@@ -9,16 +9,16 @@ const LINE_SEPARATOR = /\u2028/g
 // It replaces line breaks with a visual symbol (↵) to indicate where new lines exist in the original text.
 const LINE_BREAK_VISUAL = '↵ '
 
-const markedInstance = new Marked()
+const marked = new Marked()
 
-markedInstance.setOptions({
+marked.setOptions({
   // marked sanitize is deprecated, using DOMPurify
   // sanitize: true,
   gfm: true,
   breaks: true
 })
 
-const renderer = new markedInstance.Renderer()
+const renderer = new marked.Renderer()
 
 renderer.image = function () {
   return ''
@@ -41,7 +41,7 @@ renderer.heading = function ({ text }) {
   return `<p>${text}</p>`
 }
 
-markedInstance.use({ renderer })
+marked.use({ renderer })
 
 /**
  * Sanitizes text to show HTML
@@ -58,7 +58,7 @@ export function sanitizeHTML(text = '') {
  * @returns {string} resulting sanitized HTML
  */
 export function renderMarkdown(text = '') {
-  return markedInstance.parse(sanitizeHTML(text.replace(LINE_SEPARATOR, '\n'))) as string
+  return marked.parse(sanitizeHTML(text.replace(LINE_SEPARATOR, '\n')), { async: false })
 }
 
 /**
@@ -67,19 +67,19 @@ export function renderMarkdown(text = '') {
  * @param {string} text text to process
  * @returns {string} resulting clear text of the first line
  */
-export function removeFormats(text = ''): string | Promise<string> {
+export function removeFormats(text = '') {
   const node = document.createElement('div')
   const textWithSymbol = text.replace(/\n/g, '↵ ')
-  node.innerHTML = markedInstance.parse(sanitizeHTML(textWithSymbol)) as string
+  node.innerHTML = marked.parse(sanitizeHTML(textWithSymbol), { async: false })
 
   return node.textContent || node.innerText || ''
 }
 
-export function formatMessage(text = ''): string | Promise<string> {
+export function formatMessage(text = '') {
   const node = document.createElement('div')
 
   const textWithSymbol = text.replace(/\n/g, LINE_BREAK_VISUAL)
-  node.innerHTML = markedInstance.parse(sanitizeHTML(textWithSymbol)) as string
+  node.innerHTML = marked.parse(sanitizeHTML(textWithSymbol), { async: false })
 
   const textWithoutHtml = node.textContent || node.innerText || ''
 
