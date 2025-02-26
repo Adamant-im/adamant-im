@@ -2,15 +2,15 @@ import { Marked } from 'marked'
 import DOMPurify from 'dompurify'
 
 interface IImageParams {
-  _href: string
-  _title: string
-  _text: string
+  href: string
+  title: string
+  text: string
 }
 
 interface ILinkParams {
   href: string
-  _title: string
-  text: string
+  title: string
+  tokens: string
 }
 
 // The U+2028 character (LINE SEPARATOR) is sometimes used as a line break, but it is treated as a space in some web environments,
@@ -69,7 +69,7 @@ export function sanitizeHTML(text: string = ''): string {
  * @param {string} text text to render
  * @returns {string} resulting sanitized HTML
  */
-export function renderMarkdown(text: string = ''): string {
+export function renderMarkdown(text: string = ''): string | Promise<string> {
   return markedInstance.parse(sanitizeHTML(text.replace(LINE_SEPARATOR, '\n')))
 }
 
@@ -79,7 +79,7 @@ export function renderMarkdown(text: string = ''): string {
  * @param {string} text text to process
  * @returns {string} resulting clear text of the first line
  */
-export function removeFormats(text: string = ''): string | null {
+export function removeFormats(text: string = ''): string | null | Promise<string> {
   const node = document.createElement('div')
   const textWithSymbol = text.replace(/\n/g, '↵ ')
   node.innerHTML = markedInstance.parse(sanitizeHTML(textWithSymbol))
@@ -87,7 +87,7 @@ export function removeFormats(text: string = ''): string | null {
   return node.textContent || node.innerText || ''
 }
 
-export function formatMessage(text: string = ''): string {
+export function formatMessage(text: string = ''): string | Promise<string> {
   const node = document.createElement('div')
 
   const textWithSymbol = text.replace(/\n/g, LINE_BREAK_VISUAL)
