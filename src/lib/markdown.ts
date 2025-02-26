@@ -20,11 +20,11 @@ markedInstance.setOptions({
 
 const renderer = new markedInstance.Renderer()
 
-renderer.image = function ({ _href, _title, _text }) {
+renderer.image = function () {
   return ''
 }
 
-renderer.link = function ({ href, _title, text }) {
+renderer.link = function ({ href, text }) {
   const linkPattern = /^(eth|bch|bitcoin|https?|s?ftp|magnet|tor|onion|tg):(.*)$/i
   const emailPattern = /^(mailto):[^@]+@[^@]+\.[^@]+$/i
 
@@ -58,7 +58,7 @@ export function sanitizeHTML(text = '') {
  * @returns {string} resulting sanitized HTML
  */
 export function renderMarkdown(text = '') {
-  return markedInstance.parse(sanitizeHTML(text.replace(LINE_SEPARATOR, '\n')))
+  return markedInstance.parse(sanitizeHTML(text.replace(LINE_SEPARATOR, '\n'))) as string
 }
 
 /**
@@ -67,19 +67,19 @@ export function renderMarkdown(text = '') {
  * @param {string} text text to process
  * @returns {string} resulting clear text of the first line
  */
-export function removeFormats(text = '') {
+export function removeFormats(text = ''): string | Promise<string> {
   const node = document.createElement('div')
   const textWithSymbol = text.replace(/\n/g, '↵ ')
-  node.innerHTML = markedInstance.parse(sanitizeHTML(textWithSymbol))
+  node.innerHTML = markedInstance.parse(sanitizeHTML(textWithSymbol)) as string
 
   return node.textContent || node.innerText || ''
 }
 
-export function formatMessage(text = '') {
+export function formatMessage(text = ''): string | Promise<string> {
   const node = document.createElement('div')
 
   const textWithSymbol = text.replace(/\n/g, LINE_BREAK_VISUAL)
-  node.innerHTML = markedInstance.parse(sanitizeHTML(textWithSymbol))
+  node.innerHTML = markedInstance.parse(sanitizeHTML(textWithSymbol)) as string
 
   const textWithoutHtml = node.textContent || node.innerText || ''
 
