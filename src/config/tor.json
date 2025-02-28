@@ -92,7 +92,7 @@
           "url": "http://cc6ibzkfeseuwnmtjc6hlsd44bzg2sr3shbv7n35nj2rk2vm6dmtlnqd.onion/bitcoind"
         },
         {
-          "url": "http://grnpvgtlrfws3424l726td5lctsod3hq2at4lhiasmedpxygbo5u2bqd.onion"
+          "url": "http://grnpvgtlrfws3424l726td5lctsod3hq2at4lhiasmedpxygbo5u2bqd.onion/bitcoind"
         }
       ],
       "healthCheck": {
@@ -174,7 +174,34 @@
     },
     "explorerTx": "https://dogechain.info/tx/${ID}",
     "explorer": "https://dogechain.info",
-    "explorerAddress": "https://dogechain.info/address/${ID}"
+    "explorerAddress": "https://dogechain.info/address/${ID}",
+    "services": {
+      "dogeIndexer": {
+        "displayName": "doge-indexer",
+        "description": {
+          "software": "Esplora/Electrs",
+          "github": "https://github.com/blockstream/electrs",
+          "docs": "https://github.com/blockstream/esplora/blob/master/API.md"
+        },
+        "list": [
+          {
+            "url": "http://mtg4mq43p67cbj6qwcqgppjv7uzm7ximjlzapsbnbh5ls6zqkjsq26ad.onion/api"
+          },
+          {
+            "url": "http://bfu3iiofsagyhi22zijfilbkzlzbalpylhhfcluqmezx2avdwcxut7yd.onion/api"
+          },
+          {
+            "url": "http://tdl25bmpwystxnm6hxzqdrkaxxdicknbigs5umob2nlgcbbqgidd64qd.onion/api"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 390000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 3
+        }
+      }
+    }
   },
   "eth": {
     "nodes": {

@@ -232,7 +232,37 @@
       }
     },
     "explorer": "https://dogechain.info",
-    "explorerAddress": "https://dogechain.info/address/${ID}"
+    "explorerAddress": "https://dogechain.info/address/${ID}",
+    "services": {
+      "dogeIndexer": {
+        "displayName": "doge-indexer",
+        "description": {
+          "software": "Esplora/Electrs",
+          "github": "https://github.com/blockstream/electrs",
+          "docs": "https://github.com/blockstream/esplora/blob/master/API.md"
+        },
+        "list": [
+          {
+            "url": "https://dogenode1.adamant.im/api",
+            "alt_ip": "http://5.9.99.62:44099/api"
+          },
+          {
+            "url": "https://dogenode2.adamant.im/api",
+            "alt_ip": "http://176.9.32.126:44098/api"
+          },
+          {
+            "url": "https://dogenode3.adm.im/api",
+            "alt_ip": "http://95.216.45.88:44098/api"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 390000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 3
+        }
+      }
+    }
   },
   "eth": {
     "explorerTx": "https://etherscan.io/tx/${ID}",
