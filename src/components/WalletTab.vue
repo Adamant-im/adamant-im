@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, watch } from 'vue'
 import { useStore } from 'vuex'
 import type { PropType } from 'vue'
 
@@ -32,6 +32,7 @@ import { Cryptos, FetchStatus } from '@/lib/constants'
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import numberFormat from '@/filters/numberFormat'
 import { mdiDotsHorizontal,  mdiHelpCircleOutline } from '@mdi/js'
+import { vibrate } from '@/lib/vibrate'
 
 
 const className = 'wallet-tab'
@@ -71,6 +72,8 @@ export default defineComponent({
   setup(props) {
     const store = useStore()
 
+    const currentBalance = computed(() => props.wallet.balance)
+
     const isRateLoaded = computed(() => store.state.rate.isLoaded && props.wallet.rate)
     const balanceStatus = computed(() => {
       const { cryptoCurrency } = props.wallet
@@ -85,6 +88,13 @@ export default defineComponent({
 
     const isBalanceLoading = computed(() => balanceStatus.value === FetchStatus.Loading)
     const fetchBalanceSucceeded = computed(() => balanceStatus.value === FetchStatus.Success)
+
+    watch(currentBalance, (newBalance, oldBalance) => {
+      if (oldBalance < newBalance) {
+          vibrate.doubleVeryShort()
+        }
+      }
+    )
 
     return {
       classes,

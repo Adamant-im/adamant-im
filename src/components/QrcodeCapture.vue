@@ -18,6 +18,8 @@
 </template>
 
 <script>
+import { vibrate } from '@/lib/vibrate'
+
 export default {
   emits: ['detect', 'error'],
   data: () => ({
@@ -41,8 +43,12 @@ export default {
         this.imageBase64 = await this.getImageBase64()
         this.qrCodeText = await this.tryToDecode()
 
+        vibrate.veryShort()
+
         this.$emit('detect', this.qrCodeText)
       } catch (err) {
+        vibrate.tripleVeryShort()
+
         this.$emit('error', err)
       }
       // Reset input to trigger change event later if user selects same image (Chrome)
