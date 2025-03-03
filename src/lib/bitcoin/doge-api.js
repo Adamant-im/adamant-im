@@ -1,5 +1,3 @@
-import qs from 'qs'
-
 import BtcBaseApi from './btc-base-api'
 import { Cryptos } from '../constants'
 import BigNumber from '../bignumber'
@@ -9,6 +7,7 @@ import { ECPairFactory } from 'ecpair'
 import * as tinysecp from 'tiny-secp256k1'
 import { convertToSmallestUnit } from './bitcoin-utils'
 import { dogeIndexer } from '../../lib/nodes'
+import flattenData from '@/filters/flattenData'
 
 const ECPairAPI = ECPairFactory(tinysecp)
 
@@ -157,8 +156,11 @@ export default class DogeApi extends BtcBaseApi {
 
   /** Executes a POST request to the DOGE API */
   _post(url, data) {
+    const flatData = flattenData(data);
+    const params = new URLSearchParams(flatData);
+
     return dogeIndexer
-      .useClient((client) => client.post(url, qs.stringify(data), POST_CONFIG))
+      .useClient((client) => client.post(url, params.toString(), POST_CONFIG))
       .then((response) => response.data)
   }
 
