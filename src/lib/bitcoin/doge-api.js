@@ -7,7 +7,6 @@ import { ECPairFactory } from 'ecpair'
 import * as tinysecp from 'tiny-secp256k1'
 import { convertToSmallestUnit } from './bitcoin-utils'
 import { dogeIndexer } from '../../lib/nodes'
-import flattenData from '@/filters/flattenData'
 
 const ECPairAPI = ECPairFactory(tinysecp)
 
@@ -156,8 +155,8 @@ export default class DogeApi extends BtcBaseApi {
 
   /** Executes a POST request to the DOGE API */
   _post(url, data) {
-    const flatData = flattenData(data);
-    const params = new URLSearchParams(flatData);
+    // This will not work with nested objects. If the object is nested, need to flatten it first
+    const params = new URLSearchParams(data);
 
     return dogeIndexer
       .useClient((client) => client.post(url, params.toString(), POST_CONFIG))
