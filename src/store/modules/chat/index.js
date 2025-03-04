@@ -733,32 +733,16 @@ const actions = {
         })
       : message
 
-    return queueMessage(messageAsset, recipientId, type)
-      .then((res) => {
+    return queueMessage(messageAsset, recipientId, type, messageObject.id)
+      .then(async (res) => {
         // @todo this check must be performed on the server
         if (!res.success) {
           throw new Error(i18n.global.t('chats.message_rejected'))
         }
 
-        // update `message.status` to 'REGISTERED'
-        // and `message.id` with `realId` from server
-        commit('updateMessage', {
-          id: messageObject.id,
-          realId: res.transactionId,
-          status: TS.REGISTERED, // not confirmed yet, wait to be stored in the blockchain (optional line)
-          partnerId: recipientId
-        })
-
         return res
       })
       .catch((err) => {
-        // update `message.status` to 'REJECTED'
-        commit('updateMessage', {
-          id: messageObject.id,
-          status: TS.REJECTED,
-          partnerId: recipientId
-        })
-
         throw err // call the error again so that it can be processed inside view
       })
   },

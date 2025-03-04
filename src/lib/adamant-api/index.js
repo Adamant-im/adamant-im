@@ -1,7 +1,7 @@
 import Queue from 'promise-queue'
 import { Base64 } from 'js-base64'
 
-import { Transactions, Delegates, MessageType } from '@/lib/constants'
+import { Transactions, Delegates, MessageType, TransactionStatus as TS } from '@/lib/constants'
 import utils from '@/lib/adamant'
 import client from '@/lib/nodes/adm'
 import { encryptPassword } from '@/lib/idb/crypto'
@@ -10,6 +10,7 @@ import { i18n } from '@/i18n'
 import store from '@/store'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { parseCryptoAddressesKVStxs } from '@/lib/store-crypto-address'
+import { getTransactionId } from '@/utils/transactions/id'
 
 Queue.configure(Promise)
 
@@ -130,6 +131,19 @@ export function getPublicKey(address = '') {
 }
 
 /**
+ * Update message in the chat store
+ * @param {{
+ *   id: number,
+ *   realId?: string,
+ *   status: number,
+ *   partnerId: string
+ * }} payload
+ */
+function updateStoreMessage(payload) {
+  store.commit('chat/updateMessage', payload)
+}
+
+/**
  * @typedef {Object} MsgParams
  * @property {string} to target address
  * @property {string|object} message message to send (object value will be JSON-serialized)
@@ -148,27 +162,54 @@ export function getPublicKey(address = '') {
  * @returns {Promise<{success: boolean, transactionId: string}>}
  */
 export function sendMessage(params) {
-  return getPublicKey(params.to)
-    .then((publicKey) => {
+  let realId;
+
+  const { to, id, amount, type, message } = params;
+
+  return getPublicKey(to)
+    .then(async (publicKey) => {
       const text =
-        typeof params.message === 'string' ? params.message : JSON.stringify(params.message)
+        typeof message === 'string' ? message : JSON.stringify(message)
       const encoded = utils.encodeMessage(text, publicKey, myKeypair.privateKey)
       const chat = {
         message: encoded.message,
         own_message: encoded.nonce,
-        type: params.type || 1
+        type: type || 1
       }
 
       const transaction = newTransaction(Transactions.CHAT_MESSAGE)
-      transaction.amount = params.amount ? utils.prepareAmount(params.amount) : 0
+      transaction.amount = amount ? utils.prepareAmount(amount) : 0
       transaction.asset = { chat }
-      transaction.recipientId = params.to
+      transaction.recipientId = to
 
       return client.post('/api/chats/process', (endpoint) => {
-        return { transaction: signTransaction(transaction, endpoint.timeDelta) }
+        const signedTransaction = signTransaction(transaction, endpoint.timeDelta)
+
+        if (id) {
+          realId = getTransactionId(signedTransaction)
+
+          // update `message.status` to 'REGISTERED'
+          // and `message.id` with `realId` from signedTransaction
+          updateStoreMessage({
+            id,
+            realId,
+            status: TS.REGISTERED,
+            partnerId: params.to
+          })
+        }
+
+
+        return { transaction: signedTransaction }
       })
     })
     .catch((reason) => {
+      // update `message.status` to 'REJECTED'
+      updateStoreMessage({
+        id: realId ?? id,
+        status: TS.REJECTED,
+        partnerId: to
+      })
+
       return reason
     })
 }

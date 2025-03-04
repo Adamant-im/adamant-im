@@ -12,12 +12,13 @@ const queue = new Queue(maxConcurent, maxQueue)
  * @param {string} recipientId
  * @returns {Promise}
  */
-export function queueMessage(message, recipientId, type) {
+export function queueMessage(message, recipientId, type, id) {
   return queue.add(() => {
     return admApi.sendMessage({
       to: recipientId,
       message,
-      type
+      type,
+      id
     })
   })
 }
