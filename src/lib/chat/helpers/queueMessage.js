@@ -13,7 +13,7 @@ const queue = new Queue(maxConcurent, maxQueue)
  * @param {number} type
  * @returns {Promise}
  */
-export function queueMessage(message, recipientId, type, id) {
+export function queueMessage(message, recipientId, type) {
   return queue.add(() => {
     return admApi.sendMessage({
       to: recipientId,
