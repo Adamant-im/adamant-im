@@ -1,3 +1,5 @@
+import { MAX_FILE_EXTENSION_DISPLAY_LENGTH } from '@/lib/constants'
+
 /**
  * Format size in a human-readable format.
  * @param size - Size of the file in bytes
@@ -25,6 +27,14 @@ export function extractFileExtension(fileName: string) {
   }
 
   return fileName.split('.').at(-1)
+}
+
+export function formatFileExtension(extension?: string) {
+  if (extension && extension.length <= MAX_FILE_EXTENSION_DISPLAY_LENGTH) {
+    return extension.toUpperCase()
+  }
+
+  return 'File'
 }
 
 /**

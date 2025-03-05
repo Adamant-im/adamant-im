@@ -20,8 +20,7 @@ import { computed, defineComponent, PropType } from 'vue'
 
 import IconFile from '@/components/icons/common/IconFile.vue'
 import { FileAsset } from '@/lib/adamant-api/asset'
-import { formatBytes } from '@/lib/files'
-import { MAX_FILE_EXTENSION_DISPLAY_LENGTH } from '@/lib/constants'
+import { formatBytes, formatFileExtension } from '@/lib/files'
 
 const className = 'a-chat-modal-file'
 const classes = {
@@ -41,16 +40,7 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const fileExtension = computed(() => {
-      if (
-        props.file.extension &&
-        props.file.extension.length <= MAX_FILE_EXTENSION_DISPLAY_LENGTH
-      ) {
-        return props.file.extension.toUpperCase()
-      } else {
-        return 'File'
-      }
-    })
+    const fileExtension = computed(() => formatFileExtension(props.file.extension))
 
     const fileName = computed(() => {
       const { name = '', extension } = props.file

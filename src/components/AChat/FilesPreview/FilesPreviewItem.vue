@@ -14,8 +14,7 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 
-import { MAX_FILE_EXTENSION_DISPLAY_LENGTH } from '@/lib/constants'
-import { extractFileExtension, FileData } from '@/lib/files'
+import { extractFileExtension, formatFileExtension, FileData } from '@/lib/files'
 import IconFile from '@/components/icons/common/IconFile.vue'
 import { mdiClose } from '@mdi/js'
 
@@ -43,12 +42,7 @@ export default defineComponent({
   setup(props) {
     const extension = computed(() => {
       const fileExtension = extractFileExtension(props.file.name)
-
-      if (fileExtension && fileExtension.length <= MAX_FILE_EXTENSION_DISPLAY_LENGTH) {
-        return fileExtension.toUpperCase()
-      }
-
-      return 'File'
+      return formatFileExtension(fileExtension)
     })
 
     return {
