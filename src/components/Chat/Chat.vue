@@ -103,38 +103,18 @@
           <template #actions v-if="isRealMessage(message)">
             <AChatReactions @click="handleClickReactions(message)" :transaction="message" />
 
-            <AChatMessageActionsDropdown
+            <ChatMessageActions
               :transaction="message"
               :open="actionsDropdownMessageId === message.id"
+              :show-emoji-picker="showEmojiPicker"
               @open:change="toggleActionsDropdown"
-              @click:reply="openReplyPreview(message)"
-              @click:copy="copyMessageToClipboard(message)"
-            >
-              <template #top>
-                <EmojiPicker
-                  v-if="showEmojiPicker"
-                  @emoji:select="(emoji) => onEmojiSelect(message.id, emoji)"
-                  elevation
-                  position="absolute"
-                />
-
-                <AChatReactionSelect
-                  v-else
-                  :transaction="message"
-                  @reaction:add="sendReaction"
-                  @reaction:remove="removeReaction"
-                  @click:emoji-picker="showEmojiPicker = true"
-                />
-              </template>
-
-              <template #bottom>
-                <AChatMessageActionsList
-                  v-if="!showEmojiPicker"
-                  @click:reply="openReplyPreview(message)"
-                  @click:copy="copyMessageToClipboard(message)"
-                />
-              </template>
-            </AChatMessageActionsDropdown>
+              @click:reply="openReplyPreview"
+              @click:copy="copyMessageToClipboard"
+              @reaction:add="sendReaction"
+              @reaction:remove="removeReaction"
+              @emoji:select="onEmojiSelect"
+              @update:show-emoji-picker="showEmojiPicker = $event"
+            />
           </template>
         </a-chat-message>
 
@@ -157,38 +137,18 @@
           <template #actions v-if="isRealMessage(message)">
             <AChatReactions @click="handleClickReactions(message)" :transaction="message" />
 
-            <AChatMessageActionsDropdown
+            <ChatMessageActions
               :transaction="message"
               :open="actionsDropdownMessageId === message.id"
+              :show-emoji-picker="showEmojiPicker"
               @open:change="toggleActionsDropdown"
-              @click:reply="openReplyPreview(message)"
-              @click:copy="copyMessageToClipboard(message)"
-            >
-              <template #top>
-                <EmojiPicker
-                  v-if="showEmojiPicker"
-                  @emoji:select="(emoji) => onEmojiSelect(message.id, emoji)"
-                  elevation
-                  position="absolute"
-                />
-
-                <AChatReactionSelect
-                  v-else
-                  :transaction="message"
-                  @reaction:add="sendReaction"
-                  @reaction:remove="removeReaction"
-                  @click:emoji-picker="showEmojiPicker = true"
-                />
-              </template>
-
-              <template #bottom>
-                <AChatMessageActionsList
-                  v-if="!showEmojiPicker"
-                  @click:reply="openReplyPreview(message)"
-                  @click:copy="copyMessageToClipboard(message)"
-                />
-              </template>
-            </AChatMessageActionsDropdown>
+              @click:reply="openReplyPreview"
+              @click:copy="copyMessageToClipboard"
+              @reaction:add="sendReaction"
+              @reaction:remove="removeReaction"
+              @emoji:select="onEmojiSelect"
+              @update:show-emoji-picker="showEmojiPicker = $event"
+            />
           </template>
         </a-chat-attachment>
 
@@ -210,38 +170,18 @@
           <template #actions v-if="isRealMessage(message)">
             <AChatReactions @click="handleClickReactions(message)" :transaction="message" />
 
-            <AChatMessageActionsDropdown
+            <ChatMessageActions
               :transaction="message"
               :open="actionsDropdownMessageId === message.id"
+              :show-emoji-picker="showEmojiPicker"
               @open:change="toggleActionsDropdown"
-              @click:reply="openReplyPreview(message)"
-              @click:copy="copyMessageToClipboard(message)"
-            >
-              <template #top>
-                <EmojiPicker
-                  v-if="showEmojiPicker"
-                  @emoji:select="(emoji) => onEmojiSelect(message.id, emoji)"
-                  elevation
-                  position="absolute"
-                />
-
-                <AChatReactionSelect
-                  v-else
-                  :transaction="message"
-                  @reaction:add="sendReaction"
-                  @reaction:remove="removeReaction"
-                  @click:emoji-picker="showEmojiPicker = true"
-                />
-              </template>
-
-              <template #bottom>
-                <AChatMessageActionsList
-                  v-if="!showEmojiPicker"
-                  @click:reply="openReplyPreview(message)"
-                  @click:copy="copyMessageToClipboard(message)"
-                />
-              </template>
-            </AChatMessageActionsDropdown>
+              @click:reply="openReplyPreview"
+              @click:copy="copyMessageToClipboard"
+              @reaction:add="sendReaction"
+              @reaction:remove="removeReaction"
+              @emoji:select="onEmojiSelect"
+              @update:show-emoji-picker="showEmojiPicker = $event"
+            />
           </template>
         </a-chat-transaction>
       </template>
@@ -319,7 +259,6 @@
 </template>
 
 <script lang="ts" setup>
-import AChatMessageActionsList from '@/components/AChat/AChatMessageActionsList.vue'
 import AChatReactions from '@/components/AChat/AChatReactions/AChatReactions.vue'
 import { FileData } from '@/lib/files'
 import { emojiWeight } from '@/lib/chat/emoji-weight/emojiWeight'
@@ -342,11 +281,11 @@ import {
   AChatForm,
   AChatReplyPreview,
   AChatMessageActionsMenu,
-  AChatMessageActionsDropdown,
   AChatActionsOverlay,
   AChatReactionSelect,
   FilesPreview
 } from '@/components/AChat'
+import ChatMessageActions from './ChatMessageActions.vue'
 import ChatToolbar from '@/components/Chat/ChatToolbar.vue'
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 import ChatMenu from '@/components/Chat/ChatMenu.vue'
