@@ -10,6 +10,7 @@ const queue = new Queue(maxConcurent, maxQueue)
  * Add a message to the queue.
  * @param {string | object} message
  * @param {string} recipientId
+ * @param {number} type
  * @returns {Promise}
  */
 export function queueMessage(message, recipientId, type, id) {
@@ -18,11 +19,15 @@ export function queueMessage(message, recipientId, type, id) {
       to: recipientId,
       message,
       type,
-      id
     })
   })
 }
 
+/**
+ * Add a signed transaction to the queue.
+ * @param {object} signedTransaction
+ * @returns {Promise}
+ */
 export function queueSignedMessage(signedTransaction) {
   return queue.add(() => {
     return admApi.sendSignedTransaction(signedTransaction)
