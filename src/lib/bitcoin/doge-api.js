@@ -155,11 +155,8 @@ export default class DogeApi extends BtcBaseApi {
 
   /** Executes a POST request to the DOGE API */
   _post(url, data) {
-    // This will not work with nested objects. If the object is nested, need to flatten it first
-    const params = new URLSearchParams(data);
-
     return dogeIndexer
-      .useClient((client) => client.post(url, params.toString(), POST_CONFIG))
+      .useClient((client) => client.post(url, data, POST_CONFIG))
       .then((response) => response.data)
   }
 
