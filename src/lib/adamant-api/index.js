@@ -130,17 +130,72 @@ export function getPublicKey(address = '') {
   })
 }
 
+
 /**
- * Update message in the chat store
- * @param {{
- *   id: number,
- *   realId?: string,
- *   status: number,
- *   partnerId: string
- * }} payload
+ * @typedef {Object} MessageObject
+ * @property {number} amount
+ * @property {Object} asset
+ * @property {Object} asset.chat
+ * @property {string} asset.chat.message
+ * @property {string} asset.chat.own_message
+ * @property {number} asset.chat.type
+ * @property {string} recipientId
+ * @property {string} senderId
+ * @property {string} senderPublicKey
+ * @property {string} signature
+ * @property {number} timestamp
+ * @property {number} type
  */
-function updateStoreMessage(payload) {
-  store.commit('chat/updateMessage', payload)
+
+/**
+ * Generates and signs a chat message transaction.
+ *
+ * @param {Object} params - The transaction parameters.
+ * @param {string} params.to - The recipient's identifier.
+ * @param {number} [params.amount=0] - The transaction amount.
+ * @param {number} [params.type=1] - The message type.
+ * @param {string|Object} params.message - The message to be encrypted.
+ * @returns {Promise<MessageObject|null>} The signed transaction object or null on failure.
+ */
+export async function getSignedTransaction(params) {
+  try {
+    const { to, amount, type = 1, message } = params;
+
+    const publicKey = await getPublicKey(to);
+
+    const text =
+      typeof message === 'string' ? message : JSON.stringify(message)
+    const encoded = utils.encodeMessage(text, publicKey, myKeypair.privateKey)
+    const chat = {
+      message: encoded.message,
+      own_message: encoded.nonce,
+      type,
+    }
+
+    const transaction = newTransaction(Transactions.CHAT_MESSAGE)
+    transaction.amount = amount ? utils.prepareAmount(amount) : 0
+    transaction.asset = { chat }
+    transaction.recipientId = to
+
+    const timeDelta = await client.getTimeDelta()
+
+    return signTransaction(transaction, timeDelta)
+  } catch (error) {
+    console.error(error)
+
+    return null
+  }
+}
+
+/**
+ * Send signed transaction
+ * @param {object} signedTransaction
+ * @returns {Promise<{success: boolean, transactionId: string, nodeTimestamp: number}>}
+ */
+export function sendSignedTransaction(signedTransaction) {
+  return client.post('/api/chats/process', () => {
+    return { transaction: signedTransaction }
+  })
 }
 
 /**
@@ -159,59 +214,18 @@ function updateStoreMessage(payload) {
  *   type?: number,
  *   amount?: number
  * }} params
- * @returns {Promise<{success: boolean, transactionId: string}>}
+ * @returns {Promise<{success: boolean, transactionId: string, nodeTimestamp: number}>}
  */
-export function sendMessage(params) {
-  let realId;
+export async function sendMessage(params) {
+  try {
+    const signedTransaction = await getSignedTransaction(params)
 
-  const { to, id, amount, type, message } = params;
-
-  return getPublicKey(to)
-    .then(async (publicKey) => {
-      const text =
-        typeof message === 'string' ? message : JSON.stringify(message)
-      const encoded = utils.encodeMessage(text, publicKey, myKeypair.privateKey)
-      const chat = {
-        message: encoded.message,
-        own_message: encoded.nonce,
-        type: type || 1
-      }
-
-      const transaction = newTransaction(Transactions.CHAT_MESSAGE)
-      transaction.amount = amount ? utils.prepareAmount(amount) : 0
-      transaction.asset = { chat }
-      transaction.recipientId = to
-
-      return client.post('/api/chats/process', (endpoint) => {
-        const signedTransaction = signTransaction(transaction, endpoint.timeDelta)
-
-        if (id) {
-          realId = getTransactionId(signedTransaction)
-
-          // update `message.status` to 'REGISTERED'
-          // and `message.id` with `realId` from signedTransaction
-          updateStoreMessage({
-            id,
-            realId,
-            status: TS.REGISTERED,
-            partnerId: params.to
-          })
-        }
-
-
-        return { transaction: signedTransaction }
-      })
-    })
-    .catch((reason) => {
-      // update `message.status` to 'REJECTED'
-      updateStoreMessage({
-        id: realId ?? id,
-        status: TS.REJECTED,
-        partnerId: to
-      })
-
-      return reason
-    })
+    if (signedTransaction) {
+      return sendSignedTransaction(signedTransaction)
+    }
+  } catch (reason) {
+    return reason;
+  }
 }
 
 /**

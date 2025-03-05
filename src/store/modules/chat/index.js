@@ -8,7 +8,8 @@ import {
   createTransaction,
   createReaction,
   normalizeMessage,
-  createAttachment
+  createAttachment,
+  queueSignedMessage
 } from '@/lib/chat/helpers'
 import { i18n } from '@/i18n'
 import { isNumeric } from '@/lib/numericHelpers'
@@ -18,6 +19,7 @@ import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
 import { uploadFiles } from '../../../lib/files'
 import { generateAdamantChats } from './utils/generateAdamantChats'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
+import { getTransactionId } from '@/utils/transactions/id'
 
 export let interval
 
@@ -712,39 +714,61 @@ const actions = {
    * @param {string} replyToId Optional
    * @returns {Promise}
    */
-  sendMessage({ commit, rootState }, { message, recipientId, replyToId }) {
-    const messageObject = createMessage({
-      message,
-      recipientId,
-      senderId: rootState.address,
-      replyToId
-    })
+  async sendMessage({ commit ,rootState }, { message, recipientId, replyToId }) {
+    let id;
+    try {
+      const type = replyToId ? MessageType.RICH_CONTENT_MESSAGE : MessageType.BASIC_ENCRYPTED_MESSAGE
 
-    commit('pushMessage', {
-      message: messageObject,
-      userId: rootState.address
-    })
-
-    const type = replyToId ? MessageType.RICH_CONTENT_MESSAGE : MessageType.BASIC_ENCRYPTED_MESSAGE
-    const messageAsset = replyToId
-      ? replyMessageAsset({
+      const messageAsset = replyToId
+        ? replyMessageAsset({
           replyToId,
           replyMessage: message
         })
-      : message
+        : message
 
-    return queueMessage(messageAsset, recipientId, type, messageObject.id)
-      .then(async (res) => {
-        // @todo this check must be performed on the server
-        if (!res.success) {
-          throw new Error(i18n.global.t('chats.message_rejected'))
-        }
 
-        return res
+      const signedTransaction = await admApi.getSignedTransaction({
+        to: recipientId,
+        message: messageAsset,
+        type,
       })
-      .catch((err) => {
-        throw err // call the error again so that it can be processed inside view
+
+      id = getTransactionId(signedTransaction)
+
+      const messageObject = createMessage({
+        id,
+        message,
+        recipientId,
+        senderId: rootState.address,
+        replyToId
       })
+
+      commit('pushMessage', {
+        message: messageObject,
+        userId: rootState.address,
+      })
+
+      const sentSignedRes = await queueSignedMessage(signedTransaction)
+
+      // @todo this check must be performed on the server
+      if (!sentSignedRes.success) {
+        throw new Error(i18n.global.t('chats.message_rejected'))
+      }
+
+      commit('updateMessage', {
+        id,
+        status: TS.REGISTERED,
+        partnerId: recipientId
+      })
+    } catch (error) {
+      if (id) {
+        commit('updateMessage', {
+          id,
+          status: TS.REJECTED,
+        })
+      }
+      throw error;
+    }
   },
 
   /**

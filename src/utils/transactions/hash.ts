@@ -40,7 +40,7 @@ export interface ChatTransaction extends BasicTransaction {
     chat: {
       message: string;
       own_message: string;
-      type: MessageType;
+      type: typeof MessageType;
     };
   };
 }

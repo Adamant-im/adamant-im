@@ -66,4 +66,8 @@ export class AdmClient extends Client<AdmNode> {
 
     return result.height
   }
+
+  async getTimeDelta() {
+    return this.getNode().timeDelta
+  }
 }

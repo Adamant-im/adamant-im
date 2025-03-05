@@ -22,3 +22,9 @@ export function queueMessage(message, recipientId, type, id) {
     })
   })
 }
+
+export function queueSignedMessage(signedTransaction) {
+  return queue.add(() => {
+    return admApi.sendSignedTransaction(signedTransaction)
+  })
+}
