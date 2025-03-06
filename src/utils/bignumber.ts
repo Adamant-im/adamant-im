@@ -126,7 +126,7 @@ function toMpintBuffer(bignumber: BigNumber): Buffer {
   if (buf[0] & 0x80) len++;
 
   const ret = Buffer.alloc(4 + len);
-  if (len > 0) buf.copy(ret, 4 + (buf[0] & 0x80 ? 1 : 0));
+  if (len > 0) buf.copy(ret as Uint8Array , 4 + (buf[0] & 0x80 ? 1 : 0));
   if (buf[0] & 0x80) ret[4] = 0;
 
   ret[0] = len & (0xff << 24);
