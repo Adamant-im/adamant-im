@@ -1,5 +1,5 @@
 import adamant from '@/lib/adamant'
-import bignum from '@/lib/bignumber.js'
+import bignum from '@/lib/bignumber'
 import type { RegisterChatMessageTransaction } from '@/lib/schema/client'
 
 export const getTransactionId = (transaction: RegisterChatMessageTransaction) => {
