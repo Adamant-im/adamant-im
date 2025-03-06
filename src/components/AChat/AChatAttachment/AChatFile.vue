@@ -42,14 +42,25 @@
       </template>
     </AChatFileLoader>
 
-    <IconFile
-      v-else
-      :class="classes.icon"
-      :text="fileExtension?.toUpperCase()"
-      :height="iconSize"
-      :width="iconSize"
-      @click="$emit('click')"
-    />
+    <div v-else :class="classes.fileIcon">
+      <v-fade-transition>
+        <div
+          v-show="uploadProgress < 100"
+          :class="[classes.placeholder, classes.placeholderTransparent, classes.uploadFileProgress]"
+          style=""
+        >
+          <v-progress-circular color="grey-lighten-4" :model-value="uploadProgress" />
+        </div>
+      </v-fade-transition>
+
+      <IconFile
+        :class="classes.icon"
+        :text="fileExtensionDisplay"
+        :height="iconSize"
+        :width="iconSize"
+        @click="$emit('click')"
+      />
+    </div>
 
     <div :class="classes.fileInfo">
       <div :class="classes.name">{{ fileName }}</div>
@@ -58,13 +69,15 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
-import { LocalFile, isLocalFile, formatBytes } from '@/lib/files'
+import { LocalFile, isLocalFile, formatBytes, extractFileExtension } from '@/lib/files'
 import { FileAsset } from '@/lib/adamant-api/asset'
+import { MAX_FILE_EXTENSION_DISPLAY_LENGTH } from '@/lib/constants'
 import IconFile from '@/components/icons/common/IconFile.vue'
+import { useStore } from 'vuex'
 import { AChatFileLoader } from './AChatFileLoader'
 import { mdiImageOff } from '@mdi/js'
 
@@ -72,6 +85,8 @@ const className = 'a-chat-file'
 const classes = {
   root: className,
   placeholder: `${className}__placeholder`,
+  fileIcon: `${className}__file-icon`,
+  uploadFileProgress: `${className}__upload-file-progress`,
   placeholderTransparent: `${className}__placeholder--transparent`,
   icon: `${className}__icon`,
   iconWrapper: `${className}__icon-wrapper`,
@@ -84,55 +99,57 @@ const classes = {
 
 const iconSize = 64
 
-export default defineComponent({
-  props: {
-    transaction: {
-      type: Object as PropType<NormalizedChatMessageTransaction>,
-      required: true
-    },
-    file: {
-      type: Object as PropType<FileAsset | LocalFile>,
-      required: true
-    },
-    partnerId: {
-      type: String,
-      required: true
-    }
-  },
-  emits: ['click'],
-  components: { AChatFileLoader, IconFile },
-  setup(props) {
-    const { t } = useI18n()
+const props = defineProps<{
+  transaction: NormalizedChatMessageTransaction
+  file: FileAsset | LocalFile
+  partnerId: string
+}>()
 
-    const isImage = computed(() => {
-      if (isLocalFile(props.file)) {
-        return props.file.file.isImage
-      }
+defineEmits<{
+  (e: 'click'): void
+}>()
 
-      return ['jpg', 'jpeg', 'png'].includes(props.file.extension!)
-    })
-    const fileName = computed(() =>
-      isLocalFile(props.file) ? props.file.file.name : props.file.name || 'UNNAMED'
-    )
-    const fileExtension = computed(() =>
-      isLocalFile(props.file) ? props.file.file.type : props.file.extension
-    )
-    const fileSize = computed(() => {
-      return isLocalFile(props.file) ? props.file.file.encoded.binary.length : props.file.size
-    })
+const { t } = useI18n()
+const store = useStore()
 
-    return {
-      t,
-      classes,
-      isImage,
-      fileName,
-      fileExtension,
-      fileSize,
-      mdiImageOff,
-      formatBytes,
-      iconSize
-    }
+const isImage = computed(() => {
+  if (isLocalFile(props.file)) {
+    return props.file.file.isImage
   }
+
+  return ['jpg', 'jpeg', 'png'].includes(props.file.extension!)
+})
+
+const fileName = computed(() =>
+  isLocalFile(props.file) ? props.file.file.name : props.file.name || 'UNNAMED'
+)
+
+const fileExtension = computed(() => {
+  if (isLocalFile(props.file)) {
+    return extractFileExtension(props.file.file.name)
+  } else {
+    return props.file.extension
+  }
+})
+
+const fileExtensionDisplay = computed(() => {
+  if (fileExtension.value && fileExtension.value.length <= MAX_FILE_EXTENSION_DISPLAY_LENGTH) {
+    return fileExtension.value.toUpperCase()
+  } else {
+    return 'File'
+  }
+})
+
+const fileSize = computed(() => {
+  return isLocalFile(props.file) ? props.file.file.encoded.binary.length : props.file.size
+})
+
+const uploadProgress = computed(() => {
+  if (isLocalFile(props.file)) {
+    return store.getters['attachment/getUploadProgress'](props.file.file.cid)
+  }
+
+  return 100
 })
 </script>
 
@@ -151,6 +168,21 @@ export default defineComponent({
     align-items: center;
     justify-content: center;
     height: 100%;
+  }
+
+  &__file-icon {
+    position: relative;
+    width: 64px;
+    height: 64px;
+  }
+
+  &__upload-file-progress {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 8px;
   }
 
   &__icon {

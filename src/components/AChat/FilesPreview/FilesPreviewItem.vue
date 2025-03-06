@@ -2,13 +2,7 @@
   <div :class="classes.root">
     <div :class="classes.preview">
       <img v-if="file.isImage" :class="classes.img" :alt="file.name" :src="file.content" />
-      <IconFile
-        :class="classes.icon"
-        :text="formatText(file.name)"
-        :height="80"
-        :width="80"
-        v-else
-      />
+      <IconFile :class="classes.icon" :text="extension" :height="80" :width="80" v-else />
 
       <v-icon size="18" :icon="mdiClose" @click="$emit('remove')" :class="classes.removeIcon" />
     </div>
@@ -18,9 +12,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
+import { computed, defineComponent, PropType } from 'vue'
 
-import type { FileData } from '@/lib/files'
+import { extractFileExtension, formatFileExtension, FileData } from '@/lib/files'
 import IconFile from '@/components/icons/common/IconFile.vue'
 import { mdiClose } from '@mdi/js'
 
@@ -45,18 +39,16 @@ export default defineComponent({
       required: true
     }
   },
-  setup() {
-    const formatText = (fileName: string) => {
-      const regex = /[^.]+$/
-      const result = fileName.match(regex)?.[0]
-
-      return result
-    }
+  setup(props) {
+    const extension = computed(() => {
+      const fileExtension = extractFileExtension(props.file.name)
+      return formatFileExtension(fileExtension)
+    })
 
     return {
       classes,
-      mdiClose,
-      formatText
+      extension,
+      mdiClose
     }
   }
 })
