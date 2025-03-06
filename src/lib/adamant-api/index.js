@@ -10,7 +10,6 @@ import { i18n } from '@/i18n'
 import store from '@/store'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { parseCryptoAddressesKVStxs } from '@/lib/store-crypto-address'
-import { getTransactionId } from '@/utils/transactions/id'
 
 Queue.configure(Promise)
 
