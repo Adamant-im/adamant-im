@@ -18,7 +18,7 @@ export function queueMessage(message, recipientId, type) {
     return admApi.sendMessage({
       to: recipientId,
       message,
-      type,
+      type
     })
   })
 }
@@ -29,7 +29,5 @@ export function queueMessage(message, recipientId, type) {
  * @returns {Promise}
  */
 export function queueSignedMessage(signedTransaction) {
-  return queue.add(() => {
-    return admApi.sendSignedTransaction(signedTransaction)
-  })
+  return queue.add(() => admApi.sendSignedTransaction(signedTransaction))
 }

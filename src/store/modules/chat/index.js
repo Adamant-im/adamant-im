@@ -727,7 +727,7 @@ const actions = {
         : message
 
 
-      const signedTransaction = await admApi.getSignedTransaction({
+      const signedTransaction = await admApi.signChatMessageTransaction({
         to: recipientId,
         message: messageAsset,
         type,
@@ -748,10 +748,10 @@ const actions = {
         userId: rootState.address,
       })
 
-      const sentSignedRes = await queueSignedMessage(signedTransaction)
+      const transaction = await queueSignedMessage(signedTransaction)
 
       // @todo this check must be performed on the server
-      if (!sentSignedRes.success) {
+      if (!transaction.success) {
         throw new Error(i18n.global.t('chats.message_rejected'))
       }
 
@@ -767,7 +767,7 @@ const actions = {
           status: TS.REJECTED,
         })
       }
-      throw error;
+      throw error
     }
   },
 

@@ -157,7 +157,7 @@ export function getPublicKey(address = '') {
  * @param {string|Object} params.message - The message to be encrypted.
  * @returns {Promise<MessageObject|null>} The signed transaction object or null on failure.
  */
-export async function getSignedTransaction(params) {
+export async function signChatMessageTransaction(params) {
   try {
     const { to, amount, type = 1, message } = params;
 

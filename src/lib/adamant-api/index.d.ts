@@ -90,7 +90,7 @@ export type SendMessageParams = {
 }
 export function sendMessage(params: SendMessageParams): Promise<CreateNewChatMessageResponseDto>
 
-export function getSignedTransaction(params: SendMessageParams): Promise<RegisterAnyTransaction>
+export function signChatMessageTransaction(params: SendMessageParams): Promise<RegisterAnyTransaction>
 
 export function sendSignedTransaction(signedTransaction: RegisterAnyTransaction):  Promise<CreateNewChatMessageResponseDto>
 
