@@ -217,7 +217,7 @@ export function sendSignedTransaction(signedTransaction) {
  */
 export async function sendMessage(params) {
   try {
-    const signedTransaction = await getSignedTransaction(params)
+    const signedTransaction = await signChatMessageTransaction(params)
 
     if (signedTransaction) {
       return sendSignedTransaction(signedTransaction)
