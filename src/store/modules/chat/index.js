@@ -714,7 +714,7 @@ const actions = {
    * @param {string} replyToId Optional
    * @returns {Promise}
    */
-  async sendMessage({ commit ,rootState }, { message, recipientId, replyToId }) {
+  async sendMessage({ commit, rootState }, { message, recipientId, replyToId }) {
     let id;
     try {
       const type = replyToId ? MessageType.RICH_CONTENT_MESSAGE : MessageType.BASIC_ENCRYPTED_MESSAGE
