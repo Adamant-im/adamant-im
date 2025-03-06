@@ -1,17 +1,18 @@
-import {fromBuffer} from '../bignumber';
-import {getHash, type SignedTransaction} from './hash';
+import adamant from '@/lib/adamant'
+import bignum from '@/lib/bignumber.js'
+import type { RegisterChatMessageTransaction } from '@/lib/schema/client'
 
-export const getTransactionId = (transaction: SignedTransaction) => {
+export const getTransactionId = (transaction: RegisterChatMessageTransaction) => {
   if (!transaction.signature) {
-    throw new Error('Transaction Signature is required');
+    throw new Error('Transaction Signature is required')
   }
 
-  const hash = getHash(transaction, {skipSignature: false});
+  const hash = adamant.getHash(transaction)
 
-  const temp = Buffer.alloc(8);
+  const temp = Buffer.alloc(8)
   for (let i = 0; i < 8; i++) {
-    temp[i] = hash[7 - i];
+    temp[i] = hash[7 - i]
   }
 
-  return fromBuffer(temp).toString();
-};
+  return bignum.fromBuffer(temp).toString()
+}
