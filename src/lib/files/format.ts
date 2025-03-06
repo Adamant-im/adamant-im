@@ -1,3 +1,5 @@
+import { MAX_FILE_EXTENSION_DISPLAY_LENGTH } from '@/lib/constants'
+
 /**
  * Format size in a human-readable format.
  * @param size - Size of the file in bytes
@@ -12,4 +14,37 @@ export function formatBytes(size: number) {
   } else {
     return parseFloat((size / 1024 ** 3).toFixed(2)) + ' GB'
   }
+}
+
+/**
+ * Extract extension from filename.
+ * @param fileName
+ * @returns Returns `undefined` if the file has no extension
+ */
+export function extractFileExtension(fileName: string) {
+  if (!fileName.includes('.')) {
+    return
+  }
+
+  return fileName.split('.').at(-1)
+}
+
+export function formatFileExtension(extension?: string) {
+  if (extension && extension.length <= MAX_FILE_EXTENSION_DISPLAY_LENGTH) {
+    return extension.toUpperCase()
+  }
+
+  return 'File'
+}
+
+/**
+ * Extract filename omitting extension
+ * @param fileName
+ */
+export function extractFileName(fileName: string) {
+  if (!fileName.includes('.')) {
+    return fileName
+  }
+
+  return fileName.split('.').slice(0, -1).join('.')
 }
