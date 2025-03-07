@@ -1,6 +1,5 @@
 import { toLocalCurrency } from '@/lib/toLocalCurrency'
-import BigNumber from 'bignumber.js'
-import bignumber from '@/lib/bignumber'
+import { BigNumber } from '@/lib/bignumber'
 
 const compactOptions = {
   notation: 'compact',
@@ -10,7 +9,7 @@ const decimalOptions = {
   style: 'decimal',
   maximumFractionDigits: 15
 }
-const toSmallPrecision = (value: number | bignumber | string, significantDigits = 1) => {
+const toSmallPrecision = (value: number | customBignumber | string, significantDigits = 1) => {
   return new BigNumber(value).precision(significantDigits, BigNumber.ROUND_DOWN)
 }
 
