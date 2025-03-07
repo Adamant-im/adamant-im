@@ -761,8 +761,6 @@ const actions = {
       })
     } catch (error) {
 
-      console.log('error', error)
-
       if (id) {
         commit('updateMessage', {
           id,
