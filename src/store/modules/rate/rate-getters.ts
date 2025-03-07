@@ -16,7 +16,7 @@ export const getters: GetterTree<RateState, RootState> = {
       const calculatedRatesBySeconds = ratesBySeconds(timestamp);
 
       if (calculatedRatesBySeconds) {
-        const calculatedHistoryAmount = historyRateAmount(timestamp, amount, crypto, currentCurrency);
+        const calculatedHistoryAmount = historyRateAmount(timestamp, amount, crypto, fiatCurrency);
 
         if (!isNaN(calculatedHistoryAmount)) {
           return  `${calculatedHistoryAmount.toFixed(
