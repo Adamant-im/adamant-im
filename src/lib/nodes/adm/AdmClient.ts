@@ -75,7 +75,7 @@ export class AdmClient extends Client<AdmNode> {
     return this.getNode().timeDelta
   }
 
-  async sendTransaction(transaction: RegisterChatMessageTransaction): Promise<CreateNewChatMessageResponseDto> {
+  async sendChatTransaction(transaction: RegisterChatMessageTransaction): Promise<CreateNewChatMessageResponseDto> {
     return this.post('/api/chats/process', () => ({ transaction }))
   }
 }

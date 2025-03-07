@@ -133,11 +133,11 @@ export function getPublicKey(address = '') {
 /**
  * Generates and signs a chat message transaction.
  *
- * @param {Object} params - The transaction parameters.
+ * @param {object} params - The transaction parameters.
  * @param {string} params.to - The recipient's identifier.
  * @param {number} [params.amount=0] - The transaction amount.
  * @param {number} [params.type=1] - The message type.
- * @param {string|Object} params.message - The message to be encrypted.
+ * @param {string|object} params.message - The message to be encrypted.
  * @returns {Promise<object>} The signed transaction object or null on failure.
  */
 export async function signChatMessageTransaction(params) {
@@ -159,7 +159,7 @@ export async function signChatMessageTransaction(params) {
   transaction.asset = { chat }
   transaction.recipientId = to
 
-  const timeDelta = await client.getTimeDelta()
+  const timeDelta = client.getTimeDelta()
 
   return signTransaction(transaction, timeDelta)
 }
@@ -170,7 +170,7 @@ export async function signChatMessageTransaction(params) {
  * @returns {Promise<object>}
  */
 export async function sendSignedTransaction(signedTransaction) {
-  return client.sendTransaction(signedTransaction)
+  return client.sendChatTransaction(signedTransaction)
 }
 
 /**
