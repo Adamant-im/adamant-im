@@ -9,7 +9,7 @@ const decimalOptions = {
   style: 'decimal',
   maximumFractionDigits: 15
 }
-const toSmallPrecision = (value: number | customBignumber | string, significantDigits = 1) => {
+const toSmallPrecision = (value: number | BigNumber | string, significantDigits = 1) => {
   return new BigNumber(value).precision(significantDigits, BigNumber.ROUND_DOWN)
 }
 
