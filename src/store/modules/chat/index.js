@@ -19,7 +19,7 @@ import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
 import { uploadFiles } from '../../../lib/files'
 import { generateAdamantChats } from './utils/generateAdamantChats'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
-import { getTransactionId } from '@/utils/transactions/id'
+import adamant from '@/lib/adamant'
 
 export let interval
 
@@ -733,7 +733,7 @@ const actions = {
         type,
       })
 
-      id = getTransactionId(signedTransaction)
+      id = adamant.getTransactionId(signedTransaction)
 
       const messageObject = createMessage({
         id,
@@ -750,7 +750,6 @@ const actions = {
 
       const transaction = await queueSignedMessage(signedTransaction)
 
-      // @todo this check must be performed on the server
       if (!transaction.success) {
         throw new Error(i18n.global.t('chats.message_rejected'))
       }
@@ -761,6 +760,9 @@ const actions = {
         partnerId: recipientId
       })
     } catch (error) {
+
+      console.log('error', error)
+
       if (id) {
         commit('updateMessage', {
           id,

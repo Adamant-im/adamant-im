@@ -131,22 +131,6 @@ export function getPublicKey(address = '') {
 
 
 /**
- * @typedef {Object} MessageObject
- * @property {number} amount
- * @property {Object} asset
- * @property {Object} asset.chat
- * @property {string} asset.chat.message
- * @property {string} asset.chat.own_message
- * @property {number} asset.chat.type
- * @property {string} recipientId
- * @property {string} senderId
- * @property {string} senderPublicKey
- * @property {string} signature
- * @property {number} timestamp
- * @property {number} type
- */
-
-/**
  * Generates and signs a chat message transaction.
  *
  * @param {Object} params - The transaction parameters.
@@ -154,47 +138,39 @@ export function getPublicKey(address = '') {
  * @param {number} [params.amount=0] - The transaction amount.
  * @param {number} [params.type=1] - The message type.
  * @param {string|Object} params.message - The message to be encrypted.
- * @returns {Promise<MessageObject|null>} The signed transaction object or null on failure.
+ * @returns {Promise<object>} The signed transaction object or null on failure.
  */
 export async function signChatMessageTransaction(params) {
-  try {
-    const { to, amount, type = 1, message } = params;
+  const { to, amount, type = 1, message } = params;
 
-    const publicKey = await getPublicKey(to);
+  const publicKey = await getPublicKey(to);
 
-    const text =
-      typeof message === 'string' ? message : JSON.stringify(message)
-    const encoded = utils.encodeMessage(text, publicKey, myKeypair.privateKey)
-    const chat = {
-      message: encoded.message,
-      own_message: encoded.nonce,
-      type,
-    }
-
-    const transaction = newTransaction(Transactions.CHAT_MESSAGE)
-    transaction.amount = amount ? utils.prepareAmount(amount) : 0
-    transaction.asset = { chat }
-    transaction.recipientId = to
-
-    const timeDelta = await client.getTimeDelta()
-
-    return signTransaction(transaction, timeDelta)
-  } catch (error) {
-    console.error(error)
-
-    return null
+  const text =
+    typeof message === 'string' ? message : JSON.stringify(message)
+  const encoded = utils.encodeMessage(text, publicKey, myKeypair.privateKey)
+  const chat = {
+    message: encoded.message,
+    own_message: encoded.nonce,
+    type,
   }
+
+  const transaction = newTransaction(Transactions.CHAT_MESSAGE)
+  transaction.amount = amount ? utils.prepareAmount(amount) : 0
+  transaction.asset = { chat }
+  transaction.recipientId = to
+
+  const timeDelta = await client.getTimeDelta()
+
+  return signTransaction(transaction, timeDelta)
 }
 
 /**
  * Send signed transaction
  * @param {object} signedTransaction
- * @returns {Promise<{success: boolean, transactionId: string, nodeTimestamp: number}>}
+ * @returns {Promise<object>}
  */
-export function sendSignedTransaction(signedTransaction) {
-  return client.post('/api/chats/process', () => {
-    return { transaction: signedTransaction }
-  })
+export async function sendSignedTransaction(signedTransaction) {
+  return client.sendTransaction(signedTransaction)
 }
 
 /**
