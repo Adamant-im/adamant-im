@@ -154,9 +154,10 @@ const uploadProgress = computed(() => {
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
-@import '@/assets/styles/themes/adamant/_mixins.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'@/assets/styles/themes/adamant/_mixins.scss';
+@use'vuetify/settings';
 
 .a-chat-file {
   display: flex;
@@ -219,27 +220,27 @@ const uploadProgress = computed(() => {
 .v-theme--dark {
   .a-chat-file {
     &__placeholder {
-      background-color: map-get($adm-colors, 'muted');
+      background-color: map.get(colors.$adm-colors, 'muted');
 
       &--transparent {
-        background-color: map-get($adm-colors, 'muted');
+        background-color: map.get(colors.$adm-colors, 'muted');
       }
     }
 
     &__name {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
 
     &__size {
-      color: map-get($adm-colors, 'grey');
+      color: map.get(colors.$adm-colors, 'grey');
     }
 
     &__error {
-      background-color: map-get($adm-colors, 'secondary2-slightly-transparent');
+      background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
     }
 
     &__error-icon {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
   }
 }
@@ -247,27 +248,27 @@ const uploadProgress = computed(() => {
 .v-theme--light {
   .a-chat-file {
     &__placeholder {
-      background-color: map-get($adm-colors, 'secondary2');
+      background-color: map.get(colors.$adm-colors, 'secondary2');
 
       &--transparent {
-        background-color: rgba(map-get($adm-colors, 'grey'), 0.35);
+        background-color: rgba(map.get(colors.$adm-colors, 'grey'), 0.35);
       }
     }
 
     &__name {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
 
     &__size {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
 
     &__error {
-      background-color: map-get($adm-colors, 'secondary2');
+      background-color: map.get(colors.$adm-colors, 'secondary2');
     }
 
     &__error-icon {
-      color: map-get($grey, 'darken-1');
+      color: map.get(settings.$grey, 'darken-1');
     }
   }
 }

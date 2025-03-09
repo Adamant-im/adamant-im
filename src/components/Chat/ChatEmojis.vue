@@ -46,20 +46,21 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import 'vuetify/settings';
+@use'sass:map';
+@use'vuetify/settings';
 
 /** Themes **/
 .v-theme--light {
   .chat-emojis {
     &__icon {
-      color: map-get($grey, 'darken-1');
+      color: map.get(settings.$grey, 'darken-1');
     }
   }
 }
 .v-theme--dark {
   .chat-emojis {
     &__icon {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
   }
 }

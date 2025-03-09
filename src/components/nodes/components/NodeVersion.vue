@@ -32,15 +32,17 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/themes/adamant/_mixins.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'@/assets/styles/themes/adamant/_mixins.scss';
 
 .node-version {
-  @include a-text-explanation-small();
+  @include mixins.a-text-explanation-small();
 }
 
 .v-theme--light {
   .node-version {
-    color: map-get($adm-colors, 'regular');
+    color: map.get(colors.$adm-colors, 'regular');
   }
 }
 

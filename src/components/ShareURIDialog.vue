@@ -132,7 +132,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import 'vuetify/_settings.scss';
+@use'sass:map';
+@use'vuetify/_settings.scss';
 
 .share-uri-dialog {
 }
@@ -140,11 +141,11 @@ export default defineComponent({
 .v-theme--dark {
   .share-uri-dialog {
     &__dialog-title {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
 
     &__list-item-title {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
   }
 }

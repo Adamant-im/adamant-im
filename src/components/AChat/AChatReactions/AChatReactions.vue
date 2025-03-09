@@ -91,8 +91,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'vuetify/settings';
 
 .a-chat-reactions {
   position: absolute;
@@ -126,13 +127,13 @@ export default defineComponent({
 
 .v-theme--light {
   .a-chat-reactions {
-    background-color: map-get($adm-colors, 'secondary');
+    background-color: map.get(colors.$adm-colors, 'secondary');
   }
 }
 
 .v-theme--dark {
   .a-chat-reactions {
-    background-color: map-get($adm-colors, 'secondary2-slightly-transparent');
+    background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
   }
 }
 </style>

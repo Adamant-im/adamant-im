@@ -242,9 +242,10 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'@/assets/styles/themes/adamant/_mixins.scss';
+@use'vuetify/settings';
 
 .delegates-view {
   &__body {
@@ -253,13 +254,13 @@ export default defineComponent({
     padding: 0 16px !important;
   }
   &__dialog-title {
-    @include a-text-header();
+    @include mixins.a-text-header();
   }
   &__dialog-summary {
-    @include a-text-regular-enlarged();
+    @include mixins.a-text-regular-enlarged();
   }
   &__dialog-info {
-    @include a-text-regular-enlarged();
+    @include mixins.a-text-regular-enlarged();
     margin-top: 16px;
     :deep(a) {
       text-decoration-line: none;
@@ -269,7 +270,7 @@ export default defineComponent({
     }
   }
   &__info {
-    @include a-text-explanation-enlarged();
+    @include mixins.a-text-explanation-enlarged();
     padding: 20px 16px !important;
     :deep(a) {
       text-decoration-line: none;
@@ -294,24 +295,24 @@ export default defineComponent({
 .v-theme--light {
   .delegates-view {
     &__body {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
     &__dialog-title {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
     &__dialog-summary {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
     &__dialog-info {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
     &__divider {
-      border-color: map-get($adm-colors, 'regular');
+      border-color: map.get(colors.$adm-colors, 'regular');
     }
     :deep(.v-table) tbody tr:not(:last-child) {
       border-bottom:
         1px solid,
-        map-get($adm-colors, 'secondary2');
+        map.get(colors.$adm-colors, 'secondary2');
     }
   }
 }

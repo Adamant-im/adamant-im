@@ -96,8 +96,9 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'vuetify/settings';
 
 /**
  * 1. Navigation Button.
@@ -140,19 +141,19 @@ export default defineComponent({
 .v-theme--light {
   .app-navigation {
     &__container {
-      border-top: 1px solid map-get($grey, 'lighten-2');
+      border-top: 1px solid map.get(settings.$grey, 'lighten-2');
     }
     &.v-bottom-navigation {
-      background-color: map-get($shades, 'white');
+      background-color: map.get(settings.$shades, 'white');
     }
     :deep(.v-btn.v-btn--active) {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
     :deep(.v-btn:not(.v-btn--active)) {
-      color: map-get($adm-colors, 'muted') !important;
+      color: map.get(colors.$adm-colors, 'muted') !important;
     }
     :deep(.v-bottom-navigation__content) {
-      border-top: 1px solid map-get($grey, 'lighten-2');
+      border-top: 1px solid map.get(settings.$grey, 'lighten-2');
     }
   }
 }
@@ -160,13 +161,13 @@ export default defineComponent({
 .v-theme--dark {
   .app-navigation {
     &.v-bottom-navigation {
-      background-color: map-get($adm-colors, 'black');
+      background-color: map.get(colors.$adm-colors, 'black');
     }
     :deep(.v-btn.v-btn--active) {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
     :deep(.v-btn:not(.v-btn--active)) {
-      color: map-get($adm-colors, 'grey-transparent');
+      color: map.get(colors.$adm-colors, 'grey-transparent');
     }
   }
 }

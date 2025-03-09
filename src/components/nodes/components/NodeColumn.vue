@@ -48,8 +48,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'vuetify/settings';
 
 .node-column {
   font-size: 14px;
@@ -74,7 +75,7 @@ export default defineComponent({
   }
 }
 
-@media #{map-get($display-breakpoints, 'sm-and-down')} {
+@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
   .node-column {
     &--checkbox {
       width: 56px;
@@ -85,7 +86,7 @@ export default defineComponent({
 
 .v-theme--light {
   .node-column {
-    color: map-get($adm-colors, 'regular');
+    color: map.get(colors.$adm-colors, 'regular');
   }
 }
 

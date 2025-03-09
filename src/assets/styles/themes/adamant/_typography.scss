@@ -1,58 +1,59 @@
-@import 'vuetify/settings';
+@use'sass:map';
+@use'../../settings/_colors.scss';
+@use'_mixins.scss';
 
-@import '_mixins.scss';
-@import '../../settings/_colors.scss';
+@use'vuetify/settings';
 
 .a-text-regular {
-  @include a-text-regular();
+  @include mixins.a-text-regular();
 }
 
 .a-text-regular-enlarged {
-  @include a-text-regular-enlarged();
+  @include mixins.a-text-regular-enlarged();
 }
 
 .a-text-regular-bold {
-  @include a-text-regular-bold();
+  @include mixins.a-text-regular-bold();
 }
 
 .a-text-regular-enlarged-bold {
-  @include a-text-regular-enlarged-bold();
+  @include mixins.a-text-regular-enlarged-bold();
 }
 
 .a-text-caption {
-  @include a-text-caption();
+  @include mixins.a-text-caption();
 }
 
 .a-text-explanation {
-  @include a-text-explanation();
+  @include mixins.a-text-explanation();
 }
 
 .a-text-explanation-small {
-  @include a-text-explanation-small();
+  @include mixins.a-text-explanation-small();
 }
 
 .a-text-explanation-bold {
-  @include a-text-explanation-bold();
+  @include mixins.a-text-explanation-bold();
 }
 
 .a-text-explanation-enlarged {
-  @include a-text-explanation-enlarged();
+  @include mixins.a-text-explanation-enlarged();
 }
 
 .a-text-explanation-enlarged-bold {
-  @include a-text-explanation-enlarged-bold();
+  @include mixins.a-text-explanation-enlarged-bold();
 }
 
 .a-text-header {
-  @include a-text-header();
+  @include mixins.a-text-header();
 }
 
 .a-text-headline {
-  @include a-text-headline();
+  @include mixins.a-text-headline();
 }
 
 .a-text-active {
-  @include a-text-active();
+  @include mixins.a-text-active();
 }
 
 .v-theme--light {
@@ -63,31 +64,31 @@
   .a-text-header,
   .a-text-headline,
   .a-text-active {
-    color: map-get($adm-colors, 'regular');
+    color: map.get(colors.$adm-colors, 'regular');
   }
   .a-text-explanation,
   .a-text-explanation-small,
   .a-text-explanation-enlarged,
   .a-text-explanation-enlarged-bold,
   .a-text-explanation-bold {
-    color: map-get($adm-colors, 'muted');
+    color: map.get(colors.$adm-colors, 'muted');
   }
 
   .a-divider {
-    border-color: map-get($adm-colors, 'regular');
+    border-color: map.get(colors.$adm-colors, 'regular');
   }
 
   .a-text-attention {
-    background-color: map-get($adm-colors, 'danger');
+    background-color: map.get(colors.$adm-colors, 'danger');
   }
 }
 
 .v-theme--dark {
   .a-text-regular {
-    color: map-get($shades, 'white');
+    color: map.get(settings.$shades, 'white');
   }
 
   .a-text-attention {
-    background-color: map-get($adm-colors, 'danger');
+    background-color: map.get(colors.$adm-colors, 'danger');
   }
 }

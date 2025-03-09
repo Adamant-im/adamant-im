@@ -100,8 +100,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'vuetify/settings';
 
 .wallet-tab {
   &__crypto-icon {
@@ -124,7 +125,7 @@ export default defineComponent({
 .v-theme--light {
   .wallet-tab {
     &__rates {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
   }
 }

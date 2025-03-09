@@ -98,8 +98,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'vuetify/settings';
 
 .a-chat-reaction-select {
   border-radius: 16px;
@@ -118,22 +119,22 @@ export default defineComponent({
 
 .v-theme--light {
   .a-chat-reaction-select {
-    background-color: map-get($shades, 'white');
-    border: 1px solid map-get($adm-colors, 'secondary2');
+    background-color: map.get(settings.$shades, 'white');
+    border: 1px solid map.get(colors.$adm-colors, 'secondary2');
 
     &__more-button {
-      color: map-get($shades, 'black');
-      background-color: map-get($adm-colors, 'grey-transparent');
+      color: map.get(settings.$shades, 'black');
+      background-color: map.get(colors.$adm-colors, 'grey-transparent');
     }
   }
 }
 
 .v-theme--dark {
   .a-chat-reaction-select {
-    background-color: map-get($adm-colors, 'regular');
+    background-color: map.get(colors.$adm-colors, 'regular');
 
     &__more-button {
-      background-color: map-get($adm-colors, 'secondary2-slightly-transparent');
+      background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
     }
   }
 }

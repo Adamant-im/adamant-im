@@ -67,12 +67,12 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/themes/adamant/_mixins.scss';
+@use'@/assets/styles/themes/adamant/_mixins.scss';
 
 .v-theme--light.application--linear-gradient {
-  @include linear-gradient-light();
+  @include mixins.linear-gradient-light();
 }
 .v-theme--dark.application--linear-gradient {
-  @include linear-gradient-dark();
+  @include mixins.linear-gradient-dark();
 }
 </style>

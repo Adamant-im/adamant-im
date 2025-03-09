@@ -115,13 +115,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'@/assets/styles/themes/adamant/_mixins.scss';
+@use'vuetify/settings';
 
 .wallet-actions {
   &__title {
-    @include a-text-caption-light();
+    @include mixins.a-text-caption-light();
   }
   :deep(.v-list-item__prepend) {
     > .v-icon {
@@ -148,7 +149,7 @@ export default {
   .wallet-actions {
     &__title,
     &__icon {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
   }
 }
@@ -157,7 +158,7 @@ export default {
   .wallet-actions {
     &__title,
     &__icon {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
   }
 }

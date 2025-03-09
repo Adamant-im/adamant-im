@@ -43,7 +43,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
+@use'vuetify/settings';
 
 .nodes-view {
 }

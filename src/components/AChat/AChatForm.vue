@@ -298,8 +298,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'vuetify/settings';
 
 /**
  * 1. Limit height of message form.
@@ -361,10 +362,10 @@ export default {
   .a-chat__form {
     :deep(.v-textarea) {
       .v-field__input {
-        caret-color: map-get($adm-colors, 'primary');
+        caret-color: map.get(colors.$adm-colors, 'primary');
 
         &::placeholder {
-          color: map-get($adm-colors, 'muted');
+          color: map.get(colors.$adm-colors, 'muted');
         }
       }
     }
@@ -375,10 +376,10 @@ export default {
   .a-chat__form {
     :deep(.v-textarea) {
       .v-field__input {
-        caret-color: map-get($adm-colors, 'primary');
+        caret-color: map.get(colors.$adm-colors, 'primary');
 
         &::placeholder {
-          color: rgba(map-get($shades, 'white'), 70%);
+          color: rgba(map.get(settings.$shades, 'white'), 70%);
         }
       }
     }

@@ -225,9 +225,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'vuetify/settings';
+
 .chats-view {
+
   &__item {
     justify-content: flex-end;
     height: 56px;
@@ -256,13 +259,13 @@ export default {
 .v-theme--light {
   .chats-view {
     &__item {
-      background-color: map-get($adm-colors, 'secondary2-transparent');
+      background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
     }
     &__title {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
     &__icon {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
   }
 }
@@ -270,7 +273,7 @@ export default {
 .v-theme--dark {
   .chats-view {
     &__icon {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
   }
 }

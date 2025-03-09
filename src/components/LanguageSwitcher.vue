@@ -60,8 +60,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'vuetify/settings';
 
 .btn {
   text-transform: capitalize;
@@ -85,7 +86,7 @@ export default {
 /** Themes **/
 .v-theme--light {
   .btn {
-    color: map-get($adm-colors, 'regular');
+    color: map.get(colors.$adm-colors, 'regular');
   }
 }
 </style>

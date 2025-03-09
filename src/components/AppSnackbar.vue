@@ -65,13 +65,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'@/assets/styles/themes/adamant/_mixins.scss';
+@use'vuetify/settings';
 
 .app-snackbar {
   :deep(.v-snackbar__wrapper) {
-    @include a-text-regular-enlarged();
+    @include mixins.a-text-regular-enlarged();
 
     margin: 0 auto;
     border-radius: 0;
@@ -98,22 +99,22 @@ export default {
 
   &.outlined {
     :deep(.v-snackbar__wrapper) {
-      border-color: map-get($adm-colors, 'danger');
+      border-color: map.get(colors.$adm-colors, 'danger');
     }
   }
 }
 
 .v-theme--light.app-snackbar {
   :deep(.v-snackbar__wrapper) {
-    background-color: map-get($shades, 'white');
-    color: map-get($adm-colors, 'regular');
+    background-color: map.get(settings.$shades, 'white');
+    color: map.get(colors.$adm-colors, 'regular');
   }
 }
 
 .v-theme--dark.app-snackbar {
   :deep(.v-snackbar__wrapper) {
-    background-color: map-get($adm-colors, 'regular');
-    color: map-get($shades, 'white');
+    background-color: map.get(colors.$adm-colors, 'regular');
+    color: map.get(settings.$shades, 'white');
   }
 }
 </style>

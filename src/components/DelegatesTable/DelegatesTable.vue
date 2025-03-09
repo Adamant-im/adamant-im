@@ -121,20 +121,21 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'vuetify/settings';
 
 .delegates-table {
 }
 
-@media #{map-get($display-breakpoints, 'sm-and-down')} {
+@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
   .delegates-table {
   }
 }
 
 .v-theme--dark {
   .delegates-table {
-    background-color: map-get($adm-colors, 'black2');
+    background-color: map.get(colors.$adm-colors, 'black2');
   }
 }
 </style>

@@ -33,15 +33,16 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'vuetify/settings';
 
 .node-toggle-status-checkbox {
   font-size: 16px;
   margin-left: 16px;
 }
 
-@media #{map-get($display-breakpoints, 'sm-and-down')} {
+@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
   .node-toggle-status-checkbox {
     margin-left: 8px;
   }
@@ -49,13 +50,13 @@ export default defineComponent({
 
 .v-theme--light {
   .node-toggle-status-checkbox {
-    color: map-get($adm-colors, 'grey') !important;
+    color: map.get(colors.$adm-colors, 'grey') !important;
   }
 }
 
 .v-theme--dark {
   .node-toggle-status-checkbox {
-    color: map-get($adm-colors, 'grey') !important;
+    color: map.get(colors.$adm-colors, 'grey') !important;
   }
 }
 </style>

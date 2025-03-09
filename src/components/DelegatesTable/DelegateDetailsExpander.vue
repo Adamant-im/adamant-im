@@ -81,9 +81,10 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import 'vuetify/settings';
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'@/assets/styles/themes/adamant/_mixins.scss';
+@use'vuetify/settings';
 
 .delegate-details-expander {
   margin: 10px 26px;
@@ -97,18 +98,18 @@ export default defineComponent({
   }
   &__address {
     a {
-      @include a-text-active();
+      @include mixins.a-text-active();
     }
   }
 }
 
 .v-theme--light {
   .delegate-details-expander {
-    background-color: map-get($adm-colors, 'secondary2');
+    background-color: map.get(colors.$adm-colors, 'secondary2');
 
     &__address {
       a {
-        color: map-get($adm-colors, 'regular');
+        color: map.get(colors.$adm-colors, 'regular');
       }
     }
 
@@ -120,11 +121,11 @@ export default defineComponent({
 
 .v-theme--dark {
   .delegate-details-expander {
-    background-color: map-get($adm-colors, 'secondary2');
+    background-color: map.get(colors.$adm-colors, 'secondary2');
 
     &__address {
       a {
-        color: map-get($adm-colors, 'primary');
+        color: map.get(colors.$adm-colors, 'primary');
       }
     }
   }

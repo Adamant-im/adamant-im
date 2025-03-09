@@ -183,8 +183,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'vuetify/settings';
 
 .wallets-view {
   &__review {
@@ -195,7 +196,7 @@ export default defineComponent({
 
 .v-theme--dark {
   .v-list {
-    background-color: map-get($adm-colors, 'black2');
+    background-color: map.get(colors.$adm-colors, 'black2');
   }
 }
 </style>

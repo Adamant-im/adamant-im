@@ -37,8 +37,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'vuetify/settings';
 
 .socket-support {
 }
@@ -46,10 +47,10 @@ export default defineComponent({
 .v-theme--light {
   .socket-support {
     &--supported {
-      color: map-get($adm-colors, 'good') !important;
+      color: map.get(colors.$adm-colors, 'good') !important;
     }
     &--unsupported {
-      color: map-get($adm-colors, 'danger') !important;
+      color: map.get(colors.$adm-colors, 'danger') !important;
     }
   }
 }
@@ -57,10 +58,10 @@ export default defineComponent({
 .v-theme--dark {
   .socket-support {
     &--supported {
-      color: map-get($adm-colors, 'good') !important;
+      color: map.get(colors.$adm-colors, 'good') !important;
     }
     &--unsupported {
-      color: map-get($adm-colors, 'danger') !important;
+      color: map.get(colors.$adm-colors, 'danger') !important;
     }
   }
 }

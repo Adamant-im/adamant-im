@@ -267,18 +267,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'@/assets/styles/themes/adamant/_mixins.scss';
 
 .transaction-item {
   &__rates {
     color: hsla(0, 0%, 100%, 0.7);
     font-style: italic;
-    @include a-text-regular();
+    @include mixins.a-text-regular();
     margin-left: 4px;
   }
   &__amount {
-    @include a-text-regular-enlarged-bold();
+    @include mixins.a-text-regular-enlarged-bold();
   }
   &__date {
     margin-top: 4px;
@@ -295,7 +296,7 @@ export default {
     min-width: 36px;
   }
   &__status {
-    color: map-get($adm-colors, 'attention');
+    color: map.get(colors.$adm-colors, 'attention');
   }
   // Do not break computed length of v-divider
   /*&__tile*/
@@ -307,31 +308,31 @@ export default {
 .v-theme--light.v-list {
   .transaction-item {
     &__amount {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
     &__rates {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
       &--is-incoming {
-        color: map-get($adm-colors, 'good');
+        color: map.get(colors.$adm-colors, 'good');
       }
       &--is-outgoing {
-        color: map-get($adm-colors, 'danger');
+        color: map.get(colors.$adm-colors, 'danger');
       }
     }
     &__icon {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
   }
 }
 .v-theme--dark.v-list {
   .transaction-item {
     &__amount {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
       &--is-incoming {
-        color: map-get($adm-colors, 'good');
+        color: map.get(colors.$adm-colors, 'good');
       }
       &--is-outgoing {
-        color: map-get($adm-colors, 'danger');
+        color: map.get(colors.$adm-colors, 'danger');
       }
     }
   }

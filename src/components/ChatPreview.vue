@@ -267,8 +267,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'@/assets/styles/themes/adamant/_mixins.scss';
 
 @keyframes movement {
   from {
@@ -323,7 +324,7 @@ export default defineComponent({
   }
 
   &__date {
-    @include a-text-explanation-small();
+    @include mixins.a-text-explanation-small();
     margin-left: 16px;
     white-space: nowrap;
   }
@@ -338,17 +339,17 @@ export default defineComponent({
   }
 
   :deep(.v-list-item-subtitle) {
-    @include a-text-explanation-enlarged-bold();
+    @include mixins.a-text-explanation-enlarged-bold();
   }
 }
 
 /** Themes **/
 .v-theme--light {
   .chat-brief {
-    border-bottom: 1px solid map-get($adm-colors, 'secondary2');
+    border-bottom: 1px solid map.get(colors.$adm-colors, 'secondary2');
 
     &__date {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
 
     &__icon {
@@ -356,14 +357,14 @@ export default defineComponent({
     }
 
     :deep(.v-list-item-subtitle) {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
   }
 }
 .v-theme--dark {
   .chat-brief {
     :deep(.v-list-item-subtitle) {
-      color: map-get($adm-colors, 'grey-transparent');
+      color: map.get(colors.$adm-colors, 'grey-transparent');
     }
   }
 }

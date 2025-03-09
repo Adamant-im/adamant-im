@@ -191,8 +191,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'sass:color';
+@use'@/assets/styles/settings/_colors.scss';
+@use'vuetify/settings';
 
 /**
  * 1. Reset VTabs container fixed height.
@@ -267,38 +269,38 @@ export default {
   .account-view {
     &__wallets {
       :deep(.v-tabs-bar) {
-        background-color: map-get($adm-colors, 'secondary2-transparent');
+        background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
       }
       :deep(.v-tabs-slider) {
-        background-color: map-get($adm-colors, 'primary') !important;
+        background-color: map.get(colors.$adm-colors, 'primary') !important;
       }
       :deep(.v-tab) {
         &:not(.v-tab--selected) {
-          color: map-get($adm-colors, 'regular');
+          color: map.get(colors.$adm-colors, 'regular');
         }
       }
       :deep(.v-tabs .v-slide-group__prev .v-icon),
       :deep(.v-tabs .v-slide-group__next .v-icon) {
         z-index: 1;
-        color: map-get($adm-colors, 'primary');
+        color: map.get(colors.$adm-colors, 'primary');
         border-radius: 50%;
-        background-color: transparentize(map-get($adm-colors, 'primary2'), 0.7);
+        background-color: (map.get(colors.$adm-colors, 'primary2'), 0.7);
       }
       :deep(.v-tabs .v-slide-group__prev),
       :deep(.v-tabs .v-slide-group__next) {
         .v-icon:hover {
-          background-color: transparentize(map-get($adm-colors, 'primary2'), 0.3);
+          background-color: color.adjust(map.get(colors.$adm-colors, 'primary2'), $alpha: -0.7);
         }
       }
       :deep(:not(.v-tab--selected)) {
         .svg-icon {
-          fill: map-get($adm-colors, 'muted');
+          fill: map.get(colors.$adm-colors, 'muted');
         }
       }
       :deep(.v-tab--selected) {
-        color: map-get($adm-colors, 'primary');
+        color: map.get(colors.$adm-colors, 'primary');
         .svg-icon {
-          fill: map-get($adm-colors, 'primary');
+          fill: map.get(colors.$adm-colors, 'primary');
         }
       }
     }
@@ -312,19 +314,19 @@ export default {
         background-color: transparent;
       }
       :deep(.v-tabs-slider) {
-        background-color: map-get($adm-colors, 'primary') !important;
+        background-color: map.get(colors.$adm-colors, 'primary') !important;
       }
       :deep(.v-tabs .v-slide-group__prev .v-icon),
       :deep(.v-tabs .v-slide-group__next .v-icon) {
         z-index: 1;
-        color: map-get($adm-colors, 'primary');
+        color: map.get(colors.$adm-colors, 'primary');
         border-radius: 50%;
-        background-color: transparentize(map-get($adm-colors, 'primary2'), 0.7);
+        background-color: color.adjust(map.get(colors.$adm-colors, 'primary2'), $alpha: -0.7);
       }
       :deep(.v-tabs .v-slide-group__prev),
       :deep(.v-tabs .v-slide-group__next) {
         .v-icon:hover {
-          background-color: transparentize(map-get($adm-colors, 'primary2'), 0.3);
+          background-color: color.adjust(map.get(colors.$adm-colors, 'primary2'), $alpha: -0.3);
         }
       }
       :deep(.v-tabs-items) {
@@ -332,13 +334,13 @@ export default {
       }
       :deep(.v-tab) {
         &:not(.v-tab--selected) {
-          color: map-get($shades, 'white');
+          color: map.get(settings.$shades, 'white');
         }
       }
       :deep(.v-tab--selected) {
-        color: map-get($adm-colors, 'primary');
+        color: map.get(colors.$adm-colors, 'primary');
         .svg-icon {
-          fill: map-get($adm-colors, 'primary');
+          fill: map.get(colors.$adm-colors, 'primary');
         }
       }
     }

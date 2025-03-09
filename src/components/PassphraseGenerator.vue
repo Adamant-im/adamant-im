@@ -148,9 +148,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
+@use'@/assets/styles/themes/adamant/_mixins.scss';
+@use'vuetify/settings';
 
 /**
  * 1. Change color icons when focus textarea.
@@ -163,7 +164,7 @@ export default {
       margin-top: 0;
     }
     :deep(.v-textarea) textarea {
-      @include a-text-regular();
+      @include mixins.a-text-regular();
       line-height: 18px;
       padding-top: 12px;
       mask-image: unset;
@@ -181,7 +182,7 @@ export default {
     }
   }
   &__passphrase-label {
-    color: map-get($adm-colors, 'grey');
+    color: map.get(colors.$adm-colors, 'grey');
     font-size: 12px;
     font-weight: 400;
     line-height: 18px;
@@ -190,7 +191,7 @@ export default {
 
   :deep(.v-input--is-focused) {
     .v-icon .svg-icon {
-      fill: map-get($adm-colors, 'regular');
+      fill: map.get(colors.$adm-colors, 'regular');
     }
   }
 }
@@ -199,7 +200,7 @@ export default {
 .v-theme--light {
   .passphrase-generator {
     :deep(.v-textarea) textarea {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
   }
 }

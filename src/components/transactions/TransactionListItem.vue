@@ -43,7 +43,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/settings/_colors.scss';
+@use'sass:map';
+@use'@/assets/styles/settings/_colors.scss';
 
 .transaction-list-item {
   &__title {
@@ -63,10 +64,10 @@ export default defineComponent({
 .v-theme--light {
   .transaction-list-item {
     &__title {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
     &__value {
-      color: map-get($adm-colors, 'muted') !important;
+      color: map.get(colors.$adm-colors, 'muted') !important;
     }
   }
 }

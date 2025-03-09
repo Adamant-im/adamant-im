@@ -1,7 +1,7 @@
-@import '../themes/adamant/_mixins.scss';
+@use'../themes/adamant/_mixins.scss';
 
 .arrow-return {
-  @include a-text-explanation();
+  @include mixins.a-text-explanation();
 }
 
 .v-theme--light {
