@@ -284,7 +284,7 @@ export default {
         z-index: 1;
         color: map.get(colors.$adm-colors, 'primary');
         border-radius: 50%;
-        background-color: (map.get(colors.$adm-colors, 'primary2'), 0.7);
+        background-color: color.adjust(map.get(colors.$adm-colors, 'primary2'), $alpha: -0.7);
       }
       :deep(.v-tabs .v-slide-group__prev),
       :deep(.v-tabs .v-slide-group__next) {
