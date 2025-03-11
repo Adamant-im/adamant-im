@@ -69,8 +69,8 @@ export default {
 </script>
 
 <style lang="scss">
-@use'sass:map';
-@use'vuetify/settings';
+@use 'sass:map';
+@use 'vuetify/settings';
 
 .icon {
   -webkit-box-align: center;

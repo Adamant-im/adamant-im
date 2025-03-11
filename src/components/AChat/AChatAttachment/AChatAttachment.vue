@@ -238,9 +238,9 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-@use'sass:map';
-@use'@/assets/styles/settings/_colors.scss';
-@use'@/assets/styles/themes/adamant/_mixins.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .a-chat__attachments {
   width: 500px;

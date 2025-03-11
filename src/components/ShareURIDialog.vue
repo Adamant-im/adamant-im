@@ -132,8 +132,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@use'sass:map';
-@use'vuetify/_settings.scss';
+@use 'sass:map';
+@use 'vuetify/_settings.scss';
 
 .share-uri-dialog {
 }

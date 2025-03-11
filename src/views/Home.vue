@@ -191,10 +191,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@use'sass:map';
-@use'sass:color';
-@use'@/assets/styles/settings/_colors.scss';
-@use'vuetify/settings';
+@use 'sass:map';
+@use 'sass:color';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
 
 /**
  * 1. Reset VTabs container fixed height.

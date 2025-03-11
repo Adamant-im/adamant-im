@@ -91,9 +91,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@use'sass:map';
-@use'@/assets/styles/settings/_colors.scss';
-@use'vuetify/settings';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
 
 .input {
   border: 2px solid orange;

@@ -46,8 +46,8 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@use'sass:map';
-@use'vuetify/settings';
+@use 'sass:map';
+@use 'vuetify/settings';
 
 /** Themes **/
 .v-theme--light {

@@ -172,10 +172,10 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@use'sass:map';
-@use'@/assets/styles/settings/_colors.scss';
-@use'@/assets/styles/themes/adamant/_mixins.scss';
-@use'vuetify/settings';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .nodes-table {
   margin-left: -24px;

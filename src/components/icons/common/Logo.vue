@@ -283,8 +283,8 @@
 </template>
 
 <style lang="scss" scoped>
-@use'sass:map';
-@use'vuetify/settings';
+@use 'sass:map';
+@use 'vuetify/settings';
 
 .st0 {
   fill: url(#SVGID_1_);

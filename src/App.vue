@@ -67,7 +67,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@use'@/assets/styles/themes/adamant/_mixins.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .v-theme--light.application--linear-gradient {
   @include mixins.linear-gradient-light();

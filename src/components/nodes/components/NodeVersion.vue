@@ -32,9 +32,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@use'sass:map';
-@use'@/assets/styles/settings/_colors.scss';
-@use'@/assets/styles/themes/adamant/_mixins.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .node-version {
   @include mixins.a-text-explanation-small();

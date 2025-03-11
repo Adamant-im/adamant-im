@@ -1,8 +1,8 @@
-@use'sass:map';
-@use'../../settings/_colors.scss';
-@use'_mixins.scss';
+@use 'sass:map';
+@use '../../settings/_colors.scss';
+@use '_mixins.scss';
 
-@use'vuetify/settings';
+@use 'vuetify/settings';
 
 .a-text-regular {
   @include mixins.a-text-regular();

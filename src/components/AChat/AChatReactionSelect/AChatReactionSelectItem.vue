@@ -47,8 +47,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@use'sass:map';
-@use'@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
 
 .a-chat-reaction-select-item {
   width: 36px;

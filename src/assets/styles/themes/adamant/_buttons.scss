@@ -1,7 +1,7 @@
-@use'sass:map';
-@use'../../settings/_colors.scss';
+@use 'sass:map';
+@use '../../settings/_colors.scss';
 @use '_mixins.scss';
-@use'vuetify/settings';
+@use 'vuetify/settings';
 
 .a-btn-link {
   font-size: 16px !important;

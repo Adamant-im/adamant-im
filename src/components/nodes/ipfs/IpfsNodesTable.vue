@@ -71,5 +71,5 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@use'vuetify/settings';
+@use 'vuetify/settings';
 </style>

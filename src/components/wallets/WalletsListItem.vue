@@ -104,10 +104,10 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-@use'sass:map';
-@use'@/assets/styles/settings/_colors.scss';
-@use'@/assets/styles/themes/adamant/_mixins.scss';
-@use'vuetify/settings';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .wallets-view {
   &__crypto-content {

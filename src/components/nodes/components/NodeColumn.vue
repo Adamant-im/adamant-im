@@ -48,9 +48,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@use'sass:map';
-@use'@/assets/styles/settings/_colors.scss';
-@use'vuetify/settings';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
 
 .node-column {
   font-size: 14px;

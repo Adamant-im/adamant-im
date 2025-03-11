@@ -98,10 +98,10 @@ export default {
 </script>
 
 <style lang="scss">
-@use'sass:map';
-@use'@/assets/styles/settings/_colors.scss';
-@use'@/assets/styles/themes/adamant/_mixins.scss';
-@use'vuetify/settings';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .delegates-table-item {
   &__td {

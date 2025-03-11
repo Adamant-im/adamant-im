@@ -91,7 +91,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@use'vuetify/settings';
+@use 'vuetify/settings';
 
 .a-chat-reaction {
   display: flex;

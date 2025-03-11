@@ -230,7 +230,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@use'@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/settings/_colors.scss';
 
 .chat-start-dialog {
   &__btn-start-chat {

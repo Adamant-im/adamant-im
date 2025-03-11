@@ -30,8 +30,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@use'sass:map';
-@use'vuetify/settings';
+@use 'sass:map';
+@use 'vuetify/settings';
 
 .a-container {
   width: 100%;

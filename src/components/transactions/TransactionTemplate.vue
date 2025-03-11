@@ -401,8 +401,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@use'sass:map';
-@use'@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
 
 .transaction-view {
   &__titlecontent {

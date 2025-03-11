@@ -70,8 +70,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@use'sass:map';
-@use'vuetify/settings';
+@use 'sass:map';
+@use 'vuetify/settings';
 
 .emoji-picker {
   border-radius: 8px;
