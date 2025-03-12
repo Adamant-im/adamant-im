@@ -1,4 +1,4 @@
-import BigNumber from '@/lib/bignumber'
+import { BigNumber } from '@/lib/bignumber'
 import BtcBaseApi from '@/lib/bitcoin/btc-base-api'
 import { FetchStatus } from '@/lib/constants'
 import { nodes } from '@/lib/nodes'

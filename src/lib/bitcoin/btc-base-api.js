@@ -1,7 +1,7 @@
 import * as bitcoin from 'bitcoinjs-lib'
 
 import networks from './networks'
-import BigNumber from '../bignumber'
+import { BigNumber } from '../bignumber'
 import { isPositiveNumber } from '@/lib/numericHelpers'
 import { CryptosInfo } from '../constants'
 
