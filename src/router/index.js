@@ -109,21 +109,10 @@ const routes = [
     }
   },
   {
-    path: '/chats/:partnerId/',
-    component: Chat,
-    name: 'Chat',
-    props: true,
-    meta: {
-      requiresAuth: true,
-      layout: 'chat'
-    },
-    beforeEnter: navigationGuard.chats
-  },
-  {
     path: '/chats',
+    component: Chats, // Родительский компонент
     props: true,
     name: 'Chats',
-    component: Chats,
     meta: {
       requiresAuth: true,
       layout: 'toolbar',
@@ -133,7 +122,20 @@ const routes = [
         left: 0,
         top: 0
       }
-    }
+    },
+    children: [
+      {
+        path: ':partnerId',
+        component: Chat,
+        name: 'Chat',
+        props: true,
+        meta: {
+          requiresAuth: true,
+          layout: 'chat'
+        },
+        beforeEnter: navigationGuard.chats
+      }
+    ]
   },
   {
     path: '/transfer/:cryptoCurrency?/:recipientAddress?/:amountToSend?',

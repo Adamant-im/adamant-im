@@ -1,57 +1,91 @@
 <template>
   <v-row justify="center" :class="className" no-gutters>
-    <container>
-      <v-row no-gutters>
-        <v-col cols="12">
-          <v-list subheader class="pa-0" bg-color="transparent" v-if="isFulfilled">
-            <v-row :class="`${className}__chats-actions`" no-gutters>
-              <v-btn
-                :class="`${className}__btn mt-2 ml-4`"
-                @click="markAllAsRead"
-                v-if="unreadMessagesCount > 0"
-                :icon="mdiCheckAll"
-                size="small"
-                variant="text"
-              />
-              <v-spacer />
-              <v-btn
-                :class="`${className}__item`"
-                @click="showChatStartDialog = true"
-                variant="plain"
-              >
-                <template #prepend>
-                  <v-icon :class="`${className}__icon`" :icon="mdiMessageOutline" size="small" />
-                </template>
-
-                <div>
-                  <v-list-item-title :class="`${className}__title`">
-                    {{ $t('chats.new_chat') }}
-                  </v-list-item-title>
-                </div>
-              </v-btn>
-            </v-row>
-            <transition-group name="messages">
-              <template v-for="transaction in messages" :key="transaction.contactId">
-                <chat-preview
-                  v-if="displayChat(transaction.contactId)"
-                  :ref="transaction.contactId"
-                  :is-loading-separator="transaction.loadingSeparator"
-                  :is-loading-separator-active="loading"
-                  :user-id="userId"
-                  :contact-id="transaction.contactId"
-                  :transaction="transaction"
-                  :is-message-readonly="transaction.readonly"
-                  :adamant-chat-meta="getAdamantChatMeta(transaction.contactId)"
-                  @click="openChat(transaction.contactId)"
+    <v-col
+      :cols="isChatPage ? 3 : 12"
+      :class="!isChatPage ? 'd-flex align-center justify-center' : ''"
+    >
+      <container
+        :class="{
+          [`${className}__container`]: true,
+          [`${className}__container--chat`]: isChatPage
+        }"
+      >
+        <v-row no-gutters>
+          <v-col cols="12">
+            <v-list subheader class="pa-0" bg-color="transparent" v-if="isFulfilled">
+              <v-row :class="`${className}__chats-actions`" no-gutters>
+                <v-btn
+                  :class="`${className}__btn mt-2 ml-4`"
+                  @click="markAllAsRead"
+                  v-if="unreadMessagesCount > 0"
+                  :icon="mdiCheckAll"
+                  size="small"
+                  variant="text"
                 />
-              </template>
-            </transition-group>
-          </v-list>
-        </v-col>
+                <v-spacer />
+                <v-btn
+                  :class="`${className}__item`"
+                  @click="showChatStartDialog = true"
+                  variant="plain"
+                >
+                  <template #prepend>
+                    <v-icon :class="`${className}__icon`" :icon="mdiMessageOutline" size="small" />
+                  </template>
 
-        <ChatSpinner :value="!isFulfilled" />
-      </v-row>
-    </container>
+                  <div>
+                    <v-list-item-title :class="`${className}__title`">
+                      {{ $t('chats.new_chat') }}
+                    </v-list-item-title>
+                  </div>
+                </v-btn>
+              </v-row>
+              <div
+                :class="{
+                  [`${className}__messages`]: true,
+                  [`${className}__messages--chat`]: isChatPage
+                }"
+              >
+                <transition-group name="messages">
+                  <template v-for="transaction in messages" :key="transaction.contactId">
+                    <chat-preview
+                      v-if="displayChat(transaction.contactId)"
+                      :ref="transaction.contactId"
+                      :is-loading-separator="transaction.loadingSeparator"
+                      :is-loading-separator-active="loading"
+                      :user-id="userId"
+                      :contact-id="transaction.contactId"
+                      :transaction="transaction"
+                      :is-message-readonly="transaction.readonly"
+                      :adamant-chat-meta="getAdamantChatMeta(transaction.contactId)"
+                      @click="openChat(transaction.contactId)"
+                    />
+                  </template>
+                </transition-group>
+              </div>
+            </v-list>
+          </v-col>
+
+          <ChatSpinner :value="!isFulfilled" />
+        </v-row>
+      </container>
+    </v-col>
+    <v-col
+      transition="slide-x-reverse-transition"
+      v-if="isChatPage"
+      :cols="smAndDown ? 12 : 9"
+      v-touch="{
+        move: onMove,
+        end: onSwipeEnd
+      }"
+      :class="{
+        [`${className}__chat`]: true,
+      }"
+      :style="{
+        '--swipe-offset': !smAndDown ? '0px' : `${elementRightOffset}px`
+      }"
+    >
+      <router-view />
+    </v-col>
 
     <chat-start-dialog
       v-model="showChatStartDialog"
@@ -72,7 +106,10 @@ import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import scrollPosition from '@/mixins/scrollPosition'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
-
+import { useRoute, useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { useSwipeRight } from '@/hooks/useSwipeRight'
+import { useDisplay } from 'vuetify'
 
 const scrollOffset = 64
 
@@ -88,8 +125,28 @@ export default {
     partnerId: { default: undefined, type: String },
     showNewContact: { default: false, type: Boolean }
   },
-  setup () {
+  setup() {
+    const route = useRoute()
+    const router = useRouter()
+
+    const { smAndDown } = useDisplay()
+
+    const isChatPage = computed(() => {
+      return route.params.partnerId
+    })
+
+    const onSwipeRight = () => {
+      router.push({ name: 'Chats' })
+    }
+
+    const { onMove, onSwipeEnd, elementRightOffset } = useSwipeRight(onSwipeRight, 150)
+
     return {
+      isChatPage,
+      elementRightOffset,
+      smAndDown,
+      onMove,
+      onSwipeEnd,
       mdiCheckAll,
       mdiMessageOutline
     }
@@ -249,6 +306,20 @@ export default {
   &__title {
     font-weight: 300;
     font-size: 14px;
+  }
+  &__container--chat {
+    @media #{map-get($display-breakpoints, 'sm-and-down')} {
+      display: none;
+    }
+  }
+  &__messages {
+    &.chats-view__messages--chat {
+      max-height: calc(100vh - 56px);
+      overflow-y: auto;
+    }
+  }
+  :deep(.a-chat) {
+    transform: translateX(var(--swipe-offset));
   }
 }
 
