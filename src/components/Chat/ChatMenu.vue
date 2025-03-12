@@ -159,7 +159,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
+@use 'sass:map';
+@use 'vuetify/settings';
+
 .chat-menu {
   &__list {
     min-width: 200px;
@@ -175,18 +177,18 @@ export default {
 .v-theme--light {
   .chat-menu {
     &__icon {
-      color: map-get($grey, 'darken-1');
+      color: map.get(settings.$grey, 'darken-1');
     }
   }
 }
 .v-theme--dark {
   .chat-menu {
     &__icon {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
     &__list {
       :deep(.v-list-item-title) {
-        color: map-get($shades, 'white');
+        color: map.get(settings.$shades, 'white');
       }
     }
   }

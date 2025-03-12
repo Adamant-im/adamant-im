@@ -1,5 +1,6 @@
-@import 'vuetify/settings';
-@import '../settings/_colors.scss';
+@use 'sass:map';
+@use '../settings/_colors.scss';
+@use 'vuetify/settings';
 
 $chat-sender: (
   'font-size': 15px,
@@ -25,7 +26,7 @@ $scroll-bar-width: 4px;
   height: 100dvh;
   position: relative;
 
-  @media #{map-get($display-breakpoints, 'sm-and-down')} {
+  @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
     position: fixed;
     left: 0;
     right: 0;
@@ -56,7 +57,7 @@ $scroll-bar-width: 4px;
     padding: 16px 16px 0 16px;
 
     /* Scrollbar styles (Firefox) */
-    scrollbar-color: map-get($grey, 'lighten-2' transparent);
+    scrollbar-color: map.get(settings.$grey, 'lighten-2' transparent);
     scrollbar-width: thin;
 
     /* Scrollbar styles (WebKit) */
@@ -69,11 +70,11 @@ $scroll-bar-width: 4px;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: map-get($grey, 'lighten-2');
+      background: map.get(settings.$grey, 'lighten-2');
     }
 
     &::-webkit-scrollbar-thumb:hover {
-      background: map-get($grey, 'lighten-1');
+      background: map.get(settings.$grey, 'lighten-1');
     }
   }
 
@@ -140,7 +141,7 @@ $scroll-bar-width: 4px;
     0% {
     }
     50% {
-      background-color: rgba(map-get($adm-colors, 'primary'), 0.25);
+      background-color: rgba(map.get(colors.$adm-colors, 'primary'), 0.25);
     }
     100% {
     }
@@ -189,8 +190,8 @@ $scroll-bar-width: 4px;
   }
 
   &__message-text {
-    font-size: map-get($chat-message, 'font-size');
-    font-weight: map-get($chat-message, 'font-weight');
+    font-size: map.get($chat-message, 'font-size');
+    font-weight: map.get($chat-message, 'font-weight');
     overflow-wrap: break-word;
     word-break: break-word;
     word-wrap: break-word;
@@ -250,8 +251,8 @@ $scroll-bar-width: 4px;
    * 1. align text to top
    */
   &__sender {
-    font-size: map-get($chat-sender, 'font-size');
-    line-height: map-get($chat-sender, 'line-height');
+    font-size: map.get($chat-sender, 'font-size');
+    line-height: map.get($chat-sender, 'line-height');
     font-weight: 700;
     margin-right: 8px;
   }
@@ -302,7 +303,7 @@ $scroll-bar-width: 4px;
   &__direction {
     font-size: 14px;
     font-weight: 300;
-    border-bottom: 1px solid map-get($adm-colors, 'secondary2');
+    border-bottom: 1px solid map.get(colors.$adm-colors, 'secondary2');
     padding-bottom: 5px;
     margin-bottom: 15px;
   }
@@ -329,7 +330,7 @@ $scroll-bar-width: 4px;
       overflow: visible; // show scrollbar even with VTextarea `auto-grow` prop enabled
 
       /* Scrollbar styles (Firefox) */
-      scrollbar-color: map-get($adm-colors, 'secondary2-transparent' transparent);
+      scrollbar-color: map.get(colors.$adm-colors, 'secondary2-transparent' transparent);
       scrollbar-width: thin;
 
       /* Scrollbar styles (WebKit) */
@@ -342,11 +343,11 @@ $scroll-bar-width: 4px;
       }
 
       &::-webkit-scrollbar-thumb {
-        background: map-get($adm-colors, 'secondary2-transparent');
+        background: map.get(colors.$adm-colors, 'secondary2-transparent');
       }
 
       &::-webkit-scrollbar-thumb:hover {
-        background: map-get($adm-colors, 'secondary2-transparent');
+        background: map.get(colors.$adm-colors, 'secondary2-transparent');
       }
     }
 
@@ -386,7 +387,7 @@ $scroll-bar-width: 4px;
 .v-theme--light {
   .a-chat {
     &__content {
-      color: map-get($shades, 'black');
+      color: map.get(settings.$shades, 'black');
     }
 
     &__message {
@@ -397,68 +398,68 @@ $scroll-bar-width: 4px;
         0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
 
       &--red {
-        background-color: map-get($red, 'lighten-5');
+        background-color: map.get(settings.$red, 'lighten-5');
       }
 
       &--green {
-        background-color: map-get($green, 'lighten-5');
+        background-color: map.get(settings.$green, 'lighten-5');
       }
     }
 
     &__sender {
-      color: map-get($grey, 'darken-4');
+      color: map.get(settings.$grey, 'darken-4');
     }
 
     &__timestamp {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
 
     &__blockchain-status {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
 
     &__amount {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
 
     &__rates {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
 
     &__direction {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
 
     &__message-text {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
 
       a {
-        color: map-get($blue, 'base');
+        color: map.get(settings.$blue, 'base');
       }
 
       code {
-        background-color: map-get($grey, 'lighten-4');
-        color: map-get($grey, 'darken-3');
-        border-color: map-get($grey, 'lighten-2');
+        background-color: map.get(settings.$grey, 'lighten-4');
+        color: map.get(settings.$grey, 'darken-3');
+        border-color: map.get(settings.$grey, 'lighten-2');
       }
 
       pre {
-        background-color: map-get($grey, 'lighten-4');
-        color: map-get($grey, 'darken-3');
-        border-color: map-get($grey, 'lighten-2');
+        background-color: map.get(settings.$grey, 'lighten-4');
+        color: map.get(settings.$grey, 'darken-3');
+        border-color: map.get(settings.$grey, 'lighten-2');
       }
     }
     &__form {
-      background-color: map-get($adm-colors, 'secondary2');
+      background-color: map.get(colors.$adm-colors, 'secondary2');
 
       .v-text-field__slot {
         .v-label {
-          color: map-get($adm-colors, 'muted');
+          color: map.get(colors.$adm-colors, 'muted');
         }
 
         textarea {
-          color: map-get($adm-colors, 'regular');
-          caret-color: map-get($adm-colors, 'primary2');
+          color: map.get(colors.$adm-colors, 'regular');
+          caret-color: map.get(colors.$adm-colors, 'primary2');
         }
       }
 
@@ -472,7 +473,7 @@ $scroll-bar-width: 4px;
 
       .v-text-field.v-input--is-focused > .v-input__control > .v-input__slot:after {
         border-width: thin 0 0 0;
-        color: map-get($adm-colors, 'primary2');
+        color: map.get(colors.$adm-colors, 'primary2');
       }
 
       .v-text-field > .v-input__control > .v-input__slot:after {
@@ -480,71 +481,71 @@ $scroll-bar-width: 4px;
       }
 
       .v-input--is-focused .v-input__slot .v-icon {
-        color: map-get($adm-colors, 'muted') !important;
+        color: map.get(colors.$adm-colors, 'muted') !important;
       }
 
       &--is-active .v-input--is-focused .v-input__slot .v-icon {
-        color: map-get($adm-colors, 'primary') !important;
+        color: map.get(colors.$adm-colors, 'primary') !important;
       }
     }
     &__send-icon {
-      color: map-get($grey, 'darken-1');
+      color: map.get(settings.$grey, 'darken-1');
     }
   }
 }
 .v-theme--dark {
   .a-chat {
     &__content {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
 
     &__message {
-      background-color: map-get($adm-colors, 'black');
+      background-color: map.get(colors.$adm-colors, 'black');
       box-shadow:
         0 1px 10px hsla(0, 0%, 39.2%, 0.06),
         0 1px 1px hsla(0, 0%, 39.2%, 0.04),
         0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
       &--red {
-        background-color: map-get($grey, 'darken-3');
+        background-color: map.get(settings.$grey, 'darken-3');
       }
       &--green {
-        background-color: map-get($grey, 'darken-3');
+        background-color: map.get(settings.$grey, 'darken-3');
       }
     }
 
     &__message-actions-icon {
       background-image: linear-gradient(
         45deg,
-        map-get($adm-colors, 'muted'),
-        map-get($shades, 'black') 40%
+        map.get(colors.$adm-colors, 'muted'),
+        map.get(settings.$shades, 'black') 40%
       );
     }
 
     &__sender {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
 
     &__timestamp {
-      color: map-get($grey, 'base');
+      color: map.get(settings.$grey, 'base');
     }
     &__blockchain-status {
-      color: map-get($grey, 'base');
+      color: map.get(settings.$grey, 'base');
     }
 
     &__message-text {
       a {
-        color: map-get($blue, 'lighten-2');
+        color: map.get(settings.$blue, 'lighten-2');
       }
 
       code {
-        color: map-get($shades, 'white');
-        border-color: map-get($grey, 'darken-2');
-        background-color: map-get($adm-colors, 'secondary2-slightly-transparent');
+        color: map.get(settings.$shades, 'white');
+        border-color: map.get(settings.$grey, 'darken-2');
+        background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
       }
       pre {
         color: inherit;
-        border-color: map-get($grey, 'darken-2');
-        background-color: map-get($adm-colors, 'secondary2-slightly-transparent');
+        border-color: map.get(settings.$grey, 'darken-2');
+        background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
 
         code {
           background-color: transparent;
@@ -553,7 +554,7 @@ $scroll-bar-width: 4px;
     }
 
     &__form {
-      background-color: map-get($grey, 'darken-4');
+      background-color: map.get(settings.$grey, 'darken-4');
     }
     &__send-icon {
     }

@@ -103,8 +103,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/assets/styles/settings/_colors.scss';
-@import 'vuetify/_settings.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/_settings.scss';
 
 .partner-info-dialog {
   &__dialog-title {
@@ -120,15 +121,15 @@ export default {
 .v-theme--dark {
   .partner-info-dialog {
     &__dialog-title {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
 
     &__address {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
 
     &__username {
-      color: map-get($adm-colors, 'grey-transparent');
+      color: map.get(colors.$adm-colors, 'grey-transparent');
     }
   }
 }

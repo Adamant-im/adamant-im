@@ -193,8 +193,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
 
 .login-page {
   height: 100%;
@@ -223,7 +224,7 @@ export default defineComponent({
     position: absolute;
     right: 0;
     margin-right: 8px;
-    color: map-get($adm-colors, 'grey-transparent');
+    color: map.get(colors.$adm-colors, 'grey-transparent');
   }
 }
 
@@ -234,14 +235,14 @@ export default defineComponent({
     &__title,
     &__subtitle,
     &__settings-button {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
   }
 }
 .v-theme--dark {
   .login-page {
     &__icon {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
   }
 }

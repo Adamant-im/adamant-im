@@ -1,5 +1,6 @@
-@import 'vuetify/settings';
-@import '../settings/_colors.scss';
+@use 'sass:map';
+@use '../settings/_colors.scss';
+@use 'vuetify/settings';
 
 $font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
   Arial, sans-serif;
@@ -42,8 +43,8 @@ html {
 
 .v-theme--light {
   .v-btn--disabled:not(.v-btn--icon).v-btn--variant-elevated {
-    background-color: map-get($adm-colors, 'secondary') !important;
-    color: map-get($adm-colors, 'primary2') !important;
+    background-color: map.get(colors.$adm-colors, 'secondary') !important;
+    color: map.get(colors.$adm-colors, 'primary2') !important;
     box-shadow: none !important;
   }
   .v-btn--disabled:not(.v-btn--icon).v-btn--variant-elevated > .v-btn__overlay {
@@ -107,7 +108,7 @@ html {
   }
 
   > .v-card-title {
-    color: map-get($shades, 'white');
+    color: map.get(settings.$shades, 'white');
   }
 
   > .v-card__subtitle {
@@ -166,7 +167,7 @@ html {
 /**
  * Vuetify container padding.
  */
-@media #{map-get($display-breakpoints, 'md-and-down')} {
+@media #{map.get(settings.$display-breakpoints, 'md-and-down')} {
   .container {
     padding: 20px;
   }
@@ -177,7 +178,7 @@ html {
  */
 .v-theme--dark {
   .v-list {
-    color: map-get($shades, 'white');
+    color: map.get(settings.$shades, 'white');
   }
 }
 
@@ -193,16 +194,16 @@ html {
   opacity: unset;
 }
 .v-theme--light .v-field__outline {
-  color: map-get($adm-colors, 'muted');
+  color: map.get(colors.$adm-colors, 'muted');
 }
 .v-theme--dark .v-field__outline {
-  color: map-get($adm-colors, 'grey-transparent');
+  color: map.get(colors.$adm-colors, 'grey-transparent');
 }
 .v-theme--light .v-field__field .v-label {
-  color: map-get($adm-colors, 'muted');
+  color: map.get(colors.$adm-colors, 'muted');
 }
 .v-theme--dark .v-field__field .v-label {
-  color: map-get($adm-colors, 'grey-transparent');
+  color: map.get(colors.$adm-colors, 'grey-transparent');
 }
 
 .v-list-item--density-default.v-list-item--one-line {
@@ -251,7 +252,7 @@ html {
  * VTable
  */
 .v-table {
-  color: map-get($shades, 'white');
+  color: map.get(settings.$shades, 'white');
 }
 
 /**
@@ -263,11 +264,11 @@ html {
 }
 
 .v-theme--light.v-application {
-  color: map-get($adm-colors, 'regular');
+  color: map.get(colors.$adm-colors, 'regular');
 }
 
 .v-theme--dark.v-application {
-  color: map-get($shades, 'white');
+  color: map.get(settings.$shades, 'white');
 }
 
 a {
@@ -277,13 +278,13 @@ a {
 .v-theme--light {
   a,
   a:visited {
-    color: map-get($adm-colors, 'primary');
+    color: map.get(colors.$adm-colors, 'primary');
   }
 }
 
 .v-theme--dark {
   a,
   a:visited {
-    color: map-get($adm-colors, 'primary');
+    color: map.get(colors.$adm-colors, 'primary');
   }
 }
