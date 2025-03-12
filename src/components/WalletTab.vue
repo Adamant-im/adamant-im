@@ -2,10 +2,10 @@
   <crypto-icon :class="classes.cryptoIcon" :crypto="wallet.cryptoCurrency" size="medium" />
 
   <div>
-    <div v-if="isBalanceLoading" :class="classes.balanceLoading">
+    <div v-if="formattedBalance">{{ formattedBalance }}</div>
+    <div v-else-if="isBalanceLoading" :class="classes.balanceLoading">
       <v-icon :icon="mdiDotsHorizontal" size="18" />
     </div>
-    <div v-else-if="fetchBalanceSucceeded">{{ numberFormat(wallet.balance, 4) }}</div>
     <div v-else :class="classes.balanceError">
       <v-icon :icon="mdiHelpCircleOutline" size="18" />
     </div>
@@ -86,11 +86,22 @@ export default defineComponent({
     const isBalanceLoading = computed(() => balanceStatus.value === FetchStatus.Loading)
     const fetchBalanceSucceeded = computed(() => balanceStatus.value === FetchStatus.Success)
 
+    const formattedBalance = computed(() => {
+      const formatted = numberFormat(props.wallet.balance, 4)
+
+      if (props.wallet.balance || fetchBalanceSucceeded.value) {
+        return formatted
+      }
+
+      return null
+    })
+
     return {
       classes,
       isRateLoaded,
       isBalanceLoading,
       fetchBalanceSucceeded,
+      formattedBalance,
       mdiDotsHorizontal,
       mdiHelpCircleOutline,
       numberFormat
