@@ -274,7 +274,7 @@ export default defineComponent({
 
     const statusUpdatable = computed(() => tsUpdatable(props.transactionStatus, props.crypto))
     const historyRate = computed(() => {
-      if (!transaction.value) return
+      if (!transaction.value) return Symbols.HOURGLASS
 
       return store.getters['rate/historyRate'](
         calculatedTimestampInSec.value,
