@@ -1,5 +1,3 @@
-import qs from 'qs'
-
 import BtcBaseApi from './btc-base-api'
 import { Cryptos } from '../constants'
 import BigNumber from '../bignumber'
@@ -158,7 +156,7 @@ export default class DogeApi extends BtcBaseApi {
   /** Executes a POST request to the DOGE API */
   _post(url, data) {
     return dogeIndexer
-      .useClient((client) => client.post(url, qs.stringify(data), POST_CONFIG))
+      .useClient((client) => client.post(url, data, POST_CONFIG))
       .then((response) => response.data)
   }
 
