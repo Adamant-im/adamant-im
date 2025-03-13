@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import { VuetifyTouchEvent } from '@/types/vuetify'
 
 /**
  * Ratio between swipe offsetX / offsetY.
@@ -15,11 +16,11 @@ const SWIPE_RATIO_ACTIVATION = 2
  */
 const SWIPE_OFFSET_X_ACTIVATION = 16
 
-export function useSwipeRight(onSwipe, triggerActivationOffset = 100, blockingLeft = true) {
+export function useSwipeRight(onSwipe: () => void, triggerActivationOffset = 100, blockingLeft = true) {
   const swipeStarted = ref(false);
   const elementRightOffset = ref(0);
 
-  const onMove = (e) => {
+  const onMove = (e: VuetifyTouchEvent) => {
     const offsetX = e.touchmoveX - e.touchstartX;
     const offsetY = e.touchmoveY - e.touchstartY;
     const ratio = offsetX / offsetY;
