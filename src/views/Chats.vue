@@ -318,8 +318,12 @@ export default {
       overflow-y: auto;
     }
   }
-  :deep(.a-chat) {
-    transform: translateX(var(--swipe-offset));
+  :deep(.a-container) {
+    max-width: unset;
+
+    .a-chat {
+      transform: translateX(var(--swipe-offset));
+    }
   }
 }
 
