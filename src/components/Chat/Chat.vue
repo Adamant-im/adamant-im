@@ -421,7 +421,18 @@ watch(replyMessageId, (messageId) => {
 onBeforeMount(() => {
   window.addEventListener('keyup', onKeyPress)
 })
+
 onMounted(() => {
+  const nodes = store.getters['nodes/adm']
+
+  const enabledNodes = nodes.filter((node) => node.status !== 'disabled' && node.status !== 'unsupported_version')
+
+  if (!enabledNodes.length) {
+    store.dispatch('snackbar/show', {
+      message: t('errors.all_nodes_disabled', {crypto: 'ADM'})
+    })
+  }
+
   if (isFulfilled.value && chatPage.value <= 0) fetchChatMessages()
   scrollBehavior()
   nextTick(() => {
