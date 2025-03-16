@@ -34,7 +34,7 @@ export default defineComponent({
 
 .a-container {
   width: 100%;
-  max-width: 800px;
+  max-width: 1300px;
   position: relative;
 
   &--padding {
