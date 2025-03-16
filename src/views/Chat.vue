@@ -2,6 +2,7 @@
   <v-row justify="center" no-gutters>
     <container>
       <chat
+        :key="partnerId"
         :message-text="messageText"
         :partner-id="partnerId"
         @click:chat-avatar="onClickChatAvatar"
