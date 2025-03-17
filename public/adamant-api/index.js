@@ -61,14 +61,11 @@ function signTransaction(transaction, timeDelta) {
 }
 
 export function unlock(passphrase) {
-  try {
-    const hash = utils.createPassphraseHash(passphrase)
-    myKeypair = utils.makeKeypair(hash)
-    myAddress = utils.getAddressFromPublicKey(myKeypair.publicKey)
-    return myAddress
-  } catch (error) {
-    console.log('🚀 ~ index.js:68 ~ unlock ~ error:', error)
-  }
+  console.log('🚀 ~ index.js:64 ~ unlock ~ passphrase:', passphrase)
+  const hash = utils.createPassphraseHash(passphrase)
+  myKeypair = utils.makeKeypair(hash)
+  myAddress = utils.getAddressFromPublicKey(myKeypair.publicKey)
+  return myAddress
 }
 
 /**
@@ -77,7 +74,6 @@ export function unlock(passphrase) {
  */
 export function getCurrentAccount() {
   const publicKey = myKeypair.publicKey.toString('hex')
-  const privateKey = myKeypair.privateKey.toString('hex')
 
   return client
     .get('/api/accounts', { publicKey })
@@ -99,7 +95,6 @@ export function getCurrentAccount() {
       account.balance = utils.toAdm(account.balance)
       account.unconfirmedBalance = utils.toAdm(account.unconfirmedBalance)
       account.publicKey = myKeypair.publicKey
-      account.privateKey = privateKey
       return account
     })
 }
@@ -111,10 +106,6 @@ export function getCurrentAccount() {
 export function isReady() {
   return Boolean(myAddress && myKeypair)
 }
-
-// export function getMyPK() {
-//   return myKeypair && myKeypair.privateKey && myKeypair.privateKey.toString('hex')
-// }
 
 /**
  * Retrieves user public key by his address
@@ -254,38 +245,34 @@ function tryDecodeStoredValue(value) {
  * @returns {Promise<any>}
  */
 export function getStored(key, ownerAddress, records = 1) {
-  try {
-    if (!ownerAddress) {
-      ownerAddress = myAddress
-    }
-
-    const params = {
-      senderId: ownerAddress,
-      key,
-      orderBy: 'timestamp:desc',
-      limit: records
-    }
-
-    return client.get('/api/states/get', params).then((response) => {
-      let value = null
-
-      if (response.success && Array.isArray(response.transactions)) {
-        if (records > 1) {
-          // Return all records
-          // It may be an empty array; f. e., in case of no crypto addresses stored for a currency
-          return response.transactions
-        } else {
-          const tx = response.transactions[0]
-          value = tx && tx.asset && tx.asset.state && tx.asset.state.value
-          return tryDecodeStoredValue(value)
-        }
-      }
-
-      return null
-    })
-  } catch (error) {
-    console.log('🚀 ~ index.js:287 ~ getStored ~ error:', error)
+  if (!ownerAddress) {
+    ownerAddress = myAddress
   }
+
+  const params = {
+    senderId: ownerAddress,
+    key,
+    orderBy: 'timestamp:desc',
+    limit: records
+  }
+
+  return client.get('/api/states/get', params).then((response) => {
+    let value = null
+
+    if (response.success && Array.isArray(response.transactions)) {
+      if (records > 1) {
+        // Return all records
+        // It may be an empty array; f. e., in case of no crypto addresses stored for a currency
+        return response.transactions
+      } else {
+        const tx = response.transactions[0]
+        value = tx && tx.asset && tx.asset.state && tx.asset.state.value
+        return tryDecodeStoredValue(value)
+      }
+    }
+
+    return null
+  })
 }
 
 /**

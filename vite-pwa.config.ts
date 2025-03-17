@@ -8,28 +8,33 @@ export default mergeConfig(
   viteBaseConfig,
   defineConfig({
     plugins: [
+      // VitePWA({
+      //   registerType: 'autoUpdate',
+      //   srcDir: 'src',
+      //   filename: 'service-worker.js',
+      //   devOptions: {
+      //     enabled: false,
+      //     // type: 'module'
+      //   },
+      //   manifest: manifest,
+      //   manifestFilename: 'manifest.json',
+      //   workbox: {
+      //     maximumFileSizeToCacheInBytes: 5000000, // 5 MiB
+      //   }
+      // }),
       VitePWA({
         registerType: 'autoUpdate',
-        srcDir: 'src',
-        filename: 'service-worker.js',
-        devOptions: {
-          enabled: false
-        },
+        injectRegister: false,
         manifest: manifest,
-        manifestFilename: 'manifest.json',
-        workbox: {
-          maximumFileSizeToCacheInBytes: 5000000 // 5 MiB
-        }
-      }),
-      VitePWA({
-        registerType: 'autoUpdate',
-        strategies: 'injectManifest',
-        filename: 'firebase-messaging-sw.js',
         injectManifest: {
           injectionPoint: undefined
         },
+        strategies: 'injectManifest',
+        srcDir: 'src',
+        filename: 'firebase-messaging-sw.ts',
         devOptions: {
-          enabled: true
+          enabled: true,
+          type: 'module'
         }
       })
     ]

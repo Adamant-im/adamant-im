@@ -1,3 +1,4 @@
+/* eslint-disable */
 'use strict'
 
 import Notify from 'notifyjs'
@@ -19,9 +20,12 @@ class Notification {
 
   get lastUnread() {
     const transaction = this.store.getters['chat/lastUnreadMessage']
-
+    if (transaction && !transaction.hasOwnProperty('type')) {
+      transaction.type = ''
+      console.log('🚀 ~ 24 notification.js ~ getlastUnread ~ transaction:', transaction)
+    }
     // don't show remove reaction
-    if (transaction.type === 'reaction' && !transaction.asset.react_message) {
+    if (transaction && transaction.type === 'reaction' && !transaction.asset.react_message) {
       return null
     }
 
@@ -68,16 +72,16 @@ class PushNotification extends Notification {
 
   get messageBody() {
     let message
-    if (this.lastUnread.type === 'reaction') {
+    if (this.lastUnread && this.lastUnread.type === 'reaction') {
       const emoji = this.lastUnread.asset.react_message
       message = `${this.i18n.t('chats.partner_reacted')} ${emoji}`
-    } else if (this.lastUnread.type !== 'message') {
+    } else if (this.lastUnread && this.lastUnread.type !== 'message') {
       message = `${this.i18n.t('chats.received_label')} ${currency(
         this.lastUnread.amount,
         this.lastUnread.type
       )}`
     } else {
-      message = this.lastUnread.message
+      message = (this.lastUnread && this.lastUnread.message) || 'empty message'
     }
     const processedMessage = this.store.state.options.formatMessages
       ? removeFormats(message)
@@ -90,6 +94,13 @@ class PushNotification extends Notification {
   }
 
   notify(messageArrived) {
+    if (messageArrived) {
+      console.log(
+        '🚀 ~ notifications.js:97 ~ PushNotification ~ notify ~ messageArrived:',
+        messageArrived
+      )
+      console.log('🚀 ~ notifications.js:98 ~ this.messageBody:', this.messageBody)
+    }
     try {
       Notify.requestPermission(
         // Permission granted
@@ -134,7 +145,7 @@ class PushNotification extends Notification {
       )
     } catch (x) {
       // Notification API not supported or another error
-      console.error(x)
+      console.log('error: ', x)
       this.store.dispatch('snackbar/show', {
         message: this.i18n.t('options.push_not_supported')
       })

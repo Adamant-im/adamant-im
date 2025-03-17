@@ -140,15 +140,28 @@
               </div>
             </v-col>
             <v-col cols="12" class="mt-6">
-              <v-checkbox
-                :model-value="allowPushNotifications"
-                @update:model-value="handlePushNotificationsCheckbox"
-                :label="$t('options.enable_push')"
-                color="grey darken-1"
-                density="comfortable"
-                hide-details
-              />
-
+              <v-row no-gutters class="my-0">
+                <v-col cols="6">
+                  <v-checkbox
+                    :model-value="isAllowNotifications"
+                    @update:model-value="handleNotificationsCheckbox"
+                    :label="$t('options.notification_title')"
+                    color="grey darken-1"
+                    density="comfortable"
+                    hide-details
+                  />
+                </v-col>
+                <v-col cols="6" class="my-0 test-class">
+                  <v-select
+                    :model-value="selectedNotificationValue"
+                    @update:model-value="handleSelectedNotificationValue"
+                    :items="notificationItems"
+                    variant="underlined"
+                    :disabled="addressReadonly"
+                    :menu-icon="addressReadonly ? '' : 'mdi-menu-down'"
+                  />
+                </v-col>
+              </v-row>
               <div class="a-text-explanation-enlarged">
                 {{ $t('options.enable_push_tooltip') }}
               </div>
@@ -208,6 +221,7 @@
 </template>
 
 <script>
+/* eslint-disable */
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import CurrencySwitcher from '@/components/CurrencySwitcher.vue'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
@@ -219,6 +233,12 @@ import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import scrollPosition from '@/mixins/scrollPosition'
 import { requestToken, revokeToken } from '@/notifications'
 
+const notificationType = {
+  'No Notifications': 0,
+  'Background Fetch': 1,
+  Push: 2
+}
+
 export default {
   components: {
     LanguageSwitcher,
@@ -228,8 +248,21 @@ export default {
   },
   mixins: [scrollPosition],
   data: () => ({
-    passwordDialog: false
+    passwordDialog: false,
+    selectedNotificationValue: 0,
+    notificationItems: [
+      { title: 'No Notifications', value: notificationType['No Notifications'] },
+      { title: 'Background Fetch', value: notificationType['Background Fetch'] },
+      { title: 'Push', value: notificationType['Push'] }
+    ]
   }),
+  created() {
+    let _testIsAllowNotif = this.isAllowNotifications
+    console.log('🚀 ~ Options.vue:260 ~ created ~ _testIsAllowNotif:', _testIsAllowNotif)
+    let _test = this.allowNotificationType
+    console.log('🚀 ~ Options.vue:260 ~ created ~ _test:', _test)
+    this.selectedNotificationValue = this.allowNotificationType
+  },
   computed: {
     className: () => 'settings-view',
     stayLoggedIn() {
@@ -290,13 +323,28 @@ export default {
         })
       }
     },
-    allowPushNotifications: {
+    isAllowNotifications: {
       get() {
-        return this.$store.state.options.allowPushNotifications
+        const _isAllowNotifTest = this.$store.state.options.isAllowNotifications
+        console.log('🚀 ~ Options.vue:326 ~ get ~ _isAllowNotifTest:', _isAllowNotifTest)
+        return this.$store.state.options.isAllowNotifications
       },
       set(value) {
+        console.log('🚀 ~ Options.vue:328 ~ set ~ value:', value)
         this.$store.commit('options/updateOption', {
-          key: 'allowPushNotifications',
+          key: 'isAllowNotifications',
+          value
+        })
+      }
+    },
+    allowNotificationType: {
+      get() {
+        return this.$store.state.options.allowNotificationType
+      },
+      set(value) {
+        console.log('🚀 ~ Options.vue:340 ~ set ~ value:', value)
+        this.$store.commit('options/updateOption', {
+          key: 'allowNotificationType',
           value
         })
       }
@@ -319,11 +367,36 @@ export default {
     }
   },
   methods: {
-    async handlePushNotificationsCheckbox(checked) {
+    handleNotificationsCheckbox(checked) {
+      this.isAllowNotifications = checked
+      const selectedValue = this.selectedNotificationValue
+      switch (selectedValue) {
+        case notificationType['Background Fetch']:
+          if (checked) this.setPushNotifications(false)
+          break
+        case notificationType['Push']:
+          checked ? this.setPushNotifications(true) : this.setPushNotifications(false)
+          break
+        default:
+          break
+      }
+    },
+    handleSelectedNotificationValue(value) {
+      this.selectedNotificationValue = value
+      this.allowNotificationType = value
+      if (this.isAllowNotifications && value === notificationType['Background Fetch'])
+        this.setPushNotifications(false)
+      if (this.isAllowNotifications && value === notificationType['Push'])
+        this.setPushNotifications(true)
+    },
+    async setPushNotifications(checked) {
+      console.log('🚀 ~ Options.vue:337 ~ handlePushNotifications ~ checked:', checked)
       const deviceId = await getDeviceId()
+      console.log('🚀 ~ handlePushNotificationsCheckbox ~ deviceId:', deviceId)
 
       if (checked) {
         const token = await requestToken()
+        console.log('🚀 ~ handlePushNotificationsCheckbox ~ token:', token)
 
         if (!token) {
           this.$store.dispatch('snackbar/show', {
@@ -348,10 +421,8 @@ export default {
           message: 'Successfully subscribed to push notifications',
           timeout: 5000
         })
-
-        this.allowPushNotifications = checked
       } else {
-        const token = await requestToken()
+        const token = await this.registerCustomWorker() //await requestToken()
         if (!token) {
           this.$store.dispatch('snackbar/show', {
             message: 'Unable to retrieve FCM token',
@@ -384,8 +455,24 @@ export default {
           message: 'Successfully unsubscribed from push notifications',
           timeout: 5000
         })
-
-        this.allowPushNotifications = checked
+      }
+    },
+    async registerCustomWorker() {
+      try {
+        const worker = await navigator.serviceWorker.register(
+          import.meta.env.MODE === 'production' ? '/firebase-messagin-sw.js' : '/dev-sw.js?dev-sw',
+          {
+            type: import.meta.env.MODE === 'production' ? 'classic' : 'module'
+          }
+        )
+        const token = await getToken(fcm, {
+          vapidKey: _vapidKey,
+          serviceWorkerRegistration: worker
+        })
+        console.log('🚀 ~ Options.vue:469 ~ registerCustomWorker ~ token:', token)
+        return token
+      } catch (error) {
+        console.log('🚀 ~ Options.vue:472 ~ registerCustomWorker ~ error:', error)
       }
     },
     onSetPassword() {
@@ -495,6 +582,10 @@ export default {
   }
   :deep(.v-checkbox) {
     margin-left: -8px;
+  }
+  .test-class {
+    height: 60px;
+    margin-top: -10px !important;
   }
 }
 

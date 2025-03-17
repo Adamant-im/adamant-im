@@ -61,6 +61,7 @@ const store = {
     passphrase: '',
     password: '',
     publicKeys: {},
+    myPK: '',
     isOnline: true
   }),
   getters: {
@@ -68,6 +69,7 @@ const store = {
     isOnline: (state) => state.isOnline,
     getPassPhrase: (state) => state.passphrase, // compatibility getter for ERC20 modules
     publicKey: (state) => (adamantAddress) => state.publicKeys[adamantAddress],
+    getMyPK: (state) => state.myPK,
     isAccountNew: (state) =>
       function () {
         /*
@@ -117,6 +119,9 @@ const store = {
     },
     setPublicKey(state, { adamantAddress, publicKey }) {
       state.publicKeys[adamantAddress] = publicKey
+    },
+    setMyPK(state, value) {
+      state.myPK = value
     },
     setIsOnline(state, value) {
       state.isOnline = value
@@ -203,6 +208,7 @@ const store = {
       return getCurrentAccount()
         .then((account) => {
           commit('setBalance', account.balance)
+          commit('setMyPK', account.privateKey)
           commit('setBalanceStatus', FetchStatus.Success)
           if (account.balance > Fees.KVS) {
             flushCryptoAddresses()

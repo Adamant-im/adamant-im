@@ -19,6 +19,7 @@ export async function requestToken() {
   try {
     // Get the registration token
     const currentToken = await getToken(fcm)
+    console.log('🚀 ~ file: notifications.ts:22 ~ requestToken ~ currentToken:', currentToken)
     if (currentToken) {
       console.log('FCM registration token:', currentToken)
       return currentToken

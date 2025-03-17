@@ -22,6 +22,7 @@ window.firebaseApp = firebaseApp
 window.fcm = fcm
 
 export function getDeviceId() {
+  console.log('🚀 ~ getDeviceId ~ getInstallations(firebaseApp):', getInstallations(firebaseApp))
   return getId(getInstallations(firebaseApp))
 }
 
