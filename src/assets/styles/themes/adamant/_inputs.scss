@@ -1,5 +1,6 @@
-@import '_mixins.scss';
-@import '../../settings/_colors.scss';
+@use 'sass:map';
+@use '../../settings/_colors.scss';
+@use '_mixins.scss';
 
 .a-input {
   font-weight: 400;
@@ -100,34 +101,34 @@
 .v-theme--light {
   .a-input {
     .v-label {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
 
     .v-label.v-label--active {
-      color: map-get($adm-colors, 'muted') !important;
+      color: map.get(colors.$adm-colors, 'muted') !important;
     }
 
     .v-label--is-disabled {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
 
     &.v-input--is-disabled {
       input,
       textarea {
-        color: map-get($adm-colors, 'muted');
+        color: map.get(colors.$adm-colors, 'muted');
       }
     }
 
     &:not(.v-input--is-disabled) {
       input,
       textarea {
-        color: map-get($adm-colors, 'regular');
-        caret-color: map-get($adm-colors, 'primary2');
+        color: map.get(colors.$adm-colors, 'regular');
+        caret-color: map.get(colors.$adm-colors, 'primary2');
       }
     }
 
     &.v-select .v-select__selections {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
 
     .v-input__control > .v-input__slot:before {
@@ -135,11 +136,11 @@
     }
 
     &:not(.v-input--has-state) > .v-input__control > .v-input__slot:hover:before {
-      border-color: map-get($adm-colors, 'primary2');
+      border-color: map.get(colors.$adm-colors, 'primary2');
     }
 
     &.v-input--is-focused > .v-input__control > .v-input__slot:after {
-      border-color: map-get($adm-colors, 'primary2');
+      border-color: map.get(colors.$adm-colors, 'primary2');
       border-width: thin 0 0 0;
     }
   }
@@ -164,7 +165,7 @@
     &:not(.v-input--is-disabled) {
       input,
       textarea {
-        caret-color: map-get($adm-colors, 'primary');
+        caret-color: map.get(colors.$adm-colors, 'primary');
       }
     }
   }

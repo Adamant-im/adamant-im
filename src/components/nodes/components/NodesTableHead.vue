@@ -83,8 +83,9 @@ export default {
 </script>
 
 <style lang="scss">
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
 
 .nodes-table-head {
   &__th {
@@ -106,14 +107,14 @@ export default {
 .v-theme--light {
   .nodes-table-head {
     &__th, &__label {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
   }
 }
 .v-theme--dark {
   .nodes-table-head {
     &__th, &__label {
-      color: map-get($adm-colors, 'white');
+      color: map.get(colors.$adm-colors, 'white');
     }
   }
 }

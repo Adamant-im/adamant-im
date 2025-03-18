@@ -104,9 +104,10 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .wallets-view {
   &__crypto-content {
@@ -154,12 +155,12 @@ export default defineComponent({
   .wallets-view {
     &__checkbox {
       :deep(.v-label) {
-        color: map-get($adm-colors, 'regular');
+        color: map.get(colors.$adm-colors, 'regular');
       }
       :deep(.v-input--selection-controls__ripple),
       :deep(.v-input--selection-controls__input) i {
-        color: map-get($adm-colors, 'regular') !important;
-        caret-color: map-get($adm-colors, 'regular') !important;
+        color: map.get(colors.$adm-colors, 'regular') !important;
+        caret-color: map.get(colors.$adm-colors, 'regular') !important;
       }
     }
   }

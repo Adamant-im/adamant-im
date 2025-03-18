@@ -1,4 +1,5 @@
-@import '../settings/_colors.scss';
+@use 'sass:map';
+@use '../settings/_colors.scss';
 
 /**
  * Centering input text and label.
@@ -60,7 +61,7 @@
 .v-theme--light {
   .login-form {
     .v-input input {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
 
     .v-text-field > .v-input__control > .v-field > .v-field__outline:before {

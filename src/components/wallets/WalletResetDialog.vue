@@ -65,16 +65,17 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .wallets-view {
   &__dialog-summary {
-    @include a-text-regular-enlarged();
+    @include mixins.a-text-regular-enlarged();
   }
   &__dialog-title {
-    @include a-text-header();
+    @include mixins.a-text-header();
   }
 }
 
@@ -82,13 +83,13 @@ export default defineComponent({
 .v-theme--light {
   .wallets-view {
     &__dialog-summary {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
     &__dialog-title {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
     &__divider {
-      border-color: map-get($adm-colors, 'regular');
+      border-color: map.get(colors.$adm-colors, 'regular');
     }
   }
 }

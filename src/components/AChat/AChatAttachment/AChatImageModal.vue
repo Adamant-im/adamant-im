@@ -240,9 +240,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .a-chat-image-modal {
   &__container {
@@ -256,7 +257,7 @@ export default {
   &__carousel {
   }
   &__img-counter {
-    @include a-text-header();
+    @include mixins.a-text-header();
     flex-grow: 1;
     flex-shrink: 1;
     margin-inline-start: 0;
@@ -267,7 +268,7 @@ export default {
 .v-theme--dark {
   .a-chat-image-modal {
     &__container {
-      background-color: map-get($adm-colors, 'muted');
+      background-color: map.get(colors.$adm-colors, 'muted');
     }
   }
 }
@@ -275,7 +276,7 @@ export default {
 .v-theme--light {
   .a-chat-image-modal {
     &__container {
-      background-color: map-get($adm-colors, 'grey-transparent');
+      background-color: map.get(colors.$adm-colors, 'grey-transparent');
     }
   }
 }

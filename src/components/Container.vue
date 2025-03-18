@@ -30,7 +30,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
+@use 'sass:map';
+@use 'vuetify/settings';
 
 .a-container {
   width: 100%;
@@ -41,7 +42,7 @@ export default defineComponent({
     padding: 0 24px;
   }
 
-  @media #{map-get($display-breakpoints, 'sm-and-down')} {
+  @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
     &--padding {
       padding: 0 16px;
     }

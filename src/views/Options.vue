@@ -377,9 +377,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .settings-view {
   &__title {
@@ -390,7 +391,7 @@ export default {
     padding-right: 24px;
   }
   &__version_info {
-    @include a-text-explanation();
+    @include mixins.a-text-explanation();
     margin-top: 24px;
     margin-bottom: 16px;
   }
@@ -411,7 +412,7 @@ export default {
   :deep(.v-label),
   &__label,
   &__list__title {
-    @include a-text-regular-enlarged();
+    @include mixins.a-text-regular-enlarged();
   }
   :deep(.v-list) {
     background: transparent;
@@ -438,34 +439,34 @@ export default {
 .v-theme--light {
   .settings-view {
     &__version_info {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
     &__title {
-      background-color: map-get($adm-colors, 'secondary2-transparent');
-      color: map-get($adm-colors, 'regular');
+      background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
+      color: map.get(colors.$adm-colors, 'regular');
     }
     &__action {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
     :deep(.v-label),
     &__label {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
     .v-divider {
-      border-color: map-get($adm-colors, 'secondary2');
+      border-color: map.get(colors.$adm-colors, 'secondary2');
     }
   }
 }
 .v-theme--dark {
   .settings-view {
     &__action {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
   }
 }
 
 /** Breakpoints **/
-@media #{map-get($display-breakpoints, 'sm-and-down')} {
+@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
   .settings-view {
     &__title {
       margin-left: -16px;

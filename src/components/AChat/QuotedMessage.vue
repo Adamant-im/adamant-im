@@ -183,8 +183,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/settings/_colors.scss';
-@import '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .quoted-message {
   height: 32px;
@@ -197,7 +198,7 @@ export default defineComponent({
   }
 
   &__message {
-    @include a-text-regular();
+    @include mixins.a-text-regular();
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -214,17 +215,17 @@ export default defineComponent({
 
 .v-theme--light {
   .quoted-message {
-    border-left: 3px solid map-get($adm-colors, 'attention');
-    background-color: map-get($adm-colors, 'secondary2');
-    color: map-get($adm-colors, 'regular');
+    border-left: 3px solid map.get(colors.$adm-colors, 'attention');
+    background-color: map.get(colors.$adm-colors, 'secondary2');
+    color: map.get(colors.$adm-colors, 'regular');
   }
 }
 
 .v-theme--dark {
   .quoted-message {
-    border-left: 3px solid map-get($adm-colors, 'attention');
-    background-color: map-get($adm-colors, 'secondary2-slightly-transparent');
-    color: map-get($adm-colors, 'secondary');
+    border-left: 3px solid map.get(colors.$adm-colors, 'attention');
+    background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
+    color: map.get(colors.$adm-colors, 'secondary');
   }
 }
 </style>
