@@ -21,6 +21,14 @@ import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/uti
 
 export let interval
 
+// Last time noActiveNodesDialog was shown
+export let lastTimeDialogShown = {
+  chatRoom: null,
+  chats: null
+}
+
+const NO_ACTIVE_NODES_INTERVAL = 1000 * 60 * 10 // Interval for the dialog (10 minutes)
+
 const SOCKET_ENABLED_TIMEOUT = 10000
 const SOCKET_DISABLED_TIMEOUT = 3000
 
@@ -500,10 +508,6 @@ const mutations = {
   },
 
   setNoActiveNodesDialog(state, value) {
-    if (state.noActiveNodesDialog === false) {
-      return // do not show dialog again
-    }
-
     state.noActiveNodesDialog = value
   },
 
@@ -542,7 +546,15 @@ const actions = {
       })
       .catch((err) => {
         if (isAllNodesDisabledError(err) || isAllNodesOfflineError(err)) {
-          commit('setNoActiveNodesDialog', true)
+          if (
+            !lastTimeDialogShown.chats ||
+            (Date.now() - lastTimeDialogShown.chats >= NO_ACTIVE_NODES_INTERVAL)
+          ) {
+            commit('setNoActiveNodesDialog', true)
+
+            lastTimeDialogShown.chats = Date.now()
+          }
+          commit('setFulfilled', true)
           setTimeout(() => dispatch('loadChats'), 5000) // retry in 5 seconds
         }
       })
@@ -599,7 +611,14 @@ const actions = {
       })
       .catch((err) => {
         if (isAllNodesDisabledError(err) || isAllNodesOfflineError(err)) {
-          commit('setNoActiveNodesDialog', true)
+          if (
+            !lastTimeDialogShown.chatRoom ||
+            (Date.now() - lastTimeDialogShown.chatRoom >= NO_ACTIVE_NODES_INTERVAL)
+          ) {
+            commit('setNoActiveNodesDialog', true)
+
+            lastTimeDialogShown.chatRoom = Date.now()
+          }
         }
         throw err
       })
