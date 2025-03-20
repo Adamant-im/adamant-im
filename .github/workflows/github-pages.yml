@@ -1,0 +1,23 @@
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches: [ dev ]
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install && npm run build
+        env:
+          GITHUB_REPO_NAME: ${{ github.event.repository.name }}
+          VITE_GITHUB_REPO_NAME: /${{ github.event.repository.name }}
+      - name: Debug dist folder
+        run: ls -R ./dist
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist  # Папка с собранными файлами
+          publish_branch: gh-pages  # Явно указываем ветку
+          force_orphan: true  # Принудительно очищает ветку gh-pages

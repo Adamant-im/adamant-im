@@ -12,7 +12,18 @@ import { deferScripsPlugin } from './vite-config/plugins/deferScriptsPlugin'
 import { preloadCSSPlugin } from './vite-config/plugins/preloadCSSPlugin'
 import { excludeBip39Wordlists } from './vite-config/rollup/excludeBip39Wordlists'
 
+import dotenv from 'dotenv';
+// Загрузка переменных из .env
+dotenv.config();
+
+let additional_asset_address = '/';
+
+if (process.env.GITHUB_REPO_NAME) {
+  additional_asset_address = `/${process.env.GITHUB_REPO_NAME}/`;
+}
+
 export default defineConfig({
+  base: additional_asset_address, // Укажите субдиректорию здесь
   plugins: [
     wasm(),
     topLevelAwait(),
@@ -76,10 +87,10 @@ export default defineConfig({
       output: {
         assetFileNames: (assetInfo) => {
           if (assetInfo.name.startsWith('materialdesignicons-webfont')) {
-            return 'assets/[name][extname]'
+            return `assets/[name][extname]`
           }
 
-          return 'assets/[name]-[hash][extname]'
+          return `assets/[name]-[hash][extname]`
         }
       }
     }
