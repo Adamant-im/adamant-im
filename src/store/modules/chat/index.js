@@ -543,6 +543,7 @@ const actions = {
       .catch((err) => {
         if (isAllNodesDisabledError(err) || isAllNodesOfflineError(err)) {
           commit('setNoActiveNodesDialog', true)
+          commit('setFulfilled', true)
           setTimeout(() => dispatch('loadChats'), 5000) // retry in 5 seconds
         }
       })
