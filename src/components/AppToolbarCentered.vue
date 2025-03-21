@@ -82,8 +82,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
 
 .app-toolbar-centered {
   padding: 0;
@@ -116,7 +117,7 @@ export default {
 .v-theme--light {
   .app-toolbar-centered {
     .v-toolbar {
-      background-color: map-get($adm-colors, 'secondary2');
+      background-color: map.get(colors.$adm-colors, 'secondary2');
     }
   }
 }
@@ -124,8 +125,8 @@ export default {
 .v-theme--dark {
   .app-toolbar-centered {
     .v-toolbar {
-      background-color: map-get($adm-colors, 'black');
-      color: map-get($shades, 'white');
+      background-color: map.get(colors.$adm-colors, 'black');
+      color: map.get(settings.$shades, 'white');
     }
   }
 }

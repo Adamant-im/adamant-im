@@ -90,8 +90,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import 'vuetify/_settings.scss';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/_settings.scss';
 
 .free-tokens-dialog {
   &__card-text {
@@ -116,7 +117,7 @@ export default {
 .v-theme--dark {
   .free-tokens-dialog {
     &__disclaimer {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
   }
 }

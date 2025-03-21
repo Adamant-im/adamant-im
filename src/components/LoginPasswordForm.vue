@@ -8,10 +8,22 @@
         autocomplete="new-password"
         :label="$t('login_via_password.user_password_title')"
         :name="Date.now()"
-        type="password"
+        :type="showPassword ? 'text' : 'password'"
         class="text-center"
         variant="underlined"
-      />
+      >
+        <template #append-inner>
+          <v-btn
+            @click="togglePasswordVisibility"
+            icon
+            :ripple="false"
+            :size="28"
+            variant="plain"
+          >
+            <v-icon :icon="showPassword ? mdiEye : mdiEyeOff" :size="24" />
+          </v-btn>
+        </template>
+      </v-text-field>
     </v-row>
 
     <v-row align="center" justify="center" class="mt-2" no-gutters>
@@ -50,6 +62,7 @@ import { useI18n } from 'vue-i18n'
 
 import { clearDb } from '@/lib/idb'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
+import { mdiEye, mdiEyeOff } from '@mdi/js'
 
 export default defineComponent({
   props: {
@@ -65,6 +78,10 @@ export default defineComponent({
     const { t } = useI18n()
     const passwordField = ref(null)
     const showSpinner = ref(false)
+    const showPassword = ref(false)
+    const togglePasswordVisibility = () => {
+      showPassword.value = !showPassword.value
+    }
 
     const password = computed({
       get() {
@@ -118,6 +135,10 @@ export default defineComponent({
       passwordField,
       showSpinner,
       password,
+      showPassword,
+      mdiEye,
+      mdiEyeOff,
+      togglePasswordVisibility,
       submit,
       removePassword
     }

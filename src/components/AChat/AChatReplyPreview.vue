@@ -95,13 +95,14 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/settings/_colors.scss';
-@import '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
 
 $message-max-lines: 2;
 
 .a-chat-reply-preview {
-  border-left: 3px solid map-get($adm-colors, 'attention');
+  border-left: 3px solid map.get(colors.$adm-colors, 'attention');
   border-radius: 8px;
   margin: 8px;
 
@@ -112,7 +113,7 @@ $message-max-lines: 2;
   }
 
   &__message {
-    @include a-text-regular-enlarged();
+    @include mixins.a-text-regular-enlarged();
     line-height: 20px; // half of <ChatAvatar/> height
 
     margin-left: 8px;
@@ -135,8 +136,8 @@ $message-max-lines: 2;
 
 .v-theme--light {
   .a-chat-reply-preview {
-    background-color: map-get($adm-colors, 'secondary');
-    color: map-get($adm-colors, 'regular');
+    background-color: map.get(colors.$adm-colors, 'secondary');
+    color: map.get(colors.$adm-colors, 'regular');
   }
 }
 

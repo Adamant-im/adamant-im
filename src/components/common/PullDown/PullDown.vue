@@ -84,8 +84,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
 
 .pull-down {
   position: relative;
@@ -126,18 +127,18 @@ export default defineComponent({
 .v-theme--light {
   .pull-down {
     &__progress-circular {
-      color: map-get($adm-colors, 'grey');
+      color: map.get(colors.$adm-colors, 'grey');
 
       &--activated {
-        color: map-get($adm-colors, 'muted');
+        color: map.get(colors.$adm-colors, 'muted');
       }
     }
 
     &__action-text {
-      color: map-get($adm-colors, 'grey');
+      color: map.get(colors.$adm-colors, 'grey');
 
       &--activated {
-        color: map-get($adm-colors, 'muted');
+        color: map.get(colors.$adm-colors, 'muted');
       }
     }
   }
@@ -146,18 +147,18 @@ export default defineComponent({
 .v-theme--dark {
   .pull-down {
     &__progress-circular {
-      color: map-get($adm-colors, 'secondary2-transparent');
+      color: map.get(colors.$adm-colors, 'secondary2-transparent');
 
       &--activated {
-        color: map-get($shades, 'white');
+        color: map.get(settings.$shades, 'white');
       }
     }
 
     &__action-text {
-      color: map-get($adm-colors, 'grey');
+      color: map.get(colors.$adm-colors, 'grey');
 
       &--activated {
-        color: map-get($shades, 'white');
+        color: map.get(settings.$shades, 'white');
       }
     }
   }

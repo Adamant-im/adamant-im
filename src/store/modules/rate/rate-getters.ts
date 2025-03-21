@@ -11,19 +11,21 @@ export const getters: GetterTree<RateState, RootState> = {
   },
   historyRate:
     (state, { ratesBySeconds, historyRateAmount }, rootState) => (timestamp: number, amount: number, crypto: string) => {
-      let historyRate
-      const currentCurrency = rootState.options.currentRate
+      const fiatCurrency = rootState.options.currentRate
 
       const calculatedRatesBySeconds = ratesBySeconds(timestamp);
 
       if (calculatedRatesBySeconds) {
-        historyRate = `${historyRateAmount(timestamp, amount, crypto, currentCurrency).toFixed(
-          2
-        )} ${currentCurrency}`
-      } else {
-        historyRate = '�'
+        const calculatedHistoryAmount = historyRateAmount(timestamp, amount, crypto, fiatCurrency);
+
+        if (!isNaN(calculatedHistoryAmount)) {
+          return  `${calculatedHistoryAmount.toFixed(
+            2
+          )} ${fiatCurrency}`
+        }
       }
-      return historyRate
+
+      return  `� ${fiatCurrency}`
     },
   rate: (state, getters, rootState) => (amount: number, crypto: string) => {
     const currentCurrency = rootState.options.currentRate

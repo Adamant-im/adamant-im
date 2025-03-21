@@ -151,16 +151,17 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .wallet-card {
   &__title {
-    @include a-text-caption();
+    @include mixins.a-text-caption();
   }
   &__subtitle {
-    @include a-text-regular-enlarged();
+    @include mixins.a-text-regular-enlarged();
     line-height: 24px;
     word-break: break-word;
     display: block;
@@ -185,13 +186,13 @@ export default defineComponent({
       background: inherit;
     }
     &__title {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
     &__subtitle {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
     &__action {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
   }
 }
@@ -202,10 +203,10 @@ export default defineComponent({
       background: inherit;
     }
     &__title {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
     &__subtitle {
-      color: rgba(map-get($shades, 'white'), 70%);
+      color: rgba(map.get(settings.$shades, 'white'), 70%);
     }
   }
 }

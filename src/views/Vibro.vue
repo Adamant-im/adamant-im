@@ -91,8 +91,10 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
+
 .input {
   border: 2px solid orange;
   margin-right: 16px;
@@ -104,6 +106,6 @@ export default {
 .btn {
   display: flex;
   margin-top: 12px;
-  background-color: map-get($adm-colors, 'regular');
+  background-color: map.get(colors.$adm-colors, 'regular');
 }
 </style>

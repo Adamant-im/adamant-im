@@ -2,7 +2,7 @@
   <v-carousel-item :class="classes.root" :max-width="500" :max-height="250">
     <v-card :class="classes.card" width="100%" height="100%">
       <div :class="classes.container">
-        <IconFile :width="128" :height="128" :text="fileExtension?.toUpperCase()" />
+        <IconFile :width="128" :height="128" :text="fileExtension" />
 
         <div>
           <div :class="classes.fileName">{{ fileName }}</div>
@@ -20,7 +20,7 @@ import { computed, defineComponent, PropType } from 'vue'
 
 import IconFile from '@/components/icons/common/IconFile.vue'
 import { FileAsset } from '@/lib/adamant-api/asset'
-import { formatBytes } from '@/lib/files'
+import { formatBytes, formatFileExtension } from '@/lib/files'
 
 const className = 'a-chat-modal-file'
 const classes = {
@@ -40,11 +40,15 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const fileExtension = computed(() => props.file.extension)
+    const fileExtension = computed(() => formatFileExtension(props.file.extension))
 
     const fileName = computed(() => {
-      if (props.file.name) {
-        return props.file.extension ? `${props.file.name}.${props.file.extension}` : props.file.name
+      const { name = '', extension } = props.file
+
+      if (extension) {
+        return `${name}.${extension}`
+      } else if (name) {
+        return `${name}`
       }
 
       return 'UNNAMED'
@@ -64,14 +68,16 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .a-chat-modal-file {
   display: flex;
   align-items: center;
   justify-content: space-around;
+  flex-grow: unset;
 
   :deep(.v-responsive__content) {
     display: flex;
@@ -92,27 +98,31 @@ export default defineComponent({
   }
 
   &__file-name {
-    @include a-text-caption();
+    @include mixins.a-text-caption();
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
   }
 
   &__file-size {
-    @include a-text-regular-enlarged();
+    @include mixins.a-text-regular-enlarged();
   }
 }
 
 .v-theme--dark {
   .a-chat-modal-file {
     &__card {
-      background-color: map-get($adm-colors, 'black2');
-      border: 1px solid map-get($adm-colors, 'secondary2-slightly-transparent');
+      background-color: map.get(colors.$adm-colors, 'black2');
+      border: 1px solid map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
     }
 
     &__file-name {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
 
     &__file-size {
-      color: map-get($adm-colors, 'grey-transparent');
+      color: map.get(colors.$adm-colors, 'grey-transparent');
     }
   }
 }
@@ -120,16 +130,16 @@ export default defineComponent({
 .v-theme--light {
   .a-chat-modal-file {
     &__card {
-      background-color: map-get($adm-colors, 'secondary2');
-      border: 1px solid map-get($adm-colors, 'secondary');
+      background-color: map.get(colors.$adm-colors, 'secondary2');
+      border: 1px solid map.get(colors.$adm-colors, 'secondary');
     }
 
     &__file-name {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
 
     &__file-size {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
   }
 }

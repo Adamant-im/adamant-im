@@ -2,10 +2,10 @@
   <crypto-icon :class="classes.cryptoIcon" :crypto="wallet.cryptoCurrency" size="medium" />
 
   <div>
-    <div v-if="isBalanceLoading" :class="classes.balanceLoading">
+    <div v-if="formattedBalance">{{ formattedBalance }}</div>
+    <div v-else-if="isBalanceLoading" :class="classes.balanceLoading">
       <v-icon :icon="mdiDotsHorizontal" size="18" />
     </div>
-    <div v-else-if="fetchBalanceSucceeded">{{ numberFormat(wallet.balance, 4) }}</div>
     <div v-else :class="classes.balanceError">
       <v-icon :icon="mdiHelpCircleOutline" size="18" />
     </div>
@@ -89,6 +89,16 @@ export default defineComponent({
     const isBalanceLoading = computed(() => balanceStatus.value === FetchStatus.Loading)
     const fetchBalanceSucceeded = computed(() => balanceStatus.value === FetchStatus.Success)
 
+    const formattedBalance = computed(() => {
+      const formatted = numberFormat(props.wallet.balance, 4)
+
+      if (props.wallet.balance || fetchBalanceSucceeded.value) {
+        return formatted
+      }
+
+      return null
+    })
+
     watch(currentBalance, (newBalance, oldBalance) => {
       if (oldBalance < newBalance) {
           vibrate.doubleVeryShort()
@@ -101,6 +111,7 @@ export default defineComponent({
       isRateLoaded,
       isBalanceLoading,
       fetchBalanceSucceeded,
+      formattedBalance,
       mdiDotsHorizontal,
       mdiHelpCircleOutline,
       numberFormat
@@ -110,8 +121,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
 
 .wallet-tab {
   &__crypto-icon {
@@ -134,7 +146,7 @@ export default defineComponent({
 .v-theme--light {
   .wallet-tab {
     &__rates {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
   }
 }

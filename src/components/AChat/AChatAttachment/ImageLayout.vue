@@ -81,9 +81,10 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import 'vuetify/settings';
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 $gap-size: 4px;
 
@@ -108,8 +109,8 @@ $gap-size: 4px;
 
 .v-theme--dark {
   .a-chat-image-layout {
-    background-color: map-get($adm-colors, 'black');
-    border-color: map-get($adm-colors, 'black');
+    background-color: map.get(colors.$adm-colors, 'black');
+    border-color: map.get(colors.$adm-colors, 'black');
     box-shadow:
       0 1px 10px hsla(0, 0%, 39.2%, 0.06),
       0 1px 1px hsla(0, 0%, 39.2%, 0.04),
@@ -119,8 +120,8 @@ $gap-size: 4px;
 
 .v-theme--light {
   .a-chat-image-layout {
-    background-color: map-get($shades, 'white');
-    border-color: map-get($shades, 'white');
+    background-color: map.get(settings.$shades, 'white');
+    border-color: map.get(settings.$shades, 'white');
     box-shadow:
       0 1px 10px hsla(0, 0%, 39.2%, 0.06),
       0 1px 1px hsla(0, 0%, 39.2%, 0.04),
