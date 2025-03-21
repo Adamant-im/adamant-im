@@ -13,7 +13,6 @@ import { preloadCSSPlugin } from './vite-config/plugins/preloadCSSPlugin'
 import { excludeBip39Wordlists } from './vite-config/rollup/excludeBip39Wordlists'
 
 import dotenv from 'dotenv';
-// Загрузка переменных из .env
 dotenv.config();
 
 let additional_asset_address = '/';
@@ -23,7 +22,7 @@ if (process.env.GITHUB_REPO_NAME) {
 }
 
 export default defineConfig({
-  base: additional_asset_address, // Укажите субдиректорию здесь
+  base: additional_asset_address,
   plugins: [
     wasm(),
     topLevelAwait(),
