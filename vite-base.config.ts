@@ -87,10 +87,10 @@ export default defineConfig({
       output: {
         assetFileNames: (assetInfo) => {
           if (assetInfo.name.startsWith('materialdesignicons-webfont')) {
-            return `assets/[name][extname]`
+            return 'assets/[name][extname]'
           }
 
-          return `assets/[name]-[hash][extname]`
+          return 'assets/[name]-[hash][extname]'
         }
       }
     }

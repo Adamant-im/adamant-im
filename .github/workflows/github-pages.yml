@@ -12,8 +12,8 @@ jobs:
         env:
           GITHUB_REPO_NAME: ${{ github.event.repository.name }}
           VITE_GITHUB_REPO_NAME: /${{ github.event.repository.name }}
-      - name: Debug dist folder
-        run: ls -R ./dist
+    # - name: Debug dist folder
+    #   run: ls -R ./dist
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
