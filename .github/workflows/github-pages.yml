@@ -18,6 +18,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist  # Папка с собранными файлами
-          publish_branch: gh-pages  # Явно указываем ветку
-          force_orphan: true  # Принудительно очищает ветку gh-pages
+          publish_dir: ./dist  # folder
+          publish_branch: gh-pages  # branch
+          force_orphan: true  # clean branch gh-pages
