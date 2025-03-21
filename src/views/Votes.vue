@@ -18,6 +18,14 @@
               color="primary"
             />
             <div :class="`${className}__info`" v-html="t('votes.stake_info')" />
+            <v-progress-circular
+              :class="`mb-2`"
+              v-show="!isOnline"
+              indeterminate
+              color="secondary"
+              size="30"
+              style="z-index: 100"
+            />
             <delegates-table
               :page="pagination.page"
               :per-page="pagination.rowsPerPage"
@@ -115,6 +123,7 @@ export default defineComponent({
     const dialog = ref(false)
     const className = 'delegates-view'
 
+    const isOnline = computed(() => store.getters['isOnline'])
     const delegates = computed(() => {
       const delegates = store.state.delegates.delegates || {}
 
@@ -218,6 +227,7 @@ export default defineComponent({
       search,
       pagination,
       expanded,
+      isOnline,
       waitingForConfirmation,
       dialog,
       t,

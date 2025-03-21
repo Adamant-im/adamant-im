@@ -13,6 +13,14 @@
                 size="small"
                 variant="text"
               />
+              <v-progress-circular
+                :class="`mt-3 ml-5`"
+                v-show="!enabledNodes"
+                indeterminate
+                color="secondary"
+                size="30"
+                style="z-index: 100"
+              />
               <v-spacer />
               <v-btn
                 :class="`${className}__item`"
@@ -97,10 +105,13 @@ export default {
   data: () => ({
     showChatStartDialog: false,
     loading: false,
-    noMoreChats: false
+    noMoreChats: false,
   }),
   computed: {
     className: () => 'chats-view',
+    enabledNodes() {
+      return this.$store.getters['nodes/adm'].filter((node) => node.status === 'online').length
+    },
     isFulfilled() {
       return this.$store.state.chat.isFulfilled
     },
@@ -155,6 +166,26 @@ export default {
     },
     isAdamantChat,
     getAdamantChatMeta,
+    waitForNodesToConnect() {
+      return new Promise((resolve, reject) => {
+        const timeout = 10000
+        const startTime = Date.now()
+
+        const checkNodes = () => {
+          const onlineNodes = this.$store.getters['nodes/adm'].filter((node) => node.status === 'online')
+
+          if (onlineNodes.length) {
+            resolve()
+          } else if (Date.now() - startTime > timeout) {
+            reject()
+          } else {
+            setTimeout(checkNodes, 100)
+          }
+        };
+
+        checkNodes()
+      })
+    },
     onError(message) {
       this.$store.dispatch('snackbar/show', { message })
     },

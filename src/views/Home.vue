@@ -24,6 +24,15 @@
               </v-tab>
             </v-tabs>
 
+            <v-progress-circular
+              :class="`ml-3`"
+              v-show="!isOnline"
+              indeterminate
+              color="secondary"
+              size="30"
+              style="z-index: 100"
+            />
+
             <v-window
               v-model="currentWallet"
               :touch="{
@@ -108,6 +117,9 @@ export default {
   },
   computed: {
     className: () => 'account-view',
+    isOnline() {
+      return this.$store.getters['isOnline']
+    },
     orderedVisibleWalletSymbols() {
       return this.$store.getters['wallets/getVisibleOrderedWalletSymbols']
     },

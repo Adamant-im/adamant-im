@@ -5,6 +5,14 @@
       <v-tab value="coins">{{ t('nodes.tabs.coin_nodes') }}</v-tab>
       <v-tab value="services">{{ t('nodes.tabs.service_nodes') }}</v-tab>
       <v-tab value="ipfs">{{ t('nodes.tabs.ipfs_nodes') }}</v-tab>
+      <v-progress-circular
+        :class="`align-self-center ml-auto`"
+        v-show="!isOnline"
+        indeterminate
+        color="secondary"
+        size="30"
+        style="z-index: 100"
+      />
     </v-tabs>
 
     <v-window v-model="tab">
@@ -119,6 +127,7 @@ export default defineComponent({
     const { t } = useI18n()
     const store = useStore()
     const tab = ref<Tab>('adm')
+    const isOnline = computed(() => store.getters['isOnline'])
 
     const useSocketConnection = computed<boolean>({
       get() {
@@ -161,6 +170,7 @@ export default defineComponent({
     return {
       t,
       tab,
+      isOnline,
       classes,
       useSocketConnection,
       preferFastestAdmNodeOption,

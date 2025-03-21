@@ -74,10 +74,20 @@
         <chat-toolbar :partner-id="partnerId">
           <template #avatar-toolbar>
             <ChatAvatar
+              v-if="enabledNodes"
               class="chat-avatar"
               :user-id="partnerId"
               use-public-key
               @click="onClickAvatar(partnerId)"
+            />
+            <v-progress-circular
+              v-else
+              :class="`mr-3`"
+              v-show="!enabledNodes"
+              indeterminate
+              color="secondary"
+              size="30"
+              style="z-index: 100"
             />
           </template>
         </chat-toolbar>
@@ -353,6 +363,7 @@ const showEmojiPicker = ref(false)
 
 const messages = computed(() => store.getters['chat/messages'](props.partnerId))
 const userId = computed(() => store.state.address)
+const enabledNodes = computed(() => store.getters['nodes/adm'].filter((node) => node.status === 'online').length)
 
 const getPartnerName = (address: string) => {
   const name: string = store.getters['partners/displayName'](address) || ''
