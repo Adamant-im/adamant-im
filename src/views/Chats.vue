@@ -166,26 +166,6 @@ export default {
     },
     isAdamantChat,
     getAdamantChatMeta,
-    waitForNodesToConnect() {
-      return new Promise((resolve, reject) => {
-        const timeout = 10000
-        const startTime = Date.now()
-
-        const checkNodes = () => {
-          const onlineNodes = this.$store.getters['nodes/adm'].filter((node) => node.status === 'online')
-
-          if (onlineNodes.length) {
-            resolve()
-          } else if (Date.now() - startTime > timeout) {
-            reject()
-          } else {
-            setTimeout(checkNodes, 100)
-          }
-        };
-
-        checkNodes()
-      })
-    },
     onError(message) {
       this.$store.dispatch('snackbar/show', { message })
     },
