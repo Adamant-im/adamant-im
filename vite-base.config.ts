@@ -12,8 +12,8 @@ import { deferScripsPlugin } from './vite-config/plugins/deferScriptsPlugin'
 import { preloadCSSPlugin } from './vite-config/plugins/preloadCSSPlugin'
 import { excludeBip39Wordlists } from './vite-config/rollup/excludeBip39Wordlists'
 
-import dotenv from 'dotenv';
-dotenv.config();
+// import dotenv from 'dotenv';
+// dotenv.config();
 
 let additional_asset_address = '/';
 
