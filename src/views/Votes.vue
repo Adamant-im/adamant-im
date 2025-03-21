@@ -19,7 +19,7 @@
             />
             <div :class="`${className}__info`" v-html="t('votes.stake_info')" />
             <v-progress-circular
-              :class="`mb-2`"
+              :class="`mb-2 ml-3`"
               v-show="!isOnline"
               indeterminate
               color="secondary"
