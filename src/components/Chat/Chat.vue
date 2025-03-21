@@ -308,6 +308,7 @@ import AChatAttachment from '@/components/AChat/AChatAttachment/AChatAttachment.
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -363,7 +364,8 @@ const showEmojiPicker = ref(false)
 
 const messages = computed(() => store.getters['chat/messages'](props.partnerId))
 const userId = computed(() => store.state.address)
-const enabledNodes = computed(() => store.getters['nodes/adm'].filter((node) => node.status === 'online').length)
+const enabledNodes = computed(() => store.getters['nodes/adm']
+  .filter((node: NodeStatusResult) => node.status === 'online').length)
 
 const getPartnerName = (address: string) => {
   const name: string = store.getters['partners/displayName'](address) || ''
