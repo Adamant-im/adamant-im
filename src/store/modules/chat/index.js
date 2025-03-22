@@ -761,10 +761,11 @@ const actions = {
       })
     } catch (error) {
 
-      if (id) {
+      if (id && recipientId) {
         commit('updateMessage', {
           id,
           status: TS.REJECTED,
+          partnerId: recipientId
         })
       }
       throw error
