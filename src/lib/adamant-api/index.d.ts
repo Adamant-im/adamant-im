@@ -90,9 +90,13 @@ export type SendMessageParams = {
 }
 export function sendMessage(params: SendMessageParams): Promise<CreateNewChatMessageResponseDto>
 
-export function signChatMessageTransaction(params: SendMessageParams): Promise<RegisterChatMessageTransaction>
+export function signChatMessageTransaction(
+  params: SendMessageParams
+): Promise<RegisterChatMessageTransaction>
 
-export function sendSignedTransaction(signedTransaction: RegisterChatMessageTransaction):  Promise<CreateNewChatMessageResponseDto>
+export function sendSignedTransaction(
+  signedTransaction: RegisterChatMessageTransaction
+): Promise<CreateNewChatMessageResponseDto>
 
 export type EncodedFile = {
   binary: Uint8Array
