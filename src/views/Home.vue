@@ -83,6 +83,7 @@ import numberFormat from '@/filters/numberFormat'
 
 import { PullDown } from '@/components/common/PullDown'
 import { Cryptos, CryptosInfo, isErc20 } from '@/lib/constants'
+import { vibrate } from '@/lib/vibrate'
 
 /**
  * Center VTab element on click.
@@ -196,6 +197,8 @@ export default {
       this.$store.dispatch('updateBalance', {
         requestedByUser: true
       })
+
+      vibrate.veryShort()
     },
     numberFormat
   }

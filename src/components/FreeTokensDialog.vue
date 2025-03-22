@@ -32,8 +32,11 @@
 </template>
 
 <script>
+import { watch } from 'vue'
+
 import { websiteUriToOnion } from '@/lib/uri'
 import { mdiGift } from '@mdi/js'
+import { vibrate } from '@/lib/vibrate'
 
 export default {
   props: {
@@ -43,7 +46,13 @@ export default {
     }
   },
   emits: ['update:modelValue'],
-  setup() {
+  setup(props) {
+    watch(() => props.modelValue, () => {
+      if (props.modelValue) {
+        vibrate.medium()
+      }
+    })
+
     return {
       mdiGift
     }

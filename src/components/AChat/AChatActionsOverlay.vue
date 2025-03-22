@@ -37,6 +37,7 @@
 import { usePartnerId } from '@/components/AChat/hooks/usePartnerId'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { computed, defineComponent, onMounted, PropType, reactive, ref } from 'vue'
+import { vibrate } from '@/lib/vibrate'
 
 const className = 'a-chat-actions-overlay'
 const classes = {
@@ -95,6 +96,8 @@ export default defineComponent({
 
     onMounted(() => {
       setTimeout(() => {
+        vibrate.veryShort()
+
         if (rect.value) {
           const halfOfElementHeight = rect.value ? rect.value.height : 0
 
