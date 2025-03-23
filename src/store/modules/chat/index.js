@@ -761,7 +761,7 @@ const actions = {
       })
     } catch (error) {
 
-      if (id && recipientId) {
+      if (id) {
         commit('updateMessage', {
           id,
           status: TS.REJECTED,
