@@ -1,6 +1,6 @@
 import BtcBaseApi from './btc-base-api'
 import { Cryptos } from '../constants'
-import BigNumber from '../bignumber'
+import { BigNumber } from '../bignumber'
 import * as bitcoin from 'bitcoinjs-lib'
 import { isPositiveNumber } from '../numericHelpers'
 import { ECPairFactory } from 'ecpair'

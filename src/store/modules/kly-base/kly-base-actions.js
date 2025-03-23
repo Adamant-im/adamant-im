@@ -1,4 +1,4 @@
-import BigNumber from '@/lib/bignumber'
+import { BigNumber } from '@/lib/bignumber'
 import { KlayrAccount, KLY_TXS_PER_PAGE } from '../../../lib/klayr'
 import { getKlayrTimestamp } from '../../../lib/klayr/klayr-utils'
 import adm from '../../../lib/nodes/adm'
