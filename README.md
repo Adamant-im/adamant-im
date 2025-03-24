@@ -134,7 +134,7 @@ You can build and deploy the app to GitHub Pages. Follow the instructions below.
 
 1. Go to the **Actions** tab.
 2. Enable workflows.
-3. Select the **GH Pages** workflow.
+3. Select the **GitHub Pages** workflow.
 4. Click **Run workflow**.
 5. Wait until the build succeeds.
 6. Open ADAMANT Messenger at `username.github.io/adamant-im`
