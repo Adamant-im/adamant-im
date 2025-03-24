@@ -8,15 +8,30 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - run: npm install && npm run build
-        env:
-          GITHUB_REPO_NAME: ${{ github.event.repository.name }}
-          VITE_GITHUB_REPO_NAME: /${{ github.event.repository.name }}
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
+      - name: Setup Node version 🍀
+        uses: actions/setup-node@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          publish_branch: gh-pages
-          force_orphan: true
+          node-version: '20'
+
+      - name: Configure GitHub Pages ⚙️
+        uses: actions/configure-pages@v5
+
+      - name: Install dependencies 📦
+        run: npm ci
+
+      - name: Build PWA 🛠️
+        run: |
+          npm run schema:generate
+          npm run build
+
+      - name: Upload artifacts 📁
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages 🚀
+        id: deployment
+        uses: actions/deploy-pages@v4
