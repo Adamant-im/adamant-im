@@ -18,7 +18,6 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-      GITHUB_REPO_NAME: ${{ github.event.repository.name }}
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v4
@@ -38,7 +37,9 @@ jobs:
         run: |
           npm run schema:generate
           npm run build
-
+        env:
+          GITHUB_REPO_NAME: ${{ github.event.repository.name }}
+          VITE_GITHUB_REPO_NAME: /${{ github.event.repository.name }}
       - name: Upload artifacts 📁
         uses: actions/upload-pages-artifact@v3
         with:
