@@ -63,6 +63,8 @@ function createWindow() {
     width: 800,
     height: 800,
     maxWidth: 800,
+    minWidth: 380,
+    minHeight: 624,
     icon: path.join(__dirname, '/icon.png')
   })
 
