@@ -63,6 +63,15 @@ console.log('route', route)
       }
     }
   }
+}
 
+.v-theme--dark {
+  .sidebar {
+    &__router-view {
+      img {
+        filter: invert(1);
+      }
+    }
+  }
 }
 </style>

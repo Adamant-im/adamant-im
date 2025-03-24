@@ -255,9 +255,6 @@ export default {
 @import 'vuetify/settings';
 @import '@/assets/styles/settings/_colors.scss';
 .chats-view {
-  //height: calc(100vh - var(--v-layout-bottom)) ;
-  //overflow: hidden;
-
   &.a-container,
   :deep(.a-container) {
     max-width: 1300px;
@@ -326,12 +323,6 @@ export default {
   .chats-view {
     &__icon {
       color: map-get($shades, 'white');
-    }
-
-    &__chat {
-      img {
-        filter: invert(1);
-      }
     }
   }
 }
