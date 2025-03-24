@@ -13,9 +13,10 @@ import { preloadCSSPlugin } from './vite-config/plugins/preloadCSSPlugin'
 import { excludeBip39Wordlists } from './vite-config/rollup/excludeBip39Wordlists'
 
 const env = loadEnv('production', process.cwd())
+const basePublicPath = env.VITE_PUBLIC_PATH || '/'
 
 export default defineConfig({
-  base: env.VITE_PUBLIC_PATH,
+  base: basePublicPath,
   plugins: [
     wasm(),
     topLevelAwait(),
