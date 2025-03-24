@@ -18,6 +18,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+      GITHUB_REPO_NAME: ${{ github.repository }}
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v4
