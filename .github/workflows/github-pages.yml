@@ -13,12 +13,10 @@ jobs:
         env:
           GITHUB_REPO_NAME: ${{ github.event.repository.name }}
           VITE_GITHUB_REPO_NAME: /${{ github.event.repository.name }}
-    # - name: Debug dist folder
-    #   run: ls -R ./dist
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist  # folder
-          publish_branch: gh-pages  # branch
-          force_orphan: true  # clean branch gh-pages
+          publish_dir: ./dist
+          publish_branch: gh-pages
+          force_orphan: true
