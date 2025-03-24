@@ -38,8 +38,7 @@ jobs:
           npm run schema:generate
           npm run build
         env:
-          GITHUB_REPO_NAME: ${{ github.event.repository.name }}
-          VITE_GITHUB_REPO_NAME: /${{ github.event.repository.name }}
+          VITE_PUBLIC_PATH: ${{ github.event.repository.name }}
       - name: Upload artifacts 📁
         uses: actions/upload-pages-artifact@v3
         with:
