@@ -1,89 +1,55 @@
 <template>
-  <container class="ma-auto">
-    <v-row justify="center" :class="className" no-gutters>
-      <v-col
-        :cols="isChatPage ? 5 : 12"
-        :class="!isChatPage ? 'd-flex align-center justify-center' : ''"
-      >
-        <container
+  <div :class="className">
+    <sidebar :ready-to-show="isFulfilled">
+      <v-list subheader class="pa-0" bg-color="transparent" v-if="isFulfilled">
+        <v-row :class="`${className}__chats-actions`" no-gutters>
+          <v-btn
+            :class="`${className}__btn mt-2 ml-4`"
+            @click="markAllAsRead"
+            v-if="unreadMessagesCount > 0"
+            :icon="mdiCheckAll"
+            size="small"
+            variant="text"
+          />
+          <v-spacer />
+          <v-btn :class="`${className}__item`" @click="showChatStartDialog = true" variant="plain">
+            <template #prepend>
+              <v-icon :class="`${className}__icon`" :icon="mdiMessageOutline" size="small" />
+            </template>
+
+            <div>
+              <v-list-item-title :class="`${className}__title`">
+                {{ $t('chats.new_chat') }}
+              </v-list-item-title>
+            </div>
+          </v-btn>
+        </v-row>
+        <div
           :class="{
-            [`${className}__container`]: true,
-            [`${className}__container--chat`]: isChatPage
-          }"
-        >
-          <v-row no-gutters>
-            <v-col cols="12">
-              <v-list subheader class="pa-0" bg-color="transparent" v-if="isFulfilled">
-                <v-row :class="`${className}__chats-actions`" no-gutters>
-                  <v-btn
-                    :class="`${className}__btn mt-2 ml-4`"
-                    @click="markAllAsRead"
-                    v-if="unreadMessagesCount > 0"
-                    :icon="mdiCheckAll"
-                    size="small"
-                    variant="text"
-                  />
-                  <v-spacer />
-                  <v-btn
-                    :class="`${className}__item`"
-                    @click="showChatStartDialog = true"
-                    variant="plain"
-                  >
-                    <template #prepend>
-                      <v-icon
-                        :class="`${className}__icon`"
-                        :icon="mdiMessageOutline"
-                        size="small"
-                      />
-                    </template>
-
-                    <div>
-                      <v-list-item-title :class="`${className}__title`">
-                        {{ $t('chats.new_chat') }}
-                      </v-list-item-title>
-                    </div>
-                  </v-btn>
-                </v-row>
-                <div
-                  :class="{
-                    [`${className}__messages`]: true,
-                    [`${className}__messages--chat`]: isChatPage
-                  }"
-                >
-                  <transition-group name="messages">
-                    <template v-for="transaction in messages" :key="transaction.contactId">
-                      <chat-preview
-                        v-if="displayChat(transaction.contactId)"
-                        :ref="transaction.contactId"
-                        :is-loading-separator="transaction.loadingSeparator"
-                        :is-loading-separator-active="loading"
-                        :user-id="userId"
-                        :contact-id="transaction.contactId"
-                        :transaction="transaction"
-                        :is-message-readonly="transaction.readonly"
-                        :adamant-chat-meta="getAdamantChatMeta(transaction.contactId)"
-                        @click="openChat(transaction.contactId)"
-                      />
-                    </template>
-                  </transition-group>
-                </div>
-              </v-list>
-            </v-col>
-
-            <ChatSpinner :value="!isFulfilled" />
-          </v-row>
-        </container>
-      </v-col>
-      <v-col
-        transition="slide-x-reverse-transition"
-        v-if="isChatPage"
-        :cols="smAndDown ? 12 : 7"
-        :class="{
-          [`${className}__chat`]: true
+          [`${className}__messages`]: true,
+          [`${className}__messages--chat`]: true
         }"
-      >
-        <router-view />
-      </v-col>
+          @scroll="onScroll"
+        >
+          <template v-for="transaction in messages" :key="transaction.contactId">
+            <chat-preview
+              v-if="displayChat(transaction.contactId)"
+              :ref="transaction.contactId"
+              :is-loading-separator="transaction.loadingSeparator"
+              :is-loading-separator-active="loading"
+              :user-id="userId"
+              :contact-id="transaction.contactId"
+              :transaction="transaction"
+              :is-message-readonly="transaction.readonly"
+              :adamant-chat-meta="getAdamantChatMeta(transaction.contactId)"
+              :is-active="chatPagePartnerId === transaction.contactId"
+              @click="openChat(transaction.contactId)"
+            />
+          </template>
+        </div>
+      </v-list>
+
+      <ChatSpinner :value="!isFulfilled" />
 
       <chat-start-dialog
         v-model="showChatStartDialog"
@@ -93,8 +59,9 @@
       />
 
       <NodesOfflineDialog node-type="adm" />
-    </v-row>
-  </container>
+    </sidebar>
+
+  </div>
 </template>
 
 <script>
@@ -108,11 +75,13 @@ import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 import { useDisplay } from 'vuetify'
+import Sidebar from '@/components/common/sidebar.vue'
 
 const scrollOffset = 64
 
 export default {
   components: {
+    Sidebar,
     ChatPreview,
     ChatStartDialog,
     ChatSpinner,
@@ -128,12 +97,12 @@ export default {
 
     const { smAndDown } = useDisplay()
 
-    const isChatPage = computed(() => {
+    const chatPagePartnerId = computed(() => {
       return route.params.partnerId
     })
 
     return {
-      isChatPage,
+      chatPagePartnerId,
       smAndDown,
       mdiCheckAll,
       mdiMessageOutline
@@ -209,12 +178,25 @@ export default {
     destroyScrollListener() {
       window.removeEventListener('scroll', this.onScroll)
     },
-    onScroll() {
-      const scrollHeight = document.documentElement.scrollHeight // all of viewport height
-      const scrollTop = document.documentElement.scrollTop // current vieport scroll position
-      const clientHeight = document.documentElement.clientHeight
+    onScroll(evt) {
+      if (!evt) {
+        return
+      }
+
+      const { target } = evt
+
+      if (!target) {
+        return
+      }
+
+      const elem = target.documentElement ?? target
+
+      const scrollHeight = elem.scrollHeight // all of viewport height
+      const scrollTop = elem.scrollTop // current vieport scroll position
+      const clientHeight = elem.clientHeight
 
       let isLoadingSeparatorVisible = false
+
       if (
         this.$refs.loadingSeparator &&
         this.$refs.loadingSeparator[0] &&
@@ -273,6 +255,18 @@ export default {
 @import 'vuetify/settings';
 @import '@/assets/styles/settings/_colors.scss';
 .chats-view {
+  //height: calc(100vh - var(--v-layout-bottom)) ;
+  //overflow: hidden;
+
+  &.a-container,
+  :deep(.a-container) {
+    max-width: 1300px;
+  }
+
+  &__chats-list-aside {
+    min-height: 100%;
+    border-right: 2px solid black;
+  }
   &__item {
     justify-content: flex-end;
     height: 56px;
@@ -296,13 +290,15 @@ export default {
     font-size: 14px;
   }
   &__container--chat {
+    max-width: 1300px;
+
     @media #{map-get($display-breakpoints, 'sm-and-down')} {
       display: none;
     }
   }
   &__messages {
     &.chats-view__messages--chat {
-      max-height: calc(100vh - 56px);
+      max-height: calc(100vh - 56px - var(--v-layout-bottom));
       overflow-y: auto;
     }
   }
@@ -320,6 +316,9 @@ export default {
     &__icon {
       color: map-get($adm-colors, 'regular');
     }
+    &__chats-list-aside {
+      border-right-color: map-get($adm-colors, 'grey');
+    }
   }
 }
 
@@ -327,6 +326,12 @@ export default {
   .chats-view {
     &__icon {
       color: map-get($shades, 'white');
+    }
+
+    &__chat {
+      img {
+        filter: invert(1);
+      }
     }
   }
 }

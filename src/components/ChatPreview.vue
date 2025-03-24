@@ -8,7 +8,10 @@
       />
     </div>
   </v-list-item>
-  <v-list-item v-else lines="two" :class="className" @click="$emit('click')">
+  <v-list-item v-else lines="two" :class="{
+    [className]: true,
+    [`${className}--active`]: isActive
+  }" @click="$emit('click')">
     <template #prepend>
       <icon v-if="isWelcomeChat(contactId)" :class="`${className}__icon`">
         <adm-fill-icon />
@@ -157,6 +160,10 @@ export default defineComponent({
     isLoadingSeparatorActive: {
       type: Boolean,
       default: false
+    },
+    isActive: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['click'],
@@ -293,6 +300,10 @@ export default defineComponent({
 .chat-brief {
   position: relative;
 
+  &--active {
+    @include linear-gradient-dark-soft();
+  }
+
   &__chat-avatar {
     margin-right: 16px;
   }
@@ -353,6 +364,10 @@ export default defineComponent({
 
     &__icon {
       fill: #bdbdbd;
+    }
+
+    &--active {
+      @include linear-gradient-light-gray()
     }
 
     :deep(.v-list-item-subtitle) {

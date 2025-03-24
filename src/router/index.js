@@ -95,22 +95,8 @@ const routes = [
     beforeEnter: navigationGuard.transactions
   },
   {
-    path: '/options',
-    name: 'Options',
-    component: Options,
-    meta: {
-      requiresAuth: true,
-      layout: 'no-container',
-      showNavigation: true,
-      scrollPosition: {
-        left: 0,
-        top: 0
-      }
-    }
-  },
-  {
     path: '/chats',
-    component: Chats, // Родительский компонент
+    component: Chats,
     props: true,
     name: 'Chats',
     meta: {
@@ -121,7 +107,8 @@ const routes = [
       scrollPosition: {
         left: 0,
         top: 0
-      }
+      },
+
     },
     children: [
       {
@@ -131,7 +118,6 @@ const routes = [
         props: true,
         meta: {
           requiresAuth: true,
-          layout: 'chat'
         },
         beforeEnter: navigationGuard.chats
       }
@@ -158,7 +144,23 @@ const routes = [
       showNavigation: true,
       containerNoPadding: true
     },
-    beforeEnter: WalletGuard
+    beforeEnter: WalletGuard,
+    children: [
+      {
+        path: '/options',
+        name: 'Options',
+        component: Options,
+        meta: {
+          requiresAuth: true,
+          layout: 'no-container',
+          showNavigation: true,
+          scrollPosition: {
+            left: 0,
+            top: 0
+          }
+        }
+      },
+    ]
   },
   {
     path: '/',

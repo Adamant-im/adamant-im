@@ -5,6 +5,7 @@
     height="50"
     class="app-navigation"
     :elevation="0"
+    :absolute="absolute"
   >
     <!-- Wallet -->
     <v-btn v-if="walletShouldBeVisible" to="/home">
@@ -35,64 +36,53 @@
     </v-btn>
   </v-bottom-navigation>
 </template>
-<script>
+<script lang="ts" setup>
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
-import { watch, onMounted, defineComponent, ref, computed } from 'vue'
+import { watch, onMounted, ref, computed } from 'vue'
 import { mdiWallet, mdiForum, mdiCog } from '@mdi/js'
 
+defineProps({
+  absolute: Boolean
+})
 
-export default defineComponent({
-  setup() {
-    const pages = [
-      {
-        title: 'wallet',
-        link: '/home',
-      },
-      {
-        title: 'chats',
-        link: '/chats',
-      },
-      {
-        title: 'settings',
-        link: '/options',
-      }
-    ]
-    const currentPageIndex = ref(0)
-    const store = useStore()
-    const route = useRoute()
-    const getCurrentPageIndex = () => {
-      const currentPage = pages.find((page) => {
-        const pattern = new RegExp(`^${page.link}`)
-
-        return route.path.match(pattern)
-      })
-
-      return pages.indexOf(currentPage)
-    }
-    const numOfNewMessages = computed(() => store.getters['chat/totalNumOfNewMessages'])
-
-    const walletShouldBeVisible = computed(() => {
-      return !!store.getters['wallets/getVisibleSymbolsCount']
-    })
-
-    watch(route, () => {
-      currentPageIndex.value = getCurrentPageIndex()
-    })
-    onMounted(() => {
-      currentPageIndex.value = getCurrentPageIndex()
-    })
-
-    return {
-      currentPageIndex,
-      numOfNewMessages,
-      walletShouldBeVisible,
-      mdiWallet,
-      mdiForum,
-      mdiCog,
-      getCurrentPageIndex,
-    }
+const pages = [
+  {
+    title: 'wallet',
+    link: '/home'
+  },
+  {
+    title: 'chats',
+    link: '/chats'
+  },
+  {
+    title: 'settings',
+    link: '/options'
   }
+]
+const currentPageIndex = ref(0)
+const store = useStore()
+const route = useRoute()
+const getCurrentPageIndex = () => {
+  const currentPage = pages.find((page) => {
+    const pattern = new RegExp(`^${page.link}`)
+
+    return route.path.match(pattern)
+  })
+
+  return pages.indexOf(currentPage)
+}
+const numOfNewMessages = computed(() => store.getters['chat/totalNumOfNewMessages'])
+
+const walletShouldBeVisible = computed(() => {
+  return !!store.getters['wallets/getVisibleSymbolsCount']
+})
+
+watch(route, () => {
+  currentPageIndex.value = getCurrentPageIndex()
+})
+onMounted(() => {
+  currentPageIndex.value = getCurrentPageIndex()
 })
 </script>
 <style lang="scss" scoped>

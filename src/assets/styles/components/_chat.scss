@@ -1,5 +1,7 @@
 @import 'vuetify/settings';
 @import '../settings/_colors.scss';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
+
 
 $chat-sender: (
   'font-size': 15px,
@@ -22,7 +24,7 @@ $scroll-bar-width: 4px;
   height: 100%; // <-- Fallback for Chrome < v108
   // Chrome supports `dvh, lvh...` units starting with v108.
   // See https://caniuse.com/viewport-unit-variants
-  height: 100dvh;
+  height: calc(100dvh - var(--v-layout-bottom));
   position: relative;
 
   @media #{map-get($display-breakpoints, 'sm-and-down')} {
@@ -41,7 +43,6 @@ $scroll-bar-width: 4px;
   &__body {
     position: relative;
     flex: 1;
-    background-color: inherit;
     color: inherit;
   }
 
@@ -389,6 +390,10 @@ $scroll-bar-width: 4px;
       color: map-get($shades, 'black');
     }
 
+    &__body {
+      @include linear-gradient-light-gray();
+    }
+
     &__message {
       background-color: #fff;
       box-shadow:
@@ -496,6 +501,10 @@ $scroll-bar-width: 4px;
   .a-chat {
     &__content {
       color: map-get($shades, 'white');
+    }
+
+    &__body {
+      @include linear-gradient-dark-soft();
     }
 
     &__message {
