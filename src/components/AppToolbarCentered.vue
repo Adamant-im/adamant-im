@@ -73,10 +73,6 @@ export default {
   },
   methods: {
     goBack() {
-      console.log('this.$route.matched', this.$route.matched)
-
-      console.log('this.$route.name', this.$route.name)
-
       if (
         this.$route.matched.length > 1 &&
         this.$route.name !== 'Options'

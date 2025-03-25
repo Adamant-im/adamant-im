@@ -27,8 +27,6 @@ const { readyToShow = true } = defineProps<{
 
 const route = useRoute()
 
-console.log('route', route)
-
 const hasView = computed(() => {
   return route.matched.length > 1
 })

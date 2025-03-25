@@ -82,8 +82,6 @@ watch(route, () => {
 })
 onMounted(() => {
   currentPageIndex.value = getCurrentPageIndex()
-
-  console.log('currentPageIndex.value', currentPageIndex.value)
 })
 </script>
 <style lang="scss" scoped>
