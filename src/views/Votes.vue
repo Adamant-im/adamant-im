@@ -77,13 +77,13 @@
 </template>
 
 <script setup lang="ts">
-import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import PaginationComponent from '@/components/Pagination.vue'
 import DelegatesTable from '@/components/DelegatesTable/DelegatesTable.vue'
 import { computed, onMounted, ref, reactive, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { mdiMagnify } from '@mdi/js'
+import { DelegateDto } from '@/lib/schema/client'
 
 const VOTE_REQUEST_LIMIT = 30
 
@@ -95,7 +95,6 @@ const pagination = reactive({
   sortBy: 'rank',
   page: 1
 })
-const expanded = ref([])
 const waitingForConfirmation = ref(false)
 const dialog = ref(false)
 const className = 'delegates-view'
@@ -103,7 +102,7 @@ const className = 'delegates-view'
 const delegates = computed(() => {
   const delegates = store.state.delegates.delegates || {}
 
-  return Object.values(delegates)
+  return Object.values(delegates) as DelegateDto[]
 })
 const numOfUpvotes = computed(() => {
   return delegates.value.filter((delegate) => delegate.upvoted && !delegate.voted).length
