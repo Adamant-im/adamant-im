@@ -12,13 +12,18 @@ export default defineComponent({
     padding: {
       type: Boolean,
       default: false
+    },
+    noMaxWidth: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props) {
     const classes = computed(() => {
       return {
         'a-container': true,
-        'a-container--padding': props.padding
+        'a-container--padding': props.padding,
+        'a-container--no-mw': props.noMaxWidth
       }
     })
 
@@ -36,6 +41,10 @@ export default defineComponent({
   width: 100%;
   max-width: 800px;
   position: relative;
+
+  &--no-mw {
+    max-width: unset;
+  }
 
   &--padding {
     padding: 0 24px;

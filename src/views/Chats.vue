@@ -260,10 +260,6 @@ export default {
     max-width: 1300px;
   }
 
-  &__chats-list-aside {
-    min-height: 100%;
-    border-right: 2px solid black;
-  }
   &__item {
     justify-content: flex-end;
     height: 56px;

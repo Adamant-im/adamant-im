@@ -8,7 +8,7 @@
     :absolute="absolute"
   >
     <!-- Wallet -->
-    <v-btn v-if="walletShouldBeVisible" to="/home">
+    <v-btn v-if="walletShouldBeVisible" to="/home" :exact="true">
       <v-icon :icon="mdiWallet" />
       <span>{{ $t('bottom.wallet_button') }}</span>
     </v-btn>
@@ -66,7 +66,6 @@ const route = useRoute()
 const getCurrentPageIndex = () => {
   const currentPage = pages.find((page) => {
     const pattern = new RegExp(`^${page.link}`)
-
     return route.path.match(pattern)
   })
 
@@ -83,6 +82,8 @@ watch(route, () => {
 })
 onMounted(() => {
   currentPageIndex.value = getCurrentPageIndex()
+
+  console.log('currentPageIndex.value', currentPageIndex.value)
 })
 </script>
 <style lang="scss" scoped>

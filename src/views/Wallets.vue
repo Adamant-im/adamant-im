@@ -1,54 +1,45 @@
 <template>
-  <div :class="classes.root">
-    <app-toolbar-centered app :title="t('options.wallets_list')" :show-back="true" flat fixed />
-
-    <v-container fluid class="px-0 container--with-app-toolbar">
-      <v-row justify="center" no-gutters>
-        <container>
-          <WalletsSearchInput @change="searchChanged"></WalletsSearchInput>
-          <div
-            class="v-list v-list--density-default v-list--one-line"
-            :class="[isDarkTheme ? 'v-theme--dark' : 'v-theme--light']"
-          >
-            <draggable
-              class="list-group"
-              v-model="filteredWallets"
-              v-bind="dragOptions"
-              handle=".handle"
-              @start="isDragging = true"
-              @end="isDragging = false"
-              item-key="cryptoName"
-            >
-              <template #item="{ element }">
-                <WalletsListItem :wallet="element" :search="search"></WalletsListItem>
-              </template>
-            </draggable>
-            <v-list-item
-              v-if="!filteredWallets.length"
-              :title="t('wallets.coins_not_found_title')"
-              class="text-center"
-            ></v-list-item>
-          </div>
-          <v-row
-            v-if="filteredWallets.length"
-            :class="`${classes.root}__review`"
-            align="center"
-            justify="space-between"
-            no-gutters
-          >
-            <v-spacer></v-spacer>
-            <WalletResetDialog></WalletResetDialog>
-          </v-row>
-        </container>
-      </v-row>
-    </v-container>
+  <div :class="classes.root" class="w-100">
+    <WalletsSearchInput @change="searchChanged"/>
+    <div
+      class="v-list v-list--density-default v-list--one-line"
+      :class="[isDarkTheme ? 'v-theme--dark' : 'v-theme--light']"
+    >
+      <draggable
+        class="list-group"
+        v-model="filteredWallets"
+        v-bind="dragOptions"
+        handle=".handle"
+        @start="isDragging = true"
+        @end="isDragging = false"
+        item-key="cryptoName"
+      >
+        <template #item="{ element }">
+          <WalletsListItem :wallet="element" :search="search"></WalletsListItem>
+        </template>
+      </draggable>
+      <v-list-item
+        v-if="!filteredWallets.length"
+        :title="t('wallets.coins_not_found_title')"
+        class="text-center"
+      ></v-list-item>
+    </div>
+    <v-row
+      v-if="filteredWallets.length"
+      :class="`${classes.root}__review`"
+      align="center"
+      justify="space-between"
+      no-gutters
+    >
+      <v-spacer></v-spacer>
+      <WalletResetDialog></WalletResetDialog>
+    </v-row>
   </div>
 </template>
 
 <script lang="ts">
 import { useI18n } from 'vue-i18n'
 import draggable from 'vuedraggable'
-import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import { CryptosInfo, CryptoSymbol, isErc20 } from '@/lib/constants'
 import { useStore } from 'vuex'
@@ -90,7 +81,6 @@ export default defineComponent({
     WalletResetDialog,
     WalletsListItem,
     WalletsSearchInput,
-    AppToolbarCentered,
     draggable
   },
   setup() {

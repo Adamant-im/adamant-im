@@ -4,11 +4,12 @@
       app
       :title="transaction?.id"
       flat
-      fixed
+      absolute
+      no-max-width
       :class="`${className}__toolbar`"
     />
 
-    <container class="container--with-app-toolbar">
+    <container class="container--with-app-toolbar py-0" no-max-width :class="`${className}__content`">
       <v-list bg-color="transparent">
         <TransactionListItem :title="t('transaction.amount')">
           {{
@@ -151,10 +152,10 @@
   </v-row>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import type { QueryStatus } from '@tanstack/vue-query'
 import BigNumber from 'bignumber.js'
-import { computed, defineComponent, PropType, ref, watch } from 'vue'
+import { computed, PropType, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
@@ -185,225 +186,193 @@ import {
 
 const className = 'transaction-view'
 
-export default defineComponent({
-  components: { AppToolbarCentered, TransactionListItem },
-  props: {
-    crypto: { type: String as PropType<CryptoSymbol>, required: true },
-    explorerLink: { type: String, required: true },
-    transaction: {
-      type: Object as PropType<
-        AnyCoinTransaction | DecodedChatMessageTransaction | PendingTransaction
-      >
-    },
-    /**
-     * ADM address
-     */
-    partner: {
-      type: String
-    },
-    admTx: {
-      type: Object as PropType<NormalizedChatMessageTransaction>
-    },
-    queryStatus: {
-      type: String as PropType<QueryStatus>,
-      required: true
-    },
-    transactionStatus: {
-      type: String as PropType<TransactionStatusType>,
-      required: true
-    },
-    inconsistentStatus: {
-      type: String as PropType<InconsistentStatus>
-    },
-    confirmations: {
-      type: Number
-    },
-    fee: {
-      type: Number
-    },
-    textData: {
-      type: String
-    },
-    senders: {
-      type: Array as PropType<string[]>
-    },
-    recipients: {
-      type: Array as PropType<string[]>
-    },
-    senderFormatted: {
-      type: String
-    },
-    recipientFormatted: {
-      type: String
-    },
-    feeCrypto: {
-      type: String
-    }
+const props = defineProps({
+  crypto: { type: String as PropType<CryptoSymbol>, required: true },
+  explorerLink: { type: String, required: true },
+  transaction: {
+    type: Object as PropType<
+      AnyCoinTransaction | DecodedChatMessageTransaction | PendingTransaction
+    >
   },
-  emits: ['refetch-status'],
-  setup(props, { emit }) {
-    const store = useStore()
-    const router = useRouter()
-    const route = useRoute()
-    const { t } = useI18n()
-
-    const transaction = computed(() => props.transaction)
-    const sender = computed(() => props.senders?.join(',') ?? transaction.value?.senderId)
-    const recipient = computed(() => props.recipients?.join(',') ?? transaction.value?.senderId)
-
-    const hasMessages = computed(() => {
-      if (!props.partner) return false
-
-      const chat = store.state.chat.chats[props.partner]
-      return chat && chat.messages && Object.keys(chat.messages).length > 0
-    })
-
-    const placeholder = computed(() => {
-      if (!props.queryStatus) return Symbols.CLOCK
-
-      return props.transactionStatus === 'REJECTED' ? Symbols.CROSS : Symbols.HOURGLASS
-    })
-
-    const ifComeFromChat = computed(() =>
-      Object.prototype.hasOwnProperty.call(route.query, 'fromChat')
-    )
-
-    const comment = computed(() =>
-      props.admTx && props.admTx.message ? props.admTx.message : false
-    )
-
-    const statusUpdatable = computed(() => tsUpdatable(props.transactionStatus, props.crypto))
-    const historyRate = computed(() => {
-      if (!transaction.value) return
-
-      return store.getters['rate/historyRate'](
-        calculatedTimestampInSec.value,
-        transaction.value.amount,
-        props.crypto
-      )
-    })
-    const rate = computed(() => {
-      if (!transaction.value) return
-
-      return store.getters['rate/rate'](transaction.value.amount, props.crypto)
-    })
-
-    const calculatedTimestampInSec = computed(() => {
-      if (!transaction.value) {
-        return null;
-      }
-
-      return timestampInSec(props.crypto, transaction.value.timestamp!)
-    })
-
-    const calculatedFee = computed(() => {
-      const commissionTokenLabel = (props.feeCrypto ?? props.crypto) as CryptoSymbol;
-
-      const { cryptoTransferDecimals, decimals } = CryptosInfo[commissionTokenLabel]
-
-      const tokenFee = typeof props.fee === 'number'
-        ? `${formatAmount(props.fee, cryptoTransferDecimals ?? decimals)} ${commissionTokenLabel}`
-        : placeholder.value;
-
-      if (!props.fee || !calculatedTimestampInSec.value) return tokenFee;
-
-
-      const commissionUsdAmount = store.getters['rate/historyRate'](
-        calculatedTimestampInSec.value,
-        props.fee,
-        commissionTokenLabel,
-      );
-
-
-      if (!commissionUsdAmount) return tokenFee;
-
-      return tokenFee  + ` ~${commissionUsdAmount}`;
-    });
-
-
-    const handleCopyToClipboard = (text?: string) => {
-      if (!text) return
-
-      copyToClipboard(text)
-      store.dispatch('snackbar/show', { message: t('home.copied'), timeout: 2000 })
-    }
-
-    const openInExplorer = () => {
-      if (props.explorerLink) {
-        window.open(props.explorerLink, '_blank', 'resizable,scrollbars,status,noopener')
-      }
-    }
-
-    const openChat = () => {
-      router.push('/chats/' + props.partner + '/')
-    }
-
-    const rotateAnimation = ref(false)
-    const updateStatus = () => {
-      rotateAnimation.value = true
-      setTimeout(() => (rotateAnimation.value = false), 1000)
-
-      if (statusUpdatable.value) {
-        emit('refetch-status')
-      }
-    }
-
-    const getHistoryRates = () => {
-      if (!calculatedTimestampInSec.value) return
-
-      store.dispatch('rate/getHistoryRates', {
-        timestamp: calculatedTimestampInSec.value
-      })
-    }
-
-    watch(
-      calculatedTimestampInSec,
-      () => {
-        getHistoryRates()
-      },
-      { immediate: true }
-    )
-
-    const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decimals) => {
-      return BigNumber(amount)
-        .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
-        .toFixed()
-    }
-
-    return {
-      formatDate,
-      t,
-      className,
-      sender,
-      recipient,
-      handleCopyToClipboard,
-      openInExplorer,
-      openChat,
-      updateStatus,
-      rotateAnimation,
-      hasMessages,
-      placeholder,
-      ifComeFromChat,
-      comment,
-      statusUpdatable,
-      historyRate,
-      rate,
-      calculatedFee,
-      formatAmount,
-      mdiAlertOutline,
-      mdiChevronRight,
-      mdiComment,
-      mdiCommentOutline,
-      mdiRefresh
-    }
+  /**
+   * ADM address
+   */
+  partner: {
+    type: String
+  },
+  admTx: {
+    type: Object as PropType<NormalizedChatMessageTransaction>
+  },
+  queryStatus: {
+    type: String as PropType<QueryStatus>,
+    required: true
+  },
+  transactionStatus: {
+    type: String as PropType<TransactionStatusType>,
+    required: true
+  },
+  inconsistentStatus: {
+    type: String as PropType<InconsistentStatus>
+  },
+  confirmations: {
+    type: Number
+  },
+  fee: {
+    type: Number
+  },
+  textData: {
+    type: String
+  },
+  senders: {
+    type: Array as PropType<string[]>
+  },
+  recipients: {
+    type: Array as PropType<string[]>
+  },
+  senderFormatted: {
+    type: String
+  },
+  recipientFormatted: {
+    type: String
+  },
+  feeCrypto: {
+    type: String
   }
 })
+
+const emit = defineEmits(['refetch-status'])
+const store = useStore()
+const router = useRouter()
+const route = useRoute()
+const { t } = useI18n()
+
+const transaction = computed(() => props.transaction)
+const sender = computed(() => props.senders?.join(',') ?? transaction.value?.senderId)
+const recipient = computed(() => props.recipients?.join(',') ?? transaction.value?.senderId)
+
+const hasMessages = computed(() => {
+  if (!props.partner) return false
+
+  const chat = store.state.chat.chats[props.partner]
+  return chat && chat.messages && Object.keys(chat.messages).length > 0
+})
+
+const placeholder = computed(() => {
+  if (!props.queryStatus) return Symbols.CLOCK
+
+  return props.transactionStatus === 'REJECTED' ? Symbols.CROSS : Symbols.HOURGLASS
+})
+
+const ifComeFromChat = computed(() => Object.prototype.hasOwnProperty.call(route.query, 'fromChat'))
+
+const comment = computed(() => (props.admTx && props.admTx.message ? props.admTx.message : false))
+
+const statusUpdatable = computed(() => tsUpdatable(props.transactionStatus, props.crypto))
+const historyRate = computed(() => {
+  if (!transaction.value) return
+
+  return store.getters['rate/historyRate'](
+    calculatedTimestampInSec.value,
+    transaction.value.amount,
+    props.crypto
+  )
+})
+const rate = computed(() => {
+  if (!transaction.value) return
+
+  return store.getters['rate/rate'](transaction.value.amount, props.crypto)
+})
+
+const calculatedTimestampInSec = computed(() => {
+  if (!transaction.value) {
+    return null
+  }
+
+  return timestampInSec(props.crypto, transaction.value.timestamp!)
+})
+
+const calculatedFee = computed(() => {
+  const commissionTokenLabel = (props.feeCrypto ?? props.crypto) as CryptoSymbol
+
+  const { cryptoTransferDecimals, decimals } = CryptosInfo[commissionTokenLabel]
+
+  const tokenFee =
+    typeof props.fee === 'number'
+      ? `${formatAmount(props.fee, cryptoTransferDecimals ?? decimals)} ${commissionTokenLabel}`
+      : placeholder.value
+
+  if (!props.fee || !calculatedTimestampInSec.value) return tokenFee
+
+  const commissionUsdAmount = store.getters['rate/historyRate'](
+    calculatedTimestampInSec.value,
+    props.fee,
+    commissionTokenLabel
+  )
+
+  if (!commissionUsdAmount) return tokenFee
+
+  return tokenFee + ` ~${commissionUsdAmount}`
+})
+
+const handleCopyToClipboard = (text?: string) => {
+  if (!text) return
+
+  copyToClipboard(text)
+  store.dispatch('snackbar/show', { message: t('home.copied'), timeout: 2000 })
+}
+
+const openInExplorer = () => {
+  if (props.explorerLink) {
+    window.open(props.explorerLink, '_blank', 'resizable,scrollbars,status,noopener')
+  }
+}
+
+const openChat = () => {
+  router.push('/chats/' + props.partner + '/')
+}
+
+const rotateAnimation = ref(false)
+const updateStatus = () => {
+  rotateAnimation.value = true
+  setTimeout(() => (rotateAnimation.value = false), 1000)
+
+  if (statusUpdatable.value) {
+    emit('refetch-status')
+  }
+}
+
+const getHistoryRates = () => {
+  if (!calculatedTimestampInSec.value) return
+
+  store.dispatch('rate/getHistoryRates', {
+    timestamp: calculatedTimestampInSec.value
+  })
+}
+
+watch(
+  calculatedTimestampInSec,
+  () => {
+    getHistoryRates()
+  },
+  { immediate: true }
+)
+
+const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decimals) => {
+  return BigNumber(amount).decimalPlaces(decimals, BigNumber.ROUND_DOWN).toFixed()
+}
 </script>
 
 <style lang="scss" scoped>
 @import '@/assets/styles/settings/_colors.scss';
 
 .transaction-view {
+  position: relative;
+
+  &__content {
+    overflow-y: auto;
+    height: calc(100vh - var(--v-layout-bottom) - var(--toolbar-height));
+  }
+
   &__titlecontent {
     flex: 1 0 auto;
   }

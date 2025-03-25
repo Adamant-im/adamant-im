@@ -1,7 +1,7 @@
 <template>
   <v-container :class="[classes, className]" fluid>
     <v-row justify="center" no-gutters>
-      <container>
+      <container :noMaxWidth="noMaxWidth">
         <v-toolbar ref="toolbar" :flat="flat" :height="height">
           <v-btn v-if="showBack" icon size="small" @click="goBack">
             <v-icon :icon="mdiArrowLeft" size="x-large" />
@@ -51,6 +51,10 @@ export default {
     showBack: {
       type: Boolean,
       default: true
+    },
+    noMaxWidth: {
+      type: Boolean,
+      default: false
     }
   },
   setup() {
@@ -69,6 +73,20 @@ export default {
   },
   methods: {
     goBack() {
+      console.log('this.$route.matched', this.$route.matched)
+
+      console.log('this.$route.name', this.$route.name)
+
+      if (
+        this.$route.matched.length > 1 &&
+        this.$route.name !== 'Options'
+      ) {
+        const parentRoute = this.$route.matched[this.$route.matched.length - 2]
+
+        this.$router.push(parentRoute.path)
+        return
+      }
+
       // there are no pages in history to go back
       if (history.length === 1) {
         this.$router.replace('/')
@@ -94,6 +112,10 @@ export default {
 
   :deep(.v-toolbar-title:not(:first-child)) {
     margin-inline-start: 0;
+  }
+
+  :deep(.v-toolbar__content) {
+    top: 0;
   }
 
   :deep(.v-toolbar__content > .v-btn:first-child) {

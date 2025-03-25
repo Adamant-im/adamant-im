@@ -11,7 +11,7 @@
     }">
       <img v-show="readyToShow && !hasView" src="/img/adamant-logo-transparent-512x512.png" />
 
-      <router-view v-if="readyToShow" />
+      <router-view v-if="readyToShow" :key="route.path"/>
     </div>
   </div>
 </template>
@@ -27,14 +27,16 @@ const { readyToShow = true } = defineProps<{
 
 const route = useRoute()
 
+console.log('route', route)
+
 const hasView = computed(() => {
-  return route.matched.length > 1;
+  return route.matched.length > 1
 })
 
-console.log('route', route)
 </script>
 <style lang="scss" scoped>
 @import 'vuetify/settings';
+@import '@/assets/styles/settings/_colors.scss';
 
 .sidebar {
   display: flex;
@@ -42,6 +44,9 @@ console.log('route', route)
 
   &__aside {
     width: 33%;
+    min-height: 100%;
+    height: calc(100vh - var(--v-layout-bottom));
+    border-right: 2px solid black;
 
     @media #{map-get($display-breakpoints, 'sm-and-down')} {
       width: 100%;
@@ -71,6 +76,14 @@ console.log('route', route)
       img {
         filter: invert(1);
       }
+    }
+  }
+}
+
+.v-theme--light {
+  .sidebar {
+    &__aside {
+      border-right-color: map-get($adm-colors, 'grey');
     }
   }
 }

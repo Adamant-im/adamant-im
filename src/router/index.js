@@ -6,7 +6,6 @@ import AuthMiddleware from '@/middlewares/auth'
 import DocumentTitle from '@/middlewares/title'
 import Chat from '@/views/Chat.vue'
 import Chats from '@/views/Chats.vue'
-import ExportKeys from '@/views/ExportKeys.vue'
 import Home from '@/views/Home.vue'
 import Login from '@/views/Login.vue'
 import Nodes from '@/views/Nodes.vue'
@@ -18,82 +17,12 @@ import Votes from '@/views/Votes.vue'
 import Wallets from '@/views/Wallets.vue'
 import Vibro from '@/views/Vibro.vue'
 import WalletGuard from '@/middlewares/walletGuard'
+import ExportKeysForm from '@/views/ExportKeysForm.vue'
 
 /**
  * @type {Readonly<import("vue-router").RouteRecordRaw[]>}
  */
 const routes = [
-  {
-    path: '/options/nodes',
-    name: 'Nodes',
-    component: Nodes,
-    meta: {
-      requiresAuth: false,
-      layout: 'no-container',
-      scrollPosition: {
-        left: 0,
-        top: 0
-      }
-    }
-  },
-  {
-    path: '/options/export-keys',
-    name: 'ExportKeys',
-    component: ExportKeys,
-    meta: {
-      requiresAuth: true,
-      layout: 'no-container'
-    }
-  },
-  {
-    path: '/options/wallets',
-    name: 'Wallets',
-    component: Wallets,
-    meta: {
-      requiresAuth: true,
-      layout: 'no-container',
-      scrollPosition: {
-        left: 0,
-        top: 0
-      }
-    }
-  },
-  {
-    path: '/votes',
-    name: 'Votes',
-    component: Votes,
-    meta: {
-      requiresAuth: true,
-      layout: 'no-container'
-    }
-  },
-  {
-    path: '/transactions/:crypto/:txId',
-    component: Transaction,
-    name: 'Transaction',
-    props: true,
-    meta: {
-      requiresAuth: true,
-      layout: 'no-container',
-      containerNoPadding: true,
-      previousRoute: {}
-    },
-    beforeEnter: navigationGuard.transactions
-  },
-  {
-    path: '/transactions/:crypto?',
-    component: Transactions,
-    name: 'Transactions',
-    props: true,
-    meta: {
-      requiresAuth: true,
-      layout: 'no-container',
-      containerNoPadding: true,
-      previousRoute: {},
-      previousPreviousRoute: {}
-    },
-    beforeEnter: navigationGuard.transactions
-  },
   {
     path: '/chats',
     component: Chats,
@@ -107,8 +36,7 @@ const routes = [
       scrollPosition: {
         left: 0,
         top: 0
-      },
-
+      }
     },
     children: [
       {
@@ -117,21 +45,11 @@ const routes = [
         name: 'Chat',
         props: true,
         meta: {
-          requiresAuth: true,
+          requiresAuth: true
         },
         beforeEnter: navigationGuard.chats
       }
     ]
-  },
-  {
-    path: '/transfer/:cryptoCurrency?/:recipientAddress?/:amountToSend?',
-    name: 'SendFunds',
-    component: SendFunds,
-    props: true,
-    meta: {
-      requiresAuth: true,
-      layout: 'no-container'
-    }
   },
   {
     path: '/home',
@@ -158,8 +76,93 @@ const routes = [
             left: 0,
             top: 0
           }
+        },
+        children: [
+          {
+            path: 'export-keys',
+            name: 'ExportKeys',
+            component: ExportKeysForm,
+            meta: {
+              requiresAuth: true,
+              layout: 'no-container'
+            }
+          },
+          {
+            path: '/votes',
+            name: 'Votes',
+            component: Votes,
+            meta: {
+              requiresAuth: true,
+              layout: 'no-container'
+            }
+          },
+          {
+            path: 'wallets',
+            name: 'Wallets',
+            component: Wallets,
+            meta: {
+              requiresAuth: true,
+              layout: 'no-container',
+              scrollPosition: {
+                left: 0,
+                top: 0
+              }
+            }
+          },
+          {
+            path: 'nodes',
+            name: 'Nodes',
+            component: Nodes,
+            meta: {
+              requiresAuth: false,
+              layout: 'no-container',
+              scrollPosition: {
+                left: 0,
+                top: 0
+              }
+            }
+          },
+        ]
+      },
+
+      {
+        path: '/transactions/:crypto?',
+        component: Transactions,
+        name: 'Transactions',
+        props: true,
+        meta: {
+          requiresAuth: true,
+          layout: 'no-container',
+          containerNoPadding: true,
+          previousRoute: {},
+          previousPreviousRoute: {}
+        },
+        beforeEnter: navigationGuard.transactions
+      },
+      {
+        path: '/transactions/:crypto/:txId',
+        component: Transaction,
+        name: 'Transaction',
+        props: true,
+        meta: {
+          requiresAuth: true,
+          layout: 'no-container',
+          containerNoPadding: true,
+          previousRoute: {}
+        },
+        beforeEnter: navigationGuard.transactions
+      },
+      {
+        path: '/transfer/:cryptoCurrency?/:recipientAddress?/:amountToSend?',
+        name: 'SendFunds',
+        component: SendFunds,
+        props: true,
+        meta: {
+          requiresAuth: true,
+          layout: 'no-container'
         }
       },
+
     ]
   },
   {
