@@ -269,7 +269,7 @@ const comment = computed(() => (props.admTx && props.admTx.message ? props.admTx
 
 const statusUpdatable = computed(() => tsUpdatable(props.transactionStatus, props.crypto))
 const historyRate = computed(() => {
-  if (!transaction.value) return
+  if (!transaction.value) return Symbols.HOURGLASS
 
   return store.getters['rate/historyRate'](
     calculatedTimestampInSec.value,
@@ -363,7 +363,8 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
 
 .transaction-view {
   position: relative;
@@ -404,7 +405,7 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
 .v-theme--light {
   .transaction-view {
     :deep(.v-divider) {
-      border-color: map-get($adm-colors, 'secondary2');
+      border-color: map.get(colors.$adm-colors, 'secondary2');
     }
   }
 }
@@ -412,22 +413,22 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
 .v-theme--dark {
   .transaction-view {
     &__inconsistent-status--REJECTED {
-      color: map-get($adm-colors, 'danger') !important;
+      color: map.get(colors.$adm-colors, 'danger') !important;
     }
     &__inconsistent-status--PENDING {
-      color: map-get($adm-colors, 'attention') !important;
+      color: map.get(colors.$adm-colors, 'attention') !important;
     }
     &__inconsistent-status--REGISTERED {
-      color: map-get($adm-colors, 'attention') !important;
+      color: map.get(colors.$adm-colors, 'attention') !important;
     }
     &__inconsistent-status--CONFIRMED {
-      color: map-get($adm-colors, 'good') !important;
+      color: map.get(colors.$adm-colors, 'good') !important;
     }
     &__inconsistent-status--INVALID {
-      color: map-get($adm-colors, 'attention') !important;
+      color: map.get(colors.$adm-colors, 'attention') !important;
     }
     &__inconsistent-status--UNKNOWN {
-      color: map-get($adm-colors, 'attention') !important;
+      color: map.get(colors.$adm-colors, 'attention') !important;
     }
   }
 }

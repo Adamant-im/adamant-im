@@ -116,3 +116,25 @@ $ npm run android:build
 To build on Windows you must install build tools for windows, it is easier to do this with [windows-build-tools](https://github.com/felixrieseberg/windows-build-tools) npm package.
 
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+
+## Self-hosted
+
+If you are unable to access [adm.im](https://adm.im) (e.g., due to censorship), you can run a self-hosted version of ADAMANT Messenger. We always encourage people to build it from source.
+
+You can build and deploy the app to GitHub Pages. Follow the instructions below.
+
+### Enable GH Actions
+
+1. Fork the repository.
+2. Go to the repository **Settings**.
+3. Navigate to the **Pages** tab.
+4. Set the source as **GitHub Actions**.
+
+### Run GH Workflow
+
+1. Go to the **Actions** tab.
+2. Enable workflows.
+3. Select the **GitHub Pages** workflow.
+4. Click **Run workflow**.
+5. Wait until the build succeeds.
+6. Open ADAMANT Messenger at `username.github.io/adamant-im`

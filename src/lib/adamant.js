@@ -6,7 +6,7 @@ import crypto from 'crypto'
 import nacl from 'tweetnacl/nacl-fast'
 import ed2curve from 'ed2curve'
 import { decode } from '@stablelib/utf8'
-import bignum from './bignumber.js'
+import { BigNumber } from './bignumber.js'
 import ByteBuffer from 'bytebuffer'
 import constants from './constants'
 import { hexToBytes, bytesToHex } from './hex'
@@ -96,6 +96,27 @@ adamant.makeKeypair = function (hash) {
   }
 }
 
+
+/**
+ * Calculates tx id
+ * @param {object} transaction
+ * @returns {string}
+ */
+adamant.getTransactionId = function (transaction) {
+  if (!transaction.signature) {
+    throw new Error('Transaction Signature is required')
+  }
+
+  const hash = adamant.getHash(transaction)
+
+  const temp = Buffer.alloc(8)
+  for (let i = 0; i < 8; i++) {
+    temp[i] = hash[7 - i]
+  }
+
+  return BigNumber.fromBuffer(temp).toString()
+}
+
 /**
  * Calculates ADM address based on the public key specified
  * @param {any} publicKey public key to derive ADM address from
@@ -109,7 +130,7 @@ adamant.getAddressFromPublicKey = function (publicKey) {
     temp[i] = publicKeyHash[7 - i]
   }
 
-  return 'U' + bignum.fromBuffer(temp).toString()
+  return 'U' + BigNumber.fromBuffer(temp).toString()
 }
 
 /**
@@ -184,7 +205,7 @@ adamant.getBytes = function (transaction) {
   if (transaction.recipientId) {
     let recipient = transaction.recipientId.slice(1)
     // eslint-disable-next-line new-cap
-    recipient = new bignum(recipient).toBuffer({ size: 8 })
+    recipient = new BigNumber(recipient).toBuffer({ size: 8 })
 
     for (let i = 0; i < 8; i++) {
       bb.writeByte(recipient[i] || 0)

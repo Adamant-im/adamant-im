@@ -69,7 +69,8 @@ export default {
 </script>
 
 <style lang="scss">
-@import 'vuetify/settings';
+@use 'sass:map';
+@use 'vuetify/settings';
 
 .icon {
   -webkit-box-align: center;
@@ -110,8 +111,8 @@ export default {
 }
 .v-theme--dark {
   .svg-icon {
-    fill: map-get($shades, 'white');
-    stroke: map-get($shades, 'white');
+    fill: map.get(settings.$shades, 'white');
+    stroke: map.get(settings.$shades, 'white');
   }
 }
 </style>

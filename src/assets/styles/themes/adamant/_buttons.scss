@@ -1,6 +1,7 @@
+@use 'sass:map';
+@use '../../settings/_colors.scss';
 @use '_mixins.scss';
-@import 'vuetify/settings';
-@import '../../settings/_colors.scss';
+@use 'vuetify/settings';
 
 .a-btn-link {
   font-size: 16px !important;
@@ -16,28 +17,28 @@
 .v-theme--light {
   .a-btn-primary {
     &:not(.v-btn--icon):not(.v-btn--flat) {
-      background-color: map-get($shades, 'white');
-      color: map-get($adm-colors, 'primary');
+      background-color: map.get(settings.$shades, 'white');
+      color: map.get(colors.$adm-colors, 'primary');
     }
 
     &.v-btn--disabled:not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline) {
-      background-color: map-get($shades, 'white') !important;
-      color: map-get($adm-colors, 'muted') !important;
+      background-color: map.get(settings.$shades, 'white') !important;
+      color: map.get(colors.$adm-colors, 'muted') !important;
     }
   }
 
   .a-btn-regular {
-    color: map-get($adm-colors, 'regular');
+    color: map.get(colors.$adm-colors, 'regular');
 
     &.v-btn--active:before,
     &.v-btn:hover:before,
     &.v-btn:focus:before {
-      background-color: map-get($adm-colors, 'secondary2');
+      background-color: map.get(colors.$adm-colors, 'secondary2');
       opacity: 1;
     }
 
     &.v-btn.v-btn--disabled {
-      color: map-get($adm-colors, 'muted') !important;
+      color: map.get(colors.$adm-colors, 'muted') !important;
     }
   }
 
@@ -48,12 +49,12 @@
 .v-theme--dark {
   .a-btn-primary {
     &:not(.v-btn--icon):not(.v-btn--flat) {
-      background-color: map-get($adm-colors, 'primary');
-      color: map-get($shades, 'white');
+      background-color: map.get(colors.$adm-colors, 'primary');
+      color: map.get(settings.$shades, 'white');
     }
   }
 
   .a-btn-link {
-    color: map-get($shades, 'white');
+    color: map.get(settings.$shades, 'white');
   }
 }

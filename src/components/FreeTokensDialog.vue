@@ -32,8 +32,11 @@
 </template>
 
 <script>
+import { watch } from 'vue'
+
 import { websiteUriToOnion } from '@/lib/uri'
 import { mdiGift } from '@mdi/js'
+import { vibrate } from '@/lib/vibrate'
 
 export default {
   props: {
@@ -43,7 +46,13 @@ export default {
     }
   },
   emits: ['update:modelValue'],
-  setup() {
+  setup(props) {
+    watch(() => props.modelValue, () => {
+      if (props.modelValue) {
+        vibrate.medium()
+      }
+    })
+
     return {
       mdiGift
     }
@@ -81,8 +90,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import 'vuetify/_settings.scss';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/_settings.scss';
 
 .free-tokens-dialog {
   &__card-text {
@@ -107,7 +117,7 @@ export default {
 .v-theme--dark {
   .free-tokens-dialog {
     &__disclaimer {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
   }
 }

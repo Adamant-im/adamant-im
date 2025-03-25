@@ -1,4 +1,4 @@
-@import '../../settings/_colors.scss';
+@use '../../settings/_colors.scss';
 
 @mixin a-text-regular($size: 14px, $weight: 300) {
   font-size: $size;

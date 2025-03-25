@@ -73,9 +73,10 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
-@import '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .node-status {
   &__status-title {
@@ -93,31 +94,31 @@ export default defineComponent({
     margin-inline-start: 4px;
   }
   &__text-ms {
-    @include a-text-explanation-small();
+    @include mixins.a-text-explanation-small();
   }
 }
 
 .v-theme--light {
   .node-status {
     &__status-text {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
     &__text-ms {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
 
     &__icon {
       &--green {
-        color: map-get($adm-colors, 'good') !important;
+        color: map.get(colors.$adm-colors, 'good') !important;
       }
       &--red {
-        color: map-get($adm-colors, 'danger') !important;
+        color: map.get(colors.$adm-colors, 'danger') !important;
       }
       &--grey {
-        color: map-get($adm-colors, 'grey') !important;
+        color: map.get(colors.$adm-colors, 'grey') !important;
       }
       &--orange {
-        color: map-get($adm-colors, 'attention') !important;
+        color: map.get(colors.$adm-colors, 'attention') !important;
       }
     }
   }
@@ -126,24 +127,24 @@ export default defineComponent({
 .v-theme--dark {
   .node-status {
     &__status-text {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
       opacity: 0.7;
     }
     &__text-ms {
-      color: map-get($adm-colors, 'grey-transparent');
+      color: map.get(colors.$adm-colors, 'grey-transparent');
     }
     &__icon {
       &--green {
-        color: map-get($adm-colors, 'good') !important;
+        color: map.get(colors.$adm-colors, 'good') !important;
       }
       &--red {
-        color: map-get($adm-colors, 'danger') !important;
+        color: map.get(colors.$adm-colors, 'danger') !important;
       }
       &--grey {
-        color: map-get($adm-colors, 'grey') !important;
+        color: map.get(colors.$adm-colors, 'grey') !important;
       }
       &--orange {
-        color: map-get($adm-colors, 'attention') !important;
+        color: map.get(colors.$adm-colors, 'attention') !important;
       }
     }
   }

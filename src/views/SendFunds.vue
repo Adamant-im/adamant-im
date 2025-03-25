@@ -79,6 +79,8 @@ export default {
     onSend(transactionId, crypto) {
       const userComeFrom = this.$route.query.from
 
+      vibrate.doubleVeryShort()
+
       if (userComeFrom) {
         this.$router.replace(userComeFrom)
       } else {
@@ -86,7 +88,7 @@ export default {
       }
     },
     onError(message) {
-      vibrate.doubleShort();
+      vibrate.tripleVeryShort();
       this.$store.dispatch('snackbar/show', {
         message,
         timeout: 3000,

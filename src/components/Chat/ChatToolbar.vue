@@ -96,9 +96,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .chat-toolbar {
   flex-grow: 0;
@@ -143,12 +144,12 @@ export default {
   }
 
   :deep(.v-text-field) {
-    @include a-text-regular-enlarged-bold();
+    @include mixins.a-text-regular-enlarged-bold();
 
     .v-field__field {
       .v-label.v-field-label {
         max-width: unset;
-        @include a-text-regular-enlarged-bold();
+        @include mixins.a-text-regular-enlarged-bold();
         font-size: 16px;
       }
     }
@@ -188,20 +189,20 @@ export default {
 /** Themes **/
 .v-theme--light {
   .chat-toolbar {
-    background-color: map-get($adm-colors, 'secondary2-transparent');
+    background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
 
     :deep(.v-text-field) {
       .primary--text {
-        color: map-get($grey, 'darken-1') !important;
+        color: map.get(settings.$grey, 'darken-1') !important;
       }
       .v-label {
-        color: map-get($grey, 'darken-4');
+        color: map.get(settings.$grey, 'darken-4');
       }
       .v-label--active {
-        color: map-get($grey, 'darken-1');
+        color: map.get(settings.$grey, 'darken-1');
       }
       input {
-        caret-color: map-get($adm-colors, 'primary2');
+        caret-color: map.get(colors.$adm-colors, 'primary2');
       }
     }
   }
@@ -210,16 +211,16 @@ export default {
   .chat-toolbar {
     :deep(.v-text-field) {
       .primary--text {
-        color: map-get($shades, 'white') !important;
+        color: map.get(settings.$shades, 'white') !important;
       }
       .v-label {
-        color: map-get($shades, 'white');
+        color: map.get(settings.$shades, 'white');
       }
       .v-label--active {
-        color: map-get($shades, 'white');
+        color: map.get(settings.$shades, 'white');
       }
       input {
-        caret-color: map-get($adm-colors, 'primary');
+        caret-color: map.get(colors.$adm-colors, 'primary');
       }
     }
   }
