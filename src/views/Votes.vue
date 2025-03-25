@@ -99,10 +99,17 @@ const waitingForConfirmation = ref(false)
 const dialog = ref(false)
 const className = 'delegates-view'
 
+interface extendedDto extends DelegateDto {
+  upvoted?: unknown;
+  voted?: unknown;
+  downvoted?: unknown;
+  _voted?: unknown;
+}
+
 const delegates = computed(() => {
   const delegates = store.state.delegates.delegates || {}
 
-  return Object.values(delegates) as DelegateDto[]
+  return Object.values(delegates) as extendedDto[]
 })
 const numOfUpvotes = computed(() => {
   return delegates.value.filter((delegate) => delegate.upvoted && !delegate.voted).length
