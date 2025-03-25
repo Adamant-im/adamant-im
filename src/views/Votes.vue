@@ -144,12 +144,6 @@ onMounted(() => {
   })
 })
 
-const upVote = (id) => {
-  store.commit('delegates/upVote', id)
-}
-const downVote = (id) => {
-  store.commit('delegates/downVote', id)
-}
 const validateVotes = () => {
   if (numOfUpvotes.value + numOfDownvotes.value > VOTE_REQUEST_LIMIT) {
     store.dispatch('snackbar/show', {
