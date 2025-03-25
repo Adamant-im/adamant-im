@@ -35,8 +35,9 @@ const hasView = computed(() => {
 
 </script>
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use 'vuetify/settings';
+@use '@/assets/styles/settings/_colors.scss';
 
 .sidebar {
   display: flex;
@@ -48,12 +49,12 @@ const hasView = computed(() => {
     height: calc(100vh - var(--v-layout-bottom));
     border-right: 2px solid black;
 
-    @media #{map-get($display-breakpoints, 'sm-and-down')} {
+    @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
       width: 100%;
     }
 
     &--has-view {
-      @media #{map-get($display-breakpoints, 'sm-and-down')} {
+      @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
         display: none;
       }
     }
@@ -62,7 +63,7 @@ const hasView = computed(() => {
   &__router-view {
     flex: 1;
 
-    @media #{map-get($display-breakpoints, 'sm-and-down')} {
+    @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
       img {
         display: none;
       }
@@ -83,7 +84,7 @@ const hasView = computed(() => {
 .v-theme--light {
   .sidebar {
     &__aside {
-      border-right-color: map-get($adm-colors, 'grey');
+      border-right-color: map.get(colors.$adm-colors, 'grey');
     }
   }
 }

@@ -302,7 +302,7 @@ export default defineComponent({
   position: relative;
 
   &--active {
-    @include linear-gradient-dark-soft();
+    @include mixins.linear-gradient-dark-soft();
   }
 
   &__chat-avatar {
@@ -368,7 +368,7 @@ export default defineComponent({
     }
 
     &--active {
-      @include linear-gradient-light-gray()
+      @include mixins.linear-gradient-light-gray()
     }
 
     :deep(.v-list-item-subtitle) {

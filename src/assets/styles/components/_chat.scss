@@ -392,7 +392,7 @@ $scroll-bar-width: 4px;
     }
 
     &__body {
-      @include linear-gradient-light-gray();
+      @include mixins.linear-gradient-light-gray();
     }
 
     &__message {
@@ -505,7 +505,7 @@ $scroll-bar-width: 4px;
     }
 
     &__body {
-      @include linear-gradient-dark-soft();
+      @include mixins.linear-gradient-dark-soft();
     }
 
     &__message {

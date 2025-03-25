@@ -287,7 +287,7 @@ export default {
   &__container--chat {
     max-width: 1300px;
 
-    @media #{map-get($display-breakpoints, 'sm-and-down')} {
+    @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
       display: none;
     }
   }
@@ -312,7 +312,7 @@ export default {
       color: map.get(colors.$adm-colors, 'regular');
     }
     &__chats-list-aside {
-      border-right-color: map-get($adm-colors, 'grey');
+      border-right-color: map.get(colors.$adm-colors, 'grey');
     }
   }
 }
