@@ -10,7 +10,7 @@
     <!-- Wallet -->
     <v-btn v-if="walletShouldBeVisible" to="/home" :exact="true">
       <v-icon :icon="mdiWallet" />
-      <span>{{ $t('bottom.wallet_button') }}</span>
+      <span>{{ t('bottom.wallet_button') }}</span>
     </v-btn>
 
     <!-- Chat -->
@@ -26,13 +26,13 @@
       </v-badge>
       <v-icon v-else :icon="mdiForum" />
 
-      <span>{{ $t('bottom.chats_button') }}</span>
+      <span>{{ t('bottom.chats_button') }}</span>
     </v-btn>
 
     <!-- Settings -->
     <v-btn to="/options">
       <v-icon :icon="mdiCog" />
-      <span>{{ $t('bottom.settings_button') }}</span>
+      <span>{{ t('bottom.settings_button') }}</span>
     </v-btn>
   </v-bottom-navigation>
 </template>
@@ -41,6 +41,7 @@ import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import { watch, onMounted, ref, computed } from 'vue'
 import { mdiWallet, mdiForum, mdiCog } from '@mdi/js'
+import { useI18n } from 'vue-i18n'
 
 defineProps({
   absolute: Boolean
@@ -63,6 +64,8 @@ const pages = [
 const currentPageIndex = ref(0)
 const store = useStore()
 const route = useRoute()
+const { t } = useI18n()
+
 const getCurrentPageIndex = () => {
   const currentPage = pages.find((page) => {
     const pattern = new RegExp(`^${page.link}`)
