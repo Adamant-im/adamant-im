@@ -13,7 +13,7 @@ import {
 } from '@/lib/chat/helpers'
 import { i18n } from '@/i18n'
 import { isNumeric } from '@/lib/numericHelpers'
-import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
+import { Cryptos, CryptosInfo, TransactionStatus as TS, MessageType } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
 import { uploadFiles } from '../../../lib/files'
@@ -25,6 +25,10 @@ export let interval
 
 const SOCKET_ENABLED_TIMEOUT = 10000
 const SOCKET_DISABLED_TIMEOUT = 3000
+
+const RESEND_MESSAGE_INTERVAL = 5 * 1000
+
+const pendingMessages = new Map()
 
 /**
  * type State = {
@@ -714,7 +718,7 @@ const actions = {
    * @param {string} replyToId Optional
    * @returns {Promise}
    */
-  async sendMessage({ commit, rootState }, { message, recipientId, replyToId }) {
+  async sendMessage({ dispatch, commit, rootState }, { message, recipientId, replyToId }) {
     let id;
     try {
       const type = replyToId ? MessageType.RICH_CONTENT_MESSAGE : MessageType.BASIC_ENCRYPTED_MESSAGE
@@ -762,13 +766,19 @@ const actions = {
     } catch (error) {
 
       if (id) {
-        commit('updateMessage', {
-          id,
-          status: TS.REJECTED,
-          partnerId: recipientId
+        const timeout = setTimeout(() => {
+          pendingMessages.delete(id)
+        }, +CryptosInfo.ADM.timeout.message)
+
+        pendingMessages.set(id, timeout)
+
+        dispatch('resendMessage', {
+          recipientId,
+          messageId: id
         })
+      } else {
+        throw error
       }
-      throw error
     }
   },
 
@@ -868,7 +878,7 @@ const actions = {
    * @param {number} id Message Id
    * @returns {Promise}
    */
-  resendMessage({ getters, commit }, { recipientId, messageId }) {
+  resendMessage({ getters, commit, dispatch }, { recipientId, messageId }) {
     const message = getters.partnerMessageById(recipientId, messageId)
 
     // update message status from `rejected` to `sent`
@@ -893,7 +903,23 @@ const actions = {
       return queueMessage(messageAsset, recipientId, type)
         .then((res) => {
           if (!res.success) {
-            throw new Error(i18n.global.t('chats.message_rejected'))
+            if (!pendingMessages.has(messageId)) {
+              throw new Error(i18n.global.t('chats.message_rejected'))
+            }
+
+            setTimeout(() => {
+              dispatch('resendMessage', {
+                recipientId,
+                messageId
+              })
+            }, RESEND_MESSAGE_INTERVAL)
+
+            return
+          }
+
+          if (pendingMessages.has(messageId)) {
+            clearTimeout(pendingMessages.get(messageId));
+            pendingMessages.delete(messageId);
           }
 
           commit('updateMessage', {
