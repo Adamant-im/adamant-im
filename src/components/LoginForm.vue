@@ -4,6 +4,7 @@
       <slot>
         <!--     Todo: check src/components/PasswordSetDialog.vue component and consider the possibility to move common code to new component  -->
         <v-text-field
+          ref="passphraseField"
           v-model="passphrase"
           :label="$t('login.password_label')"
           autocomplete="current-password"
@@ -54,7 +55,7 @@
 
 <script>
 import { validateMnemonic } from 'bip39'
-import { computed, ref, defineComponent } from 'vue'
+import { computed, ref, defineComponent, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
@@ -83,6 +84,8 @@ export default defineComponent({
     const { t } = useI18n()
     const showSpinner = ref(false)
     const showPassphrase = ref(false)
+    const passphraseField = ref(null)
+
     const togglePassphraseVisibility = () => {
       showPassphrase.value = !showPassphrase.value
     }
@@ -140,9 +143,22 @@ export default defineComponent({
       showSpinner.value = false
     }
 
+    watch(showPassphrase, () => {
+      const inputElement = this.passphraseField.$el.querySelector('input');
+      if (inputElement) {
+        const cursorPosition = inputElement.selectionStart || 0;
+
+        requestAnimationFrame(() => {
+          inputElement.setSelectionRange(cursorPosition, cursorPosition);
+          inputElement.focus();
+        });
+      }
+    })
+
     return {
       showSpinner,
       passphrase,
+      passphraseField,
       showPassphrase,
       classes,
       mdiEye,

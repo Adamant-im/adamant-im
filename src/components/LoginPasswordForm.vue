@@ -55,7 +55,7 @@
 
 <script>
 import { isAxiosError } from 'axios'
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
@@ -130,6 +130,18 @@ export default defineComponent({
         store.dispatch('removePassword')
       })
     }
+
+    watch(showPassword, () => {
+      const inputElement = this.passwordField.$el.querySelector('input');
+      if (inputElement) {
+        const cursorPosition = inputElement.selectionStart || 0;
+
+        requestAnimationFrame(() => {
+          inputElement.setSelectionRange(cursorPosition, cursorPosition);
+          inputElement.focus();
+        });
+      }
+    })
 
     return {
       passwordField,
