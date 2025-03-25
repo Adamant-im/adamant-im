@@ -69,7 +69,7 @@ const getCurrentPageIndex = () => {
     return route.path.match(pattern)
   })
 
-  return pages.indexOf(currentPage)
+  return currentPage && pages.indexOf(currentPage)
 }
 const numOfNewMessages = computed(() => store.getters['chat/totalNumOfNewMessages'])
 
