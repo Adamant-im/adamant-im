@@ -5,7 +5,7 @@ export function useSaveCursor(
   trigger: Ref<boolean>
 ) {
   watch(trigger, () => {
-    const inputElement = inputRef.value
+    const inputElement = inputRef.value as HTMLInputElement
     if (inputElement) {
       const cursorPosition = inputElement.selectionStart || 0
 
