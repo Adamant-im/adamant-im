@@ -792,7 +792,7 @@ const actions = {
    * @param {string} replyToId Optional
    * @returns {Promise}
    */
-  async sendAttachment({ commit, rootState }, { files, message, recipientId, replyToId }) {
+  async sendAttachment({ commit, rootState, dispatch }, { files, message, recipientId, replyToId }) {
     let messageObject = createAttachment({
       message,
       recipientId,
@@ -826,17 +826,32 @@ const actions = {
       })
       console.debug('Files uploaded', uploadData)
     } catch (err) {
-      commit('updateMessage', {
-        id: messageObject.id,
-        status: TS.REJECTED,
-        partnerId: recipientId
+      const timeout = setTimeout(() => {
+        pendingMessages.delete(messageObject.id)
+      }, +CryptosInfo.ADM.timeout.attachment)
+
+      pendingMessages.set(messageObject.id, timeout)
+
+      dispatch('resendAttachment', {
+        recipientId,
+        messageId: messageObject.id,
+        files
       })
 
-      for (const [cid] of cids) {
-        commit('attachment/resetUploadProgress', { cid }, { root: true })
-      }
-
       throw err
+      // if (!pendingMessages.has(messageObject.id)) {
+      //   commit('updateMessage', {
+      //     id: messageObject.id,
+      //     status: TS.REJECTED,
+      //     partnerId: recipientId
+      //   })
+      //
+      //   for (const [cid] of cids) {
+      //     commit('attachment/resetUploadProgress', { cid }, { root: true })
+      //   }
+      //
+      //   throw err
+      // }
     }
 
     for (const [cid] of cids) {
@@ -862,14 +877,120 @@ const actions = {
       })
       .catch((err) => {
         // update `message.status` to 'REJECTED'
-        commit('updateMessage', {
-          id: messageObject.id,
-          status: TS.REJECTED,
-          partnerId: recipientId
+        // commit('updateMessage', {
+        //   id: messageObject.id,
+        //   status: TS.REJECTED,
+        //   partnerId: recipientId
+        // })
+        const timeout = setTimeout(() => {
+          pendingMessages.delete(messageObject.id)
+        }, +CryptosInfo.ADM.timeout.attachment)
+
+        pendingMessages.set(messageObject.id, timeout)
+
+        dispatch('resendAttachment', {
+          recipientId,
+          messageId: messageObject.id
         })
 
         throw err // call the error again so that it can be processed inside view
       })
+  },
+
+  /**
+   * Resend attachment, in case the connection fails.
+   * @param {string} id Recipient Id
+   * @param {number} id Message Id
+   * @param {FileData[]} files
+   * @returns {Promise}
+   */
+  async resendAttachment({ commit, dispatch }, { recipientId, messageId, files }) {
+    const message = getters.partnerMessageById(recipientId, messageId)
+
+    commit('updateMessage', {
+      id: messageId,
+      status: TS.PENDING,
+      partnerId: recipientId
+    });
+
+    if (message) {
+      try {
+        if (files) {
+          const cids = files.map((file) => [file.cid, file.preview?.cid]).filter(cid => !!cid);
+
+          await uploadFiles(files, (progress) => {
+            for (const [cid] of cids) {
+              commit('attachment/setUploadProgress', { cid, progress }, { root: true });
+            }
+          });
+
+          const newAsset = message.replyToId
+            ? { replyto_id: message.replyToId, reply_message: attachmentAsset(files, message.message) }
+            : attachmentAsset(files, message.message);
+
+          commit('updateMessage', {
+            id: messageId,
+            asset: newAsset,
+            partnerId: recipientId
+          });
+        }
+      } catch (err) {
+        if (!pendingMessages.has(messageId)) {
+          throw err
+        } else {
+          setTimeout(() => {
+            dispatch('resendAttachment', {
+              recipientId,
+              messageId,
+              files
+            })
+          }, RESEND_MESSAGE_INTERVAL)
+        }
+      }
+
+      return queueMessage(message.asset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
+        .then((res) => {
+          if (!res.success) {
+            if (!pendingMessages.has(messageId)) {
+              throw new Error(i18n.global.t('chats.message_rejected'));
+            }
+
+            setTimeout(() => {
+              dispatch('resendAttachment', {
+                recipientId,
+                messageId
+              })
+            }, RESEND_MESSAGE_INTERVAL)
+
+            return
+          }
+
+          if (pendingMessages.has(messageId)) {
+            clearTimeout(pendingMessages.get(messageId));
+            pendingMessages.delete(messageId);
+          }
+
+          commit('updateMessage', {
+            id: messageId,
+            realId: res.transactionId,
+            status: TS.REGISTERED,
+            partnerId: recipientId
+          })
+
+          return res
+        })
+        .catch((err) => {
+          commit('updateMessage', {
+            id: messageId,
+            status: TS.REJECTED,
+            partnerId: recipientId
+          })
+
+          throw err
+        })
+    }
+
+    return Promise.reject(new Error('Message not found in history'))
   },
 
   /**
@@ -918,8 +1039,8 @@ const actions = {
           }
 
           if (pendingMessages.has(messageId)) {
-            clearTimeout(pendingMessages.get(messageId));
-            pendingMessages.delete(messageId);
+            clearTimeout(pendingMessages.get(messageId))
+            pendingMessages.delete(messageId)
           }
 
           commit('updateMessage', {
