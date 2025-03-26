@@ -4,7 +4,7 @@
       <slot>
         <!--     Todo: check src/components/PasswordSetDialog.vue component and consider the possibility to move common code to new component  -->
         <v-text-field
-          ref="passphraseField"
+          ref="passphraseInput"
           v-model="passphrase"
           :label="$t('login.password_label')"
           autocomplete="current-password"
@@ -55,13 +55,14 @@
 
 <script>
 import { validateMnemonic } from 'bip39'
-import { computed, ref, defineComponent, watch } from 'vue'
+import { computed, ref, defineComponent, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { isAxiosError } from 'axios'
 import { isAllNodesOfflineError, isAllNodesDisabledError } from '@/lib/nodes/utils/errors'
 import { mdiEye, mdiEyeOff } from '@mdi/js'
+import { useSaveCursor } from '@/hooks/useSaveCursor'
 
 
 const className = 'login-form'
@@ -84,11 +85,13 @@ export default defineComponent({
     const { t } = useI18n()
     const showSpinner = ref(false)
     const showPassphrase = ref(false)
-    const passphraseField = ref(null)
+    const passphraseInput = useTemplateRef('passphraseInput')
 
     const togglePassphraseVisibility = () => {
       showPassphrase.value = !showPassphrase.value
     }
+
+    useSaveCursor(passphraseInput, showPassphrase)
 
     const passphrase = computed({
       get() {
@@ -143,22 +146,10 @@ export default defineComponent({
       showSpinner.value = false
     }
 
-    watch(showPassphrase, () => {
-      const inputElement = this.passphraseField.$el.querySelector('input');
-      if (inputElement) {
-        const cursorPosition = inputElement.selectionStart || 0;
-
-        requestAnimationFrame(() => {
-          inputElement.setSelectionRange(cursorPosition, cursorPosition);
-          inputElement.focus();
-        });
-      }
-    })
-
     return {
       showSpinner,
       passphrase,
-      passphraseField,
+      passphraseField: passphraseInput,
       showPassphrase,
       classes,
       mdiEye,

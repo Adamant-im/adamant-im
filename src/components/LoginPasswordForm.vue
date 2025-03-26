@@ -2,7 +2,7 @@
   <v-form ref="form" class="login-form" @submit.prevent="submit">
     <v-row no-gutters>
       <v-text-field
-        ref="passwordField"
+        ref="passwordInput"
         v-model="password"
         autofocus
         autocomplete="new-password"
@@ -55,7 +55,7 @@
 
 <script>
 import { isAxiosError } from 'axios'
-import { computed, defineComponent, ref, watch } from 'vue'
+import { computed, defineComponent, ref, useTemplateRef } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
@@ -63,6 +63,7 @@ import { useI18n } from 'vue-i18n'
 import { clearDb } from '@/lib/idb'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 import { mdiEye, mdiEyeOff } from '@mdi/js'
+import { useSaveCursor } from '@/hooks/useSaveCursor'
 
 export default defineComponent({
   props: {
@@ -76,12 +77,14 @@ export default defineComponent({
     const router = useRouter()
     const store = useStore()
     const { t } = useI18n()
-    const passwordField = ref(null)
+    const passwordInput = useTemplateRef('passwordInput')
     const showSpinner = ref(false)
     const showPassword = ref(false)
     const togglePasswordVisibility = () => {
       showPassword.value = !showPassword.value
     }
+
+    useSaveCursor(passwordInput, showPassword)
 
     const password = computed({
       get() {
@@ -131,20 +134,8 @@ export default defineComponent({
       })
     }
 
-    watch(showPassword, () => {
-      const inputElement = this.passwordField.$el.querySelector('input');
-      if (inputElement) {
-        const cursorPosition = inputElement.selectionStart || 0;
-
-        requestAnimationFrame(() => {
-          inputElement.setSelectionRange(cursorPosition, cursorPosition);
-          inputElement.focus();
-        });
-      }
-    })
-
     return {
-      passwordField,
+      passwordField: passwordInput,
       showSpinner,
       password,
       showPassword,
