@@ -26,9 +26,9 @@
         </v-row>
         <div
           :class="{
-          [`${className}__messages`]: true,
-          [`${className}__messages--chat`]: true
-        }"
+            [`${className}__messages`]: true,
+            [`${className}__messages--chat`]: true
+          }"
           @scroll="onScroll"
         >
           <template v-for="transaction in messages" :key="transaction.contactId">
@@ -60,7 +60,6 @@
 
       <NodesOfflineDialog node-type="adm" />
     </sidebar>
-
   </div>
 </template>
 
@@ -72,7 +71,7 @@ import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import scrollPosition from '@/mixins/scrollPosition'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
-import { useRoute } from 'vue-router'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { computed } from 'vue'
 import { useDisplay } from 'vuetify'
 import Sidebar from '@/components/common/sidebar.vue'
@@ -93,12 +92,31 @@ export default {
     showNewContact: { default: false, type: Boolean }
   },
   setup() {
+    const LAST_PARTNER_ID_KEY = 'last_partner_id'
+
     const route = useRoute()
+    const router = useRouter()
 
     const { smAndDown } = useDisplay()
 
     const chatPagePartnerId = computed(() => {
       return route.params.partnerId
+    })
+
+    const lastId = localStorage.getItem(LAST_PARTNER_ID_KEY)
+    localStorage.removeItem(LAST_PARTNER_ID_KEY)
+
+    if (lastId) {
+      router.push({
+        name: 'Chat',
+        params: { partnerId: lastId }
+      })
+    }
+
+    onBeforeRouteLeave((to, from) => {
+      if (from.params?.partnerId) {
+        localStorage.setItem(LAST_PARTNER_ID_KEY, from.params?.partnerId)
+      }
     })
 
     return {
