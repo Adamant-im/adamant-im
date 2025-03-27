@@ -1,17 +1,22 @@
 <template>
   <div :class="{ [`${className} d-flex justify-center ma-auto`]: true }">
-    <aside :class="{
-      [`${className}__aside`]: true,
-      [`${className}__aside--has-view`]: hasView
-    }">
+    <aside
+      :class="{
+        [`${className}__aside`]: true,
+        [`${className}__aside--has-view`]: hasView
+      }"
+    >
       <slot />
     </aside>
-    <div class="d-flex justify-center align-center" :class="{
-      [`${className}__router-view`]: true,
-    }">
+    <div
+      class="d-flex justify-center align-center"
+      :class="{
+        [`${className}__router-view`]: true
+      }"
+    >
       <img v-show="readyToShow && !hasView" src="/img/adamant-logo-transparent-512x512.png" />
 
-      <router-view v-if="readyToShow" :key="route.path"/>
+      <router-view v-if="readyToShow" :key="route.path" />
     </div>
   </div>
 </template>
@@ -30,7 +35,6 @@ const route = useRoute()
 const hasView = computed(() => {
   return route.matched.length > 1
 })
-
 </script>
 <style lang="scss" scoped>
 @use 'sass:map';
@@ -73,7 +77,8 @@ const hasView = computed(() => {
   .sidebar {
     &__router-view {
       img {
-        filter: invert(1);
+        filter: invert(1) brightness(0.4);
+        mix-blend-mode: lighten;
       }
     }
   }
@@ -83,6 +88,13 @@ const hasView = computed(() => {
   .sidebar {
     &__aside {
       border-right-color: map.get(colors.$adm-colors, 'grey');
+    }
+
+    &__router-view {
+      img {
+        filter: brightness(0.8);
+        mix-blend-mode: hard-light;
+      }
     }
   }
 }
