@@ -167,8 +167,6 @@
     "popup_title": "设置密码",
     "remove_password": "删除您的密码",
     "remove_password_hint": "或者删除密码以使用密码短语登录",
-    "user_password_forget": "忘记",
-    "user_password_hint": "用户密码",
     "user_password_title": "解锁密码",
     "user_password_unlock": "解锁"
   },

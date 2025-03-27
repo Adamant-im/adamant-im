@@ -115,9 +115,6 @@
     "popup_title": "Set password",
     "remove_password": "Remove password",
     "remove_password_hint": "Or remove password for login via passphrase",
-    "user_password_forget": "Forget",
-    "user_password_hint": "User password",
-    "user_password_title": "Password for unlock",
     "user_password_unlock": "Unlock"
   },
   "nodes": {
