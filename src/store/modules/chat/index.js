@@ -942,8 +942,6 @@ const actions = {
           }
 
           setTimeout(() => {
-            console.log('resending attachment WITHOUT files')
-
             dispatch('resendAttachment', {
               recipientId,
               messageId
