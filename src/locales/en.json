@@ -159,7 +159,7 @@
     "login_by_qr_code_tooltip": "Login with a passphrase that is included in a QR code file",
     "new_button": "Create new",
     "new_passphrase_label": "<b>Save</b> the passphrase for your new wallet and account. You must use the passphrase only. If you lose it, there will be no way to recover it",
-    "password_label": "Enter your passphrase to login",
+    "password_label": "Enter your passphrase",
     "save_button_tooltip": "Save your passphrase in a text file. Store it in a secure place!",
     "save_qr_code_to_images": "Save to images",
     "save_qr_code_tooltip": "Save your passphrase as a QR code image. Store it in a secure place!",
