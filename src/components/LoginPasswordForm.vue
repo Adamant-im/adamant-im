@@ -135,7 +135,7 @@ export default defineComponent({
     }
 
     return {
-      passwordField: passwordInput,
+      passwordInput,
       showSpinner,
       password,
       showPassword,

@@ -149,7 +149,7 @@ export default defineComponent({
     return {
       showSpinner,
       passphrase,
-      passphraseField: passphraseInput,
+      passphraseInput,
       showPassphrase,
       classes,
       mdiEye,
