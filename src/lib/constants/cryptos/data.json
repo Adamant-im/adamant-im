@@ -90,6 +90,10 @@
       "oldPendingInterval": 4000,
       "registeredInterval": 4000
     },
+    "timeout": {
+      "message": 300000,
+      "attachment": 300000
+    },
     "defaultOrdinalLevel": 0,
     "explorerTx": "https://explorer.adamant.im/tx/${ID}"
   },
