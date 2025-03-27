@@ -839,19 +839,6 @@ const actions = {
       })
 
       throw err
-      // if (!pendingMessages.has(messageObject.id)) {
-      //   commit('updateMessage', {
-      //     id: messageObject.id,
-      //     status: TS.REJECTED,
-      //     partnerId: recipientId
-      //   })
-      //
-      //   for (const [cid] of cids) {
-      //     commit('attachment/resetUploadProgress', { cid }, { root: true })
-      //   }
-      //
-      //   throw err
-      // }
     }
 
     for (const [cid] of cids) {
@@ -876,12 +863,6 @@ const actions = {
         return res
       })
       .catch((err) => {
-        // update `message.status` to 'REJECTED'
-        // commit('updateMessage', {
-        //   id: messageObject.id,
-        //   status: TS.REJECTED,
-        //   partnerId: recipientId
-        // })
         const timeout = setTimeout(() => {
           pendingMessages.delete(messageObject.id)
         }, +CryptosInfo.ADM.timeout.attachment)
@@ -913,84 +894,88 @@ const actions = {
       partnerId: recipientId
     });
 
-    if (message) {
-      try {
-        if (files) {
-          const cids = files.map((file) => [file.cid, file.preview?.cid]).filter(cid => !!cid);
-
-          await uploadFiles(files, (progress) => {
-            for (const [cid] of cids) {
-              commit('attachment/setUploadProgress', { cid, progress }, { root: true });
-            }
-          });
-
-          const newAsset = message.replyToId
-            ? { replyto_id: message.replyToId, reply_message: attachmentAsset(files, message.message) }
-            : attachmentAsset(files, message.message);
-
-          commit('updateMessage', {
-            id: messageId,
-            asset: newAsset,
-            partnerId: recipientId
-          });
-        }
-      } catch (err) {
-        if (!pendingMessages.has(messageId)) {
-          throw err
-        } else {
-          setTimeout(() => {
-            dispatch('resendAttachment', {
-              recipientId,
-              messageId,
-              files
-            })
-          }, RESEND_MESSAGE_INTERVAL)
-        }
-      }
-
-      return queueMessage(message.asset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
-        .then((res) => {
-          if (!res.success) {
-            if (!pendingMessages.has(messageId)) {
-              throw new Error(i18n.global.t('chats.message_rejected'));
-            }
-
-            setTimeout(() => {
-              dispatch('resendAttachment', {
-                recipientId,
-                messageId
-              })
-            }, RESEND_MESSAGE_INTERVAL)
-
-            return
-          }
-
-          if (pendingMessages.has(messageId)) {
-            clearTimeout(pendingMessages.get(messageId));
-            pendingMessages.delete(messageId);
-          }
-
-          commit('updateMessage', {
-            id: messageId,
-            realId: res.transactionId,
-            status: TS.REGISTERED,
-            partnerId: recipientId
-          })
-
-          return res
-        })
-        .catch((err) => {
-          commit('updateMessage', {
-            id: messageId,
-            status: TS.REJECTED,
-            partnerId: recipientId
-          })
-
-          throw err
-        })
+    if (!message) {
+      return Promise.reject(new Error('Message not found in history'))
     }
 
-    return Promise.reject(new Error('Message not found in history'))
+    const newAsset = message.replyToId
+      ? { replyto_id: message.replyToId, reply_message: attachmentAsset(files, message.message) }
+      : attachmentAsset(files, message.message);
+
+    try {
+      if (files) {
+        const cids = files.map((file) => [file.cid, file.preview?.cid]).filter(cid => !!cid);
+
+        await uploadFiles(files, (progress) => {
+          for (const [cid] of cids) {
+            commit('attachment/setUploadProgress', { cid, progress }, { root: true });
+          }
+        });
+
+        commit('updateMessage', {
+          id: messageId,
+          asset: newAsset,
+          partnerId: recipientId
+        });
+      }
+    } catch (err) {
+      if (!pendingMessages.has(messageId)) {
+        throw err
+      } else {
+        setTimeout(() => {
+          dispatch('resendAttachment', {
+            recipientId,
+            messageId,
+            files
+          })
+        }, RESEND_MESSAGE_INTERVAL)
+
+        return
+      }
+    }
+
+    return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
+      .then((res) => {
+        if (!res.success) {
+          if (!pendingMessages.has(messageId)) {
+            throw new Error(i18n.global.t('chats.message_rejected'));
+          }
+
+          setTimeout(() => {
+            console.log('resending attachment WITHOUT files')
+
+            dispatch('resendAttachment', {
+              recipientId,
+              messageId
+            })
+          }, RESEND_MESSAGE_INTERVAL)
+
+          return
+        }
+
+        if (pendingMessages.has(messageId)) {
+          clearTimeout(pendingMessages.get(messageId));
+          pendingMessages.delete(messageId);
+        }
+
+        commit('updateMessage', {
+          id: messageId,
+          realId: res.transactionId,
+          status: TS.REGISTERED,
+          partnerId: recipientId
+        })
+
+        return res
+      })
+      .catch((err) => {
+        commit('updateMessage', {
+          id: messageId,
+          status: TS.REJECTED,
+          partnerId: recipientId
+        })
+
+        throw err
+      })
   },
 
   /**
