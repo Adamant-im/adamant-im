@@ -92,7 +92,7 @@
       "text": "Unable to request new messages — No active {coin} blockchain nodes. As you've deactivated some of them, consider reviewing the node list.",
       "open_nodes_button": "Review {coin} node list"
     },
-    "unsupported_transaction_type": "This transaction type is not supported. Please refresh the page or install the latest version of the app."
+    "unsupported_transaction_type": "This transaction type is not supported. Please update to the latest app version."
   },
   "common": {
     "cancel": "Cancel",
@@ -102,28 +102,28 @@
   },
   "connection": {
     "offline": "Offline—No connection",
-    "online": "Online—Connection is set"
+    "online": "Online—Connection restored"
   },
   "error": "Error",
   "errors": {
-    "something_went_wrong": "Something went wrong. Check the console for details",
+    "something_went_wrong": "Something went wrong. Developers can check debugger",
     "all_nodes_offline": "No active {crypto} nodes. Review the node list",
-    "all_adm_nodes_offline": "No active ADM nodes to send a message. Review the node list",
-    "all_nodes_disabled": "No active {crypto} nodes. Enable at least one"
+    "all_adm_nodes_offline": "No active messaging nodes. Review ADM node list",
+    "all_nodes_disabled": "No {crypto} nodes available — Enable at least one"
   },
   "home": {
     "balance": "Balance",
     "buy_tokens_anonymously": "Anonymously on website",
-    "buy_tokens_btn": "Buy & sell coins",
+    "buy_tokens_btn": "Trade",
     "buy_tokens_btn_link": "https://adamant.im/buy-tokens/",
-    "buy_tokens_exchanger": "In-chat Exchanger",
+    "buy_tokens_exchanger": "In-chat Exchange",
     "copied": "Copied",
     "copy": "Copy",
     "copy_address": "Copy address",
-    "copy_uri": "Copy Share link",
+    "copy_uri": "Copy link",
     "create_qrcode": "Create a QR code",
     "exchanges_on": "Exchanges on {aggregator}",
-    "free_adm_btn": "Free ADM tokens",
+    "free_adm_btn": "Free coins",
     "free_tokens_link": "https://adamant.im/free-adm-tokens/",
     "send_btn": "Send funds",
     "send_crypto": "Send {crypto}",
@@ -132,7 +132,7 @@
     "stake_and_earn_btn": "Stake and earn",
     "wallet": "wallet",
     "wallet_crypto": "{crypto} wallet",
-    "explorer": "Open in Explorer"
+    "explorer": "Open in block explorer"
   },
   "warning_on_addresses": {
     "warning": "Warning",
