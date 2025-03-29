@@ -31,7 +31,7 @@
   </v-dialog>
 </template>
 
-<script>
+<script setup lang="ts">
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 import QrcodeRenderer from '@/components/QrcodeRenderer.vue'
 import { Cryptos } from '@/lib/constants'
@@ -40,67 +40,47 @@ import validateAddress from '@/lib/validateAddress'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import IconBox from '@/components/icons/IconBox.vue'
 import { mdiClose } from '@mdi/js'
+import { computed, ref } from 'vue'
 
-export default {
-  components: {
-    IconBox,
-    ChatAvatar,
-    QrcodeRenderer
+const props = defineProps({
+  address: {
+    type: String,
+    required: true,
+    validator: (v) => validateAddress('ADM', v)
   },
-  props: {
-    address: {
-      type: String,
-      required: true,
-      validator: (v) => validateAddress('ADM', v)
-    },
-    name: {
-      type: String,
-      default: ''
-    },
-    modelValue: {
-      type: Boolean,
-      required: true
-    },
-    ownerAddress: {
-      type: String,
-      required: true,
-      validator: (v) => validateAddress('ADM', v)
-    }
+  name: {
+    type: String,
+    default: ''
   },
-  emits: ['update:modelValue'],
-  setup() {
-    return {
-      mdiClose
-    }
+  modelValue: {
+    type: Boolean,
+    required: true
   },
-  data() {
-    return {
-      className: 'partner-info-dialog',
-      logo: '/img/adm-qr-invert.png',
-      opts: {
-        scale: 8.8
-      }
-    }
-  },
-  computed: {
-    show: {
-      get() {
-        return this.modelValue
-      },
-      set(value) {
-        this.$emit('update:modelValue', value)
-      }
-    },
-    text() {
-      return this.isMe
-        ? generateURI(Cryptos.ADM, this.ownerAddress)
-        : generateURI(Cryptos.ADM, this.address, this.name)
-    },
-    isMe() {
-      return isStringEqualCI(this.address, this.ownerAddress)
-    }
+  ownerAddress: {
+    type: String,
+    required: true,
+    validator: (v) => validateAddress('ADM', v)
   }
-}
+})
+
+const emit = defineEmits(['update:modelValue'])
+
+const className = ref('partner-info-dialog')
+const logo = ref('/img/adm-qr-invert.png')
+const opts = ref({ scale: 8.8 })
+
+const show = computed({
+  get: () => props.modelValue,
+  set: (value) => emit('update:modelValue', value)
+})
+
+const isMe = computed(() => isStringEqualCI(props.address, props.ownerAddress))
+
+const text = computed(() =>
+  isMe.value
+    ? generateURI(Cryptos.ADM, props.ownerAddress)
+    : generateURI(Cryptos.ADM, props.address, props.name)
+)
 </script>
 <style lang="scss" scoped>
 @use 'sass:map';

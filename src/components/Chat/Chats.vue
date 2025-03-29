@@ -1,65 +1,69 @@
 <template>
   <div :class="className">
-    <sidebar :ready-to-show="isFulfilled">
-      <v-list subheader class="pa-0" bg-color="transparent" v-if="isFulfilled">
-        <v-row :class="`${className}__chats-actions`" no-gutters>
-          <v-btn
-            :class="`${className}__btn mt-2 ml-4`"
-            @click="markAllAsRead"
-            v-if="unreadMessagesCount > 0"
-            :icon="mdiCheckAll"
-            size="small"
-            variant="text"
-          />
-          <v-spacer />
-          <v-btn :class="`${className}__item`" @click="showChatStartDialog = true" variant="plain">
-            <template #prepend>
-              <v-icon :class="`${className}__icon`" :icon="mdiMessageOutline" size="small" />
-            </template>
-
-            <div>
-              <v-list-item-title :class="`${className}__title`">
-                {{ $t('chats.new_chat') }}
-              </v-list-item-title>
-            </div>
-          </v-btn>
-        </v-row>
-        <div
-          :class="{
-            [`${className}__messages`]: true,
-            [`${className}__messages--chat`]: true
-          }"
-          @scroll="onScroll"
-        >
-          <template v-for="transaction in messages" :key="transaction.contactId">
-            <chat-preview
-              v-if="displayChat(transaction.contactId)"
-              :ref="transaction.contactId"
-              :is-loading-separator="transaction.loadingSeparator"
-              :is-loading-separator-active="loading"
-              :user-id="userId"
-              :contact-id="transaction.contactId"
-              :transaction="transaction"
-              :is-message-readonly="transaction.readonly"
-              :adamant-chat-meta="getAdamantChatMeta(transaction.contactId)"
-              :is-active="chatPagePartnerId === transaction.contactId"
-              @click="openChat(transaction.contactId)"
-            />
+    <v-list subheader class="pa-0" bg-color="transparent" v-if="isFulfilled">
+      <v-row :class="`${className}__chats-actions`" no-gutters>
+        <v-btn
+          :class="`${className}__btn mt-2 ml-4`"
+          @click="markAllAsRead"
+          v-if="unreadMessagesCount > 0"
+          :icon="mdiCheckAll"
+          size="small"
+          variant="text"
+        />
+        <v-spacer />
+        <v-btn :class="`${className}__item`" @click="showChatStartDialog = true" variant="plain">
+          <template #prepend>
+            <v-icon :class="`${className}__icon`" :icon="mdiMessageOutline" size="small" />
           </template>
-        </div>
-      </v-list>
 
+          <div>
+            <v-list-item-title :class="`${className}__title`">
+              {{ $t('chats.new_chat') }}
+            </v-list-item-title>
+          </div>
+        </v-btn>
+      </v-row>
+      <div
+        :class="{
+          [`${className}__messages`]: true,
+          [`${className}__messages--chat`]: true
+        }"
+        @scroll="onScroll"
+      >
+        <template v-for="transaction in messages" :key="transaction.contactId">
+          <chat-preview
+            v-if="displayChat(transaction.contactId)"
+            :ref="transaction.contactId"
+            :is-loading-separator="transaction.loadingSeparator"
+            :is-loading-separator-active="loading"
+            :user-id="userId"
+            :contact-id="transaction.contactId"
+            :transaction="transaction"
+            :is-message-readonly="transaction.readonly"
+            :adamant-chat-meta="getAdamantChatMeta(transaction.contactId)"
+            :is-active="chatPagePartnerId === transaction.contactId"
+            @click="openChat(transaction.contactId)"
+          />
+        </template>
+      </div>
+    </v-list>
+
+    <div
+      class="d-flex justify-center align-center"
+      :class="`${className}__chat-spinner-wrapper`"
+      v-if="!chatPagePartnerId"
+    >
       <ChatSpinner :value="!isFulfilled" />
+    </div>
 
-      <chat-start-dialog
-        v-model="showChatStartDialog"
-        :partner-id="partnerId"
-        @error="onError"
-        @start-chat="openChat"
-      />
+    <chat-start-dialog
+      v-model="showChatStartDialog"
+      :partner-id="partnerId"
+      @error="onError"
+      @start-chat="openChat"
+    />
 
-      <NodesOfflineDialog node-type="adm" />
-    </sidebar>
+    <NodesOfflineDialog node-type="adm" />
   </div>
 </template>
 
@@ -74,13 +78,11 @@ import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { computed } from 'vue'
 import { useDisplay } from 'vuetify'
-import Sidebar from '@/components/common/sidebar.vue'
 
 const scrollOffset = 64
 
 export default {
   components: {
-    Sidebar,
     ChatPreview,
     ChatStartDialog,
     ChatSpinner,
@@ -114,7 +116,7 @@ export default {
     }
 
     onBeforeRouteLeave((to, from) => {
-      if (from.params?.partnerId) {
+      if ((to.name === 'Home' || to.name === 'Options') && from.params?.partnerId) {
         localStorage.setItem(LAST_PARTNER_ID_KEY, from.params?.partnerId)
       }
     })
@@ -271,10 +273,12 @@ export default {
 
 <style lang="scss" scoped>
 @use 'sass:map';
-@use '@/assets/styles/settings/_colors.scss';
-@use 'vuetify/settings';
+@use '@/assets/styles/settings/colors';
+@use 'settings';
 
 .chats-view {
+  height: 100%;
+
   &.a-container,
   :deep(.a-container) {
     max-width: 1300px;
@@ -314,6 +318,11 @@ export default {
       max-height: calc(100vh - 56px - var(--v-layout-bottom));
       overflow-y: auto;
     }
+  }
+
+  &__chat-spinner-wrapper {
+    position: relative;
+    height: 100%;
   }
 }
 

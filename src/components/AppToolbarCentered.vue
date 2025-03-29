@@ -73,10 +73,21 @@ export default {
   },
   methods: {
     goBack() {
-      if (
-        this.$route.matched.length > 1 &&
-        this.$route.name !== 'Options'
-      ) {
+      if (this.$route.query?.from?.includes('chats')) {
+        this.$router.push(this.$route.query.from)
+        return
+      }
+
+      if (history.state?.back.includes('chats')) {
+        this.$router.push({
+          name: 'Chats'
+        })
+        return
+      }
+
+      if (this.$route.matched.length > 1) {
+        console.log('check')
+
         const parentRoute = this.$route.matched[this.$route.matched.length - 2]
 
         this.$router.push(parentRoute.path)

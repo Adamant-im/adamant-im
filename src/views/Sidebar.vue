@@ -1,39 +1,52 @@
 <template>
   <div :class="{ [`${className} d-flex justify-center ma-auto`]: true }">
     <aside
+      v-if="needAside"
       :class="{
         [`${className}__aside`]: true,
         [`${className}__aside--has-view`]: hasView
       }"
     >
-      <slot />
+      <left-side />
     </aside>
     <div
       class="d-flex justify-center align-center"
       :class="{
-        [`${className}__router-view`]: true
+        [`${className}__router-view`]: true,
+        [`${className}__router-view--no-aside`]: !needAside
       }"
     >
-      <img v-show="readyToShow && !hasView" src="/img/adamant-logo-transparent-512x512.png" />
+      <img v-show="showLogo" src="/img/adamant-logo-transparent-512x512.png" />
 
-      <router-view v-if="readyToShow" :key="route.path" />
+      <router-view :key="route.path" />
     </div>
   </div>
 </template>
 <script lang="ts" setup>
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
+import { useStore } from 'vuex'
+import LeftSide from '@/LeftSide.vue'
 
 const className = 'sidebar'
 
-const { readyToShow = true } = defineProps<{
+defineProps<{
   readyToShow?: boolean
 }>()
 
 const route = useRoute()
+const store = useStore()
 
 const hasView = computed(() => {
   return route.matched.length > 1
+})
+
+const needAside = computed(() => {
+  return store.getters.isLogged
+})
+
+const showLogo = computed(() => {
+  return !hasView.value
 })
 </script>
 <style lang="scss" scoped>
@@ -64,6 +77,11 @@ const hasView = computed(() => {
 
   &__router-view {
     flex: 1;
+
+    &--no-aside {
+      width: 100%;
+      max-width: 800px;
+    }
 
     @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
       img {

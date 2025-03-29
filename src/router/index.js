@@ -5,8 +5,7 @@ import IsLogged from '@/middlewares/isLogged'
 import AuthMiddleware from '@/middlewares/auth'
 import DocumentTitle from '@/middlewares/title'
 import Chat from '@/views/Chat.vue'
-import Chats from '@/views/Chats.vue'
-import Home from '@/views/Home.vue'
+
 import Login from '@/views/Login.vue'
 import Nodes from '@/views/Nodes.vue'
 import Options from '@/views/Options.vue'
@@ -18,6 +17,7 @@ import Wallets from '@/views/Wallets.vue'
 import Vibro from '@/views/Vibro.vue'
 import WalletGuard from '@/middlewares/walletGuard'
 import ExportKeysForm from '@/views/ExportKeysForm.vue'
+import Sidebar from '@/views/Sidebar.vue'
 
 /**
  * @type {Readonly<import("vue-router").RouteRecordRaw[]>}
@@ -25,7 +25,7 @@ import ExportKeysForm from '@/views/ExportKeysForm.vue'
 const routes = [
   {
     path: '/chats',
-    component: Chats,
+    component: Sidebar,
     props: true,
     name: 'Chats',
     meta: {
@@ -54,7 +54,7 @@ const routes = [
   {
     path: '/home',
     name: 'Home',
-    component: Home,
+    component: Sidebar,
     meta: {
       requiresAuth: true,
       requiresWallets: true,
@@ -78,6 +78,19 @@ const routes = [
           }
         },
         children: [
+          {
+            path: 'nodes',
+            name: 'Nodes',
+            component: Nodes,
+            meta: {
+              requiresAuth: false,
+              layout: 'no-container',
+              scrollPosition: {
+                left: 0,
+                top: 0
+              }
+            }
+          },
           {
             path: 'export-keys',
             name: 'ExportKeys',
@@ -108,23 +121,9 @@ const routes = [
                 top: 0
               }
             }
-          },
-          {
-            path: 'nodes',
-            name: 'Nodes',
-            component: Nodes,
-            meta: {
-              requiresAuth: false,
-              layout: 'no-container',
-              scrollPosition: {
-                left: 0,
-                top: 0
-              }
-            }
-          },
+          }
         ]
       },
-
       {
         path: '/transactions/:crypto?',
         component: Transactions,
@@ -161,8 +160,7 @@ const routes = [
           requiresAuth: true,
           layout: 'no-container'
         }
-      },
-
+      }
     ]
   },
   {

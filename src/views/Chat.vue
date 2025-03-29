@@ -15,8 +15,9 @@
         :name="contactName"
         :owner-address="address"
       />
-    </container>
 
+      <ProgressIndicator :show="!isFulfilled" />
+    </container>
   </v-row>
 </template>
 
@@ -24,9 +25,11 @@
 import Chat from '@/components/Chat/Chat.vue'
 import PartnerInfo from '@/components/PartnerInfo.vue'
 import partnerName from '@/mixins/partnerName'
+import ProgressIndicator from '@/components/ProgressIndicator.vue'
 
 export default {
   components: {
+    ProgressIndicator,
     Chat,
     PartnerInfo
   },
