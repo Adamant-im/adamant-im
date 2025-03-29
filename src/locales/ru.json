@@ -1,5 +1,5 @@
 {
-  "app_title": "АДАМАНТ Мессенджер",
+  "app_title": "АДАМАНТ",
   "bottom": {
     "chats_button": "Чаты",
     "exit_button": "Выйти",
@@ -220,8 +220,6 @@
     "currency_label": "Основная валюта",
     "dark_theme": "Темная тема",
     "delegates_title": "Делегаты",
-    "enable_bar": "Заголовок вкладки браузера",
-    "enable_bar_tooltip": "Отображать счетчик новых сообщений в заголовке вкладки браузера",
     "enable_push": "Push-уведомления",
     "enable_push_tooltip": "Уведомления на рабочем столе. Требуется ваше разрешение",
     "enable_sound": "Звук",

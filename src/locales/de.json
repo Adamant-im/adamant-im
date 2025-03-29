@@ -1,5 +1,5 @@
 {
-  "app_title": "ADAMANT Messenger",
+  "app_title": "ADAMANT",
   "bottom": {
     "chats_button": "Chats",
     "exit_button": "Abmelden",
@@ -145,8 +145,6 @@
     "currency_label": "Hauptwährung",
     "dark_theme": "Enable dark theme",
     "delegates_title": "Delegates",
-    "enable_bar": "Ändere den Browser Tab Titel",
-    "enable_bar_tooltip": "Zeigt dir die Anzahl an neuen Nachrichten im Tab Titel an. Funktioniert nur bei Desktop Browser.",
     "enable_desktop": "Browser Benachrichtigung",
     "enable_desktop_tooltip": "Verwende integrierte Browser Benachrichtigungen (Erfordert deine Zustimmung)",
     "enable_sound": "Ton",

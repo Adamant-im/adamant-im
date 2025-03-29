@@ -1,5 +1,5 @@
 {
-  "app_title": "ADAMANT Messenger",
+  "app_title": "ADAMANT",
   "bottom": {
     "chats_button": "Chats",
     "exit_button": "Logout",
@@ -220,8 +220,6 @@
     "currency_label": "Main currency",
     "dark_theme": "Dark theme",
     "delegates_title": "Delegates",
-    "enable_bar": "Title of browser tab",
-    "enable_bar_tooltip": "Shows new messages counter in the tab title",
     "enable_push": "Push notifications",
     "enable_push_tooltip": "Notifications on desktop. Permission needed",
     "enable_sound": "Sound",

@@ -1,5 +1,5 @@
 {
-  "app_title": "ADAMANT Messenger",
+  "app_title": "ADAMANT",
   "bottom": {
     "chats_button": "聊天",
     "exit_button": "注销",
@@ -208,8 +208,6 @@
     "chats_title": "聊天",
     "dark_theme": "深色主题",
     "delegates_title": "代理人",
-    "enable_bar": "浏览器选项卡的标题",
-    "enable_bar_tooltip": "在选项卡标题中显示新消息计数器",
     "enable_push": "推送通知",
     "enable_push_tooltip": "桌面上的通知。需要权限",
     "enable_sound": "声音",
