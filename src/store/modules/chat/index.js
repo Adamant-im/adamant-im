@@ -1,3 +1,4 @@
+import { getPublicKey } from '@/lib/adamant-api'
 import validateAddress from '@/lib/validateAddress'
 import * as admApi from '@/lib/adamant-api'
 import {
@@ -615,7 +616,6 @@ const actions = {
     const normalizedMessages = messages.map(normalizeMessage)
     dispatch('botCommands/reInitCommands', normalizedMessages, { root: true })
     normalizedMessages.forEach((message) => {
-
       const { recipientId, senderId } = message
 
       if (recipientId === rootState.address || senderId === rootState.address) {
@@ -715,22 +715,23 @@ const actions = {
    * @returns {Promise}
    */
   async sendMessage({ commit, rootState }, { message, recipientId, replyToId }) {
-    let id;
+    let id
     try {
-      const type = replyToId ? MessageType.RICH_CONTENT_MESSAGE : MessageType.BASIC_ENCRYPTED_MESSAGE
+      const type = replyToId
+        ? MessageType.RICH_CONTENT_MESSAGE
+        : MessageType.BASIC_ENCRYPTED_MESSAGE
 
       const messageAsset = replyToId
         ? replyMessageAsset({
-          replyToId,
-          replyMessage: message
-        })
+            replyToId,
+            replyMessage: message
+          })
         : message
-
 
       const signedTransaction = await admApi.signChatMessageTransaction({
         to: recipientId,
         message: messageAsset,
-        type,
+        type
       })
 
       id = adamant.getTransactionId(signedTransaction)
@@ -745,7 +746,7 @@ const actions = {
 
       commit('pushMessage', {
         message: messageObject,
-        userId: rootState.address,
+        userId: rootState.address
       })
 
       const transaction = await queueSignedMessage(signedTransaction)
@@ -760,7 +761,6 @@ const actions = {
         partnerId: recipientId
       })
     } catch (error) {
-
       if (id) {
         commit('updateMessage', {
           id,
@@ -783,10 +783,15 @@ const actions = {
    * @returns {Promise}
    */
   async sendAttachment({ commit, rootState }, { files, message, recipientId, replyToId }) {
+    const recipientPublicKey = await getPublicKey(recipientId)
+    const senderPublicKey = await getPublicKey(rootState.address)
+
     let messageObject = createAttachment({
       message,
       recipientId,
       senderId: rootState.address,
+      recipientPublicKey,
+      senderPublicKey,
       files,
       replyToId
     })
@@ -798,7 +803,7 @@ const actions = {
     })
 
     const cids = files.map((file) => [file.cid, file.preview?.cid]).filter((cid) => !!cid)
-    const newAsset = replyToId
+    let newAsset = replyToId
       ? { replyto_id: replyToId, reply_message: attachmentAsset(files, message) }
       : attachmentAsset(files, message)
     commit('updateMessage', {
@@ -815,6 +820,18 @@ const actions = {
         }
       })
       console.debug('Files uploaded', uploadData)
+
+      // Heisenbug: After uploading an MP4 file, the CID returned by the IPFS node differs from the locally computed one.
+      // So we update the CIDs one more time, just to be sure.
+      newAsset = replyToId
+        ? { replyto_id: replyToId, reply_message: attachmentAsset(files, message, uploadData.cids) }
+        : attachmentAsset(files, message, uploadData.cids)
+      commit('updateMessage', {
+        id: messageObject.id,
+        partnerId: recipientId,
+        asset: newAsset
+      })
+      console.debug('Updated CIDs after upload', newAsset)
     } catch (err) {
       commit('updateMessage', {
         id: messageObject.id,

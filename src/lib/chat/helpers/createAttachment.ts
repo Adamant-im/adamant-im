@@ -8,6 +8,8 @@ import { attachmentAsset } from '@/lib/adamant-api/asset'
 type Params = {
   recipientId: string
   senderId: string
+  recipientPublicKey: string
+  senderPublicKey: string
   files: FileData[]
   nonces?: [string, string]
   ids?: [string, string]
@@ -25,6 +27,8 @@ export function createAttachment({
   files,
   message,
   replyToId,
+  recipientPublicKey,
+  senderPublicKey,
   status = TS.PENDING
 }: Params) {
   const timestamp = Date.now()
@@ -35,6 +39,8 @@ export function createAttachment({
     hash: id,
     recipientId,
     senderId,
+    recipientPublicKey,
+    senderPublicKey,
     message: message || '',
     status,
     timestamp: Date.now(),
