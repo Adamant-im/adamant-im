@@ -329,9 +329,6 @@ export default {
     &__icon {
       color: map.get(colors.$adm-colors, 'regular');
     }
-    &__chats-list-aside {
-      border-right-color: map.get(colors.$adm-colors, 'grey');
-    }
   }
 }
 

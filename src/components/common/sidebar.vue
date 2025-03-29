@@ -87,7 +87,7 @@ const hasView = computed(() => {
 .v-theme--light {
   .sidebar {
     &__aside {
-      border-right-color: map.get(colors.$adm-colors, 'grey');
+      border-right-color: map.get(colors.$adm-colors, 'secondary2');
     }
 
     &__router-view {
