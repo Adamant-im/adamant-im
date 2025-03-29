@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import wasm from 'vite-plugin-wasm'
@@ -12,7 +12,11 @@ import { deferScripsPlugin } from './vite-config/plugins/deferScriptsPlugin'
 import { preloadCSSPlugin } from './vite-config/plugins/preloadCSSPlugin'
 import { excludeBip39Wordlists } from './vite-config/rollup/excludeBip39Wordlists'
 
+const env = loadEnv('production', process.cwd())
+const basePublicPath = env.VITE_PUBLIC_PATH || '/'
+
 export default defineConfig({
+  base: basePublicPath,
   plugins: [
     wasm(),
     topLevelAwait(),

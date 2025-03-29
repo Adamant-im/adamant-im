@@ -1,4 +1,4 @@
-import BigNumber from '@/lib/bignumber'
+import { BigNumber } from '@/lib/bignumber'
 import { AllCryptos } from '@/lib/constants'
 
 /**

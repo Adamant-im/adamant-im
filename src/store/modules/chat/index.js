@@ -1,3 +1,4 @@
+import { getPublicKey } from '@/lib/adamant-api'
 import validateAddress from '@/lib/validateAddress'
 import * as admApi from '@/lib/adamant-api'
 import {
@@ -8,7 +9,8 @@ import {
   createTransaction,
   createReaction,
   normalizeMessage,
-  createAttachment
+  createAttachment,
+  queueSignedMessage
 } from '@/lib/chat/helpers'
 import { i18n } from '@/i18n'
 import { isNumeric } from '@/lib/numericHelpers'
@@ -18,6 +20,7 @@ import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
 import { uploadFiles } from '../../../lib/files'
 import { generateAdamantChats } from './utils/generateAdamantChats'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
+import adamant from '@/lib/adamant'
 
 export let interval
 
@@ -613,7 +616,6 @@ const actions = {
     const normalizedMessages = messages.map(normalizeMessage)
     dispatch('botCommands/reInitCommands', normalizedMessages, { root: true })
     normalizedMessages.forEach((message) => {
-
       const { recipientId, senderId } = message
 
       if (recipientId === rootState.address || senderId === rootState.address) {
@@ -712,55 +714,62 @@ const actions = {
    * @param {string} replyToId Optional
    * @returns {Promise}
    */
-  sendMessage({ commit, rootState }, { message, recipientId, replyToId }) {
-    const messageObject = createMessage({
-      message,
-      recipientId,
-      senderId: rootState.address,
-      replyToId
-    })
+  async sendMessage({ commit, rootState }, { message, recipientId, replyToId }) {
+    let id
+    try {
+      const type = replyToId
+        ? MessageType.RICH_CONTENT_MESSAGE
+        : MessageType.BASIC_ENCRYPTED_MESSAGE
 
-    commit('pushMessage', {
-      message: messageObject,
-      userId: rootState.address
-    })
+      const messageAsset = replyToId
+        ? replyMessageAsset({
+            replyToId,
+            replyMessage: message
+          })
+        : message
 
-    const type = replyToId ? MessageType.RICH_CONTENT_MESSAGE : MessageType.BASIC_ENCRYPTED_MESSAGE
-    const messageAsset = replyToId
-      ? replyMessageAsset({
-          replyToId,
-          replyMessage: message
-        })
-      : message
-
-    return queueMessage(messageAsset, recipientId, type)
-      .then((res) => {
-        // @todo this check must be performed on the server
-        if (!res.success) {
-          throw new Error(i18n.global.t('chats.message_rejected'))
-        }
-
-        // update `message.status` to 'REGISTERED'
-        // and `message.id` with `realId` from server
-        commit('updateMessage', {
-          id: messageObject.id,
-          realId: res.transactionId,
-          status: TS.REGISTERED, // not confirmed yet, wait to be stored in the blockchain (optional line)
-          partnerId: recipientId
-        })
-
-        return res
+      const signedTransaction = await admApi.signChatMessageTransaction({
+        to: recipientId,
+        message: messageAsset,
+        type
       })
-      .catch((err) => {
-        // update `message.status` to 'REJECTED'
+
+      id = adamant.getTransactionId(signedTransaction)
+
+      const messageObject = createMessage({
+        id,
+        message,
+        recipientId,
+        senderId: rootState.address,
+        replyToId
+      })
+
+      commit('pushMessage', {
+        message: messageObject,
+        userId: rootState.address
+      })
+
+      const transaction = await queueSignedMessage(signedTransaction)
+
+      if (!transaction.success) {
+        throw new Error(i18n.global.t('chats.message_rejected'))
+      }
+
+      commit('updateMessage', {
+        id,
+        status: TS.REGISTERED,
+        partnerId: recipientId
+      })
+    } catch (error) {
+      if (id) {
         commit('updateMessage', {
-          id: messageObject.id,
+          id,
           status: TS.REJECTED,
           partnerId: recipientId
         })
-
-        throw err // call the error again so that it can be processed inside view
-      })
+      }
+      throw error
+    }
   },
 
   /**
@@ -774,10 +783,15 @@ const actions = {
    * @returns {Promise}
    */
   async sendAttachment({ commit, rootState }, { files, message, recipientId, replyToId }) {
+    const recipientPublicKey = await getPublicKey(recipientId)
+    const senderPublicKey = await getPublicKey(rootState.address)
+
     let messageObject = createAttachment({
       message,
       recipientId,
       senderId: rootState.address,
+      recipientPublicKey,
+      senderPublicKey,
       files,
       replyToId
     })
@@ -789,7 +803,7 @@ const actions = {
     })
 
     const cids = files.map((file) => [file.cid, file.preview?.cid]).filter((cid) => !!cid)
-    const newAsset = replyToId
+    let newAsset = replyToId
       ? { replyto_id: replyToId, reply_message: attachmentAsset(files, message) }
       : attachmentAsset(files, message)
     commit('updateMessage', {
@@ -806,6 +820,18 @@ const actions = {
         }
       })
       console.debug('Files uploaded', uploadData)
+
+      // Heisenbug: After uploading an MP4 file, the CID returned by the IPFS node differs from the locally computed one.
+      // So we update the CIDs one more time, just to be sure.
+      newAsset = replyToId
+        ? { replyto_id: replyToId, reply_message: attachmentAsset(files, message, uploadData.cids) }
+        : attachmentAsset(files, message, uploadData.cids)
+      commit('updateMessage', {
+        id: messageObject.id,
+        partnerId: recipientId,
+        asset: newAsset
+      })
+      console.debug('Updated CIDs after upload', newAsset)
     } catch (err) {
       commit('updateMessage', {
         id: messageObject.id,
