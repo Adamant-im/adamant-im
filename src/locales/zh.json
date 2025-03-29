@@ -250,12 +250,6 @@
     "connect_camera": "打开相机，再试一次",
     "grant_camera_permissions": "在浏览器设置中授予相机权限并重试",
     "hold_your_device": "保持设备稳定 2-3 秒以扫描二维码",
-    "login": {
-      "modal_header": "扫描包含密码短语的二维码"
-    },
-    "new-chat": {
-      "modal_header": "扫描包含ADAMANT地址的二维码"
-    },
     "no_camera_access": "没有相机访问权限",
     "no_camera_found": "未找到摄像头",
     "no_camera_stream": "没有来自摄像头的视频流",

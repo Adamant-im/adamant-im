@@ -173,12 +173,6 @@
     "connect_camera": "Connect the camera and try again",
     "grant_camera_permissions": "Erteilen Sie Kamera Berechtigungen in den Browsereinstellungen und versuchen Sie es erneut",
     "hold_your_device": "Hold your device steady for 2-3 seconds towards the QR code you want to scan",
-    "login": {
-      "modal_header": "Scan QR code with a passphrase"
-    },
-    "new-chat": {
-      "modal_header": "Scan QR code with ADM wallet address"
-    },
     "no_camera_access": "Kein zugriff auf die kamera",
     "no_camera_found": "No camera found",
     "no_camera_stream": "Kein Video Stream von Kamera",
