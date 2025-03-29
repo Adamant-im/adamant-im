@@ -273,8 +273,8 @@ export default {
 
 <style lang="scss" scoped>
 @use 'sass:map';
-@use '@/assets/styles/settings/colors';
-@use 'settings';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
 
 .chats-view {
   height: 100%;
