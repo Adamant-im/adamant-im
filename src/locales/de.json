@@ -161,7 +161,6 @@
     "security_title": "Sicherheit",
     "send_on_enter": "Send messages by Enter key",
     "send_on_enter_tooltip": "Nachricht senden bei ENTER",
-    "upvote_for_label": "Vote for:",
     "version": "App Version: ",
     "vote_for_delegates_button": "Vote for delegates",
     "wallets_list": "Liste der Geldbörsen"
@@ -273,7 +272,6 @@
     "total_new_votes": "Total new votes",
     "total_votes": "Total votes",
     "transaction_confirm_await": "Transaction is running, please be patient…",
-    "upvote_for_label": "Vote for:",
     "upvotes": "Upvotes",
     "vote_button_text": "Vote",
     "vote_request_limit": "Vote request limit: {limit}",
