@@ -35,8 +35,10 @@
     "postinstall": "electron-builder install-app-deps && npm run schema:generate"
   },
   "dependencies": {
+    "@capacitor-community/file-opener": "^6.0.1",
     "@capacitor/android": "^6.1.2",
     "@capacitor/core": "^6.1.2",
+    "@capacitor/filesystem": "^6.0.3",
     "@emoji-mart/data": "^1.2.1",
     "@klayr/codec": "^0.5.1",
     "@klayr/cryptography": "^4.1.1",

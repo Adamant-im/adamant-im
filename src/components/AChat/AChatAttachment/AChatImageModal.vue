@@ -58,6 +58,9 @@ import { ref, computed, onMounted, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
+import { Capacitor } from '@capacitor/core'
+import { Directory, Filesystem, WriteFileResult } from '@capacitor/filesystem'
+import { FileOpener } from '@capacitor-community/file-opener'
 
 import AChatImageModalItem from './AChatImageModalItem.vue'
 import AChatModalFile from './AChatModalFile.vue'
@@ -69,7 +72,36 @@ function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-function downloadFileByUrl(url: string, filename = 'unnamed') {
+async function downloadFileNatively(blobUrl: string, filename: string): Promise<WriteFileResult> {
+  const response = await fetch(blobUrl)
+  const blob = await response.blob()
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(blob)
+
+    reader.onloadend = async () => {
+      const base64Data = reader.result?.toString().split(',')[1]
+
+      Filesystem.writeFile({
+        path: filename,
+        data: base64Data!,
+        directory: Directory.Documents
+      })
+        .then(resolve)
+        .catch(reject)
+    }
+  })
+}
+
+async function downloadFileByUrl(url: string, filename = 'unnamed') {
+  if (Capacitor.isNativePlatform()) {
+    const fileResult = await downloadFileNatively(url, filename)
+    await FileOpener.open({ filePath: fileResult.uri })
+
+    return
+  }
+
   const anchor = document.createElement('a')
   anchor.href = url
   anchor.download = filename
@@ -202,7 +234,7 @@ export default {
         const fileName = file.name
           ? `${file.name}${file.extension ? '.' + file.extension : ''}`
           : undefined
-        downloadFileByUrl(imageUrl, fileName)
+        await downloadFileByUrl(imageUrl, fileName)
       } catch {
         void store.dispatch('snackbar/show', {
           message: t('chats.file_not_found')
