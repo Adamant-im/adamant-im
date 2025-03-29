@@ -1,6 +1,5 @@
 <template>
   <pull-down @action="updateBalances" :action-text="$t('chats.pull_down_actions.update_balances')">
-    <!--    <sidebar>-->
     <v-row justify="center" no-gutters :class="className">
       <container>
         <v-sheet class="white--text" color="transparent" :class="`${className}__card`">
@@ -64,7 +63,6 @@
         </v-sheet>
       </container>
     </v-row>
-    <!--    </sidebar>-->
   </pull-down>
 </template>
 
