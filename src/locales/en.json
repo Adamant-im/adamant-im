@@ -278,7 +278,7 @@
     "confirmations": "Confirmations",
     "continueChat": "Continue chat",
     "date": "Date",
-    "explorer": "Open in Explorer",
+    "explorer": "Open in block explorer",
     "me": "Me",
     "me_and_addresses": "no address | Me and {n} more address | Me and {n} more addresses",
     "no_transactions": "No transactions yet",
@@ -291,24 +291,24 @@
     "statuses": {
       "REJECTED": "Error",
       "PENDING": "Pending",
-      "REGISTERED": "Pending, waiting for confirmations",
+      "REGISTERED": "Waiting for confirmations",
       "CONFIRMED": "Success",
       "INVALID": "Inconsistent",
-      "UNKNOWN": "Unknown"
+      "UNKNOWN": "Unknown crypto"
     },
     "statuses_add": {
-      "instant_send": "Confirmed as InstantSend (yet 0 network confirmations)",
-      "adm_registered": "Confirmed as registered in ADAMANT blockchain (yet 0 network confirmations)"
+      "instant_send": "InstantSend confirmed (yet 0 blockchain confirmations)",
+      "adm_registered": "Preliminary acceptance (full confirmation pending)"
     },
     "inconsistent_reasons": {
-      "unknown": "Failed to check Tx. Somethings went wrong",
-      "no_recipient_crypto_address": "Unable to get recipient's {crypto} address",
-      "no_sender_crypto_address": "Unable to get sender's {crypto} address",
-      "wrong_tx_hash": "Wrong Tx hash. Be aware of fraud",
-      "wrong_amount": "Wrong {crypto} amount. Be aware of fraud",
-      "wrong_timestamp": "Message and {crypto} Tx has different timestamps. It is possible, but check twice",
-      "sender_crypto_address_mismatch": "Sender's {crypto} address differs. Be aware of fraud",
-      "recipient_crypto_address_mismatch": "Recipient's {crypto} address differs. Be aware of fraud"
+      "unknown": "Transaction check failed",
+      "no_recipient_crypto_address": "Recipient's {crypto} address missing",
+      "no_sender_crypto_address": "Sender's {crypto} address missing",
+      "wrong_tx_hash": "Invalid transaction hash — possible fraud",
+      "wrong_amount": "Amount mismatch — possible fraud",
+      "wrong_timestamp": "Timestamp discrepancy between message and {crypto} transaction",
+      "sender_crypto_address_mismatch": "Sender address changed — potential fraud",
+      "recipient_crypto_address_mismatch": "Recipient address changed — potential fraud"
     },
     "transactions": "Transactions",
     "txid": "Transaction #"
