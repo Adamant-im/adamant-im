@@ -51,7 +51,7 @@
     <div
       class="d-flex justify-center align-center"
       :class="`${className}__chat-spinner-wrapper`"
-      v-if="!chatPagePartnerId"
+      v-if="!chatPagePartnerId && !isFulfilled"
     >
       <ChatSpinner :value="!isFulfilled" />
     </div>
