@@ -170,7 +170,7 @@
     "article": "блоге АДАМАНТа",
     "article_hint": "О пользовательском пароле читайте в ",
     "encrypting_data_title": "Шифрование данных…",
-    "enter_password": "Задайте пароль",
+    "enter_password": "Пароль",
     "incorrect_password": "Неверный пароль",
     "login_via_password": "Войти с помощью пароля",
     "popup_confirm_text": "Установить",
@@ -184,13 +184,13 @@
   "nodes": {
     "active": "Активная",
     "fastest_title": "Подключаться к самому быстрому узлу",
-    "fastest_tooltip": "Запросы будут обрабатываться самым быстрым узлом",
+    "fastest_tooltip": "Автоматически выбирает узлы с наименьшим пингом",
     "label": "Тип",
     "host": "Хост",
     "inactive": "Неактивная",
     "sync": "Синхронизируется",
     "ms": "мс",
-    "nodeLabelDescription": "Поддержите децентрализацию и повысьте уровень приватности — <a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">установите свой узел (ноду) АДАМАНТа</a>. Чтобы добавить свои узлы в список для подключения, вам нужно <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">развернуть свое веб-приложение на отдельном домене</a>. Это ограничение связано с политикой безопасности Content Security Policy (CSP).",
+    "nodeLabelDescription": "Поддержите децентрализацию и повысьте уровень приватности: <a target=\"_blank\" href=\"https://news.adamant.im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">Установите свою ноду ADM</a>. Чтобы добавить узлы в список, <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">разверните свое веб-приложение</a> (ограничение CSP).",
     "offline": "Недоступна",
     "coin": "Coin",
     "ping": "Пинг",
@@ -200,18 +200,18 @@
       "adm_nodes": "Узлы ADM",
       "coin_nodes": "Крипто-ноды",
       "service_nodes": "Крипто-сервисы",
-      "ipfs_nodes": "IPFS ноды"
+      "ipfs_nodes": "Ноды IPFS"
     },
     "unsupported": "Не поддерживается",
     "unsupported_reason_protocol": "HTTP не поддерживается",
-    "unsupported_reason_api_version": "API версия устарела",
-    "use_socket_connection": "Использовать сокет-подключения",
-    "use_socket_connection_tooltip": "Сокеты позволяют получать новые сообщения мгновенно, как классические P2P-мессенджеры"
+    "unsupported_reason_api_version": "Версия API устарела",
+    "use_socket_connection": "Использовать сокет-подключение",
+    "use_socket_connection_tooltip": "Получайте сообщения мгновенно с технологией WebSocket"
   },
   "notifications": {
     "tabMessage": {
-      "few": "нет новых сообщений | 1 новое сообщение | {n} новых сообщения | {n} новых сообщений",
-      "many": "99+ новых сообщений"
+      "few": "нет новых сообщений | 1 сообщение | {n} сообщения | {n} сообщений",
+      "many": "99+ сообщений"
     }
   },
   "options": {
@@ -220,7 +220,6 @@
     "currency_label": "Основная валюта",
     "dark_theme": "Темная тема",
     "delegates_title": "Делегаты",
-    "downvote_for_label": "Снять голос с:",
     "enable_bar": "Заголовок вкладки браузера",
     "enable_bar_tooltip": "Отображать счетчик новых сообщений в заголовке вкладки браузера",
     "enable_push": "Push-уведомления",
@@ -386,7 +385,6 @@
     "delegate_forged": "Нафоржил",
     "delegate_link": "Ссылка",
     "delegate_uptime": "Аптайм",
-    "downvote_for_label": "Снять голос с:",
     "downvotes": "Против",
     "filter_placeholder": "Имя или адрес кошелька АДАМАНТ",
     "loading_delegates": "Загрузка делегатов…",

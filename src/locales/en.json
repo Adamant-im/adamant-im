@@ -168,14 +168,14 @@
   },
   "login_via_password": {
     "article": "ADAMANT Blog",
-    "article_hint": "Read about passwords in ",
+    "article_hint": "Learn about passwords in ",
     "encoding_data_title": "Encrypting data…",
-    "enter_password": "Set a password",
+    "enter_password": "Password",
     "incorrect_password": "Invalid password",
     "login_via_password": "Login via password",
     "popup_confirm_text": "Set",
     "popup_hint": "8+ symbols recommended…",
-    "popup_title": "Set a password",
+    "popup_title": "Set password",
     "remove_password": "Remove password",
     "remove_password_hint": "Or remove your password to log in with a passphrase",
     "user_password_title": "Password",
@@ -183,14 +183,14 @@
   },
   "nodes": {
     "active": "Active",
-    "fastest_title": "Choose the fastest node",
-    "fastest_tooltip": "Requests will be processed with a fastest node",
+    "fastest_title": "Use fastest available node",
+    "fastest_tooltip": "Automatically selects the node with lowest latency",
     "label": "Type",
     "host": "Host",
     "inactive": "Inactive",
     "sync": "Syncing",
     "ms": "ms",
-    "nodeLabelDescription": "Support decentralization and enhance privacy level—<a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">run your own ADAMANT node</a>. To add your nodes to the list, you need <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">to deploy web application on separate domain</a>. This limitation refers to Content Security Policy (CSP).",
+    "nodeLabelDescription": "Help strengthen the network: <a target=\"_blank\" href=\"https://news.adamant.im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">Run your own ADM node</a>. Note: To list a node, <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">deploy your own app</a> (CSP requirement).",
     "offline": "Offline",
     "coin": "Coin",
     "ping": "Ping",
@@ -199,19 +199,19 @@
     "tabs": {
       "adm_nodes": "ADM nodes",
       "coin_nodes": "Coin nodes",
-      "service_nodes": "Service nodes",
+      "service_nodes": "Coin services",
       "ipfs_nodes": "IPFS nodes"
     },
     "unsupported": "Unsupported",
     "unsupported_reason_protocol": "HTTP is not allowed",
     "unsupported_reason_api_version": "Outdated API version",
-    "use_socket_connection": "Use socket connections",
-    "use_socket_connection_tooltip": "WebSockets allow to get new messages instantly like P2P messengers"
+    "use_socket_connection": "Use socket connection",
+    "use_socket_connection_tooltip": "Get messages instantly via WebSocket connections"
   },
   "notifications": {
     "tabMessage": {
-      "few": "no new messages | 1 new message | {n} new messages | {n} new messages",
-      "many": "99+ new messages"
+      "few": "no new messages | 1 message | {n} messages | {n} messages",
+      "many": "99+ messages"
     }
   },
   "options": {
@@ -220,7 +220,6 @@
     "currency_label": "Main currency",
     "dark_theme": "Dark theme",
     "delegates_title": "Delegates",
-    "downvote_for_label": "Downvote for:",
     "enable_bar": "Title of browser tab",
     "enable_bar_tooltip": "Shows new messages counter in the tab title",
     "enable_push": "Push notifications",
@@ -386,7 +385,6 @@
     "delegate_forged": "Forged",
     "delegate_link": "Link",
     "delegate_uptime": "Uptime",
-    "downvote_for_label": "Downvote for:",
     "downvotes": "Downvotes",
     "filter_placeholder": "Name or ADAMANT wallet address required",
     "loading_delegates": "Loading delegates…",
