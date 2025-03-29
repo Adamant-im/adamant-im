@@ -1,3 +1,4 @@
+import { getPublicKey } from '@/lib/adamant-api'
 import validateAddress from '@/lib/validateAddress'
 import * as admApi from '@/lib/adamant-api'
 import {
@@ -613,7 +614,6 @@ const actions = {
     const normalizedMessages = messages.map(normalizeMessage)
     dispatch('botCommands/reInitCommands', normalizedMessages, { root: true })
     normalizedMessages.forEach((message) => {
-
       const { recipientId, senderId } = message
 
       if (recipientId === rootState.address || senderId === rootState.address) {
@@ -774,10 +774,15 @@ const actions = {
    * @returns {Promise}
    */
   async sendAttachment({ commit, rootState }, { files, message, recipientId, replyToId }) {
+    const recipientPublicKey = await getPublicKey(recipientId)
+    const senderPublicKey = await getPublicKey(rootState.address)
+
     let messageObject = createAttachment({
       message,
       recipientId,
       senderId: rootState.address,
+      recipientPublicKey,
+      senderPublicKey,
       files,
       replyToId
     })
@@ -789,7 +794,7 @@ const actions = {
     })
 
     const cids = files.map((file) => [file.cid, file.preview?.cid]).filter((cid) => !!cid)
-    const newAsset = replyToId
+    let newAsset = replyToId
       ? { replyto_id: replyToId, reply_message: attachmentAsset(files, message) }
       : attachmentAsset(files, message)
     commit('updateMessage', {
@@ -806,6 +811,18 @@ const actions = {
         }
       })
       console.debug('Files uploaded', uploadData)
+
+      // Heisenbug: After uploading an MP4 file, the CID returned by the IPFS node differs from the locally computed one.
+      // So we update the CIDs one more time, just to be sure.
+      newAsset = replyToId
+        ? { replyto_id: replyToId, reply_message: attachmentAsset(files, message, uploadData.cids) }
+        : attachmentAsset(files, message, uploadData.cids)
+      commit('updateMessage', {
+        id: messageObject.id,
+        partnerId: recipientId,
+        asset: newAsset
+      })
+      console.debug('Updated CIDs after upload', newAsset)
     } catch (err) {
       commit('updateMessage', {
         id: messageObject.id,

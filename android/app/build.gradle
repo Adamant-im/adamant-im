@@ -7,8 +7,8 @@ android {
         applicationId "im.adamant.adamantmessengerpwa"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 490
-        versionName "4.9.0"
+        versionCode 491
+        versionName "4.9.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
