@@ -9,8 +9,6 @@
     "wallet_button": "Account"
   },
   "chats": {
-    "attach_file": "Attach file",
-    "attach_image": "Attach image",
     "date_today": "Heute",
     "date_tomorrow": "Morgen",
     "date_yesterday": "Gestern",
