@@ -1,3 +1,4 @@
+import { getPublicKey } from '@/lib/adamant-api'
 import validateAddress from '@/lib/validateAddress'
 import * as admApi from '@/lib/adamant-api'
 import {
@@ -773,10 +774,15 @@ const actions = {
    * @returns {Promise}
    */
   async sendAttachment({ commit, rootState }, { files, message, recipientId, replyToId }) {
+    const recipientPublicKey = await getPublicKey(recipientId)
+    const senderPublicKey = await getPublicKey(rootState.address)
+
     let messageObject = createAttachment({
       message,
       recipientId,
       senderId: rootState.address,
+      recipientPublicKey,
+      senderPublicKey,
       files,
       replyToId
     })
