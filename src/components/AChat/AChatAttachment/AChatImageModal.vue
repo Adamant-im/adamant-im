@@ -91,6 +91,8 @@ async function downloadFileNatively(blobUrl: string, filename: string): Promise<
         .then(resolve)
         .catch(reject)
     }
+
+    reader.onerror = reject
   })
 }
 
