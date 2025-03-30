@@ -73,7 +73,9 @@ const startResize = (event: MouseEvent) => {
 
 const resize = (event: MouseEvent) => {
   if (isResizing && asideRef.value) {
-    width.value = Math.max(100, event.clientX - asideRef.value.offsetLeft) + 'px'
+    requestAnimationFrame(() => {
+      width.value = Math.max(100, event.clientX - asideRef.value.offsetLeft) + 'px'
+    })
   }
 }
 
@@ -141,6 +143,10 @@ const stopResize = () => {
       width: 100%;
       height: auto;
       user-select: none;
+    }
+
+    :deep(.a-container) {
+      max-width: unset;
     }
 
     @media (max-width: 799px) {
