@@ -72,9 +72,11 @@ const startResize = (event: MouseEvent) => {
 }
 
 const resize = (event: MouseEvent) => {
-  if (isResizing && asideRef.value) {
+  if (isResizing) {
     requestAnimationFrame(() => {
-      width.value = Math.max(100, event.clientX - asideRef.value.offsetLeft) + 'px'
+      if (asideRef.value) {
+        width.value = Math.max(100, event.clientX - asideRef.value.offsetLeft) + 'px'
+      }
     })
   }
 }
