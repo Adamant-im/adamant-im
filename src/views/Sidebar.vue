@@ -6,6 +6,9 @@
         [`${className}__aside`]: true,
         [`${className}__aside--has-view`]: hasView
       }"
+      ref="aside"
+      :style="{ '--width': width }"
+      @mousedown="startResize"
     >
       <left-side />
     </aside>
@@ -16,7 +19,7 @@
         [`${className}__router-view--no-aside`]: !needAside
       }"
     >
-      <img v-show="showLogo" src="/img/adamant-logo-transparent-512x512.png" />
+      <img v-show="showLogo" src="/img/adamant-logo-transparent-512x512.png" draggable="false" />
 
       <router-view :key="route.path" />
     </div>
@@ -24,7 +27,7 @@
 </template>
 <script lang="ts" setup>
 import { useRoute } from 'vue-router'
-import { computed } from 'vue'
+import { computed, useTemplateRef, ref } from 'vue'
 import { useStore } from 'vuex'
 import LeftSide from '@/LeftSide.vue'
 
@@ -37,6 +40,12 @@ defineProps<{
 const route = useRoute()
 const store = useStore()
 
+const asideRef = useTemplateRef('aside')
+let isResizing = false
+const initWidth = '33%'
+
+const width = ref(initWidth)
+
 const hasView = computed(() => {
   return route.matched.length > 1
 })
@@ -48,6 +57,33 @@ const needAside = computed(() => {
 const showLogo = computed(() => {
   return !hasView.value
 })
+
+const startResize = (event: MouseEvent) => {
+  if (!asideRef.value) return
+
+  const { left, width: boxWidth } = asideRef.value.getBoundingClientRect()
+  const mouseX = event.clientX
+
+  if (mouseX >= left + boxWidth - 10) {
+    isResizing = true
+    document.addEventListener('mousemove', resize)
+    document.addEventListener('mouseup', stopResize)
+  }
+}
+
+const resize = (event: MouseEvent) => {
+  if (isResizing && asideRef.value) {
+    width.value = Math.max(100, event.clientX - asideRef.value.offsetLeft) + 'px'
+
+    console.log('width.value', width.value)
+  }
+}
+
+const stopResize = () => {
+  isResizing = false
+  document.removeEventListener('mousemove', resize)
+  document.removeEventListener('mouseup', stopResize)
+}
 </script>
 <style lang="scss" scoped>
 @use 'sass:map';
@@ -64,17 +100,31 @@ const showLogo = computed(() => {
   }
 
   &__aside {
-    width: 33%;
+    width: var(--width);
     min-height: 100%;
     height: calc(100vh - var(--v-layout-bottom));
     border-right: 2px solid black;
+    position: relative;
+    min-width: max(300px, 16.6%);
+    max-width: 83.4%;
+    user-select: none;
 
-    @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+    &::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 10px;
+      height: 100%;
+      cursor: ew-resize;
+    }
+
+    @media (max-width: 799px) {
       width: 100%;
     }
 
     &--has-view {
-      @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+      @media (max-width: 799px) {
         display: none;
       }
     }
@@ -88,7 +138,14 @@ const showLogo = computed(() => {
       max-width: 800px;
     }
 
-    @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+    img {
+      max-width: 512px;
+      width: 100%;
+      height: auto;
+      user-select: none;
+    }
+
+    @media (max-width: 799px) {
       img {
         display: none;
       }
