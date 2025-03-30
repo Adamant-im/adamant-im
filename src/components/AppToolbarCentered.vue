@@ -21,6 +21,8 @@
 
 <script>
 import { mdiArrowLeft } from '@mdi/js'
+import { useRoute, useRouter } from 'vue-router'
+import { onBeforeUnmount } from 'vue'
 
 export default {
   props: {
@@ -58,8 +60,55 @@ export default {
     }
   },
   setup() {
+    const route = useRoute()
+    const router = useRouter()
+
+    const goBack = () => {
+      if (route.query?.from?.includes('chats')) {
+        router.push(route.query.from)
+        return
+      }
+
+      if (history.state?.back.includes('chats')) {
+        router.push({
+          name: 'Chats'
+        })
+        return
+      }
+
+      if (route.matched.length > 1) {
+        const parentRoute = route.matched[route.matched.length - 2]
+
+        router.push(parentRoute.path)
+        return
+      }
+
+      // there are no pages in history to go back
+      if (history.length === 1) {
+        router.replace('/')
+        return
+      }
+
+      router.back()
+    }
+
+    const onKeydownHandler = (event) => {
+      if (event.key === 'Escape') {
+        if (route.query?.from?.includes('chats')) {
+          goBack()
+        }
+      }
+    }
+
+    document.addEventListener('keydown', onKeydownHandler)
+
+    onBeforeUnmount(() => {
+      document.removeEventListener('keydown', onKeydownHandler)
+    })
+
     return {
-      mdiArrowLeft
+      mdiArrowLeft,
+      goBack
     }
   },
   computed: {
@@ -70,36 +119,6 @@ export default {
       }
     },
     className: () => 'app-toolbar-centered'
-  },
-  methods: {
-    goBack() {
-      if (this.$route.query?.from?.includes('chats')) {
-        this.$router.push(this.$route.query.from)
-        return
-      }
-
-      if (history.state?.back.includes('chats')) {
-        this.$router.push({
-          name: 'Chats'
-        })
-        return
-      }
-
-      if (this.$route.matched.length > 1) {
-        const parentRoute = this.$route.matched[this.$route.matched.length - 2]
-
-        this.$router.push(parentRoute.path)
-        return
-      }
-
-      // there are no pages in history to go back
-      if (history.length === 1) {
-        this.$router.replace('/')
-        return
-      }
-
-      this.$router.back()
-    }
   }
 }
 </script>
