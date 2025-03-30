@@ -121,8 +121,9 @@
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^6.1.2",
-    "@commitlint/cli": "^19.7.1",
+    "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.7.1",
+    "@commitlint/types": "^19.8.0",
     "@electron/notarize": "^2.5.0",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@openapitools/openapi-generator-cli": "^2.16.3",
