@@ -86,7 +86,7 @@ async function downloadFileNatively(blobUrl: string, filename: string): Promise<
       Filesystem.writeFile({
         path: filename,
         data: base64Data!,
-        directory: Directory.Documents
+        directory: Directory.Data
       })
         .then(resolve)
         .catch(reject)
