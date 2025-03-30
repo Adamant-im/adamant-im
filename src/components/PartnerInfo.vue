@@ -2,7 +2,7 @@
   <v-dialog v-model="show" max-width="360">
     <v-card>
       <v-card-title :class="`${className}__dialog-title`" class="a-text-header">
-        {{ isMe ? $t('chats.my_qr_code') : $t('chats.partner_info') }}
+        {{ isMe ? t('chats.my_qr_code') : t('chats.partner_info') }}
         <v-spacer />
         <v-btn variant="text" icon class="close-icon" :size="36" @click="show = false">
           <v-icon :icon="mdiClose" :size="24" />
@@ -20,7 +20,7 @@
             {{ address }}
           </v-list-item-title>
           <v-list-item-subtitle :class="`${className}__username`">
-            {{ isMe ? $t('chats.me') : name }}
+            {{ isMe ? t('chats.me') : name }}
           </v-list-item-subtitle>
         </v-list-item>
       </v-list>
@@ -31,7 +31,7 @@
   </v-dialog>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 import QrcodeRenderer from '@/components/QrcodeRenderer.vue'
 import { Cryptos } from '@/lib/constants'
@@ -41,6 +41,7 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import IconBox from '@/components/icons/IconBox.vue'
 import { mdiClose } from '@mdi/js'
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   address: {
@@ -64,6 +65,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
+
+const { t } = useI18n()
 
 const className = ref('partner-info-dialog')
 const logo = ref('/img/adm-qr-invert.png')
