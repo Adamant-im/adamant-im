@@ -123,6 +123,7 @@ const stopResize = () => {
 
     @media (max-width: 799px) {
       width: 100%;
+      max-width: unset;
     }
 
     &--has-view {
