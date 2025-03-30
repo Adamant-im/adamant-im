@@ -58,6 +58,11 @@ const showLogo = computed(() => {
   display: flex;
   max-width: 1300px;
 
+  @media (min-width: 1300px) {
+    border-right: 2px solid black;
+    border-left: 2px solid black;
+  }
+
   &__aside {
     width: 33%;
     min-height: 100%;
@@ -104,6 +109,11 @@ const showLogo = computed(() => {
 
 .v-theme--light {
   .sidebar {
+    @media (min-width: 1300px) {
+      border-right: 2px solid map.get(colors.$adm-colors, 'secondary2');
+      border-left: 2px solid map.get(colors.$adm-colors, 'secondary2');
+    }
+
     &__aside {
       border-right-color: map.get(colors.$adm-colors, 'secondary2');
     }
