@@ -107,8 +107,8 @@ const stopResize = () => {
     height: calc(100vh - var(--v-layout-bottom));
     border-right: 2px solid black;
     position: relative;
-    min-width: max(300px, 16.6%);
-    max-width: 83.4%;
+    min-width: max(300px, 25%);
+    max-width: 75%;
     user-select: none;
 
     &::after {
