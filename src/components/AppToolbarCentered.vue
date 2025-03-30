@@ -86,8 +86,6 @@ export default {
       }
 
       if (this.$route.matched.length > 1) {
-        console.log('check')
-
         const parentRoute = this.$route.matched[this.$route.matched.length - 2]
 
         this.$router.push(parentRoute.path)
