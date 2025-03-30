@@ -1,5 +1,10 @@
 <template>
-  <div :class="{ [`${className} d-flex justify-center ma-auto`]: true }">
+  <div
+    :class="{
+      [`${className} d-flex justify-center ma-auto`]: true,
+      [`${className}__with-aside`]: needAside
+    }"
+  >
     <aside
       v-if="needAside"
       :class="{
@@ -96,9 +101,11 @@ const stopResize = () => {
   display: flex;
   max-width: 1300px;
 
-  @media (min-width: 1300px) {
-    border-right: 2px solid black;
-    border-left: 2px solid black;
+  &__with-aside {
+    @media (min-width: 1300px) {
+      border-right: 2px solid black;
+      border-left: 2px solid black;
+    }
   }
 
   &__aside {
@@ -173,9 +180,11 @@ const stopResize = () => {
 
 .v-theme--light {
   .sidebar {
-    @media (min-width: 1300px) {
-      border-right: 2px solid map.get(colors.$adm-colors, 'secondary2');
-      border-left: 2px solid map.get(colors.$adm-colors, 'secondary2');
+    &__with-aside {
+      @media (min-width: 1300px) {
+        border-right: 2px solid map.get(colors.$adm-colors, 'secondary2');
+        border-left: 2px solid map.get(colors.$adm-colors, 'secondary2');
+      }
     }
 
     &__aside {
