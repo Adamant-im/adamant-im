@@ -75,7 +75,6 @@ import numberFormat from '@/filters/numberFormat'
 import { PullDown } from '@/components/common/PullDown'
 import { Cryptos, CryptosInfo, isErc20 } from '@/lib/constants'
 import { vibrate } from '@/lib/vibrate'
-import { onActivated, onDeactivated } from 'vue'
 
 /**
  * Center VTab element on click.
@@ -107,15 +106,6 @@ export default {
     WalletCard,
     WalletTab,
     CryptoIcon
-  },
-  setup() {
-    onDeactivated(() => {
-      console.log('onDeactivated')
-    })
-
-    onActivated(() => {
-      console.log('activated')
-    })
   },
   computed: {
     className: () => 'account-view',
