@@ -1,7 +1,7 @@
 import socketClient from '@/lib/sockets'
 import { decodeChat, getPublicKey } from '@/lib/adamant-api'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import { MessageType } from '@/lib/constants'
+import { EPOCH, MessageType } from '@/lib/constants'
 
 function subscribe(store) {
   socketClient.subscribe('newMessage', (transaction) => {
@@ -17,7 +17,12 @@ function subscribe(store) {
       // So we'll update confirmations in getTransactionStatus()
 
       if (transaction.asset?.chat?.type !== MessageType.SIGNAL_MESSAGE) {
-        store.commit('chat/setLastUpdated', Date.now())
+        const timestamp = transaction.timestamp
+        const chatsActualTimeout = store.getters['chat/chatsActualTimeout']
+
+        const validUntil = (timestamp * 1000) + chatsActualTimeout + EPOCH + 1000
+
+        store.commit('chat/setChatsActualUntil', validUntil)
         store.dispatch('chat/pushMessages', [decoded])
       }
     })

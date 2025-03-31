@@ -308,7 +308,6 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
-import { CHATS_ACTUAL_INTERVAL } from '@/store/modules/chat'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -361,14 +360,14 @@ const actionsMenuMessageId = ref<string | -1>(-1)
 const actionsDropdownMessageId = ref<string | -1>(-1)
 const replyMessageId = ref<string | -1>(-1)
 const showEmojiPicker = ref(false)
-const chatActualTimeout = ref<ReturnType<typeof setInterval> | undefined>(undefined)
+const chatActualInterval = ref<ReturnType<typeof setInterval> | undefined>(undefined)
 
 const messages = computed(() => store.getters['chat/messages'](props.partnerId))
 const userId = computed(() => store.state.address)
 const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
 const admNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
 const chatActual = computed(() => store.state.chat.chatsActual)
-const lastUpdated = computed(() => store.state.chat.lastUpdated)
+const chatsActualUntil = computed(() => store.state.chat.chatsActualUntil)
 
 const getPartnerName = (address: string) => {
   const name: string = store.getters['partners/displayName'](address) || ''
@@ -412,10 +411,10 @@ watch(
 )
 
 // To update immediately if the message was sent using sockets
-watch(lastUpdated, () => {
-  const isUpdated = (Date.now() - lastUpdated.value <= CHATS_ACTUAL_INTERVAL + 1)
+watch(chatsActualUntil, () => {
+  const areChatsActual = chatsActualUntil.value > Date.now()
 
-  store.commit('chat/setChatsActual', isUpdated)
+  store.commit('chat/setChatsActual', areChatsActual)
 })
 
 watch(lastMessage, () => {
@@ -446,10 +445,10 @@ onBeforeMount(() => {
 })
 onMounted(() => {
   // To show the spinner if !isUpdated
-  chatActualTimeout.value = setInterval(() => {
-    const isUpdated = (Date.now() - lastUpdated.value <= CHATS_ACTUAL_INTERVAL + 1)
+  chatActualInterval.value = setInterval(() => {
+    const areChatsActual = chatsActualUntil.value > Date.now()
 
-    store.commit('chat/setChatsActual', isUpdated)
+    store.commit('chat/setChatsActual', areChatsActual)
   }, 1000)
   
   if (isFulfilled.value && chatPage.value <= 0) fetchChatMessages()
@@ -469,7 +468,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('keyup', onKeyPress)
   Visibility.unbind(Number(visibilityId.value))
-  clearInterval(chatActualTimeout.value)
+  clearInterval(chatActualInterval.value)
 })
 
 /**

@@ -14,7 +14,7 @@ import {
 } from '@/lib/chat/helpers'
 import { i18n } from '@/i18n'
 import { isNumeric } from '@/lib/numericHelpers'
-import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
+import { EPOCH, Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
 import { uploadFiles } from '../../../lib/files'
@@ -23,8 +23,6 @@ import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/uti
 import adamant from '@/lib/adamant'
 
 export let interval
-
-export const CHATS_ACTUAL_INTERVAL = 10000
 
 const SOCKET_ENABLED_TIMEOUT = 10000
 const SOCKET_DISABLED_TIMEOUT = 3000
@@ -55,7 +53,7 @@ const state = () => ({
   offset: 0, // for loading chat list with pagination. -1 if all of chats loaded
   noActiveNodesDialog: undefined, // true - visible dialog, false - hidden dialog, but shown before, undefined - not shown
   chatsActual: false,
-  lastUpdated: 0
+  chatsActualUntil: 0
 })
 
 const getters = {
@@ -78,6 +76,15 @@ const getters = {
     }
 
     return []
+  },
+
+  /**
+   * Returns the timeout for chatsActual
+   * @depends options.useSocketConnection
+   * @returns {number}
+   */
+  chatsActualTimeout: (state, getters, rootState) => {
+    return rootState.options.useSocketConnection ? SOCKET_ENABLED_TIMEOUT : SOCKET_DISABLED_TIMEOUT
   },
 
   reactions: (state, getters) => (transactionId, partnerId) => {
@@ -366,8 +373,8 @@ const mutations = {
     state.chatsActual = value
   },
 
-  setLastUpdated(state, value) {
-    state.lastUpdated = value
+  setChatsActualUntil(state, value) {
+    state.chatsActualUntil = value
   },
 
   /**
@@ -554,7 +561,6 @@ const actions = {
         }
 
         commit('setFulfilled', true)
-        commit('setLastUpdated', Date.now())
       })
       .catch((err) => {
         if (isAllNodesDisabledError(err) || isAllNodesOfflineError(err)) {
@@ -658,18 +664,20 @@ const actions = {
    * This is a temporary solution until the sockets are implemented.
    * @returns {Promise}
    */
-  getNewMessages({ state, commit, dispatch }) {
+  getNewMessages({ getters, state, commit, dispatch }) {
     if (!state.isFulfilled) {
       return Promise.reject(new Error('Chat is not fulfilled'))
     }
 
     return getChats(state.lastMessageHeight).then((result) => {
-      const { messages, lastMessageHeight } = result
+      const { messages, lastMessageHeight, nodeTimestamp } = result
+      const chatsActualInterval = getters.chatsActualTimeout
 
       dispatch('pushMessages', messages)
 
-      commit('setLastUpdated', Date.now())
+      const validUntil = (nodeTimestamp * 1000) + chatsActualInterval + EPOCH + 1000
 
+      commit('setChatsActualUntil', validUntil)
       if (lastMessageHeight > 0) {
         commit('setHeight', lastMessageHeight)
       }

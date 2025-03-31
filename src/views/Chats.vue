@@ -79,8 +79,6 @@ import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import scrollPosition from '@/mixins/scrollPosition'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
-import { CHATS_ACTUAL_INTERVAL } from '@/store/modules/chat'
-
 
 const scrollOffset = 64
 
@@ -113,11 +111,11 @@ export default {
     enabledNodes() {
       return this.$store.getters['nodes/adm'].filter((node) => node.status === 'online').length
     },
-    lastUpdated() {
-      return this.$store.state.chat.lastUpdated
-    },
     chatsActual() {
       return this.$store.state.chat.chatsActual
+    },
+    chatsActualUntil() {
+      return this.$store.state.chat.chatsActualUntil
     },
     isFulfilled() {
       return this.$store.state.chat.isFulfilled
@@ -159,9 +157,9 @@ export default {
   mounted() {
     // To show the spinner if !isUpdated
     this.chatsActualInterval = setInterval(() => {
-      const isUpdated = (Date.now() - this.lastUpdated <= CHATS_ACTUAL_INTERVAL + 1)
+      const areChatsActual = this.chatsActualUntil > Date.now()
 
-      this.$store.commit('chat/setChatsActual', isUpdated)
+      this.$store.commit('chat/setChatsActual', areChatsActual)
     }, 1000)
     this.showChatStartDialog = this.showNewContact
     this.attachScrollListener()
@@ -172,10 +170,10 @@ export default {
   },
   watch: {
     // To update immediately if the message was sent using sockets
-    lastUpdated() {
-      const isUpdated = (Date.now() - this.lastUpdated <= CHATS_ACTUAL_INTERVAL + 1)
+    chatsActualUntil() {
+      const areChatsActual = this.chatsActualUntil > Date.now()
 
-      this.$store.commit('chat/setChatsActual', isUpdated)
+      this.$store.commit('chat/setChatsActual', areChatsActual)
     }
   },
   methods: {
