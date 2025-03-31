@@ -361,7 +361,7 @@ const actionsMenuMessageId = ref<string | -1>(-1)
 const actionsDropdownMessageId = ref<string | -1>(-1)
 const replyMessageId = ref<string | -1>(-1)
 const showEmojiPicker = ref(false)
-const chatActualTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
+const chatActualTimeout = ref<ReturnType<typeof setInterval> | undefined>(undefined)
 
 const messages = computed(() => store.getters['chat/messages'](props.partnerId))
 const userId = computed(() => store.state.address)

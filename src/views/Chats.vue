@@ -14,11 +14,11 @@
                 variant="text"
               />
               <v-progress-circular
-                :class="`mt-3 ml-5`"
+                class="mt-3 ml-5"
                 v-show="!enabledNodes || !chatsActual"
                 indeterminate
                 color="secondary"
-                size="30"
+                :size="30"
                 style="z-index: 100"
               />
               <v-spacer />

@@ -2,11 +2,11 @@
   <div :class="classes.root">
     <v-tabs v-model="tab" bg-color="transparent">
       <v-progress-circular
-        :class="`align-self-center ml-3 mr-2`"
+        class="align-self-center ml-3 mr-2"
         v-show="!isOnline"
         indeterminate
         color="secondary"
-        size="30"
+        :size="30"
         style="z-index: 100"
       />
       <v-tab value="adm">{{ t('nodes.tabs.adm_nodes') }}</v-tab>
