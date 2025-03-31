@@ -74,7 +74,7 @@
         <chat-toolbar :partner-id="partnerId">
           <template #avatar-toolbar>
             <ChatAvatar
-              v-if="enabledNodes"
+              v-if="admNodesOnline && chatActual"
               class="chat-avatar"
               :user-id="partnerId"
               use-public-key
@@ -82,12 +82,11 @@
             />
             <v-progress-circular
               v-else
-              :class="`mr-3`"
-              v-show="!enabledNodes"
+              class="mr-3"
+              v-show="!admNodesOnline || !chatActual"
               indeterminate
               color="secondary"
-              size="30"
-              style="z-index: 100"
+              :size="30"
             />
           </template>
         </chat-toolbar>
@@ -309,6 +308,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import { CHATS_ACTUAL_INTERVAL } from '@/store/modules/chat'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -361,11 +361,14 @@ const actionsMenuMessageId = ref<string | -1>(-1)
 const actionsDropdownMessageId = ref<string | -1>(-1)
 const replyMessageId = ref<string | -1>(-1)
 const showEmojiPicker = ref(false)
+const chatActualTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
 
 const messages = computed(() => store.getters['chat/messages'](props.partnerId))
 const userId = computed(() => store.state.address)
-const enabledNodes = computed(() => store.getters['nodes/adm']
-  .filter((node: NodeStatusResult) => node.status === 'online').length)
+const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
+const admNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
+const chatActual = computed(() => store.state.chat.chatsActual)
+const lastUpdated = computed(() => store.state.chat.lastUpdated)
 
 const getPartnerName = (address: string) => {
   const name: string = store.getters['partners/displayName'](address) || ''
@@ -408,6 +411,13 @@ watch(
   }
 )
 
+// To update immediately if the message was sent using sockets
+watch(lastUpdated, () => {
+  const isUpdated = (Date.now() - lastUpdated.value <= CHATS_ACTUAL_INTERVAL + 1)
+
+  store.commit('chat/setChatsActual', isUpdated)
+})
+
 watch(lastMessage, () => {
   nextTick(() => {
     if (isScrolledToBottom.value) {
@@ -435,6 +445,13 @@ onBeforeMount(() => {
   window.addEventListener('keyup', onKeyPress)
 })
 onMounted(() => {
+  // To show the spinner if !isUpdated
+  chatActualTimeout.value = setInterval(() => {
+    const isUpdated = (Date.now() - lastUpdated.value <= CHATS_ACTUAL_INTERVAL + 1)
+
+    store.commit('chat/setChatsActual', isUpdated)
+  }, 1000)
+  
   if (isFulfilled.value && chatPage.value <= 0) fetchChatMessages()
   scrollBehavior()
   nextTick(() => {
@@ -452,6 +469,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('keyup', onKeyPress)
   Visibility.unbind(Number(visibilityId.value))
+  clearInterval(chatActualTimeout.value)
 })
 
 /**

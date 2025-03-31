@@ -17,6 +17,7 @@ function subscribe(store) {
       // So we'll update confirmations in getTransactionStatus()
 
       if (transaction.asset?.chat?.type !== MessageType.SIGNAL_MESSAGE) {
+        store.commit('chat/setLastUpdated', Date.now())
         store.dispatch('chat/pushMessages', [decoded])
       }
     })

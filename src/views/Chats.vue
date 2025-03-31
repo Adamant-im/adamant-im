@@ -15,7 +15,7 @@
               />
               <v-progress-circular
                 :class="`mt-3 ml-5`"
-                v-show="!enabledNodes"
+                v-show="!enabledNodes || !chatsActual"
                 indeterminate
                 color="secondary"
                 size="30"
@@ -80,6 +80,7 @@ import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import scrollPosition from '@/mixins/scrollPosition'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
+import { CHATS_ACTUAL_INTERVAL } from '@/store/modules/chat'
 
 
 const scrollOffset = 64
@@ -106,11 +107,18 @@ export default {
     showChatStartDialog: false,
     loading: false,
     noMoreChats: false,
+    chatsActualInterval: null
   }),
   computed: {
     className: () => 'chats-view',
     enabledNodes() {
       return this.$store.getters['nodes/adm'].filter((node) => node.status === 'online').length
+    },
+    lastUpdated() {
+      return this.$store.state.chat.lastUpdated
+    },
+    chatsActual() {
+      return this.$store.state.chat.chatsActual
     },
     isFulfilled() {
       return this.$store.state.chat.isFulfilled
@@ -150,11 +158,26 @@ export default {
     this.noMoreChats = this.$store.getters['chat/chatListOffset'] === -1
   },
   mounted() {
+    // To show the spinner if !isUpdated
+    this.chatsActualInterval = setInterval(() => {
+      const isUpdated = (Date.now() - this.lastUpdated <= CHATS_ACTUAL_INTERVAL + 1)
+
+      this.$store.commit('chat/setChatsActual', isUpdated)
+    }, 1000)
     this.showChatStartDialog = this.showNewContact
     this.attachScrollListener()
   },
   beforeUnmount() {
+    this.removeInterval()
     this.destroyScrollListener()
+  },
+  watch: {
+    // To update immediately if the message was sent using sockets
+    lastUpdated() {
+      const isUpdated = (Date.now() - this.lastUpdated <= CHATS_ACTUAL_INTERVAL + 1)
+
+      this.$store.commit('chat/setChatsActual', isUpdated)
+    }
   },
   methods: {
     openChat(partnerId, messageText) {
@@ -174,6 +197,9 @@ export default {
     },
     destroyScrollListener() {
       window.removeEventListener('scroll', this.onScroll)
+    },
+    removeInterval() {
+      clearInterval(this.chatsActualInterval)
     },
     onScroll() {
       const scrollHeight = document.documentElement.scrollHeight // all of viewport height
