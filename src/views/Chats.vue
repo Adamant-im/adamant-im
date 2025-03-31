@@ -155,7 +155,7 @@ export default {
     this.noMoreChats = this.$store.getters['chat/chatListOffset'] === -1
   },
   mounted() {
-    // To show the spinner if !isUpdated
+    // To show the spinner if chats are not actual anymore
     this.chatsActualInterval = setInterval(() => {
       const areChatsActual = this.chatsActualUntil > Date.now()
 

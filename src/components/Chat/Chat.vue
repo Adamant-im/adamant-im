@@ -444,7 +444,7 @@ onBeforeMount(() => {
   window.addEventListener('keyup', onKeyPress)
 })
 onMounted(() => {
-  // To show the spinner if !isUpdated
+  // To show the spinner if chats are not actual anymore
   chatActualInterval.value = setInterval(() => {
     const areChatsActual = chatsActualUntil.value > Date.now()
 
