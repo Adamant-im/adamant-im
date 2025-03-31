@@ -25,12 +25,11 @@
             </v-tabs>
 
             <v-progress-circular
-              :class="`ml-3`"
+              class="ml-3"
               v-show="!isOnline"
               indeterminate
               color="secondary"
-              size="30"
-              style="z-index: 100"
+              :size="30"
             />
 
             <v-window

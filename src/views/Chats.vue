@@ -19,7 +19,6 @@
                 indeterminate
                 color="secondary"
                 :size="30"
-                style="z-index: 100"
               />
               <v-spacer />
               <v-btn
