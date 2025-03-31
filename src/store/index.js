@@ -18,6 +18,7 @@ import localStoragePlugin from './plugins/localStorage'
 import indexedDbPlugin from './plugins/indexedDb'
 import navigatorOnline from './plugins/navigatorOnline'
 import socketsPlugin from './plugins/socketsPlugin'
+import userKeysPlugin from './plugins/userKeys'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
 import botCommandsModule from './modules/bot-commands'
@@ -208,7 +209,7 @@ const store = {
       return getCurrentAccount()
         .then((account) => {
           commit('setBalance', account.balance)
-          commit('setMyPK', account.privateKey)
+          // commit('setMyPK', account.privateKey)
           commit('setBalanceStatus', FetchStatus.Success)
           if (account.balance > Fees.KVS) {
             flushCryptoAddresses()
@@ -276,7 +277,8 @@ registerVuexPlugins(storeInstance, [
   socketsPlugin,
   botCommandsPlugin,
   walletsPersistencePlugin,
-  servicesPlugin
+  servicesPlugin,
+  userKeysPlugin
 ])
 
 export { store } // for tests

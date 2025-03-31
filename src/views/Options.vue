@@ -141,7 +141,7 @@
             </v-col>
             <v-col cols="12" class="mt-6">
               <v-row no-gutters class="my-0">
-                <v-col cols="6">
+                <v-col cols="6" class="d-flex">
                   <v-checkbox
                     :model-value="isAllowNotifications"
                     @update:model-value="handleNotificationsCheckbox"
@@ -150,8 +150,18 @@
                     density="comfortable"
                     hide-details
                   />
+                  <v-tooltip
+                    :text="infoText"
+                    location="end"
+                    :max-width="520"
+                    :class="`${className}__info-tooltip`"
+                  >
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-information" />
+                    </template>
+                  </v-tooltip>
                 </v-col>
-                <v-col cols="6" class="my-0 test-class">
+                <v-col cols="6" :class="`${className}__notifications-col`" class="my-0">
                   <v-select
                     :model-value="selectedNotificationValue"
                     @update:model-value="handleSelectedNotificationValue"
@@ -216,6 +226,7 @@
           </v-row>
         </container>
       </v-row>
+      <!-- <ChatDialog v-model="showInfo" :text="infoText" style="white-space: break-spaces;" /> -->
     </v-container>
   </div>
 </template>
@@ -226,6 +237,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import CurrencySwitcher from '@/components/CurrencySwitcher.vue'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
+import ChatDialog from '@/components/Chat/ChatDialog.vue'
 import { getDeviceId } from '@/firebase'
 import { sendSignalMessage } from '@/lib/adamant-api'
 import { signalAsset } from '@/lib/adamant-api/asset'
@@ -244,18 +256,23 @@ export default {
     LanguageSwitcher,
     CurrencySwitcher,
     AppToolbarCentered,
-    PasswordSetDialog
+    PasswordSetDialog,
+    ChatDialog
   },
   mixins: [scrollPosition],
-  data: () => ({
-    passwordDialog: false,
-    selectedNotificationValue: 0,
-    notificationItems: [
-      { title: 'No Notifications', value: notificationType['No Notifications'] },
-      { title: 'Background Fetch', value: notificationType['Background Fetch'] },
-      { title: 'Push', value: notificationType['Push'] }
-    ]
-  }),
+  data: function () {
+    return {
+      passwordDialog: false,
+      selectedNotificationValue: 0,
+      notificationItems: [
+        { title: 'No Notifications', value: notificationType['No Notifications'] },
+        { title: 'Background Fetch', value: notificationType['Background Fetch'] },
+        { title: 'Push', value: notificationType['Push'] }
+      ],
+      showInfo: true,
+      infoText: this.$t('options.notifications_info')
+    }
+  },
   created() {
     let _testIsAllowNotif = this.isAllowNotifications
     console.log('🚀 ~ Options.vue:260 ~ created ~ _testIsAllowNotif:', _testIsAllowNotif)
@@ -583,7 +600,15 @@ export default {
   :deep(.v-checkbox) {
     margin-left: -8px;
   }
-  .test-class {
+  &__info-tooltip {
+    white-space: break-spaces;
+    :deep(.v-overlay__content) {
+      padding-top: 24px;
+      color: white;
+      background-color: map-get($adm-colors, 'regular');
+    }
+  }
+  &__notifications-col {
     height: 60px;
     margin-top: -10px !important;
   }
