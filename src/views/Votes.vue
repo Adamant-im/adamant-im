@@ -1,6 +1,6 @@
 <template>
   <div :class="className">
-    <app-toolbar-centered app :title="t('votes.page_title')" flat fixed />
+    <app-toolbar-centered app :title="t('votes.page_title')" :has-spinner="true" flat fixed />
 
     <v-container fluid class="px-0 container--with-app-toolbar">
       <v-row justify="center" no-gutters>
@@ -18,13 +18,6 @@
               color="primary"
             />
             <div :class="`${className}__info`" v-html="t('votes.stake_info')" />
-            <v-progress-circular
-              class="mb-2 ml-3"
-              v-show="!isOnline"
-              indeterminate
-              color="secondary"
-              :size="30"
-            />
             <delegates-table
               :page="pagination.page"
               :per-page="pagination.rowsPerPage"
@@ -99,7 +92,6 @@ import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { mdiMagnify } from '@mdi/js'
 
-
 const VOTE_REQUEST_LIMIT = 30
 
 export default defineComponent({
@@ -122,7 +114,6 @@ export default defineComponent({
     const dialog = ref(false)
     const className = 'delegates-view'
 
-    const isOnline = computed(() => store.getters['isOnline'])
     const delegates = computed(() => {
       const delegates = store.state.delegates.delegates || {}
 
@@ -226,7 +217,6 @@ export default defineComponent({
       search,
       pagination,
       expanded,
-      isOnline,
       waitingForConfirmation,
       dialog,
       t,

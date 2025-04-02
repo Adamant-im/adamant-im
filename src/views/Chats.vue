@@ -14,11 +14,10 @@
                 variant="text"
               />
               <v-progress-circular
-                class="mt-3 ml-5"
+                :class="`${className}__connection-spinner mt-4 ml-6`"
                 v-show="!enabledNodes || !chatsActual"
                 indeterminate
-                color="secondary"
-                :size="30"
+                :size="24"
               />
               <v-spacer />
               <v-btn
@@ -79,6 +78,8 @@ import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import scrollPosition from '@/mixins/scrollPosition'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
+import { useIntervalFn } from '@vueuse/core'
+import Visibility from 'visibilityjs'
 
 const scrollOffset = 64
 
@@ -94,7 +95,7 @@ export default {
     partnerId: { default: undefined, type: String },
     showNewContact: { default: false, type: Boolean }
   },
-  setup () {
+  setup() {
     return {
       mdiCheckAll,
       mdiMessageOutline
@@ -104,15 +105,14 @@ export default {
     showChatStartDialog: false,
     loading: false,
     noMoreChats: false,
-    chatsActualInterval: null
+    chatsActual: false,
+    currentTime: Date.now(),
+    visibilityId: null
   }),
   computed: {
     className: () => 'chats-view',
     enabledNodes() {
       return this.$store.getters['nodes/adm'].filter((node) => node.status === 'online').length
-    },
-    chatsActual() {
-      return this.$store.state.chat.chatsActual
     },
     chatsActualUntil() {
       return this.$store.state.chat.chatsActualUntil
@@ -125,10 +125,8 @@ export default {
     },
     messages() {
       const lastMessages = this.$store.getters['chat/lastMessages']
-      // We should modify cloned message list to leave original one untouched
-      const clonedLastMessages = lastMessages.map((msg) => {
-        return { ...msg }
-      })
+      const clonedLastMessages = lastMessages.map((msg) => ({ ...msg }))
+
       if (!this.noMoreChats && clonedLastMessages.length > 25) {
         const lastNotAdamantChat = lastMessages
           .map((msg) => this.isAdamantChat(msg.contactId))
@@ -151,29 +149,35 @@ export default {
     }
   },
   beforeMount() {
-    // When returning to chat list from a specific chat, restore noMoreChats property not to show loadingSeparator
     this.noMoreChats = this.$store.getters['chat/chatListOffset'] === -1
   },
   mounted() {
-    // To show the spinner if chats are not actual anymore
-    this.chatsActualInterval = setInterval(() => {
-      const areChatsActual = this.chatsActualUntil > Date.now()
-
-      this.$store.commit('chat/setChatsActual', areChatsActual)
+    const { pause, resume } = useIntervalFn(() => {
+      this.currentTime = Date.now()
     }, 1000)
+
+    this.visibilityId = Visibility.change((event, state) => {
+      if (state === 'visible') {
+        resume()
+      } else {
+        pause()
+      }
+    })
+
     this.showChatStartDialog = this.showNewContact
     this.attachScrollListener()
   },
   beforeUnmount() {
-    this.removeInterval()
     this.destroyScrollListener()
+    Visibility.unbind(Number(this.visibilityId))
   },
   watch: {
-    // To update immediately if the message was sent using sockets
-    chatsActualUntil() {
-      const areChatsActual = this.chatsActualUntil > Date.now()
-
-      this.$store.commit('chat/setChatsActual', areChatsActual)
+    chatsActualUntil: {
+      handler: 'updateChatsActual'
+    },
+    currentTime: {
+      handler: 'updateChatsActual',
+      immediate: true
     }
   },
   methods: {
@@ -186,6 +190,9 @@ export default {
     },
     isAdamantChat,
     getAdamantChatMeta,
+    updateChatsActual() {
+      this.chatsActual = this.chatsActualUntil > this.currentTime
+    },
     onError(message) {
       this.$store.dispatch('snackbar/show', { message })
     },
@@ -195,27 +202,14 @@ export default {
     destroyScrollListener() {
       window.removeEventListener('scroll', this.onScroll)
     },
-    removeInterval() {
-      clearInterval(this.chatsActualInterval)
-    },
     onScroll() {
-      const scrollHeight = document.documentElement.scrollHeight // all of viewport height
-      const scrollTop = document.documentElement.scrollTop // current vieport scroll position
-      const clientHeight = document.documentElement.clientHeight
+      const { scrollHeight, scrollTop, clientHeight } = document.documentElement
 
       let isLoadingSeparatorVisible = false
-      if (
-        this.$refs.loadingSeparator &&
-        this.$refs.loadingSeparator[0] &&
-        this.$refs.loadingSeparator[0].$el
-      ) {
+      if (this.$refs.loadingSeparator?.[0]?.$el) {
         const el = this.$refs.loadingSeparator[0].$el
         if (el.offsetTop > 0) {
-          // loadingSeparator is visible
-          const loadingSeparatorTop = el.offsetTop
-          const loadingSeparatorHeight = el.clientHeight // it is nearly about bottom menu height
-          isLoadingSeparatorVisible =
-            scrollTop + clientHeight > loadingSeparatorTop + loadingSeparatorHeight
+          isLoadingSeparatorVisible = scrollTop + clientHeight > el.offsetTop + el.clientHeight
         }
       }
 
@@ -226,8 +220,7 @@ export default {
       }
     },
     loadChatsPaged() {
-      if (this.loading) return
-      if (this.noMoreChats) return
+      if (this.loading || this.noMoreChats) return
 
       this.loading = true
       this.$store
@@ -237,18 +230,15 @@ export default {
         })
         .finally(() => {
           this.loading = false
-          this.onScroll() // update messages and remove loadingSeparator, if needed
+          this.onScroll()
         })
     },
     messagesCount(partnerId) {
-      const messages = this.$store.getters['chat/messages'](partnerId)
-
-      return messages.length
+      return this.$store.getters['chat/messages'](partnerId).length
     },
     displayChat(partnerId) {
       const isUserChat = !isAdamantChat(partnerId)
       const ifChattedBefore = isAdamantChat(partnerId) && this.messagesCount(partnerId) > 1
-
       return isUserChat || isStaticChat(partnerId) || ifChattedBefore
     },
     markAllAsRead() {
@@ -264,7 +254,6 @@ export default {
 @use 'vuetify/settings';
 
 .chats-view {
-
   &__item {
     justify-content: flex-end;
     height: 56px;
@@ -292,6 +281,9 @@ export default {
 /** Themes **/
 .v-theme--light {
   .chats-view {
+    &__connection-spinner {
+      color: map.get(colors.$adm-colors, 'grey');
+    }
     &__item {
       background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
     }
@@ -306,6 +298,9 @@ export default {
 
 .v-theme--dark {
   .chats-view {
+    &__connection-spinner {
+      color: map.get(colors.$adm-colors, 'regular');
+    }
     &__icon {
       color: map.get(settings.$shades, 'white');
     }

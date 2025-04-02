@@ -17,6 +17,8 @@ import {
 
 export const EPOCH = Date.UTC(2017, 8, 2, 17, 0, 0, 0)
 
+export const BUFFER_TIMEOUT = 1000
+
 export const Transactions = {
   SEND: 0,
   SIGNATURE: 1,

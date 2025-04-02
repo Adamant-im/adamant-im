@@ -1,6 +1,13 @@
 <template>
   <div :class="classes.root">
-    <app-toolbar-centered app :title="t('options.wallets_list')" :show-back="true" flat fixed />
+    <app-toolbar-centered
+      app
+      :title="t('options.wallets_list')"
+      :show-back="true"
+      flat
+      fixed
+      :has-spinner="true"
+    />
 
     <v-container fluid class="px-0 container--with-app-toolbar">
       <v-row justify="center" no-gutters>

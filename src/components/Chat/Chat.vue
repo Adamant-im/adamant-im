@@ -82,11 +82,9 @@
             />
             <v-progress-circular
               v-else
-              class="mr-3"
-              v-show="!admNodesOnline || !chatActual"
+              :class="`connection-spinner ml-2 mr-5`"
               indeterminate
-              color="secondary"
-              :size="30"
+              :size="24"
             />
           </template>
         </chat-toolbar>
@@ -277,6 +275,7 @@ import { useAttachments } from '@/stores/attachments'
 import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Visibility from 'visibilityjs'
 import copyToClipboard from 'copy-to-clipboard'
+import { useNow, watchImmediate } from '@vueuse/core'
 
 import { Cryptos, Fees, UPLOAD_MAX_FILE_COUNT, UPLOAD_MAX_FILE_SIZE } from '@/lib/constants'
 import EmojiPicker from '@/components/EmojiPicker.vue'
@@ -360,14 +359,16 @@ const actionsMenuMessageId = ref<string | -1>(-1)
 const actionsDropdownMessageId = ref<string | -1>(-1)
 const replyMessageId = ref<string | -1>(-1)
 const showEmojiPicker = ref(false)
-const chatActualInterval = ref<ReturnType<typeof setInterval> | undefined>(undefined)
+const chatActual = ref<boolean>(false)
 
 const messages = computed(() => store.getters['chat/messages'](props.partnerId))
 const userId = computed(() => store.state.address)
 const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
 const admNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
-const chatActual = computed(() => store.state.chat.chatsActual)
 const chatsActualUntil = computed(() => store.state.chat.chatsActualUntil)
+
+const { now, pause, resume } = useNow({ interval: 1000, controls: true })
+const currentTime = computed(() => now.value.getTime())
 
 const getPartnerName = (address: string) => {
   const name: string = store.getters['partners/displayName'](address) || ''
@@ -400,6 +401,11 @@ const actionMessage = computed<NormalizedChatMessageTransaction>(() =>
 
 const chatFormRef = ref<any>(null) // @todo type
 const chatRef = ref<any>(null) // @todo type
+
+const updateChatActual = () => {
+  chatActual.value = chatsActualUntil.value > currentTime.value
+}
+
 // Scroll to the bottom every time window focused by desktop notification
 watch(
   () => store.state.notification.desktopActivateClickCount,
@@ -412,9 +418,11 @@ watch(
 
 // To update immediately if the message was sent using sockets
 watch(chatsActualUntil, () => {
-  const areChatsActual = chatsActualUntil.value > Date.now()
+  updateChatActual()
+})
 
-  store.commit('chat/setChatsActual', areChatsActual)
+watchImmediate(currentTime, () => {
+  updateChatActual()
 })
 
 watch(lastMessage, () => {
@@ -444,19 +452,18 @@ onBeforeMount(() => {
   window.addEventListener('keyup', onKeyPress)
 })
 onMounted(() => {
-  // To show the spinner if chats are not actual anymore
-  chatActualInterval.value = setInterval(() => {
-    const areChatsActual = chatsActualUntil.value > Date.now()
-
-    store.commit('chat/setChatsActual', areChatsActual)
-  }, 1000)
-  
   if (isFulfilled.value && chatPage.value <= 0) fetchChatMessages()
   scrollBehavior()
   nextTick(() => {
     isScrolledToBottom.value = chatRef.value.isScrolledToBottom()
   })
   visibilityId.value = Visibility.change((event, state) => {
+    if (state === 'visible') {
+      resume()
+    } else {
+      pause()
+    }
+
     if (state === 'visible' && isScrolledToBottom.value) markAsRead()
   })
 
@@ -468,7 +475,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('keyup', onKeyPress)
   Visibility.unbind(Number(visibilityId.value))
-  clearInterval(chatActualInterval.value)
 })
 
 /**
@@ -810,6 +816,9 @@ const onKeyPress = (e: KeyboardEvent) => {
 </script>
 
 <style scoped lang="scss">
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+
 .chat-menu {
   margin-right: 8px;
 }
@@ -821,5 +830,18 @@ const onKeyPress = (e: KeyboardEvent) => {
 
 .chat-avatar {
   margin-right: 12px;
+}
+
+/** Themes **/
+.v-theme--light {
+  .connection-spinner {
+    color: map.get(colors.$adm-colors, 'grey');
+  }
+}
+
+.v-theme--dark {
+  .connection-spinner {
+    color: map.get(colors.$adm-colors, 'regular');
+  }
 }
 </style>

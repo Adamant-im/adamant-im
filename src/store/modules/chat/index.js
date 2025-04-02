@@ -14,7 +14,13 @@ import {
 } from '@/lib/chat/helpers'
 import { i18n } from '@/i18n'
 import { isNumeric } from '@/lib/numericHelpers'
-import { EPOCH, Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
+import {
+  EPOCH,
+  BUFFER_TIMEOUT,
+  Cryptos,
+  TransactionStatus as TS,
+  MessageType
+} from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
 import { uploadFiles } from '../../../lib/files'
@@ -52,7 +58,6 @@ const state = () => ({
   isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
   offset: 0, // for loading chat list with pagination. -1 if all of chats loaded
   noActiveNodesDialog: undefined, // true - visible dialog, false - hidden dialog, but shown before, undefined - not shown
-  chatsActual: false,
   chatsActualUntil: 0
 })
 
@@ -83,7 +88,7 @@ const getters = {
    * @depends options.useSocketConnection
    * @returns {number}
    */
-  chatsActualTimeout: (state, getters, rootState) => {
+  chatsPollingTimeout: (state, getters, rootState) => {
     return rootState.options.useSocketConnection ? SOCKET_ENABLED_TIMEOUT : SOCKET_DISABLED_TIMEOUT
   },
 
@@ -367,10 +372,6 @@ const mutations = {
    */
   setFulfilled(state, value) {
     state.isFulfilled = value
-  },
-
-  setChatsActual(state, value) {
-    state.chatsActual = value
   },
 
   setChatsActualUntil(state, value) {
@@ -671,11 +672,11 @@ const actions = {
 
     return getChats(state.lastMessageHeight).then((result) => {
       const { messages, lastMessageHeight, nodeTimestamp } = result
-      const chatsActualInterval = getters.chatsActualTimeout
+      const chatsActualInterval = getters.chatsPollingTimeout
 
       dispatch('pushMessages', messages)
 
-      const validUntil = (nodeTimestamp * 1000) + chatsActualInterval + EPOCH + 1000
+      const validUntil = nodeTimestamp * 1000 + chatsActualInterval + EPOCH + BUFFER_TIMEOUT
 
       commit('setChatsActualUntil', validUntil)
       if (lastMessageHeight > 0) {
@@ -1064,14 +1065,12 @@ const actions = {
 
   startInterval: {
     root: true,
-    handler({ dispatch, rootState }) {
+    handler({ dispatch, getters }) {
       function repeat() {
         dispatch('getNewMessages')
           .catch((err) => console.error(err))
           .then(() => {
-            const timeout = rootState.options.useSocketConnection
-              ? SOCKET_ENABLED_TIMEOUT
-              : SOCKET_DISABLED_TIMEOUT
+            const timeout = getters.chatsPollingTimeout
             interval = setTimeout(repeat, timeout)
           })
       }

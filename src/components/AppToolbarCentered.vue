@@ -7,12 +7,18 @@
             <v-icon :icon="mdiArrowLeft" size="x-large" />
           </v-btn>
 
-          <v-toolbar-title v-if="title" class="a-text-regular-enlarged">
+          <v-toolbar-title v-if="title" class="a-text-regular-enlarged flex-0-1">
             <div>{{ title }}</div>
             <div v-if="subtitle" class="body-1">
               {{ subtitle }}
             </div>
           </v-toolbar-title>
+          <v-progress-circular
+            class="spinner"
+            v-show="!isOnline && hasSpinner"
+            indeterminate
+            :size="24"
+          />
         </v-toolbar>
       </container>
     </v-row>
@@ -51,6 +57,10 @@ export default {
     showBack: {
       type: Boolean,
       default: true
+    },
+    hasSpinner: {
+      type: Boolean,
+      default: false
     }
   },
   setup() {
@@ -59,6 +69,9 @@ export default {
     }
   },
   computed: {
+    isOnline() {
+      return this.$store.getters['isOnline']
+    },
     classes() {
       return {
         'v-toolbar--fixed': this.app,
@@ -93,6 +106,13 @@ export default {
     letter-spacing: 0.02em;
   }
 
+  .spinner {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
   :deep(.v-toolbar-title:not(:first-child)) {
     margin-inline-start: 0;
   }
@@ -113,11 +133,26 @@ export default {
   z-index: 2;
 }
 
+@media #{map.get(settings.$display-breakpoints, 'xs')} {
+  .app-toolbar-centered {
+    .spinner {
+      position: relative;
+      left: 0.5em;
+      top: 0;
+      transform: translateY(10%);
+    }
+  }
+}
+
 /** Themes **/
 .v-theme--light {
   .app-toolbar-centered {
     .v-toolbar {
       background-color: map.get(colors.$adm-colors, 'secondary2');
+    }
+
+    .spinner {
+      color: map.get(colors.$adm-colors, 'grey');
     }
   }
 }
@@ -127,6 +162,10 @@ export default {
     .v-toolbar {
       background-color: map.get(colors.$adm-colors, 'black');
       color: map.get(settings.$shades, 'white');
+    }
+
+    .spinner {
+      color: map.get(colors.$adm-colors, 'regular');
     }
   }
 }
