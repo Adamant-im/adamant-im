@@ -75,6 +75,13 @@ export default {
         return
       }
 
+      const parentRoute = route.matched.length > 1 ? route.matched[route.matched.length - 2] : null
+
+      if (parentRoute) {
+        router.push(parentRoute)
+        return
+      }
+
       if (history.state?.back.includes('chats')) {
         router.push({
           name: 'Chats'
