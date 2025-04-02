@@ -200,16 +200,22 @@ export interface AttachmentAsset {
 /**
  * AIP-18: https://github.com/Adamant-im/AIPs/pull/54/files
  * @param {Array<FileData>} files
- * @param {Array<[string, string]>} [nonces] First element is the nonce of original file, second is nonce of preview
- * @param {Array<[string, string]>} [ids] List of files IDs after uploading to IPFS. First element is the ID of original file, second is ID of preview.
- * @param {string} [comment]
+ * @param {string} [comment] Optional comment associated with the transaction
+ * @param {Array<[string, string]>} [cids] List of files IDs after uploading to IPFS. First element is the ID of original file, second is ID of preview.
  */
-export function attachmentAsset(files: FileData[], comment?: string): AttachmentAsset {
+export function attachmentAsset(
+  files: FileData[],
+  comment?: string,
+  cids?: [string, string]
+): AttachmentAsset {
   return {
     files: files.map(({ file, width, height, cid, preview, encoded }) => {
       const name = extractFileName(file.name)
       const extension = extractFileExtension(file.name)!
       const resolution: FileAsset['resolution'] = width && height ? [width, height] : undefined
+
+      const fileCid = cids?.[0] || cid
+      const previewCid = cids?.[1] || preview?.cid
 
       return {
         mimeType: file.type,
@@ -218,11 +224,11 @@ export function attachmentAsset(files: FileData[], comment?: string): Attachment
         resolution,
         duration: undefined, // @todo check if is a video or audio file
         size: file.size,
-        id: cid,
+        id: fileCid,
         nonce: encoded.nonce,
         preview: preview
           ? {
-              id: preview.cid,
+              id: previewCid!,
               nonce: preview.encoded.nonce,
               extension
             }
