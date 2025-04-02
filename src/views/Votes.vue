@@ -19,12 +19,7 @@
         :search-query="search"
         :waiting-for-confirmation="waitingForConfirmation"
       />
-      <v-row
-        :class="`${className}__review`"
-        align="center"
-        justify="space-between"
-        no-gutters
-      >
+      <v-row :class="`${className}__review`" align="center" justify="space-between" no-gutters>
         <pagination-component v-if="showPagination" v-model="pagination.page" :pages="pages" />
 
         <v-btn
@@ -36,7 +31,6 @@
         </v-btn>
       </v-row>
     </v-card>
-
 
     <v-dialog v-model="dialog" width="500">
       <v-card>
@@ -100,10 +94,10 @@ const dialog = ref(false)
 const className = 'delegates-view'
 
 interface extendedDto extends DelegateDto {
-  upvoted?: unknown;
-  voted?: unknown;
-  downvoted?: unknown;
-  _voted?: unknown;
+  upvoted?: unknown
+  voted?: unknown
+  downvoted?: unknown
+  _voted?: unknown
 }
 
 const delegates = computed(() => {

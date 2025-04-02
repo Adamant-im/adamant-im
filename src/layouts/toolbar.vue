@@ -1,35 +1,34 @@
 <template>
-  <v-main>
-    <v-container
-      fluid
-      :class="{
-        'pa-6': !containerNoPadding,
-        'pa-0': containerNoPadding
-      }"
-    >
-      <slot />
-    </v-container>
-    <app-snackbar />
-    <app-navigation v-if="showNavigation" />
-  </v-main>
+  <v-container
+    fluid
+    :class="{
+      'pa-6': !containerNoPadding,
+      'pa-0': containerNoPadding
+    }"
+  >
+    <slot />
+  </v-container>
+  <app-snackbar />
+  <app-navigation v-if="showNavigation" />
 </template>
 
-<script>
+<script setup lang="ts">
 import AppSnackbar from '@/components/AppSnackbar.vue'
 import AppNavigation from '@/components/AppNavigation.vue'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
 
-export default {
-  components: {
-    AppSnackbar,
-    AppNavigation
-  },
-  computed: {
-    containerNoPadding() {
-      return this.$route.meta.containerNoPadding
-    },
-    showNavigation() {
-      return this.$route.meta.showNavigation || false
-    }
-  }
-}
+const route = useRoute()
+const store = useStore()
+
+const isLogged = computed(() => {
+  return store.getters.isLogged
+})
+
+const showNavigation = computed(() => {
+  return (route.meta.showNavigation && isLogged.value) || false
+})
+
+const containerNoPadding = computed(() => route.meta.containerNoPadding)
 </script>

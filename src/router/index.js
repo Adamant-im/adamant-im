@@ -79,7 +79,7 @@ const routes = [
         },
         children: [
           {
-            path: 'nodes',
+            path: '/options/nodes',
             name: 'Nodes',
             component: Nodes,
             meta: {
@@ -92,7 +92,7 @@ const routes = [
             }
           },
           {
-            path: 'export-keys',
+            path: '/options/export-keys',
             name: 'ExportKeys',
             component: ExportKeysForm,
             meta: {
@@ -110,7 +110,7 @@ const routes = [
             }
           },
           {
-            path: 'wallets',
+            path: '/options/wallets',
             name: 'Wallets',
             component: Wallets,
             meta: {

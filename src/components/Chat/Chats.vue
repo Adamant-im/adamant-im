@@ -51,7 +51,7 @@
     <div
       class="d-flex justify-center align-center"
       :class="`${className}__chat-spinner-wrapper`"
-      v-if="!chatPagePartnerId && !isFulfilled"
+      v-if="!isFulfilled"
     >
       <ChatSpinner :value="!isFulfilled" />
     </div>
@@ -75,8 +75,8 @@ import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import scrollPosition from '@/mixins/scrollPosition'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
-import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
-import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { computed, onActivated, onDeactivated, ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 
 const scrollOffset = 64
@@ -94,30 +94,32 @@ export default {
     showNewContact: { default: false, type: Boolean }
   },
   setup() {
-    const LAST_PARTNER_ID_KEY = 'last_partner_id'
-
     const route = useRoute()
     const router = useRouter()
 
     const { smAndDown } = useDisplay()
 
+    const savedRoute = ref(null)
+
     const chatPagePartnerId = computed(() => {
       return route.params.partnerId
     })
 
-    const lastId = localStorage.getItem(LAST_PARTNER_ID_KEY)
-    localStorage.removeItem(LAST_PARTNER_ID_KEY)
+    watch(chatPagePartnerId, (value) => {
+      if (!value && route.name === 'Chats') {
+        savedRoute.value = null
+      }
+    })
 
-    if (lastId) {
-      router.push({
-        name: 'Chat',
-        params: { partnerId: lastId }
-      })
-    }
+    onActivated(() => {
+      if (savedRoute.value) {
+        router.push(savedRoute.value)
+      }
+    })
 
-    onBeforeRouteLeave((to, from) => {
-      if ((to.name === 'Home' || to.name === 'Options') && from.params?.partnerId) {
-        localStorage.setItem(LAST_PARTNER_ID_KEY, from.params?.partnerId)
+    onDeactivated(() => {
+      if (history.state.back.includes('/chats/')) {
+        savedRoute.value = history.state.back
       }
     })
 

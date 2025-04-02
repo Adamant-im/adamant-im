@@ -16,7 +16,7 @@
         :owner-address="address"
       />
 
-      <ProgressIndicator :show="!isFulfilled" />
+      <ProgressIndicator :show="!isFulfilled" :without-spinner="!isMobileView" />
     </container>
   </v-row>
 </template>
@@ -26,6 +26,8 @@ import Chat from '@/components/Chat/Chat.vue'
 import PartnerInfo from '@/components/PartnerInfo.vue'
 import partnerName from '@/mixins/partnerName'
 import ProgressIndicator from '@/components/ProgressIndicator.vue'
+import { useDisplay } from 'vuetify'
+import { computed } from 'vue'
 
 export default {
   components: {
@@ -42,6 +44,15 @@ export default {
     partnerId: {
       required: true,
       type: String
+    }
+  },
+  setup() {
+    const { width } = useDisplay()
+
+    const isMobileView = computed(() => width.value < 800)
+
+    return {
+      isMobileView
     }
   },
   data: () => ({

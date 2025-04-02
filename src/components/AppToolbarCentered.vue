@@ -57,11 +57,17 @@ export default {
     noMaxWidth: {
       type: Boolean,
       default: false
+    },
+    sticky: {
+      type: Boolean,
+      default: false
     }
   },
   setup() {
     const route = useRoute()
     const router = useRouter()
+
+    const className = 'app-toolbar-centered'
 
     const goBack = () => {
       if (route.query?.from?.includes('chats')) {
@@ -73,13 +79,6 @@ export default {
         router.push({
           name: 'Chats'
         })
-        return
-      }
-
-      if (route.matched.length > 1) {
-        const parentRoute = route.matched[route.matched.length - 2]
-
-        router.push(parentRoute.path)
         return
       }
 
@@ -107,6 +106,7 @@ export default {
     })
 
     return {
+      className,
       mdiArrowLeft,
       goBack
     }
@@ -115,10 +115,10 @@ export default {
     classes() {
       return {
         'v-toolbar--fixed': this.app,
-        'app-toolbar--fixed': this.fixed
+        'app-toolbar--fixed': this.fixed,
+        'app-toolbar--sticky': this.sticky
       }
-    },
-    className: () => 'app-toolbar-centered'
+    }
   }
 }
 </script>
@@ -156,6 +156,12 @@ export default {
 
 .app-toolbar--fixed {
   position: fixed;
+  z-index: 2;
+}
+
+.app-toolbar--sticky {
+  position: sticky;
+  top: 0;
   z-index: 2;
 }
 

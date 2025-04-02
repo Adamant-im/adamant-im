@@ -1,464 +1,252 @@
 <template>
-  <div :class="className" class="w-100">
-    <app-toolbar-centered app :title="title" show-back flat absolute no-max-width />
-
-    <v-container fluid class="px-0 py-0 container--with-app-toolbar">
-      <v-row justify="center" no-gutters>
-        <container padding :class="`${className}__content`" no-max-width>
-          <router-view v-if="isLastChild"/>
-          <template v-else>
-            <!-- General -->
-            <h3 :class="`${className}__title a-text-caption`" class="mt-4 mb-4">
-              {{ $t('options.general_title') }}
-            </h3>
-            <v-row align="center" no-gutters>
-              <v-col cols="6">
-                <v-list-subheader :class="`${className}__label`">
-                  {{ $t('options.language_label') }}
-                </v-list-subheader>
-              </v-col>
-              <v-col cols="6" class="text-right">
-                <language-switcher :append-icon="mdiChevronDown" />
-              </v-col>
-              <v-col cols="6">
-                <v-list-subheader :class="`${className}__label`">
-                  {{ $t('options.currency_label') }}
-                </v-list-subheader>
-              </v-col>
-              <v-col cols="6" class="text-right">
-                <currency-switcher :append-icon="mdiChevronDown" />
-              </v-col>
-              <v-col cols="12">
-                <v-checkbox
-                  v-model="darkTheme"
-                  :label="$t('options.dark_theme')"
-                  color="grey darken-1"
-                  density="comfortable"
-                  hide-details
-                />
-              </v-col>
-            </v-row>
-
-            <!-- Security -->
-            <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
-              {{ $t('options.security_title') }}
-            </h3>
-            <v-row align="center" no-gutters>
-              <v-col cols="12" a-text-regular-enlarged>
-                <v-checkbox
-                  :label="$t('options.stay_logged_in')"
-                  color="grey darken-1"
-                  :modelValue="stayLoggedIn"
-                  density="comfortable"
-                  hide-details
-                  @click.prevent="onCheckStayLoggedIn"
-                />
-
-                <div class="a-text-explanation-enlarged">
-                  {{ $t('options.stay_logged_in_tooltip') }}
-                </div>
-
-                <password-set-dialog v-model="passwordDialog" @password="onSetPassword" />
-              </v-col>
-            </v-row>
-
-            <!-- Chats -->
-            <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
-              {{ $t('options.chats_title') }}
-            </h3>
-            <v-row align="center" no-gutters>
-              <v-col cols="12">
-                <v-checkbox
-                  v-model="sendMessageOnEnter"
-                  :label="$t('options.send_on_enter')"
-                  color="grey darken-1"
-                  density="comfortable"
-                  hide-details
-                />
-
-                <div class="a-text-explanation-enlarged">
-                  {{ $t('options.send_on_enter_tooltip') }}
-                </div>
-              </v-col>
-
-              <v-col cols="12" class="mt-6">
-                <v-checkbox
-                  v-model="formatMessages"
-                  :label="$t('options.format_messages')"
-                  color="grey darken-1"
-                  density="comfortable"
-                  hide-details
-                />
-
-                <div class="a-text-explanation-enlarged">
-                  {{ $t('options.format_messages_tooltip') }}
-                </div>
-              </v-col>
-
-              <v-col cols="12" class="mt-6">
-                <v-checkbox
-                  v-model="useFullDate"
-                  :label="$t('options.use_full_date')"
-                  color="grey darken-1"
-                  density="comfortable"
-                  hide-details
-                />
-
-                <div class="a-text-explanation-enlarged">
-                  {{ $t('options.use_full_date_tooltip') }}
-                </div>
-              </v-col>
-            </v-row>
-
-            <!-- Notifications -->
-            <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
-              {{ $t('options.notification_title') }}
-            </h3>
-            <v-row align="center" no-gutters>
-              <v-col cols="12">
-                <v-checkbox
-                  v-model="allowSoundNotifications"
-                  :label="$t('options.enable_sound')"
-                  color="grey darken-1"
-                  density="comfortable"
-                  hide-details
-                />
-
-                <div class="a-text-explanation-enlarged">
-                  {{ $t('options.enable_sound_tooltip') }}
-                </div>
-              </v-col>
-              <v-col cols="12" class="mt-6">
-                <v-checkbox
-                  v-model="allowTabNotifications"
-                  :label="$t('options.enable_bar')"
-                  color="grey darken-1"
-                  density="comfortable"
-                  hide-details
-                />
-
-                <div class="a-text-explanation-enlarged">
-                  {{ $t('options.enable_bar_tooltip') }}
-                </div>
-              </v-col>
-              <v-col cols="12" class="mt-6">
-                <v-checkbox
-                  v-model="allowPushNotifications"
-                  :label="$t('options.enable_push')"
-                  color="grey darken-1"
-                  density="comfortable"
-                  hide-details
-                />
-
-                <div class="a-text-explanation-enlarged">
-                  {{ $t('options.enable_push_tooltip') }}
-                </div>
-              </v-col>
-            </v-row>
-
-            <!-- Actions -->
-            <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
-              {{ $t('options.actions') }}
-            </h3>
-            <v-row no-gutters>
-              <v-col cols="12">
-                <v-list class="actions-list">
-                  <v-list-item
-                    :title="$t('options.nodes_list')"
-                    :append-icon="mdiChevronRight"
-                    @click="$router.push('/options/nodes')"
-                  />
-
-                  <v-list-item
-                    :title="$t('options.wallets_list')"
-                    :append-icon="mdiChevronRight"
-                    @click="$router.push('/options/wallets')"
-                  />
-
-                  <v-list-item
-                    :title="$t('options.export_keys.title')"
-                    :append-icon="mdiChevronRight"
-                    @click="$router.push('/options/export-keys')"
-                  />
-
-                  <v-list-item
-                    :title="$t('options.vote_for_delegates_button')"
-                    :append-icon="mdiChevronRight"
-                    @click="$router.push('/votes')"
-                  />
-
-                  <v-divider />
-
-                  <v-list-item
-                    :title="$t('bottom.exit_button')"
-                    :append-icon="mdiLogoutVariant"
-                    @click="logout"
-                  />
-                </v-list>
-              </v-col>
-            </v-row>
-            <v-row no-gutters>
-              <div :class="`${className}__version_info ml-auto`">
-                {{ $t('options.version') }} {{ $root.appVersion }}
-              </div>
-            </v-row>
-          </template>
-<!--          &lt;!&ndash; General &ndash;&gt;-->
-<!--          <h3 :class="`${className}__title a-text-caption`" class="mt-4 mb-4">-->
-<!--            {{ $t('options.general_title') }}-->
-<!--          </h3>-->
-<!--          <v-row align="center" no-gutters>-->
-<!--            <v-col cols="6">-->
-<!--              <v-list-subheader :class="`${className}__label`">-->
-<!--                {{ $t('options.language_label') }}-->
-<!--              </v-list-subheader>-->
-<!--            </v-col>-->
-<!--            <v-col cols="6" class="text-right">-->
-<!--              <language-switcher :append-icon="mdiChevronDown" />-->
-<!--            </v-col>-->
-<!--            <v-col cols="6">-->
-<!--              <v-list-subheader :class="`${className}__label`">-->
-<!--                {{ $t('options.currency_label') }}-->
-<!--              </v-list-subheader>-->
-<!--            </v-col>-->
-<!--            <v-col cols="6" class="text-right">-->
-<!--              <currency-switcher :append-icon="mdiChevronDown" />-->
-<!--            </v-col>-->
-<!--            <v-col cols="12">-->
-<!--              <v-checkbox-->
-<!--                v-model="darkTheme"-->
-<!--                :label="$t('options.dark_theme')"-->
-<!--                color="grey darken-1"-->
-<!--                density="comfortable"-->
-<!--                hide-details-->
-<!--              />-->
-<!--            </v-col>-->
-<!--          </v-row>-->
-
-<!--          &lt;!&ndash; Security &ndash;&gt;-->
-<!--          <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">-->
-<!--            {{ $t('options.security_title') }}-->
-<!--          </h3>-->
-<!--          <v-row align="center" no-gutters>-->
-<!--            <v-col cols="12" a-text-regular-enlarged>-->
-<!--              <v-checkbox-->
-<!--                :label="$t('options.stay_logged_in')"-->
-<!--                color="grey darken-1"-->
-<!--                :modelValue="stayLoggedIn"-->
-<!--                density="comfortable"-->
-<!--                hide-details-->
-<!--                @click.prevent="onCheckStayLoggedIn"-->
-<!--              />-->
-
-<!--              <div class="a-text-explanation-enlarged">-->
-<!--                {{ $t('options.stay_logged_in_tooltip') }}-->
-<!--              </div>-->
-
-<!--              <password-set-dialog v-model="passwordDialog" @password="onSetPassword" />-->
-<!--            </v-col>-->
-<!--          </v-row>-->
-
-<!--          &lt;!&ndash; Chats &ndash;&gt;-->
-<!--          <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">-->
-<!--            {{ $t('options.chats_title') }}-->
-<!--          </h3>-->
-<!--          <v-row align="center" no-gutters>-->
-<!--            <v-col cols="12">-->
-<!--              <v-checkbox-->
-<!--                v-model="sendMessageOnEnter"-->
-<!--                :label="$t('options.send_on_enter')"-->
-<!--                color="grey darken-1"-->
-<!--                density="comfortable"-->
-<!--                hide-details-->
-<!--              />-->
-
-<!--              <div class="a-text-explanation-enlarged">-->
-<!--                {{ $t('options.send_on_enter_tooltip') }}-->
-<!--              </div>-->
-<!--            </v-col>-->
-
-<!--            <v-col cols="12" class="mt-6">-->
-<!--              <v-checkbox-->
-<!--                v-model="formatMessages"-->
-<!--                :label="$t('options.format_messages')"-->
-<!--                color="grey darken-1"-->
-<!--                density="comfortable"-->
-<!--                hide-details-->
-<!--              />-->
-
-<!--              <div class="a-text-explanation-enlarged">-->
-<!--                {{ $t('options.format_messages_tooltip') }}-->
-<!--              </div>-->
-<!--            </v-col>-->
-
-<!--            <v-col cols="12" class="mt-6">-->
-<!--              <v-checkbox-->
-<!--                v-model="useFullDate"-->
-<!--                :label="$t('options.use_full_date')"-->
-<!--                color="grey darken-1"-->
-<!--                density="comfortable"-->
-<!--                hide-details-->
-<!--              />-->
-
-<!--              <div class="a-text-explanation-enlarged">-->
-<!--                {{ $t('options.use_full_date_tooltip') }}-->
-<!--              </div>-->
-<!--            </v-col>-->
-<!--          </v-row>-->
-
-<!--          &lt;!&ndash; Notifications &ndash;&gt;-->
-<!--          <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">-->
-<!--            {{ $t('options.notification_title') }}-->
-<!--          </h3>-->
-<!--          <v-row align="center" no-gutters>-->
-<!--            <v-col cols="12">-->
-<!--              <v-checkbox-->
-<!--                v-model="allowSoundNotifications"-->
-<!--                :label="$t('options.enable_sound')"-->
-<!--                color="grey darken-1"-->
-<!--                density="comfortable"-->
-<!--                hide-details-->
-<!--              />-->
-
-<!--              <div class="a-text-explanation-enlarged">-->
-<!--                {{ $t('options.enable_sound_tooltip') }}-->
-<!--              </div>-->
-<!--            </v-col>-->
-<!--            <v-col cols="12" class="mt-6">-->
-<!--              <v-checkbox-->
-<!--                v-model="allowTabNotifications"-->
-<!--                :label="$t('options.enable_bar')"-->
-<!--                color="grey darken-1"-->
-<!--                density="comfortable"-->
-<!--                hide-details-->
-<!--              />-->
-
-<!--              <div class="a-text-explanation-enlarged">-->
-<!--                {{ $t('options.enable_bar_tooltip') }}-->
-<!--              </div>-->
-<!--            </v-col>-->
-<!--            <v-col cols="12" class="mt-6">-->
-<!--              <v-checkbox-->
-<!--                v-model="allowPushNotifications"-->
-<!--                :label="$t('options.enable_push')"-->
-<!--                color="grey darken-1"-->
-<!--                density="comfortable"-->
-<!--                hide-details-->
-<!--              />-->
-
-<!--              <div class="a-text-explanation-enlarged">-->
-<!--                {{ $t('options.enable_push_tooltip') }}-->
-<!--              </div>-->
-<!--            </v-col>-->
-<!--          </v-row>-->
-
-<!--          &lt;!&ndash; Actions &ndash;&gt;-->
-<!--          <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">-->
-<!--            {{ $t('options.actions') }}-->
-<!--          </h3>-->
-<!--          <v-row no-gutters>-->
-<!--            <v-col cols="12">-->
-<!--              <v-list class="actions-list">-->
-<!--                <v-list-item-->
-<!--                  :title="$t('options.nodes_list')"-->
-<!--                  :append-icon="mdiChevronRight"-->
-<!--                  @click="$router.push('/options/nodes')"-->
-<!--                />-->
-
-<!--                <v-list-item-->
-<!--                  :title="$t('options.wallets_list')"-->
-<!--                  :append-icon="mdiChevronRight"-->
-<!--                  @click="$router.push('/options/wallets')"-->
-<!--                />-->
-
-<!--                <v-list-item-->
-<!--                  :title="$t('options.export_keys.title')"-->
-<!--                  :append-icon="mdiChevronRight"-->
-<!--                  @click="$router.push('/options/export-keys')"-->
-<!--                />-->
-
-<!--                <v-list-item-->
-<!--                  :title="$t('options.vote_for_delegates_button')"-->
-<!--                  :append-icon="mdiChevronRight"-->
-<!--                  @click="$router.push('/votes')"-->
-<!--                />-->
-
-<!--                <v-divider />-->
-
-<!--                <v-list-item-->
-<!--                  :title="$t('bottom.exit_button')"-->
-<!--                  :append-icon="mdiLogoutVariant"-->
-<!--                  @click="logout"-->
-<!--                />-->
-<!--              </v-list>-->
-<!--            </v-col>-->
-<!--          </v-row>-->
-<!--          <v-row no-gutters>-->
-<!--            <div :class="`${className}__version_info ml-auto`">-->
-<!--              {{ $t('options.version') }} {{ $root.appVersion }}-->
-<!--            </div>-->
-<!--          </v-row>-->
-        </container>
+  <options-wrapper :class="className">
+    <router-view v-if="hasView" />
+    <template v-else>
+      <!-- General -->
+      <h3 :class="`${className}__title a-text-caption`" class="mt-4 mb-4">
+        {{ $t('options.general_title') }}
+      </h3>
+      <v-row align="center" no-gutters>
+        <v-col cols="6">
+          <v-list-subheader :class="`${className}__label`">
+            {{ $t('options.language_label') }}
+          </v-list-subheader>
+        </v-col>
+        <v-col cols="6" class="text-right">
+          <language-switcher :append-icon="mdiChevronDown" />
+        </v-col>
+        <v-col cols="6">
+          <v-list-subheader :class="`${className}__label`">
+            {{ $t('options.currency_label') }}
+          </v-list-subheader>
+        </v-col>
+        <v-col cols="6" class="text-right">
+          <currency-switcher :append-icon="mdiChevronDown" />
+        </v-col>
+        <v-col cols="12">
+          <v-checkbox
+            v-model="darkTheme"
+            :label="$t('options.dark_theme')"
+            color="grey darken-1"
+            density="comfortable"
+            hide-details
+          />
+        </v-col>
       </v-row>
-    </v-container>
-  </div>
+
+      <!-- Security -->
+      <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
+        {{ $t('options.security_title') }}
+      </h3>
+      <v-row align="center" no-gutters>
+        <v-col cols="12" a-text-regular-enlarged>
+          <v-checkbox
+            :label="$t('options.stay_logged_in')"
+            color="grey darken-1"
+            :modelValue="stayLoggedIn"
+            density="comfortable"
+            hide-details
+            @click.prevent="onCheckStayLoggedIn"
+          />
+
+          <div class="a-text-explanation-enlarged">
+            {{ $t('options.stay_logged_in_tooltip') }}
+          </div>
+
+          <password-set-dialog v-model="passwordDialog" @password="onSetPassword" />
+        </v-col>
+      </v-row>
+
+      <!-- Chats -->
+      <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
+        {{ $t('options.chats_title') }}
+      </h3>
+      <v-row align="center" no-gutters>
+        <v-col cols="12">
+          <v-checkbox
+            v-model="sendMessageOnEnter"
+            :label="$t('options.send_on_enter')"
+            color="grey darken-1"
+            density="comfortable"
+            hide-details
+          />
+
+          <div class="a-text-explanation-enlarged">
+            {{ $t('options.send_on_enter_tooltip') }}
+          </div>
+        </v-col>
+
+        <v-col cols="12" class="mt-6">
+          <v-checkbox
+            v-model="formatMessages"
+            :label="$t('options.format_messages')"
+            color="grey darken-1"
+            density="comfortable"
+            hide-details
+          />
+
+          <div class="a-text-explanation-enlarged">
+            {{ $t('options.format_messages_tooltip') }}
+          </div>
+        </v-col>
+
+        <v-col cols="12" class="mt-6">
+          <v-checkbox
+            v-model="useFullDate"
+            :label="$t('options.use_full_date')"
+            color="grey darken-1"
+            density="comfortable"
+            hide-details
+          />
+
+          <div class="a-text-explanation-enlarged">
+            {{ $t('options.use_full_date_tooltip') }}
+          </div>
+        </v-col>
+      </v-row>
+
+      <!-- Notifications -->
+      <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
+        {{ $t('options.notification_title') }}
+      </h3>
+      <v-row align="center" no-gutters>
+        <v-col cols="12">
+          <v-checkbox
+            v-model="allowSoundNotifications"
+            :label="$t('options.enable_sound')"
+            color="grey darken-1"
+            density="comfortable"
+            hide-details
+          />
+
+          <div class="a-text-explanation-enlarged">
+            {{ $t('options.enable_sound_tooltip') }}
+          </div>
+        </v-col>
+        <v-col cols="12" class="mt-6">
+          <v-checkbox
+            v-model="allowTabNotifications"
+            :label="$t('options.enable_bar')"
+            color="grey darken-1"
+            density="comfortable"
+            hide-details
+          />
+
+          <div class="a-text-explanation-enlarged">
+            {{ $t('options.enable_bar_tooltip') }}
+          </div>
+        </v-col>
+        <v-col cols="12" class="mt-6">
+          <v-checkbox
+            v-model="allowPushNotifications"
+            :label="$t('options.enable_push')"
+            color="grey darken-1"
+            density="comfortable"
+            hide-details
+          />
+
+          <div class="a-text-explanation-enlarged">
+            {{ $t('options.enable_push_tooltip') }}
+          </div>
+        </v-col>
+      </v-row>
+
+      <!-- Actions -->
+      <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
+        {{ $t('options.actions') }}
+      </h3>
+      <v-row no-gutters>
+        <v-col cols="12">
+          <v-list class="actions-list">
+            <v-list-item
+              :title="$t('options.nodes_list')"
+              :append-icon="mdiChevronRight"
+              @click="$router.push('/options/nodes')"
+            />
+
+            <v-list-item
+              :title="$t('options.wallets_list')"
+              :append-icon="mdiChevronRight"
+              @click="$router.push('/options/wallets')"
+            />
+
+            <v-list-item
+              :title="$t('options.export_keys.title')"
+              :append-icon="mdiChevronRight"
+              @click="$router.push('/options/export-keys')"
+            />
+
+            <v-list-item
+              :title="$t('options.vote_for_delegates_button')"
+              :append-icon="mdiChevronRight"
+              @click="$router.push('/votes')"
+            />
+
+            <v-divider />
+
+            <v-list-item
+              :title="$t('bottom.exit_button')"
+              :append-icon="mdiLogoutVariant"
+              @click="logout"
+            />
+          </v-list>
+        </v-col>
+      </v-row>
+      <v-row no-gutters>
+        <div :class="`${className}__version_info ml-auto`">
+          {{ $t('options.version') }} {{ $root.appVersion }}
+        </div>
+      </v-row>
+    </template>
+  </options-wrapper>
 </template>
 
 <script>
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import CurrencySwitcher from '@/components/CurrencySwitcher.vue'
-import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import scrollPosition from '@/mixins/scrollPosition'
 import { resetPinia } from '@/plugins/pinia'
 import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant } from '@mdi/js'
-import { useRoute } from 'vue-router'
-import { computed, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
+import OptionsWrapper from '@/components/OptionsWrapper.vue'
+import { onBeforeRouteUpdate, useRoute } from 'vue-router'
+import { computed } from 'vue'
 
 export default {
   components: {
+    OptionsWrapper,
     LanguageSwitcher,
     CurrencySwitcher,
-    AppToolbarCentered,
     PasswordSetDialog
   },
   mixins: [scrollPosition],
   setup() {
     const route = useRoute()
 
-    const { t } = useI18n()
+    let saveTop = 0
 
-    const isLastChild = computed(() => {
-      const currentRoute = route.matched.find(r => r.name === route.name)
+    const hasView = computed(() => !(route.name === 'Options'))
 
-      return currentRoute && !currentRoute.children.length
-    });
+    onBeforeRouteUpdate(() => {
+      const sidebar = document.querySelector('.sidebar__layout')
 
-    const title = computed(() => {
-      if (route.name === 'ExportKeys') {
-        return t('options.export_keys.title')
+      if (!hasView.value) {
+        const { scrollTop } = sidebar
+
+        saveTop = scrollTop
+        sidebar.scrollTo({ top: 0, behavior: 'smooth' })
+        return
       }
 
-      if (route.name === 'Votes') {
-        return t('votes.page_title')
-      }
-
-      if (route.name === 'Wallets') {
-        return t('options.wallets_list')
-      }
-
-      return t('options.page_title')
-    })
-
-    watch(isLastChild, () => {
-      console.log('isLastChild', isLastChild.value)
+      // some routes don't have scrollbar, need delay for scroll render
+      setTimeout(() => {
+        sidebar.scrollTo({ top: saveTop, behavior: 'smooth' })
+      })
     })
 
     return {
-      isLastChild,
-      title,
+      hasView,
       mdiChevronDown,
       mdiChevronRight,
       mdiLogoutVariant
@@ -616,13 +404,6 @@ export default {
 @use 'vuetify/settings';
 
 .settings-view {
-  position: relative;
-
-  &__content {
-    overflow-y: auto;
-    height: calc(100vh - var(--v-layout-bottom) - var(--toolbar-height)) ;
-  }
-
   &__title {
     padding-top: 15px;
     margin-left: -24px;

@@ -1,5 +1,7 @@
 <template>
-  <component v-if="currentComponent" :is="currentComponent" />
+  <keep-alive>
+    <component :is="currentComponent" />
+  </keep-alive>
 </template>
 
 <script setup lang="ts">

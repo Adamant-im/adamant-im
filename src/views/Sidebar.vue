@@ -4,6 +4,7 @@
       [`${className} d-flex justify-center ma-auto`]: true,
       [`${className}__with-aside`]: needAside
     }"
+    :style="{ '--asideWidth': asideWidth }"
   >
     <aside
       v-if="needAside"
@@ -12,21 +13,27 @@
         [`${className}__aside--has-view`]: hasView
       }"
       ref="aside"
-      :style="{ '--width': width }"
       @mousedown="startResize"
     >
       <left-side />
     </aside>
-    <div
-      class="d-flex justify-center align-center"
-      :class="{
-        [`${className}__router-view`]: true,
-        [`${className}__router-view--no-aside`]: !needAside
-      }"
-    >
-      <img v-show="showLogo" src="/img/adamant-logo-transparent-512x512.png" draggable="false" />
-
-      <router-view :key="route.path" />
+    <div :class="`${className}__layout`">
+      <component :is="layout">
+        <div
+          class="d-flex justify-center align-center"
+          :class="{
+            [`${className}__router-view`]: true,
+            [`${className}__router-view--no-aside`]: !needAside
+          }"
+        >
+          <img
+            v-show="showLogo"
+            src="/img/adamant-logo-transparent-512x512.png"
+            draggable="false"
+          />
+          <router-view v-show="!showLogo" />
+        </div>
+      </component>
     </div>
   </div>
 </template>
@@ -34,13 +41,11 @@
 import { useRoute } from 'vue-router'
 import { computed, useTemplateRef, ref } from 'vue'
 import { useStore } from 'vuex'
-import LeftSide from '@/LeftSide.vue'
+import LeftSide from '@/components/LeftSide.vue'
 
 const className = 'sidebar'
 
-defineProps<{
-  readyToShow?: boolean
-}>()
+const layout = computed(() => route.meta.layout || 'default')
 
 const route = useRoute()
 const store = useStore()
@@ -49,7 +54,9 @@ const asideRef = useTemplateRef('aside')
 let isResizing = false
 const initWidth = '33%'
 
-const width = ref(initWidth)
+const minWidth = 300
+
+const asideWidth = ref(initWidth)
 
 const hasView = computed(() => {
   return route.matched.length > 1
@@ -59,9 +66,22 @@ const needAside = computed(() => {
   return store.getters.isLogged
 })
 
+const isFulfilled = computed<boolean>(() => store.state.chat.isFulfilled)
+
 const showLogo = computed(() => {
+  if (route.name === 'Chat') {
+    return !isFulfilled.value
+  }
+
   return !hasView.value
 })
+
+const stopResize = () => {
+  isResizing = false
+  document.body.style.cursor = 'auto'
+  document.removeEventListener('mousemove', resize)
+  document.removeEventListener('mouseup', stopResize)
+}
 
 const startResize = (event: MouseEvent) => {
   if (!asideRef.value) return
@@ -69,8 +89,9 @@ const startResize = (event: MouseEvent) => {
   const { left, width: boxWidth } = asideRef.value.getBoundingClientRect()
   const mouseX = event.clientX
 
-  if (mouseX >= left + boxWidth - 10) {
+  if (mouseX >= left + boxWidth - 10 && !isResizing) {
     isResizing = true
+    document.body.style.cursor = 'ew-resize'
     document.addEventListener('mousemove', resize)
     document.addEventListener('mouseup', stopResize)
   }
@@ -80,16 +101,16 @@ const resize = (event: MouseEvent) => {
   if (isResizing) {
     requestAnimationFrame(() => {
       if (asideRef.value) {
-        width.value = Math.max(100, event.clientX - asideRef.value.offsetLeft) + 'px'
+        const { left } = asideRef.value.getBoundingClientRect()
+
+        const newWidth = event.clientX - left
+
+        if (newWidth >= minWidth) {
+          asideWidth.value = newWidth + 'px'
+        }
       }
     })
   }
-}
-
-const stopResize = () => {
-  isResizing = false
-  document.removeEventListener('mousemove', resize)
-  document.removeEventListener('mouseup', stopResize)
 }
 </script>
 <style lang="scss" scoped>
@@ -99,22 +120,23 @@ const stopResize = () => {
 
 .sidebar {
   display: flex;
-  max-width: 1300px;
+  max-width: 800px;
+  width: 100%;
 
   &__with-aside {
-    @media (min-width: 1300px) {
+    max-width: 1300px;
+    @media (min-width: 1513px) {
       border-right: 2px solid black;
       border-left: 2px solid black;
     }
   }
 
   &__aside {
-    width: var(--width);
+    width: var(--asideWidth);
     min-height: 100%;
     height: calc(100vh - var(--v-layout-bottom));
     border-right: 2px solid black;
     position: relative;
-    min-width: max(300px, 25%);
     max-width: 75%;
     user-select: none;
 
@@ -140,6 +162,13 @@ const stopResize = () => {
     }
   }
 
+  &__layout {
+    flex: 1;
+    width: 100%;
+    overflow-y: auto;
+    height: calc(100vh - var(--v-layout-bottom));
+  }
+
   &__router-view {
     flex: 1;
 
@@ -158,12 +187,6 @@ const stopResize = () => {
     :deep(.a-container) {
       max-width: unset;
     }
-
-    @media (max-width: 799px) {
-      img {
-        display: none;
-      }
-    }
   }
 }
 
@@ -181,7 +204,7 @@ const stopResize = () => {
 .v-theme--light {
   .sidebar {
     &__with-aside {
-      @media (min-width: 1300px) {
+      @media (min-width: 1513px) {
         border-right: 2px solid map.get(colors.$adm-colors, 'secondary2');
         border-left: 2px solid map.get(colors.$adm-colors, 'secondary2');
       }

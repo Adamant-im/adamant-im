@@ -1,6 +1,6 @@
 <template>
   <div :class="classes.root" class="w-100">
-    <WalletsSearchInput @change="searchChanged"/>
+    <WalletsSearchInput @change="searchChanged" />
     <div
       class="v-list v-list--density-default v-list--one-line"
       :class="[isDarkTheme ? 'v-theme--dark' : 'v-theme--light']"
