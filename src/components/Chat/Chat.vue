@@ -82,7 +82,7 @@
             />
             <v-progress-circular
               v-else
-              :class="`connection-spinner ml-2 mr-5`"
+              class="connection-spinner ml-2 mr-5"
               indeterminate
               :size="24"
             />
