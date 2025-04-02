@@ -42,6 +42,7 @@ import { useRoute } from 'vue-router'
 import { computed, useTemplateRef, ref } from 'vue'
 import { useStore } from 'vuex'
 import LeftSide from '@/components/LeftSide.vue'
+import { useDisplay } from 'vuetify'
 
 const className = 'sidebar'
 
@@ -68,8 +69,12 @@ const needAside = computed(() => {
 
 const isFulfilled = computed<boolean>(() => store.state.chat.isFulfilled)
 
+const { width } = useDisplay()
+
+const isMobileView = computed(() => width.value < 800)
+
 const showLogo = computed(() => {
-  if (route.name === 'Chat') {
+  if (route.name === 'Chat' && !isMobileView.value) {
     return !isFulfilled.value
   }
 
