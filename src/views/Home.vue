@@ -208,6 +208,10 @@ export default {
  * 2. Reset VTabItem opacity.
  */
 .account-view {
+  :deep(.a-container) {
+    max-width: unset;
+  }
+
   &__wallets {
     &.v-card {
       background-color: transparent;
