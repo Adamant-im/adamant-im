@@ -363,15 +363,10 @@
     "delegate_link": "链接",
     "delegate_uptime": "正常运行时间",
     "downvotes": "否决",
-    "filter_placeholder": "需要姓名或ADAMANT钱包地址",
     "loading_delegates": "正在加载委托…",
-    "min": "min",
-    "no_data_available": "没有可用的数据",
     "no_money": "你需要 50个ADM才能投票",
-    "now": "现在！",
     "page_title": "投票",
     "search": "搜索",
-    "sec": "秒",
     "select_delegates": "选择代理人",
     "sent": "投票已发送",
     "stake_info": "要质押 ADM 并获得奖励，请投票给您信任的活跃锻造池。阅读更多内容在 <a target=\"_blank\" href=\"https://news.adamant.im/hodl-list-of-adamant-pools-join-in-and-get-rewards-491a98610f4b\">ADAMANT 博客上</a>.",
@@ -385,7 +380,6 @@
     "upvotes": "赞成票",
     "vote_button_text": "投票",
     "vote_request_limit": "投票请求限制：{limit}",
-    "voting_cost": "投票成本",
     "waiting_confirmations": "事务正在运行，请耐心等待…"
   },
   "wallets": {

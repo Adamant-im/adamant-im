@@ -244,14 +244,9 @@
     "delegate_link": "Link",
     "delegate_uptime": "Uptime",
     "downvotes": "Downvotes",
-    "filter_placeholder": "Name or ADAMANT wallet address",
-    "min": "min",
-    "no_data_available": "No data available",
     "no_money": "You need 50 ADM to vote",
-    "now": "Now!",
     "page_title": "Votes",
     "search": "Search",
-    "sec": "sec",
     "select_delegates": "First select delegates",
     "sent": "Votes have been sent",
     "stake_info": "Um ADM einzusetzen und belohnungen zu erhalten, stimmen sie für einen aktiven Forging-Pool, dem sie vertrauen. Mehr dazu lesen sie im <a target=\"_blank\" href=\"https://news.adamant.im/hodl-list-of-adamant-pools-join-in-and-get-rewards-491a98610f4b\">ADAMANT blog</a>.",
@@ -266,7 +261,6 @@
     "upvotes": "Upvotes",
     "vote_button_text": "Vote",
     "vote_request_limit": "Vote request limit: {limit}",
-    "voting_cost": "Voting cost",
     "waiting_confirmations": "Waiting for confirmations"
   },
   "wallets": {

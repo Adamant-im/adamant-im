@@ -352,19 +352,19 @@
     "increase_fee": "Increase fee",
     "invalid_qr_code": "QR code does not contain an address or unrecognizable",
     "no_address_text": "This user hasn't activated their public {crypto} wallet yet",
-    "no_address_title": "Recipient has no public {crypto} wallet yet",
-    "legacy_address_text": "This user has a legacy {crypto} wallet yet. They must log in the Messenger with more than 0.001 ADM on their balance to update {crypto} wallet address",
-    "legacy_address_title": "Recipient has a legacy {crypto} wallet yet",
+    "no_address_title": "Recipient has no public {crypto} wallet",
+    "legacy_address_text": "This user has a legacy {crypto} wallet. It will automatically update when they log in using the newest app version.",
+    "legacy_address_title": "Recipient has legacy {crypto} wallet",
     "send_button": "Send",
     "to_address_label": "To Address",
     "to_name_label": "To {name}",
     "warning_on_partner_address": {
       "warning": "Warning",
       "headline": "Partner's account may be compromised",
-      "about": "Users can accept in-chat crypto transfers, because of ADAMANT saves wallet addresses in Blockchain. To save them, passphrase is necessary—it means nobody can push wrong addresses on behalf of user.",
-      "specifics_many_addresses": "We've identified more than one {crypto} address, stored for {partner_account}{partner_name} account: {manyAddresses}. It means they may never receive your transfer.",
-      "reasons": "Maybe scammers control this account.",
-      "what_to_do": "Tell your partner about the problem.",
+      "about": "Users can accept crypto transfers directly in chat, thanks to ADAMANT storing wallet addresses on the blockchain. This is secured with a passphrase.",
+      "specifics_many_addresses": "The account {partner_account}{partner_name} has several stored {crypto} addresses: {manyAddresses}. They may never receive your transfer.",
+      "reasons": "This account may be controlled by scammers.",
+      "what_to_do": "Warn the partner immediately.",
       "hide_button": "Got it"
     }
   },
@@ -374,19 +374,14 @@
     "delegate_link": "Link",
     "delegate_uptime": "Uptime",
     "downvotes": "Downvotes",
-    "filter_placeholder": "Name or ADAMANT wallet address required",
     "loading_delegates": "Loading delegates…",
-    "min": "min",
-    "no_data_available": "No data available",
-    "no_money": "You need 50 ADM to vote",
-    "now": "Now!",
+    "no_money": "50 ADM required to vote",
     "page_title": "Votes",
     "search": "Search",
-    "sec": "sec",
     "select_delegates": "Choose delegates",
-    "sent": "Votes have been sent",
+    "sent": "Votes submitted",
     "stake_info": "To stake ADM and get rewards, vote for an active forging pool you trust. Read more in the <a target=\"_blank\" href=\"https://news.adamant.im/hodl-list-of-adamant-pools-join-in-and-get-rewards-491a98610f4b\">ADAMANT blog</a>.",
-    "summary_info": "Voting cost: 50 ADM. <a target=\"_blank\" href=\"https://medium.com/adamant-im/earning-money-on-adm-forging-4c7b6eb15516\">Read about voting and forging</a>.",
+    "summary_info": "Voting fee: 50 ADM.",
     "summary_title": "Review voting",
     "table_head_name": "Name",
     "table_head_rank": "Rank",
@@ -396,14 +391,13 @@
     "upvotes": "Upvotes",
     "vote_button_text": "Vote",
     "vote_request_limit": "Vote request limit: {limit}",
-    "voting_cost": "Voting cost",
-    "waiting_confirmations": "Transaction is running, be patient…"
+    "waiting_confirmations": "Transaction in progress, please wait…"
   },
   "wallets": {
-    "coins_not_found_title": "No coins found",
+    "coins_not_found_title": "No coins match your search",
     "reset": "Reset",
-    "reset_message": "Do you want to make the Wallet list default?",
+    "reset_message": "Are you sure to reset the wallet list to its default state?",
     "search": "Search",
-    "summary_title": "Reset Wallet list"
+    "summary_title": "Reset wallet list"
   }
 }
