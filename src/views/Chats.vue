@@ -15,7 +15,7 @@
               />
               <v-progress-circular
                 :class="`${className}__connection-spinner mt-4 ml-6`"
-                v-show="!enabledNodes || !chatsActual"
+                v-show="!admNodesOnline || !chatsActual"
                 indeterminate
                 :size="24"
               />
@@ -111,8 +111,11 @@ export default {
   }),
   computed: {
     className: () => 'chats-view',
-    enabledNodes() {
-      return this.$store.getters['nodes/adm'].filter((node) => node.status === 'online').length
+    admNodes() {
+      return this.$store.getters['nodes/adm']
+    },
+    admNodesOnline() {
+      return this.admNodes.some((node) => node.status === 'online')
     },
     chatsActualUntil() {
       return this.$store.state.chat.chatsActualUntil
@@ -125,7 +128,10 @@ export default {
     },
     messages() {
       const lastMessages = this.$store.getters['chat/lastMessages']
-      const clonedLastMessages = lastMessages.map((msg) => ({ ...msg }))
+      // We should modify cloned message list to leave original one untouched
+      const clonedLastMessages = lastMessages.map((msg) => {
+        return { ...msg }
+      })
 
       if (!this.noMoreChats && clonedLastMessages.length > 25) {
         const lastNotAdamantChat = lastMessages
@@ -149,12 +155,13 @@ export default {
     }
   },
   beforeMount() {
+    // When returning to chat list from a specific chat, restore noMoreChats property not to show loadingSeparator
     this.noMoreChats = this.$store.getters['chat/chatListOffset'] === -1
   },
   mounted() {
     const { pause, resume } = useIntervalFn(() => {
       this.currentTime = Date.now()
-    }, 1000)
+    }, 500)
 
     this.visibilityId = Visibility.change((event, state) => {
       if (state === 'visible') {
@@ -172,9 +179,11 @@ export default {
     Visibility.unbind(Number(this.visibilityId))
   },
   watch: {
+    // Hides loading spinner once the latest messages are fetched
     chatsActualUntil: {
       handler: 'updateChatsActual'
     },
+    // Shows loading spinner when chats become outdated
     currentTime: {
       handler: 'updateChatsActual',
       immediate: true
@@ -203,13 +212,23 @@ export default {
       window.removeEventListener('scroll', this.onScroll)
     },
     onScroll() {
-      const { scrollHeight, scrollTop, clientHeight } = document.documentElement
+      const scrollHeight = document.documentElement.scrollHeight // all of viewport height
+      const scrollTop = document.documentElement.scrollTop // current vieport scroll position
+      const clientHeight = document.documentElement.clientHeight
 
       let isLoadingSeparatorVisible = false
-      if (this.$refs.loadingSeparator?.[0]?.$el) {
+      if (
+        this.$refs.loadingSeparator &&
+        this.$refs.loadingSeparator[0] &&
+        this.$refs.loadingSeparator[0].$el
+      ) {
         const el = this.$refs.loadingSeparator[0].$el
         if (el.offsetTop > 0) {
-          isLoadingSeparatorVisible = scrollTop + clientHeight > el.offsetTop + el.clientHeight
+          // loadingSeparator is visible
+          const loadingSeparatorTop = el.offsetTop
+          const loadingSeparatorHeight = el.clientHeight // it is nearly about bottom menu height
+          isLoadingSeparatorVisible =
+            scrollTop + clientHeight > loadingSeparatorTop + loadingSeparatorHeight
         }
       }
 
@@ -230,15 +249,18 @@ export default {
         })
         .finally(() => {
           this.loading = false
-          this.onScroll()
+          this.onScroll() // update messages and remove loadingSeparator, if needed
         })
     },
     messagesCount(partnerId) {
-      return this.$store.getters['chat/messages'](partnerId).length
+      const messages = this.$store.getters['chat/messages'](partnerId)
+
+      return messages.length
     },
     displayChat(partnerId) {
       const isUserChat = !isAdamantChat(partnerId)
       const ifChattedBefore = isAdamantChat(partnerId) && this.messagesCount(partnerId) > 1
+
       return isUserChat || isStaticChat(partnerId) || ifChattedBefore
     },
     markAllAsRead() {

@@ -367,7 +367,7 @@ const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
 const admNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
 const chatsActualUntil = computed(() => store.state.chat.chatsActualUntil)
 
-const { now, pause, resume } = useNow({ interval: 1000, controls: true })
+const { now, pause, resume } = useNow({ interval: 500, controls: true })
 const currentTime = computed(() => now.value.getTime())
 
 const getPartnerName = (address: string) => {
@@ -416,11 +416,12 @@ watch(
   }
 )
 
-// To update immediately if the message was sent using sockets
+// Hides loading spinner once the latest messages are fetched
 watch(chatsActualUntil, () => {
   updateChatActual()
 })
 
+// Shows loading spinner when chats become outdated
 watchImmediate(currentTime, () => {
   updateChatActual()
 })

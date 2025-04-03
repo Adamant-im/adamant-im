@@ -1,7 +1,8 @@
 import socketClient from '@/lib/sockets'
 import { decodeChat, getPublicKey } from '@/lib/adamant-api'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import { EPOCH, MessageType, BUFFER_TIMEOUT } from '@/lib/constants'
+import { MessageType, CHAT_ACTUALITY_BUFFER_MS } from '@/lib/constants'
+import adamant from '@/lib/adamant'
 
 function subscribe(store) {
   socketClient.subscribe('newMessage', (transaction) => {
@@ -20,7 +21,8 @@ function subscribe(store) {
         const timestamp = transaction.timestamp
         const chatsActualTimeout = store.getters['chat/chatsPollingTimeout']
 
-        const validUntil = (timestamp * 1000) + chatsActualTimeout + EPOCH + BUFFER_TIMEOUT
+        const validUntil =
+          adamant.toTimestamp(timestamp) + chatsActualTimeout + CHAT_ACTUALITY_BUFFER_MS
 
         store.commit('chat/setChatsActualUntil', validUntil)
         store.dispatch('chat/pushMessages', [decoded])

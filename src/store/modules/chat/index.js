@@ -15,8 +15,7 @@ import {
 import { i18n } from '@/i18n'
 import { isNumeric } from '@/lib/numericHelpers'
 import {
-  EPOCH,
-  BUFFER_TIMEOUT,
+  CHAT_ACTUALITY_BUFFER_MS,
   Cryptos,
   TransactionStatus as TS,
   MessageType
@@ -676,9 +675,11 @@ const actions = {
 
       dispatch('pushMessages', messages)
 
-      const validUntil = nodeTimestamp * 1000 + chatsActualInterval + EPOCH + BUFFER_TIMEOUT
+      const validUntil =
+        adamant.toTimestamp(nodeTimestamp) + chatsActualInterval + CHAT_ACTUALITY_BUFFER_MS
 
       commit('setChatsActualUntil', validUntil)
+
       if (lastMessageHeight > 0) {
         commit('setHeight', lastMessageHeight)
       }

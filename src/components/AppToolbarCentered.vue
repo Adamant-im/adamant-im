@@ -7,17 +7,20 @@
             <v-icon :icon="mdiArrowLeft" size="x-large" />
           </v-btn>
 
-          <v-toolbar-title v-if="title" class="a-text-regular-enlarged flex-0-1">
+          <v-toolbar-title ref="title" v-if="title" class="a-text-regular-enlarged flex-0-1">
             <div>{{ title }}</div>
             <div v-if="subtitle" class="body-1">
               {{ subtitle }}
             </div>
           </v-toolbar-title>
+          <!-- Waiting for spinnerPosition and transformSpinner to be calculated in order to
+               escape jerking of the spinner -->
           <v-progress-circular
             class="spinner"
-            v-show="!isOnline && hasSpinner"
+            v-show="!isOnline && hasSpinner && spinnerPosition && transformSpinner"
             indeterminate
             :size="24"
+            :style="{ left: spinnerPosition, transform: transformSpinner }"
           />
         </v-toolbar>
       </container>
@@ -29,6 +32,10 @@
 import { mdiArrowLeft } from '@mdi/js'
 
 export default {
+  data: () => ({
+    spinnerPosition: '',
+    transformSpinner: ''
+  }),
   props: {
     title: {
       type: String,
@@ -68,6 +75,13 @@ export default {
       mdiArrowLeft
     }
   },
+  mounted() {
+    window.addEventListener('resize', this.calculateSpinnerPosition)
+    this.calculateSpinnerPosition()
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.calculateSpinnerPosition)
+  },
   computed: {
     isOnline() {
       return this.$store.getters['isOnline']
@@ -81,6 +95,21 @@ export default {
     className: () => 'app-toolbar-centered'
   },
   methods: {
+    calculateSpinnerPosition() {
+      const titleEl = this.$refs.title?.$el
+      const toolbarEl = this.$refs.toolbar?.$el
+
+      if (!titleEl || !toolbarEl) return
+
+      const titleRect = titleEl.getBoundingClientRect()
+      const toolbarRect = toolbarEl.getBoundingClientRect()
+      const titleEnd = titleRect.right - toolbarRect.left + 16
+
+      const center = toolbarRect.width / 2
+
+      this.spinnerPosition = titleEnd > center ? `${titleEnd}px` : '50%'
+      this.transformSpinner = titleEnd > center ? 'translate(-50%, -40%)' : 'translate(-50%, -50%)'
+    },
     goBack() {
       // there are no pages in history to go back
       if (history.length === 1) {
@@ -108,9 +137,9 @@ export default {
 
   .spinner {
     position: absolute;
-    left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    transition: left 0.2s ease;
   }
 
   :deep(.v-toolbar-title:not(:first-child)) {
@@ -131,17 +160,6 @@ export default {
 .app-toolbar--fixed {
   position: fixed;
   z-index: 2;
-}
-
-@media #{map.get(settings.$display-breakpoints, 'xs')} {
-  .app-toolbar-centered {
-    .spinner {
-      position: relative;
-      left: 0.5em;
-      top: 0;
-      transform: translateY(10%);
-    }
-  }
 }
 
 /** Themes **/
