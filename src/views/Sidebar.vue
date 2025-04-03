@@ -129,7 +129,7 @@ const resize = (event: MouseEvent) => {
   width: 100%;
 
   &__with-aside {
-    max-width: 1300px;
+    max-width: 1512px;
     @media (min-width: 1513px) {
       border-right: 2px solid black;
       border-left: 2px solid black;
@@ -172,10 +172,15 @@ const resize = (event: MouseEvent) => {
     width: 100%;
     overflow-y: auto;
     height: calc(100vh - var(--v-layout-bottom));
+
+    &:deep(> .v-container) {
+      height: 100%;
+    }
   }
 
   &__router-view {
     flex: 1;
+    height: 100%;
 
     &--no-aside {
       width: 100%;
