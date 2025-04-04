@@ -1,4 +1,5 @@
 import { EPOCH } from './constants'
+import { useI18n } from 'vue-i18n'
 
 function getTime(date) {
   const hours = date.getHours()
@@ -19,6 +20,8 @@ function getTime(date) {
 }
 
 export function formatDate(timestamp) {
+  const { t } = useI18n()
+
   timestamp = parseInt(timestamp)
   // That's for the ADM timestamps, which use EPOCH as a base.
   // Other cryptos use normal timestamps
@@ -31,12 +34,12 @@ export function formatDate(timestamp) {
 
   const date = new Date(timestamp)
   if (date.getTime() > startToday.getTime()) {
-    return this.$t('chats.date_today') + ', ' + getTime(date)
+    return t('chats.date_today') + ', ' + getTime(date)
   }
 
   const startYesterday = new Date(startToday.getTime() - 86400000)
   if (date.getTime() > startYesterday.getTime()) {
-    return this.$t('chats.date_yesterday') + ', ' + getTime(date)
+    return t('chats.date_yesterday') + ', ' + getTime(date)
   }
 
   let options = { weekday: 'short' }
@@ -48,7 +51,7 @@ export function formatDate(timestamp) {
     options.year = 'numeric'
   }
 
-  return date.toLocaleDateString(this.$t('region'), options) + ', ' + getTime(date)
+  return date.toLocaleDateString(t('region'), options) + ', ' + getTime(date)
 }
 
 const plugin = {

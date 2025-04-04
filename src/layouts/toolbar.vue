@@ -18,16 +18,24 @@ import AppNavigation from '@/components/AppNavigation.vue'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
+import { useScreenSize } from '@/hooks/useScreenSize'
 
 const route = useRoute()
 const store = useStore()
+
+const { isMobileView } = useScreenSize()
 
 const isLogged = computed(() => {
   return store.getters.isLogged
 })
 
 const showNavigation = computed(() => {
-  return (route.meta.showNavigation && isLogged.value) || false
+  return (
+    (route.meta.showNavigation &&
+      isLogged.value &&
+      !(route.name === 'Chat' && isMobileView.value)) ||
+    false
+  )
 })
 
 const containerNoPadding = computed(() => route.meta.containerNoPadding)

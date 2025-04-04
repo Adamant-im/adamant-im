@@ -70,8 +70,8 @@ export default {
     const className = 'app-toolbar-centered'
 
     const goBack = () => {
-      if (route.query?.from?.includes('chats')) {
-        router.push(route.query.from)
+      if (route.query?.from?.includes('chats') || route.query?.fromChat) {
+        router.back()
         return
       }
 

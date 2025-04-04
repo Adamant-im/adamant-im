@@ -26,8 +26,7 @@ import Chat from '@/components/Chat/Chat.vue'
 import PartnerInfo from '@/components/PartnerInfo.vue'
 import partnerName from '@/mixins/partnerName'
 import ProgressIndicator from '@/components/ProgressIndicator.vue'
-import { useDisplay } from 'vuetify'
-import { computed } from 'vue'
+import { useScreenSize } from '@/hooks/useScreenSize'
 
 export default {
   components: {
@@ -47,9 +46,7 @@ export default {
     }
   },
   setup() {
-    const { width } = useDisplay()
-
-    const isMobileView = computed(() => width.value < 800)
+    const { isMobileView } = useScreenSize()
 
     return {
       isMobileView

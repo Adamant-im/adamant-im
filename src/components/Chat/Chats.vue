@@ -41,7 +41,7 @@
             :transaction="transaction"
             :is-message-readonly="transaction.readonly"
             :adamant-chat-meta="getAdamantChatMeta(transaction.contactId)"
-            :is-active="chatPagePartnerId === transaction.contactId"
+            :is-active="checkIsActive(transaction.contactId)"
             @click="openChat(transaction.contactId)"
           />
         </template>
@@ -105,7 +105,17 @@ export default {
       return route.params.partnerId
     })
 
+    const lastPartnerId = ref(null)
+
+    const checkIsActive = (contactId) => {
+      return contactId === lastPartnerId.value
+    }
+
     watch(chatPagePartnerId, (value) => {
+      if (value) {
+        lastPartnerId.value = value
+      }
+
       if (!value && route.name === 'Chats') {
         savedRoute.value = null
       }
@@ -127,7 +137,8 @@ export default {
       chatPagePartnerId,
       smAndDown,
       mdiCheckAll,
-      mdiMessageOutline
+      mdiMessageOutline,
+      checkIsActive
     }
   },
   data: () => ({

@@ -13,7 +13,12 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 
 const currentComponent = computed(() => {
-  if (route.name === 'Chats' || route.name === 'Chat' || route.query?.from?.includes('chats')) {
+  if (
+    route.name === 'Chats' ||
+    route.name === 'Chat' ||
+    route.query?.from?.includes('chats') ||
+    route.query?.fromChat
+  ) {
     return Chats
   }
 

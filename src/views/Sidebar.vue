@@ -42,7 +42,7 @@ import { useRoute } from 'vue-router'
 import { computed, useTemplateRef, ref } from 'vue'
 import { useStore } from 'vuex'
 import LeftSide from '@/components/LeftSide.vue'
-import { useDisplay } from 'vuetify'
+import { useScreenSize } from '@/hooks/useScreenSize'
 
 const className = 'sidebar'
 
@@ -69,9 +69,7 @@ const needAside = computed(() => {
 
 const isFulfilled = computed<boolean>(() => store.state.chat.isFulfilled)
 
-const { width } = useDisplay()
-
-const isMobileView = computed(() => width.value < 800)
+const { isMobileView } = useScreenSize()
 
 const showLogo = computed(() => {
   if (route.name === 'Chat' && !isMobileView.value) {
@@ -168,9 +166,10 @@ const resize = (event: MouseEvent) => {
   }
 
   &__layout {
-    flex: 1;
+    flex: 1 1 auto;
     width: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
     height: calc(100vh - var(--v-layout-bottom));
 
     &:deep(> .v-container) {
