@@ -1,6 +1,6 @@
 <template>
   <div :class="className">
-    <app-toolbar-centered app :title="t('votes.page_title')" flat fixed />
+    <app-toolbar-centered app :title="t('votes.page_title')" :has-spinner="true" flat fixed />
 
     <v-container fluid class="px-0 container--with-app-toolbar">
       <v-row justify="center" no-gutters>
@@ -91,7 +91,6 @@ import { computed, onMounted, ref, reactive, defineComponent, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { mdiMagnify } from '@mdi/js'
-
 
 const VOTE_REQUEST_LIMIT = 30
 

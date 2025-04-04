@@ -1,6 +1,13 @@
 <template>
   <div :class="className">
-    <app-toolbar-centered app :title="$t('options.nodes_list')" :show-back="true" flat fixed />
+    <app-toolbar-centered
+      app
+      :title="$t('options.nodes_list')"
+      :show-back="true"
+      :has-spinner="true"
+      flat
+      fixed
+    />
 
     <v-container fluid class="px-0 container--with-app-toolbar">
       <v-row justify="center" no-gutters>

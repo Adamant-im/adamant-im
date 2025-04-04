@@ -17,6 +17,9 @@ import {
 
 export const EPOCH = Date.UTC(2017, 8, 2, 17, 0, 0, 0)
 
+/** Additional time buffer (in ms) added to message polling interval to determine if messages are fresh */
+export const CHAT_ACTUALITY_BUFFER_MS = 3000
+
 export const Transactions = {
   SEND: 0,
   SIGNATURE: 1,

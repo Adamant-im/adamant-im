@@ -13,6 +13,12 @@
                 size="small"
                 variant="text"
               />
+              <v-progress-circular
+                :class="`${className}__connection-spinner mt-4 ml-6`"
+                v-show="!admNodesOnline || !chatsActual"
+                indeterminate
+                :size="24"
+              />
               <v-spacer />
               <v-btn
                 :class="`${className}__item`"
@@ -72,7 +78,8 @@ import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import scrollPosition from '@/mixins/scrollPosition'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
-
+import { useIntervalFn } from '@vueuse/core'
+import Visibility from 'visibilityjs'
 
 const scrollOffset = 64
 
@@ -88,7 +95,7 @@ export default {
     partnerId: { default: undefined, type: String },
     showNewContact: { default: false, type: Boolean }
   },
-  setup () {
+  setup() {
     return {
       mdiCheckAll,
       mdiMessageOutline
@@ -97,10 +104,22 @@ export default {
   data: () => ({
     showChatStartDialog: false,
     loading: false,
-    noMoreChats: false
+    noMoreChats: false,
+    chatsActual: false,
+    currentTime: Date.now(),
+    visibilityId: null
   }),
   computed: {
     className: () => 'chats-view',
+    admNodes() {
+      return this.$store.getters['nodes/adm']
+    },
+    admNodesOnline() {
+      return this.admNodes.some((node) => node.status === 'online')
+    },
+    chatsActualUntil() {
+      return this.$store.state.chat.chatsActualUntil
+    },
     isFulfilled() {
       return this.$store.state.chat.isFulfilled
     },
@@ -113,6 +132,7 @@ export default {
       const clonedLastMessages = lastMessages.map((msg) => {
         return { ...msg }
       })
+
       if (!this.noMoreChats && clonedLastMessages.length > 25) {
         const lastNotAdamantChat = lastMessages
           .map((msg) => this.isAdamantChat(msg.contactId))
@@ -139,11 +159,35 @@ export default {
     this.noMoreChats = this.$store.getters['chat/chatListOffset'] === -1
   },
   mounted() {
+    const { pause, resume } = useIntervalFn(() => {
+      this.currentTime = Date.now()
+    }, 500)
+
+    this.visibilityId = Visibility.change((event, state) => {
+      if (state === 'visible') {
+        resume()
+      } else {
+        pause()
+      }
+    })
+
     this.showChatStartDialog = this.showNewContact
     this.attachScrollListener()
   },
   beforeUnmount() {
     this.destroyScrollListener()
+    Visibility.unbind(Number(this.visibilityId))
+  },
+  watch: {
+    // Hides loading spinner once the latest messages are fetched
+    chatsActualUntil: {
+      handler: 'updateChatsActual'
+    },
+    // Shows loading spinner when chats become outdated
+    currentTime: {
+      handler: 'updateChatsActual',
+      immediate: true
+    }
   },
   methods: {
     openChat(partnerId, messageText) {
@@ -155,6 +199,9 @@ export default {
     },
     isAdamantChat,
     getAdamantChatMeta,
+    updateChatsActual() {
+      this.chatsActual = this.chatsActualUntil > this.currentTime
+    },
     onError(message) {
       this.$store.dispatch('snackbar/show', { message })
     },
@@ -192,8 +239,7 @@ export default {
       }
     },
     loadChatsPaged() {
-      if (this.loading) return
-      if (this.noMoreChats) return
+      if (this.loading || this.noMoreChats) return
 
       this.loading = true
       this.$store
@@ -230,7 +276,6 @@ export default {
 @use 'vuetify/settings';
 
 .chats-view {
-
   &__item {
     justify-content: flex-end;
     height: 56px;
@@ -258,6 +303,9 @@ export default {
 /** Themes **/
 .v-theme--light {
   .chats-view {
+    &__connection-spinner {
+      color: map.get(colors.$adm-colors, 'grey');
+    }
     &__item {
       background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
     }
@@ -272,6 +320,9 @@ export default {
 
 .v-theme--dark {
   .chats-view {
+    &__connection-spinner {
+      color: map.get(colors.$adm-colors, 'regular');
+    }
     &__icon {
       color: map.get(settings.$shades, 'white');
     }

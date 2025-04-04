@@ -10,11 +10,13 @@ import * as admApi from '@/lib/adamant-api'
 export function getChats(startHeight = 0, startOffset = 0, recursive = true) {
   let allTransactions = []
   let lastMessageHeight = 0
+  let timestamp = 0
 
   function loadMessages(height = 0, offset = 0) {
     return admApi.getChats(height, offset, 'asc').then((result) => {
-      const { transactions } = result
+      const { transactions, nodeTimestamp } = result
       const length = transactions.length
+      timestamp = nodeTimestamp
 
       // if no more messages
       if (length <= 0) {
@@ -37,6 +39,7 @@ export function getChats(startHeight = 0, startOffset = 0, recursive = true) {
 
   return loadMessages(startHeight, startOffset).then((transactions) => ({
     messages: transactions,
-    lastMessageHeight: lastMessageHeight
+    lastMessageHeight: lastMessageHeight,
+    nodeTimestamp: timestamp
   }))
 }
