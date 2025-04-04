@@ -82,9 +82,9 @@
             />
             <v-progress-circular
               v-else
-              class="connection-spinner ml-2 mr-5"
+              class="connection-spinner ml-1 mr-4"
               indeterminate
-              :size="24"
+              :size="32"
             />
           </template>
         </chat-toolbar>
