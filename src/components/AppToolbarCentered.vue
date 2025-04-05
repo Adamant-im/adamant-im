@@ -3,8 +3,8 @@
     <v-row justify="center" no-gutters>
       <container>
         <v-toolbar ref="toolbar" :flat="flat" :height="height">
-          <v-btn v-if="showBack" icon size="small" @click="goBack">
-            <v-icon :icon="mdiArrowLeft" size="x-large" />
+          <v-btn v-if="showBack" icon @click="goBack">
+            <v-icon :icon="mdiArrowLeft" />
           </v-btn>
 
           <v-toolbar-title v-if="title" class="a-text-regular-enlarged">
@@ -101,9 +101,17 @@ export default {
     margin-inline-start: 4px;
   }
 
-  :deep(.v-btn:hover) {
-    > .v-btn__overlay {
-      opacity: 0;
+  :deep(.v-toolbar__content > .v-btn:first-child) {
+    width: 36px;
+    height: 36px;
+    margin: 0 12px;
+    border-radius: 50%;
+  }
+
+  :deep(.v-btn) {
+    &:hover > .v-btn__overlay {
+      opacity: 0.2;
+      transition: all 0.4s ease;
     }
   }
 }
