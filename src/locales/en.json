@@ -156,7 +156,7 @@
     "invalid_qr_code": "QR code does not contain passphrase or is unrecognizable",
     "language_label": "Language",
     "login_button": "Login",
-    "login_by_qr_code_tooltip": "Login with passphrase from QR code",
+    "login_by_qr_code_tooltip": "Login with passphrase using QR code",
     "new_button": "Create new",
     "new_passphrase_label": "<b>Save</b> your new account passphrase. Keep it secret; it grants full access to your wallet and messages. If lost, it cannot be recovered.",
     "password_label": "Passphrase",
