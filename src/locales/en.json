@@ -15,7 +15,7 @@
     "date_yesterday": "Yesterday",
     "incorrect_address": "Incorrect ADM address",
     "no_public_key": "This address is not active yet. Cannot start a chat",
-    "unable_to_retrieve_no_public_key": "`Unable to decrypt message: partner's public key missing`",
+    "unable_to_retrieve_no_public_key": "`Unable to decrypt message: partner's public key is missing`",
     "max_files": "Upload not more than {count} files",
     "max_file_size": "Maximum file size allowed: 250 MB",
     "file": "0 files | 1 file | {n} files | {n} files",
