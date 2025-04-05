@@ -39,7 +39,7 @@
 </template>
 <script lang="ts" setup>
 import { useRoute } from 'vue-router'
-import { computed, useTemplateRef, ref } from 'vue'
+import { computed, useTemplateRef, ref, onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex'
 import LeftSide from '@/components/LeftSide.vue'
 import { useScreenSize } from '@/hooks/useScreenSize'
@@ -50,6 +50,14 @@ const layout = computed(() => route.meta.layout || 'default')
 
 const route = useRoute()
 const store = useStore()
+
+const address = computed(() => {
+  return store.state.address
+})
+
+const SAVED_WIDTH_KEY_PREFIX = 'aside_width'
+
+const savedWidhtKey = address.value ? SAVED_WIDTH_KEY_PREFIX + '_' + address.value : ''
 
 const asideRef = useTemplateRef('aside')
 let isResizing = false
@@ -115,6 +123,18 @@ const resize = (event: MouseEvent) => {
     })
   }
 }
+
+if (savedWidhtKey) {
+  const value = localStorage.getItem(savedWidhtKey)
+
+  if (value) {
+    asideWidth.value = value
+  }
+}
+
+onBeforeUnmount(() => {
+  localStorage.setItem(savedWidhtKey, asideWidth.value)
+})
 </script>
 <style lang="scss" scoped>
 @use 'sass:map';
@@ -170,6 +190,7 @@ const resize = (event: MouseEvent) => {
     overflow-y: auto;
     overflow-x: hidden;
     height: calc(100vh - var(--v-layout-bottom));
+    width: calc(100% - var(--asideWidth));
 
     &:deep(> .v-container) {
       height: 100%;
