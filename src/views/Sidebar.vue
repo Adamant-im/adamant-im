@@ -57,7 +57,7 @@ const address = computed(() => {
 
 const SAVED_WIDTH_KEY_PREFIX = 'aside_width'
 
-const savedWidhtKey = address.value ? SAVED_WIDTH_KEY_PREFIX + '_' + address.value : ''
+const savedWidthKey = address.value ? SAVED_WIDTH_KEY_PREFIX + '_' + address.value : ''
 
 const asideRef = useTemplateRef('aside')
 let isResizing = false
@@ -124,8 +124,8 @@ const resize = (event: MouseEvent) => {
   }
 }
 
-if (savedWidhtKey) {
-  const value = localStorage.getItem(savedWidhtKey)
+if (savedWidthKey) {
+  const value = localStorage.getItem(savedWidthKey)
 
   if (value) {
     asideWidth.value = value
@@ -133,7 +133,7 @@ if (savedWidhtKey) {
 }
 
 onBeforeUnmount(() => {
-  localStorage.setItem(savedWidhtKey, asideWidth.value)
+  localStorage.setItem(savedWidthKey, asideWidth.value)
 })
 </script>
 <style lang="scss" scoped>
