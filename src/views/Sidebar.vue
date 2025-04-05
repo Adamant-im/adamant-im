@@ -167,7 +167,6 @@ const resize = (event: MouseEvent) => {
 
   &__layout {
     flex: 1 1 auto;
-    width: 100%;
     overflow-y: auto;
     overflow-x: hidden;
     height: calc(100vh - var(--v-layout-bottom));
