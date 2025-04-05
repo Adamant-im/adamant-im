@@ -344,7 +344,7 @@
     "error_not_enough": "Not enough tokens",
     "error_not_enough_adm_fee": "Sending {crypto} in chat requires 0.001 ADM fee",
     "error_not_enough_eth_fee": "Not enough ETH to pay a transfer fee",
-    "error_pending_transaction": "Previous {crypto} transaction still processing. Continue with new transfer later.",
+    "error_pending_transaction": "Previous {crypto} transaction is still being processed. Continue with new transfer later.",
     "error_same_recipient": "Don't send tokens to yourself",
     "error_unknown": "Unknown error. Weak connection?",
     "error_no_hash": "Unable to get transaction hash",
