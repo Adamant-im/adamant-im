@@ -183,7 +183,7 @@
   },
   "nodes": {
     "active": "Active",
-    "fastest_title": "Use fastest available node",
+    "fastest_title": "Use the fastest available node",
     "fastest_tooltip": "Automatically selects the node with the lowest latency",
     "label": "Type",
     "host": "Host",
