@@ -1,14 +1,19 @@
 <template>
-  <div id="txListElement">
-    <app-toolbar-centered app :title="$t('transaction.transactions')" flat fixed />
+  <div id="txListElement" class="w-100" :class="classes.root">
+    <app-toolbar-centered app :title="$t('transaction.transactions')" flat absolute no-max-width />
 
-    <v-container fluid class="px-0 container--with-app-toolbar">
+    <v-container
+      fluid
+      class="px-0 py-0 container--with-app-toolbar"
+      :class="`${classes.content}`"
+      @scroll="onScroll"
+    >
       <v-row justify="center" no-gutters style="position: relative">
         <v-list-item v-if="isRecentLoading" style="position: absolute; top: 20px">
           <InlineSpinner />
         </v-list-item>
 
-        <container v-if="isFulfilled">
+        <container v-if="isFulfilled" no-max-width>
           <v-list v-if="hasTransactions" lines="three" bg-color="transparent">
             <transaction-list-item
               v-for="(transaction, i) in transactions"
@@ -57,6 +62,19 @@ export default {
       type: String
     }
   },
+  setup() {
+    const className = 'transactions'
+
+
+    const classes = {
+      root: className,
+      content: `${className}__content`
+    }
+
+    return {
+      classes
+    }
+  },
   data: () => ({
     isFulfilled: false,
     isRejected: false,
@@ -65,6 +83,7 @@ export default {
   computed: {
     transactions() {
       const transactions = this.$store.getters[`${this.cryptoModule}/sortedTransactions`]
+
       const address = this.$store.state[this.crypto.toLowerCase()].address
       return transactions.filter((tx) => {
         // Filter invalid "fake" transactions (from chat rich message)
@@ -92,16 +111,11 @@ export default {
       if (this.$store.state.IDBReady) this.getNewTransactions()
     }
   },
-  beforeUnmount() {
-    window.removeEventListener('scroll', this.onScroll)
-  },
   mounted() {
     if (!this.$store.getters['options/isLoginViaPassword'] || this.$store.state.IDBReady) {
       this.getNewTransactions()
     }
-    window.addEventListener('scroll', this.onScroll)
   },
-  // mixins: [scrollPosition],
   methods: {
     sender(transaction) {
       const { senders, senderId } = transaction
@@ -148,14 +162,22 @@ export default {
         params: { partnerId }
       })
     },
-    onScroll() {
-      const height = document.getElementById('txListElement').offsetHeight
+    onScroll(evt) {
+      if (!evt) {
+        return
+      }
+
+      const { target } = evt
+
+      if (!target) {
+        return
+      }
+
+      const height = target.offsetHeight
+
       const windowHeight = window.innerHeight
-      const scrollPosition = Math.ceil(
-        window.scrollY ||
-          window.pageYOffset ||
-          document.body.scrollTop + (document.documentElement.scrollTop || 0)
-      )
+      const scrollPosition = Math.ceil(target.scrollTop || 0);
+
       // If we've scrolled to the very bottom, fetch the older transactions from server
       if (!this.isOlderLoading && windowHeight + scrollPosition >= height) {
         this.$store.dispatch(`${this.cryptoModule}/getOldTransactions`)
@@ -168,11 +190,11 @@ export default {
     getNewTransactions() {
       // If we came from Transactions details sreen, do not update transaction list
       const doNotUpdate =
-        this.$route.meta.previousRoute.params.txId &&
+        (this.$route.meta.previousRoute?.params?.txId &&
         !this.isFulfilled &&
         // If we don't just refresh Tx details screen
         this.$route.meta.previousPreviousRoute &&
-        this.$route.meta.previousPreviousRoute.name
+        this.$route.meta.previousPreviousRoute.name) || false
 
       if (doNotUpdate) {
         this.isFulfilled = true
@@ -203,3 +225,14 @@ export default {
   }
 }
 </script>
+
+<style scoped lang="scss">
+.transactions {
+  position: relative;
+
+  &__content {
+    overflow-y: auto;
+    height: calc(100vh - var(--v-layout-bottom) - var(--toolbar-height));
+  }
+}
+</style>

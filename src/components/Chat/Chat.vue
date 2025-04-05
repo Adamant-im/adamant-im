@@ -293,11 +293,11 @@ import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import FreeTokensDialog from '@/components/FreeTokensDialog.vue'
 import { isMobile } from '@/lib/display-mobile'
 import { isAdamantChat, isWelcomeChat, isWelcomeMessage } from '@/lib/chat/meta/utils'
-import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import AChatAttachment from '@/components/AChat/AChatAttachment/AChatAttachment.vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import ProgressIndicator from '@/components/ProgressIndicator.vue'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -707,7 +707,8 @@ const openTransaction = (transaction: NormalizedChatMessageTransaction) => {
         txId: transaction.hash
       },
       query: {
-        fromChat: 'true'
+        fromChat: 'true',
+        from: `/chats/${props.partnerId}`
       }
     })
   }
@@ -784,7 +785,7 @@ const onKeyPress = (e: KeyboardEvent) => {
   margin-right: 8px;
 }
 .chat {
-  height: 100vh;
+  height: calc(100vh - var(--v-layout-bottom));
   box-shadow: none;
   background-color: transparent !important;
 }

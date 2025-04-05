@@ -1,7 +1,7 @@
 <template>
   <v-container :class="[classes, className]" fluid>
     <v-row justify="center" no-gutters>
-      <container>
+      <container :noMaxWidth="noMaxWidth">
         <v-toolbar ref="toolbar" :flat="flat" :height="height">
           <v-btn v-if="showBack" icon size="small" @click="goBack">
             <v-icon :icon="mdiArrowLeft" size="x-large" />
@@ -21,6 +21,8 @@
 
 <script>
 import { mdiArrowLeft } from '@mdi/js'
+import { useRoute, useRouter } from 'vue-router'
+import { onBeforeUnmount } from 'vue'
 
 export default {
   props: {
@@ -51,31 +53,83 @@ export default {
     showBack: {
       type: Boolean,
       default: true
+    },
+    noMaxWidth: {
+      type: Boolean,
+      default: false
+    },
+    sticky: {
+      type: Boolean,
+      default: false
     }
   },
   setup() {
+    const route = useRoute()
+    const router = useRouter()
+
+    const className = 'app-toolbar-centered'
+
+    const goBack = () => {
+      if (route.query?.from?.includes('chats')) {
+        router.push(route.query?.from)
+        return
+      }
+
+      if (route.query?.fromChat) {
+        router.back()
+        return
+      }
+
+      const parentRoute = route.matched.length > 1 ? route.matched[route.matched.length - 2] : null
+
+      if (parentRoute) {
+        router.push(parentRoute)
+        return
+      }
+
+      if (history.state?.back.includes('chats')) {
+        router.push({
+          name: 'Chats'
+        })
+        return
+      }
+
+      // there are no pages in history to go back
+      if (history.length === 1) {
+        router.replace('/')
+        return
+      }
+
+      router.back()
+    }
+
+    const onKeydownHandler = (event) => {
+      if (event.key === 'Escape') {
+        if (route.query?.from?.includes('chats')) {
+          goBack()
+        }
+      }
+    }
+
+    document.addEventListener('keydown', onKeydownHandler)
+
+    onBeforeUnmount(() => {
+      document.removeEventListener('keydown', onKeydownHandler)
+    })
+
     return {
-      mdiArrowLeft
+      className,
+      mdiArrowLeft,
+      goBack
     }
   },
   computed: {
     classes() {
       return {
         'v-toolbar--fixed': this.app,
-        'app-toolbar--fixed': this.fixed
+        'app-toolbar--fixed': this.fixed,
+        'app-toolbar--sticky': this.sticky
       }
-    },
-    className: () => 'app-toolbar-centered'
-  },
-  methods: {
-    goBack() {
-      // there are no pages in history to go back
-      if (history.length === 1) {
-        this.$router.replace('/')
-        return
-      }
-
-      this.$router.back()
     }
   }
 }
@@ -97,6 +151,10 @@ export default {
     margin-inline-start: 0;
   }
 
+  :deep(.v-toolbar__content) {
+    top: 0;
+  }
+
   :deep(.v-toolbar__content > .v-btn:first-child) {
     margin-inline-start: 4px;
   }
@@ -110,6 +168,12 @@ export default {
 
 .app-toolbar--fixed {
   position: fixed;
+  z-index: 2;
+}
+
+.app-toolbar--sticky {
+  position: sticky;
+  top: 0;
   z-index: 2;
 }
 

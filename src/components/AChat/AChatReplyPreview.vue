@@ -21,8 +21,8 @@
   </div>
 </template>
 
-<script>
-import { computed, defineComponent } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
@@ -41,56 +41,41 @@ const classes = {
   closeButton: `${className}__close-button`
 }
 
-export default defineComponent({
-  components: {
-    ChatAvatar
+const props = defineProps({
+  message: {
+    type: Object,
+    required: true
   },
-  emits: ['cancel'],
-  props: {
-    message: {
-      type: Object,
-      required: true
-    },
-    partnerId: {
-      type: String,
-      required: true
-    }
-  },
-  setup(props) {
-    const { t } = useI18n()
-    const store = useStore()
-
-    const isCryptoTransfer = computed(() => {
-      const validCryptos = Object.keys(Cryptos)
-
-      return props.message ? validCryptos.includes(props.message.type) : false
-    })
-
-    const cryptoTransferLabel = computed(() => {
-      const direction =
-        props.message.senderId === props.partnerId
-          ? t('chats.received_label')
-          : t('chats.sent_label')
-      const amount = currencyFormatter(props.message.amount, props.message.type)
-      const message = props.message.message ? `: ${props.message.message}` : ''
-
-      return `${direction} ${amount}${message}`
-    })
-
-    const messageLabel = computed(() => {
-      return store.state.options.formatMessages
-        ? formatMessage(props.message.message)
-        : props.message.message
-    })
-
-    return {
-      isCryptoTransfer,
-      cryptoTransferLabel,
-      classes,
-      messageLabel,
-      mdiClose
-    }
+  partnerId: {
+    type: String,
+    required: true
   }
+})
+
+defineEmits(['cancel'])
+
+const { t } = useI18n()
+const store = useStore()
+
+const isCryptoTransfer = computed(() => {
+  const validCryptos = Object.keys(Cryptos)
+
+  return props.message ? validCryptos.includes(props.message.type) : false
+})
+
+const cryptoTransferLabel = computed(() => {
+  const direction =
+    props.message.senderId === props.partnerId ? t('chats.received_label') : t('chats.sent_label')
+  const amount = currencyFormatter(props.message.amount, props.message.type)
+  const message = props.message.message ? `: ${props.message.message}` : ''
+
+  return `${direction} ${amount}${message}`
+})
+
+const messageLabel = computed(() => {
+  return store.state.options.formatMessages
+    ? formatMessage(props.message.message)
+    : props.message.message
 })
 </script>
 

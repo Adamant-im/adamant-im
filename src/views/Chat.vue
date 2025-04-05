@@ -2,6 +2,7 @@
   <v-row justify="center" no-gutters>
     <container>
       <chat
+        :key="partnerId"
         :message-text="messageText"
         :partner-id="partnerId"
         @click:chat-avatar="onClickChatAvatar"
@@ -15,23 +16,20 @@
         :owner-address="address"
       />
 
-      <ProgressIndicator :show="!isFulfilled" />
+      <ProgressIndicator :show="!isFulfilled" :without-spinner="!isMobileView" />
     </container>
-
-    <NodesOfflineDialog node-type="adm" />
   </v-row>
 </template>
 
 <script>
-import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import Chat from '@/components/Chat/Chat.vue'
 import PartnerInfo from '@/components/PartnerInfo.vue'
-import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import partnerName from '@/mixins/partnerName'
+import ProgressIndicator from '@/components/ProgressIndicator.vue'
+import { useScreenSize } from '@/hooks/useScreenSize'
 
 export default {
   components: {
-    NodesOfflineDialog,
     ProgressIndicator,
     Chat,
     PartnerInfo
@@ -45,6 +43,13 @@ export default {
     partnerId: {
       required: true,
       type: String
+    }
+  },
+  setup() {
+    const { isMobileView } = useScreenSize()
+
+    return {
+      isMobileView
     }
   },
   data: () => ({

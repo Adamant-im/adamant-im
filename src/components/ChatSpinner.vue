@@ -41,21 +41,11 @@ $chat-spinner-size: 150px !default;
    * 1. Position overlay relative to Container.vue
    */
   &__overlay {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-  }
-
-  /**
-   * 1. Center progress-circular horizontally
-   */
-  &__progress {
-    position: fixed;
-    left: 50%;
-    margin-left: calc(0px - $chat-spinner-size / 2);
-    margin-top: 120px;
   }
 }
 </style>

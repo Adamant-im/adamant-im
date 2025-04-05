@@ -110,8 +110,7 @@ import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
 import { ref, defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
-import { mdiContentCopy, mdiDotsVertical, mdiEye,mdiEyeOff } from '@mdi/js'
-
+import { mdiContentCopy, mdiDotsVertical, mdiEye, mdiEyeOff } from '@mdi/js'
 
 function getBtcKey(crypto, passphrase, asWif) {
   const keyPair = getBtcAccount(crypto, passphrase).keyPair

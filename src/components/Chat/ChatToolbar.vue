@@ -84,11 +84,7 @@ export default {
   },
   methods: {
     goBack() {
-      if (this.lastPath === '/chats') {
-        this.$router.back()
-      } else {
-        this.$router.push({ name: 'Chats' })
-      }
+      this.$router.push({ name: 'Chats' })
     },
     showPartnerInfo() {
       this.$emit('partner-info', true)

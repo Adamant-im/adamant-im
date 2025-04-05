@@ -3,9 +3,9 @@
     <UploadAttachmentExitPrompt />
     <warning-on-addresses-dialog v-model="showWarningOnAddressesDialog" />
 
-    <component :is="layout">
+    <v-main>
       <router-view />
-    </component>
+    </v-main>
   </v-app>
 </template>
 
@@ -27,9 +27,6 @@ export default defineComponent({
     notifications: null as Notifications | null
   }),
   computed: {
-    layout() {
-      return this.$route.meta.layout || 'default'
-    },
     isLogged() {
       return this.$store.getters.isLogged
     },
