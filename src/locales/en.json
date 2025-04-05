@@ -396,7 +396,7 @@
   "wallets": {
     "coins_not_found_title": "No coins match your search",
     "reset": "Reset",
-    "reset_message": "Are you sure to reset the wallet list to its default state?",
+    "reset_message": "Are you sure you want to reset the wallet list to its default state?",
     "search": "Search",
     "summary_title": "Reset wallet list"
   }
