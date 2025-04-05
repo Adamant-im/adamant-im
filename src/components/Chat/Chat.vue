@@ -707,7 +707,8 @@ const openTransaction = (transaction: NormalizedChatMessageTransaction) => {
         txId: transaction.hash
       },
       query: {
-        fromChat: 'true'
+        fromChat: 'true',
+        from: `/chats/${props.partnerId}`
       }
     })
   }
