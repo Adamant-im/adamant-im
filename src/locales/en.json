@@ -302,7 +302,7 @@
     },
     "inconsistent_reasons": {
       "unknown": "Transaction check failed",
-      "no_recipient_crypto_address": "Recipient's {crypto} address missing",
+      "no_recipient_crypto_address": "Recipient's {crypto} address is missing",
       "no_sender_crypto_address": "Sender's {crypto} address is missing",
       "wrong_tx_hash": "Invalid transaction hash — possible fraud",
       "wrong_amount": "Amount mismatch — possible fraud",
