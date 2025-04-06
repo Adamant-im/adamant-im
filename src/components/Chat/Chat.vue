@@ -431,14 +431,12 @@ onBeforeMount(() => {
 onMounted(async () => {
   if (isFulfilled.value && chatPage.value <= 0) await fetchChatMessages()
 
-  if (chatPage.value) {
-    const userMessages = messages.value.filter(
-      (message: NormalizedChatMessageTransaction) =>
-        message.senderId && message.senderId === userId.value
-    )
+  const userMessages = messages.value.filter(
+    (message: NormalizedChatMessageTransaction) =>
+      message.senderId && message.senderId === userId.value
+  )
 
-    showNewChatPlaceholder.value = !userMessages.length
-  }
+  showNewChatPlaceholder.value = !userMessages.length
 
   scrollBehavior()
   nextTick(() => {

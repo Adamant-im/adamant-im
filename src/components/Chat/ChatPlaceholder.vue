@@ -3,7 +3,7 @@
     <div :class="`${className}__container`">
       <Logo style="width: 35px" />
       <p v-for="key in keys" :key="key" :class="`${className}__row`">
-        {{ $t(`chats.placeholder.${key}`) }}
+        {{ t(`chats.placeholder.${key}`) }}
       </p>
     </div>
   </div>
@@ -11,6 +11,9 @@
 
 <script lang="ts" setup>
 import Logo from '@/components/icons/common/Logo.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const className = 'chat-placeholder'
 const keys = ['encrypted', 'ipfs', 'anonymous', 'censorship']
