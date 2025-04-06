@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onBeforeUnmount, PropType } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import throttle from 'lodash/throttle'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import Styler from 'stylefire'
@@ -66,32 +66,23 @@ const classes = {
   overlay: `${className}__overlay`
 }
 
-const props = defineProps({
-  messages: {
-    type: Array as PropType<NormalizedChatMessageTransaction[]>,
-    default: () => []
-  },
-  partners: {
-    type: Array as PropType<User[]>,
-    default: () => []
-  },
-  userId: {
-    type: String,
-    required: true
-  },
-  loading: {
-    type: Boolean,
-    default: false
-  },
-  locale: {
-    type: String,
-    default: 'en'
-  },
-  showPlaceholder: {
-    type: Boolean,
-    default: false
+const props = withDefaults(
+  defineProps<{
+    messages: NormalizedChatMessageTransaction[]
+    partners: User[]
+    userId: string
+    loading: boolean
+    locale: string
+    showPlaceholder: boolean
+  }>(),
+  {
+    messages: () => [],
+    partners: () => [],
+    loading: false,
+    locale: 'en',
+    showPlaceholder: false
   }
-})
+)
 
 const emit = defineEmits(['scroll', 'scroll:bottom', 'scroll:top'])
 
