@@ -17,6 +17,9 @@
         </div>
 
         <div ref="messagesRef" :class="classes.bodyMessages">
+          <div v-if="showPlaceholder">
+            <slot name="placeholder" />
+          </div>
           <template v-for="message in messages" :key="message.id">
             <slot
               name="message"
@@ -84,6 +87,10 @@ export default defineComponent({
     locale: {
       type: String,
       default: 'en'
+    },
+    showPlaceholder: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['scroll', 'scroll:bottom', 'scroll:top'],

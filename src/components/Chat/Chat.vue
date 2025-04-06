@@ -5,6 +5,7 @@
       ref="chatRef"
       :messages="messages"
       :partners="partners"
+      :show-placeholder="showNewChatPlaceholder"
       :user-id="userId"
       :loading="loading"
       :locale="$i18n.locale"
@@ -81,6 +82,10 @@
             />
           </template>
         </chat-toolbar>
+      </template>
+
+      <template #placeholder>
+        <chat-placeholder />
       </template>
 
       <template #message="{ message, sender }">
@@ -298,6 +303,7 @@ import AChatAttachment from '@/components/AChat/AChatAttachment/AChatAttachment.
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import ChatPlaceholder from '@/components/Chat/ChatPlaceholder.vue'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -350,6 +356,7 @@ const actionsMenuMessageId = ref<string | -1>(-1)
 const actionsDropdownMessageId = ref<string | -1>(-1)
 const replyMessageId = ref<string | -1>(-1)
 const showEmojiPicker = ref(false)
+const showNewChatPlaceholder = ref(false)
 
 const messages = computed(() => store.getters['chat/messages'](props.partnerId))
 const userId = computed(() => store.state.address)
@@ -421,8 +428,18 @@ watch(replyMessageId, (messageId) => {
 onBeforeMount(() => {
   window.addEventListener('keyup', onKeyPress)
 })
-onMounted(() => {
-  if (isFulfilled.value && chatPage.value <= 0) fetchChatMessages()
+onMounted(async () => {
+  if (isFulfilled.value && chatPage.value <= 0) await fetchChatMessages()
+
+  if (chatPage.value) {
+    const userMessages = messages.value.filter(
+      (message: NormalizedChatMessageTransaction) =>
+        message.senderId && message.senderId === userId.value
+    )
+
+    showNewChatPlaceholder.value = !userMessages.length
+  }
+
   scrollBehavior()
   nextTick(() => {
     isScrolledToBottom.value = chatRef.value.isScrolledToBottom()

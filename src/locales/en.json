@@ -33,6 +33,12 @@
     "ok": "OK",
     "partner_info": "Partner's info",
     "partner_name": "Partner's name",
+    "placeholder": {
+      "encrypted": "\uD83D\uDD10 End-to-end encrypted across all devices",
+      "ipfs": "☁\uFE0F Decentralized IPFS storage for files/media",
+      "anonymous": "\uD83D\uDD76\uFE0F Anonymous: partners never see your IP address",
+      "censorship": "⛓\uFE0F Censorship-resistant blockchain architecture"
+    },
     "received_label": "Received",
     "recipient": "Partner's address",
     "recipient_tooltip": "Partner's ADM address like U1234567890987654321 or Share link",
