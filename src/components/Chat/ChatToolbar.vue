@@ -1,6 +1,6 @@
 <template>
   <v-toolbar flat height="56" :class="`${className}`" color="transparent">
-    <v-btn icon @click="goBack">
+    <v-btn icon @click="goBack" v-if="isMobileView">
       <v-badge
         v-if="numOfNewMessages > 0"
         :value="numOfNewMessages"
@@ -15,11 +15,7 @@
       <slot name="avatar-toolbar" />
     </div>
     <div :class="`${className}__textfield-container`">
-      <div
-        v-if="isWelcomeChat(partnerId)"
-        :class="`${className}__adm-chat-name`"
-        :style="{ paddingLeft: '12px' }"
-      >
+      <div v-if="isWelcomeChat(partnerId)" :class="`${className}__adm-chat-name`">
         {{ $t('chats.virtual.welcome_message_title') }}
       </div>
       <div v-else>
@@ -44,6 +40,7 @@
 import partnerName from '@/mixins/partnerName'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
 import { mdiArrowLeft } from '@mdi/js'
+import { useScreenSize } from '@/hooks/useScreenSize'
 
 export default {
   mixins: [partnerName],
@@ -55,7 +52,10 @@ export default {
   },
   emits: ['partner-info'],
   setup() {
+    const { isMobileView } = useScreenSize()
+
     return {
+      isMobileView,
       mdiArrowLeft
     }
   },
@@ -104,6 +104,7 @@ export default {
 .chat-toolbar {
   flex-grow: 0;
   flex-shrink: 0;
+  padding-left: 12px;
 
   &__messages-counter {
     position: relative;
@@ -139,7 +140,7 @@ export default {
   :deep(.v-toolbar__content > .v-btn:first-child) {
     width: 36px;
     height: 36px;
-    margin: 0 12px;
+    margin: 0 12px 0 0;
     border-radius: 50%;
   }
 
