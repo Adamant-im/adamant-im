@@ -111,10 +111,10 @@ export default {
       }
     }
 
-    document.addEventListener('keydown', onKeydownHandler)
+    document.addEventListener('keyup', onKeydownHandler)
 
     onBeforeUnmount(() => {
-      document.removeEventListener('keydown', onKeydownHandler)
+      document.removeEventListener('keyup', onKeydownHandler)
     })
 
     return {
