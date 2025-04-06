@@ -11,7 +11,7 @@
           variant="text"
         />
         <v-spacer />
-        <v-btn :class="`${className}__item`" @click="showChatStartDialog = true" variant="plain">
+        <v-btn :class="`${className}__item`" @click="setShowChatStartDialog(true)" variant="plain">
           <template #prepend>
             <v-icon :class="`${className}__icon`" :icon="mdiMessageOutline" size="small" />
           </template>
@@ -77,7 +77,7 @@ import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
 import { useRoute, useRouter } from 'vue-router'
 import { computed, onActivated, onDeactivated, ref, watch } from 'vue'
-import { useDisplay } from 'vuetify'
+import { useStore } from 'vuex'
 
 const scrollOffset = 64
 
@@ -96,8 +96,7 @@ export default {
   setup() {
     const route = useRoute()
     const router = useRouter()
-
-    const { smAndDown } = useDisplay()
+    const store = useStore()
 
     const savedRoute = ref(null)
 
@@ -133,16 +132,29 @@ export default {
       }
     })
 
+    const setShowChatStartDialog = (value) => {
+      store.commit('chat/setShowChatStartDialog', value)
+    }
+
+    const showChatStartDialog = computed({
+      get() {
+        return store.state.chat.showChatStartDialog
+      },
+      set(value) {
+        setShowChatStartDialog(value)
+      }
+    })
+
     return {
       chatPagePartnerId,
-      smAndDown,
+      showChatStartDialog,
       mdiCheckAll,
       mdiMessageOutline,
-      checkIsActive
+      checkIsActive,
+      setShowChatStartDialog
     }
   },
   data: () => ({
-    showChatStartDialog: false,
     loading: false,
     noMoreChats: false
   }),
@@ -186,7 +198,7 @@ export default {
     this.noMoreChats = this.$store.getters['chat/chatListOffset'] === -1
   },
   mounted() {
-    this.showChatStartDialog = this.showNewContact
+    this.setShowChatStartDialog(this.showNewContact)
     this.attachScrollListener()
   },
   beforeUnmount() {

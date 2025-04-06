@@ -5,6 +5,7 @@
         :key="partnerId"
         :message-text="messageText"
         :partner-id="partnerId"
+        :isShowingPartnerInfo="show"
         @click:chat-avatar="onClickChatAvatar"
       />
 

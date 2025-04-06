@@ -10,17 +10,37 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { computed, defineComponent, onBeforeUnmount } from 'vue'
 import dayjs from 'dayjs'
 import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
 import UploadAttachmentExitPrompt from '@/components/UploadAttachmentExitPrompt.vue'
 import Notifications from '@/lib/notifications'
 import { ThemeName } from './plugins/vuetify'
+import { useStore } from 'vuex'
 
 export default defineComponent({
   components: {
     WarningOnAddressesDialog,
     UploadAttachmentExitPrompt
+  },
+  setup() {
+    const store = useStore()
+    const isSnackbarShowing = computed(() => store.state.snackbar.show)
+
+    const onKeydownHandler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (isSnackbarShowing.value) {
+          e.stopPropagation()
+          store.commit('snackbar/changeState', false)
+        }
+      }
+    }
+
+    window.addEventListener('keydown', onKeydownHandler, true)
+
+    onBeforeUnmount(() => {
+      window.removeEventListener('keydown', onKeydownHandler, true)
+    })
   },
   data: () => ({
     showWarningOnAddressesDialog: false,
