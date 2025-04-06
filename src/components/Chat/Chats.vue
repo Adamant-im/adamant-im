@@ -108,7 +108,7 @@ export default {
     const lastPartnerId = ref(null)
 
     const checkIsActive = (contactId) => {
-      return contactId === lastPartnerId.value
+      return route.name !== 'Chats' && contactId === lastPartnerId.value
     }
 
     watch(chatPagePartnerId, (value) => {
