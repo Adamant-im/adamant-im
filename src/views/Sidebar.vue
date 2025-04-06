@@ -31,7 +31,7 @@
             src="/img/adamant-logo-transparent-512x512.png"
             draggable="false"
           />
-          <router-view v-show="!showLogo" />
+          <router-view v-show="!showLogo" :key="route.path" />
         </div>
       </component>
     </div>
