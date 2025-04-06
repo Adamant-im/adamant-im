@@ -8,13 +8,13 @@
     :absolute="absolute"
   >
     <!-- Wallet -->
-    <v-btn v-if="walletShouldBeVisible" to="/home" :exact="true">
+    <v-btn v-if="walletShouldBeVisible" to="/home" :exact="true" draggable="false">
       <v-icon :icon="mdiWallet" />
       <span>{{ t('bottom.wallet_button') }}</span>
     </v-btn>
 
     <!-- Chat -->
-    <v-btn to="/chats">
+    <v-btn to="/chats" draggable="false">
       <v-badge
         v-if="numOfNewMessages > 0"
         :value="numOfNewMessages"
@@ -30,7 +30,7 @@
     </v-btn>
 
     <!-- Settings -->
-    <v-btn to="/options">
+    <v-btn to="/options" draggable="false">
       <v-icon :icon="mdiCog" />
       <span>{{ t('bottom.settings_button') }}</span>
     </v-btn>
@@ -72,7 +72,7 @@ const getCurrentPageIndex = () => {
     return route.path.match(pattern)
   })
 
-  return currentPage && pages.indexOf(currentPage) || 0
+  return (currentPage && pages.indexOf(currentPage)) || 0
 }
 const numOfNewMessages = computed(() => store.getters['chat/totalNumOfNewMessages'])
 
