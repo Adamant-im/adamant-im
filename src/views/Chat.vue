@@ -5,13 +5,12 @@
         :key="partnerId"
         :message-text="messageText"
         :partner-id="partnerId"
-        :isShowingPartnerInfo="show"
         @click:chat-avatar="onClickChatAvatar"
       />
 
       <PartnerInfo
         v-if="contactAddress"
-        v-model="show"
+        v-model="isShowPartnerInfoDialog"
         :address="contactAddress"
         :name="contactName"
         :owner-address="address"
@@ -28,6 +27,8 @@ import PartnerInfo from '@/components/PartnerInfo.vue'
 import partnerName from '@/mixins/partnerName'
 import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import { computed } from 'vue'
+import { useStore } from 'vuex'
 
 export default {
   components: {
@@ -47,14 +48,25 @@ export default {
     }
   },
   setup() {
+    const store = useStore()
+
     const { isMobileView } = useScreenSize()
 
+    const isShowPartnerInfoDialog = computed({
+      get() {
+        return store.state.chat.isShowPartnerInfoDialog
+      },
+      set(value) {
+        store.commit('chat/setIsShowPartnerInfoDialog', value)
+      }
+    })
+
     return {
-      isMobileView
+      isMobileView,
+      isShowPartnerInfoDialog
     }
   },
   data: () => ({
-    show: false,
     contactAddress: '',
     contactName: ''
   }),
@@ -73,7 +85,7 @@ export default {
     onClickChatAvatar(address) {
       this.contactAddress = address
       this.contactName = this.getPartnerName(address)
-      this.show = true
+      this.isShowPartnerInfoDialog = true
     }
   }
 }

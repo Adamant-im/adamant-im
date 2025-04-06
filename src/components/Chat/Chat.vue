@@ -1,6 +1,6 @@
 <template>
   <v-card class="chat">
-    <free-tokens-dialog v-model="showFreeTokensDialog" />
+    <free-tokens-dialog v-model="isShowFreeTokensDialog" />
     <a-chat
       ref="chatRef"
       :messages="messages"
@@ -307,13 +307,9 @@ const validationErrors = {
   messageTooLong: 'MESSAGE_LENGTH_EXCEED'
 }
 
-const { isShowingPartnerInfo, partnerId } = defineProps({
+const { partnerId } = defineProps({
   partnerId: {
     type: String,
-    required: true
-  },
-  isShowingPartnerInfo: {
-    type: Boolean,
     required: true
   }
 })
@@ -351,12 +347,28 @@ const replyLoadingChatHistory = ref(false)
 const noMoreMessages = ref(false)
 const isScrolledToBottom = ref(true)
 const visibilityId = ref<number | boolean | null>(null)
-const showFreeTokensDialog = ref(false)
 const flashingMessageId = ref<string | -1>(-1)
 const actionsMenuMessageId = ref<string | -1>(-1)
-const actionsDropdownMessageId = ref<string | -1>(-1)
 const replyMessageId = ref<string | -1>(-1)
 const showEmojiPicker = ref(false)
+
+const isShowFreeTokensDialog = computed({
+  get() {
+    return store.state.chat.isShowFreeTokensDialog
+  },
+  set(value) {
+    store.commit('chat/setIsShowFreeTokensDialog', value)
+  }
+})
+
+const actionsDropdownMessageId = computed({
+  get() {
+    return store.state.chat.actionsDropdownMessageId
+  },
+  set(value) {
+    store.commit('chat/setActionsDropdownMessageId', value)
+  }
+})
 
 const messages = computed(() => store.getters['chat/messages'](partnerId))
 const userId = computed(() => store.state.address)
@@ -387,19 +399,6 @@ const replyMessage = computed<NormalizedChatMessageTransaction>(() =>
 const actionMessage = computed<NormalizedChatMessageTransaction>(() =>
   store.getters['chat/messageById'](actionsMenuMessageId.value)
 )
-const noActiveNodesDialog = computed(() => store.state.chat.noActiveNodesDialog)
-const showChatStartDialog = computed(() => store.state.chat.showChatStartDialog)
-const isSnackbarShowing = computed(() => store.state.snackbar.show)
-const canPressEscape = computed(() => {
-  return (
-    !isShowingPartnerInfo &&
-    !isMenuOpen.value &&
-    actionsDropdownMessageId.value === -1 &&
-    !noActiveNodesDialog.value &&
-    !showChatStartDialog.value &&
-    !isSnackbarShowing.value
-  )
-})
 
 const chatFormRef = ref<any>(null) // @todo type
 const chatRef = ref<any>(null) // @todo type
@@ -505,7 +504,7 @@ const cancelPreviewFile = () => {
 const onMessageError = (error: string) => {
   switch (error) {
     case validationErrors.notEnoughFundsNewAccount:
-      showFreeTokensDialog.value = true
+      isShowFreeTokensDialog.value = true
       return
     case validationErrors.notEnoughFunds:
       store.dispatch('snackbar/show', { message: t('chats.no_money') })
@@ -791,17 +790,9 @@ const scrollBehavior = () => {
   })
 }
 const onKeyPress = (e: KeyboardEvent) => {
-  if (e.code === 'Enter' && !showFreeTokensDialog.value) {
+  if (e.code === 'Enter' && !isShowFreeTokensDialog.value) {
     chatFormRef.value.focus()
     return
-  }
-
-  if (canPressEscape.value && !chatFormRef.value.getEmojiPickerOpen()) {
-    if (e.key === 'Escape') {
-      router.push({
-        name: 'Chats'
-      })
-    }
   }
 }
 </script>

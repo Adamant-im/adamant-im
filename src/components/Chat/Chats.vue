@@ -11,7 +11,11 @@
           variant="text"
         />
         <v-spacer />
-        <v-btn :class="`${className}__item`" @click="setShowChatStartDialog(true)" variant="plain">
+        <v-btn
+          :class="`${className}__item`"
+          @click="setIsShowChatStartDialog(true)"
+          variant="plain"
+        >
           <template #prepend>
             <v-icon :class="`${className}__icon`" :icon="mdiMessageOutline" size="small" />
           </template>
@@ -57,7 +61,7 @@
     </div>
 
     <chat-start-dialog
-      v-model="showChatStartDialog"
+      v-model="isShowChatStartDialog"
       :partner-id="partnerId"
       @error="onError"
       @start-chat="openChat"
@@ -76,7 +80,7 @@ import scrollPosition from '@/mixins/scrollPosition'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
 import { useRoute, useRouter } from 'vue-router'
-import { computed, onActivated, onDeactivated, ref, watch } from 'vue'
+import { computed, onActivated, onBeforeUnmount, onDeactivated, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 
 const scrollOffset = 64
@@ -98,6 +102,10 @@ export default {
     const router = useRouter()
     const store = useStore()
 
+    const setIsShowChatStartDialog = (value) => {
+      store.commit('chat/setIsShowChatStartDialog', value)
+    }
+
     const savedRoute = ref(null)
 
     const chatPagePartnerId = computed(() => {
@@ -105,6 +113,37 @@ export default {
     })
 
     const lastPartnerId = ref(null)
+
+    const isSnackbarShowing = computed(() => store.state.snackbar.show)
+
+    const noActiveNodesDialog = computed(() => store.state.chat.noActiveNodesDialog)
+    const isShowPartnerInfoDialog = computed(() => store.state.chat.isShowPartnerInfoDialog)
+    const isShowChatStartDialog = computed({
+      get() {
+        return store.state.chat.isShowChatStartDialog
+      },
+      set(value) {
+        setIsShowChatStartDialog(value)
+      }
+    })
+    const isShowFreeTokensDialog = computed(() => store.state.chat.isShowFreeTokensDialog)
+
+    const isChatMenuOpen = computed(() => store.state.chat.isChatMenuOpen)
+    const actionsDropdownMessageId = computed(() => store.state.chat.actionsDropdownMessageId)
+    const isEmojiPickerOpen = computed(() => store.state.chat.isEmojiPickerOpen)
+
+    const canPressEscape = computed(() => {
+      return (
+        !noActiveNodesDialog.value &&
+        !isShowChatStartDialog.value &&
+        !isShowFreeTokensDialog.value &&
+        !isSnackbarShowing.value &&
+        !isShowPartnerInfoDialog.value &&
+        !isChatMenuOpen.value &&
+        !isEmojiPickerOpen.value &&
+        actionsDropdownMessageId.value === -1
+      )
+    })
 
     const checkIsActive = (contactId) => {
       return route.name !== 'Chats' && contactId === lastPartnerId.value
@@ -132,26 +171,34 @@ export default {
       }
     })
 
-    const setShowChatStartDialog = (value) => {
-      store.commit('chat/setShowChatStartDialog', value)
+    const onKeydownHandler = (e) => {
+      if (canPressEscape.value) {
+        if (e.key === 'Escape') {
+          if (route.query?.from?.includes('chats')) {
+            router.push(route.query?.from)
+            return
+          }
+
+          router.push({
+            name: 'Chats'
+          })
+        }
+      }
     }
 
-    const showChatStartDialog = computed({
-      get() {
-        return store.state.chat.showChatStartDialog
-      },
-      set(value) {
-        setShowChatStartDialog(value)
-      }
+    document.addEventListener('keydown', onKeydownHandler)
+
+    onBeforeUnmount(() => {
+      document.removeEventListener('keydown', onKeydownHandler)
     })
 
     return {
       chatPagePartnerId,
-      showChatStartDialog,
+      isShowChatStartDialog,
       mdiCheckAll,
       mdiMessageOutline,
       checkIsActive,
-      setShowChatStartDialog
+      setIsShowChatStartDialog
     }
   },
   data: () => ({
@@ -198,7 +245,7 @@ export default {
     this.noMoreChats = this.$store.getters['chat/chatListOffset'] === -1
   },
   mounted() {
-    this.setShowChatStartDialog(this.showNewContact)
+    this.setIsShowChatStartDialog(this.showNewContact)
     this.attachScrollListener()
   },
   beforeUnmount() {

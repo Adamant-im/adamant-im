@@ -50,9 +50,14 @@ const state = () => ({
   chats: {},
   lastMessageHeight: 0, // `height` value of the last message
   isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
-  offset: 0, // for loading chat list with pagination. -1 if all of chats loaded
+  offset: 0, // for loading chat list with pagination. -1 if all of chats loaded,
+  actionsDropdownMessageId: -1,
   noActiveNodesDialog: undefined, // true - visible dialog, false - hidden dialog, but shown before, undefined - not shown
-  showChatStartDialog: false
+  isShowChatStartDialog: false,
+  isShowPartnerInfoDialog: false,
+  isShowFreeTokensDialog: false,
+  isChatMenuOpen: false,
+  isEmojiPickerOpen: false
 })
 
 const getters = {
@@ -517,8 +522,24 @@ const mutations = {
     state.isFulfilled = false
   },
 
-  setShowChatStartDialog(state, value) {
-    state.showChatStartDialog = value
+  setIsShowChatStartDialog(state, value) {
+    state.isShowChatStartDialog = value
+  },
+
+  setIsShowPartnerInfoDialog(state, value) {
+    state.isShowPartnerInfoDialog = value
+  },
+  setIsChatMenuOpen(state, value) {
+    state.isChatMenuOpen = value
+  },
+  setActionsDropdownMessageId(state, value) {
+    state.actionsDropdownMessageId = value
+  },
+  setIsEmojiPickerOpen(state, value) {
+    state.isEmojiPickerOpen = value
+  },
+  setIsShowFreeTokensDialog(state, value) {
+    state.isShowFreeTokensDialog = value
   }
 }
 

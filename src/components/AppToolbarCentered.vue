@@ -22,7 +22,6 @@
 <script>
 import { mdiArrowLeft } from '@mdi/js'
 import { useRoute, useRouter } from 'vue-router'
-import { onBeforeUnmount } from 'vue'
 
 export default {
   props: {
@@ -102,20 +101,6 @@ export default {
 
       router.back()
     }
-
-    const onKeydownHandler = (event) => {
-      if (event.key === 'Escape') {
-        if (route.query?.from?.includes('chats')) {
-          goBack()
-        }
-      }
-    }
-
-    document.addEventListener('keydown', onKeydownHandler)
-
-    onBeforeUnmount(() => {
-      document.removeEventListener('keydown', onKeydownHandler)
-    })
 
     return {
       className,
