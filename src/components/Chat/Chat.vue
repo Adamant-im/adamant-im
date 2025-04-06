@@ -391,8 +391,6 @@ const noActiveNodesDialog = computed(() => store.state.chat.noActiveNodesDialog)
 const showChatStartDialog = computed(() => store.state.chat.showChatStartDialog)
 const isSnackbarShowing = computed(() => store.state.snackbar.show)
 const canPressEscape = computed(() => {
-  console.log('isSnackbarShowing.value', isSnackbarShowing.value)
-
   return (
     !isShowingPartnerInfo &&
     !isMenuOpen.value &&
@@ -793,14 +791,12 @@ const scrollBehavior = () => {
   })
 }
 const onKeyPress = (e: KeyboardEvent) => {
-  console.log('e', e)
-
   if (e.code === 'Enter' && !showFreeTokensDialog.value) {
     chatFormRef.value.focus()
     return
   }
 
-  if (canPressEscape.value) {
+  if (canPressEscape.value && !chatFormRef.value.getEmojiPickerOpen()) {
     if (e.key === 'Escape') {
       router.push({
         name: 'Chats'

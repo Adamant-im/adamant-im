@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { nextTick } from 'vue'
+import { nextTick, ref } from 'vue'
 import ChatEmojis from '@/components/Chat/ChatEmojis.vue'
 import { isMobile } from '@/lib/display-mobile'
 import { mdiSend } from '@mdi/js'
@@ -83,16 +83,23 @@ export default {
       required: true
     }
   },
+  expose: ['getEmojiPickerOpen'],
   emits: ['message', 'esc', 'error'],
   setup() {
+    const emojiPickerOpen = ref(false)
+
+    const getEmojiPickerOpen = () => {
+      return emojiPickerOpen.value
+    }
 
     return {
-      mdiSend
+      emojiPickerOpen,
+      mdiSend,
+      getEmojiPickerOpen
     }
   },
   data: () => ({
     message: '',
-    emojiPickerOpen: false,
     botCommandIndex: null,
     botCommandSelectionMode: false,
     isInputFocused: false
