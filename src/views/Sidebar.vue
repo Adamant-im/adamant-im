@@ -39,7 +39,7 @@
 </template>
 <script lang="ts" setup>
 import { useRoute } from 'vue-router'
-import { computed, useTemplateRef, ref, onBeforeUnmount } from 'vue'
+import { computed, useTemplateRef, ref } from 'vue'
 import { useStore } from 'vuex'
 import LeftSide from '@/components/LeftSide.vue'
 import { useScreenSize } from '@/hooks/useScreenSize'
@@ -51,13 +51,7 @@ const layout = computed(() => route.meta.layout || 'default')
 const route = useRoute()
 const store = useStore()
 
-const address = computed(() => {
-  return store.state.address
-})
-
-const SAVED_WIDTH_KEY_PREFIX = 'aside_width'
-
-const savedWidthKey = address.value ? SAVED_WIDTH_KEY_PREFIX + '_' + address.value : ''
+const SAVED_WIDTH_KEY = 'aside_width'
 
 const asideRef = useTemplateRef('aside')
 let isResizing = false
@@ -118,23 +112,20 @@ const resize = (event: MouseEvent) => {
 
         if (newWidth >= minWidth) {
           asideWidth.value = newWidth + 'px'
+          localStorage.setItem(SAVED_WIDTH_KEY, asideWidth.value)
         }
       }
     })
   }
 }
 
-if (savedWidthKey) {
-  const value = localStorage.getItem(savedWidthKey)
+if (SAVED_WIDTH_KEY) {
+  const value = localStorage.getItem(SAVED_WIDTH_KEY)
 
   if (value) {
     asideWidth.value = value
   }
 }
-
-onBeforeUnmount(() => {
-  localStorage.setItem(savedWidthKey, asideWidth.value)
-})
 </script>
 <style lang="scss" scoped>
 @use 'sass:map';
