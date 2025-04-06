@@ -167,6 +167,7 @@ if (SAVED_WIDTH_KEY) {
     @media (max-width: 799px) {
       width: 100%;
       max-width: unset;
+      min-width: 100%;
     }
 
     &--has-view {
