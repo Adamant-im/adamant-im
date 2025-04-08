@@ -136,20 +136,28 @@ export default {
         return Promise.reject(new Error(this.$t('chats.incorrect_address')))
       }
 
-      return this.$store
-        .dispatch('chat/createChat', {
-          partnerId: this.recipientAddress,
-          partnerName: this.recipientName
-        })
-        .then((_publicKey) => {
-          this.$emit('start-chat', this.recipientAddress, this.uriMessage)
-          this.show = false
-        })
-        .catch((err) => {
-          this.$store.dispatch('snackbar/show', {
-            message: err.message // @todo translations
-          })
-        })
+      return this.$emit(
+        'start-chat',
+        this.recipientAddress,
+        this.uriMessage,
+        true,
+        this.recipientName
+      )
+
+      // return this.$store
+      //   .dispatch('chat/createChat', {
+      //     partnerId: this.recipientAddress,
+      //     partnerName: this.recipientName
+      //   })
+      //   .then((_publicKey) => {
+      //     this.$emit('start-chat', this.recipientAddress, this.uriMessage)
+      //     this.show = false
+      //   })
+      //   .catch((err) => {
+      //     this.$store.dispatch('snackbar/show', {
+      //       message: err.message // @todo translations
+      //     })
+      //   })
     },
 
     /**

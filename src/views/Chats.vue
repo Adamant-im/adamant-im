@@ -73,7 +73,6 @@ import scrollPosition from '@/mixins/scrollPosition'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
 
-
 const scrollOffset = 64
 
 export default {
@@ -88,7 +87,7 @@ export default {
     partnerId: { default: undefined, type: String },
     showNewContact: { default: false, type: Boolean }
   },
-  setup () {
+  setup() {
     return {
       mdiCheckAll,
       mdiMessageOutline
@@ -146,12 +145,32 @@ export default {
     this.destroyScrollListener()
   },
   methods: {
-    openChat(partnerId, messageText) {
+    openChat(partnerId, messageText, retrieveKey = false, partnerName) {
       this.$router.push({
         name: 'Chat',
         params: { partnerId },
         query: { messageText }
       })
+
+      if (retrieveKey) {
+        this.retrievePublicKey(partnerId, partnerName)
+      }
+    },
+    retrievePublicKey(partnerId, partnerName) {
+      this.$store
+        .dispatch('chat/createChat', {
+          partnerId,
+          partnerName
+        })
+        .then((_publicKey) => {
+          console.log(`Success! Retrieved public key: ${_publicKey}`)
+        })
+        .catch((err) => {
+          console.log(`Error while retrieving public key: ${err}`)
+          this.$store.dispatch('snackbar/show', {
+            message: err.message // @todo translations
+          })
+        })
     },
     isAdamantChat,
     getAdamantChatMeta,
@@ -230,7 +249,6 @@ export default {
 @use 'vuetify/settings';
 
 .chats-view {
-
   &__item {
     justify-content: flex-end;
     height: 56px;

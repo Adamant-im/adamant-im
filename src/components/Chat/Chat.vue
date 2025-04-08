@@ -428,8 +428,9 @@ watch(replyMessageId, (messageId) => {
 onBeforeMount(() => {
   window.addEventListener('keyup', onKeyPress)
 })
+
 onMounted(async () => {
-  if (isFulfilled.value && chatPage.value <= 0) await fetchChatMessages()
+  if (chatPage.value <= 0) await fetchChatMessages()
 
   const userMessages = messages.value.filter(
     (message: NormalizedChatMessageTransaction) =>
