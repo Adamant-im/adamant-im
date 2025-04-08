@@ -63,7 +63,6 @@ export default {
     }
   },
   data: () => ({
-    imageBase64: '',
     qrCodeText: '',
     codeReader: undefined
   }),
@@ -77,7 +76,7 @@ export default {
       try {
         const { BrowserQRCodeReader } = await import('@zxing/browser')
         this.codeReader = new BrowserQRCodeReader()
-        this.imageBase64 = await this.drawCanvas(event.target.files[0])
+        await this.drawCanvas(event.target.files[0])
         this.qrCodeText = await this.tryToDecode()
 
         vibrate.veryShort()
