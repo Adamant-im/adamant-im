@@ -7,13 +7,25 @@
 
       <v-divider class="a-divider" />
 
-      <!-- eslint-disable vue/no-v-html -- Safe with DOMPurify.sanitize() content -->
-      <v-card-text>
-        <div :class="`${className}__disclaimer a-text-regular-enlarged`" v-html="content" />
-      </v-card-text>
-      <!-- eslint-enable vue/no-v-html -->
+      <v-card-text :class="`${className}__card-text`">
+        <div :class="`${className}__disclaimer a-text-regular-enlarged`">
+          {{ about }}
+        </div>
 
-      <v-col cols="12" class="text-center">
+        <div :class="`${className}__disclaimer ${className}__highlight a-text-regular-enlarged`">
+          {{ details }}
+        </div>
+
+        <div :class="`${className}__disclaimer a-text-regular-enlarged`">
+          {{ reasons }}
+        </div>
+
+        <div :class="`${className}__disclaimer a-text-regular-enlarged`">
+          {{ action }}
+        </div>
+      </v-card-text>
+
+      <v-col cols="12" class="text-center pa-0">
         <v-btn :class="[`${className}__btn-hide`, 'a-btn-primary']" @click="hide()">
           <v-icon :class="`${className}__btn-icon`" :icon="mdiAlert" />
           <div :class="`${className}__btn-text`">
@@ -33,7 +45,6 @@
 
 <script>
 import { vueBus } from '@/lib/vueBus'
-import DOMPurify from 'dompurify'
 import { mdiAlert } from '@mdi/js'
 
 export default {
@@ -67,54 +78,49 @@ export default {
   created() {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const dialog = this
+
     vueBus.on('warningOnAddressDialog', function (validateSummary) {
       if (!validateSummary.isAllRight) {
-        dialog.header =
-          dialog.$t('warning_on_addresses.warning') +
-          ': ' +
-          dialog.$t('warning_on_addresses.headline')
-        let contents = '<p>' + dialog.$t('warning_on_addresses.about') + '</p>'
+        dialog.header = dialog.$t('warning_on_addresses.headline')
+
+        dialog.about = dialog.$t('warning_on_addresses.about')
 
         if (validateSummary.isWrongAddress) {
-          contents +=
-            '<p class="a-text-attention">' +
+          dialog.details =
             dialog.$t('warning_on_addresses.specifics_wrong_addresses', {
               crypto: validateSummary.wrongCoin,
               storedAddress: validateSummary.storedAddress,
               correctAddress: validateSummary.correctAddress
             })
+
           if (validateSummary.wrongCoins.length > 1) {
             const wrongCoins = validateSummary.wrongCoins.join(', ')
-            contents +=
-              ' ' +
+            dialog.details += ' ' +
               dialog.$t('warning_on_addresses.full_list_wrong_addresses', {
                 crypto_list: wrongCoins
               })
           }
-          contents += '</p>'
         } else if (validateSummary.isManyAddresses) {
           const manyAddresses = validateSummary.manyAddresses.join(', ')
-          contents +=
-            '<p class="a-text-attention">' +
+
+          dialog.details =
             dialog.$t('warning_on_addresses.specifics_many_addresses', {
               crypto: validateSummary.manyAddressesCoin,
               manyAddresses: manyAddresses
             })
+
           if (validateSummary.manyAddressesCoins.length > 1) {
             const wrongCoins = validateSummary.manyAddressesCoins.join(', ')
-            contents +=
-              ' ' +
+            dialog.details += ' ' +
               dialog.$t('warning_on_addresses.full_list_many_addresses', {
                 crypto_list: wrongCoins
               })
           }
-          contents += '</p>'
         }
 
-        contents += '<p>' + dialog.$t('warning_on_addresses.reasons') + '</p>'
-        contents += '<p>' + dialog.$t('warning_on_addresses.what_to_do') + '</p>'
+        dialog.reasons = dialog.$t('warning_on_addresses.reasons')
+        dialog.action = dialog.$t('warning_on_addresses.what_to_do')
 
-        dialog.content = DOMPurify.sanitize(contents)
         dialog.show = true
       }
     })
@@ -140,19 +146,30 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/_settings.scss';
+
 .warning-on-addresses-dialog {
+  &__card-text {
+    padding: 16px !important;
+  }
   &__disclaimer {
     margin-top: 10px;
+  }
+  &__highlight {
+    background-color: rgba(map.get(colors.$adm-colors, 'attention'), 0.6);
+    padding: 10px;
+  }
+  &__btn-icon {
+    margin-right: 8px;
   }
   &__btn-hide {
     margin-top: 15px;
     margin-bottom: 20px;
   }
-  &__btn-icon {
-    margin-right: 8px;
-  }
   &__btn-forget {
-    padding-bottom: 30px;
+    padding: 0 0 30px 0;
     text-align: center;
   }
 }
