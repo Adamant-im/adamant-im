@@ -13,17 +13,56 @@
       @change="onFileSelect"
     />
 
-    <img ref="imageElement" :src="imageBase64" :class="`${className}__image`" />
+    <canvas ref="canvasElement" :class="`${className}__image`" />
   </div>
 </template>
 
 <script>
 import { vibrate } from '@/lib/vibrate'
+import { useTemplateRef } from 'vue'
 
 export default {
   emits: ['detect', 'error'],
+  setup() {
+    const canvas = useTemplateRef('canvasElement')
+
+    const IMG_MAX_SIZE = 400
+
+    const drawCanvas = (file) => {
+      return new Promise((resolve, reject) => {
+        const img = new Image()
+
+        img.onload = () => {
+          const ctx = canvas.value.getContext('2d')
+
+          const ratio = img.width / img.height
+          let newWidth = IMG_MAX_SIZE
+          let newHeight = IMG_MAX_SIZE / ratio
+
+          if (newHeight > IMG_MAX_SIZE) {
+            newHeight = IMG_MAX_SIZE
+            newWidth = IMG_MAX_SIZE * ratio
+          }
+
+          canvas.value.width = newWidth
+          canvas.value.height = newHeight
+
+          ctx.drawImage(img, 0, 0, canvas.value.width, canvas.value.height)
+
+          resolve(canvas)
+        }
+
+        img.onerror = (e) => reject(e)
+
+        img.src = URL.createObjectURL(file)
+      })
+    }
+
+    return {
+      drawCanvas
+    }
+  },
   data: () => ({
-    selectedImage: undefined,
     imageBase64: '',
     qrCodeText: '',
     codeReader: undefined
@@ -35,12 +74,10 @@ export default {
   },
   methods: {
     async onFileSelect(event) {
-      this.selectedImage = event.target.files[0]
-
       try {
         const { BrowserQRCodeReader } = await import('@zxing/browser')
         this.codeReader = new BrowserQRCodeReader()
-        this.imageBase64 = await this.getImageBase64()
+        this.imageBase64 = await this.drawCanvas(event.target.files[0])
         this.qrCodeText = await this.tryToDecode()
 
         vibrate.veryShort()
@@ -54,28 +91,12 @@ export default {
       // Reset input to trigger change event later if user selects same image (Chrome)
       this.$refs.fileInput.value = ''
     },
-
-    /**
-     * Converts image into Base64.
-     * @returns {Promise<string>}
-     */
-    getImageBase64() {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader()
-
-        reader.onload = (e) => resolve(e.target.result)
-        reader.onerror = (err) => reject(err)
-
-        reader.readAsDataURL(this.selectedImage)
-      })
-    },
-
     /**
      * Decode QRCode from Base64 image.
      * @returns {Promise<string>}
      */
     async getQrcode() {
-      const result = await this.codeReader.decodeFromImageElement(this.$refs.imageElement)
+      const result = await this.codeReader.decodeFromCanvas(this.$refs.canvasElement)
 
       return result.text
     },
