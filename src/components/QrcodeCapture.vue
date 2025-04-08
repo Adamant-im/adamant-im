@@ -91,7 +91,7 @@ export default {
       this.$refs.fileInput.value = ''
     },
     /**
-     * Decode QRCode from Base64 image.
+     * Decode QRCode from canvas.
      * @returns {Promise<string>}
      */
     async getQrcode() {
