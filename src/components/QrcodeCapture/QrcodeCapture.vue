@@ -73,8 +73,6 @@ const drawCanvas = (file) => {
  * @returns {Promise<string>}
  */
 const getQrcode = async () => {
-  console.log('canvas.value', canvas.value)
-
   const result = await codeReader.decodeFromCanvas(canvas.value)
 
   return result.text
