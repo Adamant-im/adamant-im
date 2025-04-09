@@ -24,18 +24,15 @@ const route = useRoute()
 const { t } = useI18n()
 
 const title = computed(() => {
-  if (route.name === 'ExportKeys') {
-    return t('options.export_keys.title')
+  switch (route.name) {
+    case 'ExportKeys':
+      return t('options.export_keys.title')
+    case 'Votes':
+      return t('votes.page_title')
+    case 'Wallets':
+      return t('options.wallets_list')
+    default:
+      return t('options.page_title')
   }
-
-  if (route.name === 'Votes') {
-    return t('votes.page_title')
-  }
-
-  if (route.name === 'Wallets') {
-    return t('options.wallets_list')
-  }
-
-  return t('options.page_title')
 })
 </script>
