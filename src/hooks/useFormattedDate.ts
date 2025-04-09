@@ -4,7 +4,7 @@ import { EPOCH } from '@/lib/constants'
 export function useFormattedDate() {
   const { t } = useI18n()
 
-  const getTime = (date) => {
+  const getTime = (date: Date) => {
     const hours = date.getHours()
     let time = ''
     if (hours < 10) {
@@ -22,7 +22,7 @@ export function useFormattedDate() {
     return time
   }
 
-  const formatDate = (timestamp) => {
+  const formatDate = (timestamp: number) => {
     timestamp = parseInt(timestamp)
     // That's for the ADM timestamps, which use EPOCH as a base.
     // Other cryptos use normal timestamps
