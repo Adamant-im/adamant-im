@@ -272,10 +272,6 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 .chat-brief {
   position: relative;
 
-  &--active {
-    @include mixins.linear-gradient-dark-soft();
-  }
-
   &__chat-avatar {
     margin-right: 16px;
   }
@@ -349,6 +345,10 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 }
 .v-theme--dark {
   .chat-brief {
+    &--active {
+      @include mixins.linear-gradient-dark-soft();
+    }
+
     :deep(.v-list-item-subtitle) {
       color: map.get(colors.$adm-colors, 'grey-transparent');
     }
