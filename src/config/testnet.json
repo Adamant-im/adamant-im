@@ -1,69 +1,23 @@
 {
   "adm": {
+    "explorer": "https://explorer.adamant.im",
+    "explorerTx": "https://explorer.adamant.im/tx/${ID}",
+    "explorerAddress": "https://explorer.adamant.im/address/${ID}",
     "nodes": {
       "displayName": "adm-node",
       "list": [
         {
-          "url": "https://clown.adamant.im"
+          "url": "https://testnode1.adamant.im",
+          "alt_ip": "http://162.55.32.80:36667"
         },
         {
-          "url": "https://lake.adamant.im"
+          "alt_ip": "http://81.0.247.181:36667"
         },
         {
-          "url": "https://endless.adamant.im",
-          "alt_ip": "http://149.102.157.15:36666"
+          "alt_ip": "http://95.217.19.144:36667"
         },
         {
-          "url": "https://bid.adamant.im"
-        },
-        {
-          "url": "https://unusual.adamant.im"
-        },
-        {
-          "url": "https://debate.adamant.im",
-          "alt_ip": "http://95.216.161.113:36666"
-        },
-        {
-          "url": "http://78.47.205.206:36666"
-        },
-        {
-          "url": "http://5.161.53.74:36666"
-        },
-        {
-          "url": "http://184.94.215.92:45555"
-        },
-        {
-          "url": "https://node1.adamant.business",
-          "alt_ip": "http://194.233.75.29:45555"
-        },
-        {
-          "url": "https://node2.blockchain2fa.io"
-        },
-        {
-          "url": "https://phecda.adm.im",
-          "alt_ip": "http://46.250.234.248:36666"
-        },
-        {
-          "url": "https://tegmine.adm.im"
-        },
-        {
-          "url": "https://tauri.adm.im",
-          "alt_ip": "http://154.26.159.245:36666"
-        },
-        {
-          "url": "https://dschubba.adm.im"
-        },
-        {
-          "url": "https://tauri.bbry.org",
-          "alt_ip": "http://54.197.36.175:36666"
-        },
-        {
-          "url": "https://endless.bbry.org",
-          "alt_ip": "http://54.197.36.175:46666"
-        },
-        {
-          "url": "https://debate.bbry.org",
-          "alt_ip": "http://54.197.36.175:56666"
+          "alt_ip": "http://157.90.229.236:36667"
         }
       ],
       "healthCheck": {
@@ -128,33 +82,11 @@
           "threshold": 6000000
         }
       }
-    },
-    "explorerTx": "https://explorer.adamant.im/tx/${ID}",
-    "explorer": "https://explorer.adamant.im",
-    "explorerAddress": "https://explorer.adamant.im/address/${ID}"
+    }
   },
   "btc": {
-    "nodes": {
-      "displayName": "btc-node",
-      "list": [
-        {
-          "url": "https://btcnode1.adamant.im/bitcoind",
-          "alt_ip": "http://176.9.38.204:44099/bitcoind"
-        },
-        {
-          "url": "https://btcnode3.adamant.im/bitcoind",
-          "alt_ip": "http://195.201.242.108:44099/bitcoind"
-        }
-      ],
-      "healthCheck": {
-        "normalUpdateInterval": 360000,
-        "crucialUpdateInterval": 30000,
-        "onScreenUpdateInterval": 10000,
-        "threshold": 2
-      }
-    },
-    "explorerTx": "https://bitcoinexplorer.org/tx/${ID}",
     "explorer": "https://bitcoinexplorer.org",
+    "explorerTx": "https://bitcoinexplorer.org/tx/${ID}",
     "explorerAddress": "https://bitcoinexplorer.org/address/${ID}",
     "services": {
       "btcIndexer": {
@@ -180,9 +112,31 @@
           "onScreenUpdateInterval": 10000
         }
       }
+    },
+    "nodes": {
+      "displayName": "btc-node",
+      "list": [
+        {
+          "url": "https://btcnode1.adamant.im/bitcoind",
+          "alt_ip": "http://176.9.38.204:44099/bitcoind"
+        },
+        {
+          "url": "https://btcnode3.adamant.im/bitcoind",
+          "alt_ip": "http://195.201.242.108:44099/bitcoind"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 360000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 2
+      }
     }
   },
   "dash": {
+    "explorer": "https://dashblockexplorer.com",
+    "explorerTx": "https://dashblockexplorer.com/tx/${ID}",
+    "explorerAddress": "https://dashblockexplorer.com/address/${ID}",
     "nodes": {
       "displayName": "dash-node",
       "list": [
@@ -201,37 +155,11 @@
         "onScreenUpdateInterval": 10000,
         "threshold": 3
       }
-    },
-    "explorerTx": "https://dashblockexplorer.com/tx/${ID}",
-    "explorer": "https://dashblockexplorer.com",
-    "explorerAddress": "https://dashblockexplorer.com/address/${ID}"
+    }
   },
   "doge": {
-    "nodes": {
-      "displayName": "doge-node",
-      "list": [
-        {
-          "url": "https://dogenode1.adamant.im",
-          "alt_ip": "http://5.9.99.62:44099"
-        },
-        {
-          "url": "https://dogenode2.adamant.im",
-          "alt_ip": "http://176.9.32.126:44098"
-        },
-        {
-          "url": "https://dogenode3.adm.im",
-          "alt_ip": "http://95.216.45.88:44098"
-        }
-      ],
-      "healthCheck": {
-        "normalUpdateInterval": 390000,
-        "crucialUpdateInterval": 30000,
-        "onScreenUpdateInterval": 10000,
-        "threshold": 3
-      }
-    },
-    "explorerTx": "https://dogechain.info/tx/${ID}",
     "explorer": "https://dogechain.info",
+    "explorerTx": "https://dogechain.info/tx/${ID}",
     "explorerAddress": "https://dogechain.info/address/${ID}",
     "services": {
       "dogeIndexer": {
@@ -262,30 +190,34 @@
           "threshold": 3
         }
       }
-    }
-  },
-  "eth": {
+    },
     "nodes": {
-      "displayName": "eth-node",
+      "displayName": "doge-node",
       "list": [
         {
-          "url": "https://ethnode2.adamant.im",
-          "alt_ip": "http://95.216.114.252:44099"
+          "url": "https://dogenode1.adamant.im",
+          "alt_ip": "http://5.9.99.62:44099"
         },
         {
-          "url": "https://ethnode3.adamant.im",
-          "alt_ip": "http://46.4.37.157:44099"
+          "url": "https://dogenode2.adamant.im",
+          "alt_ip": "http://176.9.32.126:44098"
+        },
+        {
+          "url": "https://dogenode3.adm.im",
+          "alt_ip": "http://95.216.45.88:44098"
         }
       ],
       "healthCheck": {
-        "normalUpdateInterval": 300000,
+        "normalUpdateInterval": 390000,
         "crucialUpdateInterval": 30000,
         "onScreenUpdateInterval": 10000,
-        "threshold": 5
+        "threshold": 3
       }
-    },
-    "explorerTx": "https://etherscan.io/tx/${ID}",
+    }
+  },
+  "eth": {
     "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
     "explorerAddress": "https://etherscan.io/address/${ID}",
     "services": {
       "ethIndexer": {
@@ -311,31 +243,31 @@
           "onScreenUpdateInterval": 10000
         }
       }
+    },
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
     }
   },
   "kly": {
     "explorer": "https://explorer.klayr.xyz",
     "explorerTx": "https://explorer.klayr.xyz/transaction/${ID}",
     "explorerAddress": "https://explorer.klayr.xyz/account/${ID}",
-    "nodes": {
-      "displayName": "kly-node",
-      "list": [
-        {
-          "url": "https://klynode2.adamant.im",
-          "alt_ip": "http://109.176.199.130:44099"
-        },
-        {
-          "url": "https://klynode3.adm.im",
-          "alt_ip": "http://37.27.205.78:44099"
-        }
-      ],
-      "healthCheck": {
-        "normalUpdateInterval": 270000,
-        "crucialUpdateInterval": 30000,
-        "onScreenUpdateInterval": 10000,
-        "threshold": 5
-      }
-    },
     "services": {
       "klyService": {
         "displayName": "kly-indexer",
@@ -359,6 +291,25 @@
           "crucialUpdateInterval": 30000,
           "onScreenUpdateInterval": 10000
         }
+      }
+    },
+    "nodes": {
+      "displayName": "kly-node",
+      "list": [
+        {
+          "url": "https://klynode2.adamant.im",
+          "alt_ip": "http://109.176.199.130:44099"
+        },
+        {
+          "url": "https://klynode3.adm.im",
+          "alt_ip": "http://37.27.205.78:44099"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 270000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
       }
     }
   }
