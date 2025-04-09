@@ -1,5 +1,5 @@
 <template>
-  <div :class="classes" :style="{ '--asideWidth': asideWidth }">
+  <div :class="classes.root" :style="{ '--asideWidth': asideWidth }">
     <aside v-if="needAside" :class="classes.aside" ref="aside" @mousedown="startResize">
       <left-side />
     </aside>
@@ -111,11 +111,11 @@ const classes = computed(() => {
   return {
     root: {
       ['${className} d-flex justify-center ma-auto']: true,
-      [`${className}__with-aside`]: needAside
+      [`${className}__with-aside`]: needAside.value
     },
     aside: {
       [`${className}__aside`]: true,
-      [`${className}__aside--has-view`]: hasView
+      [`${className}__aside--has-view`]: hasView.value
     },
     routerView: {
       [`${className}__router-view`]: true,
