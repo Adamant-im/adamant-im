@@ -1,6 +1,12 @@
 <template>
   <div id="txListElement" class="w-100" :class="classes.root">
-    <app-toolbar-centered app :title="$t('transaction.transactions')" flat absolute no-max-width />
+    <app-toolbar-centered
+      app
+      :title="$t('transaction.transactions')"
+      flat
+      absolute
+      disable-max-width
+    />
 
     <v-container
       fluid
@@ -13,7 +19,7 @@
           <InlineSpinner />
         </v-list-item>
 
-        <container v-if="isFulfilled" no-max-width>
+        <container v-if="isFulfilled" disable-max-width>
           <v-list v-if="hasTransactions" lines="three" bg-color="transparent">
             <transaction-list-item
               v-for="(transaction, i) in transactions"
@@ -64,7 +70,6 @@ export default {
   },
   setup() {
     const className = 'transactions'
-
 
     const classes = {
       root: className,
@@ -176,7 +181,7 @@ export default {
       const height = target.offsetHeight
 
       const windowHeight = window.innerHeight
-      const scrollPosition = Math.ceil(target.scrollTop || 0);
+      const scrollPosition = Math.ceil(target.scrollTop || 0)
 
       // If we've scrolled to the very bottom, fetch the older transactions from server
       if (!this.isOlderLoading && windowHeight + scrollPosition >= height) {
@@ -191,10 +196,11 @@ export default {
       // If we came from Transactions details sreen, do not update transaction list
       const doNotUpdate =
         (this.$route.meta.previousRoute?.params?.txId &&
-        !this.isFulfilled &&
-        // If we don't just refresh Tx details screen
-        this.$route.meta.previousPreviousRoute &&
-        this.$route.meta.previousPreviousRoute.name) || false
+          !this.isFulfilled &&
+          // If we don't just refresh Tx details screen
+          this.$route.meta.previousPreviousRoute &&
+          this.$route.meta.previousPreviousRoute.name) ||
+        false
 
       if (doNotUpdate) {
         this.isFulfilled = true

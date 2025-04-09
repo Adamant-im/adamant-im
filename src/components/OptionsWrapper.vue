@@ -1,10 +1,10 @@
 <template>
   <div :class="className" class="w-100 h-100">
-    <app-toolbar-centered app :title="title" show-back flat sticky no-max-width />
+    <app-toolbar-centered app :title="title" show-back flat sticky disable-max-width />
 
     <v-container fluid class="px-0 py-0 container--with-app-toolbar">
       <v-row justify="center" no-gutters>
-        <container padding :class="`${className}__content`" no-max-width>
+        <container padding :class="`${className}__content`" disable-max-width>
           <slot />
         </container>
       </v-row>
@@ -39,14 +39,3 @@ const title = computed(() => {
   return t('options.page_title')
 })
 </script>
-
-<style scoped lang="scss">
-.options-wrapper {
-  position: relative;
-
-  //&__content {
-  //  overflow-y: auto;
-  //  height: calc(100vh - var(--v-layout-bottom) - var(--toolbar-height));
-  //}
-}
-</style>

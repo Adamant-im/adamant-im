@@ -5,11 +5,15 @@
       :title="transaction?.id"
       flat
       absolute
-      no-max-width
+      disable-max-width
       :class="`${className}__toolbar`"
     />
 
-    <container class="container--with-app-toolbar py-0" no-max-width :class="`${className}__content`">
+    <container
+      class="container--with-app-toolbar py-0"
+      disable-max-width
+      :class="`${className}__content`"
+    >
       <v-list bg-color="transparent">
         <TransactionListItem :title="t('transaction.amount')">
           {{

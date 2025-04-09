@@ -13,7 +13,7 @@ export default defineComponent({
       type: Boolean,
       default: false
     },
-    noMaxWidth: {
+    disableMaxWidth: {
       type: Boolean,
       default: false
     }
@@ -23,7 +23,7 @@ export default defineComponent({
       return {
         'a-container': true,
         'a-container--padding': props.padding,
-        'a-container--no-mw': props.noMaxWidth
+        'a-container--no-mw': props.disableMaxWidth
       }
     })
 

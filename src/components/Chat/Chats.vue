@@ -80,7 +80,7 @@ import scrollPosition from '@/mixins/scrollPosition'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
 import { useRoute, useRouter } from 'vue-router'
-import { computed, onActivated, onBeforeUnmount, onDeactivated, ref, watch } from 'vue'
+import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 
 const scrollOffset = 64
@@ -174,8 +174,8 @@ export default {
     const onKeydownHandler = (e) => {
       if (canPressEscape.value) {
         if (e.key === 'Escape') {
-          if (route.query?.from?.includes('chats')) {
-            router.push(route.query?.from)
+          if (route.query.from?.includes('chats')) {
+            router.push(route.query.from)
             return
           }
 
@@ -186,7 +186,9 @@ export default {
       }
     }
 
-    document.addEventListener('keydown', onKeydownHandler)
+    onMounted(() => {
+      document.addEventListener('keydown', onKeydownHandler)
+    })
 
     onBeforeUnmount(() => {
       document.removeEventListener('keydown', onKeydownHandler)
