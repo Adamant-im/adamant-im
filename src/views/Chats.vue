@@ -144,8 +144,6 @@ const messages = computed(() => {
 const userId = computed(() => store.state.address)
 const unreadMessagesCount = computed(() => store.getters['chat/totalNumOfNewMessages'])
 
-watch(messages, () => console.log(messages.value))
-
 onBeforeMount(() => {
   noMoreChats.value = store.getters['chat/chatListOffset'] === -1
 })
