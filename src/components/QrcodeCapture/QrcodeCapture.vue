@@ -24,32 +24,32 @@ import { IMG_MAX_SIZE } from '@/components/QrcodeCapture/consts'
 import type { BrowserQRCodeReader } from '@zxing/browser/esm/readers/BrowserQRCodeReader'
 
 const emit = defineEmits<{
-  (e: 'detect'): void
+  (e: 'detect', text: string): void
   (e: 'error', err: unknown): void
 }>()
 
 const className = 'qrcode-capture'
 
 let qrCodeText = ''
-let codeReader: BrowserQRCodeReader | null = null
+let codeReader: BrowserQRCodeReader
 
 const canvas = useTemplateRef('canvasElement')
 const fileInput = useTemplateRef('fileInput')
 
-const drawCanvas = (file) => {
+const drawCanvas = (file: File) => {
   return new Promise((resolve, reject) => {
     const img = new Image()
     const imgUrl = URL.createObjectURL(file)
 
     img.onload = () => {
       if (!canvas.value) {
-        reject()
+        return reject()
       }
 
       const ctx = canvas.value.getContext('2d')
 
       if (!ctx) {
-        reject()
+        return reject()
       }
 
       const ratio = img.width / img.height
@@ -82,13 +82,13 @@ const drawCanvas = (file) => {
  * @returns {Promise<string>}
  */
 const getQrcode = async () => {
-  const result = await codeReader.decodeFromCanvas(canvas.value)
+  const result = await codeReader?.decodeFromCanvas(canvas.value as HTMLCanvasElement)
 
-  return result.text
+  return result.getText()
 }
 
 const tryToDecode = () => {
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     // Vue should rerender <img> element,
     // so add a callback to the macrotasks queue
     setTimeout(() => {
@@ -106,7 +106,19 @@ const onFileSelect = async (event: Event) => {
       codeReader = new BrowserQRCodeReader()
     }
 
-    await drawCanvas(event.target.files[0])
+    const { target } = event
+
+    if (!target) {
+      throw Error('no target')
+    }
+
+    const file = (target as HTMLInputElement)?.files?.[0]
+
+    if (!file) {
+      throw Error('no file')
+    }
+
+    await drawCanvas(file)
     qrCodeText = await tryToDecode()
 
     vibrate.veryShort()
