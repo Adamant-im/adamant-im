@@ -31,7 +31,7 @@
   </v-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 import QrcodeRenderer from '@/components/QrcodeRenderer.vue'
 import { Cryptos } from '@/lib/constants'
