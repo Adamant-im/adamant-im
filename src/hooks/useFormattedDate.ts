@@ -43,7 +43,7 @@ export function useFormattedDate() {
       return t('chats.date_yesterday') + ', ' + getTime(date)
     }
 
-    let options = { weekday: 'short' }
+    let options: Record<string, unknown> = { weekday: 'short' }
     if (Date.now() - timestamp > 4 * 3600 * 24 * 1000) {
       options = { day: 'numeric', month: 'short' }
     }
