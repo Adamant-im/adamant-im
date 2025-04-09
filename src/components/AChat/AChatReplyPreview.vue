@@ -43,8 +43,8 @@ const classes = {
 }
 
 type AChatReplyPreviewProps = {
-  message: any
-  partnerId: NormalizedChatMessageTransaction
+  message: NormalizedChatMessageTransaction
+  partnerId: string
 }
 
 const props = defineProps<AChatReplyPreviewProps>()
