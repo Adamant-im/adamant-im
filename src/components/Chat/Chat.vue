@@ -792,7 +792,6 @@ const scrollBehavior = () => {
 const onKeyPress = (e: KeyboardEvent) => {
   if (e.code === 'Enter' && !isShowFreeTokensDialog.value) {
     chatFormRef.value.focus()
-    return
   }
 }
 </script>
