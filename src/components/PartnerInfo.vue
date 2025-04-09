@@ -47,7 +47,7 @@ const props = defineProps({
   address: {
     type: String,
     required: true,
-    validator: (v) => validateAddress('ADM', v)
+    validator: (v: string) => validateAddress('ADM', v)
   },
   name: {
     type: String,
@@ -60,7 +60,7 @@ const props = defineProps({
   ownerAddress: {
     type: String,
     required: true,
-    validator: (v) => validateAddress('ADM', v)
+    validator: (v: string) => validateAddress('ADM', v)
   }
 })
 const emit = defineEmits<{
