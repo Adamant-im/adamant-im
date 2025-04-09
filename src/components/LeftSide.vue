@@ -16,8 +16,8 @@ const currentComponent = computed(() => {
   if (
     route.name === 'Chats' ||
     route.name === 'Chat' ||
-    route.query?.from?.includes('chats') ||
-    route.query?.fromChat
+    route.query.from?.includes('chats') ||
+    route.query.fromChat
   ) {
     return Chats
   }
