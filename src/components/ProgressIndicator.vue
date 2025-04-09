@@ -1,7 +1,7 @@
 <template>
   <div v-if="show" class="progress-fog">
     <v-progress-circular
-      v-show="!withoutSpinner"
+      v-show="!hideSpinner"
       :size="150"
       :stroke="1"
       class="progress-circular"
@@ -18,7 +18,7 @@ export default {
       default: false,
       type: Boolean
     },
-    withoutSpinner: {
+    hideSpinner: {
       default: false,
       type: Boolean
     }

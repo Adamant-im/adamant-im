@@ -16,7 +16,7 @@
         :owner-address="address"
       />
 
-      <ProgressIndicator :show="!isFulfilled" :without-spinner="!isMobileView" />
+      <ProgressIndicator :show="!isFulfilled" :hide-spinner="!isMobileView" />
     </container>
   </v-row>
 </template>
