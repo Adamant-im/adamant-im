@@ -63,8 +63,9 @@ const props = defineProps({
     validator: (v) => validateAddress('ADM', v)
   }
 })
-
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: boolean): void
+}>()
 
 const { t } = useI18n()
 
