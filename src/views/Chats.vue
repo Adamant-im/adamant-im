@@ -70,203 +70,181 @@
   </v-row>
 </template>
 
-<script>
+<script lang="ts" setup>
 import ChatPreview from '@/components/ChatPreview.vue'
 import ChatStartDialog from '@/components/ChatStartDialog.vue'
 import ChatSpinner from '@/components/ChatSpinner.vue'
 import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
-import scrollPosition from '@/mixins/scrollPosition'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
-import { useIntervalFn } from '@vueuse/core'
+import { useNow, watchImmediate } from '@vueuse/core'
 import Visibility from 'visibilityjs'
+import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+
+const props = withDefaults(
+  defineProps<{
+    partnerId?: string
+    showNewContact?: boolean
+  }>(),
+  {
+    partnerId: undefined,
+    showNewContact: false
+  }
+)
+
+const store = useStore()
+const router = useRouter()
+const { now, pause, resume } = useNow({ interval: 500, controls: true })
 
 const scrollOffset = 64
+const className = 'chats-view'
 
-export default {
-  components: {
-    ChatPreview,
-    ChatStartDialog,
-    ChatSpinner,
-    NodesOfflineDialog
-  },
-  mixins: [scrollPosition],
-  props: {
-    partnerId: { default: undefined, type: String },
-    showNewContact: { default: false, type: Boolean }
-  },
-  setup() {
-    return {
-      mdiCheckAll,
-      mdiMessageOutline
-    }
-  },
-  data: () => ({
-    showChatStartDialog: false,
-    loading: false,
-    noMoreChats: false,
-    chatsActual: false,
-    currentTime: Date.now(),
-    visibilityId: null
-  }),
-  computed: {
-    className: () => 'chats-view',
-    admNodes() {
-      return this.$store.getters['nodes/adm']
-    },
-    admNodesOnline() {
-      return this.admNodes.some((node) => node.status === 'online')
-    },
-    chatsActualUntil() {
-      return this.$store.state.chat.chatsActualUntil
-    },
-    isFulfilled() {
-      return this.$store.state.chat.isFulfilled
-    },
-    partners() {
-      return this.$store.getters['chat/partners']
-    },
-    messages() {
-      const lastMessages = this.$store.getters['chat/lastMessages']
-      // We should modify cloned message list to leave original one untouched
-      const clonedLastMessages = lastMessages.map((msg) => {
-        return { ...msg }
+const showChatStartDialog = ref(false)
+const loading = ref(false)
+const noMoreChats = ref(false)
+const chatsActual = ref(false)
+const visibilityId = ref<number | boolean | null>(null)
+const loadingSeparator = ref<InstanceType<typeof ChatPreview>[]>([])
+const currentTime = computed(() => now.value.getTime())
+
+const admNodes = computed(() => store.getters['nodes/adm'])
+const admNodesOnline = admNodes.value.some((node) => node.status === 'online')
+const chatsActualUntil = computed(() => store.state.chat.chatsActualUntil)
+const isFulfilled = computed(() => store.state.chat.isFulfilled)
+const messages = computed(() => {
+  const lastMessages = store.getters['chat/lastMessages']
+  // We should modify cloned message list to leave original one untouched
+  const clonedLastMessages = lastMessages.map((msg) => {
+    return { ...msg }
+  })
+
+  if (!noMoreChats.value && clonedLastMessages.length > 25) {
+    const lastNotAdamantChat = lastMessages
+      .map((msg) => isAdamantChat(msg.contactId))
+      .lastIndexOf(false)
+    if (lastNotAdamantChat) {
+      clonedLastMessages.splice(lastNotAdamantChat + 1, 0, {
+        loadingSeparator: true,
+        userId: 'loadingSeparator',
+        contactId: 'loadingSeparator'
       })
-
-      if (!this.noMoreChats && clonedLastMessages.length > 25) {
-        const lastNotAdamantChat = lastMessages
-          .map((msg) => this.isAdamantChat(msg.contactId))
-          .lastIndexOf(false)
-        if (lastNotAdamantChat) {
-          clonedLastMessages.splice(lastNotAdamantChat + 1, 0, {
-            loadingSeparator: true,
-            userId: 'loadingSeparator',
-            contactId: 'loadingSeparator'
-          })
-        }
-      }
-      return clonedLastMessages
-    },
-    userId() {
-      return this.$store.state.address
-    },
-    unreadMessagesCount() {
-      return this.$store.getters['chat/totalNumOfNewMessages']
-    }
-  },
-  beforeMount() {
-    // When returning to chat list from a specific chat, restore noMoreChats property not to show loadingSeparator
-    this.noMoreChats = this.$store.getters['chat/chatListOffset'] === -1
-  },
-  mounted() {
-    const { pause, resume } = useIntervalFn(() => {
-      this.currentTime = Date.now()
-    }, 500)
-
-    this.visibilityId = Visibility.change((event, state) => {
-      if (state === 'visible') {
-        resume()
-      } else {
-        pause()
-      }
-    })
-
-    this.showChatStartDialog = this.showNewContact
-    this.attachScrollListener()
-  },
-  beforeUnmount() {
-    this.destroyScrollListener()
-    Visibility.unbind(Number(this.visibilityId))
-  },
-  watch: {
-    // Hides loading spinner once the latest messages are fetched
-    chatsActualUntil: {
-      handler: 'updateChatsActual'
-    },
-    // Shows loading spinner when chats become outdated
-    currentTime: {
-      handler: 'updateChatsActual',
-      immediate: true
-    }
-  },
-  methods: {
-    openChat(partnerId, messageText) {
-      this.$router.push({
-        name: 'Chat',
-        params: { partnerId },
-        query: { messageText }
-      })
-    },
-    isAdamantChat,
-    getAdamantChatMeta,
-    updateChatsActual() {
-      this.chatsActual = this.chatsActualUntil > this.currentTime
-    },
-    onError(message) {
-      this.$store.dispatch('snackbar/show', { message })
-    },
-    attachScrollListener() {
-      window.addEventListener('scroll', this.onScroll)
-    },
-    destroyScrollListener() {
-      window.removeEventListener('scroll', this.onScroll)
-    },
-    onScroll() {
-      const scrollHeight = document.documentElement.scrollHeight // all of viewport height
-      const scrollTop = document.documentElement.scrollTop // current vieport scroll position
-      const clientHeight = document.documentElement.clientHeight
-
-      let isLoadingSeparatorVisible = false
-      if (
-        this.$refs.loadingSeparator &&
-        this.$refs.loadingSeparator[0] &&
-        this.$refs.loadingSeparator[0].$el
-      ) {
-        const el = this.$refs.loadingSeparator[0].$el
-        if (el.offsetTop > 0) {
-          // loadingSeparator is visible
-          const loadingSeparatorTop = el.offsetTop
-          const loadingSeparatorHeight = el.clientHeight // it is nearly about bottom menu height
-          isLoadingSeparatorVisible =
-            scrollTop + clientHeight > loadingSeparatorTop + loadingSeparatorHeight
-        }
-      }
-
-      const isScrolledToBottom = scrollHeight - scrollTop - scrollOffset < clientHeight
-
-      if (isLoadingSeparatorVisible || isScrolledToBottom) {
-        this.loadChatsPaged()
-      }
-    },
-    loadChatsPaged() {
-      if (this.loading || this.noMoreChats) return
-
-      this.loading = true
-      this.$store
-        .dispatch('chat/loadChatsPaged')
-        .catch(() => {
-          this.noMoreChats = true
-        })
-        .finally(() => {
-          this.loading = false
-          this.onScroll() // update messages and remove loadingSeparator, if needed
-        })
-    },
-    messagesCount(partnerId) {
-      const messages = this.$store.getters['chat/messages'](partnerId)
-
-      return messages.length
-    },
-    displayChat(partnerId) {
-      const isUserChat = !isAdamantChat(partnerId)
-      const ifChattedBefore = isAdamantChat(partnerId) && this.messagesCount(partnerId) > 1
-
-      return isUserChat || isStaticChat(partnerId) || ifChattedBefore
-    },
-    markAllAsRead() {
-      this.$store.commit('chat/markAllAsRead')
     }
   }
+  return clonedLastMessages
+})
+const userId = computed(() => store.state.address)
+const unreadMessagesCount = computed(() => store.getters['chat/totalNumOfNewMessages'])
+
+onBeforeMount(() => {
+  noMoreChats.value = store.getters['chat/chatListOffset'] === -1
+})
+
+onMounted(() => {
+  visibilityId.value = Visibility.change((event, state) => {
+    if (state === 'visible') {
+      resume()
+    } else {
+      pause()
+    }
+  })
+
+  showChatStartDialog.value = props.showNewContact
+  attachScrollListener()
+})
+
+onBeforeUnmount(() => {
+  destroyScrollListener()
+  Visibility.unbind(Number(visibilityId.value))
+})
+
+watch(chatsActualUntil, () => {
+  updateChatsActual()
+})
+
+watchImmediate(currentTime, () => {
+  updateChatsActual()
+})
+
+function openChat(partnerId, messageText) {
+  router.push({
+    name: 'Chat',
+    params: { partnerId },
+    query: { messageText }
+  })
+}
+
+function updateChatsActual() {
+  chatsActual.value = chatsActualUntil.value > currentTime.value
+}
+
+function onError(message) {
+  store.dispatch('snackbar/show', { message })
+}
+
+function attachScrollListener() {
+  window.addEventListener('scroll', onScroll)
+}
+
+function destroyScrollListener() {
+  window.removeEventListener('scroll', onScroll)
+}
+
+function onScroll() {
+  const scrollHeight = document.documentElement.scrollHeight // all of viewport height
+  const scrollTop = document.documentElement.scrollTop // current vieport scroll position
+  const clientHeight = document.documentElement.clientHeight
+
+  let isLoadingSeparatorVisible = false
+  if (loadingSeparator.value && loadingSeparator.value[0] && loadingSeparator.value[0].$el) {
+    const el = loadingSeparator.value[0].$el
+    if (el.offsetTop > 0) {
+      // loadingSeparator is visible
+      const loadingSeparatorTop = el.offsetTop
+      const loadingSeparatorHeight = el.clientHeight // it is nearly about bottom menu height
+      isLoadingSeparatorVisible =
+        scrollTop + clientHeight > loadingSeparatorTop + loadingSeparatorHeight
+    }
+  }
+
+  const isScrolledToBottom = scrollHeight - scrollTop - scrollOffset < clientHeight
+
+  if (isLoadingSeparatorVisible || isScrolledToBottom) {
+    loadChatsPaged()
+  }
+}
+
+function loadChatsPaged() {
+  if (loading.value || noMoreChats.value) return
+
+  loading.value = true
+  store
+    .dispatch('chat/loadChatsPaged')
+    .catch(() => {
+      noMoreChats.value = true
+    })
+    .finally(() => {
+      loading.value = false
+      onScroll() // update messages and remove loadingSeparator, if needed
+    })
+}
+
+function messagesCount(partnerId) {
+  const messages = store.getters['chat/messages'](partnerId)
+
+  return messages.length
+}
+
+function displayChat(partnerId) {
+  const isUserChat = !isAdamantChat(partnerId)
+  const ifChattedBefore = isAdamantChat(partnerId) && messagesCount(partnerId) > 1
+
+  return isUserChat || isStaticChat(partnerId) || ifChattedBefore
+}
+
+function markAllAsRead() {
+  store.commit('chat/markAllAsRead')
 }
 </script>
 
