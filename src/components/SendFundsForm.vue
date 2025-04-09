@@ -189,12 +189,16 @@
 <script>
 import { adm } from '@/lib/nodes'
 import klyIndexer from '@/lib/nodes/kly-indexer'
-import { AllNodesDisabledError, AllNodesOfflineError, NoInternetConnectionError } from '@/lib/nodes/utils/errors'
+import {
+  AllNodesDisabledError,
+  AllNodesOfflineError,
+  NoInternetConnectionError
+} from '@/lib/nodes/utils/errors'
 import { PendingTransactionError } from '@/lib/pending-transactions'
 import axios from 'axios'
 import { computed, nextTick } from 'vue'
 
-import QrcodeCapture from '@/components/QrcodeCapture.vue'
+import QrcodeCapture from '@/components/QrcodeCapture/QrcodeCapture.vue'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
 import get from 'lodash/get'
 import { BigNumber } from 'bignumber.js'
@@ -234,7 +238,6 @@ import { MAX_UINT64 } from '@klayr/validator'
 
 import { mdiDotsVertical, mdiMenuDown } from '@mdi/js'
 import { useStore } from 'vuex'
-
 
 /**
  * @returns {string | boolean}
@@ -290,7 +293,7 @@ export default {
     const isOnline = computed(() => store.getters['isOnline'])
 
     const checkIsOnline = () => {
-      return navigator.onLine || isOnline.value;
+      return navigator.onLine || isOnline.value
     }
 
     return {

@@ -105,13 +105,12 @@ import { getAccountFromPassphrase as getEthAccount } from '@/lib/eth-utils'
 import { getAccount as getBtcAccount } from '@/lib/bitcoin/btc-base-api'
 import { getAccount as getKlyAccount } from '@/lib/klayr/klayr-utils'
 import { Cryptos, CryptosInfo } from '@/lib/constants'
-import QrcodeCapture from '@/components/QrcodeCapture.vue'
+import QrcodeCapture from '@/components/QrcodeCapture/QrcodeCapture.vue'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
 import { ref, defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
-import { mdiContentCopy, mdiDotsVertical, mdiEye,mdiEyeOff } from '@mdi/js'
-
+import { mdiContentCopy, mdiDotsVertical, mdiEye, mdiEyeOff } from '@mdi/js'
 
 function getBtcKey(crypto, passphrase, asWif) {
   const keyPair = getBtcAccount(crypto, passphrase).keyPair

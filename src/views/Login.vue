@@ -94,7 +94,7 @@
 import { nextTick, defineComponent, computed, ref } from 'vue'
 import { useStore } from 'vuex'
 
-import QrcodeCapture from '@/components/QrcodeCapture.vue'
+import QrcodeCapture from '@/components/QrcodeCapture/QrcodeCapture.vue'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import PassphraseGenerator from '@/components/PassphraseGenerator.vue'
 import LoginForm from '@/components/LoginForm.vue'
@@ -201,16 +201,18 @@ export default defineComponent({
   height: 100%;
 
   &__title {
-    font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-      Arial, sans-serif;
+    font-family:
+      -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+      sans-serif;
     font-weight: 100;
     font-size: 40px;
     line-height: 40px;
     text-transform: uppercase;
   }
   &__subtitle {
-    font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-      Arial, sans-serif;
+    font-family:
+      -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+      sans-serif;
     font-weight: 100;
     font-size: 18px;
   }
