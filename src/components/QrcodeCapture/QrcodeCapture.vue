@@ -41,14 +41,20 @@ const drawCanvas = (file: File) => {
     const img = new Image()
     const imgUrl = URL.createObjectURL(file)
 
+    const revokeObjectURL = () => {
+      URL.revokeObjectURL(imgUrl)
+    }
+
     img.onload = () => {
       if (!canvas.value) {
+        revokeObjectURL()
         return reject()
       }
 
       const ctx = canvas.value.getContext('2d')
 
       if (!ctx) {
+        revokeObjectURL()
         return reject()
       }
 
@@ -66,7 +72,7 @@ const drawCanvas = (file: File) => {
 
       ctx.drawImage(img, 0, 0, canvas.value.width, canvas.value.height)
 
-      URL.revokeObjectURL(imgUrl)
+      revokeObjectURL()
 
       resolve(canvas)
     }
