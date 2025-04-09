@@ -22,8 +22,8 @@ export function useFormattedDate() {
     return time
   }
 
-  const formatDate = (timestamp: number) => {
-    timestamp = parseInt(timestamp)
+  const formatDate = (timestamp: string | number) => {
+    timestamp = parseInt(String(timestamp)) as number
     // That's for the ADM timestamps, which use EPOCH as a base.
     // Other cryptos use normal timestamps
     if (timestamp < EPOCH) {
