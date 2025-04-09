@@ -31,6 +31,7 @@ import { Cryptos } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { formatMessage } from '@/lib/markdown'
 import { mdiClose } from '@mdi/js'
+import type { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 
 const className = 'a-chat-reply-preview'
 const classes = {
@@ -41,18 +42,16 @@ const classes = {
   closeButton: `${className}__close-button`
 }
 
-const props = defineProps({
-  message: {
-    type: Object,
-    required: true
-  },
-  partnerId: {
-    type: String,
-    required: true
-  }
-})
+type AChatReplyPreviewProps = {
+  message: any
+  partnerId: NormalizedChatMessageTransaction
+}
 
-defineEmits(['cancel'])
+const props = defineProps<AChatReplyPreviewProps>()
+
+defineEmits<{
+  (e: 'cancel'): void
+}>()
 
 const { t } = useI18n()
 const store = useStore()
