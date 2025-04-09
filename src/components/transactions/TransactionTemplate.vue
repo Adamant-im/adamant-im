@@ -9,11 +9,7 @@
       :class="`${className}__toolbar`"
     />
 
-    <container
-      class="container--with-app-toolbar py-0"
-      disable-max-width
-      :class="`${className}__content`"
-    >
+    <container class="py-0" disable-max-width :class="`${className}__content`">
       <v-list bg-color="transparent">
         <TransactionListItem :title="t('transaction.amount')">
           {{
@@ -378,6 +374,7 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
   &__content {
     overflow-y: auto;
     height: calc(100vh - var(--v-layout-bottom) - var(--toolbar-height));
+    padding-top: var(--toolbar-height);
   }
 
   &__titlecontent {

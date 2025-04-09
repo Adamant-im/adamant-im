@@ -2,7 +2,7 @@
   <div :class="className" class="w-100 h-100">
     <app-toolbar-centered app :title="title" show-back flat sticky disable-max-width />
 
-    <v-container fluid class="px-0 py-0 container--with-app-toolbar">
+    <v-container fluid class="px-0 py-0" :classes="classes">
       <v-row justify="center" no-gutters>
         <container padding :class="`${className}__content`" disable-max-width>
           <slot />
@@ -18,6 +18,9 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 const className = 'options-wrapper'
+const classes = {
+  container: { [`${className}__container`]: true }
+}
 
 const route = useRoute()
 
@@ -36,3 +39,11 @@ const title = computed(() => {
   }
 })
 </script>
+
+<style scoped lang="scss">
+.options-wrapper {
+  &__container {
+    padding-top: var(--toolbar-height);
+  }
+}
+</style>

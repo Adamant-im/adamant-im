@@ -2,11 +2,7 @@
   <div :class="className" class="w-100">
     <app-toolbar-centered app :title="$t('home.send_btn')" flat absolute disable-max-width />
 
-    <v-container
-      fluid
-      class="px-0 py-0 container--with-app-toolbar"
-      :class="`${className}__content`"
-    >
+    <v-container fluid class="px-0 py-0" :class="`${className}__content`">
       <v-row justify="center" no-gutters>
         <container padding disable-max-width>
           <send-funds-form
@@ -109,6 +105,7 @@ export default {
   &__content {
     overflow-y: auto;
     height: calc(100vh - var(--v-layout-bottom) - var(--toolbar-height));
+    padding-top: var(--toolbar-height);
   }
 }
 </style>

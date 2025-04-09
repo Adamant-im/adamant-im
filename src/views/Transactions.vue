@@ -8,12 +8,7 @@
       disable-max-width
     />
 
-    <v-container
-      fluid
-      class="px-0 py-0 container--with-app-toolbar"
-      :class="`${classes.content}`"
-      @scroll="onScroll"
-    >
+    <v-container fluid class="px-0 py-0" :class="`${classes.content}`" @scroll="onScroll">
       <v-row justify="center" no-gutters style="position: relative">
         <v-list-item v-if="isRecentLoading" style="position: absolute; top: 20px">
           <InlineSpinner />
@@ -239,6 +234,7 @@ export default {
   &__content {
     overflow-y: auto;
     height: calc(100vh - var(--v-layout-bottom) - var(--toolbar-height));
+    padding-top: var(--toolbar-height);
   }
 }
 </style>
