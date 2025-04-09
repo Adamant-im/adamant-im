@@ -1,7 +1,7 @@
 import { useI18n } from 'vue-i18n'
 import { EPOCH } from '@/lib/constants'
 
-export function useFormattedDate(timestamp) {
+export function useFormattedDate() {
   const { t } = useI18n()
 
   const getTime = (date) => {
@@ -22,7 +22,7 @@ export function useFormattedDate(timestamp) {
     return time
   }
 
-  const formatDate = () => {
+  const formatDate = (timestamp) => {
     timestamp = parseInt(timestamp)
     // That's for the ADM timestamps, which use EPOCH as a base.
     // Other cryptos use normal timestamps
