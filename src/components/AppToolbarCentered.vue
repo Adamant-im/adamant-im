@@ -78,7 +78,7 @@ const classes = computed(() => {
 
 const goBack = () => {
   if (route.query.from?.includes('chats')) {
-    router.push(route.query.from)
+    router.push(route.query.from as string)
     return
   }
 
