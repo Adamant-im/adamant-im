@@ -118,6 +118,7 @@ import { tsIcon, TransactionStatus as TS } from '@/lib/constants'
 import { useChatName } from '@/components/AChat/hooks/useChatName'
 import { TransactionProvider } from '@/providers/TransactionProvider'
 import { mdiArrowLeftTop, mdiDotsHorizontal } from '@mdi/js'
+import { AdamantChatMeta } from '@/lib/chat/meta/chat-meta'
 
 const className = 'chat-brief'
 
@@ -148,7 +149,7 @@ const props = defineProps({
    * Must be defined if is an ADAMANT chat
    */
   adamantChatMeta: {
-    type: Object,
+    type: Object as PropType<AdamantChatMeta>,
     default: null
   },
   isLoadingSeparator: {
