@@ -25,72 +25,54 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts" setup>
 import { mdiArrowLeft } from '@mdi/js'
+import { useStore } from 'vuex'
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 
-export default {
-  props: {
-    title: {
-      type: String,
-      default: undefined
-    },
-    subtitle: {
-      type: String,
-      default: undefined
-    },
-    flat: {
-      type: Boolean,
-      default: false
-    },
-    app: {
-      type: Boolean,
-      default: false
-    },
-    fixed: {
-      type: Boolean,
-      default: false
-    },
-    height: {
-      type: Number,
-      default: 56
-    },
-    showBack: {
-      type: Boolean,
-      default: true
-    },
-    hasSpinner: {
-      type: Boolean,
-      default: false
-    }
-  },
-  setup() {
-    return {
-      mdiArrowLeft
-    }
-  },
-  computed: {
-    isOnline() {
-      return this.$store.getters['isOnline']
-    },
-    classes() {
-      return {
-        'v-toolbar--fixed': this.app,
-        'app-toolbar--fixed': this.fixed
-      }
-    },
-    className: () => 'app-toolbar-centered'
-  },
-  methods: {
-    goBack() {
-      // there are no pages in history to go back
-      if (history.length === 1) {
-        this.$router.replace('/')
-        return
-      }
-
-      this.$router.back()
-    }
+const props = withDefaults(
+  defineProps<{
+    title?: string
+    subtitle?: string
+    flat?: boolean
+    app?: boolean
+    fixed?: boolean
+    height?: number
+    showBack?: boolean
+    hasSpinner?: boolean
+  }>(),
+  {
+    title: undefined,
+    subtitle: undefined,
+    flat: false,
+    app: false,
+    fixed: false,
+    height: 56,
+    showBack: true,
+    hasSpinner: false
   }
+)
+
+const store = useStore()
+const router = useRouter()
+
+const className = 'app-toolbar-centered'
+
+const isOnline = computed(() => store.getters['isOnline'])
+const classes = computed(() => ({
+  'v-toolbar--fixed': props.app,
+  'app-toolbar--fixed': props.fixed
+}))
+
+const goBack = () => {
+  // there are no pages in history to go back
+  if (history.length === 1) {
+    router.replace('/')
+    return
+  }
+
+  router.back()
 }
 </script>
 
