@@ -31,7 +31,7 @@
 
                 <div>
                   <v-list-item-title :class="`${className}__title`">
-                    {{ $t('chats.new_chat') }}
+                    {{ t('chats.new_chat') }}
                   </v-list-item-title>
                 </div>
               </v-btn>
@@ -82,6 +82,9 @@ import Visibility from 'visibilityjs'
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import { LastMessage } from '@/components/AChat/types'
 
 const props = withDefaults(
   defineProps<{
@@ -97,6 +100,7 @@ const props = withDefaults(
 const store = useStore()
 const router = useRouter()
 const { now, pause, resume } = useNow({ interval: 500, controls: true })
+const { t } = useI18n()
 
 const scrollOffset = 64
 const className = 'chats-view'
@@ -109,12 +113,12 @@ const visibilityId = ref<number | boolean | null>(null)
 const loadingSeparator = ref<InstanceType<typeof ChatPreview>[]>([])
 const currentTime = computed(() => now.value.getTime())
 
-const admNodes = computed(() => store.getters['nodes/adm'])
-const admNodesOnline = admNodes.value.some((node) => node.status === 'online')
+const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
+const admNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
 const chatsActualUntil = computed(() => store.state.chat.chatsActualUntil)
 const isFulfilled = computed(() => store.state.chat.isFulfilled)
 const messages = computed(() => {
-  const lastMessages = store.getters['chat/lastMessages']
+  const lastMessages: LastMessage[] = store.getters['chat/lastMessages']
   // We should modify cloned message list to leave original one untouched
   const clonedLastMessages = lastMessages.map((msg) => {
     return { ...msg }
@@ -125,7 +129,10 @@ const messages = computed(() => {
       .map((msg) => isAdamantChat(msg.contactId))
       .lastIndexOf(false)
     if (lastNotAdamantChat) {
+      const baseMessage = clonedLastMessages[lastNotAdamantChat] || {}
+
       clonedLastMessages.splice(lastNotAdamantChat + 1, 0, {
+        ...baseMessage,
         loadingSeparator: true,
         userId: 'loadingSeparator',
         contactId: 'loadingSeparator'
@@ -136,6 +143,8 @@ const messages = computed(() => {
 })
 const userId = computed(() => store.state.address)
 const unreadMessagesCount = computed(() => store.getters['chat/totalNumOfNewMessages'])
+
+watch(messages, () => console.log(messages.value))
 
 onBeforeMount(() => {
   noMoreChats.value = store.getters['chat/chatListOffset'] === -1
@@ -167,7 +176,7 @@ watchImmediate(currentTime, () => {
   updateChatsActual()
 })
 
-function openChat(partnerId, messageText) {
+function openChat(partnerId: string, messageText?: string) {
   router.push({
     name: 'Chat',
     params: { partnerId },
@@ -179,7 +188,7 @@ function updateChatsActual() {
   chatsActual.value = chatsActualUntil.value > currentTime.value
 }
 
-function onError(message) {
+function onError(message: string) {
   store.dispatch('snackbar/show', { message })
 }
 
@@ -230,13 +239,13 @@ function loadChatsPaged() {
     })
 }
 
-function messagesCount(partnerId) {
+function messagesCount(partnerId: string) {
   const messages = store.getters['chat/messages'](partnerId)
 
   return messages.length
 }
 
-function displayChat(partnerId) {
+function displayChat(partnerId: string) {
   const isUserChat = !isAdamantChat(partnerId)
   const ifChattedBefore = isAdamantChat(partnerId) && messagesCount(partnerId) > 1
 
