@@ -1,31 +1,11 @@
 <template>
-  <div
-    :class="{
-      [`${className} d-flex justify-center ma-auto`]: true,
-      [`${className}__with-aside`]: needAside
-    }"
-    :style="{ '--asideWidth': asideWidth }"
-  >
-    <aside
-      v-if="needAside"
-      :class="{
-        [`${className}__aside`]: true,
-        [`${className}__aside--has-view`]: hasView
-      }"
-      ref="aside"
-      @mousedown="startResize"
-    >
+  <div :class="classes" :style="{ '--asideWidth': asideWidth }">
+    <aside v-if="needAside" :class="classes.aside" ref="aside" @mousedown="startResize">
       <left-side />
     </aside>
     <div :class="`${className}__layout`">
       <component :is="layout">
-        <div
-          class="d-flex justify-center align-center"
-          :class="{
-            [`${className}__router-view`]: true,
-            [`${className}__router-view--no-aside`]: !needAside
-          }"
-        >
+        <div class="d-flex justify-center align-center" :class="classes.routerView">
           <img
             v-show="showLogo"
             src="/img/adamant-logo-transparent-512x512.png"
@@ -126,6 +106,23 @@ if (SAVED_WIDTH_KEY) {
     asideWidth.value = value
   }
 }
+
+const classes = computed(() => {
+  return {
+    root: {
+      ['${className} d-flex justify-center ma-auto']: true,
+      [`${className}__with-aside`]: needAside
+    },
+    aside: {
+      [`${className}__aside`]: true,
+      [`${className}__aside--has-view`]: hasView
+    },
+    routerView: {
+      [`${className}__router-view`]: true,
+      [`${className}__router-view--no-aside`]: !needAside.value
+    }
+  }
+})
 </script>
 <style lang="scss" scoped>
 @use 'sass:map';

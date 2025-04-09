@@ -17,7 +17,7 @@ import Wallets from '@/views/Wallets.vue'
 import Vibro from '@/views/Vibro.vue'
 import WalletGuard from '@/middlewares/walletGuard'
 import ExportKeysForm from '@/views/ExportKeysForm.vue'
-import Sidebar from '@/views/Sidebar.vue'
+import AppSidebar from '@/views/AppSidebar.vue'
 
 /**
  * @type {Readonly<import("vue-router").RouteRecordRaw[]>}
@@ -25,7 +25,7 @@ import Sidebar from '@/views/Sidebar.vue'
 const routes = [
   {
     path: '/chats',
-    component: Sidebar,
+    component: AppSidebar,
     props: true,
     name: 'Chats',
     meta: {
@@ -54,7 +54,7 @@ const routes = [
   {
     path: '/home',
     name: 'Home',
-    component: Sidebar,
+    component: AppSidebar,
     meta: {
       requiresAuth: true,
       requiresWallets: true,
