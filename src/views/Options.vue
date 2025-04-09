@@ -226,7 +226,7 @@ export default {
 
     let saveTop = 0
 
-    const hasView = computed(() => !(route.name === 'Options'))
+    const hasView = computed(() => route.matched.length > 1 && !(route.name === 'Options'))
 
     onBeforeRouteUpdate(() => {
       const sidebar = document.querySelector('.sidebar__layout')
