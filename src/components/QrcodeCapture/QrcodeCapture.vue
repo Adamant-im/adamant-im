@@ -24,7 +24,7 @@ import { IMG_MAX_SIZE } from '@/components/QrcodeCapture/consts'
 
 const emit = defineEmits<{
   (e: 'detect'): void
-  (e: 'error'): void
+  (e: 'error', err: unknown): void
 }>()
 
 const className = 'qrcode-capture'
@@ -108,8 +108,11 @@ const onFileSelect = async (event) => {
 
     emit('error', err)
   }
-  // Reset input to trigger change event later if user selects same image (Chrome)
-  fileInput.value.value = ''
+
+  if (fileInput.value) {
+    // Reset input to trigger change event later if user selects same image (Chrome)
+    fileInput.value.value = ''
+  }
 }
 </script>
 
