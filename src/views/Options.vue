@@ -125,19 +125,6 @@
         </v-col>
         <v-col cols="12" class="mt-6">
           <v-checkbox
-            v-model="allowTabNotifications"
-            :label="$t('options.enable_bar')"
-            color="grey darken-1"
-            density="comfortable"
-            hide-details
-          />
-
-          <div class="a-text-explanation-enlarged">
-            {{ $t('options.enable_bar_tooltip') }}
-          </div>
-        </v-col>
-        <v-col cols="12" class="mt-6">
-          <v-checkbox
             v-model="allowPushNotifications"
             :label="$t('options.enable_push')"
             color="grey darken-1"
