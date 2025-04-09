@@ -179,7 +179,6 @@ import { AnyCoinTransaction } from '@/lib/nodes/types/transaction'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import TransactionListItem from './TransactionListItem.vue'
 import { timestampInSec } from '@/filters/helpers'
-import { formatDate } from '@/lib/formatters'
 import {
   mdiAlertOutline,
   mdiChevronRight,
@@ -187,6 +186,7 @@ import {
   mdiCommentOutline,
   mdiRefresh
 } from '@mdi/js'
+import { useFormattedDate } from '@/hooks/useFormattedDate'
 
 const className = 'transaction-view'
 
@@ -249,6 +249,8 @@ const store = useStore()
 const router = useRouter()
 const route = useRoute()
 const { t } = useI18n()
+
+const { formatDate } = useFormattedDate()
 
 const transaction = computed(() => props.transaction)
 const sender = computed(() => props.senders?.join(',') ?? transaction.value?.senderId)
