@@ -6,7 +6,7 @@
       :show-back="true"
       flat
       fixed
-      :has-spinner="true"
+      has-spinner
     />
 
     <v-container fluid class="px-0 container--with-app-toolbar">

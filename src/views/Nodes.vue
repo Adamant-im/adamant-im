@@ -4,7 +4,7 @@
       app
       :title="$t('options.nodes_list')"
       :show-back="true"
-      :has-spinner="true"
+      has-spinner
       flat
       fixed
     />

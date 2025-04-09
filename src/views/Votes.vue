@@ -1,6 +1,6 @@
 <template>
   <div :class="className">
-    <app-toolbar-centered app :title="t('votes.page_title')" :has-spinner="true" flat fixed />
+    <app-toolbar-centered app :title="t('votes.page_title')" has-spinner flat fixed />
 
     <v-container fluid class="px-0 container--with-app-toolbar">
       <v-row justify="center" no-gutters>
