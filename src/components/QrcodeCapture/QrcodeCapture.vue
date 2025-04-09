@@ -1,6 +1,6 @@
 <template>
   <div :class="className">
-    <div :class="`${className}__activator`" @click="fileInput.click()">
+    <div :class="`${className}__activator`" @click="fileInput?.click()">
       <slot />
     </div>
 
@@ -21,6 +21,7 @@
 import { vibrate } from '@/lib/vibrate'
 import { useTemplateRef } from 'vue'
 import { IMG_MAX_SIZE } from '@/components/QrcodeCapture/consts'
+import type { BrowserQRCodeReader } from '@zxing/browser/esm/readers/BrowserQRCodeReader'
 
 const emit = defineEmits<{
   (e: 'detect'): void
@@ -30,7 +31,7 @@ const emit = defineEmits<{
 const className = 'qrcode-capture'
 
 let qrCodeText = ''
-let codeReader = null
+let codeReader: BrowserQRCodeReader | null = null
 
 const canvas = useTemplateRef('canvasElement')
 const fileInput = useTemplateRef('fileInput')
@@ -41,7 +42,15 @@ const drawCanvas = (file) => {
     const imgUrl = URL.createObjectURL(file)
 
     img.onload = () => {
+      if (!canvas.value) {
+        reject()
+      }
+
       const ctx = canvas.value.getContext('2d')
+
+      if (!ctx) {
+        reject()
+      }
 
       const ratio = img.width / img.height
       let newWidth = IMG_MAX_SIZE
@@ -90,7 +99,7 @@ const tryToDecode = () => {
   })
 }
 
-const onFileSelect = async (event) => {
+const onFileSelect = async (event: Event) => {
   try {
     if (!codeReader) {
       const { BrowserQRCodeReader } = await import('@zxing/browser')
