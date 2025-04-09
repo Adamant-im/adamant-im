@@ -26,26 +26,24 @@ const formQueryParamsObject = (query) => {
     return key && value
       ? {
           ...accum,
-          [key]: window.decodeURIComponent(
-            value.includes('+') ? value.replace(/\+/g, ' ') : value
-          )
+          [key]: window.decodeURIComponent(value.includes('+') ? value.replace(/\+/g, ' ') : value)
         }
       : accum
   }, {})
 }
 
 /**
-* Parse info from an URI
-* @param {string} uri URI. Default is address bar or argv[].
-* @returns {
-*   {
-*     address: string,
-*     crypto: string,
-*     params: Object<string, string>,
-*     protocol: string
-*   }
-* }
-*/
+ * Parse info from an URI
+ * @param {string} uri URI. Default is address bar or argv[].
+ * @returns {
+ *   {
+ *     address: string,
+ *     crypto: string,
+ *     params: Object<string, string>,
+ *     protocol: string
+ *   }
+ * }
+ */
 export function parseURI(uri = getAddressBarURI()) {
   const [origin, query = ''] = uri.split('?')
   if (origin === KLAYR_WALLET) return parseKlyURI(query)
@@ -53,22 +51,22 @@ export function parseURI(uri = getAddressBarURI()) {
 }
 
 /**
-* Parse info from an URI of the Klayr wallet
-* Ex.: klayr://wallet?modal=send&recipient=klyap2bbanxn4agw286ofz85zf3y2brdzjdyoby8r&amount=123&token=0000000000000000&recipientChain=00000000
-* @param {string} URI's query parameters
-* @returns {
-*   {
-*     address: string,
-*     crypto: string,
-*     params: Object<string, string>,
-*     protocol: string
-*   }
-* }
-*/
+ * Parse info from an URI of the Klayr wallet
+ * Ex.: klayr://wallet?modal=send&recipient=klyap2bbanxn4agw286ofz85zf3y2brdzjdyoby8r&amount=123&token=0000000000000000&recipientChain=00000000
+ * @param {string} URI's query parameters
+ * @returns {
+ *   {
+ *     address: string,
+ *     crypto: string,
+ *     params: Object<string, string>,
+ *     protocol: string
+ *   }
+ * }
+ */
 function parseKlyURI(query) {
   let address = ''
   let params = {}
-  
+
   if (query) {
     params = formQueryParamsObject(query)
     address = params.recipient || ''
@@ -101,7 +99,7 @@ export function parseURIasAIP(uri = getAddressBarURI()) {
   if (query) params = formQueryParamsObject(query)
 
   if (origin.includes(':')) {
-    [protocol, address] = origin.split(':')
+    ;[protocol, address] = origin.split(':')
     if (protocol === 'ethereum') {
       crypto = Cryptos.ETH
     } else if (/^https?$/.test(protocol) || /^app$/.test(protocol)) {
@@ -130,7 +128,7 @@ export function parseURIasAIP(uri = getAddressBarURI()) {
         if (!isKlyAddress(address)) {
           crypto = ''
         }
-      } catch (e) {
+      } catch {
         crypto = ''
       }
     }
@@ -146,7 +144,7 @@ export function parseURIasAIP(uri = getAddressBarURI()) {
  * @param {string} name ADAMANT contact name
  * @returns {string}
  */
-export function generateURI(crypto = Cryptos.ADM, address, name) {
+export function generateURI(crypto = Cryptos.ADM, address, name = '') {
   if (crypto === Cryptos.ADM) {
     const label = name ? '&label=' + window.encodeURIComponent(name) : ''
     let hostname = window.location.origin
