@@ -52,11 +52,11 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import draggable from 'vuedraggable'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
-import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { CryptosInfo, CryptoSymbol, isErc20 } from '@/lib/constants'
 import { useStore } from 'vuex'
 import WalletsSearchInput from '@/components/wallets/WalletsSearchInput.vue'
@@ -92,100 +92,76 @@ type Wallet = {
   type?: string
 }
 
-export default defineComponent({
-  components: {
-    WalletResetDialog,
-    WalletsListItem,
-    WalletsSearchInput,
-    AppToolbarCentered,
-    draggable
-  },
-  setup() {
-    const { t } = useI18n()
-    const store = useStore()
-    const { isDarkTheme } = useTheme()
+const { t } = useI18n()
+const store = useStore()
+const { isDarkTheme } = useTheme()
 
-    const isDragging = ref(false)
-    const search = ref('')
+const isDragging = ref(false)
+const search = ref('')
 
-    const orderedAllWalletSymbols = computed<CoinSymbol[]>(() => {
-      return store.getters['wallets/getAllOrderedWalletSymbols']
-    })
+const orderedAllWalletSymbols = computed<CoinSymbol[]>(() => {
+  return store.getters['wallets/getAllOrderedWalletSymbols']
+})
 
-    const wallets = computed(() => {
-      return orderedAllWalletSymbols.value.map((crypto: CoinSymbol) => {
-        const symbol = crypto.symbol
-        const cryptoName = CryptosInfo[symbol].nameShort || CryptosInfo[symbol].name
-        const erc20 = isErc20(symbol)
-        const isVisible = crypto.isVisible
-        const type = CryptosInfo[symbol].type ?? 'Blockchain'
-
-        return {
-          cryptoName,
-          erc20,
-          isVisible,
-          symbol,
-          type
-        }
-      })
-    })
-
-    const searchChanged = (value: string | Event) => {
-      if (value instanceof Event) return
-      search.value = value
-    }
-
-    const lowerCasedSearch = computed(() => {
-      return search.value.toLowerCase()
-    })
-
-    const filteredWallets = computed({
-      get() {
-        return wallets.value.filter((wallet: Wallet) => {
-          return (
-            wallet.cryptoName?.toLowerCase().includes(lowerCasedSearch.value) ||
-            wallet.symbol.toLowerCase().includes(lowerCasedSearch.value)
-          )
-        })
-      },
-      set(value) {
-        const mappedValue = value.map((item: Wallet) => {
-          return {
-            symbol: item.symbol,
-            isVisible: item.isVisible
-          }
-        })
-
-        store.dispatch('wallets/setWalletSymbols', mappedValue)
-      }
-    })
-    const { resume, pause } = useTimeoutPoll(async () => {
-      await store.dispatch('updateBalance', {
-        requestedByUser: true
-      })
-    }, BALANCE_UPDATE_INTERVAL_MS)
-
-    onMounted(() => {
-      resume()
-    })
-
-    onBeforeUnmount(() => {
-      pause()
-    })
+const wallets = computed(() => {
+  return orderedAllWalletSymbols.value.map((crypto: CoinSymbol) => {
+    const symbol = crypto.symbol
+    const cryptoName = CryptosInfo[symbol].nameShort || CryptosInfo[symbol].name
+    const erc20 = isErc20(symbol)
+    const isVisible = crypto.isVisible
+    const type = CryptosInfo[symbol].type ?? 'Blockchain'
 
     return {
-      classes,
-      t,
-      dragOptions,
-      filteredWallets,
-      isDarkTheme,
-      isDragging,
-      search,
-      searchChanged,
-      toolbar,
-      wallets
+      cryptoName,
+      erc20,
+      isVisible,
+      symbol,
+      type
     }
+  })
+})
+
+const searchChanged = (value: string | Event) => {
+  if (value instanceof Event) return
+  search.value = value
+}
+
+const lowerCasedSearch = computed(() => {
+  return search.value.toLowerCase()
+})
+
+const filteredWallets = computed({
+  get() {
+    return wallets.value.filter((wallet: Wallet) => {
+      return (
+        wallet.cryptoName?.toLowerCase().includes(lowerCasedSearch.value) ||
+        wallet.symbol.toLowerCase().includes(lowerCasedSearch.value)
+      )
+    })
+  },
+  set(value) {
+    const mappedValue = value.map((item: Wallet) => {
+      return {
+        symbol: item.symbol,
+        isVisible: item.isVisible
+      }
+    })
+
+    store.dispatch('wallets/setWalletSymbols', mappedValue)
   }
+})
+const { resume, pause } = useTimeoutPoll(async () => {
+  await store.dispatch('updateBalance', {
+    requestedByUser: true
+  })
+}, BALANCE_UPDATE_INTERVAL_MS)
+
+onMounted(() => {
+  resume()
+})
+
+onBeforeUnmount(() => {
+  pause()
 })
 </script>
 
