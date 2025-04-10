@@ -283,43 +283,41 @@ export default defineComponent({
       )
     })
     const rate = computed(() => {
-      if (!transaction.value) return
+      if (!transaction.value) return Symbols.HOURGLASS
 
       return store.getters['rate/rate'](transaction.value.amount, props.crypto)
     })
 
     const calculatedTimestampInSec = computed(() => {
       if (!transaction.value) {
-        return null;
+        return null
       }
 
       return timestampInSec(props.crypto, transaction.value.timestamp!)
     })
 
     const calculatedFee = computed(() => {
-      const commissionTokenLabel = (props.feeCrypto ?? props.crypto) as CryptoSymbol;
+      const commissionTokenLabel = (props.feeCrypto ?? props.crypto) as CryptoSymbol
 
       const { cryptoTransferDecimals, decimals } = CryptosInfo[commissionTokenLabel]
 
-      const tokenFee = typeof props.fee === 'number'
-        ? `${formatAmount(props.fee, cryptoTransferDecimals ?? decimals)} ${commissionTokenLabel}`
-        : placeholder.value;
+      const tokenFee =
+        (props.queryStatus === 'success' && typeof props.fee === 'number') || props.fee
+          ? `${formatAmount(props.fee, cryptoTransferDecimals ?? decimals)} ${commissionTokenLabel}`
+          : placeholder.value
 
-      if (!props.fee || !calculatedTimestampInSec.value) return tokenFee;
-
+      if (!props.fee || !calculatedTimestampInSec.value) return tokenFee
 
       const commissionUsdAmount = store.getters['rate/historyRate'](
         calculatedTimestampInSec.value,
         props.fee,
-        commissionTokenLabel,
-      );
+        commissionTokenLabel
+      )
 
+      if (!commissionUsdAmount) return tokenFee
 
-      if (!commissionUsdAmount) return tokenFee;
-
-      return tokenFee  + ` ~${commissionUsdAmount}`;
-    });
-
+      return tokenFee + ` ~${commissionUsdAmount}`
+    })
 
     const handleCopyToClipboard = (text?: string) => {
       if (!text) return
@@ -365,9 +363,7 @@ export default defineComponent({
     )
 
     const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decimals) => {
-      return BigNumber(amount)
-        .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
-        .toFixed()
+      return BigNumber(amount).decimalPlaces(decimals, BigNumber.ROUND_DOWN).toFixed()
     }
 
     return {
