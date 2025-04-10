@@ -2,7 +2,7 @@
   <div :class="className">
     <app-toolbar-centered
       app
-      :title="$t('options.nodes_list')"
+      :title="t('options.nodes_list')"
       :show-back="true"
       has-spinner
       flat
@@ -19,34 +19,28 @@
   </div>
 </template>
 
-<script>
+<script lang="ts" setup>
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import NodesTable from '@/components/nodes/NodesTable.vue'
 import { nodesManager } from '@/lib/nodes'
+import { onBeforeUnmount, onMounted } from 'vue'
+import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
 
-export default {
-  components: {
-    NodesTable,
-    AppToolbarCentered
-  },
-  data: () => ({
-    pagination: {
-      sortBy: 'name'
-    },
-    timer: null
-  }),
-  computed: {
-    className: () => 'nodes-view'
-  },
-  mounted() {
-    this.$store.dispatch('nodes/updateStatus')
+const className = 'nodes-view'
 
-    nodesManager.updateHealthcheckInterval('onScreen')
-  },
-  beforeUnmount() {
-    nodesManager.updateHealthcheckInterval('normal')
-  }
-}
+const store = useStore()
+const { t } = useI18n()
+
+onMounted(() => {
+  store.dispatch('nodes/updateStatus')
+
+  nodesManager.updateHealthcheckInterval('onScreen')
+})
+
+onBeforeUnmount(() => {
+  nodesManager.updateHealthcheckInterval('normal')
+})
 </script>
 
 <style lang="scss" scoped>
