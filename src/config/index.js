@@ -12,6 +12,9 @@ const configMap = {
   tor: torConfig
 }
 
-const configName = import.meta.env.MODE || import.meta.env.ADM_CONFIG_FILE
+let configName = import.meta.env.VITE_ADM_CONFIG_FILE
+
+if (!(configName in configMap))
+  configName = import.meta.env.MODE
 
 export default configMap[configName]
