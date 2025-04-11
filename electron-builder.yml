@@ -67,3 +67,4 @@ linux:
   icon: './build/linux/'
   target:
     - AppImage
+afterPack: 'scripts/electron/sandboxFix.js'
