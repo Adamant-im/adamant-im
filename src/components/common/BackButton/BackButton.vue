@@ -1,5 +1,5 @@
 <template>
-  <v-btn :class="className" icon @click="goBack">
+  <v-btn :class="className" icon>
     <slot />
     <v-icon :icon="mdiArrowLeft" />
   </v-btn>
