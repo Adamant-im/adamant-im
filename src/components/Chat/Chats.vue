@@ -1,0 +1,430 @@
+<template>
+  <div :class="className">
+    <v-list subheader class="pa-0" bg-color="transparent" v-if="isFulfilled">
+      <v-row :class="`${className}__chats-actions`" no-gutters>
+        <v-btn
+          :class="`${className}__btn mt-2 ml-4`"
+          @click="markAllAsRead"
+          v-if="unreadMessagesCount > 0"
+          :icon="mdiCheckAll"
+          size="small"
+          variant="text"
+        />
+        <v-spacer />
+        <v-btn
+          :class="`${className}__item`"
+          @click="setIsShowChatStartDialog(true)"
+          variant="plain"
+        >
+          <template #prepend>
+            <v-icon :class="`${className}__icon`" :icon="mdiMessageOutline" size="small" />
+          </template>
+
+          <div>
+            <v-list-item-title :class="`${className}__title`">
+              {{ $t('chats.new_chat') }}
+            </v-list-item-title>
+          </div>
+        </v-btn>
+      </v-row>
+      <div
+        :class="{
+          [`${className}__messages`]: true,
+          [`${className}__messages--chat`]: true
+        }"
+        @scroll="onScroll"
+      >
+        <template v-for="transaction in messages" :key="transaction.contactId">
+          <chat-preview
+            v-if="displayChat(transaction.contactId)"
+            :ref="transaction.contactId"
+            :is-loading-separator="transaction.loadingSeparator"
+            :is-loading-separator-active="loading"
+            :user-id="userId"
+            :contact-id="transaction.contactId"
+            :transaction="transaction"
+            :is-message-readonly="transaction.readonly"
+            :adamant-chat-meta="getAdamantChatMeta(transaction.contactId)"
+            :is-active="checkIsActive(transaction.contactId)"
+            @click="openChat(transaction.contactId)"
+          />
+        </template>
+      </div>
+    </v-list>
+
+    <div
+      class="d-flex justify-center align-center"
+      :class="`${className}__chat-spinner-wrapper`"
+      v-if="!isFulfilled"
+    >
+      <ChatSpinner :value="!isFulfilled" />
+    </div>
+
+    <chat-start-dialog
+      v-model="isShowChatStartDialog"
+      :partner-id="partnerId"
+      @error="onError"
+      @start-chat="openChat"
+    />
+
+    <NodesOfflineDialog node-type="adm" />
+  </div>
+</template>
+
+<script>
+import ChatPreview from '@/components/ChatPreview.vue'
+import ChatStartDialog from '@/components/ChatStartDialog.vue'
+import ChatSpinner from '@/components/ChatSpinner.vue'
+import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
+import scrollPosition from '@/mixins/scrollPosition'
+import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
+import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
+import { useRoute, useRouter } from 'vue-router'
+import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, watch } from 'vue'
+import { useStore } from 'vuex'
+
+const scrollOffset = 64
+
+export default {
+  components: {
+    ChatPreview,
+    ChatStartDialog,
+    ChatSpinner,
+    NodesOfflineDialog
+  },
+  mixins: [scrollPosition],
+  props: {
+    partnerId: { default: undefined, type: String },
+    showNewContact: { default: false, type: Boolean }
+  },
+  setup() {
+    const route = useRoute()
+    const router = useRouter()
+    const store = useStore()
+
+    const setIsShowChatStartDialog = (value) => {
+      store.commit('chat/setIsShowChatStartDialog', value)
+    }
+
+    const savedRoute = ref(null)
+
+    const chatPagePartnerId = computed(() => {
+      return route.params.partnerId
+    })
+
+    const lastPartnerId = ref(null)
+
+    const isSnackbarShowing = computed(() => store.state.snackbar.show)
+
+    const noActiveNodesDialog = computed(() => store.state.chat.noActiveNodesDialog)
+    const isShowPartnerInfoDialog = computed(() => store.state.chat.isShowPartnerInfoDialog)
+    const isShowChatStartDialog = computed({
+      get() {
+        return store.state.chat.isShowChatStartDialog
+      },
+      set(value) {
+        setIsShowChatStartDialog(value)
+      }
+    })
+    const isShowFreeTokensDialog = computed(() => store.state.chat.isShowFreeTokensDialog)
+
+    const isChatMenuOpen = computed(() => store.state.chat.isChatMenuOpen)
+    const actionsDropdownMessageId = computed(() => store.state.chat.actionsDropdownMessageId)
+    const isEmojiPickerOpen = computed(() => store.state.chat.isEmojiPickerOpen)
+
+    const canPressEscape = computed(() => {
+      return (
+        !noActiveNodesDialog.value &&
+        !isShowChatStartDialog.value &&
+        !isShowFreeTokensDialog.value &&
+        !isSnackbarShowing.value &&
+        !isShowPartnerInfoDialog.value &&
+        !isChatMenuOpen.value &&
+        !isEmojiPickerOpen.value &&
+        actionsDropdownMessageId.value === -1
+      )
+    })
+
+    const checkIsActive = (contactId) => {
+      return route.name !== 'Chats' && contactId === lastPartnerId.value
+    }
+
+    watch(chatPagePartnerId, (value) => {
+      if (value) {
+        lastPartnerId.value = value
+      }
+
+      if (!value && route.name === 'Chats') {
+        savedRoute.value = null
+      }
+    })
+
+    onActivated(() => {
+      if (savedRoute.value) {
+        router.push(savedRoute.value)
+      }
+    })
+
+    onDeactivated(() => {
+      if (history.state.back.includes('/chats/')) {
+        savedRoute.value = history.state.back
+      }
+    })
+
+    const onKeydownHandler = (e) => {
+      if (canPressEscape.value) {
+        if (e.key === 'Escape') {
+          if (route.query.from?.includes('chats')) {
+            router.push(route.query.from)
+            return
+          }
+
+          router.push({
+            name: 'Chats'
+          })
+        }
+      }
+    }
+
+    onMounted(() => {
+      document.addEventListener('keydown', onKeydownHandler)
+    })
+
+    onBeforeUnmount(() => {
+      document.removeEventListener('keydown', onKeydownHandler)
+    })
+
+    return {
+      chatPagePartnerId,
+      isShowChatStartDialog,
+      mdiCheckAll,
+      mdiMessageOutline,
+      checkIsActive,
+      setIsShowChatStartDialog
+    }
+  },
+  data: () => ({
+    loading: false,
+    noMoreChats: false
+  }),
+  computed: {
+    className: () => 'chats-view',
+    isFulfilled() {
+      return this.$store.state.chat.isFulfilled
+    },
+    partners() {
+      return this.$store.getters['chat/partners']
+    },
+    messages() {
+      const lastMessages = this.$store.getters['chat/lastMessages']
+      // We should modify cloned message list to leave original one untouched
+      const clonedLastMessages = lastMessages.map((msg) => {
+        return { ...msg }
+      })
+      if (!this.noMoreChats && clonedLastMessages.length > 25) {
+        const lastNotAdamantChat = lastMessages
+          .map((msg) => this.isAdamantChat(msg.contactId))
+          .lastIndexOf(false)
+        if (lastNotAdamantChat) {
+          clonedLastMessages.splice(lastNotAdamantChat + 1, 0, {
+            loadingSeparator: true,
+            userId: 'loadingSeparator',
+            contactId: 'loadingSeparator'
+          })
+        }
+      }
+      return clonedLastMessages
+    },
+    userId() {
+      return this.$store.state.address
+    },
+    unreadMessagesCount() {
+      return this.$store.getters['chat/totalNumOfNewMessages']
+    }
+  },
+  beforeMount() {
+    // When returning to chat list from a specific chat, restore noMoreChats property not to show loadingSeparator
+    this.noMoreChats = this.$store.getters['chat/chatListOffset'] === -1
+  },
+  mounted() {
+    this.setIsShowChatStartDialog(this.showNewContact)
+    this.attachScrollListener()
+  },
+  beforeUnmount() {
+    this.destroyScrollListener()
+  },
+  methods: {
+    openChat(partnerId, messageText) {
+      this.$router.push({
+        name: 'Chat',
+        params: { partnerId },
+        query: { messageText }
+      })
+    },
+    isAdamantChat,
+    getAdamantChatMeta,
+    onError(message) {
+      this.$store.dispatch('snackbar/show', { message })
+    },
+    attachScrollListener() {
+      window.addEventListener('scroll', this.onScroll)
+    },
+    destroyScrollListener() {
+      window.removeEventListener('scroll', this.onScroll)
+    },
+    onScroll(evt) {
+      if (!evt) {
+        return
+      }
+
+      const { target } = evt
+
+      if (!target) {
+        return
+      }
+
+      const elem = target.documentElement ?? target
+
+      const scrollHeight = elem.scrollHeight // all of viewport height
+      const scrollTop = elem.scrollTop // current vieport scroll position
+      const clientHeight = elem.clientHeight
+
+      let isLoadingSeparatorVisible = false
+
+      if (
+        this.$refs.loadingSeparator &&
+        this.$refs.loadingSeparator[0] &&
+        this.$refs.loadingSeparator[0].$el
+      ) {
+        const el = this.$refs.loadingSeparator[0].$el
+        if (el.offsetTop > 0) {
+          // loadingSeparator is visible
+          const loadingSeparatorTop = el.offsetTop
+          const loadingSeparatorHeight = el.clientHeight // it is nearly about bottom menu height
+          isLoadingSeparatorVisible =
+            scrollTop + clientHeight > loadingSeparatorTop + loadingSeparatorHeight
+        }
+      }
+
+      const isScrolledToBottom = scrollHeight - scrollTop - scrollOffset < clientHeight
+
+      if (isLoadingSeparatorVisible || isScrolledToBottom) {
+        this.loadChatsPaged()
+      }
+    },
+    loadChatsPaged() {
+      if (this.loading) return
+      if (this.noMoreChats) return
+
+      this.loading = true
+      this.$store
+        .dispatch('chat/loadChatsPaged')
+        .catch(() => {
+          this.noMoreChats = true
+        })
+        .finally(() => {
+          this.loading = false
+          this.onScroll() // update messages and remove loadingSeparator, if needed
+        })
+    },
+    messagesCount(partnerId) {
+      const messages = this.$store.getters['chat/messages'](partnerId)
+
+      return messages.length
+    },
+    displayChat(partnerId) {
+      const isUserChat = !isAdamantChat(partnerId)
+      const ifChattedBefore = isAdamantChat(partnerId) && this.messagesCount(partnerId) > 1
+
+      return isUserChat || isStaticChat(partnerId) || ifChattedBefore
+    },
+    markAllAsRead() {
+      this.$store.commit('chat/markAllAsRead')
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
+
+.chats-view {
+  height: 100%;
+
+  &.a-container,
+  :deep(.a-container) {
+    max-width: 1300px;
+  }
+
+  &__item {
+    justify-content: flex-end;
+    height: 56px;
+    min-height: 56px;
+
+    & :deep(.v-list-item__avatar) {
+      margin-right: 4px;
+    }
+
+    :deep(.v-list-item__prepend) {
+      > .v-icon {
+        margin-inline-end: 8px;
+      }
+    }
+  }
+  &__chats-actions {
+    margin: 0;
+  }
+  &__title {
+    font-weight: 300;
+    font-size: 14px;
+  }
+  &__container--chat {
+    max-width: 1300px;
+
+    @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+      display: none;
+    }
+  }
+  &__messages {
+    &.chats-view__messages--chat {
+      max-height: calc(100vh - 56px - var(--v-layout-bottom));
+      overflow-y: auto;
+    }
+  }
+
+  &__chat-spinner-wrapper {
+    position: relative;
+    height: 100%;
+  }
+}
+
+/** Themes **/
+.v-theme--light {
+  .chats-view {
+    &__item {
+      background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
+    }
+    &__title {
+      color: map.get(colors.$adm-colors, 'muted');
+    }
+    &__icon {
+      color: map.get(colors.$adm-colors, 'regular');
+    }
+  }
+}
+
+.v-theme--dark {
+  .chats-view {
+    &__icon {
+      color: map.get(settings.$shades, 'white');
+    }
+  }
+}
+
+/** Animations **/
+.messages-move {
+  transition: transform 0.5s;
+}
+</style>

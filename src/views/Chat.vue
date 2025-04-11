@@ -2,6 +2,7 @@
   <v-row justify="center" no-gutters>
     <container>
       <chat
+        :key="partnerId"
         :message-text="messageText"
         :partner-id="partnerId"
         @click:chat-avatar="onClickChatAvatar"
@@ -9,29 +10,28 @@
 
       <PartnerInfo
         v-if="contactAddress"
-        v-model="show"
+        v-model="isShowPartnerInfoDialog"
         :address="contactAddress"
         :name="contactName"
         :owner-address="address"
       />
 
-      <ProgressIndicator :show="!isFulfilled" />
+      <ProgressIndicator :show="!isFulfilled" :hide-spinner="!isMobileView" />
     </container>
-
-    <NodesOfflineDialog node-type="adm" />
   </v-row>
 </template>
 
 <script>
-import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import Chat from '@/components/Chat/Chat.vue'
 import PartnerInfo from '@/components/PartnerInfo.vue'
-import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import partnerName from '@/mixins/partnerName'
+import ProgressIndicator from '@/components/ProgressIndicator.vue'
+import { useScreenSize } from '@/hooks/useScreenSize'
+import { computed } from 'vue'
+import { useStore } from 'vuex'
 
 export default {
   components: {
-    NodesOfflineDialog,
     ProgressIndicator,
     Chat,
     PartnerInfo
@@ -47,8 +47,26 @@ export default {
       type: String
     }
   },
+  setup() {
+    const store = useStore()
+
+    const { isMobileView } = useScreenSize()
+
+    const isShowPartnerInfoDialog = computed({
+      get() {
+        return store.state.chat.isShowPartnerInfoDialog
+      },
+      set(value) {
+        store.commit('chat/setIsShowPartnerInfoDialog', value)
+      }
+    })
+
+    return {
+      isMobileView,
+      isShowPartnerInfoDialog
+    }
+  },
   data: () => ({
-    show: false,
     contactAddress: '',
     contactName: ''
   }),
@@ -67,7 +85,7 @@ export default {
     onClickChatAvatar(address) {
       this.contactAddress = address
       this.contactName = this.getPartnerName(address)
-      this.show = true
+      this.isShowPartnerInfoDialog = true
     }
   }
 }

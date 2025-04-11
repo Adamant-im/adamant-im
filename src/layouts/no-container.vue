@@ -1,25 +1,25 @@
 <template>
-  <v-main>
-    <slot />
+  <slot />
 
-    <app-snackbar />
-    <app-navigation v-if="showNavigation" />
-  </v-main>
+  <app-snackbar />
+  <app-navigation v-if="showNavigation" />
 </template>
 
-<script>
+<script setup lang="ts">
 import AppSnackbar from '@/components/AppSnackbar.vue'
 import AppNavigation from '@/components/AppNavigation.vue'
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
+import { useStore } from 'vuex'
 
-export default {
-  components: {
-    AppSnackbar,
-    AppNavigation
-  },
-  computed: {
-    showNavigation() {
-      return this.$route.meta.showNavigation || false
-    }
-  }
-}
+const route = useRoute()
+const store = useStore()
+
+const isLogged = computed(() => {
+  return store.getters.isLogged
+})
+
+const showNavigation = computed(() => {
+  return (route.meta.showNavigation && isLogged.value) || false
+})
 </script>

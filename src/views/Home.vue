@@ -140,6 +140,10 @@ export default {
         return this.$store.state.options.currentWallet
       },
       set(value) {
+        if (this.$route.name === 'Transactions') {
+          this.goToTransactions(value)
+        }
+
         this.$store.commit('options/updateOption', {
           key: 'currentWallet',
           value
@@ -204,6 +208,10 @@ export default {
  * 2. Reset VTabItem opacity.
  */
 .account-view {
+  :deep(.a-container) {
+    max-width: unset;
+  }
+
   &__wallets {
     &.v-card {
       background-color: transparent;

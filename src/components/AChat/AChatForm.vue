@@ -27,7 +27,7 @@
       <template #prepend-inner>
         <chat-emojis
           @keydown.capture.esc="closeElement"
-          :open="emojiPickerOpen"
+          :open="isEmojiPickerOpen"
           @onChange="onToggleEmojiPicker"
           @get-emoji-picture="emojiPicture"
         ></chat-emojis>
@@ -43,10 +43,11 @@
 </template>
 
 <script>
-import { nextTick } from 'vue'
+import { computed, nextTick } from 'vue'
 import ChatEmojis from '@/components/Chat/ChatEmojis.vue'
 import { isMobile } from '@/lib/display-mobile'
 import { mdiSend } from '@mdi/js'
+import { useStore } from 'vuex'
 
 export default {
   components: { ChatEmojis },
@@ -85,14 +86,24 @@ export default {
   },
   emits: ['message', 'esc', 'error'],
   setup() {
+    const store = useStore()
+
+    const isEmojiPickerOpen = computed({
+      get() {
+        return store.state.chat.isEmojiPickerOpen
+      },
+      set(value) {
+        store.commit('chat/setIsEmojiPickerOpen', value)
+      }
+    })
 
     return {
+      isEmojiPickerOpen,
       mdiSend
     }
   },
   data: () => ({
     message: '',
-    emojiPickerOpen: false,
     botCommandIndex: null,
     botCommandSelectionMode: false,
     isInputFocused: false
@@ -176,10 +187,10 @@ export default {
       }
     },
     openElement() {
-      this.emojiPickerOpen = true
+      this.isEmojiPickerOpen = true
     },
     closeElement() {
-      this.emojiPickerOpen = false
+      this.isEmojiPickerOpen = false
       setTimeout(() => this.focus(), 0)
     },
     onInput: function () {
@@ -221,7 +232,7 @@ export default {
     },
 
     onToggleEmojiPicker(state) {
-      this.emojiPickerOpen = state
+      this.isEmojiPickerOpen = state
 
       this.focus()
     },

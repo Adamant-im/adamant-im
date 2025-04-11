@@ -1,10 +1,10 @@
 <template>
-  <div>
-    <app-toolbar-centered app :title="$t('home.send_btn')" flat fixed />
+  <div :class="className" class="w-100">
+    <app-toolbar-centered app :title="$t('home.send_btn')" flat absolute disable-max-width />
 
-    <v-container fluid class="px-0 container--with-app-toolbar">
+    <v-container fluid class="px-0 py-0" :class="`${className}__content`">
       <v-row justify="center" no-gutters>
-        <container padding>
+        <container padding disable-max-width>
           <send-funds-form
             class="pt-5"
             :crypto-currency="cryptoCurrency"
@@ -40,6 +40,13 @@ export default {
     recipientAddress: '',
     amountToSend: undefined
   }),
+  setup() {
+    const className = 'send-funds'
+
+    return {
+      className
+    }
+  },
   computed: {
     comeFromChat() {
       return this.recipientAddress.length > 0
@@ -81,7 +88,7 @@ export default {
       }
     },
     onError(message) {
-      vibrate.tripleVeryShort();
+      vibrate.tripleVeryShort()
       this.$store.dispatch('snackbar/show', {
         message,
         timeout: 3000,
@@ -91,3 +98,14 @@ export default {
   }
 }
 </script>
+<style scoped lang="scss">
+.send-funds {
+  position: relative;
+
+  &__content {
+    overflow-y: auto;
+    height: calc(100vh - var(--v-layout-bottom) - var(--toolbar-height));
+    padding-top: var(--toolbar-height);
+  }
+}
+</style>

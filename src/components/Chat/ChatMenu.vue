@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-menu eager>
+    <v-menu eager v-model="isChatMenuOpen">
       <template #activator="{ props }">
         <v-icon class="chat-menu__icon" v-bind="props" :icon="mdiPlusCircleOutline" size="28" />
       </template>
@@ -54,7 +54,8 @@ import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import IconBox from '@/components/icons/IconBox.vue'
 import UploadFile from '../UploadFile.vue'
 import { mdiFile, mdiImage, mdiPlusCircleOutline } from '@mdi/js'
-
+import { computed } from 'vue'
+import { useStore } from 'vuex'
 
 export default {
   components: {
@@ -63,7 +64,7 @@ export default {
     CryptoIcon,
     UploadFile
   },
-  emits: ['files'],
+  emits: ['files', 'update:modelValue'],
   props: {
     partnerId: {
       type: String,
@@ -74,7 +75,19 @@ export default {
     }
   },
   setup() {
+    const store = useStore()
+
+    const isChatMenuOpen = computed({
+      get() {
+        return store.state.chat.isChatMenuOpen
+      },
+      set(value) {
+        store.commit('chat/setIsChatMenuOpen', value)
+      }
+    })
+
     return {
+      isChatMenuOpen,
       mdiFile,
       mdiImage,
       mdiPlusCircleOutline
