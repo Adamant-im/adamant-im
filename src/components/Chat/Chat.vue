@@ -74,10 +74,17 @@
         <chat-toolbar :partner-id="partnerId">
           <template #avatar-toolbar>
             <ChatAvatar
+              v-if="!showSpinner"
               class="chat-avatar"
               :user-id="partnerId"
               use-public-key
               @click="onClickAvatar(partnerId)"
+            />
+            <v-progress-circular
+              v-else
+              class="connection-spinner ml-1 mr-4"
+              indeterminate
+              :size="32"
             />
           </template>
         </chat-toolbar>
@@ -298,6 +305,7 @@ import AChatAttachment from '@/components/AChat/AChatAttachment/AChatAttachment.
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import { useChatsSpinner } from '@/hooks/useChatsSpinner'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -317,6 +325,7 @@ const emit = defineEmits(['click:chat-avatar'])
 const router = useRouter()
 const store = useStore()
 const { t } = useI18n()
+const showSpinner = useChatsSpinner()
 
 const attachments = useAttachments(props.partnerId)()
 const handleAttachments = (files: FileData[]) => {
@@ -385,6 +394,7 @@ const actionMessage = computed<NormalizedChatMessageTransaction>(() =>
 
 const chatFormRef = ref<any>(null) // @todo type
 const chatRef = ref<any>(null) // @todo type
+
 // Scroll to the bottom every time window focused by desktop notification
 watch(
   () => store.state.notification.desktopActivateClickCount,
@@ -780,6 +790,9 @@ const onKeyPress = (e: KeyboardEvent) => {
 </script>
 
 <style scoped lang="scss">
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+
 .chat-menu {
   margin-right: 8px;
 }
@@ -791,5 +804,18 @@ const onKeyPress = (e: KeyboardEvent) => {
 
 .chat-avatar {
   margin-right: 12px;
+}
+
+/** Themes **/
+.v-theme--light {
+  .connection-spinner {
+    color: map.get(colors.$adm-colors, 'grey');
+  }
+}
+
+.v-theme--dark {
+  .connection-spinner {
+    color: map.get(colors.$adm-colors, 'regular');
+  }
 }
 </style>

@@ -13,6 +13,12 @@
                 size="small"
                 variant="text"
               />
+              <v-progress-circular
+                :class="`${className}__connection-spinner mt-4 ml-6`"
+                v-show="showSpinner"
+                indeterminate
+                :size="24"
+              />
               <v-spacer />
               <v-btn
                 :class="`${className}__item`"
@@ -25,7 +31,7 @@
 
                 <div>
                   <v-list-item-title :class="`${className}__title`">
-                    {{ $t('chats.new_chat') }}
+                    {{ t('chats.new_chat') }}
                   </v-list-item-title>
                 </div>
               </v-btn>
@@ -64,163 +70,159 @@
   </v-row>
 </template>
 
-<script>
+<script lang="ts" setup>
 import ChatPreview from '@/components/ChatPreview.vue'
 import ChatStartDialog from '@/components/ChatStartDialog.vue'
 import ChatSpinner from '@/components/ChatSpinner.vue'
 import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
-import scrollPosition from '@/mixins/scrollPosition'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
+import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { LastMessage } from '@/components/AChat/types'
+import { useChatsSpinner } from '@/hooks/useChatsSpinner'
 
+const props = withDefaults(
+  defineProps<{
+    partnerId?: string
+    showNewContact?: boolean
+  }>(),
+  {
+    partnerId: undefined,
+    showNewContact: false
+  }
+)
+
+const store = useStore()
+const router = useRouter()
+const { t } = useI18n()
+const showSpinner = useChatsSpinner()
 
 const scrollOffset = 64
+const className = 'chats-view'
 
-export default {
-  components: {
-    ChatPreview,
-    ChatStartDialog,
-    ChatSpinner,
-    NodesOfflineDialog
-  },
-  mixins: [scrollPosition],
-  props: {
-    partnerId: { default: undefined, type: String },
-    showNewContact: { default: false, type: Boolean }
-  },
-  setup () {
-    return {
-      mdiCheckAll,
-      mdiMessageOutline
-    }
-  },
-  data: () => ({
-    showChatStartDialog: false,
-    loading: false,
-    noMoreChats: false
-  }),
-  computed: {
-    className: () => 'chats-view',
-    isFulfilled() {
-      return this.$store.state.chat.isFulfilled
-    },
-    partners() {
-      return this.$store.getters['chat/partners']
-    },
-    messages() {
-      const lastMessages = this.$store.getters['chat/lastMessages']
-      // We should modify cloned message list to leave original one untouched
-      const clonedLastMessages = lastMessages.map((msg) => {
-        return { ...msg }
+const showChatStartDialog = ref(false)
+const loading = ref(false)
+const noMoreChats = ref(false)
+const loadingSeparator = ref<InstanceType<typeof ChatPreview>[]>([])
+
+const isFulfilled = computed(() => store.state.chat.isFulfilled)
+const messages = computed(() => {
+  const lastMessages: LastMessage[] = store.getters['chat/lastMessages']
+  // We should modify cloned message list to leave original one untouched
+  const clonedLastMessages = lastMessages.map((msg) => {
+    return { ...msg }
+  })
+
+  if (!noMoreChats.value && clonedLastMessages.length > 25) {
+    const lastNotAdamantChat = lastMessages
+      .map((msg) => isAdamantChat(msg.contactId))
+      .lastIndexOf(false)
+    if (lastNotAdamantChat) {
+      const baseMessage = clonedLastMessages[lastNotAdamantChat] || {}
+
+      clonedLastMessages.splice(lastNotAdamantChat + 1, 0, {
+        ...baseMessage,
+        loadingSeparator: true,
+        userId: 'loadingSeparator',
+        contactId: 'loadingSeparator'
       })
-      if (!this.noMoreChats && clonedLastMessages.length > 25) {
-        const lastNotAdamantChat = lastMessages
-          .map((msg) => this.isAdamantChat(msg.contactId))
-          .lastIndexOf(false)
-        if (lastNotAdamantChat) {
-          clonedLastMessages.splice(lastNotAdamantChat + 1, 0, {
-            loadingSeparator: true,
-            userId: 'loadingSeparator',
-            contactId: 'loadingSeparator'
-          })
-        }
-      }
-      return clonedLastMessages
-    },
-    userId() {
-      return this.$store.state.address
-    },
-    unreadMessagesCount() {
-      return this.$store.getters['chat/totalNumOfNewMessages']
-    }
-  },
-  beforeMount() {
-    // When returning to chat list from a specific chat, restore noMoreChats property not to show loadingSeparator
-    this.noMoreChats = this.$store.getters['chat/chatListOffset'] === -1
-  },
-  mounted() {
-    this.showChatStartDialog = this.showNewContact
-    this.attachScrollListener()
-  },
-  beforeUnmount() {
-    this.destroyScrollListener()
-  },
-  methods: {
-    openChat(partnerId, messageText) {
-      this.$router.push({
-        name: 'Chat',
-        params: { partnerId },
-        query: { messageText }
-      })
-    },
-    isAdamantChat,
-    getAdamantChatMeta,
-    onError(message) {
-      this.$store.dispatch('snackbar/show', { message })
-    },
-    attachScrollListener() {
-      window.addEventListener('scroll', this.onScroll)
-    },
-    destroyScrollListener() {
-      window.removeEventListener('scroll', this.onScroll)
-    },
-    onScroll() {
-      const scrollHeight = document.documentElement.scrollHeight // all of viewport height
-      const scrollTop = document.documentElement.scrollTop // current vieport scroll position
-      const clientHeight = document.documentElement.clientHeight
-
-      let isLoadingSeparatorVisible = false
-      if (
-        this.$refs.loadingSeparator &&
-        this.$refs.loadingSeparator[0] &&
-        this.$refs.loadingSeparator[0].$el
-      ) {
-        const el = this.$refs.loadingSeparator[0].$el
-        if (el.offsetTop > 0) {
-          // loadingSeparator is visible
-          const loadingSeparatorTop = el.offsetTop
-          const loadingSeparatorHeight = el.clientHeight // it is nearly about bottom menu height
-          isLoadingSeparatorVisible =
-            scrollTop + clientHeight > loadingSeparatorTop + loadingSeparatorHeight
-        }
-      }
-
-      const isScrolledToBottom = scrollHeight - scrollTop - scrollOffset < clientHeight
-
-      if (isLoadingSeparatorVisible || isScrolledToBottom) {
-        this.loadChatsPaged()
-      }
-    },
-    loadChatsPaged() {
-      if (this.loading) return
-      if (this.noMoreChats) return
-
-      this.loading = true
-      this.$store
-        .dispatch('chat/loadChatsPaged')
-        .catch(() => {
-          this.noMoreChats = true
-        })
-        .finally(() => {
-          this.loading = false
-          this.onScroll() // update messages and remove loadingSeparator, if needed
-        })
-    },
-    messagesCount(partnerId) {
-      const messages = this.$store.getters['chat/messages'](partnerId)
-
-      return messages.length
-    },
-    displayChat(partnerId) {
-      const isUserChat = !isAdamantChat(partnerId)
-      const ifChattedBefore = isAdamantChat(partnerId) && this.messagesCount(partnerId) > 1
-
-      return isUserChat || isStaticChat(partnerId) || ifChattedBefore
-    },
-    markAllAsRead() {
-      this.$store.commit('chat/markAllAsRead')
     }
   }
+  return clonedLastMessages
+})
+const userId = computed(() => store.state.address)
+const unreadMessagesCount = computed(() => store.getters['chat/totalNumOfNewMessages'])
+
+onBeforeMount(() => {
+  noMoreChats.value = store.getters['chat/chatListOffset'] === -1
+})
+
+onMounted(() => {
+  showChatStartDialog.value = props.showNewContact
+  attachScrollListener()
+})
+
+onBeforeUnmount(() => {
+  destroyScrollListener()
+})
+
+function openChat(partnerId: string, messageText?: string) {
+  router.push({
+    name: 'Chat',
+    params: { partnerId },
+    query: { messageText }
+  })
+}
+
+function onError(message: string) {
+  store.dispatch('snackbar/show', { message })
+}
+
+function attachScrollListener() {
+  window.addEventListener('scroll', onScroll)
+}
+
+function destroyScrollListener() {
+  window.removeEventListener('scroll', onScroll)
+}
+
+function onScroll() {
+  const scrollHeight = document.documentElement.scrollHeight // all of viewport height
+  const scrollTop = document.documentElement.scrollTop // current vieport scroll position
+  const clientHeight = document.documentElement.clientHeight
+
+  let isLoadingSeparatorVisible = false
+  if (loadingSeparator.value && loadingSeparator.value[0] && loadingSeparator.value[0].$el) {
+    const el = loadingSeparator.value[0].$el
+    if (el.offsetTop > 0) {
+      // loadingSeparator is visible
+      const loadingSeparatorTop = el.offsetTop
+      const loadingSeparatorHeight = el.clientHeight // it is nearly about bottom menu height
+      isLoadingSeparatorVisible =
+        scrollTop + clientHeight > loadingSeparatorTop + loadingSeparatorHeight
+    }
+  }
+
+  const isScrolledToBottom = scrollHeight - scrollTop - scrollOffset < clientHeight
+
+  if (isLoadingSeparatorVisible || isScrolledToBottom) {
+    loadChatsPaged()
+  }
+}
+
+function loadChatsPaged() {
+  if (loading.value || noMoreChats.value) return
+
+  loading.value = true
+  store
+    .dispatch('chat/loadChatsPaged')
+    .catch(() => {
+      noMoreChats.value = true
+    })
+    .finally(() => {
+      loading.value = false
+      onScroll() // update messages and remove loadingSeparator, if needed
+    })
+}
+
+function messagesCount(partnerId: string) {
+  const messages = store.getters['chat/messages'](partnerId)
+
+  return messages.length
+}
+
+function displayChat(partnerId: string) {
+  const isUserChat = !isAdamantChat(partnerId)
+  const ifChattedBefore = isAdamantChat(partnerId) && messagesCount(partnerId) > 1
+
+  return isUserChat || isStaticChat(partnerId) || ifChattedBefore
+}
+
+function markAllAsRead() {
+  store.commit('chat/markAllAsRead')
 }
 </script>
 
@@ -230,7 +232,6 @@ export default {
 @use 'vuetify/settings';
 
 .chats-view {
-
   &__item {
     justify-content: flex-end;
     height: 56px;
@@ -258,6 +259,9 @@ export default {
 /** Themes **/
 .v-theme--light {
   .chats-view {
+    &__connection-spinner {
+      color: map.get(colors.$adm-colors, 'grey');
+    }
     &__item {
       background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
     }
@@ -272,6 +276,9 @@ export default {
 
 .v-theme--dark {
   .chats-view {
+    &__connection-spinner {
+      color: map.get(colors.$adm-colors, 'regular');
+    }
     &__icon {
       color: map.get(settings.$shades, 'white');
     }

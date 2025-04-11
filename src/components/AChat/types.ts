@@ -2,6 +2,8 @@
   Not used file
 */
 
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+
 export type Message = {
   id: number
   hash?: string // transactionId for third-party cryptos
@@ -14,6 +16,13 @@ export type Message = {
   i18n: boolean
   status: MessageStatus
   type: MessageType
+}
+
+export type LastMessage = NormalizedChatMessageTransaction & {
+  contactId: string
+  readonly?: boolean
+  loadingSeparator?: boolean
+  userId?: string
 }
 
 export enum MessageType {

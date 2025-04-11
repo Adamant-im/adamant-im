@@ -484,7 +484,7 @@ export function getChats(from = 0, offset = 0, orderBy = 'desc') {
   // Doesn't return ADM direct transfer transactions, only messages and in-chat transfers
   // https://github.com/Adamant-im/adamant/wiki/API-Specification#get-chat-transactions
   return client.get('/api/chats/get/', params).then((response) => {
-    const { count, transactions } = response
+    const { count, transactions, nodeTimestamp } = response
 
     const promises = transactions.map((transaction) => {
       const promise = isStringEqualCI(transaction.recipientId, myAddress)
@@ -505,7 +505,8 @@ export function getChats(from = 0, offset = 0, orderBy = 'desc') {
 
     return Promise.all(promises).then((decoded) => ({
       count,
-      transactions: decoded.filter((v) => v)
+      transactions: decoded.filter((v) => v),
+      nodeTimestamp
     }))
   })
 }
