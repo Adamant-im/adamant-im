@@ -4,9 +4,7 @@
       <template #prepend>
         <v-icon
           :class="`${className}__prepend-icon`"
-          :icon="
-            isStringEqualCI(senderId, userId) ? mdiAirplaneTakeoff : mdiAirplaneLanding
-          "
+          :icon="isStringEqualCI(senderId, userId) ? mdiAirplaneTakeoff : mdiAirplaneLanding"
           size="small"
         />
       </template>
@@ -39,7 +37,7 @@
       </v-list-item-title>
 
       <v-list-item-subtitle :class="`${className}__date`" class="a-text-explanation-small">
-        <span v-if="!isPendingTransaction">{{ formatDate(createdAt) }}</span>
+        <span v-if="!isStatusVisibleTransaction">{{ formatDate(createdAt) }}</span>
         <span v-else-if="status" :class="`${className}__status`">{{
           $t(`transaction.statuses.${status}`)
         }}</span>
@@ -71,7 +69,6 @@ import currencyAmount from '@/filters/currencyAmount'
 import { timestampInSec } from '@/filters/helpers'
 import currency from '@/filters/currencyAmountWithSymbol'
 import { mdiAirplaneLanding, mdiAirplaneTakeoff, mdiMessageOutline, mdiMessageText } from '@mdi/js'
-
 
 export default {
   mixins: [partnerName],
@@ -202,9 +199,11 @@ export default {
         )
       )
     },
-    isPendingTransaction() {
+    isStatusVisibleTransaction() {
       return (
-        this.status === TransactionStatus.PENDING || this.status === TransactionStatus.REGISTERED
+        this.status === TransactionStatus.PENDING ||
+        this.status === TransactionStatus.REGISTERED ||
+        this.status === TransactionStatus.REJECTED
       )
     }
   },
