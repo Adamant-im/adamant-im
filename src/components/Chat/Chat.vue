@@ -74,7 +74,7 @@
         <chat-toolbar :partner-id="partnerId">
           <template #avatar-toolbar>
             <ChatAvatar
-              v-if="admNodesOnline && chatActual"
+              v-if="!showSpinner"
               class="chat-avatar"
               :user-id="partnerId"
               use-public-key
@@ -275,7 +275,6 @@ import { useAttachments } from '@/stores/attachments'
 import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Visibility from 'visibilityjs'
 import copyToClipboard from 'copy-to-clipboard'
-import { useNow, watchImmediate } from '@vueuse/core'
 
 import { Cryptos, Fees, UPLOAD_MAX_FILE_COUNT, UPLOAD_MAX_FILE_SIZE } from '@/lib/constants'
 import EmojiPicker from '@/components/EmojiPicker.vue'
@@ -306,7 +305,7 @@ import AChatAttachment from '@/components/AChat/AChatAttachment/AChatAttachment.
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import { useChatsSpinner } from '@/hooks/useChatsSpinner'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -326,6 +325,7 @@ const emit = defineEmits(['click:chat-avatar'])
 const router = useRouter()
 const store = useStore()
 const { t } = useI18n()
+const showSpinner = useChatsSpinner()
 
 const attachments = useAttachments(props.partnerId)()
 const handleAttachments = (files: FileData[]) => {
@@ -359,16 +359,9 @@ const actionsMenuMessageId = ref<string | -1>(-1)
 const actionsDropdownMessageId = ref<string | -1>(-1)
 const replyMessageId = ref<string | -1>(-1)
 const showEmojiPicker = ref(false)
-const chatActual = ref<boolean>(false)
 
 const messages = computed(() => store.getters['chat/messages'](props.partnerId))
 const userId = computed(() => store.state.address)
-const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
-const admNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
-const chatsActualUntil = computed(() => store.state.chat.chatsActualUntil)
-
-const { now, pause, resume } = useNow({ interval: 500, controls: true })
-const currentTime = computed(() => now.value.getTime())
 
 const getPartnerName = (address: string) => {
   const name: string = store.getters['partners/displayName'](address) || ''
@@ -402,10 +395,6 @@ const actionMessage = computed<NormalizedChatMessageTransaction>(() =>
 const chatFormRef = ref<any>(null) // @todo type
 const chatRef = ref<any>(null) // @todo type
 
-const updateChatActual = () => {
-  chatActual.value = chatsActualUntil.value > currentTime.value
-}
-
 // Scroll to the bottom every time window focused by desktop notification
 watch(
   () => store.state.notification.desktopActivateClickCount,
@@ -415,16 +404,6 @@ watch(
     })
   }
 )
-
-// Hides loading spinner once the latest messages are fetched
-watch(chatsActualUntil, () => {
-  updateChatActual()
-})
-
-// Shows loading spinner when chats become outdated
-watchImmediate(currentTime, () => {
-  updateChatActual()
-})
 
 watch(lastMessage, () => {
   nextTick(() => {
@@ -459,12 +438,6 @@ onMounted(() => {
     isScrolledToBottom.value = chatRef.value.isScrolledToBottom()
   })
   visibilityId.value = Visibility.change((event, state) => {
-    if (state === 'visible') {
-      resume()
-    } else {
-      pause()
-    }
-
     if (state === 'visible' && isScrolledToBottom.value) markAsRead()
   })
 

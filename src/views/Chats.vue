@@ -15,7 +15,7 @@
               />
               <v-progress-circular
                 :class="`${className}__connection-spinner mt-4 ml-6`"
-                v-show="!admNodesOnline || !chatsActual"
+                v-show="showSpinner"
                 indeterminate
                 :size="24"
               />
@@ -77,14 +77,12 @@ import ChatSpinner from '@/components/ChatSpinner.vue'
 import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
-import { useNow, watchImmediate } from '@vueuse/core'
-import Visibility from 'visibilityjs'
-import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { LastMessage } from '@/components/AChat/types'
+import { useChatsSpinner } from '@/hooks/useChatsSpinner'
 
 const props = withDefaults(
   defineProps<{
@@ -99,8 +97,8 @@ const props = withDefaults(
 
 const store = useStore()
 const router = useRouter()
-const { now, pause, resume } = useNow({ interval: 500, controls: true })
 const { t } = useI18n()
+const showSpinner = useChatsSpinner()
 
 const scrollOffset = 64
 const className = 'chats-view'
@@ -108,14 +106,8 @@ const className = 'chats-view'
 const showChatStartDialog = ref(false)
 const loading = ref(false)
 const noMoreChats = ref(false)
-const chatsActual = ref(false)
-const visibilityId = ref<number | boolean | null>(null)
 const loadingSeparator = ref<InstanceType<typeof ChatPreview>[]>([])
-const currentTime = computed(() => now.value.getTime())
 
-const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
-const admNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
-const chatsActualUntil = computed(() => store.state.chat.chatsActualUntil)
 const isFulfilled = computed(() => store.state.chat.isFulfilled)
 const messages = computed(() => {
   const lastMessages: LastMessage[] = store.getters['chat/lastMessages']
@@ -149,29 +141,12 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-  visibilityId.value = Visibility.change((event, state) => {
-    if (state === 'visible') {
-      resume()
-    } else {
-      pause()
-    }
-  })
-
   showChatStartDialog.value = props.showNewContact
   attachScrollListener()
 })
 
 onBeforeUnmount(() => {
   destroyScrollListener()
-  Visibility.unbind(Number(visibilityId.value))
-})
-
-watch(chatsActualUntil, () => {
-  updateChatsActual()
-})
-
-watchImmediate(currentTime, () => {
-  updateChatsActual()
 })
 
 function openChat(partnerId: string, messageText?: string) {
@@ -180,10 +155,6 @@ function openChat(partnerId: string, messageText?: string) {
     params: { partnerId },
     query: { messageText }
   })
-}
-
-function updateChatsActual() {
-  chatsActual.value = chatsActualUntil.value > currentTime.value
 }
 
 function onError(message: string) {
