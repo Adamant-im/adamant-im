@@ -3,7 +3,7 @@
     <v-row justify="center" no-gutters>
       <container>
         <v-toolbar ref="toolbar" :flat="flat" :height="height">
-          <back-button v-if="showBack" :go-back="goBack" />
+          <back-button v-if="showBack" @click="goBack" />
           <v-toolbar-title v-if="title" class="a-text-regular-enlarged">
             <div>{{ title }}</div>
             <div v-if="subtitle" class="body-1">

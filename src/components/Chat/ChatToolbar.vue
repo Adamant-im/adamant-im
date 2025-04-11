@@ -1,6 +1,6 @@
 <template>
   <v-toolbar flat height="56" :class="`${className}`" color="transparent">
-    <back-button :go-back="goBack">
+    <back-button @click="goBack">
       <v-badge
         v-if="numOfNewMessages > 0"
         :value="numOfNewMessages"

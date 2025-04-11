@@ -1,5 +1,5 @@
 <template>
-  <v-btn class="back-button" icon @click="goBack">
+  <v-btn :class="className" icon @click="goBack">
     <slot />
     <v-icon :icon="mdiArrowLeft" />
   </v-btn>
@@ -8,9 +8,7 @@
 <script setup lang="ts">
 import { mdiArrowLeft } from '@mdi/js'
 
-defineProps<{
-  goBack: () => void
-}>()
+const className = 'back-button'
 </script>
 
 <style lang="scss">
