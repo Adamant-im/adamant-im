@@ -1,6 +1,6 @@
 <template>
   <v-toolbar flat height="56" :class="`${className}`" color="transparent">
-    <v-btn icon @click="goBack">
+    <back-button :go-back="goBack">
       <v-badge
         v-if="numOfNewMessages > 0"
         :value="numOfNewMessages"
@@ -9,8 +9,7 @@
         :content="numOfNewMessages > 99 ? '99+' : numOfNewMessages"
       >
       </v-badge>
-      <v-icon :icon="mdiArrowLeft" />
-    </v-btn>
+    </back-button>
     <div v-if="!isWelcomeChat(partnerId)">
       <slot name="avatar-toolbar" />
     </div>
@@ -44,8 +43,10 @@
 import partnerName from '@/mixins/partnerName'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
 import { mdiArrowLeft } from '@mdi/js'
+import BackButton from '@/components/common/BackButton/BackButton.vue'
 
 export default {
+  components: { BackButton },
   mixins: [partnerName],
   props: {
     partnerId: {
@@ -140,13 +141,6 @@ export default {
     }
   }
 
-  :deep(.v-toolbar__content > .v-btn:first-child) {
-    width: 36px;
-    height: 36px;
-    margin: 0 12px;
-    border-radius: 50%;
-  }
-
   :deep(.v-text-field) {
     @include mixins.a-text-regular-enlarged-bold();
 
@@ -179,13 +173,6 @@ export default {
 
     .v-input__control > .v-input__slot {
       margin-bottom: 0;
-    }
-  }
-
-  :deep(.v-btn) {
-    &:hover > .v-btn__overlay {
-      opacity: 0.2;
-      transition: all 0.4s ease;
     }
   }
 }
