@@ -1,6 +1,6 @@
 <template>
-  <div :class="className">
-    <div :class="`${className}__activator`" @click="fileInput?.click()">
+  <div :class="classes.root">
+    <div :class="classes.activator" @click="fileInput?.click()">
       <slot />
     </div>
 
@@ -9,11 +9,11 @@
       ref="fileInput"
       type="file"
       accept="image/*"
-      :class="`${className}__file-input`"
+      :class="classes.input"
       @change="onFileSelect"
     />
 
-    <canvas ref="canvasElement" :class="`${className}__image`" />
+    <canvas ref="canvasElement" :class="classes.image" />
   </div>
 </template>
 
@@ -29,6 +29,13 @@ const emit = defineEmits<{
 }>()
 
 const className = 'qrcode-capture'
+
+const classes = {
+  root: className,
+  activator: `${className}__activator`,
+  input: `${className}__file-input`,
+  image: `${className}__image`
+}
 
 let qrCodeText = ''
 let codeReader: BrowserQRCodeReader
