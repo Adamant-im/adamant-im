@@ -7,6 +7,7 @@ import path from 'path'
 import autoprefixer from 'autoprefixer'
 import inject from '@rollup/plugin-inject'
 import commonjs from '@rollup/plugin-commonjs'
+import { fileURLToPath } from 'url'
 
 import { deferScripsPlugin } from './vite-config/plugins/deferScriptsPlugin'
 import { preloadCSSPlugin } from './vite-config/plugins/preloadCSSPlugin'
@@ -14,6 +15,9 @@ import { excludeBip39Wordlists } from './vite-config/rollup/excludeBip39Wordlist
 
 const env = loadEnv('production', process.cwd())
 const basePublicPath = env.VITE_PUBLIC_PATH || '/'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 export default defineConfig({
   base: basePublicPath,

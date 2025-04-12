@@ -1,10 +1,12 @@
 import { app, BrowserWindow, Menu, nativeTheme, protocol } from 'electron'
+import { fileURLToPath, URL } from 'url'
 import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import path from 'path'
 import { readFile } from 'fs'
-import { URL } from 'url'
 
 const SCHEME = 'app'
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected
