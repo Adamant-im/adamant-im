@@ -209,7 +209,6 @@ const store = {
       return getCurrentAccount()
         .then((account) => {
           commit('setBalance', account.balance)
-          // commit('setMyPK', account.privateKey)
           commit('setBalanceStatus', FetchStatus.Success)
           if (account.balance > Fees.KVS) {
             flushCryptoAddresses()

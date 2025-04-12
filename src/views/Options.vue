@@ -238,11 +238,12 @@ import CurrencySwitcher from '@/components/CurrencySwitcher.vue'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
 import ChatDialog from '@/components/Chat/ChatDialog.vue'
-import { getDeviceId } from '@/firebase'
 import { sendSignalMessage } from '@/lib/adamant-api'
 import { signalAsset } from '@/lib/adamant-api/asset'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import scrollPosition from '@/mixins/scrollPosition'
+import { fcm, getDeviceId } from '@/firebase'
+import { getToken } from 'firebase/messaging'
 import { requestToken, revokeToken } from '@/notifications'
 
 const notificationType = {
@@ -410,11 +411,9 @@ export default {
       console.log('🚀 ~ Options.vue:337 ~ handlePushNotifications ~ checked:', checked)
       const deviceId = await getDeviceId()
       console.log('🚀 ~ handlePushNotificationsCheckbox ~ deviceId:', deviceId)
-
+      let token
       if (checked) {
-        const token = await requestToken()
-        console.log('🚀 ~ handlePushNotificationsCheckbox ~ token:', token)
-
+        token = await this.registerCustomWorker()
         if (!token) {
           this.$store.dispatch('snackbar/show', {
             message: 'Unable to retrieve FCM token',
@@ -439,15 +438,7 @@ export default {
           timeout: 5000
         })
       } else {
-        const token = await this.registerCustomWorker() //await requestToken()
-        if (!token) {
-          this.$store.dispatch('snackbar/show', {
-            message: 'Unable to retrieve FCM token',
-            timeout: 5000
-          })
-          return
-        }
-
+        if (!token) token = await requestToken()
         const result = await sendSignalMessage(signalAsset(deviceId, token, 'FCM', 'remove'))
         console.log('Sent signal message transaction (action: remove)', result)
 
