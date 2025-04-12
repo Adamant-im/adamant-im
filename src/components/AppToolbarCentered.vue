@@ -28,28 +28,27 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import BackButton from '@/components/common/BackButton/BackButton.vue'
 
-const props = withDefaults(
-  defineProps<{
-    title?: string
-    subtitle?: string
-    flat?: boolean
-    app?: boolean
-    fixed?: boolean
-    height?: number
-    showBack?: boolean
-    hasSpinner?: boolean
-  }>(),
-  {
-    title: undefined,
-    subtitle: undefined,
-    flat: false,
-    app: false,
-    fixed: false,
-    height: 56,
-    showBack: true,
-    hasSpinner: false
-  }
-)
+type Props = {
+  title?: string
+  subtitle?: string
+  flat?: boolean
+  app?: boolean
+  fixed?: boolean
+  height?: number
+  showBack?: boolean
+  hasSpinner?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  title: undefined,
+  subtitle: undefined,
+  flat: false,
+  app: false,
+  fixed: false,
+  height: 56,
+  showBack: true,
+  hasSpinner: false
+})
 
 const store = useStore()
 const router = useRouter()
