@@ -302,7 +302,7 @@ export default defineComponent({
       const { cryptoTransferDecimals, decimals } = CryptosInfo[commissionTokenLabel]
 
       const tokenFee =
-        (props.queryStatus === 'success' && typeof props.fee === 'number') || props.fee
+        props.queryStatus === 'success' && typeof props.fee === 'number'
           ? `${formatAmount(props.fee, cryptoTransferDecimals ?? decimals)} ${commissionTokenLabel}`
           : placeholder.value
 
