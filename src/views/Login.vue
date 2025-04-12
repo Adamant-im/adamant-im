@@ -94,7 +94,7 @@
 import { nextTick, defineComponent, computed, ref } from 'vue'
 import { useStore } from 'vuex'
 
-import QrcodeCapture from '@/components/QrcodeCapture/QrcodeCapture.vue'
+import QrcodeCapture from '@/components/QrcodeCapture.vue'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import PassphraseGenerator from '@/components/PassphraseGenerator.vue'
 import LoginForm from '@/components/LoginForm.vue'

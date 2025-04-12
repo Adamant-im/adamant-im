@@ -20,8 +20,9 @@
 <script setup lang="ts">
 import { vibrate } from '@/lib/vibrate'
 import { useTemplateRef } from 'vue'
-import { IMG_MAX_SIZE } from '@/components/QrcodeCapture/consts'
-import type { BrowserQRCodeReader } from '@zxing/browser/esm/readers/BrowserQRCodeReader'
+import type { BrowserQRCodeReader } from '@zxing/browser'
+
+const IMG_MAX_SIZE = 400
 
 const emit = defineEmits<{
   (e: 'detect', text: string): void
@@ -44,24 +45,22 @@ const canvas = useTemplateRef('canvasElement')
 const fileInput = useTemplateRef('fileInput')
 
 const drawCanvas = (file: File) => {
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    const imgUrl = URL.createObjectURL(file)
+  const img = new Image()
+  const imgUrl = URL.createObjectURL(file)
 
-    const revokeObjectURL = () => {
-      URL.revokeObjectURL(imgUrl)
-    }
+  const revokeObjectURL = () => {
+    URL.revokeObjectURL(imgUrl)
+  }
 
+  const promise = new Promise((resolve, reject) => {
     img.onload = () => {
       if (!canvas.value) {
-        revokeObjectURL()
         return reject()
       }
 
       const ctx = canvas.value.getContext('2d')
 
       if (!ctx) {
-        revokeObjectURL()
         return reject()
       }
 
@@ -88,26 +87,30 @@ const drawCanvas = (file: File) => {
 
     img.src = imgUrl
   })
+
+  promise.finally(revokeObjectURL)
+
+  return promise
 }
 
 /**
  * Decode QRCode from canvas.
- * @returns {Promise<string>}
+ * @returns {<string>}
  */
-const getQrcode = async () => {
-  const result = await codeReader?.decodeFromCanvas(canvas.value as HTMLCanvasElement)
-
-  return result.getText()
+const getQrcode = () => {
+  return codeReader?.decodeFromCanvas(canvas.value!).getText()
 }
 
 const tryToDecode = () => {
   return new Promise<string>((resolve, reject) => {
-    // Vue should rerender <img> element,
+    // Vue should rerender <canvas> element,
     // so add a callback to the macrotasks queue
     setTimeout(() => {
-      getQrcode()
-        .then((qrCodeText) => resolve(qrCodeText))
-        .catch((err) => reject(err))
+      try {
+        resolve(getQrcode())
+      } catch (e) {
+        reject(e)
+      }
     }, 0)
   })
 }
@@ -119,13 +122,8 @@ const onFileSelect = async (event: Event) => {
       codeReader = new BrowserQRCodeReader()
     }
 
-    const { target } = event
-
-    if (!target) {
-      throw Error('no target')
-    }
-
-    const file = (target as HTMLInputElement)?.files?.[0]
+    const input = event.target as HTMLInputElement
+    const file = input.files?.[0]
 
     if (!file) {
       throw Error('no file')

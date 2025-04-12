@@ -198,7 +198,7 @@ import { PendingTransactionError } from '@/lib/pending-transactions'
 import axios from 'axios'
 import { computed, nextTick } from 'vue'
 
-import QrcodeCapture from '@/components/QrcodeCapture/QrcodeCapture.vue'
+import QrcodeCapture from '@/components/QrcodeCapture.vue'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
 import get from 'lodash/get'
 import { BigNumber } from 'bignumber.js'
