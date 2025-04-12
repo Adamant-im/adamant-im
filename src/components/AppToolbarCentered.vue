@@ -3,10 +3,7 @@
     <v-row justify="center" no-gutters>
       <container :disableMaxWidth="disableMaxWidth">
         <v-toolbar ref="toolbar" :flat="flat" :height="height">
-          <v-btn v-if="showBack" icon size="small" @click="goBack">
-            <v-icon :icon="mdiArrowLeft" size="x-large" />
-          </v-btn>
-
+          <back-button v-if="showBack" @click="goBack" />
           <v-toolbar-title v-if="title" class="a-text-regular-enlarged">
             <div>{{ title }}</div>
             <div v-if="subtitle" class="body-1">
@@ -20,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { mdiArrowLeft } from '@mdi/js'
+import BackButton from '@/components/common/BackButton/BackButton.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { computed } from 'vue'
 
@@ -125,20 +122,6 @@ const goBack = () => {
 
   :deep(.v-toolbar-title:not(:first-child)) {
     margin-inline-start: 0;
-  }
-
-  :deep(.v-toolbar__content) {
-    top: 0;
-  }
-
-  :deep(.v-toolbar__content > .v-btn:first-child) {
-    margin-inline-start: 4px;
-  }
-
-  :deep(.v-btn:hover) {
-    > .v-btn__overlay {
-      opacity: 0;
-    }
   }
 }
 

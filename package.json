@@ -1,6 +1,7 @@
 {
   "name": "adamant-im",
   "version": "4.9.2",
+  "type": "module",
   "author": "ADAMANT Foundation <devs@adamant.im>",
   "license": "GPLv3",
   "description": "Decentralized Messenger",
@@ -120,8 +121,9 @@
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^6.1.2",
-    "@commitlint/cli": "^19.7.1",
+    "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.7.1",
+    "@commitlint/types": "^19.8.0",
     "@electron/notarize": "^2.5.0",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@openapitools/openapi-generator-cli": "^2.16.3",
@@ -170,7 +172,7 @@
     "vite-plugin-pwa": "^0.20.1",
     "vite-plugin-top-level-await": "^1.4.4",
     "vite-plugin-wasm": "^3.3.0",
-    "vitest": "^2.0.5",
+    "vitest": "^3.0.9",
     "vue-cli-plugin-i18n": "^2.3.2",
     "vue-cli-plugin-vuetify": "~2.5.8",
     "vue-eslint-parser": "^9.4.3",
