@@ -226,7 +226,6 @@
           </v-row>
         </container>
       </v-row>
-      <!-- <ChatDialog v-model="showInfo" :text="infoText" style="white-space: break-spaces;" /> -->
     </v-container>
   </div>
 </template>
@@ -275,10 +274,6 @@ export default {
     }
   },
   created() {
-    let _testIsAllowNotif = this.isAllowNotifications
-    console.log('🚀 ~ Options.vue:260 ~ created ~ _testIsAllowNotif:', _testIsAllowNotif)
-    let _test = this.allowNotificationType
-    console.log('🚀 ~ Options.vue:260 ~ created ~ _test:', _test)
     this.selectedNotificationValue = this.allowNotificationType
   },
   computed: {
@@ -343,12 +338,9 @@ export default {
     },
     isAllowNotifications: {
       get() {
-        const _isAllowNotifTest = this.$store.state.options.isAllowNotifications
-        console.log('🚀 ~ Options.vue:326 ~ get ~ _isAllowNotifTest:', _isAllowNotifTest)
         return this.$store.state.options.isAllowNotifications
       },
       set(value) {
-        console.log('🚀 ~ Options.vue:328 ~ set ~ value:', value)
         this.$store.commit('options/updateOption', {
           key: 'isAllowNotifications',
           value
@@ -360,7 +352,6 @@ export default {
         return this.$store.state.options.allowNotificationType
       },
       set(value) {
-        console.log('🚀 ~ Options.vue:340 ~ set ~ value:', value)
         this.$store.commit('options/updateOption', {
           key: 'allowNotificationType',
           value
@@ -408,9 +399,7 @@ export default {
         this.setPushNotifications(true)
     },
     async setPushNotifications(checked) {
-      console.log('🚀 ~ Options.vue:337 ~ handlePushNotifications ~ checked:', checked)
       const deviceId = await getDeviceId()
-      console.log('🚀 ~ handlePushNotificationsCheckbox ~ deviceId:', deviceId)
       let token
       if (checked) {
         token = await this.registerCustomWorker()
@@ -423,7 +412,6 @@ export default {
         }
 
         const result = await sendSignalMessage(signalAsset(deviceId, token, 'FCM', 'add'))
-        console.log('Sent signal message transaction (action: add)', result)
 
         if (!result.success) {
           this.$store.dispatch('snackbar/show', {
@@ -440,7 +428,6 @@ export default {
       } else {
         if (!token) token = await requestToken()
         const result = await sendSignalMessage(signalAsset(deviceId, token, 'FCM', 'remove'))
-        console.log('Sent signal message transaction (action: remove)', result)
 
         if (!result.success) {
           this.$store.dispatch('snackbar/show', {
@@ -477,7 +464,6 @@ export default {
           vapidKey: _vapidKey,
           serviceWorkerRegistration: worker
         })
-        console.log('🚀 ~ Options.vue:469 ~ registerCustomWorker ~ token:', token)
         return token
       } catch (error) {
         console.log('🚀 ~ Options.vue:472 ~ registerCustomWorker ~ error:', error)

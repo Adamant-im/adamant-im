@@ -31,6 +31,7 @@ yarn-error.log*
 
 # Electron-builder output
 /dist-electron
+/dist-android
 # Electron app will be placed here after packaging
 /release-electron
 
