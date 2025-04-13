@@ -3,10 +3,7 @@
     <v-row justify="center" no-gutters>
       <container>
         <v-toolbar ref="toolbar" :flat="flat" :height="height">
-          <v-btn v-if="showBack" icon size="small" @click="goBack">
-            <v-icon :icon="mdiArrowLeft" size="x-large" />
-          </v-btn>
-
+          <back-button v-if="showBack" @click="goBack" />
           <v-toolbar-title v-if="title" class="a-text-regular-enlarged">
             <div>{{ title }}</div>
             <div v-if="subtitle" class="body-1">
@@ -21,8 +18,10 @@
 
 <script>
 import { mdiArrowLeft } from '@mdi/js'
+import BackButton from '@/components/common/BackButton/BackButton.vue'
 
 export default {
+  components: { BackButton },
   props: {
     title: {
       type: String,
@@ -95,16 +94,6 @@ export default {
 
   :deep(.v-toolbar-title:not(:first-child)) {
     margin-inline-start: 0;
-  }
-
-  :deep(.v-toolbar__content > .v-btn:first-child) {
-    margin-inline-start: 4px;
-  }
-
-  :deep(.v-btn:hover) {
-    > .v-btn__overlay {
-      opacity: 0;
-    }
   }
 }
 

@@ -290,7 +290,7 @@ export default defineComponent({
       )
     })
     const rate = computed(() => {
-      if (!transaction.value) return
+      if (!transaction.value) return Symbols.HOURGLASS
 
       return store.getters['rate/rate'](transaction.value.amount, props.crypto)
     })
@@ -309,7 +309,7 @@ export default defineComponent({
       const { cryptoTransferDecimals, decimals } = CryptosInfo[commissionTokenLabel]
 
       const tokenFee =
-        typeof props.fee === 'number'
+        props.queryStatus === 'success' && typeof props.fee === 'number'
           ? `${formatAmount(props.fee, cryptoTransferDecimals ?? decimals)} ${commissionTokenLabel}`
           : placeholder.value
 
