@@ -7,7 +7,7 @@ import path from 'path'
 import autoprefixer from 'autoprefixer'
 import inject from '@rollup/plugin-inject'
 import commonjs from '@rollup/plugin-commonjs'
-import { fileURLToPath } from 'url'
+import { fileURLToPath } from 'node:url'
 
 import { deferScripsPlugin } from './vite-config/plugins/deferScriptsPlugin'
 import { preloadCSSPlugin } from './vite-config/plugins/preloadCSSPlugin'

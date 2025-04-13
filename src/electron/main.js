@@ -1,8 +1,8 @@
 import { app, BrowserWindow, Menu, nativeTheme, protocol } from 'electron'
-import { fileURLToPath, URL } from 'url'
+import { fileURLToPath, URL } from 'node:url'
 import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer'
-import path from 'path'
-import { readFile } from 'fs'
+import path from 'node:path'
+import { readFile } from 'node:fs'
 
 const SCHEME = 'app'
 const __filename = fileURLToPath(import.meta.url)
