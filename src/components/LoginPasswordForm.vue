@@ -4,7 +4,6 @@
       <v-text-field
         ref="passwordInput"
         v-model="password"
-        autofocus
         autocomplete="new-password"
         :label="$t('login_via_password.user_password_title')"
         :name="Date.now()"
@@ -13,13 +12,7 @@
         variant="underlined"
       >
         <template #append-inner>
-          <v-btn
-            @click="togglePasswordVisibility"
-            icon
-            :ripple="false"
-            :size="28"
-            variant="plain"
-          >
+          <v-btn @click="togglePasswordVisibility" icon :ripple="false" :size="28" variant="plain">
             <v-icon :icon="showPassword ? mdiEye : mdiEyeOff" :size="24" />
           </v-btn>
         </template>
