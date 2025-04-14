@@ -162,8 +162,8 @@ export default {
         params: { partnerId }
       })
     },
-    onScroll(evt) {
-      const { target } = evt
+    onScroll(event) {
+      const { target } = event
 
       const height = target.offsetHeight
 

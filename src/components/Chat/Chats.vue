@@ -272,8 +272,8 @@ export default {
     destroyScrollListener() {
       window.removeEventListener('scroll', this.onScroll)
     },
-    onScroll(evt) {
-      const { target } = evt
+    onScroll(event) {
+      const { target } = event
 
       const elem = target.documentElement ?? target
 
