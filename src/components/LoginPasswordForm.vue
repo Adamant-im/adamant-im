@@ -153,5 +153,9 @@ export default defineComponent({
     width: 100%;
     padding-right: 0;
   }
+
+  :deep(input) {
+    font-size: 16px !important;
+  }
 }
 </style>
