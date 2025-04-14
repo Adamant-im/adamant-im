@@ -19,7 +19,7 @@
               <v-icon :icon="mdiImage" />
             </icon-box>
           </template>
-          <v-list-item-title>{{ $t('chats.attach_image') }}</v-list-item-title>
+          <v-list-item-title>{{ t('chats.attach_image') }}</v-list-item-title>
         </v-list-item>
 
         <!-- Attach File -->
@@ -29,7 +29,7 @@
               <v-icon :icon="mdiFile" />
             </icon-box>
           </template>
-          <v-list-item-title>{{ $t('chats.attach_file') }}</v-list-item-title>
+          <v-list-item-title>{{ t('chats.attach_file') }}</v-list-item-title>
         </v-list-item>
 
         <!-- Cryptos -->
@@ -38,7 +38,7 @@
             <crypto-icon :crypto="c" box-centered />
           </template>
 
-          <v-list-item-title>{{ $t('chats.send_crypto', { crypto: c }) }}</v-list-item-title>
+          <v-list-item-title>{{ t('chats.send_crypto', { crypto: c }) }}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
