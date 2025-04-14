@@ -203,11 +203,6 @@ const showConfirmationDialog = () => {
 .delegates-view {
   position: relative;
 
-  &__content {
-    overflow-y: auto;
-    height: calc(100vh - var(--v-layout-bottom) - var(--toolbar-height));
-  }
-
   &__body {
     font-size: 14px;
     font-weight: 300;
