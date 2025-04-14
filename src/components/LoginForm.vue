@@ -64,7 +64,6 @@ import { isAllNodesOfflineError, isAllNodesDisabledError } from '@/lib/nodes/uti
 import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useSaveCursor } from '@/hooks/useSaveCursor'
 
-
 const className = 'login-form'
 const classes = {
   root: className,
@@ -181,5 +180,4 @@ export default defineComponent({
     }
   }
 }
-
 </style>
