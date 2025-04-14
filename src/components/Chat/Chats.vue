@@ -11,11 +11,7 @@
           variant="text"
         />
         <v-spacer />
-        <v-btn
-          :class="`${className}__item`"
-          @click="setIsShowChatStartDialog(true)"
-          variant="plain"
-        >
+        <v-btn :class="`${className}__item`" @click="setShowChatStartDialog(true)" variant="plain">
           <template #prepend>
             <v-icon :class="`${className}__icon`" :icon="mdiMessageOutline" size="small" />
           </template>
@@ -82,6 +78,8 @@ import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
 import { useRoute, useRouter } from 'vue-router'
 import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, watch } from 'vue'
 import { useStore } from 'vuex'
+import { useChatStateStore } from '@/stores/chat-state'
+import { storeToRefs } from 'pinia'
 
 const scrollOffset = 64
 
@@ -102,9 +100,16 @@ export default {
     const router = useRouter()
     const store = useStore()
 
-    const setIsShowChatStartDialog = (value) => {
-      store.commit('chat/setIsShowChatStartDialog', value)
-    }
+    const chatStateStore = useChatStateStore()
+    const {
+      actionsDropdownMessageId,
+      isShowPartnerInfoDialog,
+      isShowFreeTokensDialog,
+      isChatMenuOpen,
+      isEmojiPickerOpen
+    } = storeToRefs(chatStateStore)
+
+    const { setShowChatStartDialog } = chatStateStore
 
     const savedRoute = ref(null)
 
@@ -117,20 +122,14 @@ export default {
     const isSnackbarShowing = computed(() => store.state.snackbar.show)
 
     const noActiveNodesDialog = computed(() => store.state.chat.noActiveNodesDialog)
-    const isShowPartnerInfoDialog = computed(() => store.state.chat.isShowPartnerInfoDialog)
     const isShowChatStartDialog = computed({
       get() {
-        return store.state.chat.isShowChatStartDialog
+        return chatStateStore.isShowChatStartDialog
       },
       set(value) {
-        setIsShowChatStartDialog(value)
+        setShowChatStartDialog(value)
       }
     })
-    const isShowFreeTokensDialog = computed(() => store.state.chat.isShowFreeTokensDialog)
-
-    const isChatMenuOpen = computed(() => store.state.chat.isChatMenuOpen)
-    const actionsDropdownMessageId = computed(() => store.state.chat.actionsDropdownMessageId)
-    const isEmojiPickerOpen = computed(() => store.state.chat.isEmojiPickerOpen)
 
     const canPressEscape = computed(() => {
       return (
@@ -200,7 +199,7 @@ export default {
       mdiCheckAll,
       mdiMessageOutline,
       checkIsActive,
-      setIsShowChatStartDialog
+      setShowChatStartDialog
     }
   },
   data: () => ({
@@ -247,7 +246,7 @@ export default {
     this.noMoreChats = this.$store.getters['chat/chatListOffset'] === -1
   },
   mounted() {
-    this.setIsShowChatStartDialog(this.showNewContact)
+    this.setShowChatStartDialog(this.showNewContact)
     this.attachScrollListener()
   },
   beforeUnmount() {

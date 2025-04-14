@@ -28,7 +28,7 @@ import partnerName from '@/mixins/partnerName'
 import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { computed } from 'vue'
-import { useStore } from 'vuex'
+import { useChatStateStore } from '@/stores/chat-state'
 
 export default {
   components: {
@@ -48,22 +48,25 @@ export default {
     }
   },
   setup() {
-    const store = useStore()
-
     const { isMobileView } = useScreenSize()
+
+    const chatStateStore = useChatStateStore()
+
+    const { setShowPartnerInfoDialog } = chatStateStore
 
     const isShowPartnerInfoDialog = computed({
       get() {
-        return store.state.chat.isShowPartnerInfoDialog
+        return chatStateStore.isShowPartnerInfoDialog
       },
       set(value) {
-        store.commit('chat/setIsShowPartnerInfoDialog', value)
+        setShowPartnerInfoDialog(value)
       }
     })
 
     return {
       isMobileView,
-      isShowPartnerInfoDialog
+      isShowPartnerInfoDialog,
+      setShowPartnerInfoDialog
     }
   },
   data: () => ({
@@ -85,7 +88,7 @@ export default {
     onClickChatAvatar(address) {
       this.contactAddress = address
       this.contactName = this.getPartnerName(address)
-      this.isShowPartnerInfoDialog = true
+      this.setShowPartnerInfoDialog(true)
     }
   }
 }

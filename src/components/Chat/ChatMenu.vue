@@ -55,7 +55,7 @@ import IconBox from '@/components/icons/IconBox.vue'
 import UploadFile from '../UploadFile.vue'
 import { mdiFile, mdiImage, mdiPlusCircleOutline } from '@mdi/js'
 import { computed } from 'vue'
-import { useStore } from 'vuex'
+import { useChatStateStore } from '@/stores/chat-state'
 
 export default {
   components: {
@@ -75,14 +75,16 @@ export default {
     }
   },
   setup() {
-    const store = useStore()
+    const chatStateStore = useChatStateStore()
+
+    const { setChatMenuOpen } = chatStateStore
 
     const isChatMenuOpen = computed({
       get() {
-        return store.state.chat.isChatMenuOpen
+        return chatStateStore.isChatMenuOpen
       },
       set(value) {
-        store.commit('chat/setIsChatMenuOpen', value)
+        setChatMenuOpen(value)
       }
     })
 

@@ -299,6 +299,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import ProgressIndicator from '@/components/ProgressIndicator.vue'
+import { useChatStateStore } from '@/stores/chat-state'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -352,21 +353,25 @@ const actionsMenuMessageId = ref<string | -1>(-1)
 const replyMessageId = ref<string | -1>(-1)
 const showEmojiPicker = ref(false)
 
+const chatStateStore = useChatStateStore()
+
+const { setShowFreeTokensDialog, setActionsDropdownMessageId } = chatStateStore
+
 const isShowFreeTokensDialog = computed({
   get() {
-    return store.state.chat.isShowFreeTokensDialog
+    return chatStateStore.isShowFreeTokensDialog
   },
   set(value) {
-    store.commit('chat/setIsShowFreeTokensDialog', value)
+    setShowFreeTokensDialog(value)
   }
 })
 
 const actionsDropdownMessageId = computed({
   get() {
-    return store.state.chat.actionsDropdownMessageId
+    return chatStateStore.actionsDropdownMessageId
   },
   set(value) {
-    store.commit('chat/setActionsDropdownMessageId', value)
+    setActionsDropdownMessageId(value)
   }
 })
 
@@ -504,7 +509,7 @@ const cancelPreviewFile = () => {
 const onMessageError = (error: string) => {
   switch (error) {
     case validationErrors.notEnoughFundsNewAccount:
-      isShowFreeTokensDialog.value = true
+      setShowFreeTokensDialog(true)
       return
     case validationErrors.notEnoughFunds:
       store.dispatch('snackbar/show', { message: t('chats.no_money') })

@@ -47,7 +47,7 @@ import { computed, nextTick } from 'vue'
 import ChatEmojis from '@/components/Chat/ChatEmojis.vue'
 import { isMobile } from '@/lib/display-mobile'
 import { mdiSend } from '@mdi/js'
-import { useStore } from 'vuex'
+import { useChatStateStore } from '@/stores/chat-state'
 
 export default {
   components: { ChatEmojis },
@@ -86,14 +86,16 @@ export default {
   },
   emits: ['message', 'esc', 'error'],
   setup() {
-    const store = useStore()
+    const chatStateStore = useChatStateStore()
+
+    const { setEmojiPickerOpen } = chatStateStore
 
     const isEmojiPickerOpen = computed({
       get() {
-        return store.state.chat.isEmojiPickerOpen
+        return chatStateStore.isEmojiPickerOpen
       },
       set(value) {
-        store.commit('chat/setIsEmojiPickerOpen', value)
+        setEmojiPickerOpen(value)
       }
     })
 
