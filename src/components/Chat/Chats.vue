@@ -273,15 +273,7 @@ export default {
       window.removeEventListener('scroll', this.onScroll)
     },
     onScroll(evt) {
-      if (!evt) {
-        return
-      }
-
       const { target } = evt
-
-      if (!target) {
-        return
-      }
 
       const elem = target.documentElement ?? target
 

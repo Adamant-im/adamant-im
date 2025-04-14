@@ -8,7 +8,7 @@
       disable-max-width
     />
 
-    <v-container fluid class="px-0 py-0" :class="`${classes.content}`" @scroll="onScroll">
+    <v-container fluid class="px-0 py-0" :class="classes.content" @scroll="onScroll">
       <v-row justify="center" no-gutters style="position: relative">
         <v-list-item v-if="isRecentLoading" style="position: absolute; top: 20px">
           <InlineSpinner />
@@ -163,15 +163,7 @@ export default {
       })
     },
     onScroll(evt) {
-      if (!evt) {
-        return
-      }
-
       const { target } = evt
-
-      if (!target) {
-        return
-      }
 
       const height = target.offsetHeight
 
