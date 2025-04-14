@@ -40,7 +40,7 @@ import validateAddress from '@/lib/validateAddress'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import IconBox from '@/components/icons/IconBox.vue'
 import { mdiClose } from '@mdi/js'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
@@ -69,9 +69,9 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-const className = ref('partner-info-dialog')
-const logo = ref('/img/adm-qr-invert.png')
-const opts = ref({ scale: 8.8 })
+const className = 'partner-info-dialog'
+const logo = '/img/adm-qr-invert.png'
+const opts = { scale: 8.8 }
 
 const show = computed({
   get: () => props.modelValue,
