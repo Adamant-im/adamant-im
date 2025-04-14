@@ -65,7 +65,7 @@ const emit = defineEmits<{
   (e: 'files', value: FileData[]): void
 }>()
 
-const props = defineProps<{
+const { partnerId = '', replyToId } = defineProps<{
   partnerId?: string
   replyToId?: string
 }>()
@@ -103,11 +103,11 @@ function sendFunds(selectedCrypto: string) {
         name: 'SendFunds',
         params: {
           cryptoCurrency: selectedCrypto,
-          recipientAddress: props.partnerId || ''
+          recipientAddress: partnerId || ''
         },
         query: {
-          from: `/chats/${props.partnerId}`,
-          replyToId: props.replyToId
+          from: `/chats/${partnerId}`,
+          replyToId
         }
       })
     })
@@ -136,7 +136,7 @@ function fetchCryptoAddress(selectedCrypto: string): Promise<any> {
   return store
     .dispatch('partners/fetchAddress', {
       crypto: selectedCrypto,
-      partner: props.partnerId,
+      partner: partnerId,
       moreInfo: true
     })
     .then((address: any) => {
