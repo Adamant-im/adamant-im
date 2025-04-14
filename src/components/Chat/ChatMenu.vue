@@ -15,7 +15,7 @@
 
       <v-list class="chat-menu__list">
         <!-- Attach Image -->
-        <v-list-item @click="uploadImageRef?.$refs.fileInput?.click()">
+        <v-list-item @click="uploadImageRef?.$el?.click()">
           <template #prepend>
             <icon-box>
               <v-icon :icon="mdiImage" />
@@ -25,7 +25,7 @@
         </v-list-item>
 
         <!-- Attach File -->
-        <v-list-item @click="uploadFileRef?.$refs.fileInput?.click()">
+        <v-list-item @click="uploadFileRef?.$el?.click()">
           <template #prepend>
             <icon-box>
               <v-icon :icon="mdiFile" />
