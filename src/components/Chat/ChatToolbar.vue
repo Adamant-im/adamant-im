@@ -15,7 +15,7 @@
     </div>
     <div :class="`${className}__textfield-container`">
       <div v-if="isWelcomeChat(partnerId)" :class="`${className}__adm-chat-name`">
-        {{ $t('chats.virtual.welcome_message_title') }}
+        {{ t('chats.virtual.welcome_message_title') }}
       </div>
       <div v-else>
         <v-text-field
@@ -35,64 +35,51 @@
   </v-toolbar>
 </template>
 
-<script>
-import partnerName from '@/mixins/partnerName'
-import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
-import { mdiArrowLeft } from '@mdi/js'
+<script setup lang="ts">
 import { useScreenSize } from '@/hooks/useScreenSize'
 import BackButton from '@/components/common/BackButton/BackButton.vue'
+import { computed } from 'vue'
+import { useStore } from 'vuex'
+import { usePartnerName } from '@/hooks/usePartnerName'
+import { useRouter } from 'vue-router'
+import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
+import { useI18n } from 'vue-i18n'
 
-export default {
-  components: { BackButton },
-  mixins: [partnerName],
-  props: {
-    partnerId: {
-      type: String,
-      required: true
-    }
-  },
-  emits: ['partner-info'],
-  setup() {
-    const { isMobileView } = useScreenSize()
-
-    return {
-      isMobileView,
-      mdiArrowLeft
-    }
-  },
-  computed: {
-    className: () => 'chat-toolbar',
-    partnerName: {
-      get() {
-        return this.getPartnerName(this.partnerId)
-      },
-      set(value) {
-        this.$store.commit('partners/displayName', {
-          partner: this.partnerId,
-          displayName: value
-        })
-      }
-    },
-    numOfNewMessages() {
-      return this.$store.getters['chat/numWithoutTheCurrentChat'](this.partnerId)
-    }
-  },
-  data: () => ({
-    lastPath: null
-  }),
-  created() {
-    this.lastPath = this.$router.options.history.state.back
-  },
-  methods: {
-    goBack() {
-      this.$router.push({ name: 'Chats' })
-    },
-    showPartnerInfo() {
-      this.$emit('partner-info', true)
-    },
-    isAdamantChat,
-    isWelcomeChat
+const props = defineProps({
+  partnerId: {
+    type: String,
+    required: true
   }
+})
+
+const className = 'chat-toolbar'
+
+const store = useStore()
+const router = useRouter()
+const { t } = useI18n()
+
+const { isMobileView } = useScreenSize()
+
+const { getPartnerName } = usePartnerName()
+
+const partnerName = computed({
+  get() {
+    return getPartnerName(props.partnerId)
+  },
+  set(value) {
+    store.commit('partners/displayName', {
+      partner: props.partnerId,
+      displayName: value
+    })
+  }
+})
+
+const numOfNewMessages = computed(() =>
+  store.getters['chat/numWithoutTheCurrentChat'](props.partnerId)
+)
+
+const goBack = () => {
+  router.push({ name: 'Chats' })
 }
 </script>
 
