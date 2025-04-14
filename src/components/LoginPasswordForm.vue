@@ -5,10 +5,10 @@
         ref="passwordInput"
         v-model="password"
         autocomplete="new-password"
+        autofocus
         :label="$t('login_via_password.user_password_title')"
         :name="Date.now()"
         :type="showPassword ? 'text' : 'password'"
-        class="text-center"
         variant="underlined"
       >
         <template #append-inner>
@@ -141,3 +141,17 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="scss" scoped>
+.v-text-field {
+  &:deep(.v-field__append-inner) {
+    padding-left: 0;
+    margin-left: -28px; // compensate the append-inner icon
+  }
+
+  &:deep(.v-field__input) {
+    width: 100%;
+    padding-right: 0;
+  }
+}
+</style>
