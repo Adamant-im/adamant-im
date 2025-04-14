@@ -165,15 +165,17 @@ export default defineComponent({
 @use '@/assets/styles/settings/_colors.scss';
 @use 'vuetify/settings';
 
-.v-text-field {
-  &:deep(.v-field__append-inner) {
-    padding-left: 0;
-    margin-left: -28px; // compensate the append-inner icon
-  }
+.login-form {
+  &__textfield {
+    &:deep(.v-field__append-inner) {
+      padding-left: 0;
+      margin-left: -28px; // compensate the append-inner icon
+    }
 
-  &:deep(.v-field__input) {
-    width: 100%;
-    padding-right: 0;
+    &:deep(.v-field__input) {
+      width: 100%;
+      padding-right: 0;
+    }
   }
 }
 
