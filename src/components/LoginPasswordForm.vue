@@ -1,15 +1,15 @@
 <template>
-  <v-form ref="form" class="login-form" @submit.prevent="submit">
+  <v-form ref="form" :class="classes.root" @submit.prevent="submit">
     <v-row no-gutters>
       <v-text-field
         ref="passwordInput"
         v-model="password"
-        autofocus
         autocomplete="new-password"
+        autofocus
+        :class="classes.textField"
         :label="$t('login_via_password.user_password_title')"
         :name="Date.now()"
         :type="showPassword ? 'text' : 'password'"
-        class="text-center"
         variant="underlined"
       >
         <template #append-inner>
@@ -58,6 +58,12 @@ import { clearDb } from '@/lib/idb'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useSaveCursor } from '@/hooks/useSaveCursor'
+
+const className = 'login-form'
+const classes = {
+  root: className,
+  textField: `${className}__textfield`
+}
 
 export default defineComponent({
   props: {
@@ -132,6 +138,7 @@ export default defineComponent({
       passwordInput,
       showSpinner,
       password,
+      classes,
       showPassword,
       mdiEye,
       mdiEyeOff,
@@ -142,3 +149,23 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="scss" scoped>
+.login-form {
+  &__textfield {
+    &:deep(.v-field__append-inner) {
+      padding-left: 0;
+      margin-left: -28px; // compensate the append-inner icon
+    }
+
+    &:deep(.v-field__input) {
+      width: 100%;
+      padding-right: 0;
+    }
+
+    :deep(input) {
+      font-size: 16px !important;
+    }
+  }
+}
+</style>
