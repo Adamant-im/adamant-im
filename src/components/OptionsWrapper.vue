@@ -1,10 +1,10 @@
 <template>
-  <div :class="className" class="w-100 h-100">
+  <div :class="className.root" class="w-100 h-100">
     <app-toolbar-centered app :title="title" show-back flat sticky disable-max-width />
 
-    <v-container fluid class="px-0 py-0" :classes="classes">
+    <v-container fluid class="px-0 py-0" :classes="classes.container">
       <v-row justify="center" no-gutters>
-        <container padding :class="`${className}__content`" disable-max-width>
+        <container padding :class="classes.content" disable-max-width>
           <slot />
         </container>
       </v-row>
@@ -18,8 +18,11 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 const className = 'options-wrapper'
+
 const classes = {
-  container: { [`${className}__container`]: true }
+  root: className,
+  container: `${className}__container`,
+  content: `${className}__content`
 }
 
 const route = useRoute()
