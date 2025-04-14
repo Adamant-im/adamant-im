@@ -31,10 +31,7 @@ const isLogged = computed(() => {
 
 const showNavigation = computed(() => {
   return (
-    (route.meta.showNavigation &&
-      isLogged.value &&
-      !(route.name === 'Chat' && isMobileView.value)) ||
-    false
+    route.meta.showNavigation && isLogged.value && !(route.name === 'Chat' && isMobileView.value)
   )
 })
 
