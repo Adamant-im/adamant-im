@@ -4,16 +4,18 @@
       <template #activator="{ props }">
         <v-icon class="chat-menu__icon" v-bind="props" :icon="mdiPlusCircleOutline" size="28" />
       </template>
+
       <UploadFile
+        ref="uploadImageRef"
         :partnerId="partnerId"
         :accept="acceptImage"
         @file="handleFileSelected"
-        ref="UploadImageRef"
       />
-      <UploadFile :partnerId="partnerId" @file="handleFileSelected" ref="UploadFileRef" />
+      <UploadFile ref="uploadFileRef" :partnerId="partnerId" @file="handleFileSelected" />
+
       <v-list class="chat-menu__list">
         <!-- Attach Image -->
-        <v-list-item @click="$refs.UploadImageRef.$refs.fileInput.click()">
+        <v-list-item @click="uploadImageRef?.$refs.fileInput?.click()">
           <template #prepend>
             <icon-box>
               <v-icon :icon="mdiImage" />
@@ -23,7 +25,7 @@
         </v-list-item>
 
         <!-- Attach File -->
-        <v-list-item @click="$refs.UploadFileRef.$refs.fileInput.click()">
+        <v-list-item @click="uploadFileRef?.$refs.fileInput?.click()">
           <template #prepend>
             <icon-box>
               <v-icon :icon="mdiFile" />
@@ -37,8 +39,9 @@
           <template #prepend>
             <crypto-icon :crypto="c" box-centered />
           </template>
-
-          <v-list-item-title>{{ t('chats.send_crypto', { crypto: c }) }}</v-list-item-title>
+          <v-list-item-title>
+            {{ t('chats.send_crypto', { crypto: c }) }}
+          </v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -48,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, useTemplateRef } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
@@ -74,6 +77,9 @@ const router = useRouter()
 const store = useStore()
 const { t } = useI18n()
 const chatStateStore = useChatStateStore()
+
+const uploadImageRef = useTemplateRef<InstanceType<typeof UploadFile>>('uploadImageRef')
+const uploadFileRef = useTemplateRef<InstanceType<typeof UploadFile>>('uploadFileRef')
 
 const dialog = ref(false)
 const dialogTitle = ref('')
