@@ -46,7 +46,6 @@
               />
             </v-list-item-title>
           </template>
-
           <div
             :class="[
               `${className}__inconsistent-status`,
@@ -59,7 +58,7 @@
               size="20"
               style="color: #f8a061 !important"
             />
-            {{ t(`transaction.statuses.${transactionStatus}`)
+            {{ formattedTransactionStatus
             }}<span v-if="inconsistentStatus">{{
               ': ' + t(`transaction.inconsistent_reasons.${inconsistentStatus}`, { crypto })
             }}</span>
@@ -269,6 +268,14 @@ const ifComeFromChat = computed(() => Object.prototype.hasOwnProperty.call(route
 
 const comment = computed(() => (props.admTx && props.admTx.message ? props.admTx.message : false))
 
+const isPendingQuery = computed(() => props.queryStatus === 'pending')
+
+const formattedTransactionStatus = computed(() => {
+  if (isPendingQuery.value) return Symbols.HOURGLASS
+
+  return t(`transaction.statuses.${props.transactionStatus}`)
+})
+
 const statusUpdatable = computed(() => tsUpdatable(props.transactionStatus, props.crypto))
 const historyRate = computed(() => {
   if (!transaction.value) return Symbols.HOURGLASS
@@ -280,7 +287,7 @@ const historyRate = computed(() => {
   )
 })
 const rate = computed(() => {
-  if (!transaction.value) return
+  if (!transaction.value) return Symbols.HOURGLASS
 
   return store.getters['rate/rate'](transaction.value.amount, props.crypto)
 })
@@ -299,7 +306,7 @@ const calculatedFee = computed(() => {
   const { cryptoTransferDecimals, decimals } = CryptosInfo[commissionTokenLabel]
 
   const tokenFee =
-    typeof props.fee === 'number'
+    props.queryStatus === 'success' && typeof props.fee === 'number'
       ? `${formatAmount(props.fee, cryptoTransferDecimals ?? decimals)} ${commissionTokenLabel}`
       : placeholder.value
 
