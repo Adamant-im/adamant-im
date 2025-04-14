@@ -2,14 +2,7 @@
   <div v-if="value">
     <div :class="`${className}__overlay`" />
 
-    <v-progress-circular
-      v-if="value"
-      :size="150"
-      :stroke="1"
-      :class="`${className}__progress`"
-      color="#4A4A4A"
-      indeterminate
-    />
+    <v-progress-circular v-if="value" :size="150" :stroke="1" color="#4A4A4A" indeterminate />
   </div>
 </template>
 
