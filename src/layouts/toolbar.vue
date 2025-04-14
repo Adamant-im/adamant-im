@@ -25,9 +25,7 @@ const store = useStore()
 
 const { isMobileView } = useScreenSize()
 
-const isLogged = computed(() => {
-  return store.getters.isLogged
-})
+const isLogged = computed(() => store.getters.isLogged)
 
 const showNavigation = computed(() => {
   return (
