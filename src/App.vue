@@ -9,78 +9,68 @@
   </v-app>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, onBeforeUnmount } from 'vue'
+<script setup lang="ts">
+import { computed, onBeforeUnmount, onMounted, getCurrentInstance, ref } from 'vue'
 import dayjs from 'dayjs'
 import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
 import UploadAttachmentExitPrompt from '@/components/UploadAttachmentExitPrompt.vue'
 import Notifications from '@/lib/notifications'
 import { ThemeName } from './plugins/vuetify'
 import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
 
-export default defineComponent({
-  components: {
-    WarningOnAddressesDialog,
-    UploadAttachmentExitPrompt
-  },
-  setup() {
-    const store = useStore()
-    const isSnackbarShowing = computed(() => store.state.snackbar.show)
+const store = useStore()
+const isSnackbarShowing = computed(() => store.state.snackbar.show)
 
-    const onKeydownHandler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        if (isSnackbarShowing.value) {
-          e.stopPropagation()
-          store.commit('snackbar/changeState', false)
-        }
-      }
-    }
+const showWarningOnAddressesDialog = ref(false)
 
-    window.addEventListener('keydown', onKeydownHandler, true)
+const notifications = ref<Notifications | null>(null)
 
-    onBeforeUnmount(() => {
-      window.removeEventListener('keydown', onKeydownHandler, true)
-    })
-  },
-  data: () => ({
-    showWarningOnAddressesDialog: false,
-    notifications: null as Notifications | null
-  }),
-  computed: {
-    isLogged() {
-      return this.$store.getters.isLogged
-    },
-    isLoginViaPassword() {
-      return this.$store.getters['options/isLoginViaPassword']
-    },
-    themeName() {
-      return this.$store.state.options.darkTheme ? ThemeName.Dark : ThemeName.Light
-    }
-  },
-  created() {
-    this.setLocale()
-  },
-  mounted() {
-    this.notifications = new Notifications(this)
-    this.notifications.start()
-  },
-  beforeUnmount() {
-    this.notifications?.stop()
-    this.$store.dispatch('stopInterval')
-  },
-  methods: {
-    setLocale() {
-      // Set language from `localStorage`.
-      //
-      // This is required only when initializing the application.
-      // Subsequent mutations of `language.currentLocale`
-      // will be synchronized with `i18n.locale`.
-      const localeFromStorage = this.$store.state.language.currentLocale
-      this.$i18n.locale = localeFromStorage
-      dayjs.locale(localeFromStorage)
-    }
+const themeName = computed(() => {
+  return store.state.options.darkTheme ? ThemeName.Dark : ThemeName.Light
+})
+
+onMounted(() => {
+  const instance = getCurrentInstance()
+
+  if (instance) {
+    const notifications = new Notifications(instance.proxy)
+    notifications.start()
   }
 })
+
+onBeforeUnmount(() => {
+  notifications.value?.stop()
+  store.dispatch('stopInterval')
+})
+
+const onKeydownHandler = (e: KeyboardEvent) => {
+  if (e.key === 'Escape') {
+    if (isSnackbarShowing.value) {
+      e.stopPropagation()
+      store.commit('snackbar/changeState', false)
+    }
+  }
+}
+
+const setLocale = () => {
+  // Set language from `localStorage`.
+  //
+  // This is required only when initializing the application.
+  // Subsequent mutations of `language.currentLocale`
+  // will be synchronized with `i18n.locale`.
+  const localeFromStorage = store.state.language.currentLocale
+  useI18n().locale.value = localeFromStorage
+  dayjs.locale(localeFromStorage)
+}
+
+window.addEventListener('keydown', onKeydownHandler, true)
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onKeydownHandler, true)
+})
+
+setLocale()
 </script>
 
 <style lang="scss" scoped>
