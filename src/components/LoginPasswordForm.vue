@@ -5,6 +5,7 @@
         ref="passwordInput"
         v-model="password"
         autocomplete="new-password"
+        autofocus
         :label="$t('login_via_password.user_password_title')"
         :name="Date.now()"
         :type="showPassword ? 'text' : 'password'"
@@ -47,7 +48,7 @@
 
 <script>
 import { isAxiosError } from 'axios'
-import { computed, defineComponent, onMounted, ref, useTemplateRef } from 'vue'
+import { computed, defineComponent, ref, useTemplateRef } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
@@ -125,13 +126,6 @@ export default defineComponent({
         store.dispatch('removePassword')
       })
     }
-
-    onMounted(() => {
-      setTimeout(() => {
-        const input = passwordInput.value?.$el?.querySelector('input')
-        input?.focus()
-      }, 300)
-    })
 
     return {
       passwordInput,
