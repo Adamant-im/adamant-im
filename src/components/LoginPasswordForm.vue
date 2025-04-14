@@ -13,13 +13,7 @@
         variant="underlined"
       >
         <template #append-inner>
-          <v-btn
-            @click="togglePasswordVisibility"
-            icon
-            :ripple="false"
-            :size="28"
-            variant="plain"
-          >
+          <v-btn @click="togglePasswordVisibility" icon :ripple="false" :size="28" variant="plain">
             <v-icon :icon="showPassword ? mdiEye : mdiEyeOff" :size="24" />
           </v-btn>
         </template>

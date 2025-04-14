@@ -45,7 +45,6 @@
               />
             </v-list-item-title>
           </template>
-
           <div
             :class="[
               `${className}__inconsistent-status`,
@@ -58,7 +57,7 @@
               size="20"
               style="color: #f8a061 !important"
             />
-            {{ t(`transaction.statuses.${transactionStatus}`)
+            {{ formattedTransactionStatus
             }}<span v-if="inconsistentStatus">{{
               ': ' + t(`transaction.inconsistent_reasons.${inconsistentStatus}`, { crypto })
             }}</span>
@@ -272,6 +271,14 @@ export default defineComponent({
       props.admTx && props.admTx.message ? props.admTx.message : false
     )
 
+    const isPendingQuery = computed(() => props.queryStatus === 'pending')
+
+    const formattedTransactionStatus = computed(() => {
+      if (isPendingQuery.value) return Symbols.HOURGLASS
+
+      return t(`transaction.statuses.${props.transactionStatus}`)
+    })
+
     const statusUpdatable = computed(() => tsUpdatable(props.transactionStatus, props.crypto))
     const historyRate = computed(() => {
       if (!transaction.value) return Symbols.HOURGLASS
@@ -385,6 +392,7 @@ export default defineComponent({
       historyRate,
       rate,
       calculatedFee,
+      formattedTransactionStatus,
       formatAmount,
       mdiAlertOutline,
       mdiChevronRight,
