@@ -255,7 +255,7 @@
         </v-badge>
       </template>
     </a-chat>
-    <ProgressIndicator :show="replyLoadingChatHistory" />
+    <ProgressIndicator v-if="replyLoadingChatHistory" />
   </v-card>
 </template>
 
