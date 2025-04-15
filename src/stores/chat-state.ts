@@ -33,6 +33,15 @@ export const useChatStateStore = defineStore('chatState', () => {
     actionsDropdownMessageId.value = value
   }
 
+  const $reset = () => {
+    setShowChatStartDialog(false)
+    setShowPartnerInfoDialog(false)
+    setShowFreeTokensDialog(false)
+    setChatMenuOpen(false)
+    setEmojiPickerOpen(false)
+    setActionsDropdownMessageId(-1)
+  }
+
   return {
     actionsDropdownMessageId,
     isShowChatStartDialog,
@@ -46,6 +55,7 @@ export const useChatStateStore = defineStore('chatState', () => {
     setShowPartnerInfoDialog,
     setShowFreeTokensDialog,
     setChatMenuOpen,
-    setEmojiPickerOpen
+    setEmojiPickerOpen,
+    $reset
   }
 })
