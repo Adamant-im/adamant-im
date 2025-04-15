@@ -18,13 +18,6 @@ export type Message = {
   type: MessageType
 }
 
-export type LastMessage = NormalizedChatMessageTransaction & {
-  contactId: string
-  readonly?: boolean
-  loadingSeparator?: boolean
-  userId?: string
-}
-
 export enum MessageType {
   Message = 'message',
   ADM = 'ADM',

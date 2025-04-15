@@ -37,18 +37,21 @@
               </v-btn>
             </v-row>
             <transition-group name="messages">
-              <template v-for="transaction in messages" :key="transaction.contactId">
+              <template
+                v-for="(transaction, index) in messages"
+                :key="messageOptions[index].contactId"
+              >
                 <chat-preview
-                  v-if="displayChat(transaction.contactId)"
-                  :ref="transaction.contactId"
-                  :is-loading-separator="transaction.loadingSeparator"
+                  v-if="displayChat(messageOptions[index].contactId)"
+                  :ref="messageOptions[index].contactId"
+                  :is-loading-separator="messageOptions[index].loadingSeparator"
                   :is-loading-separator-active="loading"
                   :user-id="userId"
-                  :contact-id="transaction.contactId"
+                  :contact-id="messageOptions[index].contactId"
                   :transaction="transaction"
-                  :is-message-readonly="transaction.readonly"
-                  :adamant-chat-meta="getAdamantChatMeta(transaction.contactId)"
-                  @click="openChat(transaction.contactId)"
+                  :is-message-readonly="messageOptions[index].readonly"
+                  :adamant-chat-meta="getAdamantChatMeta(messageOptions[index].contactId)"
+                  @click="openChat(messageOptions[index].contactId)"
                 />
               </template>
             </transition-group>
@@ -81,8 +84,15 @@ import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { LastMessage } from '@/components/AChat/types'
 import { useChatsSpinner } from '@/hooks/useChatsSpinner'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+
+interface MessageOptions {
+  contactId: string
+  readonly?: boolean
+  loadingSeparator?: boolean
+  userId?: string
+}
 
 const props = withDefaults(
   defineProps<{
@@ -109,29 +119,29 @@ const noMoreChats = ref(false)
 const loadingSeparator = ref<InstanceType<typeof ChatPreview>[]>([])
 
 const isFulfilled = computed(() => store.state.chat.isFulfilled)
-const messages = computed(() => {
-  const lastMessages: LastMessage[] = store.getters['chat/lastMessages']
-  // We should modify cloned message list to leave original one untouched
-  const clonedLastMessages = lastMessages.map((msg) => {
-    return { ...msg }
-  })
+const lastMessages = computed(() => store.getters['chat/lastMessages'])
+const messages = computed<NormalizedChatMessageTransaction[]>(() =>
+  lastMessages.value.map((msg: { lastMessage: NormalizedChatMessageTransaction }) => ({
+    ...msg.lastMessage
+  }))
+)
+const messageOptions = computed(() => {
+  const options: MessageOptions[] = lastMessages.value.map((msg: { contactId: string }) => ({
+    contactId: msg.contactId
+  }))
 
-  if (!noMoreChats.value && clonedLastMessages.length > 25) {
-    const lastNotAdamantChat = lastMessages
-      .map((msg) => isAdamantChat(msg.contactId))
-      .lastIndexOf(false)
+  if (!noMoreChats.value && options.length > 25) {
+    const lastNotAdamantChat = options.map((msg) => isAdamantChat(msg.contactId)).lastIndexOf(false)
     if (lastNotAdamantChat) {
-      const baseMessage = clonedLastMessages[lastNotAdamantChat] || {}
-
-      clonedLastMessages.splice(lastNotAdamantChat + 1, 0, {
-        ...baseMessage,
+      options.splice(lastNotAdamantChat + 1, 0, {
         loadingSeparator: true,
         userId: 'loadingSeparator',
         contactId: 'loadingSeparator'
       })
     }
   }
-  return clonedLastMessages
+
+  return options
 })
 const userId = computed(() => store.state.address)
 const unreadMessagesCount = computed(() => store.getters['chat/totalNumOfNewMessages'])

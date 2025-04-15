@@ -109,7 +109,7 @@ import { tsIcon, TransactionStatus as TS } from '@/lib/constants'
 import { useChatName } from '@/components/AChat/hooks/useChatName'
 import { TransactionProvider } from '@/providers/TransactionProvider'
 import { mdiArrowLeftTop, mdiDotsHorizontal } from '@mdi/js'
-import { LastMessage } from '@/components/AChat/types'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 
 const className = 'chat-brief'
 
@@ -136,7 +136,7 @@ export default defineComponent({
       required: true
     },
     transaction: {
-      type: Object as PropType<LastMessage>,
+      type: Object as PropType<NormalizedChatMessageTransaction>,
       required: true
     },
     isMessageReadonly: {

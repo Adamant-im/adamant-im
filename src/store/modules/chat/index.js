@@ -293,12 +293,14 @@ const getters = {
         const message = getters.lastMessage(partnerId)
 
         return {
-          timestamp: Date.now(), // give priority to new chats without messages (will be overwritten by ...message)
-          ...message,
+          lastMessage: {
+            timestamp: Date.now(), // give priority to new chats without messages (will be overwritten by ...message)
+            ...message
+          },
           contactId: partnerId
         }
       })
-      .sort((left, right) => right.timestamp - left.timestamp)
+      .sort((left, right) => right.lastMessage.timestamp - left.lastMessage.timestamp)
   },
 
   scrollPosition: (state) => (contactId) => {
