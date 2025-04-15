@@ -18,7 +18,7 @@
     >
       <left-side />
     </aside>
-    <div :class="`${className}__layout`">
+    <div :class="`${className}__layout`" ref="sidebarLayout">
       <component :is="layout">
         <div
           class="d-flex justify-center align-center"
@@ -40,10 +40,15 @@
 </template>
 <script lang="ts" setup>
 import { useRoute } from 'vue-router'
-import { computed, useTemplateRef, ref } from 'vue'
+import { computed, useTemplateRef, ref, provide } from 'vue'
 import { useStore } from 'vuex'
 import LeftSide from '@/components/LeftSide.vue'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import { sidebarLayoutKey } from '@/lib/constants'
+
+const sidebarLayoutRef = useTemplateRef('sidebarLayout')
+
+provide(sidebarLayoutKey, sidebarLayoutRef)
 
 const className = 'sidebar'
 
