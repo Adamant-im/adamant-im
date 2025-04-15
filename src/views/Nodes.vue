@@ -2,21 +2,20 @@
   <NodesTable />
 </template>
 
-<script>
+<script setup lang="ts">
 import NodesTable from '@/components/nodes/NodesTable.vue'
 import { nodesManager } from '@/lib/nodes'
+import { useStore } from 'vuex'
+import { onMounted, onBeforeUnmount } from 'vue'
 
-export default {
-  components: {
-    NodesTable
-  },
-  mounted() {
-    this.$store.dispatch('nodes/updateStatus')
+const store = useStore()
 
-    nodesManager.updateHealthcheckInterval('onScreen')
-  },
-  beforeUnmount() {
-    nodesManager.updateHealthcheckInterval('normal')
-  }
-}
+onMounted(() => {
+  store.dispatch('nodes/updateStatus')
+  nodesManager.updateHealthcheckInterval('onScreen')
+})
+
+onBeforeUnmount(() => {
+  nodesManager.updateHealthcheckInterval('normal')
+})
 </script>
