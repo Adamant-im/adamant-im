@@ -126,9 +126,12 @@ const messages = computed<NormalizedChatMessageTransaction[]>(() =>
   }))
 )
 const messageOptions = computed(() => {
-  const options: MessageOptions[] = lastMessages.value.map((msg: { contactId: string }) => ({
-    contactId: msg.contactId
-  }))
+  const options: MessageOptions[] = lastMessages.value.map(
+    (msg: { contactId: string; lastMessage: { readonly?: boolean } }) => ({
+      contactId: msg.contactId,
+      readonly: msg.lastMessage.readonly
+    })
+  )
 
   if (!noMoreChats.value && options.length > 25) {
     const lastNotAdamantChat = options.map((msg) => isAdamantChat(msg.contactId)).lastIndexOf(false)
