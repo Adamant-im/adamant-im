@@ -1,7 +1,7 @@
 <template>
   <pull-down @action="updateBalances" :action-text="t('chats.pull_down_actions.update_balances')">
     <v-row justify="center" no-gutters :class="className">
-      <container>
+      <container disableMaxWidth>
         <v-sheet class="white--text" color="transparent" :class="`${className}__card`">
           <!-- Wallets -->
           <v-sheet color="transparent" :class="`${className}__wallets`">
@@ -187,10 +187,6 @@ watch(currentWallet, (value) => {
  * 2. Reset VTabItem opacity.
  */
 .account-view {
-  :deep(.a-container) {
-    max-width: unset;
-  }
-
   &__wallets {
     &.v-card {
       background-color: transparent;
