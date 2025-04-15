@@ -1,5 +1,5 @@
 <template>
-  <div :class="className.root" class="w-100 h-100">
+  <div :class="classes.root" class="w-100 h-100">
     <app-toolbar-centered app :title="title" show-back flat sticky disable-max-width />
 
     <v-container fluid class="px-0 py-0" :classes="classes.container">
