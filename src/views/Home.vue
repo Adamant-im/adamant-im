@@ -1,18 +1,18 @@
 <template>
-  <pull-down @action="updateBalances" :action-text="$t('chats.pull_down_actions.update_balances')">
+  <pull-down @action="updateBalances" :action-text="t('chats.pull_down_actions.update_balances')">
     <v-row justify="center" no-gutters :class="className">
       <container>
         <v-sheet class="white--text" color="transparent" :class="`${className}__card`">
           <!-- Wallets -->
           <v-sheet color="transparent" :class="`${className}__wallets`">
             <v-tabs
-              ref="vtabs"
               v-model="currentWallet"
               :class="`${className}__tabs`"
               grow
               stacked
               height="auto"
               show-arrows
+              center-active
             >
               <v-tab
                 v-for="wallet in wallets"
@@ -69,39 +69,18 @@
 <script setup lang="ts">
 import WalletCard from '@/components/WalletCard.vue'
 import WalletTab from '@/components/WalletTab.vue'
+import type { Wallet } from '@/components/WalletTab.vue'
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import { PullDown } from '@/components/common/PullDown'
-import { Cryptos, CryptosInfo, isErc20 } from '@/lib/constants'
+import { Cryptos, CryptosInfo, CryptoSymbol, isErc20 } from '@/lib/constants'
 import { vibrate } from '@/lib/vibrate'
 import { useStore } from 'vuex'
-import { computed, watch, ref, onMounted } from 'vue'
+import { computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { CoinSymbol } from '@/store/modules/wallets/types'
+import { useI18n } from 'vue-i18n'
 
-/**
- * Center VTab element on click.
- *
- * @override vuetify.VTabs.methods.scrollIntoView()
- */
-function scrollIntoView() {
-  if (!this.activeTab) return
-  if (!this.isOverflowing) return (this.scrollOffset = 0)
-
-  const totalWidth = this.widths.wrapper + this.scrollOffset
-  const { clientWidth, offsetLeft } = this.activeTab.$el
-
-  const scrollOffset =
-    this.scrollOffset - (totalWidth - offsetLeft - clientWidth / 2 - this.widths.wrapper / 2)
-
-  if (scrollOffset <= 0) {
-    this.scrollOffset = 0
-  } else if (scrollOffset >= this.widths.container - this.widths.wrapper) {
-    this.scrollOffset = this.widths.container - this.widths.wrapper
-  } else {
-    this.scrollOffset = scrollOffset
-  }
-}
-
-const vtabs = ref(null)
+const { t } = useI18n()
 
 const store = useStore()
 
@@ -128,12 +107,11 @@ const currentCurrency = computed({
 
 const wallets = computed(() => {
   const state = store.state
-
-  return orderedVisibleWalletSymbols.value.map((crypto) => {
+  return orderedVisibleWalletSymbols.value.map((crypto: CoinSymbol) => {
     const key = crypto.symbol.toLowerCase()
     const address = crypto.symbol === Cryptos.ADM ? state.address : state[key].address
     const balance = crypto.symbol === Cryptos.ADM ? state.balance : state[key].balance
-    const erc20 = isErc20(crypto.symbol.toUpperCase())
+    const erc20 = isErc20(crypto.symbol.toUpperCase() as CryptoSymbol)
     const currentRate = state.rate.rates[`${crypto.symbol}/${currentCurrency.value}`]
     const rate = currentRate !== undefined ? Number((balance * currentRate).toFixed(2)) : 0
 
@@ -158,7 +136,7 @@ const updateBalances = () => {
   vibrate.veryShort()
 }
 
-const goToTransactions = (crypto) => {
+const goToTransactions = (crypto: string) => {
   router.push({
     name: 'Transactions',
     params: {
@@ -167,14 +145,16 @@ const goToTransactions = (crypto) => {
   })
 }
 
-const onWheel = (e) => {
-  const currentWallet = this.wallets.find((wallet) => wallet.cryptoCurrency === this.currentWallet)
-  const currentWalletIndex = this.wallets.indexOf(currentWallet)
+const onWheel = (e: WheelEvent) => {
+  const currentWallet = wallets.value.find(
+    (wallet: Wallet) => wallet.cryptoCurrency === currentWallet.value
+  )
+  const currentWalletIndex = wallets.value.indexOf(currentWallet)
 
   const nextWalletIndex = e.deltaY < 0 ? currentWalletIndex + 1 : currentWalletIndex - 1
-  const nextWallet = this.wallets[nextWalletIndex]
+  const nextWallet = wallets.value[nextWalletIndex]
 
-  if (nextWallet) this.currentWallet = nextWallet.cryptoCurrency
+  if (nextWallet) currentWallet.value = nextWallet.cryptoCurrency
 }
 
 const currentWallet = computed({
@@ -193,10 +173,6 @@ watch(currentWallet, (value) => {
   if (route.name === 'Transactions') {
     goToTransactions(value)
   }
-})
-
-onMounted(() => {
-  vtabs.value.scrollIntoView = scrollIntoView
 })
 </script>
 
