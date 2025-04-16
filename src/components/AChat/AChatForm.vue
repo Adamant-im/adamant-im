@@ -91,12 +91,8 @@ export default {
     const { setEmojiPickerOpen } = chatStateStore
 
     const isEmojiPickerOpen = computed({
-      get() {
-        return chatStateStore.isEmojiPickerOpen
-      },
-      set(value) {
-        setEmojiPickerOpen(value)
-      }
+      get: () => chatStateStore.isEmojiPickerOpen,
+      set: setEmojiPickerOpen
     })
 
     return {
