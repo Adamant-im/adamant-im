@@ -18,7 +18,7 @@
     >
       <left-side />
     </aside>
-    <div :class="`${className}__layout`" ref="sidebarLayout">
+    <div :class="classes.layout" ref="sidebarLayout">
       <component :is="layout">
         <div
           class="d-flex justify-center align-center"
@@ -51,6 +51,16 @@ const sidebarLayoutRef = useTemplateRef('sidebarLayout')
 provide(sidebarLayoutKey, sidebarLayoutRef)
 
 const className = 'sidebar'
+
+const classes = {
+  root: className,
+  rootWithAside: `${className}__with-aside`,
+  aside: `${className}__aside`,
+  asideHasView: `${className}__aside--has-view`,
+  routerView: `${className}__router-view`,
+  routerViewNoAside: `${className}__router-view--no-aside`,
+  layout: `${className}__layout`
+}
 
 const layout = computed(() => route.meta.layout || 'default')
 
@@ -131,15 +141,6 @@ if (SAVED_WIDTH_KEY) {
   if (value) {
     asideWidth.value = value
   }
-}
-
-const classes = {
-  root: className,
-  rootWithAside: `${className}__with-aside`,
-  aside: `${className}__aside`,
-  asideHasView: `${className}__aside--has-view`,
-  routerView: `${className}__router-view`,
-  routerViewNoAside: `${className}__router-view--no-aside`
 }
 </script>
 <style lang="scss" scoped>
