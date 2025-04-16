@@ -50,7 +50,7 @@ const state = () => ({
   chats: {},
   lastMessageHeight: 0, // `height` value of the last message
   isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
-  offset: 0, // for loading chat list with pagination. -1 if all of chats loaded,
+  offset: 0, // for loading chat list with pagination. -1 if all of chats loaded
   noActiveNodesDialog: undefined // true - visible dialog, false - hidden dialog, but shown before, undefined - not shown
 })
 
