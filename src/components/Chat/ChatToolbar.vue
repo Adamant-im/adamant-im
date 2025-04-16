@@ -63,7 +63,7 @@ const { isMobileView } = useScreenSize()
 const name = useChatName(partnerId)
 
 const partnerName = computed({
-  get: name.value,
+  get: () => name.value,
   set(value) {
     store.commit('partners/displayName', {
       partner: partnerId,
