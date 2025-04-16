@@ -63,6 +63,7 @@ import UploadFile from '../UploadFile.vue'
 import { mdiFile, mdiImage, mdiPlusCircleOutline } from '@mdi/js'
 import { useChatStateStore } from '@/stores/chat-state'
 import type { FileData } from '@/lib/files'
+import { CoinSymbol } from '@/store/modules/wallets/types'
 
 const emit = defineEmits<{
   (e: 'files', value: FileData[]): void
@@ -78,6 +79,8 @@ const store = useStore()
 const { t } = useI18n()
 const chatStateStore = useChatStateStore()
 
+const { setChatMenuOpen } = chatStateStore
+
 const uploadImageRef = useTemplateRef<InstanceType<typeof UploadFile>>('uploadImageRef')
 const uploadFileRef = useTemplateRef<InstanceType<typeof UploadFile>>('uploadFileRef')
 
@@ -89,14 +92,14 @@ const acceptImage = 'image/* , video/*'
 
 const isChatMenuOpen = computed({
   get: () => chatStateStore.isChatMenuOpen,
-  set: (value: boolean) => chatStateStore.setChatMenuOpen(value)
+  set: setChatMenuOpen
 })
 
 const orderedVisibleWalletSymbols = computed(
   () => store.getters['wallets/getVisibleOrderedWalletSymbols']
 )
 
-const wallets = computed(() => orderedVisibleWalletSymbols.value.map((c: any) => c.symbol))
+const wallets = computed(() => orderedVisibleWalletSymbols.value.map((c: CoinSymbol) => c.symbol))
 
 function handleFileSelected(imageData: FileData) {
   emit('files', [imageData])
