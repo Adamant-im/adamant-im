@@ -40,12 +40,12 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import BackButton from '@/components/common/BackButton/BackButton.vue'
 import { computed } from 'vue'
 import { useStore } from 'vuex'
-import { usePartnerName } from '@/hooks/usePartnerName'
 import { useRouter } from 'vue-router'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
 import { useI18n } from 'vue-i18n'
+import { useChatName } from '@/components/AChat/hooks/useChatName'
 
-const props = defineProps({
+const { partnerId } = defineProps({
   partnerId: {
     type: String,
     required: true
@@ -60,23 +60,19 @@ const { t } = useI18n()
 
 const { isMobileView } = useScreenSize()
 
-const { getPartnerName } = usePartnerName()
+const name = useChatName(partnerId)
 
 const partnerName = computed({
-  get() {
-    return getPartnerName(props.partnerId)
-  },
+  get: name.value,
   set(value) {
     store.commit('partners/displayName', {
-      partner: props.partnerId,
+      partner: partnerId,
       displayName: value
     })
   }
 })
 
-const numOfNewMessages = computed(() =>
-  store.getters['chat/numWithoutTheCurrentChat'](props.partnerId)
-)
+const numOfNewMessages = computed(() => store.getters['chat/numWithoutTheCurrentChat'](partnerId))
 
 const goBack = () => {
   router.push({ name: 'Chats' })
