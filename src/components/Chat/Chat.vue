@@ -367,12 +367,8 @@ const isShowFreeTokensDialog = computed({
 })
 
 const actionsDropdownMessageId = computed({
-  get() {
-    return chatStateStore.actionsDropdownMessageId
-  },
-  set(value) {
-    setActionsDropdownMessageId(value)
-  }
+  get: () => chatStateStore.actionsDropdownMessageId,
+  set: setActionsDropdownMessageId
 })
 
 const messages = computed(() => store.getters['chat/messages'](partnerId))
