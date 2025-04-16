@@ -30,6 +30,8 @@ const themeName = computed(() => {
   return store.state.options.darkTheme ? ThemeName.Dark : ThemeName.Light
 })
 
+const { locale } = useI18n()
+
 onMounted(() => {
   const instance = getCurrentInstance()
 
@@ -60,11 +62,13 @@ const setLocale = () => {
   // Subsequent mutations of `language.currentLocale`
   // will be synchronized with `i18n.locale`.
   const localeFromStorage = store.state.language.currentLocale
-  useI18n().locale.value = localeFromStorage
+  locale.value = localeFromStorage
   dayjs.locale(localeFromStorage)
 }
 
-window.addEventListener('keydown', onKeydownHandler, true)
+onMounted(() => {
+  window.addEventListener('keydown', onKeydownHandler, true)
+})
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeydownHandler, true)
