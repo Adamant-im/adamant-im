@@ -1,10 +1,14 @@
 <template>
-  <div :class="className">
-    <div :class="`${className}__container`">
+  <div v-if="showPlaceholder || isGettingPublicKey" :class="classes.root">
+    <div v-if="showPlaceholder" :class="classes.container">
       <Logo style="width: 35px" />
-      <p v-for="key in keys" :key="key" :class="`${className}__row`">
+      <p v-for="key in keys" :key="key" :class="classes.row">
         {{ t(`chats.placeholder.${key}`) }}
       </p>
+    </div>
+    <div v-if="isGettingPublicKey" :class="[classes.container, `${classes.container}_public-key`]">
+      <v-progress-circular :class="classes.spinner" indeterminate :size="20" />
+      {{ t('chats.placeholder.public-key') }}
     </div>
   </div>
 </template>
@@ -15,7 +19,18 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
+defineProps<{
+  showPlaceholder: boolean
+  isGettingPublicKey: boolean
+}>()
+
 const className = 'chat-placeholder'
+const classes = {
+  root: className,
+  row: `${className}__row`,
+  container: `${className}__container`,
+  spinner: `${className}__spinner`
+}
 const keys = ['encrypted', 'ipfs', 'anonymous', 'censorship']
 </script>
 
@@ -24,6 +39,9 @@ const keys = ['encrypted', 'ipfs', 'anonymous', 'censorship']
 @use '@/assets/styles/settings/_colors.scss';
 
 .chat-placeholder {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
   width: 100%;
   padding: 8px 0;
   margin: 16px 0;
@@ -39,6 +57,11 @@ const keys = ['encrypted', 'ipfs', 'anonymous', 'censorship']
     padding: 16px;
     background: map.get(colors.$adm-colors, 'black');
     border-radius: 8px;
+
+    &_public-key {
+      flex-direction: row;
+      column-gap: 8px;
+    }
   }
 
   &__row {
@@ -57,6 +80,10 @@ const keys = ['encrypted', 'ipfs', 'anonymous', 'censorship']
         0 1px 1px hsla(0, 0%, 39.2%, 0.04),
         0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
     }
+
+    &__spinner {
+      color: map.get(colors.$adm-colors, 'grey');
+    }
   }
 }
 
@@ -68,6 +95,10 @@ const keys = ['encrypted', 'ipfs', 'anonymous', 'censorship']
         0 1px 10px hsla(0, 0%, 39.2%, 0.06),
         0 1px 1px hsla(0, 0%, 39.2%, 0.04),
         0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
+    }
+
+    &__spinner {
+      color: map.get(colors.$adm-colors, 'regular');
     }
   }
 }

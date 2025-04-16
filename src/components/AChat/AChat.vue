@@ -17,7 +17,7 @@
         </div>
 
         <div ref="messagesRef" :class="classes.bodyMessages">
-          <div v-if="showPlaceholder">
+          <div>
             <slot name="placeholder" />
           </div>
           <template v-for="message in messages" :key="message.id">
@@ -73,14 +73,12 @@ const props = withDefaults(
     userId: string
     loading: boolean
     locale: string
-    showPlaceholder: boolean
   }>(),
   {
     messages: () => [],
     partners: () => [],
     loading: false,
-    locale: 'en',
-    showPlaceholder: false
+    locale: 'en'
   }
 )
 

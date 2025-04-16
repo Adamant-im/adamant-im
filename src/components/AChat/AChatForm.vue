@@ -10,6 +10,7 @@
       v-model="message"
       @input="onInput"
       :placeholder="label"
+      :disabled="isInputDisabled"
       hide-details
       single-line
       auto-grow
@@ -71,6 +72,10 @@ export default {
       type: String,
       default: 'Type a message'
     },
+    isInputDisabled: {
+      type: Boolean,
+      default: false
+    },
     showDivider: {
       type: Boolean,
       default: false
@@ -85,7 +90,6 @@ export default {
   },
   emits: ['message', 'esc', 'error'],
   setup() {
-
     return {
       mdiSend
     }

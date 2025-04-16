@@ -143,21 +143,6 @@ export default {
         true,
         this.recipientName
       )
-
-      // return this.$store
-      //   .dispatch('chat/createChat', {
-      //     partnerId: this.recipientAddress,
-      //     partnerName: this.recipientName
-      //   })
-      //   .then((_publicKey) => {
-      //     this.$emit('start-chat', this.recipientAddress, this.uriMessage)
-      //     this.show = false
-      //   })
-      //   .catch((err) => {
-      //     this.$store.dispatch('snackbar/show', {
-      //       message: err.message // @todo translations
-      //     })
-      //   })
     },
 
     /**

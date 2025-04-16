@@ -5,7 +5,6 @@
       ref="chatRef"
       :messages="messages"
       :partners="partners"
-      :show-placeholder="showNewChatPlaceholder"
       :user-id="userId"
       :loading="loading"
       :locale="$i18n.locale"
@@ -85,7 +84,10 @@
       </template>
 
       <template #placeholder>
-        <chat-placeholder />
+        <chat-placeholder
+          :show-placeholder="showNewChatPlaceholder"
+          :is-getting-public-key="isGettingPublicKey"
+        />
       </template>
 
       <template #message="{ message, sender }">
@@ -199,6 +201,7 @@
           :send-on-enter="sendMessageOnEnter"
           :show-divider="true"
           :label="t('chats.message')"
+          :is-input-disabled="isInputDisabled"
           :message-text="
             $route.query.messageText || $store.getters['draftMessage/draftMessage'](partnerId)
           "
@@ -357,9 +360,12 @@ const actionsDropdownMessageId = ref<string | -1>(-1)
 const replyMessageId = ref<string | -1>(-1)
 const showEmojiPicker = ref(false)
 const showNewChatPlaceholder = ref(false)
+const isGettingPublicKey = ref(false)
+const isInputDisabled = ref(false)
 
 const messages = computed(() => store.getters['chat/messages'](props.partnerId))
 const userId = computed(() => store.state.address)
+const isNewChat = computed(() => store.getters['chat/isNewChat'](props.partnerId))
 
 const getPartnerName = (address: string) => {
   const name: string = store.getters['partners/displayName'](address) || ''
@@ -430,6 +436,12 @@ onBeforeMount(() => {
 })
 
 onMounted(async () => {
+  if (isNewChat.value) {
+    const partnerName = store.getters['chat/getPartnerName'](props.partnerId)
+
+    await retrievePublicKey(props.partnerId, partnerName)
+  }
+
   if (chatPage.value <= 0) await fetchChatMessages()
 
   const userMessages = messages.value.filter(
@@ -456,6 +468,26 @@ onBeforeUnmount(() => {
   window.removeEventListener('keyup', onKeyPress)
   Visibility.unbind(Number(visibilityId.value))
 })
+
+async function retrievePublicKey(partnerId: string, partnerName: string) {
+  try {
+    isGettingPublicKey.value = true
+    await store.dispatch('chat/createChat', {
+      partnerId,
+      partnerName
+    })
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Unknown error'
+    vibrate.long()
+    isInputDisabled.value = true
+
+    store.dispatch('snackbar/show', {
+      message: message
+    })
+  } finally {
+    isGettingPublicKey.value = false
+  }
+}
 
 /**
  * Validate message before sending.

@@ -146,31 +146,15 @@ export default {
   },
   methods: {
     openChat(partnerId, messageText, retrieveKey = false, partnerName) {
+      if (retrieveKey) {
+        this.$store.commit('chat/addNewChat', { partnerId, partnerName })
+      }
+
       this.$router.push({
         name: 'Chat',
         params: { partnerId },
         query: { messageText }
       })
-
-      if (retrieveKey) {
-        this.retrievePublicKey(partnerId, partnerName)
-      }
-    },
-    retrievePublicKey(partnerId, partnerName) {
-      this.$store
-        .dispatch('chat/createChat', {
-          partnerId,
-          partnerName
-        })
-        .then((_publicKey) => {
-          console.log(`Success! Retrieved public key: ${_publicKey}`)
-        })
-        .catch((err) => {
-          console.log(`Error while retrieving public key: ${err}`)
-          this.$store.dispatch('snackbar/show', {
-            message: err.message // @todo translations
-          })
-        })
     },
     isAdamantChat,
     getAdamantChatMeta,
