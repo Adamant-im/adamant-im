@@ -308,10 +308,14 @@ export default defineComponent({
 
       const { cryptoTransferDecimals, decimals } = CryptosInfo[commissionTokenLabel]
 
-      const tokenFee =
-        props.queryStatus === 'success' && typeof props.fee === 'number'
-          ? `${formatAmount(props.fee, cryptoTransferDecimals ?? decimals)} ${commissionTokenLabel}`
-          : placeholder.value
+      const isShouldShowFee =
+        typeof props.fee === 'number' &&
+        ((props.queryStatus === 'success' && props.fee > 0) ||
+          props.transactionStatus === 'CONFIRMED')
+
+      const tokenFee = isShouldShowFee
+        ? `${formatAmount(props.fee, cryptoTransferDecimals ?? decimals)} ${commissionTokenLabel}`
+        : placeholder.value
 
       if (!props.fee || !calculatedTimestampInSec.value) return tokenFee
 
