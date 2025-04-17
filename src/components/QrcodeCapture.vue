@@ -38,7 +38,6 @@ const classes = {
   image: `${className}__image`
 }
 
-let qrCodeText = ''
 let codeReader: BrowserQRCodeReader
 
 const canvas = useTemplateRef('canvasElement')
@@ -78,8 +77,6 @@ const drawCanvas = (file: File) => {
 
       ctx.drawImage(img, 0, 0, canvas.value.width, canvas.value.height)
 
-      revokeObjectURL()
-
       resolve(canvas)
     }
 
@@ -93,10 +90,6 @@ const drawCanvas = (file: File) => {
   return promise
 }
 
-/**
- * Decode QRCode from canvas.
- * @returns {<string>}
- */
 const getQrcode = () => {
   return codeReader?.decodeFromCanvas(canvas.value!).getText()
 }
@@ -130,7 +123,7 @@ const onFileSelect = async (event: Event) => {
     }
 
     await drawCanvas(file)
-    qrCodeText = await tryToDecode()
+    const qrCodeText = await tryToDecode()
 
     vibrate.veryShort()
 
