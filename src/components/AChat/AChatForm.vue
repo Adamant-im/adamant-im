@@ -43,262 +43,253 @@
   </div>
 </template>
 
-<script>
-import { nextTick } from 'vue'
+<script lang="ts" setup>
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import ChatEmojis from '@/components/Chat/ChatEmojis.vue'
 import { isMobile } from '@/lib/display-mobile'
 import { mdiSend } from '@mdi/js'
+import { useStore } from 'vuex'
 
-export default {
-  components: { ChatEmojis },
-  props: {
-    partnerId: {
-      default: '',
-      type: String
-    },
-    messageText: {
-      default: '',
-      type: String
-    },
-    showSendButton: {
-      type: Boolean,
-      default: true
-    },
-    sendOnEnter: {
-      type: Boolean,
-      default: true
-    },
-    label: {
-      type: String,
-      default: 'Type a message'
-    },
-    isKeyMissing: {
-      type: Boolean,
-      default: false
-    },
-    showDivider: {
-      type: Boolean,
-      default: false
-    },
-    /**
-     * Message validator.
-     */
-    validator: {
-      type: Function,
-      required: true
-    }
-  },
-  emits: ['message', 'esc', 'error'],
-  setup() {
-    return {
-      mdiSend
-    }
-  },
-  data: () => ({
-    message: '',
-    emojiPickerOpen: false,
-    botCommandIndex: null,
-    botCommandSelectionMode: false,
-    isInputFocused: false
-  }),
-  computed: {
-    isDesktopDevice: () => !isMobile(),
-    className: () => 'a-chat',
-    classes() {
-      return [
-        `${this.className}__form`,
-        {
-          [`${this.className}__form--is-active`]: !!this.message
-        }
-      ]
-    },
-    /**
-     * Processing `ctrl+enter`, `shift + enter` and `enter`
-     */
-    listeners() {
-      return {
-        keypress: (e) => {
-          // on some devices keyCode for CTRL+ENTER is 10
-          // https://bugs.chromium.org/p/chromium/issues/detail?id=79407
-          if (e.keyCode === 13 || e.keyCode === 10) {
-            // Enter || Ctrl+Enter
-            if (this.sendOnEnter) {
-              // add LF and calculate height when CTRL+ENTER or ALT+ENTER or CMD+ENTER (Mac & Windows)
-              // no need to add LF for shiftKey, it will be added automatically
-              if (e.ctrlKey || e.altKey || e.metaKey) {
-                this.addLineFeed()
-                this.calculateInputHeight()
-                return
-              }
+type Props = {
+  partnerId: string
+  messageText: string
+  showSendButton: boolean
+  sendOnEnter: boolean
+  label: string
+  isKeyMissing: boolean
+  showDivider: boolean
+  validator: (message: string) => string | false
+}
 
-              if (!e.shiftKey) {
-                // send message if shiftKey is not pressed
-                e.preventDefault()
-                this.submitMessage()
-              }
-            } else {
-              if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) {
-                e.preventDefault()
-                this.submitMessage()
-              }
-            }
+const props = withDefaults(defineProps<Props>(), {
+  partnerId: '',
+  messageText: '',
+  showSendButton: true,
+  sendOnEnter: true,
+  label: 'Type a message',
+  isKeyMissing: false,
+  showDivider: false
+})
+
+const emit = defineEmits<{
+  (e: 'message', message: string): void
+  (e: 'esc'): void
+  (e: 'error', error: string): void
+}>()
+
+const store = useStore()
+
+const message = ref('')
+const emojiPickerOpen = ref(false)
+const botCommandIndex = ref<number | null>(null)
+const botCommandSelectionMode = ref(false)
+const isInputFocused = ref(false)
+const messageTextarea = ref()
+
+const className = 'a-chat'
+const classes = [
+  `${className}__form`,
+  {
+    [`${className}__form--is-active`]: !!message.value
+  }
+]
+
+const isDesktopDevice = computed(() => !isMobile())
+const listeners = computed(() => {
+  return {
+    keypress: (e: KeyboardEvent) => {
+      // on some devices keyCode for CTRL+ENTER is 10
+      // https://bugs.chromium.org/p/chromium/issues/detail?id=79407
+      if (e.keyCode === 13 || e.keyCode === 10) {
+        // Enter || Ctrl+Enter
+        if (props.sendOnEnter) {
+          // add LF and calculate height when CTRL+ENTER or ALT+ENTER or CMD+ENTER (Mac & Windows)
+          // no need to add LF for shiftKey, it will be added automatically
+          if (e.ctrlKey || e.altKey || e.metaKey) {
+            addLineFeed()
+            calculateInputHeight()
+            return
           }
-        },
-        keydown: (e) => {
-          if (e.code === 'Escape') {
-            this.$emit('esc')
+
+          if (!e.shiftKey) {
+            // send message if shiftKey is not pressed
+            e.preventDefault()
+            submitMessage()
+          }
+        } else {
+          if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) {
+            e.preventDefault()
+            submitMessage()
           }
         }
       }
-    }
-  },
-  mounted() {
-    if (this.messageText) {
-      this.message = this.messageText
-      this.focus()
-    }
-    this.attachKeyCommandListener()
-  },
-  beforeUnmount() {
-    this.destroyKeyCommandListener()
-  },
-  methods: {
-    attachKeyCommandListener() {
-      window.addEventListener('keydown', this.onKeyCommand)
     },
-    destroyKeyCommandListener() {
-      window.removeEventListener('keydown', this.onKeyCommand)
-    },
-    onKeyCommand: function (event) {
-      if (event.ctrlKey && event.shiftKey && event.code === 'Digit1') {
-        this.openElement()
-      } else if (this.isInputFocused && (event.code === 'ArrowUp' || event.code === 'ArrowDown')) {
-        this.selectCommand(event)
-      } else if (event.key.length === 1) {
-        this.botCommandSelectionMode = false
-        this.botCommandIndex = null
-      }
-    },
-    openElement() {
-      this.emojiPickerOpen = true
-    },
-    closeElement() {
-      this.emojiPickerOpen = false
-      setTimeout(() => this.focus(), 0)
-    },
-    onInput: function () {
-      this.$store.commit('draftMessage/saveMessage', {
-        message: this.message,
-        partnerId: this.partnerId
-      })
-    },
-    emojiPicture(emoji) {
-      const caretPosition = this.$refs.messageTextarea.selectionStart
-
-      let before = this.message.slice(0, caretPosition)
-      const after = this.message.slice(caretPosition)
-      let emojiLength = emoji.length
-
-      if (
-        (before.length > 0 &&
-          !/\s|[[{(\n]/.test(before.slice(-1)) && // Check for a space, newline or parentheses before the emoji
-          !before
-            .slice(-2)
-            .match(
-              /[\p{Emoji_Presentation}\p{Emoji}\p{Emoji_Modifier_Base}\p{Emoji_Component}]/gu
-            )) ||
-        /[\d]/.test(before.slice(-1))
-      ) {
-        before += ' '
-        emojiLength += 1
-      }
-      this.message = before + emoji + after
-      this.closeElement()
-
-      // Set the cursor position to after the newly inserted text
-      const newCaretPosition = caretPosition + emojiLength
-      this.focus()
-      this.$nextTick(() => {
-        this.$refs.messageTextarea.setSelectionRange(newCaretPosition, newCaretPosition)
-      })
-      this.onInput()
-    },
-
-    onToggleEmojiPicker(state) {
-      this.emojiPickerOpen = state
-
-      this.focus()
-    },
-
-    submitMessage() {
-      const error = this.validator(this.message)
-      if (error === false) {
-        if (this.message.startsWith('/')) {
-          this.$store.commit('botCommands/addCommand', {
-            partnerId: this.partnerId,
-            command: this.message.trim(),
-            timestamp: Date.now()
-          })
-        }
-        this.$emit('message', this.message)
-        this.message = ''
-        this.$store.commit('draftMessage/deleteMessage', {
-          message: this.message,
-          partnerId: this.partnerId
-        })
-        this.botCommandIndex = null
-        this.botCommandSelectionMode = false
-      } else {
-        this.$emit('error', error)
-      }
-
-      // Fix textarea height to 1 row after miltiline message send
-      this.calculateInputHeight()
-      this.focus()
-    },
-    calculateInputHeight() {
-      nextTick(this.$refs.messageTextarea.calculateInputHeight)
-    },
-    addLineFeed() {
-      this.message += '\n'
-    },
-    focus() {
-      this.$refs.messageTextarea.focus()
-    },
-    selectCommand(event) {
-      const direction = event.code
-      if (!this.message) {
-        this.botCommandSelectionMode = true
-      }
-      if (!this.botCommandSelectionMode) {
-        return
-      }
-      event.preventDefault()
-      const commands = this.$store.getters['botCommands/getCommandsHistory'](this.partnerId)
-      const maxIndex = commands.length > 0 ? commands.length - 1 : 0
-      if (this.botCommandIndex === null) {
-        if (direction === 'ArrowUp') {
-          this.botCommandIndex = maxIndex
-          this.message = commands[this.botCommandIndex]?.command || ''
-        }
-        return
-      }
-
-      if (direction === 'ArrowUp') {
-        if (this.botCommandIndex > 0) {
-          this.botCommandIndex--
-          this.message = commands[this.botCommandIndex]?.command || ''
-        }
-        return
-      }
-
-      if (this.botCommandIndex < maxIndex) {
-        this.botCommandIndex++
-        this.message = commands[this.botCommandIndex]?.command || ''
+    keydown: (e: KeyboardEvent) => {
+      if (e.code === 'Escape') {
+        emit('esc')
       }
     }
   }
+})
+
+onMounted(() => {
+  if (props.messageText) {
+    message.value = props.messageText
+    focus()
+  }
+  attachKeyCommandListener()
+})
+
+onBeforeUnmount(() => {
+  destroyKeyCommandListener()
+})
+
+function attachKeyCommandListener() {
+  window.addEventListener('keydown', onKeyCommand)
 }
+
+function destroyKeyCommandListener() {
+  window.removeEventListener('keydown', onKeyCommand)
+}
+
+function onKeyCommand(event: KeyboardEvent) {
+  if (event.ctrlKey && event.shiftKey && event.code === 'Digit1') {
+    openElement()
+  } else if (isInputFocused.value && (event.code === 'ArrowUp' || event.code === 'ArrowDown')) {
+    selectCommand(event)
+  } else if (event.key.length === 1) {
+    botCommandSelectionMode.value = false
+    botCommandIndex.value = null
+  }
+}
+
+function openElement() {
+  emojiPickerOpen.value = true
+}
+
+function closeElement() {
+  emojiPickerOpen.value = false
+  setTimeout(() => focus(), 0)
+}
+
+function onInput() {
+  store.commit('draftMessage/saveMessage', {
+    message: message.value,
+    partnerId: props.partnerId
+  })
+}
+
+function emojiPicture(emoji: string) {
+  const caretPosition = messageTextarea.value.selectionStart
+
+  let before = message.value.slice(0, caretPosition)
+  const after = message.value.slice(caretPosition)
+  let emojiLength = emoji.length
+
+  if (
+    (before.length > 0 &&
+      !/\s|[[{(\n]/.test(before.slice(-1)) && // Check for a space, newline or parentheses before the emoji
+      !before
+        .slice(-2)
+        .match(/[\p{Emoji_Presentation}\p{Emoji}\p{Emoji_Modifier_Base}\p{Emoji_Component}]/gu)) ||
+    /[\d]/.test(before.slice(-1))
+  ) {
+    before += ' '
+    emojiLength += 1
+  }
+  message.value = before + emoji + after
+  closeElement()
+
+  // Set the cursor position to after the newly inserted text
+  const newCaretPosition = caretPosition + emojiLength
+  focus()
+  nextTick(() => {
+    messageTextarea.value.setSelectionRange(newCaretPosition, newCaretPosition)
+  })
+  onInput()
+}
+
+function onToggleEmojiPicker(state: boolean) {
+  emojiPickerOpen.value = state
+
+  focus()
+}
+
+function submitMessage() {
+  const error = props.validator(message.value)
+  if (error === false) {
+    if (message.value.startsWith('/')) {
+      store.commit('botCommands/addCommand', {
+        partnerId: props.partnerId,
+        command: message.value.trim(),
+        timestamp: Date.now()
+      })
+    }
+    emit('message', message.value)
+    message.value = ''
+    store.commit('draftMessage/deleteMessage', {
+      message: message.value,
+      partnerId: props.partnerId
+    })
+    botCommandIndex.value = null
+    botCommandSelectionMode.value = false
+  } else {
+    emit('error', error)
+  }
+
+  // Fix textarea height to 1 row after miltiline message send
+  calculateInputHeight()
+  focus()
+}
+
+function calculateInputHeight() {
+  nextTick(messageTextarea.value.calculateInputHeight)
+}
+
+function addLineFeed() {
+  message.value += '\n'
+}
+
+function focus() {
+  messageTextarea.value.focus()
+}
+
+function selectCommand(event: KeyboardEvent) {
+  const direction = event.code
+  if (!message.value) {
+    botCommandSelectionMode.value = true
+  }
+  if (!botCommandSelectionMode.value) {
+    return
+  }
+  event.preventDefault()
+  const commands = store.getters['botCommands/getCommandsHistory'](props.partnerId)
+  const maxIndex = commands.length > 0 ? commands.length - 1 : 0
+  if (botCommandIndex.value === null) {
+    if (direction === 'ArrowUp') {
+      botCommandIndex.value = maxIndex
+      message.value = commands[botCommandIndex.value]?.command || ''
+    }
+    return
+  }
+
+  if (direction === 'ArrowUp') {
+    if (botCommandIndex.value > 0) {
+      botCommandIndex.value--
+      message.value = commands[botCommandIndex.value]?.command || ''
+    }
+    return
+  }
+
+  if (botCommandIndex.value < maxIndex) {
+    botCommandIndex.value++
+    message.value = commands[botCommandIndex.value]?.command || ''
+  }
+}
+
+defineExpose({
+  focus
+})
 </script>
 
 <style lang="scss" scoped>
