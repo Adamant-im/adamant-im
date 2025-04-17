@@ -446,7 +446,7 @@ onMounted(async () => {
   if (isNewChat.value) {
     const partnerName = store.getters['chat/getPartnerName'](props.partnerId)
 
-    await retrievePublicKey(props.partnerId, partnerName)
+    await createChat(props.partnerId, partnerName)
   }
 
   const userMessages = messages.value.filter(
@@ -472,9 +472,13 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   window.removeEventListener('keyup', onKeyPress)
   Visibility.unbind(Number(visibilityId.value))
+
+  if (isNewChat.value) {
+    store.commit('chat/removeNewChat', props.partnerId)
+  }
 })
 
-async function retrievePublicKey(partnerId: string, partnerName: string) {
+async function createChat(partnerId: string, partnerName: string) {
   try {
     isGettingPublicKey.value = true
     await store.dispatch('chat/createChat', {
