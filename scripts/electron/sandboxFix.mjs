@@ -1,11 +1,8 @@
 // copied and modified from https://github.com/gergof/electron-builder-sandbox-fix/blob/master/lib/index.js
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const fs = require('fs/promises')
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const path = require('path')
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const chalk = require('chalk')
+import fs from 'fs/promises'
+import path from 'path'
+import chalk from 'chalk'
 
 const log = (message, dotFormatting = chalk.blue) => {
   console.log(`  ${dotFormatting('•')} ${message}`)
@@ -37,4 +34,4 @@ exec "$SCRIPT_DIR/${params.packager.executableName}.bin" "--no-sandbox" "$@"
   log('sandbox fix successfully applied', chalk.green)
 }
 
-module.exports = afterPackHook
+export default afterPackHook
