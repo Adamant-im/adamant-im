@@ -45,7 +45,6 @@
               />
             </v-list-item-title>
           </template>
-
           <div
             :class="[
               `${className}__inconsistent-status`,
@@ -58,7 +57,7 @@
               size="20"
               style="color: #f8a061 !important"
             />
-            {{ t(`transaction.statuses.${transactionStatus}`)
+            {{ formattedTransactionStatus
             }}<span v-if="inconsistentStatus">{{
               ': ' + t(`transaction.inconsistent_reasons.${inconsistentStatus}`, { crypto })
             }}</span>
@@ -272,6 +271,14 @@ export default defineComponent({
       props.admTx && props.admTx.message ? props.admTx.message : false
     )
 
+    const isPendingQuery = computed(() => props.queryStatus === 'pending')
+
+    const formattedTransactionStatus = computed(() => {
+      if (isPendingQuery.value) return Symbols.HOURGLASS
+
+      return t(`transaction.statuses.${props.transactionStatus}`)
+    })
+
     const statusUpdatable = computed(() => tsUpdatable(props.transactionStatus, props.crypto))
     const historyRate = computed(() => {
       if (!transaction.value) return Symbols.HOURGLASS
@@ -283,43 +290,41 @@ export default defineComponent({
       )
     })
     const rate = computed(() => {
-      if (!transaction.value) return
+      if (!transaction.value) return Symbols.HOURGLASS
 
       return store.getters['rate/rate'](transaction.value.amount, props.crypto)
     })
 
     const calculatedTimestampInSec = computed(() => {
       if (!transaction.value) {
-        return null;
+        return null
       }
 
       return timestampInSec(props.crypto, transaction.value.timestamp!)
     })
 
     const calculatedFee = computed(() => {
-      const commissionTokenLabel = (props.feeCrypto ?? props.crypto) as CryptoSymbol;
+      const commissionTokenLabel = (props.feeCrypto ?? props.crypto) as CryptoSymbol
 
       const { cryptoTransferDecimals, decimals } = CryptosInfo[commissionTokenLabel]
 
-      const tokenFee = typeof props.fee === 'number'
-        ? `${formatAmount(props.fee, cryptoTransferDecimals ?? decimals)} ${commissionTokenLabel}`
-        : placeholder.value;
+      const tokenFee =
+        props.queryStatus === 'success' && typeof props.fee === 'number'
+          ? `${formatAmount(props.fee, cryptoTransferDecimals ?? decimals)} ${commissionTokenLabel}`
+          : placeholder.value
 
-      if (!props.fee || !calculatedTimestampInSec.value) return tokenFee;
-
+      if (!props.fee || !calculatedTimestampInSec.value) return tokenFee
 
       const commissionUsdAmount = store.getters['rate/historyRate'](
         calculatedTimestampInSec.value,
         props.fee,
-        commissionTokenLabel,
-      );
+        commissionTokenLabel
+      )
 
+      if (!commissionUsdAmount) return tokenFee
 
-      if (!commissionUsdAmount) return tokenFee;
-
-      return tokenFee  + ` ~${commissionUsdAmount}`;
-    });
-
+      return tokenFee + ` ~${commissionUsdAmount}`
+    })
 
     const handleCopyToClipboard = (text?: string) => {
       if (!text) return
@@ -365,9 +370,7 @@ export default defineComponent({
     )
 
     const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decimals) => {
-      return BigNumber(amount)
-        .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
-        .toFixed()
+      return BigNumber(amount).decimalPlaces(decimals, BigNumber.ROUND_DOWN).toFixed()
     }
 
     return {
@@ -389,6 +392,7 @@ export default defineComponent({
       historyRate,
       rate,
       calculatedFee,
+      formattedTransactionStatus,
       formatAmount,
       mdiAlertOutline,
       mdiChevronRight,

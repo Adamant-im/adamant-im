@@ -4,6 +4,7 @@
       <slot>
         <!--     Todo: check src/components/PasswordSetDialog.vue component and consider the possibility to move common code to new component  -->
         <v-text-field
+          ref="passphraseInput"
           v-model="passphrase"
           :label="$t('login.password_label')"
           autocomplete="current-password"
@@ -54,14 +55,14 @@
 
 <script>
 import { validateMnemonic } from 'bip39'
-import { computed, ref, defineComponent } from 'vue'
+import { computed, ref, defineComponent, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { isAxiosError } from 'axios'
 import { isAllNodesOfflineError, isAllNodesDisabledError } from '@/lib/nodes/utils/errors'
 import { mdiEye, mdiEyeOff } from '@mdi/js'
-
+import { useSaveCursor } from '@/hooks/useSaveCursor'
 
 const className = 'login-form'
 const classes = {
@@ -83,9 +84,13 @@ export default defineComponent({
     const { t } = useI18n()
     const showSpinner = ref(false)
     const showPassphrase = ref(false)
+    const passphraseInput = useTemplateRef('passphraseInput')
+
     const togglePassphraseVisibility = () => {
       showPassphrase.value = !showPassphrase.value
     }
+
+    useSaveCursor(passphraseInput, showPassphrase)
 
     const passphrase = computed({
       get() {
@@ -143,6 +148,7 @@ export default defineComponent({
     return {
       showSpinner,
       passphrase,
+      passphraseInput,
       showPassphrase,
       classes,
       mdiEye,
@@ -159,6 +165,20 @@ export default defineComponent({
 @use '@/assets/styles/settings/_colors.scss';
 @use 'vuetify/settings';
 
+.login-form {
+  &__textfield {
+    &:deep(.v-field__append-inner) {
+      padding-left: 0;
+      margin-left: -28px; // compensate the append-inner icon
+    }
+
+    &:deep(.v-field__input) {
+      width: 100%;
+      padding-right: 0;
+    }
+  }
+}
+
 /** Themes **/
 .v-theme--light {
   .login-form {
@@ -174,5 +194,4 @@ export default defineComponent({
     }
   }
 }
-
 </style>
