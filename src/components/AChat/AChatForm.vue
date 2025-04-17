@@ -10,7 +10,7 @@
       v-model="message"
       @input="onInput"
       :placeholder="label"
-      :disabled="isInputDisabled"
+      :disabled="isKeyMissing"
       hide-details
       single-line
       auto-grow
@@ -72,7 +72,7 @@ export default {
       type: String,
       default: 'Type a message'
     },
-    isInputDisabled: {
+    isKeyMissing: {
       type: Boolean,
       default: false
     },

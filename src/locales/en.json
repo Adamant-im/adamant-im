@@ -38,6 +38,7 @@
       "censorship": "⛓\uFE0F Censorship-resistant blockchain architecture",
       "encrypted": "\uD83D\uDD10 End-to-end encrypted across all devices",
       "ipfs": "☁\uFE0F Decentralized IPFS storage for files/media",
+      "key-missing": "Unable to start a chat, public key is missing",
       "public-key": "Retrieving your partner’s key to encrypt messages…"
     },
     "received_label": "Received",

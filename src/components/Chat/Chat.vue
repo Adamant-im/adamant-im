@@ -87,6 +87,7 @@
         <chat-placeholder
           :show-placeholder="showNewChatPlaceholder"
           :is-getting-public-key="isGettingPublicKey"
+          :is-key-missing="isKeyMissing"
         />
       </template>
 
@@ -201,7 +202,7 @@
           :send-on-enter="sendMessageOnEnter"
           :show-divider="true"
           :label="t('chats.message')"
-          :is-input-disabled="isInputDisabled"
+          :is-key-missing="isKeyMissing"
           :message-text="
             $route.query.messageText || $store.getters['draftMessage/draftMessage'](partnerId)
           "
@@ -361,7 +362,7 @@ const replyMessageId = ref<string | -1>(-1)
 const showEmojiPicker = ref(false)
 const showNewChatPlaceholder = ref(false)
 const isGettingPublicKey = ref(false)
-const isInputDisabled = ref(false)
+const isKeyMissing = ref(false)
 
 const messages = computed(() => store.getters['chat/messages'](props.partnerId))
 const userId = computed(() => store.state.address)
@@ -436,13 +437,17 @@ onBeforeMount(() => {
 })
 
 onMounted(async () => {
+  if (chatPage.value <= 0) await fetchChatMessages()
+
+  if (!messages.value.length) {
+    store.commit('chat/addNewChat', { partnerId: props.partnerId })
+  }
+
   if (isNewChat.value) {
     const partnerName = store.getters['chat/getPartnerName'](props.partnerId)
 
     await retrievePublicKey(props.partnerId, partnerName)
   }
-
-  if (chatPage.value <= 0) await fetchChatMessages()
 
   const userMessages = messages.value.filter(
     (message: NormalizedChatMessageTransaction) =>
@@ -479,7 +484,7 @@ async function retrievePublicKey(partnerId: string, partnerName: string) {
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Unknown error'
     vibrate.long()
-    isInputDisabled.value = true
+    isKeyMissing.value = true
 
     store.dispatch('snackbar/show', {
       message: message

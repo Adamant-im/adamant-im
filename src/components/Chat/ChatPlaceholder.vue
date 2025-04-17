@@ -1,14 +1,22 @@
 <template>
-  <div v-if="showPlaceholder || isGettingPublicKey" :class="classes.root">
-    <div v-if="showPlaceholder" :class="classes.container">
+  <div v-if="showPlaceholder || isGettingPublicKey || isKeyMissing" :class="classes.root">
+    <div v-if="showPlaceholder && !isKeyMissing" :class="classes.container">
       <Logo style="width: 35px" />
       <p v-for="key in keys" :key="key" :class="classes.row">
         {{ t(`chats.placeholder.${key}`) }}
       </p>
     </div>
-    <div v-if="isGettingPublicKey" :class="[classes.container, `${classes.container}_public-key`]">
-      <v-progress-circular :class="classes.spinner" indeterminate :size="20" />
-      {{ t('chats.placeholder.public-key') }}
+    <div
+      v-if="isGettingPublicKey || isKeyMissing"
+      :class="[classes.container, `${classes.container}_public-key`]"
+    >
+      <div v-if="!isKeyMissing">
+        <v-progress-circular :class="classes.spinner" indeterminate :size="20" />
+        {{ t('chats.placeholder.public-key') }}
+      </div>
+      <div v-else>
+        {{ t('chats.placeholder.key-missing') }}
+      </div>
     </div>
   </div>
 </template>
@@ -22,6 +30,7 @@ const { t } = useI18n()
 defineProps<{
   showPlaceholder: boolean
   isGettingPublicKey: boolean
+  isKeyMissing: boolean
 }>()
 
 const className = 'chat-placeholder'
@@ -62,6 +71,11 @@ const keys = ['encrypted', 'ipfs', 'anonymous', 'censorship']
       flex-direction: row;
       column-gap: 8px;
     }
+  }
+
+  &__spinner {
+    margin-bottom: 4px;
+    margin-right: 4px;
   }
 
   &__row {
