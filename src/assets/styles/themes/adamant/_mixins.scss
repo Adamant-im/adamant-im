@@ -72,3 +72,11 @@
 @mixin linear-gradient-dark {
   background: repeating-linear-gradient(140deg, #191919, #191919 0.7px, #212121 0, #212121 5px);
 }
+
+@mixin linear-gradient-dark-soft {
+  background: repeating-linear-gradient(140deg, #252525, #252525 0.7px, #303030 0, #303030 5px);
+}
+
+@mixin linear-gradient-light-gray {
+  background: repeating-linear-gradient(140deg, #e6e6e6, #e6e6e6 0.7px, #f2f2f2 0, #f2f2f2 5px);
+}

@@ -2,6 +2,7 @@
   <v-row justify="center" no-gutters>
     <container>
       <chat
+        :key="partnerId"
         :message-text="messageText"
         :partner-id="partnerId"
         @click:chat-avatar="onClickChatAvatar"
@@ -9,29 +10,28 @@
 
       <PartnerInfo
         v-if="contactAddress"
-        v-model="show"
+        v-model="isShowPartnerInfoDialog"
         :address="contactAddress"
         :name="contactName"
         :owner-address="address"
       />
 
-      <ProgressIndicator :show="!isFulfilled" />
+      <ProgressIndicator v-if="!isFulfilled" :show-spinner="isMobileView" />
     </container>
-
-    <NodesOfflineDialog node-type="adm" />
   </v-row>
 </template>
 
 <script>
-import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import Chat from '@/components/Chat/Chat.vue'
 import PartnerInfo from '@/components/PartnerInfo.vue'
-import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import partnerName from '@/mixins/partnerName'
+import ProgressIndicator from '@/components/ProgressIndicator.vue'
+import { useScreenSize } from '@/hooks/useScreenSize'
+import { computed } from 'vue'
+import { useChatStateStore } from '@/stores/chat-state'
 
 export default {
   components: {
-    NodesOfflineDialog,
     ProgressIndicator,
     Chat,
     PartnerInfo
@@ -47,8 +47,29 @@ export default {
       type: String
     }
   },
+  setup() {
+    const { isMobileView } = useScreenSize()
+
+    const chatStateStore = useChatStateStore()
+
+    const { setShowPartnerInfoDialog } = chatStateStore
+
+    const isShowPartnerInfoDialog = computed({
+      get() {
+        return chatStateStore.isShowPartnerInfoDialog
+      },
+      set(value) {
+        setShowPartnerInfoDialog(value)
+      }
+    })
+
+    return {
+      isMobileView,
+      isShowPartnerInfoDialog,
+      setShowPartnerInfoDialog
+    }
+  },
   data: () => ({
-    show: false,
     contactAddress: '',
     contactName: ''
   }),
@@ -67,7 +88,7 @@ export default {
     onClickChatAvatar(address) {
       this.contactAddress = address
       this.contactName = this.getPartnerName(address)
-      this.show = true
+      this.setShowPartnerInfoDialog(true)
     }
   }
 }

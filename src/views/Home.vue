@@ -1,18 +1,18 @@
 <template>
-  <pull-down @action="updateBalances" :action-text="$t('chats.pull_down_actions.update_balances')">
+  <pull-down @action="updateBalances" :action-text="t('chats.pull_down_actions.update_balances')">
     <v-row justify="center" no-gutters :class="className">
-      <container>
+      <container disableMaxWidth>
         <v-sheet class="white--text" color="transparent" :class="`${className}__card`">
           <!-- Wallets -->
           <v-sheet color="transparent" :class="`${className}__wallets`">
             <v-tabs
-              ref="vtabs"
               v-model="currentWallet"
               :class="`${className}__tabs`"
               grow
               stacked
               height="auto"
               show-arrows
+              center-active
             >
               <v-tab
                 v-for="wallet in wallets"
@@ -66,131 +66,114 @@
   </pull-down>
 </template>
 
-<script>
+<script setup lang="ts">
 import WalletCard from '@/components/WalletCard.vue'
 import WalletTab from '@/components/WalletTab.vue'
+import type { Wallet } from '@/components/WalletTab.vue'
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
-import numberFormat from '@/filters/numberFormat'
-
 import { PullDown } from '@/components/common/PullDown'
-import { Cryptos, CryptosInfo, isErc20 } from '@/lib/constants'
+import { Cryptos, CryptosInfo, CryptoSymbol, isErc20 } from '@/lib/constants'
 import { vibrate } from '@/lib/vibrate'
+import { useStore } from 'vuex'
+import { computed, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { CoinSymbol } from '@/store/modules/wallets/types'
+import { useI18n } from 'vue-i18n'
 
-/**
- * Center VTab element on click.
- *
- * @override vuetify.VTabs.methods.scrollIntoView()
- */
-function scrollIntoView() {
-  if (!this.activeTab) return
-  if (!this.isOverflowing) return (this.scrollOffset = 0)
+const { t } = useI18n()
 
-  const totalWidth = this.widths.wrapper + this.scrollOffset
-  const { clientWidth, offsetLeft } = this.activeTab.$el
+const store = useStore()
 
-  const scrollOffset =
-    this.scrollOffset - (totalWidth - offsetLeft - clientWidth / 2 - this.widths.wrapper / 2)
+const route = useRoute()
+const router = useRouter()
 
-  if (scrollOffset <= 0) {
-    this.scrollOffset = 0
-  } else if (scrollOffset >= this.widths.container - this.widths.wrapper) {
-    this.scrollOffset = this.widths.container - this.widths.wrapper
-  } else {
-    this.scrollOffset = scrollOffset
-  }
-}
+const className = 'account-view'
 
-export default {
-  components: {
-    PullDown,
-    WalletCard,
-    WalletTab,
-    CryptoIcon
+const orderedVisibleWalletSymbols = computed(() => {
+  return store.getters['wallets/getVisibleOrderedWalletSymbols']
+})
+
+const currentCurrency = computed({
+  get() {
+    return store.state.options.currentRate
   },
-  computed: {
-    className: () => 'account-view',
-    orderedVisibleWalletSymbols() {
-      return this.$store.getters['wallets/getVisibleOrderedWalletSymbols']
-    },
-    wallets() {
-      const state = this.$store.state
+  set(value) {
+    store.commit('options/updateOption', {
+      key: 'currentRate',
+      value
+    })
+  }
+})
 
-      return this.orderedVisibleWalletSymbols.map((crypto) => {
-        const key = crypto.symbol.toLowerCase()
-        const address = crypto.symbol === Cryptos.ADM ? state.address : state[key].address
-        const balance = crypto.symbol === Cryptos.ADM ? state.balance : state[key].balance
-        const erc20 = isErc20(crypto.symbol.toUpperCase())
-        const currentRate = state.rate.rates[`${crypto.symbol}/${this.currentCurrency}`]
-        const rate = currentRate !== undefined ? Number((balance * currentRate).toFixed(2)) : 0
+const wallets = computed(() => {
+  const state = store.state
+  return orderedVisibleWalletSymbols.value.map((crypto: CoinSymbol) => {
+    const key = crypto.symbol.toLowerCase()
+    const address = crypto.symbol === Cryptos.ADM ? state.address : state[key].address
+    const balance = crypto.symbol === Cryptos.ADM ? state.balance : state[key].balance
+    const erc20 = isErc20(crypto.symbol.toUpperCase() as CryptoSymbol)
+    const currentRate = state.rate.rates[`${crypto.symbol}/${currentCurrency.value}`]
+    const rate = currentRate !== undefined ? Number((balance * currentRate).toFixed(2)) : 0
 
-        const cryptoName = CryptosInfo[crypto.symbol].nameShort || CryptosInfo[crypto.symbol].name
+    const cryptoName = CryptosInfo[crypto.symbol].nameShort || CryptosInfo[crypto.symbol].name
 
-        return {
-          address,
-          balance,
-          cryptoName,
-          erc20,
-          rate,
-          cryptoCurrency: crypto.symbol
-        }
-      })
-    },
-    currentWallet: {
-      get() {
-        return this.$store.state.options.currentWallet
-      },
-      set(value) {
-        this.$store.commit('options/updateOption', {
-          key: 'currentWallet',
-          value
-        })
-      }
-    },
-    currentCurrency: {
-      get() {
-        return this.$store.state.options.currentRate
-      },
-      set(value) {
-        this.$store.commit('options/updateOption', {
-          key: 'currentRate',
-          value
-        })
-      }
+    return {
+      address,
+      balance,
+      cryptoName,
+      erc20,
+      rate,
+      cryptoCurrency: crypto.symbol
     }
-  },
-  mounted() {
-    this.$refs.vtabs.scrollIntoView = scrollIntoView
-  },
-  methods: {
-    goToTransactions(crypto) {
-      this.$router.push({
-        name: 'Transactions',
-        params: {
-          crypto
-        }
-      })
-    },
-    onWheel(e) {
-      const currentWallet = this.wallets.find(
-        (wallet) => wallet.cryptoCurrency === this.currentWallet
-      )
-      const currentWalletIndex = this.wallets.indexOf(currentWallet)
+  })
+})
 
-      const nextWalletIndex = e.deltaY < 0 ? currentWalletIndex + 1 : currentWalletIndex - 1
-      const nextWallet = this.wallets[nextWalletIndex]
+const updateBalances = () => {
+  store.dispatch('updateBalance', {
+    requestedByUser: true
+  })
 
-      if (nextWallet) this.currentWallet = nextWallet.cryptoCurrency
-    },
-    updateBalances() {
-      this.$store.dispatch('updateBalance', {
-        requestedByUser: true
-      })
-
-      vibrate.veryShort()
-    },
-    numberFormat
-  }
+  vibrate.veryShort()
 }
+
+const goToTransactions = (crypto: string) => {
+  router.push({
+    name: 'Transactions',
+    params: {
+      crypto
+    }
+  })
+}
+
+const onWheel = (e: WheelEvent) => {
+  const currentWallet = wallets.value.find(
+    (wallet: Wallet) => wallet.cryptoCurrency === currentWallet.value
+  )
+  const currentWalletIndex = wallets.value.indexOf(currentWallet)
+
+  const nextWalletIndex = e.deltaY < 0 ? currentWalletIndex + 1 : currentWalletIndex - 1
+  const nextWallet = wallets.value[nextWalletIndex]
+
+  if (nextWallet) currentWallet.value = nextWallet.cryptoCurrency
+}
+
+const currentWallet = computed({
+  get() {
+    return store.state.options.currentWallet
+  },
+  set(value) {
+    store.commit('options/updateOption', {
+      key: 'currentWallet',
+      value
+    })
+  }
+})
+
+watch(currentWallet, (value) => {
+  if (route.name === 'Transactions') {
+    goToTransactions(value)
+  }
+})
 </script>
 
 <style lang="scss" scoped>
