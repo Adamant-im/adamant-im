@@ -145,7 +145,7 @@ export default {
     this.destroyScrollListener()
   },
   methods: {
-    openChat(partnerId, messageText, retrieveKey = false, partnerName) {
+    openChat(partnerId, messageText, partnerName, retrieveKey = false) {
       if (retrieveKey) {
         this.$store.commit('chat/addNewChat', { partnerId, partnerName })
       }

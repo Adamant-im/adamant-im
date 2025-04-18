@@ -52,6 +52,7 @@
     "start_chat": "Start chat",
     "title": "Chats",
     "too_long": "The message is too long",
+    "type_a_message": "Type a message",
     "invalid_message": "Invalid message",
     "message_not_found": "Message not found",
     "free_adm_disclaimer": "ADAMANT is unique among messengers—it's truly decentralized. Every action, including messaging, incurs a network fee of 0.001 ADM. To start messaging now, get your free welcome coins.",

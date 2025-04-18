@@ -27,11 +27,13 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
-defineProps<{
+type Props = {
   showPlaceholder: boolean
   isGettingPublicKey: boolean
   isKeyMissing: boolean
-}>()
+}
+
+defineProps<Props>()
 
 const className = 'chat-placeholder'
 const classes = {

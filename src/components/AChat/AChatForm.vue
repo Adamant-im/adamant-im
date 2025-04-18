@@ -9,7 +9,7 @@
       ref="messageTextarea"
       v-model="message"
       @input="onInput"
-      :placeholder="label"
+      :placeholder="placeholder"
       :disabled="isKeyMissing"
       hide-details
       single-line
@@ -49,15 +49,19 @@ import ChatEmojis from '@/components/Chat/ChatEmojis.vue'
 import { isMobile } from '@/lib/display-mobile'
 import { mdiSend } from '@mdi/js'
 import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
+
+const store = useStore()
+const { t } = useI18n()
 
 type Props = {
-  partnerId: string
-  messageText: string
-  showSendButton: boolean
-  sendOnEnter: boolean
-  label: string
-  isKeyMissing: boolean
-  showDivider: boolean
+  partnerId?: string
+  messageText?: string
+  showSendButton?: boolean
+  sendOnEnter?: boolean
+  label?: string
+  isKeyMissing?: boolean
+  showDivider?: boolean
   validator: (message: string) => string | false
 }
 
@@ -66,7 +70,7 @@ const props = withDefaults(defineProps<Props>(), {
   messageText: '',
   showSendButton: true,
   sendOnEnter: true,
-  label: 'Type a message',
+  label: undefined,
   isKeyMissing: false,
   showDivider: false
 })
@@ -76,8 +80,6 @@ const emit = defineEmits<{
   (e: 'esc'): void
   (e: 'error', error: string): void
 }>()
-
-const store = useStore()
 
 const message = ref('')
 const emojiPickerOpen = ref(false)
@@ -94,6 +96,7 @@ const classes = [
   }
 ]
 
+const placeholder = computed(() => props.label ?? t('chats.type_a_message'))
 const isDesktopDevice = computed(() => !isMobile())
 const listeners = computed(() => {
   return {

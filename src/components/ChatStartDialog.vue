@@ -140,8 +140,8 @@ export default {
         'start-chat',
         this.recipientAddress,
         this.uriMessage,
-        true,
-        this.recipientName
+        this.recipientName,
+        true
       )
     },
 

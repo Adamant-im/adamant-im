@@ -66,21 +66,20 @@ const classes = {
   overlay: `${className}__overlay`
 }
 
-const props = withDefaults(
-  defineProps<{
-    messages: NormalizedChatMessageTransaction[]
-    partners: User[]
-    userId: string
-    loading: boolean
-    locale: string
-  }>(),
-  {
-    messages: () => [],
-    partners: () => [],
-    loading: false,
-    locale: 'en'
-  }
-)
+type Props = {
+  messages: NormalizedChatMessageTransaction[]
+  partners: User[]
+  userId: string
+  loading: boolean
+  locale: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  messages: () => [],
+  partners: () => [],
+  loading: false,
+  locale: 'en'
+})
 
 const emit = defineEmits(['scroll', 'scroll:bottom', 'scroll:top'])
 
@@ -241,14 +240,10 @@ onBeforeUnmount(() => {
 })
 
 defineExpose({
-  classes,
-  messagesRef,
-  maintainScrollPosition,
   scrollToBottom,
-  scrollTo,
-  scrollToMessage,
+  isScrolledToBottom,
   scrollToMessageEasy,
-  getSenderMeta,
-  isScrolledToBottom
+  maintainScrollPosition,
+  scrollToMessage
 })
 </script>
