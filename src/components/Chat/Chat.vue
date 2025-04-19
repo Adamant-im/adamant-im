@@ -457,20 +457,6 @@ onBeforeMount(() => {
   window.addEventListener('keyup', onKeyPress)
 })
 
-async function handleEmptyChat() {
-  showNewChatPlaceholder.value = !userMessages.value.length
-
-  if (!messages.value.length) {
-    store.commit('chat/addNewChat', { partnerId: props.partnerId })
-  }
-
-  if (isNewChat.value) {
-    const partnerName = store.getters['chat/getPartnerName'](props.partnerId)
-
-    await createChat(props.partnerId, partnerName)
-  }
-}
-
 onMounted(async () => {
   if (isNewChat.value) {
     showNewChatPlaceholder.value = true
@@ -501,6 +487,20 @@ onBeforeUnmount(() => {
     store.commit('chat/removeNewChat', props.partnerId)
   }
 })
+
+async function handleEmptyChat() {
+  showNewChatPlaceholder.value = !userMessages.value.length
+
+  if (!messages.value.length) {
+    store.commit('chat/addNewChat', { partnerId: props.partnerId })
+  }
+
+  if (isNewChat.value) {
+    const partnerName = store.getters['chat/getPartnerName'](props.partnerId)
+
+    await createChat(props.partnerId, partnerName)
+  }
+}
 
 async function createChat(partnerId: string, partnerName: string) {
   try {
