@@ -33,6 +33,18 @@
     "ok": "OK",
     "partner_info": "Partner info",
     "partner_name": "Partner name",
+    "placeholder": {
+      "anonymous": "\uD83D\uDD76\uFE0F Anonymous: partners never see your IP address",
+      "censorship": "⛓\uFE0F Censorship-resistant blockchain architecture",
+      "encrypted": "\uD83D\uDD10 End-to-end encrypted across all devices",
+      "ipfs": "☁\uFE0F Decentralized IPFS storage for files/media",
+      "can_not_message": "Cannot message this user yet—their account isn't activated",
+      "what_does_it_mean": {
+        "text": "What does it mean?",
+        "link": "https://news.adamant.im/chats-and-uninitialized-accounts-in-adamant-5035438e2fcd"
+      },
+      "public-key": "Retrieving your partner’s key to encrypt messages…"
+    },
     "received_label": "Received",
     "recipient": "Partner address",
     "recipient_tooltip": "Partner ADM address like U1234567890987654321 or Share link",
@@ -44,6 +56,7 @@
     "start_chat": "Start chat",
     "title": "Chats",
     "too_long": "The message is too long",
+    "type_a_message": "Type a message",
     "invalid_message": "Invalid message",
     "message_not_found": "Message not found",
     "free_adm_disclaimer": "ADAMANT is unique among messengers—it's truly decentralized. Every action, including messaging, incurs a network fee of 0.001 ADM. To start messaging now, get your free welcome coins.",

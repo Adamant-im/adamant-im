@@ -51,7 +51,8 @@ const state = () => ({
   lastMessageHeight: 0, // `height` value of the last message
   isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
   offset: 0, // for loading chat list with pagination. -1 if all of chats loaded
-  noActiveNodesDialog: undefined // true - visible dialog, false - hidden dialog, but shown before, undefined - not shown
+  noActiveNodesDialog: undefined, // true - visible dialog, false - hidden dialog, but shown before, undefined - not shown
+  newChats: {} // { [partnerId]: partnerName }, for pointing if a chat needs further handling after being opened
 })
 
 const getters = {
@@ -319,6 +320,14 @@ const getters = {
    */
   chatListOffset: (state) => {
     return state.offset
+  },
+
+  isNewChat: (state) => (partnerId) => {
+    return partnerId in state.newChats
+  },
+
+  getPartnerName: (state) => (partnerId) => {
+    return state.newChats[partnerId]
   }
 }
 
@@ -371,6 +380,14 @@ const mutations = {
     }
 
     state.chats[partnerId] = createChat()
+  },
+
+  addNewChat(state, { partnerId, partnerName }) {
+    state.newChats[partnerId] = partnerName
+  },
+
+  removeNewChat(state, partnerId) {
+    delete state.newChats[partnerId]
   },
 
   /**
