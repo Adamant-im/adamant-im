@@ -202,7 +202,7 @@
           :send-on-enter="sendMessageOnEnter"
           :show-divider="true"
           :label="t('chats.message')"
-          :is-key-missing="isKeyMissing"
+          :should-disable-input="shouldDisableInput"
           :message-text="
             $route.query.messageText || $store.getters['draftMessage/draftMessage'](partnerId)
           "
@@ -308,6 +308,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import ChatPlaceholder from '@/components/Chat/ChatPlaceholder.vue'
+import { watchImmediate } from '@vueuse/core'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -365,8 +366,16 @@ const isGettingPublicKey = ref(false)
 const isKeyMissing = ref(false)
 
 const messages = computed(() => store.getters['chat/messages'](props.partnerId))
+const userMessages = computed(() =>
+  messages.value.filter(
+    (message: NormalizedChatMessageTransaction) => message.senderId === userId.value
+  )
+)
 const userId = computed(() => store.state.address)
 const isNewChat = computed(() => store.getters['chat/isNewChat'](props.partnerId))
+const shouldDisableInput = computed(
+  () => isGettingPublicKey.value || isKeyMissing.value || !store.state.publicKeys[props.partnerId]
+)
 
 const getPartnerName = (address: string) => {
   const name: string = store.getters['partners/displayName'](address) || ''
@@ -432,12 +441,24 @@ watch(replyMessageId, (messageId) => {
   })
 })
 
+watch(userMessages, () => {
+  if (noMoreMessages.value) {
+    showNewChatPlaceholder.value = !userMessages.value.length
+  }
+})
+
+watchImmediate(messages, (updatedMessages) => {
+  if (isFulfilled.value && !updatedMessages.length) {
+    store.commit('chat/addNewChat', { partnerId: props.partnerId })
+  }
+})
+
 onBeforeMount(() => {
   window.addEventListener('keyup', onKeyPress)
 })
 
-onMounted(async () => {
-  if (chatPage.value <= 0) await fetchChatMessages()
+async function handleEmptyChat() {
+  showNewChatPlaceholder.value = !userMessages.value.length
 
   if (!messages.value.length) {
     store.commit('chat/addNewChat', { partnerId: props.partnerId })
@@ -448,13 +469,16 @@ onMounted(async () => {
 
     await createChat(props.partnerId, partnerName)
   }
+}
 
-  const userMessages = messages.value.filter(
-    (message: NormalizedChatMessageTransaction) =>
-      message.senderId && message.senderId === userId.value
-  )
+onMounted(async () => {
+  if (isNewChat.value) {
+    showNewChatPlaceholder.value = true
+  }
 
-  showNewChatPlaceholder.value = !userMessages.length
+  if (chatPage.value <= 0) await fetchChatMessages()
+
+  await handleEmptyChat()
 
   scrollBehavior()
   nextTick(() => {
@@ -485,14 +509,9 @@ async function createChat(partnerId: string, partnerName: string) {
       partnerId,
       partnerName
     })
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Unknown error'
+  } catch {
     vibrate.long()
     isKeyMissing.value = true
-
-    store.dispatch('snackbar/show', {
-      message: message
-    })
   } finally {
     isGettingPublicKey.value = false
   }

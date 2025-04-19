@@ -10,7 +10,7 @@
       v-model="message"
       @input="onInput"
       :placeholder="placeholder"
-      :disabled="isKeyMissing"
+      :disabled="shouldDisableInput"
       hide-details
       single-line
       auto-grow
@@ -60,7 +60,7 @@ type Props = {
   showSendButton?: boolean
   sendOnEnter?: boolean
   label?: string
-  isKeyMissing?: boolean
+  shouldDisableInput?: boolean
   showDivider?: boolean
   validator: (message: string) => string | false
 }
@@ -71,7 +71,7 @@ const props = withDefaults(defineProps<Props>(), {
   showSendButton: true,
   sendOnEnter: true,
   label: undefined,
-  isKeyMissing: false,
+  shouldDisableInput: false,
   showDivider: false
 })
 

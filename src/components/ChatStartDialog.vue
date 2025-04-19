@@ -136,13 +136,7 @@ export default {
         return Promise.reject(new Error(this.$t('chats.incorrect_address')))
       }
 
-      return this.$emit(
-        'start-chat',
-        this.recipientAddress,
-        this.uriMessage,
-        this.recipientName,
-        true
-      )
+      this.$emit('start-chat', this.recipientAddress, this.uriMessage, this.recipientName, true)
     },
 
     /**

@@ -10,8 +10,8 @@
           <v-progress-circular
             v-show="loading"
             indeterminate
-            color="primary"
-            size="24"
+            :class="classes.spinner"
+            :size="20"
             style="z-index: 100"
           />
         </div>
@@ -63,7 +63,8 @@ const classes = {
   body: `${className}__body`,
   bodyMessages: `${className}__body-messages`,
   fab: `${className}__fab`,
-  overlay: `${className}__overlay`
+  overlay: `${className}__overlay`,
+  spinner: `${className}__spinner`
 }
 
 type Props = {
@@ -244,6 +245,29 @@ defineExpose({
   isScrolledToBottom,
   scrollToMessageEasy,
   maintainScrollPosition,
-  scrollToMessage
+  scrollToMessage,
+  scrollTo
 })
 </script>
+
+<style lang="scss" scoped>
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+
+/** Themes **/
+.v-theme--light {
+  .a-chat {
+    &__spinner {
+      color: map.get(colors.$adm-colors, 'grey');
+    }
+  }
+}
+
+.v-theme--dark {
+  .a-chat {
+    &__spinner {
+      color: map.get(colors.$adm-colors, 'regular');
+    }
+  }
+}
+</style>

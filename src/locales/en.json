@@ -38,7 +38,11 @@
       "censorship": "⛓\uFE0F Censorship-resistant blockchain architecture",
       "encrypted": "\uD83D\uDD10 End-to-end encrypted across all devices",
       "ipfs": "☁\uFE0F Decentralized IPFS storage for files/media",
-      "key-missing": "Unable to start a chat, public key is missing",
+      "can_not_message": "Cannot message this user yet—their account isn't activated",
+      "what_does_it_mean": {
+        "text": "What does it mean?",
+        "link": "https://news.adamant.im/chats-and-uninitialized-accounts-in-adamant-5035438e2fcd"
+      },
       "public-key": "Retrieving your partner’s key to encrypt messages…"
     },
     "received_label": "Received",
