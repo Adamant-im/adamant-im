@@ -136,20 +136,22 @@ const routes = [
           previousRoute: {},
           previousPreviousRoute: {}
         },
-        beforeEnter: navigationGuard.transactions
-      },
-      {
-        path: '/transactions/:crypto/:txId',
-        component: Transaction,
-        name: 'Transaction',
-        props: true,
-        meta: {
-          requiresAuth: true,
-          layout: 'no-container',
-          containerNoPadding: true,
-          previousRoute: {}
-        },
-        beforeEnter: navigationGuard.transactions
+        beforeEnter: navigationGuard.transactions,
+        children: [
+          {
+            path: ':txId',
+            component: Transaction,
+            name: 'Transaction',
+            props: true,
+            meta: {
+              requiresAuth: true,
+              layout: 'no-container',
+              containerNoPadding: true,
+              previousRoute: {}
+            },
+            beforeEnter: navigationGuard.transactions
+          }
+        ]
       },
       {
         path: '/transfer/:cryptoCurrency?/:recipientAddress?/:amountToSend?',

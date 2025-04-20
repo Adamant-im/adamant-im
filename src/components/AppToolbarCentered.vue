@@ -87,7 +87,10 @@ const goBack = () => {
   const parentRoute = route.matched.length > 1 ? route.matched.at(-2) : null
 
   if (parentRoute) {
-    router.push(parentRoute)
+    router.push({
+      name: parentRoute.name,
+      params: { ...route.params }
+    })
     return
   }
 

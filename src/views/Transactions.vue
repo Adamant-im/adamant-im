@@ -1,5 +1,5 @@
 <template>
-  <div id="txListElement" class="w-100" :class="classes.root">
+  <div id="txListElement" class="w-100" :class="classes.root" v-if="!hasView">
     <app-toolbar-centered
       app
       :title="$t('transaction.transactions')"
@@ -42,6 +42,7 @@
       </v-row>
     </v-container>
   </div>
+  <router-view v-else />
 </template>
 
 <script>
@@ -50,6 +51,8 @@ import InlineSpinner from '@/components/InlineSpinner.vue'
 import TransactionListItem from '@/components/TransactionListItem.vue'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { AllNodesDisabledError, AllNodesOfflineError } from '@/lib/nodes/utils/errors'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 
 export default {
   components: {
@@ -71,7 +74,12 @@ export default {
       content: `${className}__content`
     }
 
+    const route = useRoute()
+
+    const hasView = computed(() => route.matched.length > 1 && !(route.name === 'Transactions'))
+
     return {
+      hasView,
       classes
     }
   },
