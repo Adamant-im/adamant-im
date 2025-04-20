@@ -30,6 +30,10 @@ export abstract class Node<C = unknown> {
   wsPort = '36668'
 
   /**
+   * Node alternative IP
+   */
+  alt_ip?: string
+  /**
    * Node base URL
    */
   url: string
@@ -57,9 +61,21 @@ export abstract class Node<C = unknown> {
 
   // Healthcheck related params
   /**
+   * Indicates whether a node with alternative IP is available
+   */
+  altIpAvailable = false
+  /**
+   * Indicates whether a node with main URL is available
+   */
+  mainUrlAvailable = true
+  /**
    * Indicates whether node is available.
    */
   online = true
+  /**
+   * Indicates whether prefer a node with alternative IP or not
+   */
+  preferAltIp = false
   /**
    * Node ping estimation
    */
@@ -97,13 +113,16 @@ export abstract class Node<C = unknown> {
   healthcheckInProgress = false
 
   constructor(
-    url: string,
+    endpoint: { alt_ip?: string; url: string },
     type: NodeType,
     kind: NodeKind,
     label: TNodeLabel,
     version = '',
     minNodeVersion = ''
   ) {
+    const { alt_ip, url } = endpoint
+
+    this.alt_ip = alt_ip
     this.url = url
     this.type = type
     this.label = label
@@ -134,8 +153,21 @@ export abstract class Node<C = unknown> {
         this.height = health.height
         this.ping = health.ping
         this.online = true
+
+        if (this.preferAltIp) {
+          this.altIpAvailable = true
+        } else {
+          this.mainUrlAvailable = true
+        }
       } catch {
-        this.online = false
+        if (this.preferAltIp) {
+          this.altIpAvailable = false
+          this.preferAltIp = false
+          this.online = false
+        } else if (this.mainUrlAvailable) {
+          this.mainUrlAvailable = false
+          this.preferAltIp = true
+        }
       } finally {
         this.healthcheckInProgress = false
       }
@@ -164,6 +196,7 @@ export abstract class Node<C = unknown> {
 
   getStatus() {
     return {
+      alt_ip: this.alt_ip,
       url: this.url,
       port: this.port,
       hostname: this.hostname,
