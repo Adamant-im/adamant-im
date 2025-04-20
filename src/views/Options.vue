@@ -201,6 +201,8 @@ import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute } from 'vue-router'
 import { computed, inject } from 'vue'
 import { sidebarLayoutKey } from '@/lib/constants/index'
 
+const SAVED_TOP_ATTRIBUTE = 'data-saved-top'
+
 export default {
   components: {
     OptionsWrapper,
@@ -210,8 +212,6 @@ export default {
   },
   mixins: [scrollPosition],
   setup() {
-    const savedTopAttribute = 'data-saved-top'
-
     const route = useRoute()
 
     const sidebarLayoutRef = inject(sidebarLayoutKey)
@@ -222,7 +222,7 @@ export default {
       if (!hasView.value) {
         const { scrollTop } = sidebarLayoutRef.value
 
-        sidebarLayoutRef.value.setAttribute(savedTopAttribute, scrollTop)
+        sidebarLayoutRef.value.setAttribute(SAVED_TOP_ATTRIBUTE, scrollTop)
 
         sidebarLayoutRef.value.scrollTo({ top: 0, behavior: 'smooth' })
         return
@@ -230,14 +230,14 @@ export default {
       // some routes don't have scrollbar, need delay for scroll render
       setTimeout(() => {
         sidebarLayoutRef.value.scrollTo({
-          top: sidebarLayoutRef.value?.getAttribute(savedTopAttribute),
+          top: sidebarLayoutRef.value?.getAttribute(SAVED_TOP_ATTRIBUTE),
           behavior: 'smooth'
         })
       })
     })
 
     onBeforeRouteLeave(() => {
-      sidebarLayoutRef.value?.removeAttribute(savedTopAttribute)
+      sidebarLayoutRef.value?.removeAttribute(SAVED_TOP_ATTRIBUTE)
     })
 
     return {
