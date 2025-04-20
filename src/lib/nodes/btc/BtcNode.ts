@@ -12,8 +12,8 @@ import { BlockchainInfo } from './types/api/blockchain-info'
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class BtcNode extends Node<AxiosInstance> {
-  constructor(url: string) {
-    super(url, 'btc', 'node', NODE_LABELS.BtcNode)
+  constructor(endpoint: { alt_ip?: string; url: string }) {
+    super(endpoint, 'btc', 'node', NODE_LABELS.BtcNode)
   }
 
   protected buildClient(): AxiosInstance {
@@ -53,6 +53,7 @@ export class BtcNode extends Node<AxiosInstance> {
     return this.client
       .request<RpcResponse<Result>>({
         ...requestConfig,
+        baseURL: this.preferAltIp ? this.alt_ip : this.url,
         method: 'POST',
         data: params
       })

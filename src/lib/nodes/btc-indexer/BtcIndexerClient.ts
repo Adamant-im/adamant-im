@@ -17,7 +17,7 @@ import { GetUnspentsParams } from './types/api/get-unspents/get-unspents-params'
  * is not available at the moment.
  */
 export class BtcIndexerClient extends Client<BtcIndexer> {
-  constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
+  constructor(endpoints: { alt_ip?: string; url: string }[] = [], minNodeVersion = '0.0.0') {
     super('btc', 'service', NODE_LABELS.BtcIndexer)
     this.nodes = endpoints.map((endpoint) => new BtcIndexer(endpoint))
     this.minNodeVersion = minNodeVersion

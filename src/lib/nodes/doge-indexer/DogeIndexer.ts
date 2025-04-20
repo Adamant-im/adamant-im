@@ -8,8 +8,8 @@ import { NODE_LABELS } from '@/lib/nodes/constants'
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class DogeIndexer extends Node<AxiosInstance> {
-  constructor(url: string) {
-    super(url, 'doge', 'service', NODE_LABELS.DogeIndexer)
+  constructor(endpoint: { alt_ip?: string; url: string }) {
+    super(endpoint, 'doge', 'service', NODE_LABELS.DogeIndexer)
   }
 
   protected buildClient(): AxiosInstance {
@@ -18,9 +18,7 @@ export class DogeIndexer extends Node<AxiosInstance> {
 
   protected async checkHealth() {
     const time = Date.now()
-    const height = await this.client
-      .get('/api/status')
-      .then((res) => res.data.info.blocks)
+    const height = await this.client.get('/api/status').then((res) => res.data.info.blocks)
 
     return {
       height,
@@ -40,6 +38,7 @@ export class DogeIndexer extends Node<AxiosInstance> {
     return this.client
       .request({
         ...requestConfig,
+        baseURL: this.preferAltIp ? this.alt_ip : this.url,
         url: path,
         method,
         params: method === 'GET' ? params : undefined,

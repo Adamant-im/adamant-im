@@ -7,9 +7,10 @@ import { RateHistoryInfoResponse } from '@/lib/nodes/rate-info-service/types/Rat
 import { GetHistoryParams } from '@/lib/nodes/rate-info-service/types/GetHistoryParams'
 
 export class RateInfoService extends Node<AxiosInstance> {
-  constructor(url: string) {
-    super(url, 'adm', 'service', NODE_LABELS.RatesInfo)
+  constructor(endpoint: { alt_ip?: string; url: string }) {
+    super(endpoint, 'adm', 'service', NODE_LABELS.RatesInfo)
   }
+
   protected buildClient(): AxiosInstance {
     return axios.create({
       baseURL: this.url
@@ -41,9 +42,10 @@ export class RateInfoService extends Node<AxiosInstance> {
 
   formatHeight(height: number): string {
     return super.formatHeight(
-      Number(Math.ceil(height / 1000)
-        .toString()
-        .substring(2)
+      Number(
+        Math.ceil(height / 1000)
+          .toString()
+          .substring(2)
       )
     )
   }

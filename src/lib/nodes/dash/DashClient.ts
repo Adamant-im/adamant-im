@@ -9,7 +9,7 @@ import { Balance } from './types/api/balance'
 import { Transaction } from './types/api/transaction'
 
 export class DashClient extends Client<DashNode> {
-  constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
+  constructor(endpoints: { alt_ip?: string; url: string }[] = [], minNodeVersion = '0.0.0') {
     super('dash', 'node', NODE_LABELS.DashNode)
     this.nodes = endpoints.map((endpoint) => new DashNode(endpoint))
     this.minNodeVersion = minNodeVersion

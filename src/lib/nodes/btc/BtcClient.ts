@@ -12,7 +12,7 @@ import { RpcRequest } from './types/api/common'
  * is not available at the moment.
  */
 export class BtcClient extends Client<BtcNode> {
-  constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
+  constructor(endpoints: { alt_ip?: string; url: string }[] = [], minNodeVersion = '0.0.0') {
     super('btc', 'node', NODE_LABELS.BtcNode)
     this.nodes = endpoints.map((endpoint) => new BtcNode(endpoint))
     this.minNodeVersion = minNodeVersion

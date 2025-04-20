@@ -8,7 +8,7 @@ import { normalizeTransaction } from './utils'
 import { Client } from '../abstract.client'
 
 export class EthIndexerClient extends Client<EthIndexer> {
-  constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
+  constructor(endpoints: { alt_ip?: string; url: string }[] = [], minNodeVersion = '0.0.0') {
     super('eth', 'service', NODE_LABELS.EthIndexer)
     this.nodes = endpoints.map((endpoint) => new EthIndexer(endpoint))
     this.minNodeVersion = minNodeVersion

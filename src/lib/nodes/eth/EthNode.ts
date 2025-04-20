@@ -11,7 +11,7 @@ import { formatEthVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
 export class EthNode extends Node<Web3Eth> {
   clientName = ''
 
-  constructor(url: string) {
+  constructor(url: { alt_ip?: string; url: string }) {
     super(url, 'eth', 'node', NODE_LABELS.EthNode)
   }
 

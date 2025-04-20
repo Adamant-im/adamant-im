@@ -5,7 +5,7 @@ import { DogeNode } from './DogeNode'
 import { Client } from '../abstract.client'
 
 export class DogeClient extends Client<DogeNode> {
-  constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
+  constructor(endpoints: { alt_ip?: string; url: string }[] = [], minNodeVersion = '0.0.0') {
     super('doge', 'node', NODE_LABELS.DogeNode)
     this.nodes = endpoints.map((endpoint) => new DogeNode(endpoint))
     this.minNodeVersion = minNodeVersion

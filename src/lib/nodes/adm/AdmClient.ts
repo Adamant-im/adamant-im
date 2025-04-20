@@ -16,7 +16,7 @@ import { Client } from '../abstract.client'
  * is not available at the moment.
  */
 export class AdmClient extends Client<AdmNode> {
-  constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
+  constructor(endpoints: { alt_ip?: string; url: string }[] = [], minNodeVersion = '0.0.0') {
     super('adm', 'node', NODE_LABELS.AdmNode)
     this.nodes = endpoints.map((endpoint) => new AdmNode(endpoint, minNodeVersion))
     this.minNodeVersion = minNodeVersion
@@ -75,7 +75,9 @@ export class AdmClient extends Client<AdmNode> {
     return this.getNode().timeDelta
   }
 
-  async sendChatTransaction(transaction: RegisterChatMessageTransaction): Promise<CreateNewChatMessageResponseDto> {
+  async sendChatTransaction(
+    transaction: RegisterChatMessageTransaction
+  ): Promise<CreateNewChatMessageResponseDto> {
     return this.post('/api/chats/process', () => ({ transaction }))
   }
 }

@@ -9,7 +9,7 @@ import { KlyIndexer } from './KlyIndexer'
 import { Client } from '../abstract.client'
 
 export class KlyIndexerClient extends Client<KlyIndexer> {
-  constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
+  constructor(endpoints: { alt_ip?: string; url: string }[] = [], minNodeVersion = '0.0.0') {
     super('kly', 'service', NODE_LABELS.KlyIndexer)
     this.nodes = endpoints.map((endpoint) => new KlyIndexer(endpoint))
     this.minNodeVersion = minNodeVersion

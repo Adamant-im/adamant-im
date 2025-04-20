@@ -6,7 +6,7 @@ import { KlyNode } from './KlyNode'
 import { Client } from '../abstract.client'
 
 export class KlyClient extends Client<KlyNode> {
-  constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
+  constructor(endpoints: { alt_ip?: string; url: string }[] = [], minNodeVersion = '0.0.0') {
     super('kly', 'node', NODE_LABELS.KlyNode)
     this.nodes = endpoints.map((endpoint) => new KlyNode(endpoint))
     this.minNodeVersion = minNodeVersion

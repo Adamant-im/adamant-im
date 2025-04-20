@@ -8,8 +8,8 @@ import { NODE_LABELS } from '@/lib/nodes/constants'
  * https://github.com/Adamant-im/ETH-transactions-storage
  */
 export class EthIndexer extends Node<AxiosInstance> {
-  constructor(url: string) {
-    super(url, 'eth', 'service', NODE_LABELS.EthIndexer)
+  constructor(endpoint: { alt_ip?: string; url: string }) {
+    super(endpoint, 'eth', 'service', NODE_LABELS.EthIndexer)
   }
 
   protected buildClient(): AxiosInstance {
@@ -30,6 +30,7 @@ export class EthIndexer extends Node<AxiosInstance> {
     return this.client
       .request({
         ...requestConfig,
+        baseURL: this.preferAltIp ? this.alt_ip : this.url,
         url: path,
         method,
         params: method === 'GET' ? params : undefined,

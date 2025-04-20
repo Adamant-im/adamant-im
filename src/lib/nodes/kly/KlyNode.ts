@@ -10,8 +10,8 @@ import { v4 as uuid } from 'uuid'
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class KlyNode extends Node<AxiosInstance> {
-  constructor(url: string) {
-    super(url, 'kly', 'node', NODE_LABELS.KlyNode)
+  constructor(endpoint: { alt_ip?: string; url: string }) {
+    super(endpoint, 'kly', 'node', NODE_LABELS.KlyNode)
   }
 
   protected buildClient(): AxiosInstance {
@@ -29,6 +29,7 @@ export class KlyNode extends Node<AxiosInstance> {
   ): Promise<RpcResults[M]['result']> {
     return this.client
       .post<JSONRPCResponse<RpcResults[M]['result']>>('/rpc', {
+        baseURL: this.preferAltIp ? this.alt_ip : this.url,
         jsonrpc: '2.0',
         id: uuid(),
         method,

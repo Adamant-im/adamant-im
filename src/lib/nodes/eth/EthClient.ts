@@ -16,7 +16,7 @@ import { normalizeEthTransaction, normalizeErc20Transaction } from './utils'
  * is not available at the moment.
  */
 export class EthClient extends Client<EthNode> {
-  constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
+  constructor(endpoints: { alt_ip?: string; url: string }[] = [], minNodeVersion = '0.0.0') {
     super('eth', 'node', NODE_LABELS.EthNode)
     this.nodes = endpoints.map((endpoint) => new EthNode(endpoint))
     this.minNodeVersion = minNodeVersion
@@ -32,7 +32,7 @@ export class EthClient extends Client<EthNode> {
       const isFinalized = !!transaction.blockNumber
 
       return isFinalized
-    } catch (err) {
+    } catch {
       return false
     }
   }

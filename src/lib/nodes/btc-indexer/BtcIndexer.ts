@@ -8,8 +8,8 @@ import { NODE_LABELS } from '@/lib/nodes/constants'
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class BtcIndexer extends Node<AxiosInstance> {
-  constructor(url: string) {
-    super(url, 'btc', 'service', NODE_LABELS.BtcIndexer)
+  constructor(endpoint: { alt_ip?: string; url: string }) {
+    super(endpoint, 'btc', 'service', NODE_LABELS.BtcIndexer)
   }
 
   protected buildClient(): AxiosInstance {
@@ -40,6 +40,7 @@ export class BtcIndexer extends Node<AxiosInstance> {
     return this.client
       .request({
         ...requestConfig,
+        baseURL: this.preferAltIp ? this.alt_ip : this.url,
         url: path,
         method,
         params: method === 'GET' ? params : undefined,

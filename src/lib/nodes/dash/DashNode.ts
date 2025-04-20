@@ -11,8 +11,8 @@ import { BlockchainInfo } from './types/api/blockchain-info'
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class DashNode extends Node<AxiosInstance> {
-  constructor(url: string) {
-    super(url, 'dash', 'node', NODE_LABELS.DashNode)
+  constructor(endpoint: { alt_ip?: string; url: string }) {
+    super(endpoint, 'dash', 'node', NODE_LABELS.DashNode)
   }
 
   protected buildClient(): AxiosInstance {
@@ -51,6 +51,7 @@ export class DashNode extends Node<AxiosInstance> {
     return this.client
       .request<RpcResponse<Result>>({
         ...requestConfig,
+        baseURL: this.preferAltIp ? this.alt_ip : this.url,
         url: '/',
         method: 'POST',
         data: params
@@ -73,6 +74,7 @@ export class DashNode extends Node<AxiosInstance> {
     return this.client
       .request<RpcResponse<Result>[]>({
         ...requestConfig,
+        baseURL: this.preferAltIp ? this.alt_ip : this.url,
         url: '/',
         method: 'POST',
         data: params

@@ -32,8 +32,8 @@ export type RequestConfig<P extends Payload> = {
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class IpfsNode extends Node<AxiosInstance> {
-  constructor(url: string, minNodeVersion = '0.0.0') {
-    super(url, 'ipfs', 'node', NODE_LABELS.IpfsNode, '', minNodeVersion)
+  constructor(endpoint: { alt_ip?: string; url: string }, minNodeVersion = '0.0.0') {
+    super(endpoint, 'ipfs', 'node', NODE_LABELS.IpfsNode, '', minNodeVersion)
   }
 
   protected buildClient(): AxiosInstance {
@@ -53,6 +53,7 @@ export class IpfsNode extends Node<AxiosInstance> {
     const { url, headers, method = 'get', payload, onUploadProgress } = cfg
 
     const config: AxiosRequestConfig = {
+      baseURL: this.preferAltIp ? this.alt_ip : this.url,
       url,
       method: method.toLowerCase(),
       headers,
@@ -77,7 +78,6 @@ export class IpfsNode extends Node<AxiosInstance> {
         // According to https://github.com/axios/axios#handling-errors this means, that request was sent,
         // but server could not respond.
         if (!error.response && error.request) {
-          this.online = false
           throw new NodeOfflineError()
         }
         throw error
@@ -117,7 +117,7 @@ export class IpfsNode extends Node<AxiosInstance> {
   protected async checkHealth() {
     const time = Date.now()
     const { timestamp } = await this.fetchNodeInfo()
-    this.height = timestamp;
+    this.height = timestamp
 
     return {
       height: this.height,
@@ -127,9 +127,10 @@ export class IpfsNode extends Node<AxiosInstance> {
 
   formatHeight(height: number): string {
     return super.formatHeight(
-      Number(Math.ceil(height / 1000)
-        .toString()
-        .substring(2)
+      Number(
+        Math.ceil(height / 1000)
+          .toString()
+          .substring(2)
       )
     )
   }

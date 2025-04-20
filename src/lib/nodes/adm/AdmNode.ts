@@ -18,6 +18,7 @@ export type Payload =
       (ctx: AdmNode): Record<string, any>
     }
 export type RequestConfig<P extends Payload> = {
+  baseURL?: string
   url: string
   method?: string
   payload?: P
@@ -28,8 +29,8 @@ export type RequestConfig<P extends Payload> = {
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class AdmNode extends Node<AxiosInstance> {
-  constructor(url: string, minNodeVersion = '0.0.0') {
-    super(url, 'adm', 'node', NODE_LABELS.AdmNode, '', minNodeVersion)
+  constructor(endpoint: { alt_ip?: string; url: string }, minNodeVersion = '0.0.0') {
+    super(endpoint, 'adm', 'node', NODE_LABELS.AdmNode, '', minNodeVersion)
 
     this.wsPort = '36668' // default wsPort
     this.wsProtocol = this.protocol === 'https:' ? 'wss:' : 'ws:'
@@ -52,6 +53,7 @@ export class AdmNode extends Node<AxiosInstance> {
     const { url, method = 'get', payload } = cfg
 
     const config: AxiosRequestConfig = {
+      baseURL: this.preferAltIp ? this.alt_ip : this.url,
       url,
       method: method.toLowerCase(),
       [method === 'get' ? 'params' : 'data']:
@@ -72,7 +74,6 @@ export class AdmNode extends Node<AxiosInstance> {
         // According to https://github.com/axios/axios#handling-errors this means, that request was sent,
         // but server could not respond.
         if (!error.response && error.request) {
-          this.online = false
           throw new NodeOfflineError()
         }
         throw error

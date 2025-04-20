@@ -12,7 +12,7 @@ import { EstimatedFee, GetEstimatedFeeParams } from './types/api/estimated-fee'
 import { Balance } from './types/api/balance'
 
 export class DogeIndexerClient extends Client<DogeIndexer> {
-  constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
+  constructor(endpoints: { alt_ip?: string; url: string }[] = [], minNodeVersion = '0.0.0') {
     super('doge', 'service', NODE_LABELS.DogeIndexer)
     this.nodes = endpoints.map((endpoint) => new DogeIndexer(endpoint))
     this.minNodeVersion = minNodeVersion
