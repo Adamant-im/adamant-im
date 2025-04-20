@@ -160,7 +160,8 @@ export default defineComponent({
 
     &:deep(.v-field__input) {
       width: 100%;
-      padding-right: 0;
+      margin-right: 28px;
+      margin-left: 28px;
     }
 
     :deep(input) {
