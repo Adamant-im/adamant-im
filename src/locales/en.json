@@ -242,6 +242,7 @@
     "page_title": "Settings",
     "push_denied": "Notifications disabled — update browser permissions",
     "push_not_supported": "Notifications not supported in this browser or device",
+    "notifications_info": "Notification modes\n\nDisabled\nNo notifications.\n\nBackground Fetch\nYour device fetchs for new messages by itself. No external calls.\n\nPush\nNotifications sent to your device by ADAMANT Notification Service. You will receive notification almost instantly after a message was sent and approved by the Blockchain — a few seconds delay. But this mode requires your device to register it’s Device Token in the Service’s database. Device tokens are safe and secure, and this option is recommended in most cases.\n\nYou can read more about device registration on ADAMANT’s Github page.\n\n",
     "security_title": "Security",
     "send_on_enter": "Send with Enter",
     "send_on_enter_tooltip": "Send messages with Enter key, for new line Ctrl+Enter",

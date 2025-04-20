@@ -1,7 +1,12 @@
 import Queue from 'promise-queue'
 import { Base64 } from 'js-base64'
 
-import { Transactions, Delegates, MessageType, TransactionStatus as TS } from '@/lib/constants'
+import {
+  Transactions,
+  Delegates,
+  MessageType,
+  ADAMANT_NOTIFICATION_SERVICE_ADDRESS
+} from '@/lib/constants'
 import utils from '@/lib/adamant'
 import client from '@/lib/nodes/adm'
 import { encryptPassword } from '@/lib/idb/crypto'
@@ -56,10 +61,14 @@ function signTransaction(transaction, timeDelta) {
 }
 
 export function unlock(passphrase) {
-  const hash = utils.createPassphraseHash(passphrase)
-  myKeypair = utils.makeKeypair(hash)
-  myAddress = utils.getAddressFromPublicKey(myKeypair.publicKey)
-  return myAddress
+  try {
+    const hash = utils.createPassphraseHash(passphrase)
+    myKeypair = utils.makeKeypair(hash)
+    myAddress = utils.getAddressFromPublicKey(myKeypair.publicKey)
+    return myAddress
+  } catch (error) {
+    console.log('🚀 ~ index.js:68 ~ unlock ~ error:', error)
+  }
 }
 
 /**
@@ -68,6 +77,7 @@ export function unlock(passphrase) {
  */
 export function getCurrentAccount() {
   const publicKey = myKeypair.publicKey.toString('hex')
+  const privateKey = myKeypair.privateKey.toString('hex')
 
   return client
     .get('/api/accounts', { publicKey })
@@ -89,6 +99,7 @@ export function getCurrentAccount() {
       account.balance = utils.toAdm(account.balance)
       account.unconfirmedBalance = utils.toAdm(account.unconfirmedBalance)
       account.publicKey = myKeypair.publicKey
+      account.privateKey = privateKey
       return account
     })
 }
@@ -100,6 +111,10 @@ export function getCurrentAccount() {
 export function isReady() {
   return Boolean(myAddress && myKeypair)
 }
+
+// export function getMyPK() {
+//   return myKeypair && myKeypair.privateKey && myKeypair.privateKey.toString('hex')
+// }
 
 /**
  * Retrieves user public key by his address
@@ -129,7 +144,6 @@ export function getPublicKey(address = '') {
   })
 }
 
-
 /**
  * Generates and signs a chat message transaction.
  *
@@ -141,17 +155,16 @@ export function getPublicKey(address = '') {
  * @returns {Promise<object>} The signed transaction object or null on failure.
  */
 export async function signChatMessageTransaction(params) {
-  const { to, amount, type = 1, message } = params;
+  const { to, amount, type = 1, message } = params
 
-  const publicKey = await getPublicKey(to);
+  const publicKey = await getPublicKey(to)
 
-  const text =
-    typeof message === 'string' ? message : JSON.stringify(message)
+  const text = typeof message === 'string' ? message : JSON.stringify(message)
   const encoded = utils.encodeMessage(text, publicKey, myKeypair.privateKey)
   const chat = {
     message: encoded.message,
     own_message: encoded.nonce,
-    type,
+    type
   }
 
   const transaction = newTransaction(Transactions.CHAT_MESSAGE)
@@ -199,7 +212,7 @@ export async function sendMessage(params) {
       return sendSignedTransaction(signedTransaction)
     }
   } catch (reason) {
-    return reason;
+    return reason
   }
 }
 
@@ -212,6 +225,15 @@ export async function encodeFile(file, params) {
   const { binary, nonce } = utils.encodeBinary(file, publicKey, myKeypair.privateKey)
 
   return { binary, nonce }
+}
+
+// https://aips.adamant.im/AIPS/aip-6
+export function sendSignalMessage(asset) {
+  return sendMessage({
+    type: MessageType.SIGNAL_MESSAGE,
+    message: asset,
+    to: ADAMANT_NOTIFICATION_SERVICE_ADDRESS
+  })
 }
 
 /**
@@ -248,6 +270,7 @@ function tryDecodeStoredValue(value) {
     json = JSON.parse(value)
   } catch (e) {
     // Not a JSON => not an encoded value
+    console.warn('tryDecodeStoredValue error ', e)
     return value
   }
 
@@ -271,34 +294,38 @@ function tryDecodeStoredValue(value) {
  * @returns {Promise<any>}
  */
 export function getStored(key, ownerAddress, records = 1) {
-  if (!ownerAddress) {
-    ownerAddress = myAddress
-  }
-
-  const params = {
-    senderId: ownerAddress,
-    key,
-    orderBy: 'timestamp:desc',
-    limit: records
-  }
-
-  return client.get('/api/states/get', params).then((response) => {
-    let value = null
-
-    if (response.success && Array.isArray(response.transactions)) {
-      if (records > 1) {
-        // Return all records
-        // It may be an empty array; f. e., in case of no crypto addresses stored for a currency
-        return response.transactions
-      } else {
-        const tx = response.transactions[0]
-        value = tx && tx.asset && tx.asset.state && tx.asset.state.value
-        return tryDecodeStoredValue(value)
-      }
+  try {
+    if (!ownerAddress) {
+      ownerAddress = myAddress
     }
 
-    return null
-  })
+    const params = {
+      senderId: ownerAddress,
+      key,
+      orderBy: 'timestamp:desc',
+      limit: records
+    }
+
+    return client.get('/api/states/get', params).then((response) => {
+      let value = null
+
+      if (response.success && Array.isArray(response.transactions)) {
+        if (records > 1) {
+          // Return all records
+          // It may be an empty array; f. e., in case of no crypto addresses stored for a currency
+          return response.transactions
+        } else {
+          const tx = response.transactions[0]
+          value = tx && tx.asset && tx.asset.state && tx.asset.state.value
+          return tryDecodeStoredValue(value)
+        }
+      }
+
+      return null
+    })
+  } catch (error) {
+    console.log('🚀 ~ index.js:287 ~ getStored ~ error:', error)
+  }
 }
 
 /**

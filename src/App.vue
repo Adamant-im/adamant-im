@@ -17,6 +17,10 @@ import UploadAttachmentExitPrompt from '@/components/UploadAttachmentExitPrompt.
 import Notifications from '@/lib/notifications'
 import { ThemeName } from './plugins/vuetify'
 
+import { fcm } from './firebase'
+import { onMessage, getToken } from 'firebase/messaging'
+import { VAPID_KEY } from '@/lib/constants'
+
 export default defineComponent({
   components: {
     WarningOnAddressesDialog,
@@ -38,14 +42,40 @@ export default defineComponent({
     },
     themeName() {
       return this.$store.state.options.darkTheme ? ThemeName.Dark : ThemeName.Light
+    },
+    myPK() {
+      return this.$store.getters.getMyPK
     }
   },
-  created() {
+  watch: {
+    myPK(newVal, oldVal) {
+      if (newVal && !oldVal) {
+        const channel = new BroadcastChannel('adm_notifications')
+        channel.postMessage({ isCheckPK: true })
+        channel.onmessage = async (event) => {
+          const data = event.data
+          if (data && data.isNoPrivateKey) {
+            const privateKey = newVal
+            if (privateKey) channel.postMessage({ privateKey })
+          }
+        }
+      }
+    }
+  },
+  async created() {
     this.setLocale()
+    // const isPushNotifications = this.$store.state.options.allowNotificationType === '2'
+    // console.log("🚀 ~ App.vue:66 ~ created ~ isPushNotifications:", isPushNotifications)
+    // if (isPushNotifications)
+    await this.registerCustomWorker()
   },
   mounted() {
     this.notifications = new Notifications(this)
     this.notifications.start()
+    console.log('🚀 ~ mounted ~ fcm:', fcm)
+    onMessage(fcm, (payload: object) => {
+      console.log('!! Message received. ', payload)
+    })
   },
   beforeUnmount() {
     this.notifications?.stop()
@@ -61,6 +91,23 @@ export default defineComponent({
       const localeFromStorage = this.$store.state.language.currentLocale
       this.$i18n.locale = localeFromStorage
       dayjs.locale(localeFromStorage)
+    },
+    async registerCustomWorker() {
+      try {
+        const worker = await navigator.serviceWorker.register(
+          import.meta.env.MODE === 'production' ? '/firebase-messagin-sw.js' : '/dev-sw.js?dev-sw',
+          {
+            type: import.meta.env.MODE === 'production' ? 'classic' : 'module'
+          }
+        )
+        const token = await getToken(fcm, {
+          vapidKey: VAPID_KEY,
+          serviceWorkerRegistration: worker
+        })
+        console.log('🚀 107 ~ registerCustomWorker ~ token:', token)
+      } catch (error) {
+        console.log('🚀 125 ~ registerCustomWorker ~ error:', error)
+      }
     }
   }
 })

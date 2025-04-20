@@ -18,8 +18,22 @@ export default mergeConfig(
         manifest: manifest,
         manifestFilename: 'manifest.json',
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,wasm}'],
           maximumFileSizeToCacheInBytes: 5000000 // 5 MiB
+        }
+      }),
+      VitePWA({
+        registerType: 'autoUpdate',
+        injectRegister: false,
+        manifest: manifest,
+        injectManifest: {
+          injectionPoint: undefined
+        },
+        strategies: 'injectManifest',
+        srcDir: 'src',
+        filename: 'firebase-messaging-sw.ts',
+        devOptions: {
+          enabled: true,
+          type: 'module'
         }
       })
     ]

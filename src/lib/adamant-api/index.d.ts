@@ -80,6 +80,13 @@ export function getCurrentAccount(): Promise<CurrentAccount>
 
 export function isReady(): boolean
 
+export type KeyPair = {
+  publicKey: Buffer
+  privateKey: Buffer
+}
+
+export function getMyPK(): string
+
 export function getPublicKey(address: string): Promise<string>
 
 export type SendMessageParams = {
@@ -167,6 +174,8 @@ export function decodeTransaction(
   transaction: AnyTransaction | QueuedTransaction,
   address: string
 ): DecodedChatMessageTransaction
+
+// export function decodeNotificationMessage(message: string, senderPublicKey: string, own_message: string): string
 
 export function getI18nMessage(message: string, senderId: string): string
 

@@ -71,6 +71,7 @@
     "ed2curve": "^0.3.0",
     "emoji-mart": "^5.6.0",
     "file-saver": "^2.0.5",
+    "firebase": "^10.14.1",
     "hdkey": "^2.1.0",
     "https-browserify": "^1.0.0",
     "i": "^0.3.7",
