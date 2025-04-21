@@ -16,11 +16,15 @@ export class EthNode extends Node<Web3Eth> {
   }
 
   protected buildClient(): Web3Eth {
-    return new Web3Eth(new HttpProvider(this.url))
+    return new Web3Eth(new HttpProvider(this.preferAltIp ? (this.alt_ip as string) : this.url))
   }
 
   protected async checkHealth() {
     const time = Date.now()
+
+    /** Set `clientUrl` for `HttpProvider` depending on `preferAltIp`. */
+    this.client = this.buildClient()
+
     const blockNumber = await this.client.getBlockNumber()
 
     return {
