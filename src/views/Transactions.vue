@@ -1,62 +1,61 @@
 <template>
-  <div id="txListElement" class="w-100" :class="classes.root" v-if="!hasView">
-    <app-toolbar-centered
-      app
-      :title="$t('transaction.transactions')"
-      flat
-      absolute
-      disable-max-width
-    />
+  <navigation-wrapper
+    :content-padding="false"
+    :ready-to-show="isFulfilled"
+    @scroll-content="onScroll"
+  >
+    <template #loader>
+      <v-list-item v-if="isRecentLoading" style="position: absolute; top: 20px">
+        <InlineSpinner />
+      </v-list-item>
+    </template>
 
-    <v-container fluid class="px-0 py-0" :class="classes.content" @scroll="onScroll">
-      <v-row justify="center" no-gutters style="position: relative">
-        <v-list-item v-if="isRecentLoading" style="position: absolute; top: 20px">
-          <InlineSpinner />
+    <router-view v-if="hasView" />
+
+    <template v-else>
+      <v-list v-if="hasTransactions" lines="three" bg-color="transparent">
+        <transaction-list-item
+          v-for="(transaction, i) in transactions"
+          :id="transaction.id"
+          :key="i"
+          :sender-id="sender(transaction)"
+          :recipient-id="recipient(transaction)"
+          :timestamp="transaction.timestamp || NaN"
+          :amount="transaction.amount"
+          :crypto="crypto"
+          :status="transaction.status"
+          :text-data="transaction.data"
+          @click:transaction="goToTransaction"
+          @click:icon="goToChat"
+        />
+        <v-list-item>
+          <InlineSpinner v-if="isOlderLoading" />
         </v-list-item>
+      </v-list>
 
-        <container v-if="isFulfilled" disable-max-width>
-          <v-list v-if="hasTransactions" lines="three" bg-color="transparent">
-            <transaction-list-item
-              v-for="(transaction, i) in transactions"
-              :id="transaction.id"
-              :key="i"
-              :sender-id="sender(transaction)"
-              :recipient-id="recipient(transaction)"
-              :timestamp="transaction.timestamp || NaN"
-              :amount="transaction.amount"
-              :crypto="crypto"
-              :status="transaction.status"
-              :text-data="transaction.data"
-              @click:transaction="goToTransaction"
-              @click:icon="goToChat"
-            />
-            <v-list-item>
-              <InlineSpinner v-if="isOlderLoading" />
-            </v-list-item>
-          </v-list>
-
-          <h3 v-else class="a-text-caption text-center mt-6">
-            {{ $t('transaction.no_transactions') }}
-          </h3>
-        </container>
-      </v-row>
-    </v-container>
-  </div>
-  <router-view v-else />
+      <h3 v-else class="a-text-caption text-center mt-6">
+        {{ $t('transaction.no_transactions') }}
+      </h3>
+    </template>
+  </navigation-wrapper>
 </template>
 
 <script>
-import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import InlineSpinner from '@/components/InlineSpinner.vue'
 import TransactionListItem from '@/components/TransactionListItem.vue'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { AllNodesDisabledError, AllNodesOfflineError } from '@/lib/nodes/utils/errors'
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useSavedScroll } from '@/hooks/useSavedScroll'
+import NavigationWrapper from '@/components/NavigationWrapper.vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useStore } from 'vuex'
+import { onBeforeRouteUpdate, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import navigationGuard from '@/router/navigationGuard'
 
 export default {
   components: {
-    AppToolbarCentered,
+    NavigationWrapper,
     InlineSpinner,
     TransactionListItem
   },
@@ -66,7 +65,7 @@ export default {
       type: String
     }
   },
-  setup() {
+  setup(props) {
     const className = 'transactions'
 
     const classes = {
@@ -74,20 +73,116 @@ export default {
       content: `${className}__content`
     }
 
+    const store = useStore()
     const route = useRoute()
+    const { t } = useI18n()
 
-    const hasView = computed(() => route.matched.length > 1 && !(route.name === 'Transactions'))
+    const { hasView, sidebarLayoutRef } = useSavedScroll()
+
+    const isFulfilled = ref(false)
+    const isRejected = ref(false)
+    const isUpdating = ref(false)
+
+    const cryptoModule = computed(() => {
+      return props.crypto.toLowerCase()
+    })
+
+    const isRecentLoading = computed(() => {
+      return store.getters[`${cryptoModule.value}/areRecentLoading`]
+    })
+
+    const isOlderLoading = computed(() => store.getters[`${cryptoModule.value}/areOlderLoading`])
+
+    const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
+    const isIDBReady = computed(() => store.state.IDBReady)
+
+    onBeforeRouteUpdate((to, from, next) => {
+      navigationGuard.transactions(to, from, next)
+    })
+
+    const getNewTransactions = () => {
+      const doNotUpdate =
+        route.meta.previousRoute?.params?.txId &&
+        !isFulfilled.value &&
+        route.meta.previousPreviousRoute &&
+        route.meta.previousPreviousRoute.name
+
+      if (doNotUpdate) {
+        isFulfilled.value = true
+      } else {
+        store
+          .dispatch(`${cryptoModule.value}/getNewTransactions`)
+          .then(() => {
+            isFulfilled.value = true
+          })
+          .catch((err) => {
+            isRejected.value = true
+            let message = err.message
+            if (err instanceof AllNodesOfflineError) {
+              message = t('errors.all_nodes_offline', {
+                crypto: err.nodeLabel.toUpperCase()
+              })
+            } else if (err instanceof AllNodesDisabledError) {
+              message = t('errors.all_nodes_disabled', {
+                crypto: err.nodeLabel.toUpperCase()
+              })
+            }
+
+            store.dispatch('snackbar/show', {
+              message
+            })
+          })
+      }
+    }
+
+    const onScroll = (event) => {
+      const { target } = event
+
+      const height = target.offsetHeight
+      const windowHeight = window.innerHeight
+      const scrollPosition = Math.ceil(target.scrollTop || 0)
+
+      // Если долистали до низа — подгружаем старые транзакции
+      if (!isOlderLoading.value && windowHeight + scrollPosition >= height) {
+        store.dispatch(`${cryptoModule.value}/getOldTransactions`)
+      }
+
+      // Если долистали до верха — получаем новые транзакции
+      if (!isRecentLoading.value && scrollPosition === 0) {
+        getNewTransactions()
+      }
+    }
+
+    onMounted(() => {
+      if (!isLoginViaPassword.value || isIDBReady.value) {
+        getNewTransactions()
+      }
+
+      sidebarLayoutRef.value.addEventListener('scroll', onScroll)
+    })
+
+    onBeforeUnmount(() => {
+      sidebarLayoutRef.value.removeEventListener('scroll', onScroll)
+    })
+
+    watch(isIDBReady, (newVal) => {
+      if (newVal) {
+        getNewTransactions()
+      }
+    })
 
     return {
+      cryptoModule,
+      classes,
       hasView,
-      classes
+      isOlderLoading,
+      isRecentLoading,
+      isFulfilled,
+      isRejected,
+      isUpdating,
+      onScroll
     }
   },
-  data: () => ({
-    isFulfilled: false,
-    isRejected: false,
-    isUpdating: false
-  }),
   computed: {
     transactions() {
       const transactions = this.$store.getters[`${this.cryptoModule}/sortedTransactions`]
@@ -103,25 +198,6 @@ export default {
     },
     hasTransactions() {
       return this.transactions && this.transactions.length > 0
-    },
-    isOlderLoading() {
-      return this.$store.getters[`${this.cryptoModule}/areOlderLoading`]
-    },
-    isRecentLoading() {
-      return this.$store.getters[`${this.cryptoModule}/areRecentLoading`]
-    },
-    cryptoModule() {
-      return this.crypto.toLowerCase()
-    }
-  },
-  watch: {
-    '$store.state.IDBReady'() {
-      if (this.$store.state.IDBReady) this.getNewTransactions()
-    }
-  },
-  mounted() {
-    if (!this.$store.getters['options/isLoginViaPassword'] || this.$store.state.IDBReady) {
-      this.getNewTransactions()
     }
   },
   methods: {
@@ -169,72 +245,7 @@ export default {
         name: 'Chat',
         params: { partnerId }
       })
-    },
-    onScroll(event) {
-      const { target } = event
-
-      const height = target.offsetHeight
-
-      const windowHeight = window.innerHeight
-      const scrollPosition = Math.ceil(target.scrollTop || 0)
-
-      // If we've scrolled to the very bottom, fetch the older transactions from server
-      if (!this.isOlderLoading && windowHeight + scrollPosition >= height) {
-        this.$store.dispatch(`${this.cryptoModule}/getOldTransactions`)
-      }
-      // If we've scrolled to the very top, fetch the recent transactions from server
-      if (!this.isRecentLoading && scrollPosition === 0) {
-        this.getNewTransactions()
-      }
-    },
-    getNewTransactions() {
-      // If we came from Transactions details sreen, do not update transaction list
-      const doNotUpdate =
-        (this.$route.meta.previousRoute?.params?.txId &&
-          !this.isFulfilled &&
-          // If we don't just refresh Tx details screen
-          this.$route.meta.previousPreviousRoute &&
-          this.$route.meta.previousPreviousRoute.name) ||
-        false
-
-      if (doNotUpdate) {
-        this.isFulfilled = true
-      } else {
-        this.$store
-          .dispatch(`${this.cryptoModule}/getNewTransactions`)
-          .then(() => {
-            this.isFulfilled = true
-          })
-          .catch((err) => {
-            this.isRejected = true
-            let message = err.message
-            if (err instanceof AllNodesOfflineError) {
-              message = this.$t('errors.all_nodes_offline', {
-                crypto: err.nodeLabel.toUpperCase()
-              })
-            } else if (err instanceof AllNodesDisabledError) {
-              message = this.$t('errors.all_nodes_disabled', {
-                crypto: err.nodeLabel.toUpperCase()
-              })
-            }
-            this.$store.dispatch('snackbar/show', {
-              message: message
-            })
-          })
-      }
     }
   }
 }
 </script>
-
-<style scoped lang="scss">
-.transactions {
-  position: relative;
-
-  &__content {
-    overflow-y: auto;
-    height: calc(100vh - var(--v-layout-bottom) - var(--toolbar-height));
-    padding-top: var(--toolbar-height);
-  }
-}
-</style>

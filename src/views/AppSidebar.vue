@@ -21,10 +21,11 @@
     <div :class="classes.layout" ref="sidebarLayout">
       <component :is="layout">
         <div
-          class="d-flex justify-center align-center"
+          class="d-flex justify-center"
           :class="{
             [classes.routerView]: true,
-            [classes.routerViewNoAside]: !needAside
+            [classes.routerViewNoAside]: !needAside,
+            [classes.routerViewLogo]: showLogo
           }"
         >
           <img
@@ -59,6 +60,7 @@ const classes = {
   asideHasView: `${className}__aside--has-view`,
   routerView: `${className}__router-view`,
   routerViewNoAside: `${className}__router-view--no-aside`,
+  routerViewLogo: `${className}__router-view--logo`,
   layout: `${className}__layout`
 }
 
@@ -212,6 +214,10 @@ if (SAVED_WIDTH_KEY) {
     &--no-aside {
       width: 100%;
       max-width: 800px;
+    }
+
+    &--logo {
+      align-items: center;
     }
 
     img {

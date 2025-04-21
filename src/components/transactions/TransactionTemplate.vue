@@ -1,154 +1,136 @@
 <template>
-  <v-row justify="center" no-gutters :class="className">
-    <app-toolbar-centered
-      app
-      :title="transaction?.id"
-      flat
-      absolute
-      disable-max-width
-      :class="`${className}__toolbar`"
-    />
+  <v-list bg-color="transparent">
+    <TransactionListItem :title="t('transaction.amount')">
+      {{
+        typeof transaction?.amount === 'number'
+          ? formatAmount(transaction?.amount) + ` ${crypto}`
+          : placeholder
+      }}
+    </TransactionListItem>
 
-    <container class="py-0" disable-max-width :class="`${className}__content`">
-      <v-list bg-color="transparent">
-        <TransactionListItem :title="t('transaction.amount')">
-          {{
-            typeof transaction?.amount === 'number'
-              ? formatAmount(transaction?.amount) + ` ${crypto}`
-              : placeholder
-          }}
-        </TransactionListItem>
+    <v-divider />
 
-        <v-divider />
+    <TransactionListItem :title="t('transaction.currentVal')">
+      {{ rate }}
+    </TransactionListItem>
 
-        <TransactionListItem :title="t('transaction.currentVal')">
-          {{ rate }}
-        </TransactionListItem>
+    <v-divider />
 
-        <v-divider />
+    <TransactionListItem :title="t('transaction.valueTimeTxn')">
+      {{ historyRate }}
+    </TransactionListItem>
 
-        <TransactionListItem :title="t('transaction.valueTimeTxn')">
-          {{ historyRate }}
-        </TransactionListItem>
+    <v-divider />
 
-        <v-divider />
+    <v-list-item>
+      <template #prepend>
+        <v-list-item-title :class="`${className}__title`">
+          {{ t('transaction.status') }}
+          <v-icon
+            v-if="statusUpdatable || rotateAnimation"
+            :class="{ [`${className}__update-status-icon--rotate`]: rotateAnimation }"
+            :icon="mdiRefresh"
+            size="20"
+            @click="updateStatus()"
+          />
+        </v-list-item-title>
+      </template>
+      <div
+        :class="[
+          `${className}__inconsistent-status`,
+          `${className}__inconsistent-status--${transactionStatus}`
+        ]"
+      >
+        <v-icon
+          v-if="transactionStatus === 'INVALID'"
+          :icon="mdiAlertOutline"
+          size="20"
+          style="color: #f8a061 !important"
+        />
+        {{ formattedTransactionStatus
+        }}<span v-if="inconsistentStatus">{{
+          ': ' + t(`transaction.inconsistent_reasons.${inconsistentStatus}`, { crypto })
+        }}</span>
+        <!--            <span v-if="status.addStatus">{{ ': ' + status.addDescription }}</span>-->
+      </div>
+    </v-list-item>
 
-        <v-list-item>
-          <template #prepend>
-            <v-list-item-title :class="`${className}__title`">
-              {{ t('transaction.status') }}
-              <v-icon
-                v-if="statusUpdatable || rotateAnimation"
-                :class="{ [`${className}__update-status-icon--rotate`]: rotateAnimation }"
-                :icon="mdiRefresh"
-                size="20"
-                @click="updateStatus()"
-              />
-            </v-list-item-title>
-          </template>
-          <div
-            :class="[
-              `${className}__inconsistent-status`,
-              `${className}__inconsistent-status--${transactionStatus}`
-            ]"
-          >
-            <v-icon
-              v-if="transactionStatus === 'INVALID'"
-              :icon="mdiAlertOutline"
-              size="20"
-              style="color: #f8a061 !important"
-            />
-            {{ formattedTransactionStatus
-            }}<span v-if="inconsistentStatus">{{
-              ': ' + t(`transaction.inconsistent_reasons.${inconsistentStatus}`, { crypto })
-            }}</span>
-            <!--            <span v-if="status.addStatus">{{ ': ' + status.addDescription }}</span>-->
-          </div>
-        </v-list-item>
+    <v-divider />
 
-        <v-divider />
+    <TransactionListItem :title="t('transaction.date')">
+      {{
+        confirmations && transaction?.timestamp ? formatDate(transaction.timestamp) : placeholder
+      }}
+    </TransactionListItem>
 
-        <TransactionListItem :title="t('transaction.date')">
-          {{
-            confirmations && transaction?.timestamp
-              ? formatDate(transaction.timestamp)
-              : placeholder
-          }}
-        </TransactionListItem>
+    <v-divider />
 
-        <v-divider />
+    <TransactionListItem :title="t('transaction.confirmations')">
+      {{ confirmations || placeholder }}
+    </TransactionListItem>
 
-        <TransactionListItem :title="t('transaction.confirmations')">
-          {{ confirmations || placeholder }}
-        </TransactionListItem>
+    <v-divider />
 
-        <v-divider />
+    <TransactionListItem :title="t('transaction.commission')">
+      {{ calculatedFee }}
+    </TransactionListItem>
 
-        <TransactionListItem :title="t('transaction.commission')">
-          {{ calculatedFee }}
-        </TransactionListItem>
+    <v-divider />
 
-        <v-divider />
+    <TransactionListItem
+      :title="t('transaction.txid')"
+      @click="handleCopyToClipboard(transaction?.id)"
+    >
+      {{ transaction?.id || placeholder }}
+    </TransactionListItem>
 
-        <TransactionListItem
-          :title="t('transaction.txid')"
-          @click="handleCopyToClipboard(transaction?.id)"
-        >
-          {{ transaction?.id || placeholder }}
-        </TransactionListItem>
+    <v-divider />
 
-        <v-divider />
+    <TransactionListItem :title="t('transaction.sender')" @click="handleCopyToClipboard(sender)">
+      {{ senderFormatted || placeholder }}
+    </TransactionListItem>
 
-        <TransactionListItem
-          :title="t('transaction.sender')"
-          @click="handleCopyToClipboard(sender)"
-        >
-          {{ senderFormatted || placeholder }}
-        </TransactionListItem>
+    <v-divider />
 
-        <v-divider />
+    <TransactionListItem
+      :title="t('transaction.recipient')"
+      @click="handleCopyToClipboard(recipient)"
+    >
+      {{ recipientFormatted || placeholder }}
+    </TransactionListItem>
 
-        <TransactionListItem
-          :title="t('transaction.recipient')"
-          @click="handleCopyToClipboard(recipient)"
-        >
-          {{ recipientFormatted || placeholder }}
-        </TransactionListItem>
+    <v-divider v-if="comment" />
 
-        <v-divider v-if="comment" />
+    <TransactionListItem v-if="comment" :title="t('transaction.comment')">
+      {{ comment || placeholder }}
+    </TransactionListItem>
 
-        <TransactionListItem v-if="comment" :title="t('transaction.comment')">
-          {{ comment || placeholder }}
-        </TransactionListItem>
+    <v-divider v-if="textData" />
 
-        <v-divider v-if="textData" />
+    <TransactionListItem v-if="textData" :title="t('transaction.textData')">
+      {{ textData || placeholder }}
+    </TransactionListItem>
 
-        <TransactionListItem v-if="textData" :title="t('transaction.textData')">
-          {{ textData || placeholder }}
-        </TransactionListItem>
+    <v-divider v-if="explorerLink" />
 
-        <v-divider v-if="explorerLink" />
+    <TransactionListItem
+      v-if="explorerLink"
+      :title="t('transaction.explorer')"
+      @click="openInExplorer"
+    >
+      <v-icon :icon="mdiChevronRight" size="20" />
+    </TransactionListItem>
 
-        <TransactionListItem
-          v-if="explorerLink"
-          :title="t('transaction.explorer')"
-          @click="openInExplorer"
-        >
-          <v-icon :icon="mdiChevronRight" size="20" />
-        </TransactionListItem>
+    <v-divider v-if="partner && !ifComeFromChat" />
 
-        <v-divider v-if="partner && !ifComeFromChat" />
-
-        <TransactionListItem
-          v-if="partner && !ifComeFromChat"
-          :title="hasMessages ? t('transaction.continueChat') : t('transaction.startChat')"
-          @click="openChat"
-        >
-          <v-icon :icon="hasMessages ? mdiComment : mdiCommentOutline" size="20" />
-        </TransactionListItem>
-      </v-list>
-    </container>
-  </v-row>
+    <TransactionListItem
+      v-if="partner && !ifComeFromChat"
+      :title="hasMessages ? t('transaction.continueChat') : t('transaction.startChat')"
+      @click="openChat"
+    >
+      <v-icon :icon="hasMessages ? mdiComment : mdiCommentOutline" size="20" />
+    </TransactionListItem>
+  </v-list>
 </template>
 
 <script lang="ts" setup>
@@ -171,7 +153,6 @@ import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { InconsistentStatus } from './utils/getInconsistentStatus'
 import { PendingTransaction } from '@/lib/pending-transactions'
 import { AnyCoinTransaction } from '@/lib/nodes/types/transaction'
-import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import TransactionListItem from './TransactionListItem.vue'
 import { timestampInSec } from '@/filters/helpers'
 import {

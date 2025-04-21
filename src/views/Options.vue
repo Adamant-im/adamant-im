@@ -196,49 +196,19 @@ import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import scrollPosition from '@/mixins/scrollPosition'
 import { resetPinia } from '@/plugins/pinia'
 import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant } from '@mdi/js'
-import OptionsWrapper from '@/components/OptionsWrapper.vue'
-import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute } from 'vue-router'
-import { computed, inject } from 'vue'
-import { sidebarLayoutKey } from '@/lib/constants/index'
-
-const SAVED_TOP_ATTRIBUTE = 'data-saved-top'
+import NavigationWrapper from '@/components/NavigationWrapper.vue'
+import { useSavedScroll } from '@/hooks/useSavedScroll'
 
 export default {
   components: {
-    OptionsWrapper,
+    OptionsWrapper: NavigationWrapper,
     LanguageSwitcher,
     CurrencySwitcher,
     PasswordSetDialog
   },
   mixins: [scrollPosition],
   setup() {
-    const route = useRoute()
-
-    const sidebarLayoutRef = inject(sidebarLayoutKey)
-
-    const hasView = computed(() => route.matched.length > 1 && !(route.name === 'Options'))
-
-    onBeforeRouteUpdate(() => {
-      if (!hasView.value) {
-        const { scrollTop } = sidebarLayoutRef.value
-
-        sidebarLayoutRef.value.setAttribute(SAVED_TOP_ATTRIBUTE, scrollTop)
-
-        sidebarLayoutRef.value.scrollTo({ top: 0, behavior: 'smooth' })
-        return
-      }
-      // some routes don't have scrollbar, need delay for scroll render
-      setTimeout(() => {
-        sidebarLayoutRef.value.scrollTo({
-          top: sidebarLayoutRef.value?.getAttribute(SAVED_TOP_ATTRIBUTE),
-          behavior: 'smooth'
-        })
-      })
-    })
-
-    onBeforeRouteLeave(() => {
-      sidebarLayoutRef.value?.removeAttribute(SAVED_TOP_ATTRIBUTE)
-    })
+    const { hasView } = useSavedScroll()
 
     return {
       hasView,
