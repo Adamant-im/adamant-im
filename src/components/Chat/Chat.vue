@@ -358,12 +358,8 @@ const chatStateStore = useChatStateStore()
 const { setShowFreeTokensDialog, setActionsDropdownMessageId } = chatStateStore
 
 const isShowFreeTokensDialog = computed({
-  get() {
-    return chatStateStore.isShowFreeTokensDialog
-  },
-  set(value) {
-    setShowFreeTokensDialog(value)
-  }
+  get: () => chatStateStore.isShowFreeTokensDialog,
+  set: setShowFreeTokensDialog
 })
 
 const actionsDropdownMessageId = computed({

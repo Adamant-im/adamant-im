@@ -123,12 +123,8 @@ export default {
 
     const noActiveNodesDialog = computed(() => store.state.chat.noActiveNodesDialog)
     const isShowChatStartDialog = computed({
-      get() {
-        return chatStateStore.isShowChatStartDialog
-      },
-      set(value) {
-        setShowChatStartDialog(value)
-      }
+      get: () => chatStateStore.isShowChatStartDialog,
+      set: (value) => setShowChatStartDialog(value)
     })
 
     const canPressEscape = computed(() => {
