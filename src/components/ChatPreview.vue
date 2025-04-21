@@ -8,7 +8,7 @@
       />
     </div>
   </v-list-item>
-  <v-list-item v-else lines="two" :class="className" @click="$emit('click')">
+  <v-list-item lines="two" :class="className" @click="$emit('click')">
     <template #prepend>
       <icon v-if="isWelcomeChat(contactId)" :class="`${className}__icon`">
         <adm-fill-icon />

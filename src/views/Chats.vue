@@ -37,21 +37,18 @@
               </v-btn>
             </v-row>
             <transition-group name="messages">
-              <template
-                v-for="(transaction, index) in messages"
-                :key="messageOptions[index].contactId"
-              >
+              <template v-for="(transaction, index) in lastMessages" :key="transaction.contactId">
                 <chat-preview
-                  v-if="displayChat(messageOptions[index].contactId)"
-                  :ref="messageOptions[index].contactId"
-                  :is-loading-separator="messageOptions[index].loadingSeparator"
+                  v-if="displayChat(transaction.contactId)"
+                  :ref="transaction.contactId"
+                  :is-loading-separator="index === separatorIndex"
                   :is-loading-separator-active="loading"
                   :user-id="userId"
-                  :contact-id="messageOptions[index].contactId"
-                  :transaction="transaction"
-                  :is-message-readonly="messageOptions[index].readonly"
-                  :adamant-chat-meta="getAdamantChatMeta(messageOptions[index].contactId)"
-                  @click="openChat(messageOptions[index].contactId)"
+                  :contact-id="transaction.contactId"
+                  :transaction="transaction.lastMessage"
+                  :is-message-readonly="transaction.lastMessage.readonly"
+                  :adamant-chat-meta="getAdamantChatMeta(transaction.contactId)"
+                  @click="openChat(transaction.contactId)"
                 />
               </template>
             </transition-group>
@@ -85,14 +82,6 @@ import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useChatsSpinner } from '@/hooks/useChatsSpinner'
-import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
-
-interface MessageOptions {
-  contactId: string
-  readonly?: boolean
-  loadingSeparator?: boolean
-  userId?: string
-}
 
 const props = withDefaults(
   defineProps<{
@@ -120,31 +109,16 @@ const loadingSeparator = ref<InstanceType<typeof ChatPreview>[]>([])
 
 const isFulfilled = computed(() => store.state.chat.isFulfilled)
 const lastMessages = computed(() => store.getters['chat/lastMessages'])
-const messages = computed<NormalizedChatMessageTransaction[]>(() =>
-  lastMessages.value.map((msg: { lastMessage: NormalizedChatMessageTransaction }) => ({
-    ...msg.lastMessage
-  }))
-)
-const messageOptions = computed(() => {
-  const options: MessageOptions[] = lastMessages.value.map(
-    (msg: { contactId: string; lastMessage: { readonly?: boolean } }) => ({
-      contactId: msg.contactId,
-      readonly: msg.lastMessage.readonly
-    })
-  )
+const separatorIndex = computed(() => {
+  if (!noMoreChats.value && lastMessages.value.length > 25) {
+    const lastNotAdamantChat = lastMessages.value
+      .map((msg: { contactId: string }) => isAdamantChat(msg.contactId))
+      .lastIndexOf(false)
 
-  if (!noMoreChats.value && options.length > 25) {
-    const lastNotAdamantChat = options.map((msg) => isAdamantChat(msg.contactId)).lastIndexOf(false)
-    if (lastNotAdamantChat) {
-      options.splice(lastNotAdamantChat + 1, 0, {
-        loadingSeparator: true,
-        userId: 'loadingSeparator',
-        contactId: 'loadingSeparator'
-      })
-    }
+    return lastNotAdamantChat + 1
   }
 
-  return options
+  return null
 })
 const userId = computed(() => store.state.address)
 const unreadMessagesCount = computed(() => store.getters['chat/totalNumOfNewMessages'])
