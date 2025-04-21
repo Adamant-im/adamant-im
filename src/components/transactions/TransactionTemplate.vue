@@ -308,12 +308,12 @@ export default defineComponent({
 
       const { cryptoTransferDecimals, decimals } = CryptosInfo[commissionTokenLabel]
 
-      const isShouldShowFee =
+      const isFeeShown =
         typeof props.fee === 'number' &&
         ((props.queryStatus === 'success' && props.fee > 0) ||
           props.transactionStatus === 'CONFIRMED')
 
-      const tokenFee = isShouldShowFee
+      const tokenFee = isFeeShown
         ? `${formatAmount(props.fee, cryptoTransferDecimals ?? decimals)} ${commissionTokenLabel}`
         : placeholder.value
 
