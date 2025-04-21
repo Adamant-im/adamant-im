@@ -68,7 +68,7 @@ const title = computed(() => {
       return t('options.wallets_list')
     case 'Transactions':
     case 'Transaction':
-      return route?.params?.txId || t('transaction.transactions')
+      return (route?.params?.txId as string) || t('transaction.transactions')
     default:
       return t('options.page_title')
   }
