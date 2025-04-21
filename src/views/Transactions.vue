@@ -142,12 +142,10 @@ export default {
       const windowHeight = window.innerHeight
       const scrollPosition = Math.ceil(target.scrollTop || 0)
 
-      // Если долистали до низа — подгружаем старые транзакции
       if (!isOlderLoading.value && windowHeight + scrollPosition >= height) {
         store.dispatch(`${cryptoModule.value}/getOldTransactions`)
       }
 
-      // Если долистали до верха — получаем новые транзакции
       if (!isRecentLoading.value && scrollPosition === 0) {
         getNewTransactions()
       }
