@@ -142,10 +142,11 @@ export default {
       const windowHeight = window.innerHeight
       const scrollPosition = Math.ceil(target.scrollTop || 0)
 
+      // If we've scrolled to the very bottom, fetch the older transactions from server
       if (!isOlderLoading.value && windowHeight + scrollPosition >= height) {
         store.dispatch(`${cryptoModule.value}/getOldTransactions`)
       }
-
+      // If we've scrolled to the very top, fetch the recent transactions from server
       if (!isRecentLoading.value && scrollPosition === 0) {
         getNewTransactions()
       }
