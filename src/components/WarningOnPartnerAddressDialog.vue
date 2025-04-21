@@ -70,18 +70,18 @@ export default {
   },
   methods: {
     header() {
-      return (this.$t('transfer.warning_on_partner_address.headline'))
+      return this.$t('transfer.warning_on_partner_address.headline')
     },
     about() {
       return this.$t('transfer.warning_on_partner_address.about')
     },
     details() {
       return this.$t('transfer.warning_on_partner_address.specifics_many_addresses', {
-          crypto: this.info.coin,
-          partner_account: this.info.ADMaddress,
-          partner_name: this.info.ADMname,
-          manyAddresses: this.info.coinAddresses
-        })
+        crypto: this.info.coin,
+        partner_account: this.info.ADMaddress,
+        partner_name: this.info.ADMname,
+        manyAddresses: this.info.coinAddresses
+      })
     },
     reasons() {
       return this.$t('transfer.warning_on_partner_address.reasons')

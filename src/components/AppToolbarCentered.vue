@@ -1,7 +1,7 @@
 <template>
   <v-container :class="[classes, className]" fluid>
     <v-row justify="center" no-gutters>
-      <container>
+      <container :disableMaxWidth="disableMaxWidth">
         <v-toolbar ref="toolbar" :flat="flat" :height="height">
           <back-button v-if="showBack" @click="goBack" />
           <v-toolbar-title v-if="title" class="a-text-regular-enlarged">
@@ -16,67 +16,98 @@
   </v-container>
 </template>
 
-<script>
-import { mdiArrowLeft } from '@mdi/js'
+<script setup lang="ts">
 import BackButton from '@/components/common/BackButton/BackButton.vue'
+import { useRoute, useRouter } from 'vue-router'
+import { computed } from 'vue'
 
-export default {
-  components: { BackButton },
-  props: {
-    title: {
-      type: String,
-      default: undefined
-    },
-    subtitle: {
-      type: String,
-      default: undefined
-    },
-    flat: {
-      type: Boolean,
-      default: false
-    },
-    app: {
-      type: Boolean,
-      default: false
-    },
-    fixed: {
-      type: Boolean,
-      default: false
-    },
-    height: {
-      type: Number,
-      default: 56
-    },
-    showBack: {
-      type: Boolean,
-      default: true
-    }
+const props = defineProps({
+  title: {
+    type: String,
+    default: undefined
   },
-  setup() {
-    return {
-      mdiArrowLeft
-    }
+  subtitle: {
+    type: String,
+    default: undefined
   },
-  computed: {
-    classes() {
-      return {
-        'v-toolbar--fixed': this.app,
-        'app-toolbar--fixed': this.fixed
-      }
-    },
-    className: () => 'app-toolbar-centered'
+  flat: {
+    type: Boolean,
+    default: false
   },
-  methods: {
-    goBack() {
-      // there are no pages in history to go back
-      if (history.length === 1) {
-        this.$router.replace('/')
-        return
-      }
-
-      this.$router.back()
-    }
+  app: {
+    type: Boolean,
+    default: false
+  },
+  fixed: {
+    type: Boolean,
+    default: false
+  },
+  height: {
+    type: Number,
+    default: 56
+  },
+  showBack: {
+    type: Boolean,
+    default: true
+  },
+  disableMaxWidth: {
+    type: Boolean,
+    default: false
+  },
+  sticky: {
+    type: Boolean,
+    default: false
   }
+})
+
+const route = useRoute()
+const router = useRouter()
+
+const className = 'app-toolbar-centered'
+
+const classes = computed(() => {
+  return {
+    'v-toolbar--fixed': props.app,
+    'app-toolbar--fixed': props.fixed,
+    'app-toolbar--sticky': props.sticky
+  }
+})
+
+const goBack = () => {
+  if (route.query.from?.includes('chats')) {
+    router.push(route.query.from as string)
+    return
+  }
+
+  if (route.query.fromChat) {
+    router.back()
+    return
+  }
+
+  const parentRoute = route.matched.length > 1 ? route.matched.at(-2) : null
+
+  if (parentRoute) {
+    router.push({
+      name: parentRoute.name,
+      params: { ...route.params }
+    })
+    return
+  }
+
+  if (history.state?.back.includes('chats')) {
+    router.push({
+      name: 'Chats'
+    })
+    return
+  }
+
+  // there are no pages in history to go back
+  if (history.length === 1) {
+    router.replace('/')
+    return
+  }
+
+  router.back()
 }
 </script>
 
@@ -99,6 +130,12 @@ export default {
 
 .app-toolbar--fixed {
   position: fixed;
+  z-index: 2;
+}
+
+.app-toolbar--sticky {
+  position: sticky;
+  top: 0;
   z-index: 2;
 }
 

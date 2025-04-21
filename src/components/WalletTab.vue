@@ -31,9 +31,8 @@ import type { PropType } from 'vue'
 import { Cryptos, FetchStatus } from '@/lib/constants'
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import numberFormat from '@/filters/numberFormat'
-import { mdiDotsHorizontal,  mdiHelpCircleOutline } from '@mdi/js'
+import { mdiDotsHorizontal, mdiHelpCircleOutline } from '@mdi/js'
 import { vibrate } from '@/lib/vibrate'
-
 
 const className = 'wallet-tab'
 const classes = {
@@ -44,7 +43,7 @@ const classes = {
   rates: `${className}__rates`
 }
 
-type Wallet = {
+export type Wallet = {
   address: string
   balance: number
   cryptoName: string
@@ -101,10 +100,9 @@ export default defineComponent({
 
     watch(currentBalance, (newBalance, oldBalance) => {
       if (oldBalance < newBalance) {
-          vibrate.doubleVeryShort()
-        }
+        vibrate.doubleVeryShort()
       }
-    )
+    })
 
     return {
       classes,

@@ -1,67 +1,70 @@
 <template>
-  <v-row justify="center" :class="className" no-gutters>
-    <container>
-      <v-row no-gutters>
-        <v-col cols="12">
-          <v-list subheader class="pa-0" bg-color="transparent" v-if="isFulfilled">
-            <v-row :class="`${className}__chats-actions`" no-gutters>
-              <v-btn
-                :class="`${className}__btn mt-2 ml-4`"
-                @click="markAllAsRead"
-                v-if="unreadMessagesCount > 0"
-                :icon="mdiCheckAll"
-                size="small"
-                variant="text"
-              />
-              <v-spacer />
-              <v-btn
-                :class="`${className}__item`"
-                @click="showChatStartDialog = true"
-                variant="plain"
-              >
-                <template #prepend>
-                  <v-icon :class="`${className}__icon`" :icon="mdiMessageOutline" size="small" />
-                </template>
+  <div :class="className">
+    <v-list subheader class="pa-0" bg-color="transparent" v-if="isFulfilled">
+      <v-row :class="`${className}__chats-actions`" no-gutters>
+        <v-btn
+          :class="`${className}__btn mt-2 ml-4`"
+          @click="markAllAsRead"
+          v-if="unreadMessagesCount > 0"
+          :icon="mdiCheckAll"
+          size="small"
+          variant="text"
+        />
+        <v-spacer />
+        <v-btn :class="`${className}__item`" @click="setShowChatStartDialog(true)" variant="plain">
+          <template #prepend>
+            <v-icon :class="`${className}__icon`" :icon="mdiMessageOutline" size="small" />
+          </template>
 
-                <div>
-                  <v-list-item-title :class="`${className}__title`">
-                    {{ $t('chats.new_chat') }}
-                  </v-list-item-title>
-                </div>
-              </v-btn>
-            </v-row>
-            <transition-group name="messages">
-              <template v-for="transaction in messages" :key="transaction.contactId">
-                <chat-preview
-                  v-if="displayChat(transaction.contactId)"
-                  :ref="transaction.contactId"
-                  :is-loading-separator="transaction.loadingSeparator"
-                  :is-loading-separator-active="loading"
-                  :user-id="userId"
-                  :contact-id="transaction.contactId"
-                  :transaction="transaction"
-                  :is-message-readonly="transaction.readonly"
-                  :adamant-chat-meta="getAdamantChatMeta(transaction.contactId)"
-                  @click="openChat(transaction.contactId)"
-                />
-              </template>
-            </transition-group>
-          </v-list>
-        </v-col>
-
-        <ChatSpinner :value="!isFulfilled" />
+          <div>
+            <v-list-item-title :class="`${className}__title`">
+              {{ $t('chats.new_chat') }}
+            </v-list-item-title>
+          </div>
+        </v-btn>
       </v-row>
-    </container>
+      <div
+        :class="{
+          [`${className}__messages`]: true,
+          [`${className}__messages--chat`]: true
+        }"
+        @scroll="onScroll"
+      >
+        <template v-for="transaction in messages" :key="transaction.contactId">
+          <chat-preview
+            v-if="displayChat(transaction.contactId)"
+            :ref="transaction.contactId"
+            :is-loading-separator="transaction.loadingSeparator"
+            :is-loading-separator-active="loading"
+            :user-id="userId"
+            :contact-id="transaction.contactId"
+            :transaction="transaction"
+            :is-message-readonly="transaction.readonly"
+            :adamant-chat-meta="getAdamantChatMeta(transaction.contactId)"
+            :is-active="checkIsActive(transaction.contactId)"
+            @click="openChat(transaction.contactId)"
+          />
+        </template>
+      </div>
+    </v-list>
+
+    <div
+      class="d-flex justify-center align-center"
+      :class="`${className}__chat-spinner-wrapper`"
+      v-if="!isFulfilled"
+    >
+      <ChatSpinner :value="!isFulfilled" />
+    </div>
 
     <chat-start-dialog
-      v-model="showChatStartDialog"
+      v-model="isShowChatStartDialog"
       :partner-id="partnerId"
       @error="onError"
       @start-chat="openChat"
     />
 
     <NodesOfflineDialog node-type="adm" />
-  </v-row>
+  </div>
 </template>
 
 <script>
@@ -72,7 +75,11 @@ import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import scrollPosition from '@/mixins/scrollPosition'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
-
+import { useRoute, useRouter } from 'vue-router'
+import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, watch } from 'vue'
+import { useStore } from 'vuex'
+import { useChatStateStore } from '@/stores/chat-state'
+import { storeToRefs } from 'pinia'
 
 const scrollOffset = 64
 
@@ -88,14 +95,110 @@ export default {
     partnerId: { default: undefined, type: String },
     showNewContact: { default: false, type: Boolean }
   },
-  setup () {
+  setup() {
+    const route = useRoute()
+    const router = useRouter()
+    const store = useStore()
+
+    const chatStateStore = useChatStateStore()
+    const {
+      actionsDropdownMessageId,
+      isShowPartnerInfoDialog,
+      isShowFreeTokensDialog,
+      isChatMenuOpen,
+      isEmojiPickerOpen
+    } = storeToRefs(chatStateStore)
+
+    const { setShowChatStartDialog } = chatStateStore
+
+    const savedRoute = ref(null)
+
+    const chatPagePartnerId = computed(() => {
+      return route.params.partnerId
+    })
+
+    const lastPartnerId = ref(null)
+
+    const isSnackbarShowing = computed(() => store.state.snackbar.show)
+
+    const noActiveNodesDialog = computed(() => store.state.chat.noActiveNodesDialog)
+    const isShowChatStartDialog = computed({
+      get: () => chatStateStore.isShowChatStartDialog,
+      set: (value) => setShowChatStartDialog(value)
+    })
+
+    const canPressEscape = computed(() => {
+      return (
+        !noActiveNodesDialog.value &&
+        !isShowChatStartDialog.value &&
+        !isShowFreeTokensDialog.value &&
+        !isSnackbarShowing.value &&
+        !isShowPartnerInfoDialog.value &&
+        !isChatMenuOpen.value &&
+        !isEmojiPickerOpen.value &&
+        actionsDropdownMessageId.value === -1
+      )
+    })
+
+    const checkIsActive = (contactId) => {
+      return route.name !== 'Chats' && contactId === lastPartnerId.value
+    }
+
+    watch(chatPagePartnerId, (value) => {
+      if (value) {
+        lastPartnerId.value = value
+      }
+
+      if (!value && route.name === 'Chats') {
+        savedRoute.value = null
+      }
+    })
+
+    onActivated(() => {
+      if (savedRoute.value) {
+        router.push(savedRoute.value)
+      }
+    })
+
+    onDeactivated(() => {
+      if (history.state.back.includes('/chats/')) {
+        savedRoute.value = history.state.back
+      }
+    })
+
+    const onKeydownHandler = (e) => {
+      if (canPressEscape.value) {
+        if (e.key === 'Escape') {
+          if (route.query.from?.includes('chats')) {
+            router.push(route.query.from)
+            return
+          }
+
+          router.push({
+            name: 'Chats'
+          })
+        }
+      }
+    }
+
+    onMounted(() => {
+      document.addEventListener('keydown', onKeydownHandler)
+    })
+
+    onBeforeUnmount(() => {
+      document.removeEventListener('keydown', onKeydownHandler)
+    })
+
     return {
+      chatPagePartnerId,
+      isShowChatStartDialog,
       mdiCheckAll,
-      mdiMessageOutline
+      mdiMessageOutline,
+      checkIsActive,
+      setShowChatStartDialog
     }
   },
   data: () => ({
-    showChatStartDialog: false,
     loading: false,
     noMoreChats: false
   }),
@@ -139,7 +242,7 @@ export default {
     this.noMoreChats = this.$store.getters['chat/chatListOffset'] === -1
   },
   mounted() {
-    this.showChatStartDialog = this.showNewContact
+    this.setShowChatStartDialog(this.showNewContact)
     this.attachScrollListener()
   },
   beforeUnmount() {
@@ -164,12 +267,17 @@ export default {
     destroyScrollListener() {
       window.removeEventListener('scroll', this.onScroll)
     },
-    onScroll() {
-      const scrollHeight = document.documentElement.scrollHeight // all of viewport height
-      const scrollTop = document.documentElement.scrollTop // current vieport scroll position
-      const clientHeight = document.documentElement.clientHeight
+    onScroll(event) {
+      const { target } = event
+
+      const elem = target.documentElement ?? target
+
+      const scrollHeight = elem.scrollHeight // all of viewport height
+      const scrollTop = elem.scrollTop // current vieport scroll position
+      const clientHeight = elem.clientHeight
 
       let isLoadingSeparatorVisible = false
+
       if (
         this.$refs.loadingSeparator &&
         this.$refs.loadingSeparator[0] &&
@@ -230,6 +338,12 @@ export default {
 @use 'vuetify/settings';
 
 .chats-view {
+  height: 100%;
+
+  &.a-container,
+  :deep(.a-container) {
+    max-width: 1300px;
+  }
 
   &__item {
     justify-content: flex-end;
@@ -252,6 +366,24 @@ export default {
   &__title {
     font-weight: 300;
     font-size: 14px;
+  }
+  &__container--chat {
+    max-width: 1300px;
+
+    @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+      display: none;
+    }
+  }
+  &__messages {
+    &.chats-view__messages--chat {
+      max-height: calc(100vh - 56px - var(--v-layout-bottom));
+      overflow-y: auto;
+    }
+  }
+
+  &__chat-spinner-wrapper {
+    position: relative;
+    height: 100%;
   }
 }
 
