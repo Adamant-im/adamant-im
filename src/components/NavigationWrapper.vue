@@ -18,7 +18,7 @@
           :class="{ [classes.content]: true }"
           disable-max-width
           v-if="readyToShow"
-          @scroll="(e) => $emit('scroll-content', e)"
+          @scroll="onScroll"
         >
           <slot />
         </container>
@@ -39,7 +39,7 @@ type NavigationWrapperProps = {
 
 const { contentPadding = true, readyToShow = true } = defineProps<NavigationWrapperProps>()
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'scroll-content', value: Event): void
 }>()
 const className = 'navigation-wrapper'
@@ -73,6 +73,10 @@ const title = computed(() => {
       return t('options.page_title')
   }
 })
+
+const onScroll = (event: Event) => {
+  emit('scroll-content', event)
+}
 </script>
 
 <style scoped lang="scss">
