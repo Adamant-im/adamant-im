@@ -64,7 +64,6 @@ import { isAllNodesOfflineError, isAllNodesDisabledError } from '@/lib/nodes/uti
 import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useSaveCursor } from '@/hooks/useSaveCursor'
 
-
 const className = 'login-form'
 const classes = {
   root: className,
@@ -166,6 +165,20 @@ export default defineComponent({
 @use '@/assets/styles/settings/_colors.scss';
 @use 'vuetify/settings';
 
+.login-form {
+  &__textfield {
+    &:deep(.v-field__append-inner) {
+      padding-left: 0;
+      margin-left: -28px; // compensate the append-inner icon
+    }
+
+    &:deep(.v-field__input) {
+      width: 100%;
+      padding-right: 0;
+    }
+  }
+}
+
 /** Themes **/
 .v-theme--light {
   .login-form {
@@ -181,5 +194,4 @@ export default defineComponent({
     }
   }
 }
-
 </style>
