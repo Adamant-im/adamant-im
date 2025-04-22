@@ -1,4 +1,4 @@
-name: Preview Testnet Workflow
+name: PWA Testnet Workflow
 
 on:
   push:
@@ -11,7 +11,7 @@ env:
 
 jobs:
   build-and-deploy-to-surge:
-    name: Build and Deploy witn Testnet nodes to surge
+    name: Build and Deploy with Testnet ADM nodes to surge
     runs-on: ubuntu-latest
     environment: testing
     permissions:
