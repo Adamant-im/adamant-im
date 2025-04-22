@@ -5,6 +5,7 @@ import {
   RegisterChatMessageTransaction
 } from '@/lib/schema/client'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import type { NodeInfo } from '@/types/wallets'
 import { AdmNode, Payload, RequestConfig } from './AdmNode'
 import { Client } from '../abstract.client'
 
@@ -16,7 +17,7 @@ import { Client } from '../abstract.client'
  * is not available at the moment.
  */
 export class AdmClient extends Client<AdmNode> {
-  constructor(endpoints: { alt_ip?: string; url: string }[] = [], minNodeVersion = '0.0.0') {
+  constructor(endpoints: NodeInfo[] = [], minNodeVersion = '0.0.0') {
     super('adm', 'node', NODE_LABELS.AdmNode)
     this.nodes = endpoints.map((endpoint) => new AdmNode(endpoint, minNodeVersion))
     this.minNodeVersion = minNodeVersion

@@ -1,5 +1,5 @@
 import config from '@/config'
-import { NodeInfo } from '@/types/wallets'
+import type { NodeInfo } from '@/types/wallets'
 import { BtcClient } from './BtcClient'
 
 const endpoints = (config.btc.nodes.list as NodeInfo[]).map((endpoint) => ({

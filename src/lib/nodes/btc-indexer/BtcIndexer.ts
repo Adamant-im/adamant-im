@@ -2,13 +2,14 @@ import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import type { NodeInfo } from '@/types/wallets'
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class BtcIndexer extends Node<AxiosInstance> {
-  constructor(endpoint: { alt_ip?: string; url: string }) {
+  constructor(endpoint: NodeInfo) {
     super(endpoint, 'btc', 'service', NODE_LABELS.BtcIndexer)
   }
 

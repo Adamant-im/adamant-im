@@ -5,9 +5,10 @@ import { NODE_LABELS } from '@/lib/nodes/constants'
 import { RateInfoResponse } from '@/lib/nodes/rate-info-service/types/RateInfoResponse'
 import { RateHistoryInfoResponse } from '@/lib/nodes/rate-info-service/types/RateHistoryInfoResponse'
 import { GetHistoryParams } from '@/lib/nodes/rate-info-service/types/GetHistoryParams'
+import type { NodeInfo } from '@/types/wallets'
 
 export class RateInfoService extends Node<AxiosInstance> {
-  constructor(endpoint: { alt_ip?: string; url: string }) {
+  constructor(endpoint: NodeInfo) {
     super(endpoint, 'adm', 'service', NODE_LABELS.RatesInfo)
   }
 

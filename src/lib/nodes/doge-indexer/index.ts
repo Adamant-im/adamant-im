@@ -1,5 +1,5 @@
 import config from '@/config'
-import { NodeInfo } from '@/types/wallets'
+import type { NodeInfo } from '@/types/wallets'
 import { DogeIndexerClient } from './DogeIndexerClient'
 
 const endpoints = (config.doge.nodes.list as NodeInfo[]).map((endpoint) => ({

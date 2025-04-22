@@ -3,6 +3,7 @@ import { HttpProvider } from 'web3-providers-http'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import { formatEthVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
+import type { NodeInfo } from '@/types/wallets'
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
@@ -11,7 +12,7 @@ import { formatEthVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
 export class EthNode extends Node<Web3Eth> {
   clientName = ''
 
-  constructor(url: { alt_ip?: string; url: string }) {
+  constructor(url: NodeInfo) {
     super(url, 'eth', 'node', NODE_LABELS.EthNode)
   }
 

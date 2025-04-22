@@ -3,6 +3,7 @@ import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import { RpcMethod, RpcResults } from './types/api'
 import { JSONRPCResponse } from '@/lib/klayr'
+import type { NodeInfo } from '@/types/wallets'
 import { v4 as uuid } from 'uuid'
 
 /**
@@ -10,7 +11,7 @@ import { v4 as uuid } from 'uuid'
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class KlyNode extends Node<AxiosInstance> {
-  constructor(endpoint: { alt_ip?: string; url: string }) {
+  constructor(endpoint: NodeInfo) {
     super(endpoint, 'kly', 'node', NODE_LABELS.KlyNode)
   }
 

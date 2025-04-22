@@ -3,6 +3,7 @@ import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import { formatDogeVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
+import type { NodeInfo } from '@/types/wallets'
 import { RpcRequest, RpcResponse } from './types/api/common'
 import { NetworkInfo } from './types/api/network-info'
 import { BlockchainInfo } from './types/api/blockchain-info'
@@ -12,7 +13,7 @@ import { BlockchainInfo } from './types/api/blockchain-info'
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class DogeNode extends Node<AxiosInstance> {
-  constructor(endpoint: { alt_ip?: string; url: string }) {
+  constructor(endpoint: NodeInfo) {
     super(endpoint, 'doge', 'node', NODE_LABELS.DogeNode)
   }
 

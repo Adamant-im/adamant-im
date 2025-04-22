@@ -1,5 +1,5 @@
 import config from '@/config'
-import { NodeInfo } from '@/types/wallets'
+import type { NodeInfo } from '@/types/wallets'
 import { AdmClient } from './AdmClient'
 
 const endpoints = (config.adm.nodes.list as NodeInfo[]).map((endpoint) => ({

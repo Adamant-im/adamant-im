@@ -1,11 +1,12 @@
 import { AxiosRequestConfig } from 'axios'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import type { NodeInfo } from '@/types/wallets'
 import { RpcRequest } from './types/api/common'
 import { DogeNode } from './DogeNode'
 import { Client } from '../abstract.client'
 
 export class DogeClient extends Client<DogeNode> {
-  constructor(endpoints: { alt_ip?: string; url: string }[] = [], minNodeVersion = '0.0.0') {
+  constructor(endpoints: NodeInfo[] = [], minNodeVersion = '0.0.0') {
     super('doge', 'node', NODE_LABELS.DogeNode)
     this.nodes = endpoints.map((endpoint) => new DogeNode(endpoint))
     this.minNodeVersion = minNodeVersion

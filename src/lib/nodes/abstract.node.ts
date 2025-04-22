@@ -1,3 +1,4 @@
+import type { NodeInfo } from '@/types/wallets/index.ts'
 import { getHealthCheckInterval } from './utils/getHealthcheckConfig'
 import { TNodeLabel } from './constants'
 import { HealthcheckInterval, HealthcheckResult, NodeKind, NodeStatus, NodeType } from './types'
@@ -113,7 +114,7 @@ export abstract class Node<C = unknown> {
   healthcheckInProgress = false
 
   constructor(
-    endpoint: { alt_ip?: string; url: string },
+    endpoint: NodeInfo,
     type: NodeType,
     kind: NodeKind,
     label: TNodeLabel,

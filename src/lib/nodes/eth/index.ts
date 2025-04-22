@@ -1,5 +1,5 @@
 import config from '@/config'
-import { NodeInfo } from '@/types/wallets'
+import type { NodeInfo } from '@/types/wallets'
 import { EthClient } from './EthClient'
 
 const endpoints = (config.eth.nodes.list as NodeInfo[]).map((endpoint) => ({

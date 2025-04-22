@@ -2,13 +2,14 @@ import { Endpoints } from './types/api/endpoints'
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import type { NodeInfo } from '@/types/wallets'
 
 /**
  * ETH Indexer API
  * https://github.com/Adamant-im/ETH-transactions-storage
  */
 export class EthIndexer extends Node<AxiosInstance> {
-  constructor(endpoint: { alt_ip?: string; url: string }) {
+  constructor(endpoint: NodeInfo) {
     super(endpoint, 'eth', 'service', NODE_LABELS.EthIndexer)
   }
 

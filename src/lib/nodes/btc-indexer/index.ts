@@ -1,5 +1,5 @@
 import config from '@/config'
-import { NodeInfo } from '@/types/wallets'
+import type { NodeInfo } from '@/types/wallets'
 import { BtcIndexerClient } from './BtcIndexerClient'
 
 const endpoints = (config.btc.services.btcIndexer.list as NodeInfo[]).map((endpoint) => ({

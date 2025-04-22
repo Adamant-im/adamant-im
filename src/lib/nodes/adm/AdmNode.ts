@@ -4,6 +4,7 @@ import { GetNodeStatusResponseDto } from '@/lib/schema/client'
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import type { NodeInfo } from '@/types/wallets'
 
 type FetchNodeInfoResult = {
   socketSupport: boolean
@@ -29,7 +30,7 @@ export type RequestConfig<P extends Payload> = {
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class AdmNode extends Node<AxiosInstance> {
-  constructor(endpoint: { alt_ip?: string; url: string }, minNodeVersion = '0.0.0') {
+  constructor(endpoint: NodeInfo, minNodeVersion = '0.0.0') {
     super(endpoint, 'adm', 'node', NODE_LABELS.AdmNode, '', minNodeVersion)
 
     this.wsPort = '36668' // default wsPort
