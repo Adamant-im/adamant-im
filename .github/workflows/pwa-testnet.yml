@@ -7,15 +7,13 @@ on:
 
 env:
   SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
-  PREVIEW_DOMAIN: https://msg-adamant-pr-testnet.surge.sh
+  PREVIEW_DOMAIN: https://msg-adamant-testnet.surge.sh
 
 jobs:
   build-and-deploy-to-surge:
     name: Build and Deploy with Testnet ADM nodes to surge
     runs-on: ubuntu-latest
-    environment: testing
-    permissions:
-      pull-requests: write
+    environment: testnet
     steps:
       - name: Checkout repository 🛎️
         uses: actions/checkout@v4
@@ -42,10 +40,3 @@ jobs:
         run: |
           npm install --global surge
           surge ./dist ${{ env.PREVIEW_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
-
-      - name: Comment PR 💬
-        uses: thollander/actions-comment-pull-request@v2
-        with:
-          message: |
-            Deployed to ${{ env.PREVIEW_DOMAIN }} 🚀
-          comment_tag: deploy-message
