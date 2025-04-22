@@ -7,7 +7,7 @@ on:
 
 env:
   SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
-  PREVIEW_DOMAIN: https://msg-adamant-pr-${{ github.event.number }}.surge.sh
+  PREVIEW_DOMAIN: https://msg-adamant-pr-testnet.surge.sh
 
 jobs:
   build-and-deploy-to-surge:
