@@ -3,67 +3,78 @@
     <UploadAttachmentExitPrompt />
     <warning-on-addresses-dialog v-model="showWarningOnAddressesDialog" />
 
-    <component :is="layout">
+    <v-main>
       <router-view />
-    </component>
+    </v-main>
   </v-app>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { computed, onBeforeUnmount, onMounted, getCurrentInstance, ref } from 'vue'
 import dayjs from 'dayjs'
 import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
 import UploadAttachmentExitPrompt from '@/components/UploadAttachmentExitPrompt.vue'
 import Notifications from '@/lib/notifications'
 import { ThemeName } from './plugins/vuetify'
+import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
 
-export default defineComponent({
-  components: {
-    WarningOnAddressesDialog,
-    UploadAttachmentExitPrompt
-  },
-  data: () => ({
-    showWarningOnAddressesDialog: false,
-    notifications: null as Notifications | null
-  }),
-  computed: {
-    layout() {
-      return this.$route.meta.layout || 'default'
-    },
-    isLogged() {
-      return this.$store.getters.isLogged
-    },
-    isLoginViaPassword() {
-      return this.$store.getters['options/isLoginViaPassword']
-    },
-    themeName() {
-      return this.$store.state.options.darkTheme ? ThemeName.Dark : ThemeName.Light
-    }
-  },
-  created() {
-    this.setLocale()
-  },
-  mounted() {
-    this.notifications = new Notifications(this)
-    this.notifications.start()
-  },
-  beforeUnmount() {
-    this.notifications?.stop()
-    this.$store.dispatch('stopInterval')
-  },
-  methods: {
-    setLocale() {
-      // Set language from `localStorage`.
-      //
-      // This is required only when initializing the application.
-      // Subsequent mutations of `language.currentLocale`
-      // will be synchronized with `i18n.locale`.
-      const localeFromStorage = this.$store.state.language.currentLocale
-      this.$i18n.locale = localeFromStorage
-      dayjs.locale(localeFromStorage)
-    }
+const store = useStore()
+const isSnackbarShowing = computed(() => store.state.snackbar.show)
+
+const showWarningOnAddressesDialog = ref(false)
+
+const notifications = ref<Notifications | null>(null)
+
+const themeName = computed(() => {
+  return store.state.options.darkTheme ? ThemeName.Dark : ThemeName.Light
+})
+
+const { locale } = useI18n()
+
+onMounted(() => {
+  const instance = getCurrentInstance()
+
+  if (instance) {
+    const notifications = new Notifications(instance.proxy)
+    notifications.start()
   }
 })
+
+onBeforeUnmount(() => {
+  notifications.value?.stop()
+  store.dispatch('stopInterval')
+})
+
+const onKeydownHandler = (e: KeyboardEvent) => {
+  if (e.key === 'Escape') {
+    if (isSnackbarShowing.value) {
+      e.stopPropagation()
+      store.commit('snackbar/changeState', false)
+    }
+  }
+}
+
+const setLocale = () => {
+  // Set language from `localStorage`.
+  //
+  // This is required only when initializing the application.
+  // Subsequent mutations of `language.currentLocale`
+  // will be synchronized with `i18n.locale`.
+  const localeFromStorage = store.state.language.currentLocale
+  locale.value = localeFromStorage
+  dayjs.locale(localeFromStorage)
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', onKeydownHandler, true)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onKeydownHandler, true)
+})
+
+setLocale()
 </script>
 
 <style lang="scss" scoped>

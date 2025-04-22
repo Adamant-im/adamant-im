@@ -86,16 +86,16 @@ export default {
         dialog.about = dialog.$t('warning_on_addresses.about')
 
         if (validateSummary.isWrongAddress) {
-          dialog.details =
-            dialog.$t('warning_on_addresses.specifics_wrong_addresses', {
-              crypto: validateSummary.wrongCoin,
-              storedAddress: validateSummary.storedAddress,
-              correctAddress: validateSummary.correctAddress
-            })
+          dialog.details = dialog.$t('warning_on_addresses.specifics_wrong_addresses', {
+            crypto: validateSummary.wrongCoin,
+            storedAddress: validateSummary.storedAddress,
+            correctAddress: validateSummary.correctAddress
+          })
 
           if (validateSummary.wrongCoins.length > 1) {
             const wrongCoins = validateSummary.wrongCoins.join(', ')
-            dialog.details += ' ' +
+            dialog.details +=
+              ' ' +
               dialog.$t('warning_on_addresses.full_list_wrong_addresses', {
                 crypto_list: wrongCoins
               })
@@ -103,15 +103,15 @@ export default {
         } else if (validateSummary.isManyAddresses) {
           const manyAddresses = validateSummary.manyAddresses.join(', ')
 
-          dialog.details =
-            dialog.$t('warning_on_addresses.specifics_many_addresses', {
-              crypto: validateSummary.manyAddressesCoin,
-              manyAddresses: manyAddresses
-            })
+          dialog.details = dialog.$t('warning_on_addresses.specifics_many_addresses', {
+            crypto: validateSummary.manyAddressesCoin,
+            manyAddresses: manyAddresses
+          })
 
           if (validateSummary.manyAddressesCoins.length > 1) {
             const wrongCoins = validateSummary.manyAddressesCoins.join(', ')
-            dialog.details += ' ' +
+            dialog.details +=
+              ' ' +
               dialog.$t('warning_on_addresses.full_list_many_addresses', {
                 crypto_list: wrongCoins
               })

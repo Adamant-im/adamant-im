@@ -1,11 +1,9 @@
 <template>
-  <v-main>
-    <v-container fluid class="pa-0">
-      <slot />
-    </v-container>
+  <v-container fluid class="pa-0">
+    <slot />
+  </v-container>
 
-    <app-snackbar />
-  </v-main>
+  <app-snackbar />
 </template>
 
 <script>
