@@ -52,7 +52,7 @@ export class DashNode extends Node<AxiosInstance> {
     return this.client
       .request<RpcResponse<Result>>({
         ...requestConfig,
-        baseURL: this.preferAltIp ? this.alt_ip : this.url,
+        baseURL: this.preferAltIp ? this.altIp : this.url,
         url: '/',
         method: 'POST',
         data: params
@@ -75,7 +75,7 @@ export class DashNode extends Node<AxiosInstance> {
     return this.client
       .request<RpcResponse<Result>[]>({
         ...requestConfig,
-        baseURL: this.preferAltIp ? this.alt_ip : this.url,
+        baseURL: this.preferAltIp ? this.altIp : this.url,
         url: '/',
         method: 'POST',
         data: params

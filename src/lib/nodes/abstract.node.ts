@@ -33,7 +33,7 @@ export abstract class Node<C = unknown> {
   /**
    * Node alternative IP
    */
-  alt_ip?: string
+  altIp?: string
   /**
    * Node base URL
    */
@@ -123,7 +123,7 @@ export abstract class Node<C = unknown> {
   ) {
     const { alt_ip, url } = endpoint
 
-    this.alt_ip = alt_ip
+    this.altIp = alt_ip
     this.url = url
     this.type = type
     this.label = label
@@ -197,7 +197,7 @@ export abstract class Node<C = unknown> {
 
   getStatus() {
     return {
-      alt_ip: this.alt_ip,
+      alt_ip: this.altIp,
       url: this.url,
       port: this.port,
       hostname: this.hostname,

@@ -31,7 +31,7 @@ export class EthIndexer extends Node<AxiosInstance> {
     return this.client
       .request({
         ...requestConfig,
-        baseURL: this.preferAltIp ? this.alt_ip : this.url,
+        baseURL: this.preferAltIp ? this.altIp : this.url,
         url: path,
         method,
         params: method === 'GET' ? params : undefined,

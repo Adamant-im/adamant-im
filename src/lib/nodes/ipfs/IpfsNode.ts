@@ -54,7 +54,7 @@ export class IpfsNode extends Node<AxiosInstance> {
     const { url, headers, method = 'get', payload, onUploadProgress } = cfg
 
     const config: AxiosRequestConfig = {
-      baseURL: this.preferAltIp ? this.alt_ip : this.url,
+      baseURL: this.preferAltIp ? this.altIp : this.url,
       url,
       method: method.toLowerCase(),
       headers,

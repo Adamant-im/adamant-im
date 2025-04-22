@@ -30,7 +30,7 @@ export class KlyNode extends Node<AxiosInstance> {
   ): Promise<RpcResults[M]['result']> {
     return this.client
       .post<JSONRPCResponse<RpcResults[M]['result']>>('/rpc', {
-        baseURL: this.preferAltIp ? this.alt_ip : this.url,
+        baseURL: this.preferAltIp ? this.altIp : this.url,
         jsonrpc: '2.0',
         id: uuid(),
         method,
