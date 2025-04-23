@@ -150,7 +150,7 @@
                 </v-col>
                 <v-col cols="6" :class="`${className}__notifications-col`" class="my-0">
                   <v-select
-                    :model-value="selectedNotificationValue"
+                    :model-value="allowNotificationType"
                     @update:model-value="handleSelectedNotificationValue"
                     :items="notificationItems"
                     variant="underlined"
@@ -239,13 +239,7 @@ import {
 import { fcm, getDeviceId } from '@/firebase'
 import { getToken } from 'firebase/messaging'
 import { requestToken, revokeToken } from '@/notifications'
-import { VAPID_KEY } from '@/lib/constants'
-
-const notificationType = {
-  'No Notifications': 0,
-  'Background Fetch': 1,
-  Push: 2
-}
+import { VAPID_KEY, notificationType } from '@/lib/constants'
 
 export default {
   components: {
@@ -267,7 +261,6 @@ export default {
   data: function () {
     return {
       passwordDialog: false,
-      selectedNotificationValue: 0,
       notificationItems: [
         { title: 'No Notifications', value: notificationType['No Notifications'] },
         { title: 'Background Fetch', value: notificationType['Background Fetch'] },
@@ -275,13 +268,6 @@ export default {
       ],
       infoText: this.$t('options.notifications_info')
     }
-  },
-  created() {
-    console.log(
-      '🚀 ~ Options.vue:275 ~ created ~ this.allowNotificationType:',
-      this.allowNotificationType
-    )
-    this.selectedNotificationValue = this.allowNotificationType
   },
   computed: {
     className: () => 'settings-view',
@@ -382,14 +368,10 @@ export default {
       return this.$store.getters['options/isLoginViaPassword']
     }
   },
-  methods: {
-    handleNotificationsCheckbox(checked) {
-      this.isAllowNotifications = checked
-      const selectedValue = this.selectedNotificationValue
-      switch (selectedValue) {
-        case notificationType['Background Fetch']:
-          if (checked) this.setPushNotifications(false)
-          break
+  watch: {
+    isAllowNotifications(checked) {
+      const selectedNotificationType = this.allowNotificationType
+      switch (selectedNotificationType) {
         case notificationType['Push']:
           checked ? this.setPushNotifications(true) : this.setPushNotifications(false)
           break
@@ -397,13 +379,22 @@ export default {
           break
       }
     },
-    handleSelectedNotificationValue(value) {
-      this.selectedNotificationValue = value
-      this.allowNotificationType = value
-      if (this.isAllowNotifications && value === notificationType['Background Fetch'])
+    allowNotificationType(newVal, oldVal) {
+      if (!this.isAllowNotifications) return
+      const isNotPushNotification =
+        newVal === notificationType['No Notifications'] ||
+        newVal === notificationType['Background Fetch']
+      if (isNotPushNotification && oldVal === notificationType['Push'])
         this.setPushNotifications(false)
-      if (this.isAllowNotifications && value === notificationType['Push'])
-        this.setPushNotifications(true)
+      if (newVal === notificationType['Push']) this.setPushNotifications(true)
+    }
+  },
+  methods: {
+    handleNotificationsCheckbox(checked) {
+      this.isAllowNotifications = !!checked
+    },
+    handleSelectedNotificationValue(value) {
+      this.allowNotificationType = value
     },
     async setPushNotifications(checked) {
       const deviceId = await getDeviceId()

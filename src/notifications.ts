@@ -19,14 +19,10 @@ export async function requestToken() {
   try {
     // Get the registration token
     const currentToken = await getToken(fcm)
-    console.log('🚀 ~ file: notifications.ts:22 ~ requestToken ~ currentToken:', currentToken)
     if (currentToken) {
-      console.log('FCM registration token:', currentToken)
       return currentToken
       // Send the token to your server and save it for later
     } else {
-      console.log('No registration token available. Request permission to generate one.')
-
       return null
     }
   } catch (err) {

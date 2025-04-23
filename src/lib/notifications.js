@@ -6,6 +6,7 @@ import Visibility from 'visibilityjs'
 import currency from '@/filters/currencyAmountWithSymbol'
 import { removeFormats } from '@/lib/markdown'
 import { isAdamantChat } from '@/lib/chat/meta/utils'
+import { notificationType } from './constants'
 
 let _this
 
@@ -22,7 +23,6 @@ class Notification {
     const transaction = this.store.getters['chat/lastUnreadMessage']
     if (transaction && !transaction.hasOwnProperty('type')) {
       transaction.type = ''
-      console.log('🚀 ~ 24 notification.js ~ getlastUnread ~ transaction:', transaction)
     }
     // don't show remove reaction
     if (transaction && transaction.type === 'reaction' && !transaction.asset.react_message) {
@@ -43,8 +43,11 @@ class Notification {
     return isAdmChat ? this.i18n.t(name) : name
   }
 
-  get pushAllowed() {
-    return this.store.state.options.allowPushNotifications
+  get bgFetchNotificationAllowed() {
+    return (
+      this.store.state.options.isAllowNotifications &&
+      this.store.state.options.allowNotificationType === notificationType['Background Fetch']
+    )
   }
 
   get soundAllowed() {
@@ -94,13 +97,6 @@ class PushNotification extends Notification {
   }
 
   notify(messageArrived) {
-    if (messageArrived) {
-      console.log(
-        '🚀 ~ notifications.js:97 ~ PushNotification ~ notify ~ messageArrived:',
-        messageArrived
-      )
-      console.log('🚀 ~ notifications.js:98 ~ this.messageBody:', this.messageBody)
-    }
     try {
       Notify.requestPermission(
         // Permission granted
@@ -225,7 +221,7 @@ export default class extends Notification {
 
   start() {
     this.interval = window.setInterval(() => {
-      if (this.pushAllowed) {
+      if (this.bgFetchNotificationAllowed) {
         this.push.notify(this.messageArrived)
       }
       if (this.soundAllowed) {

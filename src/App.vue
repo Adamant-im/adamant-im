@@ -18,8 +18,8 @@ import Notifications from '@/lib/notifications'
 import { ThemeName } from './plugins/vuetify'
 
 import { fcm } from './firebase'
-import { onMessage, getToken } from 'firebase/messaging'
-import { VAPID_KEY } from '@/lib/constants'
+import { getToken } from 'firebase/messaging'
+import { VAPID_KEY, notificationType } from '@/lib/constants'
 
 export default defineComponent({
   components: {
@@ -39,6 +39,21 @@ export default defineComponent({
     },
     isLoginViaPassword() {
       return this.$store.getters['options/isLoginViaPassword']
+    },
+    isNotificationsAllowed() {
+      return this.$store.state.options.isAllowNotifications
+    },
+    isBackgroundFetchNotification() {
+      return (
+        this.isNotificationsAllowed &&
+        this.$store.state.options.allowNotificationType === notificationType['Background Fetch']
+      )
+    },
+    isPushNotification() {
+      return (
+        this.isNotificationsAllowed &&
+        this.$store.state.options.allowNotificationType === notificationType['Push']
+      )
     },
     themeName() {
       return this.$store.state.options.darkTheme ? ThemeName.Dark : ThemeName.Light
@@ -64,18 +79,13 @@ export default defineComponent({
   },
   async created() {
     this.setLocale()
-    // const isPushNotifications = this.$store.state.options.allowNotificationType === '2'
-    // console.log("🚀 ~ App.vue:66 ~ created ~ isPushNotifications:", isPushNotifications)
-    // if (isPushNotifications)
-    await this.registerCustomWorker()
+    if (this.isPushNotification) await this.registerCustomWorker()
   },
   mounted() {
-    this.notifications = new Notifications(this)
-    this.notifications.start()
-    console.log('🚀 ~ mounted ~ fcm:', fcm)
-    onMessage(fcm, (payload: object) => {
-      console.log('!! Message received. ', payload)
-    })
+    if (this.isBackgroundFetchNotification) {
+      this.notifications = new Notifications(this)
+      this.notifications.start()
+    }
   },
   beforeUnmount() {
     this.notifications?.stop()
