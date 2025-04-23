@@ -37,8 +37,8 @@ renderer.link = function ({ href, text }) {
   return text
 }
 
-renderer.heading = function ({ text }) {
-  return `<p>${text}</p>`
+renderer.heading = function ({ text, depth }) {
+  return `<h${depth}>${text}</h${depth}>`
 }
 
 marked.use({ renderer })
