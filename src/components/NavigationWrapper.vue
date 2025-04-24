@@ -1,6 +1,14 @@
 <template>
   <div :class="classes.root" class="w-100" ref="navigationWrapper">
-    <app-toolbar-centered app :title="title" show-back flat sticky disable-max-width />
+    <app-toolbar-centered
+      app
+      :title="title"
+      :has-spinner="hasSpinner"
+      show-back
+      flat
+      sticky
+      disable-max-width
+    />
 
     <v-container
       fluid
@@ -60,6 +68,8 @@ const hasLoaderSlot = computed(() => !!slots.loader)
 
 const title = computed(() => {
   switch (route.name) {
+    case 'Nodes':
+      return t('options.nodes_list')
     case 'ExportKeys':
       return t('options.export_keys.title')
     case 'Votes':
@@ -72,6 +82,11 @@ const title = computed(() => {
     default:
       return t('options.page_title')
   }
+})
+
+const hasSpinner = computed(() => {
+  const routesWithSpinner = new Set(['Votes', 'Wallets', 'Nodes'])
+  return route.name ? routesWithSpinner.has(route.name.toString()) : false
 })
 
 const onScroll = (event: Event) => {

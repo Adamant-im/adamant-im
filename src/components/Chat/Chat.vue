@@ -74,10 +74,17 @@
         <chat-toolbar :partner-id="partnerId">
           <template #avatar-toolbar>
             <ChatAvatar
+              v-if="!showSpinner"
               class="chat-avatar"
               :user-id="partnerId"
               use-public-key
               @click="onClickAvatar(partnerId)"
+            />
+            <v-progress-circular
+              v-else
+              class="connection-spinner ml-1 mr-4"
+              indeterminate
+              :size="32"
             />
           </template>
         </chat-toolbar>
@@ -298,6 +305,7 @@ import AChatAttachment from '@/components/AChat/AChatAttachment/AChatAttachment.
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import { useChatsSpinner } from '@/hooks/useChatsSpinner'
 import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import { useChatStateStore } from '@/stores/chat-state'
 
@@ -308,7 +316,7 @@ const validationErrors = {
   messageTooLong: 'MESSAGE_LENGTH_EXCEED'
 }
 
-const { partnerId } = defineProps({
+const props = defineProps({
   partnerId: {
     type: String,
     required: true
@@ -319,10 +327,11 @@ const emit = defineEmits(['click:chat-avatar'])
 const router = useRouter()
 const store = useStore()
 const { t } = useI18n()
+const showSpinner = useChatsSpinner()
 
 const isMenuOpen = ref(false)
 
-const attachments = useAttachments(partnerId)()
+const attachments = useAttachments(props.partnerId)()
 const handleAttachments = (files: FileData[]) => {
   const maxFileSizeExceeded = files.some(({ file }) => file.size >= UPLOAD_MAX_FILE_SIZE)
   const maxFileCountExceeded = attachments.list.length + files.length > UPLOAD_MAX_FILE_COUNT
@@ -367,7 +376,7 @@ const actionsDropdownMessageId = computed({
   set: setActionsDropdownMessageId
 })
 
-const messages = computed(() => store.getters['chat/messages'](partnerId))
+const messages = computed(() => store.getters['chat/messages'](props.partnerId))
 const userId = computed(() => store.state.address)
 
 const getPartnerName = (address: string) => {
@@ -379,17 +388,19 @@ const getUserMeta = (address: string) => ({
   id: address,
   name: address === userId.value ? t('chats.you') : getPartnerName(address)
 })
-const partners = computed(() => [getUserMeta(userId.value), getUserMeta(partnerId)])
+const partners = computed(() => [getUserMeta(userId.value), getUserMeta(props.partnerId)])
 const sendMessageOnEnter = computed<boolean>(() => store.state.options.sendMessageOnEnter)
 const isFulfilled = computed<boolean>(() => store.state.chat.isFulfilled)
 const lastMessage = computed<NormalizedChatMessageTransaction>(() =>
-  store.getters['chat/lastMessage'](partnerId)
+  store.getters['chat/lastMessage'](props.partnerId)
 )
-const chatPage = computed<number>(() => store.getters['chat/chatPage'](partnerId))
+const chatPage = computed<number>(() => store.getters['chat/chatPage'](props.partnerId))
 const scrollPosition = computed<number | false>(() =>
-  store.getters['chat/scrollPosition'](partnerId)
+  store.getters['chat/scrollPosition'](props.partnerId)
 )
-const numOfNewMessages = computed<number>(() => store.getters['chat/numOfNewMessages'](partnerId))
+const numOfNewMessages = computed<number>(() =>
+  store.getters['chat/numOfNewMessages'](props.partnerId)
+)
 const replyMessage = computed<NormalizedChatMessageTransaction>(() =>
   store.getters['chat/messageById'](replyMessageId.value)
 )
@@ -399,6 +410,7 @@ const actionMessage = computed<NormalizedChatMessageTransaction>(() =>
 
 const chatFormRef = ref<any>(null) // @todo type
 const chatRef = ref<any>(null) // @todo type
+
 // Scroll to the bottom every time window focused by desktop notification
 watch(
   () => store.state.notification.desktopActivateClickCount,
@@ -445,7 +457,7 @@ onMounted(() => {
     if (state === 'visible' && isScrolledToBottom.value) markAsRead()
   })
 
-  const draftMessage = store.getters['draftMessage/draftReplyTold'](partnerId)
+  const draftMessage = store.getters['draftMessage/draftReplyTold'](props.partnerId)
   if (draftMessage) {
     replyMessageId.value = draftMessage
   }
@@ -518,19 +530,19 @@ const cancelReplyMessage = () => {
   replyMessageId.value = -1
   store.commit('draftMessage/deleteReplyTold', {
     replyToId: replyMessageId.value,
-    partnerId: partnerId
+    partnerId: props.partnerId
   })
 }
 
 const sendMessage = (message: string) => {
-  store.dispatch('draftMessage/deleteDraft', { partnerId: partnerId })
+  store.dispatch('draftMessage/deleteDraft', { partnerId: props.partnerId })
   const replyToId = replyMessageId.value !== -1 ? replyMessageId.value : undefined
 
   if (attachments.list.length > 0) {
     store.dispatch('chat/sendAttachment', {
       files: attachments.list,
       message,
-      recipientId: partnerId,
+      recipientId: props.partnerId,
       replyToId
     })
 
@@ -540,7 +552,7 @@ const sendMessage = (message: string) => {
   return store
     .dispatch('chat/sendMessage', {
       message,
-      recipientId: partnerId,
+      recipientId: props.partnerId,
       replyToId
     })
     .catch((err) => {
@@ -562,7 +574,7 @@ const sendReaction = (reactToId: string, emoji: string) => {
   closeActionsDropdown()
   emojiWeight.addReaction(emoji)
   return store.dispatch('chat/sendReaction', {
-    recipientId: partnerId,
+    recipientId: props.partnerId,
     reactToId,
     reactMessage: emoji
   })
@@ -573,7 +585,7 @@ const removeReaction = (reactToId: string, emoji: string) => {
   closeActionsDropdown()
   emojiWeight.removeReaction(emoji)
   return store.dispatch('chat/sendReaction', {
-    recipientId: partnerId,
+    recipientId: props.partnerId,
     reactToId,
     reactMessage: ''
   })
@@ -584,7 +596,7 @@ const onEmojiSelect = (transactionId: string, emoji: string) => {
 }
 
 const markAsRead = () => {
-  store.commit('chat/markAsRead', partnerId)
+  store.commit('chat/markAsRead', props.partnerId)
 }
 
 const onScrollTop = () => {
@@ -598,7 +610,7 @@ const onScrollBottom = () => {
 const onScroll = (scrollPosition: number, isBottom: boolean) => {
   isScrolledToBottom.value = isBottom
   store.commit('chat/updateScrollPosition', {
-    contactId: partnerId,
+    contactId: props.partnerId,
     scrollPosition
   })
 }
@@ -608,14 +620,14 @@ const onClickAvatar = (address: string) => {
 }
 
 const onQuotedMessageClick = async (transactionId: string) => {
-  let transactionIndex = store.getters['chat/indexOfMessage'](partnerId, transactionId)
+  let transactionIndex = store.getters['chat/indexOfMessage'](props.partnerId, transactionId)
 
   // if the message is not present in the store
   // fetch chat history until reach that message
   if (transactionIndex === -1) {
     await fetchUntilFindTransaction(transactionId)
 
-    transactionIndex = store.getters['chat/indexOfMessage'](partnerId, transactionId)
+    transactionIndex = store.getters['chat/indexOfMessage'](props.partnerId, transactionId)
   }
 
   // if after fetching chat history the message still cannot be found
@@ -688,7 +700,7 @@ const openReplyPreview = (message: NormalizedChatMessageTransaction) => {
   chatFormRef.value.focus()
   store.commit('draftMessage/saveReplyToId', {
     replyToId: message.id,
-    partnerId: partnerId
+    partnerId: props.partnerId
   })
 }
 
@@ -722,7 +734,7 @@ const openTransaction = (transaction: NormalizedChatMessageTransaction) => {
       },
       query: {
         fromChat: 'true',
-        from: `/chats/${partnerId}`
+        from: `/chats/${props.partnerId}`
       }
     })
   }
@@ -738,7 +750,7 @@ const fetchChatMessages = () => {
   loading.value = true
 
   return store
-    .dispatch('chat/getChatRoomMessages', { contactId: partnerId })
+    .dispatch('chat/getChatRoomMessages', { contactId: props.partnerId })
     .catch(() => {
       noMoreMessages.value = true
     })
@@ -749,11 +761,14 @@ const fetchChatMessages = () => {
 }
 const fetchUntilFindTransaction = (transactionId: string) => {
   const fetchMessages = async () => {
-    await store.dispatch('chat/getChatRoomMessages', { contactId: partnerId })
+    await store.dispatch('chat/getChatRoomMessages', { contactId: props.partnerId })
 
     chatRef.value.maintainScrollPosition()
 
-    const transactionFound = store.getters['chat/partnerMessageById'](partnerId, transactionId)
+    const transactionFound = store.getters['chat/partnerMessageById'](
+      props.partnerId,
+      transactionId
+    )
     if (transactionFound) return
 
     if (store.state.chat.offset > -1) {
@@ -794,6 +809,9 @@ const onKeyPress = (e: KeyboardEvent) => {
 </script>
 
 <style scoped lang="scss">
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+
 .chat-menu {
   margin-right: 8px;
 }
@@ -805,5 +823,18 @@ const onKeyPress = (e: KeyboardEvent) => {
 
 .chat-avatar {
   margin-right: 12px;
+}
+
+/** Themes **/
+.v-theme--light {
+  .connection-spinner {
+    color: map.get(colors.$adm-colors, 'grey');
+  }
+}
+
+.v-theme--dark {
+  .connection-spinner {
+    color: map.get(colors.$adm-colors, 'regular');
+  }
 }
 </style>

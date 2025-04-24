@@ -70,7 +70,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import PaginationComponent from '@/components/Pagination.vue'
 import DelegatesTable from '@/components/DelegatesTable/DelegatesTable.vue'
 import { computed, onMounted, ref, reactive, watch } from 'vue'

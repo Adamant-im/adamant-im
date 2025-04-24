@@ -151,6 +151,7 @@ export function getChats(
 ): Promise<{
   count: number
   transactions: Array<DecodedChatMessageTransaction>
+  nodeTimestamp: number
 }>
 
 type DecodedChatMessageTransaction = ChatMessageTransaction & {

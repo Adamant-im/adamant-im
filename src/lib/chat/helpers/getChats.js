@@ -13,12 +13,12 @@ export function getChats(startHeight = 0, startOffset = 0, recursive = true) {
 
   function loadMessages(height = 0, offset = 0) {
     return admApi.getChats(height, offset, 'asc').then((result) => {
-      const { transactions } = result
+      const { transactions, nodeTimestamp } = result
       const length = transactions.length
 
       // if no more messages
       if (length <= 0) {
-        return allTransactions
+        return { transactions: allTransactions, nodeTimestamp }
       }
 
       allTransactions = [...allTransactions, ...transactions]
@@ -30,13 +30,14 @@ export function getChats(startHeight = 0, startOffset = 0, recursive = true) {
       if (recursive) {
         return loadMessages(height, offset + length)
       } else {
-        return allTransactions
+        return { transactions: allTransactions, nodeTimestamp }
       }
     })
   }
 
-  return loadMessages(startHeight, startOffset).then((transactions) => ({
+  return loadMessages(startHeight, startOffset).then(({ transactions, nodeTimestamp }) => ({
     messages: transactions,
-    lastMessageHeight: lastMessageHeight
+    lastMessageHeight: lastMessageHeight,
+    nodeTimestamp
   }))
 }
