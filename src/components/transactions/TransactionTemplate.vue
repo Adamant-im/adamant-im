@@ -145,6 +145,7 @@ import {
   CryptosInfo,
   CryptoSymbol,
   Symbols,
+  TransactionStatus,
   TransactionStatusType,
   tsUpdatable
 } from '@/lib/constants'
@@ -251,6 +252,8 @@ const comment = computed(() => (props.admTx && props.admTx.message ? props.admTx
 
 const isPendingQuery = computed(() => props.queryStatus === 'pending')
 
+const isRejectedTransaction = computed(() => props.transactionStatus === TransactionStatus.REJECTED)
+
 const formattedTransactionStatus = computed(() => {
   if (isPendingQuery.value) return Symbols.HOURGLASS
 
@@ -262,7 +265,7 @@ const statusUpdatable = computed(() => tsUpdatable(props.transactionStatus, prop
 const historyRate = computed(() => {
   if (isPendingQuery.value) return Symbols.HOURGLASS
 
-  if (props.transactionStatus === 'REJECTED') return Symbols.CROSS
+  if (isRejectedTransaction.value) return Symbols.CROSS
 
   return store.getters['rate/historyRate'](
     calculatedTimestampInSec.value,
@@ -274,7 +277,7 @@ const historyRate = computed(() => {
 const rate = computed(() => {
   if (isPendingQuery.value) return Symbols.HOURGLASS
 
-  if (props.transactionStatus === 'REJECTED') return Symbols.CROSS
+  if (isRejectedTransaction.value) return Symbols.CROSS
 
   return store.getters['rate/rate'](transaction.value?.amount, props.crypto)
 })
