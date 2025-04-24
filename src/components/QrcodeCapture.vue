@@ -117,8 +117,7 @@ const onFileSelect = async (event: Event) => {
 
     const input = event.target as HTMLInputElement
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-    const file = input.files?.[0]!
+    const file = input.files![0]!
 
     await drawCanvas(file)
     const qrCodeText = await tryToDecode()
