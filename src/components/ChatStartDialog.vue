@@ -124,6 +124,14 @@ export default {
       this.recipientAddress = this.partnerId
     }
   },
+  watch: {
+    modelValue(newVal) {
+      if (!newVal) {
+        this.recipientAddress = ''
+        this.recipientName = ''
+      }
+    }
+  },
   methods: {
     startChat() {
       this.recipientAddress = this.recipientAddress.trim().toUpperCase()
@@ -137,6 +145,14 @@ export default {
       }
 
       this.$emit('start-chat', this.recipientAddress, this.uriMessage, this.recipientName, true)
+      this.closeDialog()
+    },
+
+    // Clear all values
+    closeDialog() {
+      this.$emit('update:modelValue', false)
+      this.recipientAddress = ''
+      this.recipientName = ''
     },
 
     /**

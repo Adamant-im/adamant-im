@@ -28,7 +28,7 @@
       <template #prepend-inner>
         <chat-emojis
           @keydown.capture.esc="closeElement"
-          :open="emojiPickerOpen"
+          :open="isEmojiPickerOpen"
           @onChange="onToggleEmojiPicker"
           @get-emoji-picture="emojiPicture"
         ></chat-emojis>
@@ -48,11 +48,15 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import ChatEmojis from '@/components/Chat/ChatEmojis.vue'
 import { isMobile } from '@/lib/display-mobile'
 import { mdiSend } from '@mdi/js'
+import { useChatStateStore } from '@/stores/chat-state'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 
 const store = useStore()
+const chatStateStore = useChatStateStore()
 const { t } = useI18n()
+
+const { setEmojiPickerOpen } = chatStateStore
 
 type Props = {
   partnerId?: string
@@ -82,7 +86,6 @@ const emit = defineEmits<{
 }>()
 
 const message = ref('')
-const emojiPickerOpen = ref(false)
 const botCommandIndex = ref<number | null>(null)
 const botCommandSelectionMode = ref(false)
 const isInputFocused = ref(false)
@@ -96,6 +99,10 @@ const classes = [
   }
 ]
 
+const isEmojiPickerOpen = computed({
+  get: () => chatStateStore.isEmojiPickerOpen,
+  set: setEmojiPickerOpen
+})
 const placeholder = computed(() => props.label ?? t('chats.type_a_message'))
 const isDesktopDevice = computed(() => !isMobile())
 const listeners = computed(() => {
@@ -147,15 +154,15 @@ onBeforeUnmount(() => {
   destroyKeyCommandListener()
 })
 
-function attachKeyCommandListener() {
+const attachKeyCommandListener = () => {
   window.addEventListener('keydown', onKeyCommand)
 }
 
-function destroyKeyCommandListener() {
+const destroyKeyCommandListener = () => {
   window.removeEventListener('keydown', onKeyCommand)
 }
 
-function onKeyCommand(event: KeyboardEvent) {
+const onKeyCommand = (event: KeyboardEvent) => {
   if (event.ctrlKey && event.shiftKey && event.code === 'Digit1') {
     openElement()
   } else if (isInputFocused.value && (event.code === 'ArrowUp' || event.code === 'ArrowDown')) {
@@ -166,23 +173,23 @@ function onKeyCommand(event: KeyboardEvent) {
   }
 }
 
-function openElement() {
-  emojiPickerOpen.value = true
+const openElement = () => {
+  isEmojiPickerOpen.value = true
 }
 
-function closeElement() {
-  emojiPickerOpen.value = false
+const closeElement = () => {
+  isEmojiPickerOpen.value = false
   setTimeout(() => focus(), 0)
 }
 
-function onInput() {
+const onInput = () => {
   store.commit('draftMessage/saveMessage', {
     message: message.value,
     partnerId: props.partnerId
   })
 }
 
-function emojiPicture(emoji: string) {
+const emojiPicture = (emoji: string) => {
   const caretPosition = messageTextarea.value.selectionStart
 
   let before = message.value.slice(0, caretPosition)
@@ -212,13 +219,13 @@ function emojiPicture(emoji: string) {
   onInput()
 }
 
-function onToggleEmojiPicker(state: boolean) {
-  emojiPickerOpen.value = state
+const onToggleEmojiPicker = (state: boolean) => {
+  isEmojiPickerOpen.value = state
 
   focus()
 }
 
-function submitMessage() {
+const submitMessage = () => {
   const error = props.validator(message.value)
   if (error === false) {
     if (message.value.startsWith('/')) {
@@ -245,19 +252,19 @@ function submitMessage() {
   focus()
 }
 
-function calculateInputHeight() {
+const calculateInputHeight = () => {
   nextTick(messageTextarea.value.calculateInputHeight)
 }
 
-function addLineFeed() {
+const addLineFeed = () => {
   message.value += '\n'
 }
 
-function focus() {
+const focus = () => {
   messageTextarea.value.focus()
 }
 
-function selectCommand(event: KeyboardEvent) {
+const selectCommand = (event: KeyboardEvent) => {
   const direction = event.code
   if (!message.value) {
     botCommandSelectionMode.value = true

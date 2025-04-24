@@ -1,6 +1,6 @@
 <template>
   <v-card class="chat">
-    <free-tokens-dialog v-model="showFreeTokensDialog" />
+    <free-tokens-dialog v-model="isShowFreeTokensDialog" />
     <a-chat
       ref="chatRef"
       :messages="messages"
@@ -214,6 +214,7 @@
         >
           <template #append>
             <chat-menu
+              v-model="isMenuOpen"
               class="chat-menu"
               :partner-id="partnerId"
               :reply-to-id="replyMessageId !== -1 ? replyMessageId : undefined"
@@ -263,7 +264,7 @@
         </v-badge>
       </template>
     </a-chat>
-    <ProgressIndicator :show="replyLoadingChatHistory" />
+    <ProgressIndicator v-if="replyLoadingChatHistory" />
   </v-card>
 </template>
 
@@ -302,11 +303,12 @@ import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import FreeTokensDialog from '@/components/FreeTokensDialog.vue'
 import { isMobile } from '@/lib/display-mobile'
 import { isAdamantChat, isWelcomeChat, isWelcomeMessage } from '@/lib/chat/meta/utils'
-import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import AChatAttachment from '@/components/AChat/AChatAttachment/AChatAttachment.vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import ProgressIndicator from '@/components/ProgressIndicator.vue'
+import { useChatStateStore } from '@/stores/chat-state'
 import ChatPlaceholder from '@/components/Chat/ChatPlaceholder.vue'
 import { watchImmediate } from '@vueuse/core'
 
@@ -328,6 +330,9 @@ const emit = defineEmits(['click:chat-avatar'])
 const router = useRouter()
 const store = useStore()
 const { t } = useI18n()
+
+const isMenuOpen = ref(false)
+const isFirstCallSkipped = ref(false)
 
 const attachments = useAttachments(props.partnerId)()
 const handleAttachments = (files: FileData[]) => {
@@ -355,15 +360,27 @@ const replyLoadingChatHistory = ref(false)
 const noMoreMessages = ref(false)
 const isScrolledToBottom = ref(true)
 const visibilityId = ref<number | boolean | null>(null)
-const showFreeTokensDialog = ref(false)
 const flashingMessageId = ref<string | -1>(-1)
 const actionsMenuMessageId = ref<string | -1>(-1)
-const actionsDropdownMessageId = ref<string | -1>(-1)
 const replyMessageId = ref<string | -1>(-1)
 const showEmojiPicker = ref(false)
 const showNewChatPlaceholder = ref(false)
 const isGettingPublicKey = ref(false)
 const isKeyMissing = ref(false)
+
+const chatStateStore = useChatStateStore()
+
+const { setShowFreeTokensDialog, setActionsDropdownMessageId } = chatStateStore
+
+const isShowFreeTokensDialog = computed({
+  get: () => chatStateStore.isShowFreeTokensDialog,
+  set: setShowFreeTokensDialog
+})
+
+const actionsDropdownMessageId = computed({
+  get: () => chatStateStore.actionsDropdownMessageId,
+  set: setActionsDropdownMessageId
+})
 
 const messages = computed(() => store.getters['chat/messages'](props.partnerId))
 const userMessages = computed(() =>
@@ -442,8 +459,12 @@ watch(replyMessageId, (messageId) => {
 })
 
 watch(userMessages, () => {
-  if (noMoreMessages.value) {
+  // isFirstCallSkipped needed in order to properly handle reloading of a chat where the last
+  // message was from the partner and not you (do not show placeholder)
+  if (isFulfilled.value && isFirstCallSkipped.value) {
     showNewChatPlaceholder.value = !userMessages.value.length
+  } else {
+    isFirstCallSkipped.value = true
   }
 })
 
@@ -454,7 +475,7 @@ watchImmediate(messages, (updatedMessages) => {
 })
 
 onBeforeMount(() => {
-  window.addEventListener('keyup', onKeyPress)
+  window.addEventListener('keydown', onKeyPress)
 })
 
 onMounted(async () => {
@@ -480,7 +501,7 @@ onMounted(async () => {
   }
 })
 onBeforeUnmount(() => {
-  window.removeEventListener('keyup', onKeyPress)
+  window.removeEventListener('keydown', onKeyPress)
   Visibility.unbind(Number(visibilityId.value))
 
   if (isNewChat.value) {
@@ -488,7 +509,7 @@ onBeforeUnmount(() => {
   }
 })
 
-async function handleEmptyChat() {
+const handleEmptyChat = async () => {
   showNewChatPlaceholder.value = !userMessages.value.length
 
   if (!messages.value.length) {
@@ -502,7 +523,7 @@ async function handleEmptyChat() {
   }
 }
 
-async function createChat(partnerId: string, partnerName: string) {
+const createChat = async (partnerId: string, partnerName: string) => {
   try {
     isGettingPublicKey.value = true
     await store.dispatch('chat/createChat', {
@@ -522,7 +543,7 @@ async function createChat(partnerId: string, partnerName: string) {
  * @param message
  * @returns If `false` then validation passed without errors.
  */
-function validateMessage(message: string): string | false {
+const validateMessage = (message: string): string | false => {
   if (hasAttachment.value) {
     // When attaching files, the message is not mandatory
     return false
@@ -563,7 +584,7 @@ const cancelPreviewFile = () => {
 const onMessageError = (error: string) => {
   switch (error) {
     case validationErrors.notEnoughFundsNewAccount:
-      showFreeTokensDialog.value = true
+      setShowFreeTokensDialog(true)
       return
     case validationErrors.notEnoughFunds:
       store.dispatch('snackbar/show', { message: t('chats.no_money') })
@@ -783,7 +804,8 @@ const openTransaction = (transaction: NormalizedChatMessageTransaction) => {
         txId: transaction.hash
       },
       query: {
-        fromChat: 'true'
+        fromChat: 'true',
+        from: `/chats/${props.partnerId}`
       }
     })
   }
@@ -851,7 +873,9 @@ const scrollBehavior = () => {
   })
 }
 const onKeyPress = (e: KeyboardEvent) => {
-  if (e.code === 'Enter' && !showFreeTokensDialog.value) chatFormRef.value.focus()
+  if (e.code === 'Enter' && !isShowFreeTokensDialog.value) {
+    chatFormRef.value.focus()
+  }
 }
 </script>
 
@@ -860,7 +884,7 @@ const onKeyPress = (e: KeyboardEvent) => {
   margin-right: 8px;
 }
 .chat {
-  height: 100vh;
+  height: calc(100vh - var(--v-layout-bottom));
   box-shadow: none;
   background-color: transparent !important;
 }

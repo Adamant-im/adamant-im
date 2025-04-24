@@ -108,7 +108,7 @@ export function validateStoredCryptoAddresses() {
   const validateSummary = {
     isAllRight: true,
     wrongCoins: [],
-    manyAddressesCoins: [],
+    manyAddressesCoins: []
   }
 
   for (const crypto of Object.keys(Cryptos)) {
@@ -153,4 +153,4 @@ export function validateStoredCryptoAddresses() {
       vueBus.emit('warningOnAddressDialog', validateSummary)
     }
   }
-} 
+}
