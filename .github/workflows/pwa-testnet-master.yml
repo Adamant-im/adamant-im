@@ -3,7 +3,7 @@ name: PWA Testnet Workflow
 on:
   push:
     branches:
-      - dev
+      - master
 
 env:
   SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
