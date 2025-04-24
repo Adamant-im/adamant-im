@@ -2,8 +2,6 @@
   Not used file
 */
 
-import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
-
 export type Message = {
   id: number
   hash?: string // transactionId for third-party cryptos

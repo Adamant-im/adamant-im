@@ -8,7 +8,14 @@
       />
     </div>
   </v-list-item>
-  <v-list-item lines="two" :class="className" @click="$emit('click')">
+  <v-list-item
+    lines="two"
+    :class="{
+      [className]: true,
+      [`${className}--active`]: isActive
+    }"
+    @click="$emit('click')"
+  >
     <template #prepend>
       <icon v-if="isWelcomeChat(contactId)" :class="`${className}__icon`">
         <adm-fill-icon />
@@ -104,12 +111,13 @@ import currency from '@/filters/currencyAmountWithSymbol'
 import formatDate from '@/filters/dateBrief'
 import { formatMessage } from '@/lib/markdown'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon, TransactionStatus as TS } from '@/lib/constants'
 import { useChatName } from '@/components/AChat/hooks/useChatName'
 import { TransactionProvider } from '@/providers/TransactionProvider'
 import { mdiArrowLeftTop, mdiDotsHorizontal } from '@mdi/js'
-import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { AdamantChatMeta } from '@/lib/chat/meta/chat-meta'
 
 const className = 'chat-brief'
 
@@ -118,16 +126,18 @@ type Props = {
   contactId: string
   transaction: NormalizedChatMessageTransaction
   isMessageReadonly?: boolean
-  adamantChatMeta?: object | null
+  adamantChatMeta?: AdamantChatMeta | null
   isLoadingSeparator?: boolean
   isLoadingSeparatorActive?: boolean
+  isActive?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   isMessageReadonly: false,
   adamantChatMeta: null,
   isLoadingSeparator: false,
-  isLoadingSeparatorActive: false
+  isLoadingSeparatorActive: false,
+  isActive: false
 })
 
 defineEmits<{
@@ -300,6 +310,10 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
       fill: #bdbdbd;
     }
 
+    &--active {
+      @include mixins.linear-gradient-light-gray();
+    }
+
     :deep(.v-list-item-subtitle) {
       color: map.get(colors.$adm-colors, 'muted');
     }
@@ -307,6 +321,10 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 }
 .v-theme--dark {
   .chat-brief {
+    &--active {
+      @include mixins.linear-gradient-dark-soft();
+    }
+
     :deep(.v-list-item-subtitle) {
       color: map.get(colors.$adm-colors, 'grey-transparent');
     }

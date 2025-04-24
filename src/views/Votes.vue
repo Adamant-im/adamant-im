@@ -1,49 +1,36 @@
 <template>
-  <div :class="className">
-    <app-toolbar-centered app :title="t('votes.page_title')" has-spinner flat fixed />
+  <div :class="className" class="w-100">
+    <v-card flat color="transparent">
+      <v-text-field
+        v-model="search"
+        :append-inner-icon="mdiMagnify"
+        :label="t('votes.search')"
+        :class="`${className}__search`"
+        single-line
+        hide-details
+        variant="underlined"
+        class="a-input"
+        color="primary"
+      />
+      <div :class="`${className}__info`" v-html="t('votes.stake_info')" />
+      <delegates-table
+        :page="pagination.page"
+        :per-page="pagination.rowsPerPage"
+        :search-query="search"
+        :waiting-for-confirmation="waitingForConfirmation"
+      />
+      <v-row :class="`${className}__review`" align="center" justify="space-between" no-gutters>
+        <pagination-component v-if="showPagination" v-model="pagination.page" :pages="pages" />
 
-    <v-container fluid class="px-0 container--with-app-toolbar">
-      <v-row justify="center" no-gutters>
-        <container>
-          <v-card flat color="transparent">
-            <v-text-field
-              v-model="search"
-              :append-inner-icon="mdiMagnify"
-              :label="t('votes.search')"
-              :class="`${className}__search`"
-              single-line
-              hide-details
-              variant="underlined"
-              class="a-input"
-              color="primary"
-            />
-            <div :class="`${className}__info`" v-html="t('votes.stake_info')" />
-            <delegates-table
-              :page="paginationOptions.page"
-              :per-page="paginationOptions.rowsPerPage"
-              :search-query="search"
-              :waiting-for-confirmation="waitingForConfirmation"
-            />
-            <v-row
-              :class="`${className}__review`"
-              align="center"
-              justify="space-between"
-              no-gutters
-            >
-              <pagination v-if="showPagination" v-model="paginationOptions.page" :pages="pages" />
-
-              <v-btn
-                :disabled="reviewButtonDisabled"
-                class="a-btn-primary ma-2"
-                @click="showConfirmationDialog"
-              >
-                {{ t('votes.summary_title') }}
-              </v-btn>
-            </v-row>
-          </v-card>
-        </container>
+        <v-btn
+          :disabled="reviewButtonDisabled"
+          class="a-btn-primary ma-2"
+          @click="showConfirmationDialog"
+        >
+          {{ t('votes.summary_title') }}
+        </v-btn>
       </v-row>
-    </v-container>
+    </v-card>
 
     <v-dialog v-model="dialog" width="500">
       <v-card>
@@ -84,8 +71,7 @@
 </template>
 
 <script lang="ts" setup>
-import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
-import Pagination from '@/components/Pagination.vue'
+import PaginationComponent from '@/components/Pagination.vue'
 import DelegatesTable from '@/components/DelegatesTable/DelegatesTable.vue'
 import { computed, onMounted, ref, reactive, watch } from 'vue'
 import { useStore } from 'vuex'
@@ -93,38 +79,32 @@ import { useI18n } from 'vue-i18n'
 import { mdiMagnify } from '@mdi/js'
 import { DelegateDto } from '@/lib/schema/client'
 
-// It seems to be used only here so it doesn't need any special constant yet
-type Delegate = DelegateDto & {
-  _voted: boolean
-  voted: boolean
-  upvoted: boolean
-  downvoted: boolean
-  showDetails: boolean
-  forged: number
-  status: number
-}
-
 const VOTE_REQUEST_LIMIT = 30
-const className = 'delegates-view'
 
 const store = useStore()
 const { t } = useI18n()
-
 const search = ref('')
-const paginationOptions = reactive({
+const pagination = reactive({
   rowsPerPage: 50,
   sortBy: 'rank',
   page: 1
 })
 const waitingForConfirmation = ref(false)
 const dialog = ref(false)
+const className = 'delegates-view'
 
-const delegates = computed<Delegate[]>(() => {
+interface ExtendedDto extends DelegateDto {
+  upvoted?: unknown
+  voted?: unknown
+  downvoted?: unknown
+  _voted?: unknown
+}
+
+const delegates = computed(() => {
   const delegates = store.state.delegates.delegates || {}
 
-  return Object.values(delegates)
+  return Object.values(delegates) as ExtendedDto[]
 })
-
 const numOfUpvotes = computed(() => {
   return delegates.value.filter((delegate) => delegate.upvoted && !delegate.voted).length
 })
@@ -139,17 +119,17 @@ const pages = computed(() => {
     return 0
   }
 
-  return Math.ceil(delegates.value.length / paginationOptions.rowsPerPage)
+  return Math.ceil(delegates.value.length / pagination.rowsPerPage)
 })
+watch(search, (newValue) => {
+  if (newValue.length > 0) {
+    pagination.page = 1
+  }
+})
+
 const showPagination = computed(() => search.value.length === 0)
 const reviewButtonDisabled = computed(() => {
   return numOfUpvotes.value + numOfDownvotes.value === 0
-})
-
-watch(search, (newValue) => {
-  if (newValue.length > 0) {
-    paginationOptions.page = 1
-  }
 })
 
 onMounted(() => {
@@ -221,6 +201,8 @@ const showConfirmationDialog = () => {
 @use 'vuetify/settings';
 
 .delegates-view {
+  position: relative;
+
   &__body {
     font-size: 14px;
     font-weight: 300;

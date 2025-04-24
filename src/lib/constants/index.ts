@@ -258,3 +258,5 @@ export const REACT_EMOJIS = {
   FLUSHED_FACE: '😳',
   PARTY_POPPER: '🎉'
 } as const
+
+export const sidebarLayoutKey = Symbol('sidebarLayout')
