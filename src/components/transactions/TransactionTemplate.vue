@@ -258,19 +258,25 @@ const formattedTransactionStatus = computed(() => {
 })
 
 const statusUpdatable = computed(() => tsUpdatable(props.transactionStatus, props.crypto))
+
 const historyRate = computed(() => {
-  if (!transaction.value) return Symbols.HOURGLASS
+  if (isPendingQuery.value) return Symbols.HOURGLASS
+
+  if (props.transactionStatus === 'REJECTED') return Symbols.CROSS
 
   return store.getters['rate/historyRate'](
     calculatedTimestampInSec.value,
-    transaction.value.amount,
+    transaction.value?.amount,
     props.crypto
   )
 })
-const rate = computed(() => {
-  if (!transaction.value) return Symbols.HOURGLASS
 
-  return store.getters['rate/rate'](transaction.value.amount, props.crypto)
+const rate = computed(() => {
+  if (isPendingQuery.value) return Symbols.HOURGLASS
+
+  if (props.transactionStatus === 'REJECTED') return Symbols.CROSS
+
+  return store.getters['rate/rate'](transaction.value?.amount, props.crypto)
 })
 
 const calculatedTimestampInSec = computed(() => {
