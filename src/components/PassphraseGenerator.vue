@@ -24,7 +24,7 @@
 
         <v-textarea
           ref="textarea"
-          :value="passphrase"
+          :value="showSuggestedPassphrase ? passphrase : '*** *** *** *** *** *** *** *** *** *** *** *** '"
           type="text"
           variant="plain"
           multi-line
@@ -38,6 +38,7 @@
           <template #append>
             <div :class="`${className}__icons`">
               <icon
+                :class="`${className}__icon`"
                 :width="24"
                 :height="24"
                 shape-rendering="crispEdges"
@@ -47,6 +48,7 @@
                 <copy-icon />
               </icon>
               <icon
+                :class="`${className}__icon`"
                 :width="24"
                 :height="24"
                 shape-rendering="auto"
@@ -56,6 +58,7 @@
                 <save-icon />
               </icon>
               <icon
+                :class="`${className}__icon`"
                 :width="24"
                 :height="24"
                 shape-rendering="crispEdges"
@@ -64,6 +67,13 @@
               >
                 <qr-code-icon />
               </icon>
+              <v-icon
+                :class="`${className}__icon`"
+                :title="showSuggestedPassphrase ? $t('login.hide_passphrase_tooltip') : $t('login.show_passphrase_tooltip')"
+                :icon="showSuggestedPassphrase ? mdiEye : mdiEyeOff"
+                size="24"
+                @click="togglePassphraseVisibility"
+              />
             </div>
           </template>
         </v-textarea>
@@ -84,6 +94,7 @@ import Icon from '@/components/icons/BaseIcon.vue'
 import CopyIcon from '@/components/icons/common/Copy.vue'
 import SaveIcon from '@/components/icons/common/Save.vue'
 import QrCodeIcon from '@/components/icons/common/QrCode.vue'
+import { mdiEye, mdiEyeOff } from '@mdi/js'
 
 export default {
   components: {
@@ -91,13 +102,21 @@ export default {
     CopyIcon,
     SaveIcon,
     QrCodeIcon,
-    QrcodeRendererDialog
+    QrcodeRendererDialog,
   },
   emits: ['copy', 'save'],
+  setup() {
+
+    return {
+      mdiEye,
+      mdiEyeOff
+    }
+  },
   data: () => ({
     passphrase: '',
     showPassphrase: false,
-    showQrcodeRendererDialog: false
+    showQrcodeRendererDialog: false,
+    showSuggestedPassphrase: false,
   }),
   computed: {
     className() {
@@ -142,7 +161,10 @@ export default {
           console.warn('[PassphraseGenerator] `element` is undefined')
         }
       }, 0)
-    }
+    },
+    togglePassphraseVisibility() {
+      this.showSuggestedPassphrase = !this.showSuggestedPassphrase
+    },
   }
 }
 </script>
@@ -178,7 +200,7 @@ export default {
   }
   &__icons {
     > *:not(:first-child) {
-      margin-left: 8px;
+      margin-left: 20px;
     }
   }
   &__passphrase-label {
@@ -197,10 +219,74 @@ export default {
 }
 
 /** Themes **/
+.v-theme--dark {
+  .passphrase-generator {
+    &__icon {
+      position: relative;
+      opacity: 0.62;
+
+      &::before {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        background-color: currentColor;
+        opacity: 0.12;
+        width: 36px;
+        height: 36px;
+        top: -6px;
+        left: -7px;
+      }
+
+      &:hover {
+        opacity: 1;
+      }
+
+      &:hover::before {
+        opacity: 0.2;
+      }
+
+      :deep(.svg-icon) {
+        position: relative;
+        fill: map.get(colors.$adm-colors, 'grey-transparent');
+      }
+    }
+  }
+}
+
 .v-theme--light {
   .passphrase-generator {
     :deep(.v-textarea) textarea {
       color: map.get(colors.$adm-colors, 'regular');
+    }
+
+    &__icon {
+      position: relative;
+      opacity: 0.62;
+
+      &::before {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        background-color: currentColor;
+        opacity: 0.12;
+        width: 36px;
+        height: 36px;
+        top: -6px;
+        left: -6px;
+      }
+
+      &:hover {
+        opacity: 1;
+      }
+
+      &:hover::before {
+        opacity: 0.2;
+      }
+
+      :deep(.svg-icon) {
+        position: relative;
+        fill: map.get(colors.$adm-colors, 'black2');
+      }
     }
   }
 }
