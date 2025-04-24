@@ -24,7 +24,7 @@
 
         <v-textarea
           ref="textarea"
-          :value="showSuggestedPassphrase ? passphrase : '*** *** *** *** *** *** *** *** *** *** *** *** '"
+          :value="displayedPassphrase"
           type="text"
           variant="plain"
           multi-line
@@ -69,7 +69,7 @@
               </icon>
               <v-icon
                 :class="`${className}__icon`"
-                :title="showSuggestedPassphrase ? $t('login.hide_passphrase_tooltip') : $t('login.show_passphrase_tooltip')"
+                :title="passphraseVisibilityTooltip"
                 :icon="showSuggestedPassphrase ? mdiEye : mdiEyeOff"
                 size="24"
                 @click="togglePassphraseVisibility"
@@ -121,6 +121,12 @@ export default {
   computed: {
     className() {
       return 'passphrase-generator'
+    },
+    displayedPassphrase() {
+      return this.showSuggestedPassphrase ? this.passphrase : '*** *** *** *** *** *** *** *** *** *** *** *** '
+    },
+    passphraseVisibilityTooltip() {
+      return this.showSuggestedPassphrase ? this.$t('login.hide_passphrase_tooltip') : this.$t('login.show_passphrase_tooltip')
     }
   },
   methods: {
