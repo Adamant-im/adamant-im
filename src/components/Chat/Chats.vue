@@ -135,10 +135,8 @@ const noMoreChats = ref(false)
 const loadingSeparator = ref<InstanceType<typeof ChatPreview>[]>([])
 
 const chatPagePartnerId = computed(() => {
-  const partnerId = route.params.partnerId
-
-  // To convert it to string immediately => no need in further type conversion
-  return Array.isArray(partnerId) ? partnerId[0] : partnerId
+  // We assume partnerId to always be a string
+  return route.params.partnerId as string
 })
 const isSnackbarShowing = computed(() => store.state.snackbar.show)
 const noActiveNodesDialog = computed(() => store.state.chat.noActiveNodesDialog)
@@ -218,12 +216,13 @@ const checkIsActive = (contactId: string) => {
 const onKeydownHandler = (e: KeyboardEvent) => {
   if (canPressEscape.value) {
     if (e.key === 'Escape') {
-      if (!route.query.from) {
-        return router.push({ name: 'Chats' })
+      if (route.query.from?.includes('chats')) {
+        router.push(route.query.from as string)
+        return
       }
-
-      const from = Array.isArray(route.query.from) ? route.query.from[0] : route.query.from
-      return from ? router.push(from) : router.push({ name: 'Chats' })
+      router.push({
+        name: 'Chats'
+      })
     }
   }
 }
