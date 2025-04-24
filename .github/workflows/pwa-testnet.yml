@@ -3,11 +3,12 @@ name: PWA Testnet Workflow
 on:
   push:
     branches:
+      - dev
       - master
 
 env:
   SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
-  PREVIEW_DOMAIN: https://msg-adamant-testnet.surge.sh
+  PREVIEW_DOMAIN: https://${{ github.ref_name }}-adamant-testnet.surge.sh
 
 jobs:
   build-and-deploy-to-surge:
