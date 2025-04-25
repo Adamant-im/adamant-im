@@ -38,7 +38,7 @@
 
       <v-list-item-subtitle :class="`${className}__date`" class="a-text-explanation-small">
         <span v-if="!isStatusVisibleTransaction">{{ formatDate(createdAt) }}</span>
-        <span v-else-if="status" :class="`${className}__status`">{{
+        <span v-else-if="status" :class="`${className}__status ${className}__status--${status}`">{{
           $t(`transaction.statuses.${status}`)
         }}</span>
       </v-list-item-subtitle>
@@ -296,6 +296,10 @@ export default {
   }
   &__status {
     color: map.get(colors.$adm-colors, 'attention');
+
+    &--REJECTED {
+      color: map.get(colors.$adm-colors, 'danger');
+    }
   }
   // Do not break computed length of v-divider
   /*&__tile*/

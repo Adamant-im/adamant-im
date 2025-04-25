@@ -10,61 +10,57 @@
               {{ subtitle }}
             </div>
           </v-toolbar-title>
+          <v-progress-circular
+            class="spinner"
+            v-show="!isOnline && hasSpinner"
+            indeterminate
+            :size="24"
+          />
         </v-toolbar>
       </container>
     </v-row>
   </v-container>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import BackButton from '@/components/common/BackButton/BackButton.vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
-const props = defineProps({
-  title: {
-    type: String,
-    default: undefined
-  },
-  subtitle: {
-    type: String,
-    default: undefined
-  },
-  flat: {
-    type: Boolean,
-    default: false
-  },
-  app: {
-    type: Boolean,
-    default: false
-  },
-  fixed: {
-    type: Boolean,
-    default: false
-  },
-  height: {
-    type: Number,
-    default: 56
-  },
-  showBack: {
-    type: Boolean,
-    default: true
-  },
-  disableMaxWidth: {
-    type: Boolean,
-    default: false
-  },
-  sticky: {
-    type: Boolean,
-    default: false
-  }
+type Props = {
+  title?: string
+  subtitle?: string
+  flat?: boolean
+  app?: boolean
+  fixed?: boolean
+  height?: number
+  showBack?: boolean
+  hasSpinner?: boolean
+  disableMaxWidth?: boolean
+  sticky?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  title: undefined,
+  subtitle: undefined,
+  flat: false,
+  app: false,
+  fixed: false,
+  height: 56,
+  showBack: true,
+  hasSpinner: false,
+  disableMaxWidth: false,
+  sticky: false
 })
 
+const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
 const className = 'app-toolbar-centered'
 
+const isOnline = computed(() => store.getters['isOnline'])
 const classes = computed(() => {
   return {
     'v-toolbar--fixed': props.app,
@@ -123,6 +119,14 @@ const goBack = () => {
     letter-spacing: 0.02em;
   }
 
+  .spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: left 0.2s ease;
+  }
+
   :deep(.v-toolbar-title:not(:first-child)) {
     margin-inline-start: 0;
   }
@@ -145,6 +149,10 @@ const goBack = () => {
     .v-toolbar {
       background-color: map.get(colors.$adm-colors, 'secondary2');
     }
+
+    .spinner {
+      color: map.get(colors.$adm-colors, 'grey');
+    }
   }
 }
 
@@ -153,6 +161,10 @@ const goBack = () => {
     .v-toolbar {
       background-color: map.get(colors.$adm-colors, 'black');
       color: map.get(settings.$shades, 'white');
+    }
+
+    .spinner {
+      color: map.get(colors.$adm-colors, 'regular');
     }
   }
 }

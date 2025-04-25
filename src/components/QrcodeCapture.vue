@@ -1,6 +1,6 @@
 <template>
-  <div :class="className">
-    <div :class="`${className}__activator`" @click="$refs.fileInput.click()">
+  <div :class="classes.root">
+    <div :class="classes.activator" @click="fileInput?.click()">
       <slot />
     </div>
 
@@ -9,88 +9,131 @@
       ref="fileInput"
       type="file"
       accept="image/*"
-      :class="`${className}__file-input`"
+      :class="classes.input"
       @change="onFileSelect"
     />
 
-    <img ref="imageElement" :src="imageBase64" :class="`${className}__image`" />
+    <canvas ref="canvasElement" :class="classes.image" />
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { vibrate } from '@/lib/vibrate'
+import { useTemplateRef } from 'vue'
+import type { BrowserQRCodeReader } from '@zxing/browser'
 
-export default {
-  emits: ['detect', 'error'],
-  data: () => ({
-    selectedImage: undefined,
-    imageBase64: '',
-    qrCodeText: '',
-    codeReader: undefined
-  }),
-  computed: {
-    className() {
-      return 'qrcode-capture'
-    }
-  },
-  methods: {
-    async onFileSelect(event) {
-      this.selectedImage = event.target.files[0]
+const IMG_MAX_SIZE = 400
 
-      try {
-        const { BrowserQRCodeReader } = await import('@zxing/browser')
-        this.codeReader = new BrowserQRCodeReader()
-        this.imageBase64 = await this.getImageBase64()
-        this.qrCodeText = await this.tryToDecode()
+const emit = defineEmits<{
+  (e: 'detect', text: string): void
+  (e: 'error', err: unknown): void
+}>()
 
-        vibrate.veryShort()
+const className = 'qrcode-capture'
 
-        this.$emit('detect', this.qrCodeText)
-      } catch (err) {
-        vibrate.tripleVeryShort()
+const classes = {
+  root: className,
+  activator: `${className}__activator`,
+  input: `${className}__file-input`,
+  image: `${className}__image`
+}
 
-        this.$emit('error', err)
+let codeReader: BrowserQRCodeReader
+
+const canvas = useTemplateRef('canvasElement')
+const fileInput = useTemplateRef('fileInput')
+
+const drawCanvas = (file: File) => {
+  const img = new Image()
+  const imgUrl = URL.createObjectURL(file)
+
+  const revokeObjectURL = () => {
+    URL.revokeObjectURL(imgUrl)
+  }
+
+  const promise = new Promise((resolve, reject) => {
+    img.onload = () => {
+      if (!canvas.value) {
+        return reject()
       }
-      // Reset input to trigger change event later if user selects same image (Chrome)
-      this.$refs.fileInput.value = ''
-    },
 
-    /**
-     * Converts image into Base64.
-     * @returns {Promise<string>}
-     */
-    getImageBase64() {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader()
+      const ctx = canvas.value.getContext('2d')
 
-        reader.onload = (e) => resolve(e.target.result)
-        reader.onerror = (err) => reject(err)
+      if (!ctx) {
+        return reject()
+      }
 
-        reader.readAsDataURL(this.selectedImage)
-      })
-    },
+      const ratio = img.width / img.height
+      let newWidth = IMG_MAX_SIZE
+      let newHeight = IMG_MAX_SIZE / ratio
 
-    /**
-     * Decode QRCode from Base64 image.
-     * @returns {Promise<string>}
-     */
-    async getQrcode() {
-      const result = await this.codeReader.decodeFromImageElement(this.$refs.imageElement)
+      if (newHeight > IMG_MAX_SIZE) {
+        newHeight = IMG_MAX_SIZE
+        newWidth = IMG_MAX_SIZE * ratio
+      }
 
-      return result.text
-    },
+      canvas.value.width = newWidth
+      canvas.value.height = newHeight
 
-    tryToDecode() {
-      return new Promise((resolve, reject) => {
-        // Vue should rerender <img> element,
-        // so add a callback to the macrotasks queue
-        setTimeout(() => {
-          this.getQrcode()
-            .then((qrCodeText) => resolve(qrCodeText))
-            .catch((err) => reject(err))
-        }, 0)
-      })
+      ctx.drawImage(img, 0, 0, canvas.value.width, canvas.value.height)
+
+      resolve(canvas)
     }
+
+    img.onerror = (e) => reject(e)
+
+    img.src = imgUrl
+  })
+
+  promise.finally(revokeObjectURL)
+
+  return promise
+}
+
+const getQrcode = () => {
+  return codeReader?.decodeFromCanvas(canvas.value!).getText()
+}
+
+const tryToDecode = () => {
+  return new Promise<string>((resolve, reject) => {
+    // Vue should rerender <canvas> element,
+    // so add a callback to the macrotasks queue
+    setTimeout(() => {
+      try {
+        resolve(getQrcode())
+      } catch (e) {
+        reject(e)
+      }
+    }, 0)
+  })
+}
+
+const onFileSelect = async (event: Event) => {
+  try {
+    if (!codeReader) {
+      const { BrowserQRCodeReader } = await import('@zxing/browser')
+      codeReader = new BrowserQRCodeReader()
+    }
+
+    const input = event.target as HTMLInputElement
+
+    const file = input.files![0]!
+
+    await drawCanvas(file)
+    const qrCodeText = await tryToDecode()
+
+    vibrate.veryShort()
+
+    emit('detect', qrCodeText)
+  } catch (err) {
+    vibrate.tripleVeryShort()
+
+    emit('error', err)
+  }
+
+  if (fileInput.value) {
+    // Reset input to trigger change event later if user selects same image (Chrome)
+    fileInput.value.value = ''
   }
 }
 </script>

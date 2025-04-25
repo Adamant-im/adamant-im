@@ -14,7 +14,12 @@ import {
 } from '@/lib/chat/helpers'
 import { i18n } from '@/i18n'
 import { isNumeric } from '@/lib/numericHelpers'
-import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
+import {
+  CHAT_ACTUALITY_BUFFER_MS,
+  Cryptos,
+  TransactionStatus as TS,
+  MessageType
+} from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
 import { uploadFiles } from '../../../lib/files'
@@ -52,7 +57,8 @@ const state = () => ({
   isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
   offset: 0, // for loading chat list with pagination. -1 if all of chats loaded
   noActiveNodesDialog: undefined, // true - visible dialog, false - hidden dialog, but shown before, undefined - not shown
-  newChats: {} // { [partnerId]: partnerName }, for pointing if a chat needs further handling after being opened
+  newChats: {}, // { [partnerId]: partnerName }, for pointing if a chat needs further handling after being opened
+  chatsActualUntil: 0
 })
 
 const getters = {
@@ -75,6 +81,15 @@ const getters = {
     }
 
     return []
+  },
+
+  /**
+   * Returns the timeout for chatsActual
+   * @depends options.useSocketConnection
+   * @returns {number}
+   */
+  chatsPollingTimeout: (state, getters, rootState) => {
+    return rootState.options.useSocketConnection ? SOCKET_ENABLED_TIMEOUT : SOCKET_DISABLED_TIMEOUT
   },
 
   reactions: (state, getters) => (transactionId, partnerId) => {
@@ -279,12 +294,14 @@ const getters = {
         const message = getters.lastMessage(partnerId)
 
         return {
-          timestamp: Date.now(), // give priority to new chats without messages (will be overwritten by ...message)
-          ...message,
+          lastMessage: {
+            timestamp: Date.now(), // give priority to new chats without messages (will be overwritten by ...message)
+            ...message
+          },
           contactId: partnerId
         }
       })
-      .sort((left, right) => right.timestamp - left.timestamp)
+      .sort((left, right) => right.lastMessage.timestamp - left.lastMessage.timestamp)
   },
 
   scrollPosition: (state) => (contactId) => {
@@ -365,6 +382,10 @@ const mutations = {
    */
   setFulfilled(state, value) {
     state.isFulfilled = value
+  },
+
+  setChatsActualUntil(state, value) {
+    state.chatsActualUntil = value
   },
 
   /**
@@ -662,15 +683,21 @@ const actions = {
    * This is a temporary solution until the sockets are implemented.
    * @returns {Promise}
    */
-  getNewMessages({ state, commit, dispatch }) {
+  getNewMessages({ getters, state, commit, dispatch }) {
     if (!state.isFulfilled) {
       return Promise.reject(new Error('Chat is not fulfilled'))
     }
 
     return getChats(state.lastMessageHeight).then((result) => {
-      const { messages, lastMessageHeight } = result
+      const { messages, lastMessageHeight, nodeTimestamp } = result
+      const chatsActualInterval = getters.chatsPollingTimeout
 
       dispatch('pushMessages', messages)
+
+      const validUntil =
+        adamant.toTimestamp(nodeTimestamp) + chatsActualInterval + CHAT_ACTUALITY_BUFFER_MS
+
+      commit('setChatsActualUntil', validUntil)
 
       if (lastMessageHeight > 0) {
         commit('setHeight', lastMessageHeight)
@@ -1058,14 +1085,12 @@ const actions = {
 
   startInterval: {
     root: true,
-    handler({ dispatch, rootState }) {
+    handler({ dispatch, getters }) {
       function repeat() {
         dispatch('getNewMessages')
           .catch((err) => console.error(err))
           .then(() => {
-            const timeout = rootState.options.useSocketConnection
-              ? SOCKET_ENABLED_TIMEOUT
-              : SOCKET_DISABLED_TIMEOUT
+            const timeout = getters.chatsPollingTimeout
             interval = setTimeout(repeat, timeout)
           })
       }

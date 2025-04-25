@@ -1,7 +1,7 @@
 import Queue from 'promise-queue'
 import { Base64 } from 'js-base64'
 
-import { Transactions, Delegates, MessageType, TransactionStatus as TS } from '@/lib/constants'
+import { Transactions, Delegates, MessageType } from '@/lib/constants'
 import utils from '@/lib/adamant'
 import client from '@/lib/nodes/adm'
 import { encryptPassword } from '@/lib/idb/crypto'
@@ -129,7 +129,6 @@ export function getPublicKey(address = '') {
   })
 }
 
-
 /**
  * Generates and signs a chat message transaction.
  *
@@ -141,17 +140,16 @@ export function getPublicKey(address = '') {
  * @returns {Promise<object>} The signed transaction object or null on failure.
  */
 export async function signChatMessageTransaction(params) {
-  const { to, amount, type = 1, message } = params;
+  const { to, amount, type = 1, message } = params
 
-  const publicKey = await getPublicKey(to);
+  const publicKey = await getPublicKey(to)
 
-  const text =
-    typeof message === 'string' ? message : JSON.stringify(message)
+  const text = typeof message === 'string' ? message : JSON.stringify(message)
   const encoded = utils.encodeMessage(text, publicKey, myKeypair.privateKey)
   const chat = {
     message: encoded.message,
     own_message: encoded.nonce,
-    type,
+    type
   }
 
   const transaction = newTransaction(Transactions.CHAT_MESSAGE)
@@ -199,7 +197,7 @@ export async function sendMessage(params) {
       return sendSignedTransaction(signedTransaction)
     }
   } catch (reason) {
-    return reason;
+    return reason
   }
 }
 
@@ -246,7 +244,7 @@ function tryDecodeStoredValue(value) {
   let json = null
   try {
     json = JSON.parse(value)
-  } catch (e) {
+  } catch {
     // Not a JSON => not an encoded value
     return value
   }
@@ -484,7 +482,7 @@ export function getChats(from = 0, offset = 0, orderBy = 'desc') {
   // Doesn't return ADM direct transfer transactions, only messages and in-chat transfers
   // https://github.com/Adamant-im/adamant/wiki/API-Specification#get-chat-transactions
   return client.get('/api/chats/get/', params).then((response) => {
-    const { count, transactions } = response
+    const { count, transactions, nodeTimestamp } = response
 
     const promises = transactions.map((transaction) => {
       const promise = isStringEqualCI(transaction.recipientId, myAddress)
@@ -505,7 +503,8 @@ export function getChats(from = 0, offset = 0, orderBy = 'desc') {
 
     return Promise.all(promises).then((decoded) => ({
       count,
-      transactions: decoded.filter((v) => v)
+      transactions: decoded.filter((v) => v),
+      nodeTimestamp
     }))
   })
 }

@@ -9,7 +9,6 @@
     </div>
   </v-list-item>
   <v-list-item
-    v-else
     lines="two"
     :class="{
       [className]: true,
@@ -100,8 +99,8 @@
   </v-list-item>
 </template>
 
-<script setup lang="ts">
-import { computed, PropType } from 'vue'
+<script lang="ts" setup>
+import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 
@@ -122,51 +121,28 @@ import { AdamantChatMeta } from '@/lib/chat/meta/chat-meta'
 
 const className = 'chat-brief'
 
-const props = defineProps({
-  /**
-   * Account owner ID
-   */
-  userId: {
-    type: String,
-    required: true
-  },
-  /**
-   * Contact ID with whom the chat is held
-   */
-  contactId: {
-    type: String,
-    required: true
-  },
-  transaction: {
-    type: Object as PropType<NormalizedChatMessageTransaction>,
-    required: true
-  },
-  isMessageReadonly: {
-    type: Boolean,
-    default: false
-  },
-  /**
-   * Must be defined if is an ADAMANT chat
-   */
-  adamantChatMeta: {
-    type: Object as PropType<AdamantChatMeta>,
-    default: null
-  },
-  isLoadingSeparator: {
-    type: Boolean,
-    default: false
-  },
-  isLoadingSeparatorActive: {
-    type: Boolean,
-    default: false
-  },
-  isActive: {
-    type: Boolean,
-    default: false
-  }
+type Props = {
+  userId: string
+  contactId: string
+  transaction: NormalizedChatMessageTransaction
+  isMessageReadonly?: boolean
+  adamantChatMeta?: AdamantChatMeta | null
+  isLoadingSeparator?: boolean
+  isLoadingSeparatorActive?: boolean
+  isActive?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  isMessageReadonly: false,
+  adamantChatMeta: null,
+  isLoadingSeparator: false,
+  isLoadingSeparatorActive: false,
+  isActive: false
 })
 
-defineEmits(['click'])
+defineEmits<{
+  (e: 'click'): void
+}>()
 
 const store = useStore()
 const { t } = useI18n()

@@ -145,6 +145,7 @@ import {
   CryptosInfo,
   CryptoSymbol,
   Symbols,
+  TransactionStatus,
   TransactionStatusType,
   tsUpdatable
 } from '@/lib/constants'
@@ -251,6 +252,8 @@ const comment = computed(() => (props.admTx && props.admTx.message ? props.admTx
 
 const isPendingQuery = computed(() => props.queryStatus === 'pending')
 
+const isRejectedTransaction = computed(() => props.transactionStatus === TransactionStatus.REJECTED)
+
 const formattedTransactionStatus = computed(() => {
   if (isPendingQuery.value) return Symbols.HOURGLASS
 
@@ -258,19 +261,25 @@ const formattedTransactionStatus = computed(() => {
 })
 
 const statusUpdatable = computed(() => tsUpdatable(props.transactionStatus, props.crypto))
+
 const historyRate = computed(() => {
-  if (!transaction.value) return Symbols.HOURGLASS
+  if (isPendingQuery.value) return Symbols.HOURGLASS
+
+  if (isRejectedTransaction.value) return Symbols.CROSS
 
   return store.getters['rate/historyRate'](
     calculatedTimestampInSec.value,
-    transaction.value.amount,
+    transaction.value?.amount,
     props.crypto
   )
 })
-const rate = computed(() => {
-  if (!transaction.value) return Symbols.HOURGLASS
 
-  return store.getters['rate/rate'](transaction.value.amount, props.crypto)
+const rate = computed(() => {
+  if (isPendingQuery.value) return Symbols.HOURGLASS
+
+  if (isRejectedTransaction.value) return Symbols.CROSS
+
+  return store.getters['rate/rate'](transaction.value?.amount, props.crypto)
 })
 
 const calculatedTimestampInSec = computed(() => {
@@ -286,10 +295,13 @@ const calculatedFee = computed(() => {
 
   const { cryptoTransferDecimals, decimals } = CryptosInfo[commissionTokenLabel]
 
-  const tokenFee =
-    props.queryStatus === 'success' && typeof props.fee === 'number'
-      ? `${formatAmount(props.fee, cryptoTransferDecimals ?? decimals)} ${commissionTokenLabel}`
-      : placeholder.value
+  const isFeeShown =
+    typeof props.fee === 'number' &&
+    ((props.queryStatus === 'success' && props.fee > 0) || props.transactionStatus === 'CONFIRMED')
+
+  const tokenFee = isFeeShown
+    ? `${formatAmount(props.fee, cryptoTransferDecimals ?? decimals)} ${commissionTokenLabel}`
+    : placeholder.value
 
   if (!props.fee || !calculatedTimestampInSec.value) return tokenFee
 

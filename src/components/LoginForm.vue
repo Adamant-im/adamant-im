@@ -174,7 +174,8 @@ export default defineComponent({
 
     &:deep(.v-field__input) {
       width: 100%;
-      padding-right: 0;
+      padding-right: 32px;
+      padding-left: 32px;
     }
   }
 }
