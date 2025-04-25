@@ -1,5 +1,5 @@
 <template>
-  <v-row justify="center" no-gutters :class="className">
+  <v-row justify="center" no-gutters :class="`${className} pa-4`">
     <container>
       <div :class="`${className}__buttons`">
         <div class="text-right">
@@ -201,16 +201,18 @@ export default defineComponent({
   height: 100%;
 
   &__title {
-    font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-      Arial, sans-serif;
+    font-family:
+      -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+      sans-serif;
     font-weight: 100;
     font-size: 40px;
     line-height: 40px;
     text-transform: uppercase;
   }
   &__subtitle {
-    font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-      Arial, sans-serif;
+    font-family:
+      -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+      sans-serif;
     font-weight: 100;
     font-size: 18px;
   }

@@ -1,6 +1,6 @@
 <template>
   <v-toolbar flat height="56" :class="`${className}`" color="transparent">
-    <v-btn icon @click="goBack">
+    <back-button @click="goBack" v-if="isMobileView">
       <v-badge
         v-if="numOfNewMessages > 0"
         :value="numOfNewMessages"
@@ -9,18 +9,13 @@
         :content="numOfNewMessages > 99 ? '99+' : numOfNewMessages"
       >
       </v-badge>
-      <v-icon :icon="mdiArrowLeft" />
-    </v-btn>
+    </back-button>
     <div v-if="!isWelcomeChat(partnerId)">
       <slot name="avatar-toolbar" />
     </div>
     <div :class="`${className}__textfield-container`">
-      <div
-        v-if="isWelcomeChat(partnerId)"
-        :class="`${className}__adm-chat-name`"
-        :style="{ paddingLeft: '12px' }"
-      >
-        {{ $t('chats.virtual.welcome_message_title') }}
+      <div v-if="isWelcomeChat(partnerId)" :class="`${className}__adm-chat-name`">
+        {{ t('chats.virtual.welcome_message_title') }}
       </div>
       <div v-else>
         <v-text-field
@@ -40,62 +35,47 @@
   </v-toolbar>
 </template>
 
-<script>
-import partnerName from '@/mixins/partnerName'
+<script setup lang="ts">
+import { useScreenSize } from '@/hooks/useScreenSize'
+import BackButton from '@/components/common/BackButton/BackButton.vue'
+import { computed } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
-import { mdiArrowLeft } from '@mdi/js'
+import { useI18n } from 'vue-i18n'
+import { useChatName } from '@/components/AChat/hooks/useChatName'
 
-export default {
-  mixins: [partnerName],
-  props: {
-    partnerId: {
-      type: String,
-      required: true
-    }
-  },
-  emits: ['partner-info'],
-  setup() {
-    return {
-      mdiArrowLeft
-    }
-  },
-  computed: {
-    className: () => 'chat-toolbar',
-    partnerName: {
-      get() {
-        return this.getPartnerName(this.partnerId)
-      },
-      set(value) {
-        this.$store.commit('partners/displayName', {
-          partner: this.partnerId,
-          displayName: value
-        })
-      }
-    },
-    numOfNewMessages() {
-      return this.$store.getters['chat/numWithoutTheCurrentChat'](this.partnerId)
-    }
-  },
-  data: () => ({
-    lastPath: null
-  }),
-  created() {
-    this.lastPath = this.$router.options.history.state.back
-  },
-  methods: {
-    goBack() {
-      if (this.lastPath === '/chats') {
-        this.$router.back()
-      } else {
-        this.$router.push({ name: 'Chats' })
-      }
-    },
-    showPartnerInfo() {
-      this.$emit('partner-info', true)
-    },
-    isAdamantChat,
-    isWelcomeChat
+const { partnerId } = defineProps({
+  partnerId: {
+    type: String,
+    required: true
   }
+})
+
+const className = 'chat-toolbar'
+
+const store = useStore()
+const router = useRouter()
+const { t } = useI18n()
+
+const { isMobileView } = useScreenSize()
+
+const name = useChatName(partnerId)
+
+const partnerName = computed({
+  get: () => name.value,
+  set(value) {
+    store.commit('partners/displayName', {
+      partner: partnerId,
+      displayName: value
+    })
+  }
+})
+
+const numOfNewMessages = computed(() => store.getters['chat/numWithoutTheCurrentChat'](partnerId))
+
+const goBack = () => {
+  router.push({ name: 'Chats' })
 }
 </script>
 
@@ -108,6 +88,7 @@ export default {
 .chat-toolbar {
   flex-grow: 0;
   flex-shrink: 0;
+  padding-left: 12px;
 
   &__messages-counter {
     position: relative;
@@ -138,13 +119,6 @@ export default {
         border-color: unset;
       }
     }
-  }
-
-  :deep(.v-toolbar__content > .v-btn:first-child) {
-    width: 36px;
-    height: 36px;
-    margin: 0 12px;
-    border-radius: 50%;
   }
 
   :deep(.v-text-field) {
@@ -179,13 +153,6 @@ export default {
 
     .v-input__control > .v-input__slot {
       margin-bottom: 0;
-    }
-  }
-
-  :deep(.v-btn) {
-    &:hover > .v-btn__overlay {
-      opacity: 0.2;
-      transition: all 0.4s ease;
     }
   }
 }

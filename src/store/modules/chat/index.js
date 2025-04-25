@@ -1,3 +1,4 @@
+import { getPublicKey } from '@/lib/adamant-api'
 import validateAddress from '@/lib/validateAddress'
 import * as admApi from '@/lib/adamant-api'
 import {
@@ -14,6 +15,12 @@ import {
 import { i18n } from '@/i18n'
 import { isNumeric } from '@/lib/numericHelpers'
 import { Cryptos, CryptosInfo, TransactionStatus as TS, MessageType } from '@/lib/constants'
+import {
+  CHAT_ACTUALITY_BUFFER_MS,
+  Cryptos,
+  TransactionStatus as TS,
+  MessageType
+} from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
 import { uploadFiles } from '../../../lib/files'
@@ -54,7 +61,8 @@ const state = () => ({
   lastMessageHeight: 0, // `height` value of the last message
   isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
   offset: 0, // for loading chat list with pagination. -1 if all of chats loaded
-  noActiveNodesDialog: undefined // true - visible dialog, false - hidden dialog, but shown before, undefined - not shown
+  noActiveNodesDialog: undefined, // true - visible dialog, false - hidden dialog, but shown before, undefined - not shown
+  chatsActualUntil: 0
 })
 
 const getters = {
@@ -77,6 +85,15 @@ const getters = {
     }
 
     return []
+  },
+
+  /**
+   * Returns the timeout for chatsActual
+   * @depends options.useSocketConnection
+   * @returns {number}
+   */
+  chatsPollingTimeout: (state, getters, rootState) => {
+    return rootState.options.useSocketConnection ? SOCKET_ENABLED_TIMEOUT : SOCKET_DISABLED_TIMEOUT
   },
 
   reactions: (state, getters) => (transactionId, partnerId) => {
@@ -281,12 +298,14 @@ const getters = {
         const message = getters.lastMessage(partnerId)
 
         return {
-          timestamp: Date.now(), // give priority to new chats without messages (will be overwritten by ...message)
-          ...message,
+          lastMessage: {
+            timestamp: Date.now(), // give priority to new chats without messages (will be overwritten by ...message)
+            ...message
+          },
           contactId: partnerId
         }
       })
-      .sort((left, right) => right.timestamp - left.timestamp)
+      .sort((left, right) => right.lastMessage.timestamp - left.lastMessage.timestamp)
   },
 
   scrollPosition: (state) => (contactId) => {
@@ -359,6 +378,10 @@ const mutations = {
    */
   setFulfilled(state, value) {
     state.isFulfilled = value
+  },
+
+  setChatsActualUntil(state, value) {
+    state.chatsActualUntil = value
   },
 
   /**
@@ -619,7 +642,6 @@ const actions = {
     const normalizedMessages = messages.map(normalizeMessage)
     dispatch('botCommands/reInitCommands', normalizedMessages, { root: true })
     normalizedMessages.forEach((message) => {
-
       const { recipientId, senderId } = message
 
       if (recipientId === rootState.address || senderId === rootState.address) {
@@ -649,15 +671,21 @@ const actions = {
    * This is a temporary solution until the sockets are implemented.
    * @returns {Promise}
    */
-  getNewMessages({ state, commit, dispatch }) {
+  getNewMessages({ getters, state, commit, dispatch }) {
     if (!state.isFulfilled) {
       return Promise.reject(new Error('Chat is not fulfilled'))
     }
 
     return getChats(state.lastMessageHeight).then((result) => {
-      const { messages, lastMessageHeight } = result
+      const { messages, lastMessageHeight, nodeTimestamp } = result
+      const chatsActualInterval = getters.chatsPollingTimeout
 
       dispatch('pushMessages', messages)
+
+      const validUntil =
+        adamant.toTimestamp(nodeTimestamp) + chatsActualInterval + CHAT_ACTUALITY_BUFFER_MS
+
+      commit('setChatsActualUntil', validUntil)
 
       if (lastMessageHeight > 0) {
         commit('setHeight', lastMessageHeight)
@@ -719,22 +747,23 @@ const actions = {
    * @returns {Promise}
    */
   async sendMessage({ dispatch, commit, rootState }, { message, recipientId, replyToId }) {
-    let id;
+    let id
     try {
-      const type = replyToId ? MessageType.RICH_CONTENT_MESSAGE : MessageType.BASIC_ENCRYPTED_MESSAGE
+      const type = replyToId
+        ? MessageType.RICH_CONTENT_MESSAGE
+        : MessageType.BASIC_ENCRYPTED_MESSAGE
 
       const messageAsset = replyToId
         ? replyMessageAsset({
-          replyToId,
-          replyMessage: message
-        })
+            replyToId,
+            replyMessage: message
+          })
         : message
-
 
       const signedTransaction = await admApi.signChatMessageTransaction({
         to: recipientId,
         message: messageAsset,
-        type,
+        type
       })
 
       id = adamant.getTransactionId(signedTransaction)
@@ -749,7 +778,7 @@ const actions = {
 
       commit('pushMessage', {
         message: messageObject,
-        userId: rootState.address,
+        userId: rootState.address
       })
 
       const transaction = await queueSignedMessage(signedTransaction)
@@ -764,7 +793,6 @@ const actions = {
         partnerId: recipientId
       })
     } catch (error) {
-
       if (id) {
         const timeout = setTimeout(() => {
           pendingMessages.delete(id)
@@ -793,10 +821,15 @@ const actions = {
    * @returns {Promise}
    */
   async sendAttachment({ commit, rootState, dispatch }, { files, message, recipientId, replyToId }) {
+    const recipientPublicKey = await getPublicKey(recipientId)
+    const senderPublicKey = await getPublicKey(rootState.address)
+
     let messageObject = createAttachment({
       message,
       recipientId,
       senderId: rootState.address,
+      recipientPublicKey,
+      senderPublicKey,
       files,
       replyToId
     })
@@ -808,7 +841,7 @@ const actions = {
     })
 
     const cids = files.map((file) => [file.cid, file.preview?.cid]).filter((cid) => !!cid)
-    const newAsset = replyToId
+    let newAsset = replyToId
       ? { replyto_id: replyToId, reply_message: attachmentAsset(files, message) }
       : attachmentAsset(files, message)
     commit('updateMessage', {
@@ -825,6 +858,18 @@ const actions = {
         }
       })
       console.debug('Files uploaded', uploadData)
+
+      // Heisenbug: After uploading an MP4 file, the CID returned by the IPFS node differs from the locally computed one.
+      // So we update the CIDs one more time, just to be sure.
+      newAsset = replyToId
+        ? { replyto_id: replyToId, reply_message: attachmentAsset(files, message, uploadData.cids) }
+        : attachmentAsset(files, message, uploadData.cids)
+      commit('updateMessage', {
+        id: messageObject.id,
+        partnerId: recipientId,
+        asset: newAsset
+      })
+      console.debug('Updated CIDs after upload', newAsset)
     } catch (err) {
       const timeout = setTimeout(() => {
         pendingMessages.delete(messageObject.id)
@@ -1154,14 +1199,12 @@ const actions = {
 
   startInterval: {
     root: true,
-    handler({ dispatch, rootState }) {
+    handler({ dispatch, getters }) {
       function repeat() {
         dispatch('getNewMessages')
           .catch((err) => console.error(err))
           .then(() => {
-            const timeout = rootState.options.useSocketConnection
-              ? SOCKET_ENABLED_TIMEOUT
-              : SOCKET_DISABLED_TIMEOUT
+            const timeout = getters.chatsPollingTimeout
             interval = setTimeout(repeat, timeout)
           })
       }
