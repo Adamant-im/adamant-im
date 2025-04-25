@@ -1,24 +1,24 @@
 <template>
-  <div :class="className">
+  <div :class="classes.root">
     <div class="text-center">
       <h3 class="a-text-regular">
-        {{ $t('login.create_address_label') }}
+        {{ t('login.create_address_label') }}
       </h3>
       <v-btn class="a-btn-link mt-2" variant="text" size="small" @click="generatePassphrase">
-        {{ $t('login.new_button') }}
+        {{ t('login.new_button') }}
       </v-btn>
     </div>
 
     <transition name="slide-fade">
-      <div v-if="showPassphrase" :class="`${className}__box`">
+      <div v-if="showPassphrase" :class="classes.box">
         <!-- eslint-disable vue/no-v-html -- Safe internal content -->
         <div
           ref="el"
           :class="{
             'mt-2': true,
-            [`${className}__passphrase-label`]: true
+            [classes.passphraseLabel]: true
           }"
-          v-html="$t('login.new_passphrase_label')"
+          v-html="t('login.new_passphrase_label')"
         />
         <!-- eslint-enable vue/no-v-html -->
 
@@ -36,39 +36,39 @@
           @click.prevent="selectText"
         >
           <template #append>
-            <div :class="`${className}__icons`">
+            <div :class="classes.icons">
               <icon
-                :class="`${className}__icon`"
+                :class="classes.icon"
                 :width="24"
                 :height="24"
                 shape-rendering="crispEdges"
-                :title="$t('login.copy_button_tooltip')"
-                @click="copyToClipboard"
+                :title="t('login.copy_button_tooltip')"
+                @click="copyToClipboardHandler"
               >
                 <copy-icon />
               </icon>
               <icon
-                :class="`${className}__icon`"
+                :class="classes.icon"
                 :width="24"
                 :height="24"
                 shape-rendering="auto"
-                :title="$t('login.save_button_tooltip')"
+                :title="t('login.save_button_tooltip')"
                 @click="saveFile"
               >
                 <save-icon />
               </icon>
               <icon
-                :class="`${className}__icon`"
+                :class="classes.icon"
                 :width="24"
                 :height="24"
                 shape-rendering="crispEdges"
-                :title="$t('login.save_qr_code_tooltip')"
+                :title="t('login.save_qr_code_tooltip')"
                 @click="showQrcodeRendererDialog = true"
               >
                 <qr-code-icon />
               </icon>
               <v-icon
-                :class="`${className}__icon`"
+                :class="classes.icon"
                 :title="passphraseVisibilityTooltip"
                 :icon="showSuggestedPassphrase ? mdiEye : mdiEyeOff"
                 size="24"
@@ -84,9 +84,11 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import * as bip39 from 'bip39'
 import copyToClipboard from 'copy-to-clipboard'
+import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import { downloadFile } from '@/lib/textHelpers'
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog.vue'
@@ -96,82 +98,77 @@ import SaveIcon from '@/components/icons/common/Save.vue'
 import QrCodeIcon from '@/components/icons/common/QrCode.vue'
 import { mdiEye, mdiEyeOff } from '@mdi/js'
 
-export default {
-  components: {
-    Icon,
-    CopyIcon,
-    SaveIcon,
-    QrCodeIcon,
-    QrcodeRendererDialog,
-  },
-  emits: ['copy', 'save'],
-  setup() {
+const { t } = useI18n()
 
-    return {
-      mdiEye,
-      mdiEyeOff
-    }
-  },
-  data: () => ({
-    passphrase: '',
-    showPassphrase: false,
-    showQrcodeRendererDialog: false,
-    showSuggestedPassphrase: false,
-  }),
-  computed: {
-    className() {
-      return 'passphrase-generator'
-    },
-    displayedPassphrase() {
-      return this.showSuggestedPassphrase ? this.passphrase : '*** *** *** *** *** *** *** *** *** *** *** *** '
-    },
-    passphraseVisibilityTooltip() {
-      return this.showSuggestedPassphrase ? this.$t('login.hide_passphrase_tooltip') : this.$t('login.show_passphrase_tooltip')
-    }
-  },
-  methods: {
-    copyToClipboard() {
-      copyToClipboard(this.passphrase)
+const emit = defineEmits(['copy', 'save'])
 
-      this.selectText()
+const className = "passphrase-generator"
+const classes = {
+  root: className,
+  box: `${className}__box`,
+  passphraseLabel: `${className}__passphrase-label`,
+  icons: `${className}__icons`,
+  icon: `${className}__icon`,
+}
 
-      this.$emit('copy')
-    },
-    saveFile() {
-      const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
-      if (!iOS) {
-        downloadFile(
-          this.passphrase,
-          'adm-' + btoa(new Date().getTime()).replace('==', '') + '.txt',
-          'text/plain'
-        )
-      }
+const passphrase = ref('')
+const showPassphrase = ref(false)
+const showQrcodeRendererDialog = ref(false)
+const showSuggestedPassphrase = ref(false)
+const textarea = ref(null)
+const el = ref(null)
 
-      this.$emit('save')
-    },
-    selectText() {
-      this.$refs.textarea.$el.querySelector('textarea').select()
-    },
-    generatePassphrase() {
-      this.passphrase = bip39.generateMnemonic()
+const displayedPassphrase = computed(() => {
+  return showSuggestedPassphrase.value ? passphrase.value : '*** *** *** *** *** *** *** *** *** *** *** *** '
+})
 
-      this.showPassphrase = true
+const passphraseVisibilityTooltip = computed(() => {
+  return showSuggestedPassphrase.value ? 
+    t('login.hide_passphrase_tooltip') : 
+    t('login.show_passphrase_tooltip')
+})
 
-      // callback after Vue rerender
-      setTimeout(() => {
-        const element = this.$refs.textarea.$el
+const copyToClipboardHandler = () => {
+  copyToClipboard(passphrase.value)
+  selectText()
+  emit('copy')
+}
 
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' })
-        } else {
-          console.warn('[PassphraseGenerator] `element` is undefined')
-        }
-      }, 0)
-    },
-    togglePassphraseVisibility() {
-      this.showSuggestedPassphrase = !this.showSuggestedPassphrase
-    },
+const saveFile = () => {
+  const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
+  if (!iOS) {
+    downloadFile(
+      passphrase.value,
+      'adm-' + btoa(new Date().getTime()).replace('==', '') + '.txt',
+      'text/plain'
+    )
   }
+  
+  emit('save')
+}
+
+const selectText = () => {
+  textarea.value.$el.querySelector('textarea').select()
+}
+
+const generatePassphrase = () => {
+  passphrase.value = bip39.generateMnemonic()
+  showPassphrase.value = true
+
+  // callback after Vue rerender
+  setTimeout(() => {
+    const element = textarea.value.$el
+
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    } else {
+      console.warn('[PassphraseGenerator] `element` is undefined')
+    }
+  }, 0)
+}
+
+const togglePassphraseVisibility = () => {
+  showSuggestedPassphrase.value = !showSuggestedPassphrase.value
 }
 </script>
 
@@ -204,6 +201,30 @@ export default {
       }
     }
   }
+  &__icon {
+    position: relative;
+    opacity: 0.62;
+
+    &::before {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      background-color: currentColor;
+      opacity: 0.12;
+      width: 36px;
+      height: 36px;
+      top: -6px;
+      left: -7px;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &:hover::before {
+      opacity: 0.2;
+    }
+  }
   &__icons {
     > *:not(:first-child) {
       margin-left: 20px;
@@ -228,29 +249,6 @@ export default {
 .v-theme--dark {
   .passphrase-generator {
     &__icon {
-      position: relative;
-      opacity: 0.62;
-
-      &::before {
-        content: '';
-        position: absolute;
-        border-radius: 50%;
-        background-color: currentColor;
-        opacity: 0.12;
-        width: 36px;
-        height: 36px;
-        top: -6px;
-        left: -7px;
-      }
-
-      &:hover {
-        opacity: 1;
-      }
-
-      &:hover::before {
-        opacity: 0.2;
-      }
-
       :deep(.svg-icon) {
         position: relative;
         fill: map.get(colors.$adm-colors, 'grey-transparent');
@@ -266,29 +264,6 @@ export default {
     }
 
     &__icon {
-      position: relative;
-      opacity: 0.62;
-
-      &::before {
-        content: '';
-        position: absolute;
-        border-radius: 50%;
-        background-color: currentColor;
-        opacity: 0.12;
-        width: 36px;
-        height: 36px;
-        top: -6px;
-        left: -6px;
-      }
-
-      &:hover {
-        opacity: 1;
-      }
-
-      &:hover::before {
-        opacity: 0.2;
-      }
-
       :deep(.svg-icon) {
         position: relative;
         fill: map.get(colors.$adm-colors, 'black2');

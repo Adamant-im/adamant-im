@@ -6,8 +6,9 @@
           <language-switcher :prepend-icon="mdiChevronRight" />
         </div>
         <div :class="`${className}__settings-button-container`">
-          <v-btn 
-            @click="$router.push('/options/nodes')" 
+        <router-link to="/options/nodes" custom #default="{ navigate }">
+          <v-btn
+            @click="navigate"
             icon 
             variant="plain" 
             :size="32"
@@ -15,6 +16,7 @@
           >
             <v-icon :icon="mdiCog" />
           </v-btn>
+        </router-link>
         </div>
       </div>
 
