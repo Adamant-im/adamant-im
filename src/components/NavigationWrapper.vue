@@ -34,6 +34,7 @@
     </v-container>
   </div>
 </template>
+
 <script setup lang="ts">
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import { computed, useSlots } from 'vue'
@@ -79,6 +80,9 @@ const title = computed(() => {
     case 'Transactions':
     case 'Transaction':
       return (route.params.txId as string) || t('transaction.transactions')
+    case 'SendFunds':
+      return t('home.send_btn')
+
     default:
       return t('options.page_title')
   }
