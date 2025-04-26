@@ -1,16 +1,23 @@
-import { computed } from 'vue'
+import { computed, onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex'
 import { watchImmediate } from '@vueuse/core'
 import { isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 import { TransactionStatus as TS } from '@/lib/constants'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 
+type PendingMessage = {
+  recipientId: string
+  timeout: ReturnType<typeof setTimeout>
+}
+
 export function useResendPendingMessages() {
   const store = useStore()
 
   const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
   const admNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
-  const pendingMessages = computed(() => store.state.chat.pendingMessages)
+  const pendingMessages = computed<Record<string, PendingMessage>>(
+    () => store.state.chat.pendingMessages
+  )
 
   watchImmediate(admNodesOnline, (newVal) => {
     if (newVal) {
@@ -18,7 +25,7 @@ export function useResendPendingMessages() {
         store
           .dispatch('chat/resendMessage', {
             messageId,
-            recipientId: message.recipientId
+            recipientId: message.recipientId!
           })
           .then((res) => {
             if (res.success) {
@@ -30,7 +37,7 @@ export function useResendPendingMessages() {
               store.commit('chat/updateMessage', {
                 id: messageId,
                 status: TS.REJECTED,
-                partnerId: message.recipientId
+                partnerId: message.recipientId!
               })
 
               store.commit('chat/deletePendingMessage', messageId)
@@ -38,5 +45,11 @@ export function useResendPendingMessages() {
           })
       })
     }
+  })
+
+  onBeforeUnmount(() => {
+    Object.values(pendingMessages.value).forEach((message) => {
+      clearTimeout(message.timeout)
+    })
   })
 }
