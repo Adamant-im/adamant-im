@@ -12,9 +12,6 @@ permissions:
   pages: write
   id-token: write
 
-env:
-  VITE_ROUTER_HISTORY_MODE: hash
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -38,11 +35,11 @@ jobs:
 
       - name: Build PWA 🛠️
         run: |
-          echo 'VITE_ROUTER_HISTORY_MODE="hash"' >> .env
           npm run schema:generate
           npm run build
         env:
           VITE_PUBLIC_PATH: ${{ github.event.repository.name }}
+          VITE_ROUTER_HISTORY_MODE: hash
       - name: Upload artifacts 📁
         uses: actions/upload-pages-artifact@v3
         with:
