@@ -38,6 +38,7 @@ jobs:
 
       - name: Build PWA 🛠️
         run: |
+          echo 'VITE_ROUTER_HISTORY_MODE="hash"' >> .env
           npm run schema:generate
           npm run build
         env:
