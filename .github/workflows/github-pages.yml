@@ -2,7 +2,7 @@ name: GitHub Pages
 on:
   push:
     branches:
-      - dev
+      - master
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -11,6 +11,9 @@ permissions:
   contents: read
   pages: write
   id-token: write
+
+env:
+  VITE_ROUTER_HISTORY_MODE: hash
 
 jobs:
   deploy:
