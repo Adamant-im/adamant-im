@@ -1,12 +1,16 @@
-import { mergeConfig, defineConfig } from 'vite'
+import { defineConfig, mergeConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 import viteBaseConfig from './vite-base.config'
 import { manifest } from './vite-config/manifest'
 
-export default mergeConfig(
-  viteBaseConfig,
-  defineConfig({
+export default defineConfig(() => {
+  /** @see https://vite.dev/guide/api-javascript.html#mergeconfig */
+  return mergeConfig(viteBaseConfig, {
+    /** @see https://vite.dev/config/shared-options.html#define */
+    define: {
+      __VITE_ROUTER_HISTORY_MODE__: JSON.stringify(process.env.VITE_ROUTER_HISTORY_MODE)
+    },
     plugins: [
       VitePWA({
         registerType: 'autoUpdate',
@@ -24,4 +28,4 @@ export default mergeConfig(
       })
     ]
   })
-)
+})
