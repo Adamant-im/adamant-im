@@ -308,6 +308,7 @@ import { useStore } from 'vuex'
 import { useChatsSpinner } from '@/hooks/useChatsSpinner'
 import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import { useChatStateStore } from '@/stores/chat-state'
+import { useResendPendingMessages } from '@/hooks/useResendPendingMessages'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -315,6 +316,8 @@ const validationErrors = {
   notEnoughFundsNewAccount: 'NON_ENOUGH_FUNDS_NEW_ACCOUNT',
   messageTooLong: 'MESSAGE_LENGTH_EXCEED'
 }
+
+useResendPendingMessages()
 
 const props = defineProps({
   partnerId: {

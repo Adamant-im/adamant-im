@@ -14,10 +14,10 @@ import {
 } from '@/lib/chat/helpers'
 import { i18n } from '@/i18n'
 import { isNumeric } from '@/lib/numericHelpers'
-import { Cryptos, CryptosInfo, TransactionStatus as TS, MessageType } from '@/lib/constants'
 import {
   CHAT_ACTUALITY_BUFFER_MS,
   Cryptos,
+  CryptosInfo,
   TransactionStatus as TS,
   MessageType
 } from '@/lib/constants'
@@ -32,10 +32,6 @@ export let interval
 
 const SOCKET_ENABLED_TIMEOUT = 10000
 const SOCKET_DISABLED_TIMEOUT = 3000
-
-const RESEND_MESSAGE_INTERVAL = 5 * 1000
-
-const pendingMessages = new Map()
 
 /**
  * type State = {
@@ -62,7 +58,8 @@ const state = () => ({
   isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
   offset: 0, // for loading chat list with pagination. -1 if all of chats loaded
   noActiveNodesDialog: undefined, // true - visible dialog, false - hidden dialog, but shown before, undefined - not shown
-  chatsActualUntil: 0
+  chatsActualUntil: 0,
+  pendingMessages: {}
 })
 
 const getters = {
@@ -536,6 +533,20 @@ const mutations = {
     state.noActiveNodesDialog = value
   },
 
+  addPendingMessage(state, { messageId, recipientId, timeout }) {
+    state.pendingMessages[messageId] = {
+      recipientId,
+      timeout
+    }
+  },
+
+  deletePendingMessage(state, messageId) {
+    if (state.pendingMessages[messageId]) {
+      clearTimeout(state.pendingMessages[messageId].timeout)
+      delete state.pendingMessages[messageId]
+    }
+  },
+
   reset(state) {
     state.chats = {}
     state.lastMessageHeight = 0
@@ -746,7 +757,7 @@ const actions = {
    * @param {string} replyToId Optional
    * @returns {Promise}
    */
-  async sendMessage({ dispatch, commit, rootState }, { message, recipientId, replyToId }) {
+  async sendMessage({ commit, rootState }, { message, recipientId, replyToId }) {
     let id
     try {
       const type = replyToId
@@ -793,20 +804,38 @@ const actions = {
         partnerId: recipientId
       })
     } catch (error) {
-      if (id) {
+      if (isAllNodesOfflineError(error)) {
         const timeout = setTimeout(() => {
-          pendingMessages.delete(id)
+          commit('updateMessage', {
+            id,
+            status: TS.REJECTED,
+            partnerId: recipientId
+          })
+
+          commit('deletePendingMessage', id)
         }, +CryptosInfo.ADM.timeout.message)
 
-        pendingMessages.set(id, timeout)
-
-        dispatch('resendMessage', {
+        commit('addPendingMessage', {
+          messageId: id,
           recipientId,
-          messageId: id
+          timeout
+        })
+
+        commit('updateMessage', {
+          id,
+          status: TS.PENDING,
+          partnerId: recipientId
         })
       } else {
-        throw error
+        if (id) {
+          commit('updateMessage', {
+            id,
+            status: TS.REJECTED,
+            partnerId: recipientId
+          })
+        }
       }
+      throw error
     }
   },
 
@@ -820,7 +849,7 @@ const actions = {
    * @param {string} replyToId Optional
    * @returns {Promise}
    */
-  async sendAttachment({ commit, rootState, dispatch }, { files, message, recipientId, replyToId }) {
+  async sendAttachment({ commit, rootState }, { files, message, recipientId, replyToId }) {
     const recipientPublicKey = await getPublicKey(recipientId)
     const senderPublicKey = await getPublicKey(rootState.address)
 
@@ -871,17 +900,15 @@ const actions = {
       })
       console.debug('Updated CIDs after upload', newAsset)
     } catch (err) {
-      const timeout = setTimeout(() => {
-        pendingMessages.delete(messageObject.id)
-      }, +CryptosInfo.ADM.timeout.attachment)
-
-      pendingMessages.set(messageObject.id, timeout)
-
-      dispatch('resendAttachment', {
-        recipientId,
-        messageId: messageObject.id,
-        files
+      commit('updateMessage', {
+        id: messageObject.id,
+        status: TS.REJECTED,
+        partnerId: recipientId
       })
+
+      for (const [cid] of cids) {
+        commit('attachment/resetUploadProgress', { cid }, { root: true })
+      }
 
       throw err
     }
@@ -908,116 +935,14 @@ const actions = {
         return res
       })
       .catch((err) => {
-        const timeout = setTimeout(() => {
-          pendingMessages.delete(messageObject.id)
-        }, +CryptosInfo.ADM.timeout.attachment)
-
-        pendingMessages.set(messageObject.id, timeout)
-
-        dispatch('resendAttachment', {
-          recipientId,
-          messageId: messageObject.id
-        })
-
-        throw err // call the error again so that it can be processed inside view
-      })
-  },
-
-  /**
-   * Resend attachment, in case the connection fails.
-   * @param {string} id Recipient Id
-   * @param {number} id Message Id
-   * @param {FileData[]} files
-   * @returns {Promise}
-   */
-  async resendAttachment({ commit, dispatch }, { recipientId, messageId, files }) {
-    const message = getters.partnerMessageById(recipientId, messageId)
-
-    commit('updateMessage', {
-      id: messageId,
-      status: TS.PENDING,
-      partnerId: recipientId
-    });
-
-    if (!message) {
-      return Promise.reject(new Error('Message not found in history'))
-    }
-
-    const newAsset = message.replyToId
-      ? { replyto_id: message.replyToId, reply_message: attachmentAsset(files, message.message) }
-      : attachmentAsset(files, message.message);
-
-    try {
-      if (files) {
-        const cids = files.map((file) => [file.cid, file.preview?.cid]).filter(cid => !!cid);
-
-        await uploadFiles(files, (progress) => {
-          for (const [cid] of cids) {
-            commit('attachment/setUploadProgress', { cid, progress }, { root: true });
-          }
-        });
-
+        // update `message.status` to 'REJECTED'
         commit('updateMessage', {
-          id: messageId,
-          asset: newAsset,
-          partnerId: recipientId
-        });
-      }
-    } catch (err) {
-      if (!pendingMessages.has(messageId)) {
-        throw err
-      } else {
-        setTimeout(() => {
-          dispatch('resendAttachment', {
-            recipientId,
-            messageId,
-            files
-          })
-        }, RESEND_MESSAGE_INTERVAL)
-
-        return
-      }
-    }
-
-    return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
-      .then((res) => {
-        if (!res.success) {
-          if (!pendingMessages.has(messageId)) {
-            throw new Error(i18n.global.t('chats.message_rejected'));
-          }
-
-          setTimeout(() => {
-            dispatch('resendAttachment', {
-              recipientId,
-              messageId
-            })
-          }, RESEND_MESSAGE_INTERVAL)
-
-          return
-        }
-
-        if (pendingMessages.has(messageId)) {
-          clearTimeout(pendingMessages.get(messageId));
-          pendingMessages.delete(messageId);
-        }
-
-        commit('updateMessage', {
-          id: messageId,
-          realId: res.transactionId,
-          status: TS.REGISTERED,
-          partnerId: recipientId
-        })
-
-        return res
-      })
-      .catch((err) => {
-        commit('updateMessage', {
-          id: messageId,
+          id: messageObject.id,
           status: TS.REJECTED,
           partnerId: recipientId
         })
 
-        throw err
+        throw err // call the error again so that it can be processed inside view
       })
   },
 
@@ -1027,7 +952,7 @@ const actions = {
    * @param {number} id Message Id
    * @returns {Promise}
    */
-  resendMessage({ getters, commit, dispatch }, { recipientId, messageId }) {
+  resendMessage({ getters, commit }, { recipientId, messageId }) {
     const message = getters.partnerMessageById(recipientId, messageId)
 
     // update message status from `rejected` to `sent`
@@ -1052,23 +977,7 @@ const actions = {
       return queueMessage(messageAsset, recipientId, type)
         .then((res) => {
           if (!res.success) {
-            if (!pendingMessages.has(messageId)) {
-              throw new Error(i18n.global.t('chats.message_rejected'))
-            }
-
-            setTimeout(() => {
-              dispatch('resendMessage', {
-                recipientId,
-                messageId
-              })
-            }, RESEND_MESSAGE_INTERVAL)
-
-            return
-          }
-
-          if (pendingMessages.has(messageId)) {
-            clearTimeout(pendingMessages.get(messageId))
-            pendingMessages.delete(messageId)
+            throw new Error(i18n.global.t('chats.message_rejected'))
           }
 
           commit('updateMessage', {
