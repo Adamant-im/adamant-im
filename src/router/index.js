@@ -187,7 +187,7 @@ const router = createRouter({
      * For GitHub Pages deployment only.
      * If variable is not available in process environment, use from the `.env` file instead.
      */
-    (window.__VITE_ROUTER_HISTORY_MODE__ ?? import.meta.env.VITE_ROUTER_HISTORY_MODE === 'hash')
+    import.meta.env.VITE_ROUTER_HISTORY_MODE === 'hash'
       ? createWebHashHistory()
       : createWebHistory(),
   routes,
