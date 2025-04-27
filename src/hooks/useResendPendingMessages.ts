@@ -1,13 +1,15 @@
 import { computed, onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex'
 import { watchImmediate } from '@vueuse/core'
-import { isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
-import { TransactionStatus as TS } from '@/lib/constants'
+import { MessageType } from '@/lib/constants'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import { FileData } from '@/lib/files'
 
 type PendingMessage = {
   recipientId: string
   timeout: ReturnType<typeof setTimeout>
+  type: number
+  files?: FileData[]
 }
 
 export function useResendPendingMessages() {
@@ -19,32 +21,26 @@ export function useResendPendingMessages() {
     () => store.state.chat.pendingMessages
   )
 
-  watchImmediate(admNodesOnline, (newVal) => {
-    if (newVal) {
-      Object.entries(pendingMessages.value).forEach(([messageId, message]) => {
-        store
-          .dispatch('chat/resendMessage', {
-            messageId,
-            recipientId: message.recipientId!
-          })
-          .then((res) => {
-            if (res.success) {
-              store.commit('chat/deletePendingMessage', messageId)
-            }
-          })
-          .catch((err) => {
-            if (!isAllNodesOfflineError(err)) {
-              store.commit('chat/updateMessage', {
-                id: messageId,
-                status: TS.REJECTED,
-                partnerId: message.recipientId!
-              })
+  watchImmediate(admNodesOnline, (online) => {
+    if (!online) return
 
-              store.commit('chat/deletePendingMessage', messageId)
-            }
+    Object.entries(pendingMessages.value).forEach(([messageId, message]) => {
+      ;(message.type === MessageType.BASIC_ENCRYPTED_MESSAGE
+        ? store.dispatch('chat/resendMessage', {
+            recipientId: message.recipientId,
+            messageId
           })
+        : store.dispatch('chat/resendAttachment', {
+            recipientId: message.recipientId,
+            files: message.files,
+            messageId
+          })
+      ).then((res) => {
+        if (res.success) {
+          store.commit('chat/deletePendingMessage', messageId)
+        }
       })
-    }
+    })
   })
 
   onBeforeUnmount(() => {

@@ -25,7 +25,11 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
 import { uploadFiles } from '../../../lib/files'
 import { generateAdamantChats } from './utils/generateAdamantChats'
-import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
+import {
+  AllNodesOfflineError,
+  isAllNodesDisabledError,
+  isAllNodesOfflineError
+} from '@/lib/nodes/utils/errors'
 import adamant from '@/lib/adamant'
 
 export let interval
@@ -533,10 +537,12 @@ const mutations = {
     state.noActiveNodesDialog = value
   },
 
-  addPendingMessage(state, { messageId, recipientId, timeout }) {
+  addPendingMessage(state, { messageId, recipientId, timeout, type, files }) {
     state.pendingMessages[messageId] = {
       recipientId,
-      timeout
+      timeout,
+      type,
+      files
     }
   },
 
@@ -817,6 +823,7 @@ const actions = {
 
         commit('addPendingMessage', {
           messageId: id,
+          type: MessageType.BASIC_ENCRYPTED_MESSAGE,
           recipientId,
           timeout
         })
@@ -900,17 +907,19 @@ const actions = {
       })
       console.debug('Updated CIDs after upload', newAsset)
     } catch (err) {
-      commit('updateMessage', {
-        id: messageObject.id,
-        status: TS.REJECTED,
-        partnerId: recipientId
-      })
+      if (!isAllNodesOfflineError(err)) {
+        commit('updateMessage', {
+          id: messageObject.id,
+          status: TS.REJECTED,
+          partnerId: recipientId
+        })
 
-      for (const [cid] of cids) {
-        commit('attachment/resetUploadProgress', { cid }, { root: true })
+        for (const [cid] of cids) {
+          commit('attachment/resetUploadProgress', { cid }, { root: true })
+        }
+
+        throw err
       }
-
-      throw err
     }
 
     for (const [cid] of cids) {
@@ -919,6 +928,10 @@ const actions = {
 
     return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
       .then((res) => {
+        if (isAllNodesOfflineError(res)) {
+          throw new AllNodesOfflineError('ipfs')
+        }
+
         if (!res.success) {
           throw new Error(i18n.global.t('chats.message_rejected'))
         }
@@ -936,11 +949,37 @@ const actions = {
       })
       .catch((err) => {
         // update `message.status` to 'REJECTED'
-        commit('updateMessage', {
-          id: messageObject.id,
-          status: TS.REJECTED,
-          partnerId: recipientId
-        })
+        if (!isAllNodesOfflineError(err)) {
+          commit('updateMessage', {
+            id: messageObject.id,
+            status: TS.REJECTED,
+            partnerId: recipientId
+          })
+        } else {
+          const timeout = setTimeout(() => {
+            commit('updateMessage', {
+              id: messageObject.id,
+              status: TS.REJECTED,
+              partnerId: recipientId
+            })
+
+            commit('deletePendingMessage', messageObject.id)
+          }, +CryptosInfo.ADM.timeout.attachment)
+
+          commit('addPendingMessage', {
+            messageId: messageObject.id,
+            type: MessageType.RICH_CONTENT_MESSAGE,
+            recipientId,
+            timeout,
+            files
+          })
+
+          commit('updateMessage', {
+            id: messageObject.id,
+            status: TS.PENDING,
+            partnerId: recipientId
+          })
+        }
 
         throw err // call the error again so that it can be processed inside view
       })
@@ -989,18 +1028,115 @@ const actions = {
 
           return res
         })
-        .catch((err) => {
+        .catch((error) => {
+          if (!isAllNodesOfflineError(error)) {
+            commit('updateMessage', {
+              messageId,
+              status: TS.REJECTED,
+              partnerId: recipientId
+            })
+
+            commit('deletePendingMessage', messageId)
+          }
+
+          throw error
+        })
+    }
+
+    return Promise.reject(new Error('Message not found in history'))
+  },
+
+  /**
+   * Resend attachment, in case the connection fails at upload or at send.
+   * @param {string} recipientId
+   * @param {number} messageId
+   * @param {FileData[]} files
+   * @returns {Promise}
+   */
+  async resendAttachment({ getters, commit }, { recipientId, messageId, files }) {
+    const message = getters.partnerMessageById(recipientId, messageId)
+    if (!message) {
+      return Promise.reject(new Error('Message not found in history'))
+    }
+
+    const cidsOld = files.map((file) => [file.cid, file.preview?.cid]).filter(Boolean)
+    for (const [cid] of cidsOld) {
+      commit('attachment/resetUploadProgress', { cid }, { root: true })
+    }
+    commit('updateMessage', {
+      id: messageId,
+      status: TS.PENDING,
+      partnerId: recipientId
+    })
+
+    let uploadData
+    try {
+      uploadData = await uploadFiles(files, (progress) => {
+        for (const [cid] of cidsOld) {
+          commit('attachment/setUploadProgress', { cid, progress }, { root: true })
+        }
+      })
+    } catch (err) {
+      for (const [cid] of cidsOld) {
+        commit('attachment/resetUploadProgress', { cid }, { root: true })
+      }
+
+      if (!isAllNodesOfflineError(err)) {
+        commit('updateMessage', {
+          id: messageId,
+          status: TS.REJECTED,
+          partnerId: recipientId
+        })
+
+        commit('deletePendingMessage', messageId)
+
+        throw err
+      }
+    }
+
+    const newAsset = message.replyToId
+      ? {
+          replyto_id: message.replyToId,
+          reply_message: attachmentAsset(files, message.message, uploadData.cids)
+        }
+      : attachmentAsset(files, message.message, uploadData.cids)
+
+    commit('updateMessage', {
+      id: messageId,
+      asset: newAsset,
+      partnerId: recipientId
+    })
+
+    for (const [cid] of cidsOld) {
+      commit('attachment/resetUploadProgress', { cid }, { root: true })
+    }
+
+    return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
+      .then((res) => {
+        if (!res.success) {
+          throw new Error(i18n.global.t('chats.message_rejected'))
+        }
+        commit('updateMessage', {
+          id: messageId,
+          realId: res.transactionId,
+          status: TS.REGISTERED,
+          partnerId: recipientId
+        })
+        return res
+      })
+      .catch((err) => {
+        if (!isAllNodesOfflineError(err)) {
           commit('updateMessage', {
             id: messageId,
             status: TS.REJECTED,
             partnerId: recipientId
           })
 
-          throw err
-        })
-    }
+          commit('deletePendingMessage', messageId)
+        }
 
-    return Promise.reject(new Error('Message not found in history'))
+        throw err
+      })
   },
 
   /**
