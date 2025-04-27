@@ -81,7 +81,7 @@ const title = computed(() => {
     case 'Transaction':
       return (route.params.txId as string) || t('transaction.transactions')
     case 'SendFunds':
-      return t('home.send_btn')
+      return t('transfer.page_title')
 
     default:
       return t('options.page_title')

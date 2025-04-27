@@ -232,6 +232,7 @@
     "max_transfer": "Max to transfer",
     "no_address_text": "This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.",
     "no_address_title": "Recipient has no {crypto} wallet yet",
+    "page_title": "Send funds",
     "send_button": "Betrag senden",
     "to_address_label": "An die Adresse",
     "to_name_label": "To {name}"
