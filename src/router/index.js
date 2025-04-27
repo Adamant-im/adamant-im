@@ -184,8 +184,7 @@ const routes = [
 const router = createRouter({
   history:
     /**
-     * For GitHub Pages deployment only.
-     * If variable is not available in process environment, use from the `.env` file instead.
+     * Hash is for GitHub Pages deployment and Electron App build only.
      */
     import.meta.env.VITE_ROUTER_HISTORY_MODE === 'hash'
       ? createWebHashHistory()
