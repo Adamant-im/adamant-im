@@ -29,6 +29,8 @@ jobs:
         run: |
           npm run schema:generate
           npm run electron:build
+        env:
+          VITE_ROUTER_HISTORY_MODE: hash
 
       - name: Save artifacts
         uses: actions/upload-artifact@v4
