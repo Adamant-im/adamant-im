@@ -206,23 +206,20 @@ const togglePassphraseVisibility = () => {
     opacity: 0.62;
 
     &::before {
-      content: '';
       position: absolute;
       border-radius: 50%;
-      background-color: currentColor;
-      opacity: 0.12;
       width: 36px;
       height: 36px;
       top: -6px;
-      left: -7px;
+      left: -6px;
+      background-color: map.get(colors.$adm-colors, 'regular');
     }
 
     &:hover {
-      opacity: 1;
-    }
-
-    &:hover::before {
-      opacity: 0.2;
+      &:before {
+        transition: all 0.4s ease;
+        content: '';
+      }
     }
   }
   &__icons {
@@ -253,6 +250,10 @@ const togglePassphraseVisibility = () => {
         position: relative;
         fill: map.get(colors.$adm-colors, 'grey-transparent');
       }
+
+      &::before {
+        opacity: 0.3;
+      }
     }
   }
 }
@@ -267,6 +268,10 @@ const togglePassphraseVisibility = () => {
       :deep(.svg-icon) {
         position: relative;
         fill: map.get(colors.$adm-colors, 'black2');
+      }
+
+      &::before {
+        opacity: 0.06;
       }
     }
   }

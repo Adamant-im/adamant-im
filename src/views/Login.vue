@@ -93,7 +93,7 @@
         v-if="showQrcodeScanner"
         v-model="showQrcodeScanner"
         @scan="onScanQrcode"
-      />    
+      />
     </container>
   </v-row>
 </template>
@@ -237,9 +237,8 @@ export default defineComponent({
   }
   &__settings-button {
     &:hover> ::v-deep(.v-btn__overlay) {
-      opacity: 0.2;
-      transition: all 0.4s ease;
       display: block;
+      opacity: 0.06;
     }
   }
 }
@@ -248,12 +247,8 @@ export default defineComponent({
 .v-theme--light {
   .login-page {
     &__title,
-    &__subtitle{
+    &__subtitle {
       color: map.get(colors.$adm-colors, 'regular');
-    }
-
-    &__settings-button {
-      color: map.get(colors.$adm-colors, 'black2');
     }
 
     &__icon {
@@ -270,10 +265,10 @@ export default defineComponent({
   .login-page {
     &__icon {
       color: map.get(colors.$adm-colors, 'grey-transparent');
-      &:hover> :deep(.v-btn__overlay) {
-        color: #fff;
-        opacity: 0.2;
-        display: block;
+
+      &:hover {
+        color: map.get(colors.$adm-colors, 'secondary');
+        opacity: 1;
       }
     }
   }
