@@ -9,7 +9,6 @@ import { router } from './router'
 import { pinia } from '@/plugins/pinia'
 import store from './store/index.js'
 import { i18n } from './i18n'
-import VueFormatters from './lib/formatters'
 import packageJSON from '../package.json'
 import { vuetify } from '@/plugins/vuetify'
 import { registerGlobalComponents } from './plugins/layout'
@@ -32,7 +31,6 @@ app.use(pinia)
 app.use(i18n)
 app.use(vuetify)
 app.use(VueQueryPlugin)
-app.use(VueFormatters)
 app.directive('longpress', longPressDirective)
 
 registerGlobalComponents(app)

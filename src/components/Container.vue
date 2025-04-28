@@ -1,5 +1,5 @@
 <template>
-  <div :class="classes">
+  <div :class="classes" v-bind="$attrs">
     <slot />
   </div>
 </template>
@@ -12,13 +12,18 @@ export default defineComponent({
     padding: {
       type: Boolean,
       default: false
+    },
+    disableMaxWidth: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props) {
     const classes = computed(() => {
       return {
         'a-container': true,
-        'a-container--padding': props.padding
+        'a-container--padding': props.padding,
+        'a-container--no-mw': props.disableMaxWidth
       }
     })
 
@@ -37,6 +42,10 @@ export default defineComponent({
   width: 100%;
   max-width: 800px;
   position: relative;
+
+  &--no-mw {
+    max-width: unset;
+  }
 
   &--padding {
     padding: 0 24px;
