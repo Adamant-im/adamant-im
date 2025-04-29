@@ -204,8 +204,10 @@ const togglePassphraseVisibility = () => {
   &__icon {
     position: relative;
     opacity: 0.62;
+    transition: all 0.4s ease;
 
     &::before {
+      content: '';
       position: absolute;
       border-radius: 50%;
       width: 36px;
@@ -213,13 +215,12 @@ const togglePassphraseVisibility = () => {
       top: -6px;
       left: -6px;
       background-color: map.get(colors.$adm-colors, 'regular');
+      opacity: 0;
+      transition: all 0.4s ease;
     }
 
     &:hover {
-      &:before {
-        transition: all 0.4s ease;
-        content: '';
-      }
+      opacity: 1;
     }
   }
   &__icons {
@@ -246,13 +247,22 @@ const togglePassphraseVisibility = () => {
 .v-theme--dark {
   .passphrase-generator {
     &__icon {
-      :deep(.svg-icon) {
+      :deep(.svg-icon),
+      :deep(.v-icon__svg) {
         position: relative;
         fill: map.get(colors.$adm-colors, 'grey-transparent');
       }
 
-      &::before {
-        opacity: 0.3;
+      &:hover {
+        :deep(.svg-icon),
+        :deep(.v-icon__svg) {
+          fill: #fff;
+          opacity: 1;
+        }
+
+        &:before {
+          opacity: 0.3;
+        }
       }
     }
   }
@@ -265,13 +275,21 @@ const togglePassphraseVisibility = () => {
     }
 
     &__icon {
-      :deep(.svg-icon) {
+      :deep(.svg-icon),
+      :deep(.v-icon__svg) {
         position: relative;
         fill: map.get(colors.$adm-colors, 'black2');
       }
 
-      &::before {
-        opacity: 0.06;
+      &:hover {
+        :deep(.svg-icon),
+        :deep(.v-icon__svg) {
+          fill: map.get(colors.$adm-colors, 'black');
+        }
+
+        &:before {
+          opacity: 0.12;
+        }
       }
     }
   }
