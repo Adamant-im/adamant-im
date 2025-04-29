@@ -1,5 +1,5 @@
 <template>
-  <v-row justify="center" no-gutters :class="className">
+  <v-row justify="center" no-gutters :class="`${className} pa-4`">
     <container>
       <div :class="`${className}__buttons`">
         <div class="text-right">
