@@ -1,7 +1,7 @@
 <template>
   <div v-if="showPlaceholder || isGettingPublicKey || isKeyMissing" :class="classes.root">
     <div v-if="showPlaceholder && !isKeyMissing" :class="classes.container">
-      <v-img :src="logo" :class="classes.logo" />
+      <img :src="logo" :class="classes.logo" alt="logo" />
       <p v-for="key in keys" :key="key" :class="classes.row">
         {{ t(`chats.placeholder.${key}`) }}
       </p>
@@ -57,20 +57,21 @@ function openLink() {
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/components/_chat.scss';
 @use 'vuetify/settings';
 
 .chat-placeholder {
   display: flex;
   flex-direction: column;
-  row-gap: 10px;
+  row-gap: 16px;
   width: 100%;
   margin-bottom: 16px;
 
   &__container {
     margin: auto;
     display: flex;
-    width: fit-content;
     flex-direction: column;
+    height: chat.$placeholder-height;
     justify-content: flex-start;
     align-items: center;
     row-gap: 5px;
@@ -79,6 +80,7 @@ function openLink() {
     border-radius: 8px;
 
     &_public-key {
+      height: auto;
       flex-direction: row;
       column-gap: 8px;
     }
@@ -96,6 +98,7 @@ function openLink() {
 
   &__logo {
     width: 100px;
+    height: 100px;
   }
 }
 

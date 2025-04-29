@@ -10,7 +10,7 @@
           <v-progress-circular
             v-show="loading"
             indeterminate
-            :class="classes.spinner"
+            :class="[classes.spinner, !messages.length ? `${classes.spinner}_no-messages` : '']"
             :size="20"
             style="z-index: 100"
           />
@@ -253,6 +253,17 @@ defineExpose({
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/components/_chat.scss';
+
+.a-chat {
+  &__spinner {
+    margin-top: 26px;
+
+    &_no-messages {
+      margin-top: chat.$placeholder-height + 16px;
+    }
+  }
+}
 
 /** Themes **/
 .v-theme--light {

@@ -92,6 +92,7 @@
 
       <template #placeholder>
         <chat-placeholder
+          v-if="!isWelcomeChat(partnerId)"
           :show-placeholder="showNewChatPlaceholder"
           :is-getting-public-key="isGettingPublicKey"
           :is-key-missing="isKeyMissing"
