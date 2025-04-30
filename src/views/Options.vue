@@ -189,15 +189,16 @@
 </template>
 
 <script>
+import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant } from '@mdi/js'
+
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import CurrencySwitcher from '@/components/CurrencySwitcher.vue'
 import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
-import scrollPosition from '@/mixins/scrollPosition'
 import { resetPinia } from '@/plugins/pinia'
-import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant } from '@mdi/js'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
 import { useSavedScroll } from '@/hooks/useSavedScroll'
+import { nextTick } from 'vue'
 
 export default {
   components: {
@@ -206,7 +207,13 @@ export default {
     CurrencySwitcher,
     PasswordSetDialog
   },
-  mixins: [scrollPosition],
+  props: {
+    sidebarLayoutRef: {
+      type: Object,
+      required: false,
+      default: null
+    }
+  },
   setup() {
     const { hasView } = useSavedScroll()
 
@@ -220,6 +227,19 @@ export default {
   data: () => ({
     passwordDialog: false
   }),
+  mounted() {
+    nextTick(() => {
+      if (this.sidebarLayoutRef) {
+        const scrollTopValue = Number(localStorage.getItem('optionsScrollTop')) || 0
+        this.sidebarLayoutRef.scrollTo({
+          top: scrollTopValue
+        })
+      }
+    })
+  },
+  beforeUnmount() {
+    localStorage.setItem('optionsScrollTop', this.sidebarLayoutRef?.scrollTop || 0)
+  },
   computed: {
     className: () => 'settings-view',
     stayLoggedIn() {
@@ -315,11 +335,23 @@ export default {
         value: true
       })
     },
+    onKeydownHandler(e) {
+      if (e.key === 'Escape') {
+        if (this.passwordDialog) {
+          e.stopPropagation()
+          this.passwordDialog = false
+
+          window.removeEventListener('keydown', this.onKeydownHandler, true)
+        }
+      }
+    },
     onCheckStayLoggedIn() {
       if (!this.stayLoggedIn) {
         isIDBSupported
           .then(() => {
             this.passwordDialog = true
+
+            window.addEventListener('keydown', this.onKeydownHandler, true)
           })
           .catch(() => {
             this.$store.dispatch('snackbar/show', {

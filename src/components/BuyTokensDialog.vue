@@ -104,6 +104,9 @@ export default {
     }
   },
   methods: {
+    closeDialog() {
+      this.show = false
+    },
     openLink(link) {
       if (link.startsWith('U')) {
         this.$router.push({
@@ -113,6 +116,8 @@ export default {
       } else {
         window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
       }
+
+      this.closeDialog()
     }
   }
 }

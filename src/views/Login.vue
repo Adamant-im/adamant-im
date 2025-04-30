@@ -1,98 +1,103 @@
 <template>
-  <v-row justify="center" no-gutters :class="`${className} pa-4`">
-    <container>
-      <div :class="`${className}__buttons`">
-        <div class="text-right">
-          <language-switcher :prepend-icon="mdiChevronRight" />
-        </div>
-        <div :class="`${className}__settings-button`">
-          <v-btn @click="$router.push('/options/nodes')" icon variant="plain" :size="32">
-            <v-icon :icon="mdiCog" />
-          </v-btn>
-        </div>
-      </div>
-
-      <v-sheet class="text-center mt-4" color="transparent">
-        <logo style="width: 300px" />
-
-        <h1 :class="`${className}__title`">
-          {{ t('login.brand_title') }}
-        </h1>
-        <h2 :class="`${className}__subtitle`" class="hidden-sm-and-down mt-4">
-          {{ t('login.subheader') }}
-        </h2>
-      </v-sheet>
-
-      <v-sheet v-if="!isLoginViaPassword" class="text-center mt-4" color="transparent">
-        <v-row justify="center" no-gutters>
-          <v-col sm="8" md="8" lg="8">
-            <login-form
-              ref="loginForm"
-              v-model="passphrase"
-              @login="onLogin"
-              @error="onLoginError"
-            />
-          </v-col>
-        </v-row>
-
-        <v-row justify="center" class="mt-4" no-gutters>
-          <v-col cols="auto">
-            <v-btn
-              class="ma-2"
-              :title="t('login.scan_qr_code_button_tooltip')"
-              icon
-              variant="text"
-              size="x-small"
-              :class="`${className}__icon`"
-              @click="showQrcodeScanner = true"
-            >
-              <icon><qr-code-scan-icon /></icon>
+  <component :is="layout">
+    <v-row justify="center" no-gutters :class="className">
+      <container>
+        <div :class="`${className}__buttons`">
+          <div class="text-right">
+            <language-switcher :prepend-icon="mdiChevronRight" />
+          </div>
+          <div :class="`${className}__settings-button`">
+            <v-btn @click="$router.push('/options/nodes')" icon variant="plain" :size="32">
+              <v-icon :icon="mdiCog" />
             </v-btn>
-          </v-col>
+          </div>
+        </div>
 
-          <v-col cols="auto">
-            <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
+        <v-sheet class="text-center mt-4" color="transparent">
+          <logo style="width: 300px" />
+
+          <h1 :class="`${className}__title`">
+            {{ t('login.brand_title') }}
+          </h1>
+          <h2 :class="`${className}__subtitle`" class="hidden-sm-and-down mt-4">
+            {{ t('login.subheader') }}
+          </h2>
+        </v-sheet>
+
+        <v-sheet v-if="!isLoginViaPassword" class="text-center mt-4" color="transparent">
+          <v-row justify="center" no-gutters>
+            <v-col sm="8" md="8" lg="8">
+              <login-form
+                ref="loginForm"
+                v-model="passphrase"
+                @login="onLogin"
+                @error="onLoginError"
+              />
+            </v-col>
+          </v-row>
+
+          <v-row justify="center" class="mt-4" no-gutters>
+            <v-col cols="auto">
               <v-btn
                 class="ma-2"
-                :title="t('login.login_by_qr_code_tooltip')"
+                :title="t('login.scan_qr_code_button_tooltip')"
                 icon
                 variant="text"
                 size="x-small"
                 :class="`${className}__icon`"
+                @click="showQrcodeScanner = true"
               >
-                <icon><file-icon /></icon>
+                <icon><qr-code-scan-icon /></icon>
               </v-btn>
-            </qrcode-capture>
-          </v-col>
-        </v-row>
-      </v-sheet>
+            </v-col>
 
-      <v-row v-if="!isLoginViaPassword" justify="center" class="mt-8">
-        <v-col sm="8" md="8" lg="8">
-          <passphrase-generator @copy="onCopyPassphrase" />
-        </v-col>
-      </v-row>
+            <v-col cols="auto">
+              <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
+                <v-btn
+                  class="ma-2"
+                  :title="t('login.login_by_qr_code_tooltip')"
+                  icon
+                  variant="text"
+                  size="x-small"
+                  :class="`${className}__icon`"
+                >
+                  <icon><file-icon /></icon>
+                </v-btn>
+              </qrcode-capture>
+            </v-col>
+          </v-row>
+        </v-sheet>
 
-      <v-sheet v-if="isLoginViaPassword" class="text-center mt-6" color="transparent">
-        <v-row no-gutters justify="center">
+        <v-row v-if="!isLoginViaPassword" justify="center" class="mt-8">
           <v-col sm="8" md="8" lg="8">
-            <login-password-form v-model="password" @login="onLogin" @error="onLoginError" />
+            <passphrase-generator @copy="onCopyPassphrase" />
           </v-col>
         </v-row>
-      </v-sheet>
 
-      <qrcode-scanner-dialog
-        v-if="showQrcodeScanner"
-        v-model="showQrcodeScanner"
-        @scan="onScanQrcode"
-      />
-    </container>
-  </v-row>
+        <v-sheet v-if="isLoginViaPassword" class="text-center mt-6" color="transparent">
+          <v-row no-gutters justify="center">
+            <v-col sm="8" md="8" lg="8">
+              <login-password-form v-model="password" @login="onLogin" @error="onLoginError" />
+            </v-col>
+          </v-row>
+        </v-sheet>
+
+        <qrcode-scanner-dialog
+          v-if="showQrcodeScanner"
+          v-model="showQrcodeScanner"
+          @scan="onScanQrcode"
+        />
+      </container>
+    </v-row>
+  </component>
 </template>
 
 <script>
 import { nextTick, defineComponent, computed, ref } from 'vue'
 import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
+import { mdiCog, mdiChevronRight } from '@mdi/js'
+import { useRoute } from 'vue-router'
 
 import QrcodeCapture from '@/components/QrcodeCapture.vue'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
@@ -105,8 +110,6 @@ import FileIcon from '@/components/icons/common/File.vue'
 import LoginPasswordForm from '@/components/LoginPasswordForm.vue'
 import Logo from '@/components/icons/common/Logo.vue'
 import { navigateByURI } from '@/router/navigationGuard'
-import { useI18n } from 'vue-i18n'
-import { mdiCog, mdiChevronRight } from '@mdi/js'
 
 export default defineComponent({
   components: {
@@ -127,11 +130,14 @@ export default defineComponent({
     const showQrcodeScanner = ref(false)
     const logo = '/img/adamant-logo-transparent-512x512.png'
     const store = useStore()
+    const route = useRoute()
     const { t } = useI18n()
     const className = 'login-page'
     const loginForm = ref(null)
 
     const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
+
+    const layout = computed(() => route.meta.layout || 'default')
 
     const onDetectQrcode = (passphrase) => {
       onScanQrcode(passphrase)
@@ -181,6 +187,7 @@ export default defineComponent({
       loginForm,
       mdiCog,
       mdiChevronRight,
+      layout,
       onDetectQrcode,
       onDetectQrcodeError,
       onLogin,

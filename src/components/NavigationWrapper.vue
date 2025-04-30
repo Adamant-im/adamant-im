@@ -34,6 +34,7 @@
     </v-container>
   </div>
 </template>
+
 <script setup lang="ts">
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import { computed, useSlots } from 'vue'
