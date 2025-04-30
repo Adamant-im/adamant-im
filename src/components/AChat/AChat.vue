@@ -147,7 +147,7 @@ const maintainScrollPosition = () => {
 }
 
 const scrollToBottom = () => {
-  if (messagesRef.value) {
+  if (messagesRef.value && messagesRef.value.scrollHeight) {
     messagesRef.value.scrollTop = messagesRef.value.scrollHeight
   }
 }
@@ -260,7 +260,7 @@ defineExpose({
     margin-top: 26px;
 
     &_no-messages {
-      margin-top: chat.$placeholder-height + 16px;
+      margin-top: chat.$placeholder-height + 42px;
     }
   }
 }

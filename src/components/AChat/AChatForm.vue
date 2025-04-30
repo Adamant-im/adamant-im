@@ -44,7 +44,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import ChatEmojis from '@/components/Chat/ChatEmojis.vue'
 import { isMobile } from '@/lib/display-mobile'
 import { mdiSend } from '@mdi/js'
@@ -153,6 +153,17 @@ onMounted(() => {
 onBeforeUnmount(() => {
   destroyKeyCommandListener()
 })
+
+watch(
+  () => props.shouldDisableInput,
+  (newVal) => {
+    nextTick(() => {
+      if (!newVal && !isInputFocused.value) {
+        messageTextarea.value.focus()
+      }
+    })
+  }
+)
 
 const attachKeyCommandListener = () => {
   window.addEventListener('keydown', onKeyCommand)

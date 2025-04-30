@@ -423,6 +423,7 @@ const chatPage = computed<number>(() => store.getters['chat/chatPage'](props.par
 const scrollPosition = computed<number | false>(() =>
   store.getters['chat/scrollPosition'](props.partnerId)
 )
+
 const numOfNewMessages = computed<number>(() =>
   store.getters['chat/numOfNewMessages'](props.partnerId)
 )

@@ -293,15 +293,12 @@ const loadChatsPaged = () => {
   if (loading.value || noMoreChats.value) return
 
   loading.value = true
-  store
-    .dispatch('chat/loadChatsPaged')
-    .catch(() => {
+  store.dispatch('chat/loadChatsPaged').finally(() => {
+    if (store.state.chat.offset === -1) {
       noMoreChats.value = true
-    })
-    .finally(() => {
-      loading.value = false
-      onScroll() // update messages and remove loadingSeparator, if needed
-    })
+    }
+    loading.value = false
+  })
 }
 
 const messagesCount = (partnerId: string) => {
