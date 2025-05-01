@@ -598,13 +598,15 @@ const actions = {
 
     return admApi
       .getChatRooms(rootState.address, { offset, limit: perPage })
-      .then(({ messages }) => {
-        dispatch('pushMessages', messages)
+      .then(({ messages, count }) => {
+        if (count && Number(count) > 0) {
+          dispatch('pushMessages', messages)
 
-        if (messages.length <= 0) {
-          commit('setOffset', -1)
-        } else {
-          commit('setOffset', offset + perPage)
+          if (messages.length <= 0) {
+            commit('setOffset', -1)
+          } else {
+            commit('setOffset', offset + perPage)
+          }
         }
       })
   },

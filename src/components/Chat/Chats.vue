@@ -81,21 +81,13 @@ import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
 import { useRoute, useRouter } from 'vue-router'
-import {
-  computed,
-  onActivated,
-  onBeforeMount,
-  onBeforeUnmount,
-  onDeactivated,
-  onMounted,
-  ref,
-  watch
-} from 'vue'
+import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, watch } from 'vue'
 import { useChatStateStore } from '@/stores/chat-state'
 import { storeToRefs } from 'pinia'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { useChatsSpinner } from '@/hooks/useChatsSpinner'
+import { computedEager } from '@vueuse/core'
 
 const scrollOffset = 64
 
@@ -131,9 +123,9 @@ const { setShowChatStartDialog } = chatStateStore
 const lastPartnerId = ref<string | null>(null)
 const savedRoute = ref(null)
 const loading = ref(false)
-const noMoreChats = ref(false)
 const loadingSeparator = ref<InstanceType<typeof ChatPreview>[]>([])
 
+const noMoreChats = computedEager(() => store.getters['chat/chatListOffset'] === -1)
 const chatPagePartnerId = computed(() => {
   // We assume partnerId to always be a string
   return route.params.partnerId as string
@@ -182,10 +174,6 @@ onDeactivated(() => {
   if (history.state.back.includes('/chats/')) {
     savedRoute.value = history.state.back
   }
-})
-
-onBeforeMount(() => {
-  noMoreChats.value = store.getters['chat/chatListOffset'] === -1
 })
 
 onMounted(() => {
@@ -294,9 +282,6 @@ const loadChatsPaged = () => {
 
   loading.value = true
   store.dispatch('chat/loadChatsPaged').finally(() => {
-    if (store.state.chat.offset === -1) {
-      noMoreChats.value = true
-    }
     loading.value = false
   })
 }
