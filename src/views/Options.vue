@@ -124,13 +124,38 @@
           </div>
         </v-col>
         <v-col cols="12" class="mt-6">
-          <v-checkbox
-            v-model="allowPushNotifications"
-            :label="$t('options.enable_push')"
-            color="grey darken-1"
-            density="comfortable"
-            hide-details
-          />
+          <v-row no-gutters class="my-0">
+            <v-col cols="6" class="d-flex">
+              <v-checkbox
+                :model-value="isAllowNotifications"
+                @update:model-value="handleNotificationsCheckbox"
+                :label="$t('options.notification_title')"
+                color="grey darken-1"
+                density="comfortable"
+                hide-details
+              />
+              <v-tooltip
+                :text="infoText"
+                location="end"
+                :max-width="520"
+                :class="`${className}__info-tooltip`"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-icon v-bind="props" :icon="mdiInformation" />
+                </template>
+              </v-tooltip>
+            </v-col>
+            <v-col cols="6" :class="`${className}__notifications-col`" class="my-0">
+              <v-select
+                :model-value="allowNotificationType"
+                @update:model-value="handleSelectedNotificationValue"
+                :items="notificationItems"
+                variant="underlined"
+                :disabled="addressReadonly"
+                :menu-icon="addressReadonly ? '' : mdiMenuDown"
+              />
+            </v-col>
+          </v-row>
 
           <div class="a-text-explanation-enlarged">
             {{ $t('options.enable_push_tooltip') }}
@@ -189,13 +214,27 @@
 </template>
 
 <script>
+/* eslint-disable */
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import CurrencySwitcher from '@/components/CurrencySwitcher.vue'
 import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
+import { sendSignalMessage } from '@/lib/adamant-api'
+import { signalAsset } from '@/lib/adamant-api/asset'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import scrollPosition from '@/mixins/scrollPosition'
 import { resetPinia } from '@/plugins/pinia'
-import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant } from '@mdi/js'
+import {
+  mdiChevronRight,
+  mdiChevronDown,
+  mdiLogoutVariant,
+  mdiMenuDown,
+  mdiInformation
+} from '@mdi/js'
+
+import { fcm, getDeviceId } from '@/firebase'
+import { getToken } from 'firebase/messaging'
+import { requestToken, revokeToken } from '@/notifications'
+import { VAPID_KEY, notificationType } from '@/lib/constants'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
 import { useSavedScroll } from '@/hooks/useSavedScroll'
 
@@ -214,12 +253,22 @@ export default {
       hasView,
       mdiChevronDown,
       mdiChevronRight,
-      mdiLogoutVariant
+      mdiLogoutVariant,
+      mdiMenuDown,
+      mdiInformation
     }
   },
-  data: () => ({
-    passwordDialog: false
-  }),
+  data: function () {
+    return {
+      passwordDialog: false,
+      notificationItems: [
+        { title: 'No Notifications', value: notificationType['No Notifications'] },
+        { title: 'Background Fetch', value: notificationType['Background Fetch'] },
+        { title: 'Push', value: notificationType['Push'] }
+      ],
+      infoText: this.$t('options.notifications_info')
+    }
+  },
   computed: {
     className: () => 'settings-view',
     stayLoggedIn() {
@@ -280,13 +329,24 @@ export default {
         })
       }
     },
-    allowPushNotifications: {
+    isAllowNotifications: {
       get() {
-        return this.$store.state.options.allowPushNotifications
+        return this.$store.state.options.isAllowNotifications
       },
       set(value) {
         this.$store.commit('options/updateOption', {
-          key: 'allowPushNotifications',
+          key: 'isAllowNotifications',
+          value
+        })
+      }
+    },
+    allowNotificationType: {
+      get() {
+        return this.$store.state.options.allowNotificationType
+      },
+      set(value) {
+        this.$store.commit('options/updateOption', {
+          key: 'allowNotificationType',
           value
         })
       }
@@ -308,7 +368,105 @@ export default {
       return this.$store.getters['options/isLoginViaPassword']
     }
   },
+  watch: {
+    isAllowNotifications(checked) {
+      const selectedNotificationType = this.allowNotificationType
+      switch (selectedNotificationType) {
+        case notificationType['Push']:
+          checked ? this.setPushNotifications(true) : this.setPushNotifications(false)
+          break
+        default:
+          break
+      }
+    },
+    allowNotificationType(newVal, oldVal) {
+      if (!this.isAllowNotifications) return
+      const isNotPushNotification =
+        newVal === notificationType['No Notifications'] ||
+        newVal === notificationType['Background Fetch']
+      if (isNotPushNotification && oldVal === notificationType['Push'])
+        this.setPushNotifications(false)
+      if (newVal === notificationType['Push']) this.setPushNotifications(true)
+    }
+  },
   methods: {
+    handleNotificationsCheckbox(checked) {
+      this.isAllowNotifications = !!checked
+    },
+    handleSelectedNotificationValue(value) {
+      this.allowNotificationType = value
+    },
+    async setPushNotifications(checked) {
+      const deviceId = await getDeviceId()
+      let token
+      if (checked) {
+        token = await this.registerCustomWorker()
+        if (!token) {
+          this.$store.dispatch('snackbar/show', {
+            message: 'Unable to retrieve FCM token',
+            timeout: 5000
+          })
+          return
+        }
+
+        const result = await sendSignalMessage(signalAsset(deviceId, token, 'FCM', 'add'))
+
+        if (!result.success) {
+          this.$store.dispatch('snackbar/show', {
+            message: 'Send signal message transaction failed',
+            timeout: 5000
+          })
+          return
+        }
+
+        this.$store.dispatch('snackbar/show', {
+          message: 'Successfully subscribed to push notifications',
+          timeout: 5000
+        })
+      } else {
+        if (!token) token = await requestToken()
+        const result = await sendSignalMessage(signalAsset(deviceId, token, 'FCM', 'remove'))
+
+        if (!result.success) {
+          this.$store.dispatch('snackbar/show', {
+            message: 'Send signal message transaction failed',
+            timeout: 5000
+          })
+          return
+        }
+
+        const revoked = await revokeToken()
+        if (!revoked) {
+          this.$store.dispatch('snackbar/show', {
+            message: 'Unable to revoke FCM token',
+            timeout: 5000
+          })
+          return
+        }
+
+        this.$store.dispatch('snackbar/show', {
+          message: 'Successfully unsubscribed from push notifications',
+          timeout: 5000
+        })
+      }
+    },
+    async registerCustomWorker() {
+      try {
+        const worker = await navigator.serviceWorker.register(
+          import.meta.env.MODE === 'production' ? '/firebase-messagin-sw.js' : '/dev-sw.js?dev-sw',
+          {
+            type: import.meta.env.MODE === 'production' ? 'classic' : 'module'
+          }
+        )
+        const token = await getToken(fcm, {
+          vapidKey: VAPID_KEY,
+          serviceWorkerRegistration: worker
+        })
+        return token
+      } catch (error) {
+        console.log('🚀 ~ Options.vue:472 ~ registerCustomWorker ~ error:', error)
+      }
+    },
     onSetPassword() {
       this.$store.commit('options/updateOption', {
         key: 'stayLoggedIn',
@@ -418,6 +576,18 @@ export default {
   }
   :deep(.v-checkbox) {
     margin-left: -8px;
+  }
+  &__info-tooltip {
+    white-space: break-spaces;
+    :deep(.v-overlay__content) {
+      padding-top: 24px;
+      color: white;
+      background-color: map.get(colors.$adm-colors, 'regular');
+    }
+  }
+  &__notifications-col {
+    height: 60px;
+    margin-top: -10px !important;
   }
 }
 

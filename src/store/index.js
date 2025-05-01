@@ -18,6 +18,7 @@ import localStoragePlugin from './plugins/localStorage'
 import indexedDbPlugin from './plugins/indexedDb'
 import navigatorOnline from './plugins/navigatorOnline'
 import socketsPlugin from './plugins/socketsPlugin'
+import userKeysPlugin from './plugins/userKeys'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
 import attachmentModule from './modules/attachment'
@@ -64,6 +65,7 @@ const store = {
     passphrase: '',
     password: '',
     publicKeys: {},
+    myPK: '',
     isOnline: true
   }),
   getters: {
@@ -71,6 +73,7 @@ const store = {
     isOnline: (state) => state.isOnline,
     getPassPhrase: (state) => state.passphrase, // compatibility getter for ERC20 modules
     publicKey: (state) => (adamantAddress) => state.publicKeys[adamantAddress],
+    getMyPK: (state) => state.myPK,
     isAccountNew: (state) =>
       function () {
         /*
@@ -124,6 +127,9 @@ const store = {
     },
     setPublicKey(state, { adamantAddress, publicKey }) {
       state.publicKeys[adamantAddress] = publicKey
+    },
+    setMyPK(state, value) {
+      state.myPK = value
     },
     setIsOnline(state, value) {
       state.isOnline = value
@@ -279,9 +285,7 @@ const storeInstance = createStore(store)
 window.store = storeInstance
 
 // Need to init persistence plugin before other, because they use info from wallets
-registerVuexPlugins(storeInstance, [
-  walletsPersistencePlugin,
-])
+registerVuexPlugins(storeInstance, [walletsPersistencePlugin])
 
 registerCryptoModules(storeInstance)
 registerVuexPlugins(storeInstance, [
@@ -292,7 +296,9 @@ registerVuexPlugins(storeInstance, [
   navigatorOnline,
   socketsPlugin,
   botCommandsPlugin,
-  servicesPlugin
+  walletsPersistencePlugin,
+  servicesPlugin,
+  userKeysPlugin
 ])
 
 export { store } // for tests

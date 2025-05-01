@@ -239,3 +239,12 @@ export function attachmentAsset(
     storage: { id: 'ipfs' }
   }
 }
+
+export function signalAsset(deviceId: string, token: string, provider: string, action: string) {
+  return {
+    deviceId,
+    token,
+    provider,
+    action
+  }
+}
