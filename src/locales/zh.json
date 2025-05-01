@@ -344,6 +344,7 @@
     "no_address_title": "R收件人还没有 {crypto} 钱包",
     "legacy_address_text": "此用户有一个旧的 {crypto} 钱包。他们必须登录Messenger，余额超过 0.001 ADM才能更新 {crypto} 的钱包地址",
     "legacy_address_title": "收件人还有一个旧的 {crypto} 钱包",
+    "page_title": "发送资金",
     "send_button": "发送",
     "to_address_label": "收件人",
     "to_name_label": "收件人 {name}",
