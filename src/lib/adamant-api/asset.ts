@@ -224,7 +224,7 @@ export function attachmentAsset(
         name,
         extension,
         resolution,
-        duration: undefined,
+        duration: undefined, // @todo check if is a video or audio file
         size: file.size,
         id: fileCid,
         nonce: encoded.nonce,
