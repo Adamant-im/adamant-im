@@ -183,9 +183,6 @@ const routes = [
 
 const router = createRouter({
   history:
-    /**
-     * Hash is for GitHub Pages deployment and Electron App build only.
-     */
     import.meta.env.VITE_ROUTER_HISTORY_MODE === 'hash'
       ? createWebHashHistory()
       : createWebHistory(),
