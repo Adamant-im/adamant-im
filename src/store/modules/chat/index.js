@@ -552,6 +552,10 @@ const mutations = {
     state.chats = {}
     state.lastMessageHeight = 0
     state.isFulfilled = false
+    state.offset = 0
+    state.noActiveNodesDialog = undefined
+    state.newChats = {}
+    state.chatsActualUntil = 0
   }
 }
 
@@ -598,15 +602,13 @@ const actions = {
 
     return admApi
       .getChatRooms(rootState.address, { offset, limit: perPage })
-      .then(({ messages, count }) => {
-        if (count && Number(count) > 0) {
-          dispatch('pushMessages', messages)
+      .then(({ messages }) => {
+        dispatch('pushMessages', messages)
 
-          if (messages.length <= 0) {
-            commit('setOffset', -1)
-          } else {
-            commit('setOffset', offset + perPage)
-          }
+        if (messages.length <= 0) {
+          commit('setOffset', -1)
+        } else {
+          commit('setOffset', offset + perPage)
         }
       })
   },
