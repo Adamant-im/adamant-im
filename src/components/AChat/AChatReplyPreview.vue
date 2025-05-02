@@ -29,7 +29,7 @@ import { useStore } from 'vuex'
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 import { Cryptos } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
-import { formatMessage } from '@/lib/markdown'
+import { formatChatPreviewMessage } from '@/lib/markdown'
 import { mdiClose } from '@mdi/js'
 import type { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 
@@ -73,7 +73,7 @@ const cryptoTransferLabel = computed(() => {
 
 const messageLabel = computed(() => {
   return store.state.options.formatMessages
-    ? formatMessage(props.message.message)
+    ? formatChatPreviewMessage(props.message.message)
     : props.message.message
 })
 </script>
