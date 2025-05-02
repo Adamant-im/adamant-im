@@ -201,28 +201,30 @@ export interface AttachmentAsset {
  * AIP-18: https://github.com/Adamant-im/AIPs/pull/54/files
  * @param {Array<FileData>} files
  * @param {string} [comment] Optional comment associated with the transaction
- * @param {Array<[string, string]>} [cids] List of files IDs after uploading to IPFS. First element is the ID of original file, second is ID of preview.
+ * @param {Array<[string]>} [cids] List of files IDs after uploading to IPFS. ID of original file and ID of preview go one by one.
  */
 export function attachmentAsset(
   files: FileData[],
   comment?: string,
-  cids?: [string, string]
+  cids?: string[]
 ): AttachmentAsset {
   return {
-    files: files.map(({ file, width, height, cid, preview, encoded }) => {
+    files: files.map(({ file, width, height, cid, preview, encoded }, index) => {
+      const cidsChunk = index * 2
+
       const name = extractFileName(file.name)
       const extension = extractFileExtension(file.name)!
       const resolution: FileAsset['resolution'] = width && height ? [width, height] : undefined
 
-      const fileCid = cids?.[0] || cid
-      const previewCid = cids?.[1] || preview?.cid
+      const fileCid = (cids && cids[cidsChunk]) || cid
+      const previewCid = (cids && cids[cidsChunk + 1]) || preview?.cid
 
       return {
         mimeType: file.type,
         name,
         extension,
         resolution,
-        duration: undefined, // @todo check if is a video or audio file
+        duration: undefined,
         size: file.size,
         id: fileCid,
         nonce: encoded.nonce,

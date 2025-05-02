@@ -16,13 +16,25 @@ export function useResendPendingMessages() {
   const store = useStore()
 
   const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
-  const admNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
+  const ipfsNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/ipfs'])
+  const admNodesOnline = computed<NodeStatusResult[]>(() =>
+    admNodes.value.some((node) => node.status === 'online')
+  )
+  const ipfsNodesOnline = computed<NodeStatusResult[]>(() =>
+    ipfsNodes.value.some((node) => node.status === 'online')
+  )
   const pendingMessages = computed<Record<string, PendingMessage>>(
     () => store.state.chat.pendingMessages
   )
 
-  watchImmediate(admNodesOnline, (online) => {
-    if (!online) return
+  watchImmediate([admNodesOnline, ipfsNodesOnline], ([admOnline, ipfsOnline]) => {
+    const hasMessagesWithFiles = Object.values(pendingMessages.value).some(
+      (message) => message.files && message.files.length > 0
+    )
+
+    const isReady = hasMessagesWithFiles ? admOnline && ipfsOnline : admOnline
+
+    if (!isReady) return
 
     Object.entries(pendingMessages.value).forEach(([messageId, message]) => {
       ;(message.type === MessageType.BASIC_ENCRYPTED_MESSAGE

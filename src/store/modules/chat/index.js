@@ -900,6 +900,7 @@ const actions = {
       newAsset = replyToId
         ? { replyto_id: replyToId, reply_message: attachmentAsset(files, message, uploadData.cids) }
         : attachmentAsset(files, message, uploadData.cids)
+
       commit('updateMessage', {
         id: messageObject.id,
         partnerId: recipientId,
