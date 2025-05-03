@@ -7,8 +7,8 @@
         autocomplete="new-password"
         autofocus
         :class="classes.textField"
-        :label="$t('login_via_password.user_password_title')"
-        :name="Date.now()"
+        :label="t('login_via_password.user_password_title')"
+        :name="Date.now().toString()"
         :type="showPassword ? 'text' : 'password'"
         variant="underlined"
       >
@@ -31,25 +31,25 @@
               size="24"
               class="mr-4"
             />
-            {{ $t('login_via_password.user_password_unlock') }}
+            {{ t('login_via_password.user_password_unlock') }}
           </v-btn>
         </slot>
       </v-col>
       <v-col cols="12" class="a-text-regular mt-8">
-        {{ $t('login_via_password.remove_password_hint') }}
+        {{ t('login_via_password.remove_password_hint') }}
       </v-col>
       <v-col cols="12">
         <v-btn class="a-btn-link" variant="text" size="small" @click="removePassword">
-          {{ $t('login_via_password.remove_password') }}
+          {{ t('login_via_password.remove_password') }}
         </v-btn>
       </v-col>
     </v-row>
   </v-form>
 </template>
 
-<script>
+<script lang="ts" setup>
 import { isAxiosError } from 'axios'
-import { computed, defineComponent, ref, useTemplateRef } from 'vue'
+import { computed, ref, useTemplateRef } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
@@ -59,95 +59,86 @@ import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/uti
 import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useSaveCursor } from '@/hooks/useSaveCursor'
 
+type Props = {
+  modelValue: string
+}
+
 const className = 'login-form'
 const classes = {
   root: className,
   textField: `${className}__textfield`
 }
 
-export default defineComponent({
-  props: {
-    modelValue: {
-      type: String,
-      default: ''
-    }
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: ''
+})
+
+const emit = defineEmits<{
+  (e: 'login'): void
+  (e: 'error', error: string): void
+  (e: 'update:modelValue', value: string): void
+}>()
+
+const router = useRouter()
+const store = useStore()
+const { t } = useI18n()
+const passwordInput = useTemplateRef('passwordInput')
+const showSpinner = ref(false)
+const showPassword = ref(false)
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value
+}
+
+useSaveCursor(passwordInput, showPassword)
+
+const password = computed({
+  get() {
+    return props.modelValue
   },
-  emits: ['login', 'error', 'update:modelValue'],
-  setup(props, { emit }) {
-    const router = useRouter()
-    const store = useStore()
-    const { t } = useI18n()
-    const passwordInput = useTemplateRef('passwordInput')
-    const showSpinner = ref(false)
-    const showPassword = ref(false)
-    const togglePasswordVisibility = () => {
-      showPassword.value = !showPassword.value
-    }
-
-    useSaveCursor(passwordInput, showPassword)
-
-    const password = computed({
-      get() {
-        return props.modelValue
-      },
-      set(value) {
-        emit('update:modelValue', value)
-      }
-    })
-
-    const isOnline = computed(() => store.getters['isOnline'])
-
-    const submit = () => {
-      showSpinner.value = true
-
-      return store
-        .dispatch('loginViaPassword', password.value)
-        .then(() => {
-          emit('login')
-        })
-        .catch((err) => {
-          if (!isOnline.value) {
-            emit('error', t('connection.offline'))
-            router.push({ name: 'Nodes' })
-          } else if (err?.message === 'Invalid password') {
-            emit('error', t('login_via_password.incorrect_password'))
-          } else if (isAxiosError(err)) {
-            emit('error', t('login.invalid_passphrase'))
-          } else if (isAllNodesOfflineError(err)) {
-            emit('error', t('errors.all_nodes_offline', { crypto: err.nodeLabel.toUpperCase() }))
-          } else if (isAllNodesDisabledError(err)) {
-            emit('error', t('errors.all_nodes_disabled', { crypto: err.nodeLabel.toUpperCase() }))
-            router.push({ name: 'Nodes' })
-          } else {
-            emit('error', t('errors.something_went_wrong'))
-          }
-          console.log(err)
-        })
-        .finally(() => {
-          showSpinner.value = false
-        })
-    }
-
-    const removePassword = () => {
-      clearDb().finally(() => {
-        store.dispatch('removePassword')
-      })
-    }
-
-    return {
-      passwordInput,
-      showSpinner,
-      password,
-      classes,
-      showPassword,
-      mdiEye,
-      mdiEyeOff,
-      togglePasswordVisibility,
-      submit,
-      removePassword
-    }
+  set(value) {
+    emit('update:modelValue', value)
   }
 })
+
+const isOnline = computed(() => store.getters['isOnline'])
+
+const submit = () => {
+  showSpinner.value = true
+
+  return store
+    .dispatch('loginViaPassword', password.value)
+    .then(() => {
+      emit('login')
+    })
+    .catch((err) => {
+      if (!isOnline.value) {
+        emit('error', t('connection.offline'))
+        router.push({ name: 'Chats' })
+      } else if (err?.message === 'Invalid password') {
+        emit('error', t('login_via_password.incorrect_password'))
+      } else if (isAxiosError(err)) {
+        emit('error', t('login.invalid_passphrase'))
+      } else if (isAllNodesOfflineError(err)) {
+        emit('error', t('errors.all_nodes_offline', { crypto: err.nodeLabel.toUpperCase() }))
+        router.push({ name: 'Chats' })
+      } else if (isAllNodesDisabledError(err)) {
+        emit('error', t('errors.all_nodes_disabled', { crypto: err.nodeLabel.toUpperCase() }))
+        router.push({ name: 'Chats' })
+      } else {
+        emit('error', t('errors.something_went_wrong'))
+      }
+      console.log(err)
+    })
+    .finally(() => {
+      showSpinner.value = false
+    })
+}
+
+const removePassword = () => {
+  clearDb().finally(() => {
+    store.dispatch('removePassword')
+  })
+}
 </script>
 
 <style lang="scss" scoped>
