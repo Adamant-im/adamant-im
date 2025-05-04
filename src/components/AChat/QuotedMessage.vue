@@ -43,7 +43,7 @@ import { getTransaction, decodeChat } from '@/lib/adamant-api'
 import { NormalizedChatMessageTransaction, normalizeMessage } from '@/lib/chat/helpers'
 import { Cryptos } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
-import { formatMessage } from '@/lib/markdown'
+import { formatChatPreviewMessage } from '@/lib/markdown'
 import { ChatMessageTransaction } from '@/lib/schema/client/api'
 
 const className = 'quoted-message'
@@ -141,7 +141,7 @@ export default defineComponent({
       }
 
       return store.state.options.formatMessages
-        ? formatMessage(transaction.value.message)
+        ? formatChatPreviewMessage(transaction.value.message)
         : transaction.value.message
     })
 
