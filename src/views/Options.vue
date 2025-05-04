@@ -210,7 +210,6 @@ export default {
   props: {
     sidebarLayoutRef: {
       type: Object,
-      required: false,
       default: null
     }
   },
@@ -229,21 +228,33 @@ export default {
   }),
   mounted() {
     nextTick(() => {
-      if (this.sidebarLayoutRef) {
-        const scrollTopValue = Number(localStorage.getItem('optionsScrollTop')) || 0
+      if (this.sidebarLayoutRef && this.scrollTopPosition) {
         this.sidebarLayoutRef.scrollTo({
-          top: scrollTopValue
+          top: this.scrollTopPosition
         })
       }
     })
   },
   beforeUnmount() {
-    localStorage.setItem('optionsScrollTop', this.sidebarLayoutRef?.scrollTop || 0)
+    if (this.sidebarLayoutRef) {
+      this.scrollTopPosition = this.sidebarLayoutRef.scrollTop || 0
+    }
   },
   computed: {
     className: () => 'settings-view',
     stayLoggedIn() {
       return this.$store.state.options.stayLoggedIn
+    },
+    scrollTopPosition: {
+      get() {
+        return this.$store.state.options.scrollTopPosition
+      },
+      set(value) {
+        this.$store.commit('options/updateOption', {
+          key: 'scrollTopPosition',
+          value
+        })
+      }
     },
     sendMessageOnEnter: {
       get() {
@@ -335,23 +346,11 @@ export default {
         value: true
       })
     },
-    onKeydownHandler(e) {
-      if (e.key === 'Escape') {
-        if (this.passwordDialog) {
-          e.stopPropagation()
-          this.passwordDialog = false
-
-          window.removeEventListener('keydown', this.onKeydownHandler, true)
-        }
-      }
-    },
     onCheckStayLoggedIn() {
       if (!this.stayLoggedIn) {
         isIDBSupported
           .then(() => {
             this.passwordDialog = true
-
-            window.addEventListener('keydown', this.onKeydownHandler, true)
           })
           .catch(() => {
             this.$store.dispatch('snackbar/show', {

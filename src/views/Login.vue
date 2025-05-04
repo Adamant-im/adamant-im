@@ -27,7 +27,7 @@
         <v-sheet v-if="!isLoginViaPassword" class="text-center mt-4" color="transparent">
           <v-row justify="center" no-gutters>
             <v-col sm="8" md="8" lg="8">
-              <login-form
+              <LoginForm
                 ref="loginForm"
                 v-model="passphrase"
                 @login="onLogin"
@@ -92,8 +92,8 @@
   </component>
 </template>
 
-<script>
-import { nextTick, defineComponent, computed, ref } from 'vue'
+<script setup>
+import { nextTick, computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { mdiCog, mdiChevronRight } from '@mdi/js'
@@ -111,92 +111,61 @@ import LoginPasswordForm from '@/components/LoginPasswordForm.vue'
 import Logo from '@/components/icons/common/Logo.vue'
 import { navigateByURI } from '@/router/navigationGuard'
 
-export default defineComponent({
-  components: {
-    LanguageSwitcher,
-    PassphraseGenerator,
-    LoginForm,
-    QrcodeScannerDialog,
-    QrcodeCapture,
-    Icon,
-    QrCodeScanIcon,
-    FileIcon,
-    LoginPasswordForm,
-    Logo
-  },
-  setup() {
-    const passphrase = ref('')
-    const password = ref('')
-    const showQrcodeScanner = ref(false)
-    const logo = '/img/adamant-logo-transparent-512x512.png'
-    const store = useStore()
-    const route = useRoute()
-    const { t } = useI18n()
-    const className = 'login-page'
-    const loginForm = ref(null)
+const store = useStore()
+const route = useRoute()
+const { t } = useI18n()
 
-    const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
+const className = 'login-page'
+const passphrase = ref('')
+const password = ref('')
+const showQrcodeScanner = ref(false)
+const loginForm = ref(null)
 
-    const layout = computed(() => route.meta.layout || 'default')
+const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
+const layout = computed(() => route.meta.layout || 'default')
 
-    const onDetectQrcode = (passphrase) => {
-      onScanQrcode(passphrase)
-    }
-    const onDetectQrcodeError = (err) => {
-      passphrase.value = ''
-      store.dispatch('snackbar/show', {
-        message: t('login.invalid_qr_code')
-      })
-      console.warn(err)
-    }
-    const onLogin = () => {
-      if (!store.state.chat.isFulfilled) {
-        store.commit('chat/createAdamantChats')
-        store.dispatch('chat/loadChats').then(() => store.dispatch('startInterval'))
-      } else {
-        store.dispatch('startInterval')
-      }
+const onDetectQrcode = (passphrase) => {
+  onScanQrcode(passphrase)
+}
 
-      navigateByURI()
-    }
-    const onLoginError = (errorMessage) => {
-      store.dispatch('snackbar/show', {
-        message: errorMessage,
-        timeout: 3000
-      })
-    }
-    const onCopyPassphrase = () => {
-      store.dispatch('snackbar/show', {
-        message: t('home.copied'),
-        timeout: 2000
-      })
-    }
-    const onScanQrcode = (value) => {
-      passphrase.value = value
-      nextTick(() => loginForm.value.submit())
-    }
+const onDetectQrcodeError = (err) => {
+  passphrase.value = ''
+  store.dispatch('snackbar/show', {
+    message: t('login.invalid_qr_code')
+  })
+  console.warn(err)
+}
 
-    return {
-      passphrase,
-      password,
-      showQrcodeScanner,
-      logo,
-      className,
-      isLoginViaPassword,
-      t,
-      loginForm,
-      mdiCog,
-      mdiChevronRight,
-      layout,
-      onDetectQrcode,
-      onDetectQrcodeError,
-      onLogin,
-      onLoginError,
-      onCopyPassphrase,
-      onScanQrcode
-    }
+const onLogin = () => {
+  if (!store.state.chat.isFulfilled) {
+    store.commit('chat/createAdamantChats')
+    store.dispatch('chat/loadChats').then(() => store.dispatch('startInterval'))
+  } else {
+    store.dispatch('startInterval')
   }
-})
+  navigateByURI()
+}
+
+const onLoginError = (errorMessage) => {
+  store.dispatch('snackbar/show', {
+    message: errorMessage,
+    timeout: 3000
+  })
+}
+
+const onCopyPassphrase = () => {
+  store.dispatch('snackbar/show', {
+    message: t('home.copied'),
+    timeout: 2000
+  })
+}
+
+const onScanQrcode = (value) => {
+  passphrase.value = value
+  nextTick(() => {
+    loginForm.value.submit()
+  })
+}
 </script>
 
 <style lang="scss" scoped>

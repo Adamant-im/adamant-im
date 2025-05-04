@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" width="320" :class="className">
+  <v-dialog v-model="show" width="320">
     <v-card>
       <v-card-title class="a-text-header">
         {{ $t('home.buy_tokens_btn') }}
@@ -56,69 +56,68 @@
   </v-dialog>
 </template>
 
-<script>
+<script setup>
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
+
 import validateAddress from '@/lib/validateAddress'
+import { websiteUriToOnion } from '@/lib/uri'
+
 import AdamantIcon from '@/components/icons/common/Adamant.vue'
 import CoingeckoIcon from '@/components/icons/common/Coingecko.vue'
 import CoinmarketcapIcon from '@/components/icons/common/Coinmarketcap.vue'
 import ExchangerIcon from '@/components/icons/common/Exchanger.vue'
 import Icon from '@/components/icons/BaseIcon.vue'
-import { websiteUriToOnion } from '@/lib/uri'
 
-export default {
-  components: {
-    AdamantIcon,
-    CoingeckoIcon,
-    CoinmarketcapIcon,
-    ExchangerIcon,
-    Icon
+const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    required: true
   },
-  props: {
-    modelValue: {
-      type: Boolean,
-      required: true
-    },
-    adamantAddress: {
-      type: String,
-      default: undefined,
-      validator: (v) => validateAddress('ADM', v)
-    }
-  },
-  emits: ['update:modelValue'],
-  computed: {
-    className: () => 'buy-tokens-dialog',
-    admLink() {
-      return websiteUriToOnion(
-        this.adamantAddress
-          ? `${this.$t('home.buy_tokens_btn_link')}?wallet=${this.adamantAddress}`
-          : `${this.$t('home.buy_tokens_btn_link')}`
-      )
-    },
-    show: {
-      get() {
-        return this.modelValue
-      },
-      set(value) {
-        this.$emit('update:modelValue', value)
-      }
-    }
-  },
-  methods: {
-    closeDialog() {
-      this.show = false
-    },
-    openLink(link) {
-      if (link.startsWith('U')) {
-        this.$router.push({
-          name: 'Chat',
-          params: { partnerId: link }
-        })
-      } else {
-        window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
-      }
-
-      this.closeDialog()
-    }
+  adamantAddress: {
+    type: String,
+    default: undefined,
+    validator: (v) => validateAddress('ADM', v)
   }
+})
+
+const emit = defineEmits(['update:modelValue'])
+
+const { t } = useI18n()
+const router = useRouter()
+
+const show = computed({
+  get() {
+    return props.modelValue
+  },
+  set(value) {
+    emit('update:modelValue', value)
+  }
+})
+
+const admLink = computed(() =>
+  websiteUriToOnion(
+    props.adamantAddress
+      ? `${t('home.buy_tokens_btn_link')}?wallet=${props.adamantAddress}`
+      : `${t('home.buy_tokens_btn_link')}`
+  )
+)
+
+const closeDialog = () => {
+  show.value = false
+}
+
+const openLink = (link) => {
+  if (link.startsWith('U')) {
+    router.push({
+      name: 'Chat',
+      params: { partnerId: link }
+    })
+  } else {
+    window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
+  }
+
+  closeDialog()
 }
 </script>
