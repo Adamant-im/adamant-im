@@ -6,17 +6,17 @@
           <language-switcher :prepend-icon="mdiChevronRight" />
         </div>
         <div :class="`${className}__settings-button-container`">
-        <router-link to="/options/nodes" custom #default="{ navigate }">
-          <v-btn
-            @click="navigate"
-            icon 
-            variant="plain" 
-            :size="32"
-            :class="`${className}__settings-button`"
-          >
-            <v-icon :icon="mdiCog" />
-          </v-btn>
-        </router-link>
+          <router-link to="/options/nodes" custom #default="{ navigate }">
+            <v-btn
+              @click="navigate"
+              icon
+              variant="plain"
+              :size="32"
+              :class="`${className}__settings-button`"
+            >
+              <v-icon :icon="mdiCog" />
+            </v-btn>
+          </router-link>
         </div>
       </div>
 
@@ -236,7 +236,7 @@ export default defineComponent({
     margin-right: 8px;
   }
   &__settings-button {
-    &:hover> ::v-deep(.v-btn__overlay) {
+    &:hover > ::v-deep(.v-btn__overlay) {
       display: block;
       opacity: 0.06;
     }

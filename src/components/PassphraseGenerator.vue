@@ -84,7 +84,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import * as bip39 from 'bip39'
 import copyToClipboard from 'copy-to-clipboard'
 import { ref, computed } from 'vue'
@@ -102,30 +102,32 @@ const { t } = useI18n()
 
 const emit = defineEmits(['copy', 'save'])
 
-const className = "passphrase-generator"
+const className = 'passphrase-generator'
 const classes = {
   root: className,
   box: `${className}__box`,
   passphraseLabel: `${className}__passphrase-label`,
   icons: `${className}__icons`,
-  icon: `${className}__icon`,
+  icon: `${className}__icon`
 }
 
 const passphrase = ref('')
 const showPassphrase = ref(false)
 const showQrcodeRendererDialog = ref(false)
 const showSuggestedPassphrase = ref(false)
-const textarea = ref(null)
-const el = ref(null)
+const textarea = ref<InstanceType<typeof import('vuetify/components').VTextarea> | null>(null)
+const el = ref<HTMLElement | null>(null)
 
 const displayedPassphrase = computed(() => {
-  return showSuggestedPassphrase.value ? passphrase.value : '*** *** *** *** *** *** *** *** *** *** *** *** '
+  return showSuggestedPassphrase.value
+    ? passphrase.value
+    : '*** *** *** *** *** *** *** *** *** *** *** *** '
 })
 
 const passphraseVisibilityTooltip = computed(() => {
-  return showSuggestedPassphrase.value ? 
-    t('login.hide_passphrase_tooltip') : 
-    t('login.show_passphrase_tooltip')
+  return showSuggestedPassphrase.value
+    ? t('login.hide_passphrase_tooltip')
+    : t('login.show_passphrase_tooltip')
 })
 
 const copyToClipboardHandler = () => {
@@ -135,20 +137,20 @@ const copyToClipboardHandler = () => {
 }
 
 const saveFile = () => {
-  const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
+  const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !('MSStream' in window)
   if (!iOS) {
     downloadFile(
       passphrase.value,
-      'adm-' + btoa(new Date().getTime()).replace('==', '') + '.txt',
+      'adm-' + btoa(new Date().getTime().toString()).replace('==', '') + '.txt',
       'text/plain'
     )
   }
-  
+
   emit('save')
 }
 
 const selectText = () => {
-  textarea.value.$el.querySelector('textarea').select()
+  textarea.value?.$el.querySelector('textarea').select()
 }
 
 const generatePassphrase = () => {
@@ -157,7 +159,7 @@ const generatePassphrase = () => {
 
   // callback after Vue rerender
   setTimeout(() => {
-    const element = textarea.value.$el
+    const element = textarea.value?.$el
 
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' })
