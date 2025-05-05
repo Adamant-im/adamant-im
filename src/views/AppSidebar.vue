@@ -33,12 +33,13 @@
             src="/img/adamant-logo-transparent-512x512.png"
             draggable="false"
           />
-          <router-view v-show="!showLogo" :key="route.path" :sidebarLayoutRef="sidebarLayoutRef" />
+          <router-view v-show="!showLogo" :key="route.path" />
         </div>
       </component>
     </div>
   </div>
 </template>
+
 <script lang="ts" setup>
 import { useRoute } from 'vue-router'
 import { computed, useTemplateRef, ref, provide } from 'vue'

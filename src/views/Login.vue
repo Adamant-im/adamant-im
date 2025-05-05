@@ -7,7 +7,7 @@
             <language-switcher :prepend-icon="mdiChevronRight" />
           </div>
           <div :class="`${className}__settings-button`">
-            <v-btn @click="$router.push('/options/nodes')" icon variant="plain" :size="32">
+            <v-btn @click="navigateToNodes" icon variant="plain" :size="32">
               <v-icon :icon="mdiCog" />
             </v-btn>
           </div>
@@ -27,7 +27,7 @@
         <v-sheet v-if="!isLoginViaPassword" class="text-center mt-4" color="transparent">
           <v-row justify="center" no-gutters>
             <v-col sm="8" md="8" lg="8">
-              <LoginForm
+              <login-form
                 ref="loginForm"
                 v-model="passphrase"
                 @login="onLogin"
@@ -92,12 +92,12 @@
   </component>
 </template>
 
-<script setup>
-import { nextTick, computed, ref } from 'vue'
+<script setup lang="ts">
+import { nextTick, computed, ref, useTemplateRef } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { mdiCog, mdiChevronRight } from '@mdi/js'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import QrcodeCapture from '@/components/QrcodeCapture.vue'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
@@ -113,22 +113,27 @@ import { navigateByURI } from '@/router/navigationGuard'
 
 const store = useStore()
 const route = useRoute()
+const router = useRouter()
 const { t } = useI18n()
 
 const className = 'login-page'
 const passphrase = ref('')
 const password = ref('')
 const showQrcodeScanner = ref(false)
-const loginForm = ref(null)
+const loginForm = useTemplateRef<InstanceType<typeof LoginForm> | null>('loginForm')
 
 const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
 const layout = computed(() => route.meta.layout || 'default')
 
-const onDetectQrcode = (passphrase) => {
+const navigateToNodes = () => {
+  router.push('/options/nodes')
+}
+
+const onDetectQrcode = (passphrase: string) => {
   onScanQrcode(passphrase)
 }
 
-const onDetectQrcodeError = (err) => {
+const onDetectQrcodeError = (err: unknown) => {
   passphrase.value = ''
   store.dispatch('snackbar/show', {
     message: t('login.invalid_qr_code')
@@ -146,7 +151,7 @@ const onLogin = () => {
   navigateByURI()
 }
 
-const onLoginError = (errorMessage) => {
+const onLoginError = (errorMessage: string) => {
   store.dispatch('snackbar/show', {
     message: errorMessage,
     timeout: 3000
@@ -160,10 +165,10 @@ const onCopyPassphrase = () => {
   })
 }
 
-const onScanQrcode = (value) => {
+const onScanQrcode = (value: string) => {
   passphrase.value = value
   nextTick(() => {
-    loginForm.value.submit()
+    loginForm.value?.submit()
   })
 }
 </script>

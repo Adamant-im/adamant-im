@@ -2,7 +2,7 @@
   <v-dialog v-model="show" width="320">
     <v-card>
       <v-card-title class="a-text-header">
-        {{ $t('home.buy_tokens_btn') }}
+        {{ t('home.buy_tokens_btn') }}
       </v-card-title>
 
       <v-divider class="a-divider" />
@@ -14,7 +14,7 @@
               <icon><exchanger-icon /></icon>
             </template>
 
-            <v-list-item-title>{{ $t('home.buy_tokens_exchanger') }}</v-list-item-title>
+            <v-list-item-title>{{ t('home.buy_tokens_exchanger') }}</v-list-item-title>
           </v-list-item>
 
           <v-list-item avatar @click="openLink(admLink)">
@@ -22,7 +22,7 @@
               <icon><adamant-icon /></icon>
             </template>
 
-            <v-list-item-title>{{ $t('home.buy_tokens_anonymously') }}</v-list-item-title>
+            <v-list-item-title>{{ t('home.buy_tokens_anonymously') }}</v-list-item-title>
           </v-list-item>
 
           <v-list-item
@@ -34,7 +34,7 @@
             </template>
 
             <v-list-item-title>{{
-              $t('home.exchanges_on', { aggregator: 'CoinMarketCap' })
+              t('home.exchanges_on', { aggregator: 'CoinMarketCap' })
             }}</v-list-item-title>
           </v-list-item>
 
@@ -47,7 +47,7 @@
             </template>
 
             <v-list-item-title>{{
-              $t('home.exchanges_on', { aggregator: 'CoinGecko' })
+              t('home.exchanges_on', { aggregator: 'CoinGecko' })
             }}</v-list-item-title>
           </v-list-item>
         </v-list>
@@ -56,7 +56,7 @@
   </v-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
@@ -78,11 +78,13 @@ const props = defineProps({
   adamantAddress: {
     type: String,
     default: undefined,
-    validator: (v) => validateAddress('ADM', v)
+    validator: (v: string) => validateAddress('ADM', v)
   }
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: boolean): void
+}>()
 
 const { t } = useI18n()
 const router = useRouter()
@@ -108,7 +110,7 @@ const closeDialog = () => {
   show.value = false
 }
 
-const openLink = (link) => {
+const openLink = (link: string) => {
   if (link.startsWith('U')) {
     router.push({
       name: 'Chat',

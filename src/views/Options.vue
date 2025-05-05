@@ -189,6 +189,7 @@
 </template>
 
 <script>
+import { nextTick, inject } from 'vue'
 import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant } from '@mdi/js'
 
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
@@ -198,7 +199,7 @@ import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import { resetPinia } from '@/plugins/pinia'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
 import { useSavedScroll } from '@/hooks/useSavedScroll'
-import { nextTick } from 'vue'
+import { sidebarLayoutKey } from '@/lib/constants'
 
 export default {
   components: {
@@ -207,17 +208,13 @@ export default {
     CurrencySwitcher,
     PasswordSetDialog
   },
-  props: {
-    sidebarLayoutRef: {
-      type: Object,
-      default: null
-    }
-  },
   setup() {
     const { hasView } = useSavedScroll()
+    const sidebarLayoutRef = inject(sidebarLayoutKey)
 
     return {
       hasView,
+      sidebarLayoutRef,
       mdiChevronDown,
       mdiChevronRight,
       mdiLogoutVariant
