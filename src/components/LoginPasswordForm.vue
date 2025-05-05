@@ -58,10 +58,7 @@ import { clearDb } from '@/lib/idb'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useSaveCursor } from '@/hooks/useSaveCursor'
-
-type Props = {
-  modelValue: string
-}
+import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 
 const className = 'login-form'
 const classes = {
@@ -69,13 +66,13 @@ const classes = {
   textField: `${className}__textfield`
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  modelValue: ''
-})
+const props = defineProps<{
+  modelValue: string
+}>()
 
 const emit = defineEmits<{
   (e: 'login'): void
-  (e: 'error', error: string): void
+  (e: 'error', error: string, isIndefinite?: boolean): void
   (e: 'update:modelValue', value: string): void
 }>()
 
@@ -99,8 +96,9 @@ const password = computed({
     emit('update:modelValue', value)
   }
 })
-
 const isOnline = computed(() => store.getters['isOnline'])
+const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
+const admNodesDisabled = computed(() => admNodes.value.some((node) => node.status === 'disabled'))
 
 const submit = () => {
   showSpinner.value = true
@@ -112,17 +110,25 @@ const submit = () => {
     })
     .catch((err) => {
       if (!isOnline.value) {
-        emit('error', t('connection.offline'))
+        emit('error', t('connection.offline'), true)
+        emit('login')
+
         router.push({ name: 'Chats' })
       } else if (err?.message === 'Invalid password') {
         emit('error', t('login_via_password.incorrect_password'))
       } else if (isAxiosError(err)) {
         emit('error', t('login.invalid_passphrase'))
       } else if (isAllNodesOfflineError(err)) {
-        emit('error', t('errors.all_nodes_offline', { crypto: err.nodeLabel.toUpperCase() }))
+        if (admNodesDisabled.value) {
+          emit('error', t('errors.all_nodes_offline', { crypto: err.nodeLabel.toUpperCase() }))
+        }
+        emit('login')
+
         router.push({ name: 'Chats' })
       } else if (isAllNodesDisabledError(err)) {
         emit('error', t('errors.all_nodes_disabled', { crypto: err.nodeLabel.toUpperCase() }))
+        emit('login')
+
         router.push({ name: 'Chats' })
       } else {
         emit('error', t('errors.something_went_wrong'))

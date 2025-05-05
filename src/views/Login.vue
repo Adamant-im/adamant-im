@@ -144,10 +144,12 @@ const onLogin = () => {
 
   navigateByURI()
 }
-const onLoginError = (errorMessage: string) => {
+const onLoginError = (errorMessage: string, isIndefinite?: boolean) => {
+  const timeout = isIndefinite ? -1 : 3000
+
   store.dispatch('snackbar/show', {
     message: errorMessage,
-    timeout: 3000
+    timeout
   })
 }
 const onCopyPassphrase = () => {
