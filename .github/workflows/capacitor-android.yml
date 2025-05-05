@@ -13,7 +13,6 @@ env:
   ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
   ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
   ANDROID_KEYSTORE_ALIAS_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASSWORD }}
-  ANDROID_RELEASE_TYPE: 'AAB' # APK or AAB
 
 jobs:
   release:
@@ -51,9 +50,20 @@ jobs:
           base64 -d android/keystore.base64 > android/app.keystore
           rm android/keystore.base64
 
-      - name: Build and Sign Android App 🛠️
+      - name: Build and Sign Android App (APK) 🛠️
         run: |
           npx cap sync
+          export ANDROID_RELEASE_TYPE=APK
+          npx cap build android \
+            --keystorepath $ANDROID_KEYSTORE_PATH \
+            --keystorepass $ANDROID_KEYSTORE_PASSWORD \
+            --keystorealias $ANDROID_KEYSTORE_ALIAS \
+            --keystorealiaspass $ANDROID_KEYSTORE_ALIAS_PASSWORD \
+            --androidreleasetype $ANDROID_RELEASE_TYPE
+
+      - name: Build and Sign Android App (AAB) 🛠️
+        run: |
+          export ANDROID_RELEASE_TYPE=AAB
           npx cap build android \
             --keystorepath $ANDROID_KEYSTORE_PATH \
             --keystorepass $ANDROID_KEYSTORE_PASSWORD \
@@ -66,6 +76,7 @@ jobs:
         with:
           name: android-release-app
           path: |
+            android/app/build/outputs/apk/release/*
             android/app/build/outputs/bundle/release/*
 
       - name: Clean Keystore file 🧹
