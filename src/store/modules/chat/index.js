@@ -763,7 +763,7 @@ const actions = {
    * @param {string} replyToId Optional
    * @returns {Promise}
    */
-  async sendMessage({ commit, rootState }, { message, recipientId, replyToId }) {
+  async sendMessage({ commit, rootState, dispatch }, { message, recipientId, replyToId }) {
     let id
     try {
       const type = replyToId
@@ -811,16 +811,18 @@ const actions = {
       })
     } catch (error) {
       if (isAllNodesOfflineError(error)) {
+        // if the error is caused by connection we keep the message in PENDING status
+        // and try to resend it after the connection is restored
+
+        // timeout for self deleting out of pending messages
         const timeout = setTimeout(() => {
-          commit('updateMessage', {
-            id,
-            status: TS.REJECTED,
-            partnerId: recipientId
+          dispatch('rejectPendingMessage', {
+            messageId: id,
+            recipientId
           })
+        }, Number(CryptosInfo.ADM.timeout.message))
 
-          commit('deletePendingMessage', id)
-        }, +CryptosInfo.ADM.timeout.message)
-
+        // put the message into pending messages object
         commit('addPendingMessage', {
           messageId: id,
           type: MessageType.BASIC_ENCRYPTED_MESSAGE,
@@ -856,7 +858,10 @@ const actions = {
    * @param {string} replyToId Optional
    * @returns {Promise}
    */
-  async sendAttachment({ commit, rootState }, { files, message, recipientId, replyToId }) {
+  async sendAttachment(
+    { commit, rootState, dispatch },
+    { files, message, recipientId, replyToId }
+  ) {
     const recipientPublicKey = await getPublicKey(recipientId)
     const senderPublicKey = await getPublicKey(rootState.address)
 
@@ -949,7 +954,7 @@ const actions = {
         return res
       })
       .catch((err) => {
-        // update `message.status` to 'REJECTED'
+        // update `message.status` to 'REJECTED' if the error is not caused by connection
         if (!isAllNodesOfflineError(err)) {
           commit('updateMessage', {
             id: messageObject.id,
@@ -957,16 +962,18 @@ const actions = {
             partnerId: recipientId
           })
         } else {
+          // if the error is caused by connection we keep the message in PENDING status
+          // and try to resend it after the connection is restored
+
+          // timeout for self deleting out of pending messages
           const timeout = setTimeout(() => {
-            commit('updateMessage', {
-              id: messageObject.id,
-              status: TS.REJECTED,
-              partnerId: recipientId
+            dispatch('rejectPendingMessage', {
+              messageId: messageObject.id,
+              recipientId
             })
+          }, Number(CryptosInfo.ADM.timeout.attachment))
 
-            commit('deletePendingMessage', messageObject.id)
-          }, +CryptosInfo.ADM.timeout.attachment)
-
+          // put the message into pending messages object
           commit('addPendingMessage', {
             messageId: messageObject.id,
             type: MessageType.RICH_CONTENT_MESSAGE,
@@ -992,7 +999,7 @@ const actions = {
    * @param {number} id Message Id
    * @returns {Promise}
    */
-  resendMessage({ getters, commit }, { recipientId, messageId }) {
+  resendMessage({ getters, commit, dispatch }, { recipientId, messageId }) {
     const message = getters.partnerMessageById(recipientId, messageId)
 
     // update message status from `rejected` to `sent`
@@ -1020,24 +1027,20 @@ const actions = {
             throw new Error(i18n.global.t('chats.message_rejected'))
           }
 
-          commit('updateMessage', {
-            id: messageId,
-            realId: res.transactionId,
-            status: TS.REGISTERED,
-            partnerId: recipientId
+          dispatch('registerPendingMessage', {
+            transactionId: res.transactionId,
+            messageId,
+            recipientId
           })
 
           return res
         })
         .catch((error) => {
           if (!isAllNodesOfflineError(error)) {
-            commit('updateMessage', {
+            dispatch('rejectPendingMessage', {
               messageId,
-              status: TS.REJECTED,
-              partnerId: recipientId
+              recipientId
             })
-
-            commit('deletePendingMessage', messageId)
           }
 
           throw error
@@ -1054,12 +1057,14 @@ const actions = {
    * @param {FileData[]} files
    * @returns {Promise}
    */
-  async resendAttachment({ getters, commit }, { recipientId, messageId, files }) {
+  async resendAttachment({ getters, commit, dispatch }, { recipientId, messageId, files }) {
     const message = getters.partnerMessageById(recipientId, messageId)
     if (!message) {
       return Promise.reject(new Error('Message not found in history'))
     }
 
+    // in case the files were not fully uploaded or uploaded incorrectly we
+    // reupload them from scratch to resend a message with attachments
     const cidsOld = files.map((file) => [file.cid, file.preview?.cid]).filter(Boolean)
     for (const [cid] of cidsOld) {
       commit('attachment/resetUploadProgress', { cid }, { root: true })
@@ -1083,21 +1088,18 @@ const actions = {
       }
 
       if (!isAllNodesOfflineError(err)) {
-        commit('updateMessage', {
-          id: messageId,
-          status: TS.REJECTED,
-          partnerId: recipientId
+        dispatch('rejectPendingMessage', {
+          messageId,
+          recipientId
         })
-
-        commit('deletePendingMessage', messageId)
 
         throw err
       }
     }
 
-    const newAsset = message.replyToId
+    const newAsset = message.isReply
       ? {
-          replyto_id: message.replyToId,
+          replyto_id: message.asset.replyto_id,
           reply_message: attachmentAsset(files, message.message, uploadData.cids)
         }
       : attachmentAsset(files, message.message, uploadData.cids)
@@ -1117,27 +1119,44 @@ const actions = {
         if (!res.success) {
           throw new Error(i18n.global.t('chats.message_rejected'))
         }
-        commit('updateMessage', {
-          id: messageId,
-          realId: res.transactionId,
-          status: TS.REGISTERED,
-          partnerId: recipientId
+        dispatch('registerPendingMessage', {
+          transactionId: res.transactionId,
+          messageId,
+          recipientId
         })
         return res
       })
       .catch((err) => {
         if (!isAllNodesOfflineError(err)) {
-          commit('updateMessage', {
-            id: messageId,
-            status: TS.REJECTED,
-            partnerId: recipientId
+          dispatch('rejectPendingMessage', {
+            messageId,
+            recipientId
           })
-
-          commit('deletePendingMessage', messageId)
         }
 
         throw err
       })
+  },
+
+  registerPendingMessage({ commit }, { messageId, recipientId, transactionId }) {
+    commit('updateMessage', {
+      id: messageId,
+      realId: transactionId,
+      status: TS.REGISTERED,
+      partnerId: recipientId
+    })
+
+    commit('deletePendingMessage', messageId)
+  },
+
+  rejectPendingMessage({ commit }, { messageId, recipientId }) {
+    commit('updateMessage', {
+      messageId,
+      status: TS.REJECTED,
+      partnerId: recipientId
+    })
+
+    commit('deletePendingMessage', messageId)
   },
 
   /**
