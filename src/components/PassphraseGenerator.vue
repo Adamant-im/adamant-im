@@ -97,6 +97,7 @@ import CopyIcon from '@/components/icons/common/Copy.vue'
 import SaveIcon from '@/components/icons/common/Save.vue'
 import QrCodeIcon from '@/components/icons/common/QrCode.vue'
 import { mdiEye, mdiEyeOff } from '@mdi/js'
+import { VTextarea } from 'vuetify/components'
 
 const { t } = useI18n()
 
@@ -115,7 +116,7 @@ const passphrase = ref('')
 const showPassphrase = ref(false)
 const showQrcodeRendererDialog = ref(false)
 const showSuggestedPassphrase = ref(false)
-const textarea = ref<InstanceType<typeof import('vuetify/components').VTextarea> | null>(null)
+const textarea = ref<InstanceType<typeof VTextarea> | null>(null)
 const el = ref<HTMLElement | null>(null)
 
 const displayedPassphrase = computed(() => {
