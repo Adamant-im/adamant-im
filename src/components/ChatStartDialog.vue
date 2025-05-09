@@ -124,6 +124,14 @@ export default {
       this.recipientAddress = this.partnerId
     }
   },
+  watch: {
+    modelValue(newVal) {
+      if (!newVal) {
+        this.recipientAddress = ''
+        this.recipientName = ''
+      }
+    }
+  },
   methods: {
     startChat() {
       this.recipientAddress = this.recipientAddress.trim().toUpperCase()
@@ -136,20 +144,15 @@ export default {
         return Promise.reject(new Error(this.$t('chats.incorrect_address')))
       }
 
-      return this.$store
-        .dispatch('chat/createChat', {
-          partnerId: this.recipientAddress,
-          partnerName: this.recipientName
-        })
-        .then((_publicKey) => {
-          this.$emit('start-chat', this.recipientAddress, this.uriMessage)
-          this.show = false
-        })
-        .catch((err) => {
-          this.$store.dispatch('snackbar/show', {
-            message: err.message // @todo translations
-          })
-        })
+      this.$emit('start-chat', this.recipientAddress, this.uriMessage, this.recipientName, true)
+      this.closeDialog()
+    },
+
+    // Clear all values
+    closeDialog() {
+      this.$emit('update:modelValue', false)
+      this.recipientAddress = ''
+      this.recipientName = ''
     },
 
     /**
