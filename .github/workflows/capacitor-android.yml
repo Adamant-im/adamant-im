@@ -53,23 +53,22 @@ jobs:
       - name: Build and Sign Android App (APK) 🛠️
         run: |
           npx cap sync
-          export ANDROID_RELEASE_TYPE=APK
           npx cap build android \
             --keystorepath $ANDROID_KEYSTORE_PATH \
             --keystorepass $ANDROID_KEYSTORE_PASSWORD \
             --keystorealias $ANDROID_KEYSTORE_ALIAS \
             --keystorealiaspass $ANDROID_KEYSTORE_ALIAS_PASSWORD \
-            --androidreleasetype $ANDROID_RELEASE_TYPE
+            --androidreleasetype APK
 
       - name: Build and Sign Android App (AAB) 🛠️
         run: |
-          export ANDROID_RELEASE_TYPE=AAB
+          npx cap sync
           npx cap build android \
             --keystorepath $ANDROID_KEYSTORE_PATH \
             --keystorepass $ANDROID_KEYSTORE_PASSWORD \
             --keystorealias $ANDROID_KEYSTORE_ALIAS \
             --keystorealiaspass $ANDROID_KEYSTORE_ALIAS_PASSWORD \
-            --androidreleasetype $ANDROID_RELEASE_TYPE
+            --androidreleasetype AAB
 
       - name: Save artifacts 💾
         uses: actions/upload-artifact@v4
