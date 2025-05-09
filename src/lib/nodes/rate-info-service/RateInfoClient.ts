@@ -2,9 +2,10 @@ import { NODE_LABELS } from '@/lib/nodes/constants'
 import { Client } from '@/lib/nodes/abstract.client'
 import { RateInfoService } from '@/lib/nodes/rate-info-service/RateInfoService'
 import { RateInfoResponse } from '@/lib/nodes/rate-info-service/types/RateInfoResponse'
+import type { NodeInfo } from '@/types/wallets'
 
 export class RateInfoClient extends Client<RateInfoService> {
-  constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
+  constructor(endpoints: NodeInfo[] = [], minNodeVersion = '0.0.0') {
     super('adm', 'service', NODE_LABELS.RatesInfo)
     this.nodes = endpoints.map((endpoint) => new RateInfoService(endpoint))
     this.minNodeVersion = minNodeVersion
