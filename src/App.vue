@@ -18,6 +18,9 @@ import Notifications from '@/lib/notifications'
 import { ThemeName } from './plugins/vuetify'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
+import { useResendPendingMessages } from '@/hooks/useResendPendingMessages'
+
+useResendPendingMessages()
 
 const store = useStore()
 const isSnackbarShowing = computed(() => store.state.snackbar.show)
