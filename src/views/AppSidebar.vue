@@ -39,6 +39,7 @@
     </div>
   </div>
 </template>
+
 <script lang="ts" setup>
 import { useRoute } from 'vue-router'
 import { computed, useTemplateRef, ref, provide } from 'vue'

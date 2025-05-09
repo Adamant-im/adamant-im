@@ -189,15 +189,17 @@
 </template>
 
 <script>
+import { nextTick, inject } from 'vue'
+import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant } from '@mdi/js'
+
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import CurrencySwitcher from '@/components/CurrencySwitcher.vue'
 import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
-import scrollPosition from '@/mixins/scrollPosition'
 import { resetPinia } from '@/plugins/pinia'
-import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant } from '@mdi/js'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
 import { useSavedScroll } from '@/hooks/useSavedScroll'
+import { sidebarLayoutKey } from '@/lib/constants'
 
 export default {
   components: {
@@ -206,12 +208,13 @@ export default {
     CurrencySwitcher,
     PasswordSetDialog
   },
-  mixins: [scrollPosition],
   setup() {
     const { hasView } = useSavedScroll()
+    const sidebarLayoutRef = inject(sidebarLayoutKey)
 
     return {
       hasView,
+      sidebarLayoutRef,
       mdiChevronDown,
       mdiChevronRight,
       mdiLogoutVariant
@@ -220,10 +223,35 @@ export default {
   data: () => ({
     passwordDialog: false
   }),
+  mounted() {
+    nextTick(() => {
+      if (this.sidebarLayoutRef && this.scrollTopPosition) {
+        this.sidebarLayoutRef.scrollTo({
+          top: this.scrollTopPosition
+        })
+      }
+    })
+  },
+  beforeUnmount() {
+    if (this.sidebarLayoutRef) {
+      this.scrollTopPosition = this.sidebarLayoutRef.scrollTop || 0
+    }
+  },
   computed: {
     className: () => 'settings-view',
     stayLoggedIn() {
       return this.$store.state.options.stayLoggedIn
+    },
+    scrollTopPosition: {
+      get() {
+        return this.$store.state.options.scrollTopPosition
+      },
+      set(value) {
+        this.$store.commit('options/updateOption', {
+          key: 'scrollTopPosition',
+          value
+        })
+      }
     },
     sendMessageOnEnter: {
       get() {

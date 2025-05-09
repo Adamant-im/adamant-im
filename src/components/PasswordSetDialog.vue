@@ -8,7 +8,7 @@
       <v-divider class="a-divider" />
 
       <v-card-text class="pa-4">
-<!--     Todo: check src/components/LoginForm.vue component and consider the possibility to move common code to new component  -->
+        <!--     Todo: check src/components/LoginForm.vue component and consider the possibility to move common code to new component  -->
         <v-text-field
           v-model="password"
           color="primary"
@@ -73,7 +73,6 @@ import { UserPasswordArticleLink } from '@/lib/constants'
 import { saveState } from '@/lib/idb/state'
 import { mdiEye, mdiEyeOff } from '@mdi/js'
 
-
 export default {
   props: {
     modelValue: {
@@ -83,6 +82,18 @@ export default {
   },
   emits: ['password', 'update:modelValue'],
   setup() {
+    const onKeydownHandler = (e) => {
+      if (e.key === 'Escape') {
+        if (this.show) {
+          e.stopPropagation()
+          this.togglePasswordVisibility()
+
+          window.removeEventListener('keydown', onKeydownHandler, true)
+        }
+      }
+    }
+
+    window.addEventListener('keydown', onKeydownHandler, true)
 
     return {
       mdiEye,
