@@ -2,7 +2,7 @@
   <v-dialog v-model="show" width="500">
     <v-card>
       <v-card-title class="a-text-header">
-        {{ $t('login_via_password.popup_title') }}
+        {{ t('login_via_password.popup_title') }}
       </v-card-title>
 
       <v-divider class="a-divider" />
@@ -17,8 +17,8 @@
           class="a-input"
           :type="showPassword ? 'text' : 'password'"
           variant="underlined"
-          :label="$t('login_via_password.enter_password')"
-          :name="Date.now()"
+          :label="t('login_via_password.enter_password')"
+          :name="Date.now().toString()"
           @keyup.enter="submit"
         >
           <template #append-inner>
@@ -35,8 +35,8 @@
         </v-text-field>
 
         <div class="a-text-regular-enlarged">
-          {{ $t('login_via_password.article_hint') }}
-          <a @click="openLink(userPasswordAgreementLink)">{{ $t('login_via_password.article') }}</a
+          {{ t('login_via_password.article_hint') }}
+          <a @click="openLink(userPasswordAgreementLink)">{{ t('login_via_password.article') }}</a
           >.
         </div>
       </v-card-text>
@@ -45,7 +45,7 @@
         <v-spacer />
 
         <v-btn variant="text" class="a-btn-regular" @click="show = false">
-          {{ $t('transfer.confirm_cancel') }}
+          {{ t('transfer.confirm_cancel') }}
         </v-btn>
 
         <v-btn
@@ -61,100 +61,93 @@
             size="24"
             class="mr-4"
           />
-          {{ $t('login_via_password.popup_confirm_text') }}
+          {{ t('login_via_password.popup_confirm_text') }}
         </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { useStore } from 'vuex'
+import { mdiEye, mdiEyeOff } from '@mdi/js'
+import { useI18n } from 'vue-i18n'
+
 import { UserPasswordArticleLink } from '@/lib/constants'
 import { saveState } from '@/lib/idb/state'
-import { mdiEye, mdiEyeOff } from '@mdi/js'
 
-export default {
-  props: {
-    modelValue: {
-      type: Boolean,
-      required: true
-    }
-  },
-  emits: ['password', 'update:modelValue'],
-  setup() {
-    const onKeydownHandler = (e) => {
-      if (e.key === 'Escape') {
-        if (this.show) {
-          e.stopPropagation()
-          this.togglePasswordVisibility()
+const props = defineProps<{
+  modelValue: boolean
+}>()
 
-          window.removeEventListener('keydown', onKeydownHandler, true)
-        }
-      }
-    }
+const emit = defineEmits<{
+  (e: 'password', value: string): void
+  (e: 'update:modelValue', value: boolean): void
+}>()
 
-    window.addEventListener('keydown', onKeydownHandler, true)
+const store = useStore()
+const { t } = useI18n()
 
-    return {
-      mdiEye,
-      mdiEyeOff
-    }
-  },
-  data: () => ({
-    password: '',
-    showSpinner: false,
-    disabledButton: false,
-    userPasswordAgreementLink: UserPasswordArticleLink,
-    showPassword: false
-  }),
-  computed: {
-    show: {
-      get() {
-        return this.modelValue
-      },
-      set(value) {
-        this.$emit('update:modelValue', value)
-      }
-    },
-    isValidForm() {
-      return this.password.length > 0
-    }
-  },
-  methods: {
-    openLink(link) {
-      window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
-    },
-    submit() {
-      if (!this.isValidForm) {
-        return
-      }
-      this.disabledButton = true
-      this.showSpinner = true
+const password = ref('')
+const showSpinner = ref(false)
+const disabledButton = ref(false)
+const showPassword = ref(false)
+const userPasswordAgreementLink = UserPasswordArticleLink
 
-      this.$store
-        .dispatch('setPassword', this.password)
-        .then((encodedPassword) => {
-          this.password = ''
+const show = computed({
+  get: () => props.modelValue,
+  set: (value) => emit('update:modelValue', value)
+})
 
-          this.$emit('password', encodedPassword)
+const isValidForm = computed(() => password.value.length > 0)
 
-          return encodedPassword
-        })
-        .then(() => {
-          return saveState(this.$store)
-        })
-        .catch((err) => {
-          console.error(err)
-        })
-        .finally(() => {
-          this.disabledButton = false
-          this.showSpinner = false
-          this.show = false
-        })
-    },
-    togglePasswordVisibility() {
-      this.showPassword = !this.showPassword
-    }
+const openLink = (link: string) => {
+  window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
+}
+
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value
+}
+
+const submit = () => {
+  if (!isValidForm.value) return
+
+  disabledButton.value = true
+  showSpinner.value = true
+
+  store
+    .dispatch('setPassword', password.value)
+    .then((encodedPassword) => {
+      password.value = ''
+      emit('password', encodedPassword)
+
+      return encodedPassword
+    })
+    .then(() => saveState(store))
+    .catch((err) => {
+      console.error(err)
+    })
+    .finally(() => {
+      disabledButton.value = false
+      showSpinner.value = false
+      show.value = false
+    })
+}
+
+const onKeydownHandler = (e: KeyboardEvent) => {
+  if (e.key === 'Escape' && show.value) {
+    e.stopPropagation()
+    show.value = false
+    window.removeEventListener('keydown', onKeydownHandler, true)
   }
 }
+
+onMounted(() => {
+  window.addEventListener('keydown', onKeydownHandler, true)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', onKeydownHandler, true)
+})
 </script>
