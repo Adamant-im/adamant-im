@@ -4,7 +4,7 @@ import {
   GetHeightResponseDto,
   RegisterChatMessageTransaction
 } from '@/lib/schema/client'
-import { NODE_LABELS } from '@/lib/nodes/constants'
+import { defaultTimeDelta, NODE_LABELS } from '@/lib/nodes/constants'
 import { AdmNode, Payload, RequestConfig } from './AdmNode'
 import { Client } from '../abstract.client'
 
@@ -72,10 +72,17 @@ export class AdmClient extends Client<AdmNode> {
   }
 
   getTimeDelta() {
+    const areNodesOnline = this.nodes.some((node) => node.getNodeStatus() === 'online')
+    if (!areNodesOnline) {
+      return defaultTimeDelta
+    }
+
     return this.getNode().timeDelta
   }
 
-  async sendChatTransaction(transaction: RegisterChatMessageTransaction): Promise<CreateNewChatMessageResponseDto> {
+  async sendChatTransaction(
+    transaction: RegisterChatMessageTransaction
+  ): Promise<CreateNewChatMessageResponseDto> {
     return this.post('/api/chats/process', () => ({ transaction }))
   }
 }

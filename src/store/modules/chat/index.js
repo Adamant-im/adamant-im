@@ -763,7 +763,7 @@ const actions = {
           })
         : message
 
-      const signedTransaction = await admApi.signChatMessageTransaction({
+      const signedTransaction = admApi.signChatMessageTransaction({
         to: recipientId,
         message: messageAsset,
         type

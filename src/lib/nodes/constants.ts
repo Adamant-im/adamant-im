@@ -42,3 +42,6 @@ export const NODE_LABELS: NodeLabels = {
   KlyIndexer: 'kly-indexer',
   RatesInfo: 'rates-info'
 }
+
+// Default timeDelta (s) in case there's no connection to get it from a node
+export const defaultTimeDelta = -5
