@@ -124,6 +124,8 @@ export default (store) => {
           store.commit('setIDBReady', true)
         })
         .then(() => {
+          store.dispatch('rate/getAllRates')
+
           if (!store.state.chat.isFulfilled) {
             store.commit('chat/createAdamantChats')
             return store.dispatch('chat/loadChats')
@@ -156,6 +158,7 @@ export default (store) => {
   } else if (store.getters.isLogged) {
     // is logged with passphrase
     store.dispatch('unlock')
+    store.dispatch('rate/getAllRates')
     store.commit('chat/createAdamantChats')
     store.dispatch('chat/loadChats').then(() => store.dispatch('startInterval'))
 

@@ -1,21 +1,27 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import wasm from 'vite-plugin-wasm'
-import topLevelAwait from 'vite-plugin-top-level-await'
-import path from 'path'
+import path from 'node:path'
 import autoprefixer from 'autoprefixer'
 import inject from '@rollup/plugin-inject'
 import commonjs from '@rollup/plugin-commonjs'
+import { fileURLToPath } from 'node:url'
 
 import { deferScripsPlugin } from './vite-config/plugins/deferScriptsPlugin'
 import { preloadCSSPlugin } from './vite-config/plugins/preloadCSSPlugin'
 import { excludeBip39Wordlists } from './vite-config/rollup/excludeBip39Wordlists'
 
+const env = loadEnv('production', process.cwd())
+const basePublicPath = env.VITE_PUBLIC_PATH || '/'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
 export default defineConfig({
+  base: basePublicPath,
   plugins: [
     wasm(),
-    topLevelAwait(),
     vue(),
     vueJsx(),
     commonjs(),
@@ -67,6 +73,7 @@ export default defineConfig({
     }
   },
   build: {
+    target: 'esnext',
     commonjsOptions: {
       include: []
     },

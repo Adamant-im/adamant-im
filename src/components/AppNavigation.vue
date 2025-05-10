@@ -5,15 +5,16 @@
     height="50"
     class="app-navigation"
     :elevation="0"
+    :absolute="absolute"
   >
     <!-- Wallet -->
-    <v-btn v-if="walletShouldBeVisible" to="/home">
+    <v-btn v-if="walletShouldBeVisible" to="/home" :exact="true" draggable="false">
       <v-icon :icon="mdiWallet" />
-      <span>{{ $t('bottom.wallet_button') }}</span>
+      <span>{{ t('bottom.wallet_button') }}</span>
     </v-btn>
 
     <!-- Chat -->
-    <v-btn to="/chats">
+    <v-btn to="/chats" draggable="false">
       <v-badge
         v-if="numOfNewMessages > 0"
         :value="numOfNewMessages"
@@ -25,79 +26,71 @@
       </v-badge>
       <v-icon v-else :icon="mdiForum" />
 
-      <span>{{ $t('bottom.chats_button') }}</span>
+      <span>{{ t('bottom.chats_button') }}</span>
     </v-btn>
 
     <!-- Settings -->
-    <v-btn to="/options">
+    <v-btn to="/options" draggable="false">
       <v-icon :icon="mdiCog" />
-      <span>{{ $t('bottom.settings_button') }}</span>
+      <span>{{ t('bottom.settings_button') }}</span>
     </v-btn>
   </v-bottom-navigation>
 </template>
-<script>
+<script lang="ts" setup>
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
-import { watch, onMounted, defineComponent, ref, computed } from 'vue'
+import { watch, onMounted, ref, computed } from 'vue'
 import { mdiWallet, mdiForum, mdiCog } from '@mdi/js'
+import { useI18n } from 'vue-i18n'
 
+defineProps({
+  absolute: Boolean
+})
 
-export default defineComponent({
-  setup() {
-    const pages = [
-      {
-        title: 'wallet',
-        link: '/home',
-      },
-      {
-        title: 'chats',
-        link: '/chats',
-      },
-      {
-        title: 'settings',
-        link: '/options',
-      }
-    ]
-    const currentPageIndex = ref(0)
-    const store = useStore()
-    const route = useRoute()
-    const getCurrentPageIndex = () => {
-      const currentPage = pages.find((page) => {
-        const pattern = new RegExp(`^${page.link}`)
-
-        return route.path.match(pattern)
-      })
-
-      return pages.indexOf(currentPage)
-    }
-    const numOfNewMessages = computed(() => store.getters['chat/totalNumOfNewMessages'])
-
-    const walletShouldBeVisible = computed(() => {
-      return !!store.getters['wallets/getVisibleSymbolsCount']
-    })
-
-    watch(route, () => {
-      currentPageIndex.value = getCurrentPageIndex()
-    })
-    onMounted(() => {
-      currentPageIndex.value = getCurrentPageIndex()
-    })
-
-    return {
-      currentPageIndex,
-      numOfNewMessages,
-      walletShouldBeVisible,
-      mdiWallet,
-      mdiForum,
-      mdiCog,
-      getCurrentPageIndex,
-    }
+const pages = [
+  {
+    title: 'wallet',
+    link: '/home'
+  },
+  {
+    title: 'chats',
+    link: '/chats'
+  },
+  {
+    title: 'settings',
+    link: '/options'
   }
+]
+const currentPageIndex = ref(0)
+const store = useStore()
+const route = useRoute()
+const { t } = useI18n()
+
+const getCurrentPageIndex = () => {
+  const currentPage = pages.find((page) => {
+    const pattern = new RegExp(`^${page.link}`)
+    return route.path.match(pattern)
+  })
+
+  return (currentPage && pages.indexOf(currentPage)) || 0
+}
+const numOfNewMessages = computed(() => store.getters['chat/totalNumOfNewMessages'])
+
+const walletShouldBeVisible = computed(() => {
+  return !!store.getters['wallets/getVisibleSymbolsCount']
+})
+
+watch(route, () => {
+  currentPageIndex.value = getCurrentPageIndex()
+})
+onMounted(() => {
+  currentPageIndex.value = getCurrentPageIndex()
 })
 </script>
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
 
 /**
  * 1. Navigation Button.
@@ -140,19 +133,19 @@ export default defineComponent({
 .v-theme--light {
   .app-navigation {
     &__container {
-      border-top: 1px solid map-get($grey, 'lighten-2');
+      border-top: 1px solid map.get(settings.$grey, 'lighten-2');
     }
     &.v-bottom-navigation {
-      background-color: map-get($shades, 'white');
+      background-color: map.get(settings.$shades, 'white');
     }
     :deep(.v-btn.v-btn--active) {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
     :deep(.v-btn:not(.v-btn--active)) {
-      color: map-get($adm-colors, 'muted') !important;
+      color: map.get(colors.$adm-colors, 'muted') !important;
     }
     :deep(.v-bottom-navigation__content) {
-      border-top: 1px solid map-get($grey, 'lighten-2');
+      border-top: 1px solid map.get(settings.$grey, 'lighten-2');
     }
   }
 }
@@ -160,13 +153,13 @@ export default defineComponent({
 .v-theme--dark {
   .app-navigation {
     &.v-bottom-navigation {
-      background-color: map-get($adm-colors, 'black');
+      background-color: map.get(colors.$adm-colors, 'black');
     }
     :deep(.v-btn.v-btn--active) {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
     :deep(.v-btn:not(.v-btn--active)) {
-      color: map-get($adm-colors, 'grey-transparent');
+      color: map.get(colors.$adm-colors, 'grey-transparent');
     }
   }
 }

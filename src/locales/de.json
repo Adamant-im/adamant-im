@@ -1,5 +1,5 @@
 {
-  "app_title": "ADAMANT Messenger",
+  "app_title": "ADAMANT",
   "bottom": {
     "chats_button": "Chats",
     "exit_button": "Abmelden",
@@ -9,8 +9,6 @@
     "wallet_button": "Account"
   },
   "chats": {
-    "attach_file": "Attach file",
-    "attach_image": "Attach image",
     "date_today": "Heute",
     "date_tomorrow": "Morgen",
     "date_yesterday": "Gestern",
@@ -115,9 +113,6 @@
     "popup_title": "Set password",
     "remove_password": "Remove password",
     "remove_password_hint": "Or remove password for login via passphrase",
-    "user_password_forget": "Forget",
-    "user_password_hint": "User password",
-    "user_password_title": "Password for unlock",
     "user_password_unlock": "Unlock"
   },
   "nodes": {
@@ -150,9 +145,6 @@
     "currency_label": "Hauptwährung",
     "dark_theme": "Enable dark theme",
     "delegates_title": "Delegates",
-    "downvote_for_label": "Downvote for:",
-    "enable_bar": "Ändere den Browser Tab Titel",
-    "enable_bar_tooltip": "Zeigt dir die Anzahl an neuen Nachrichten im Tab Titel an. Funktioniert nur bei Desktop Browser.",
     "enable_desktop": "Browser Benachrichtigung",
     "enable_desktop_tooltip": "Verwende integrierte Browser Benachrichtigungen (Erfordert deine Zustimmung)",
     "enable_sound": "Ton",
@@ -169,7 +161,6 @@
     "security_title": "Sicherheit",
     "send_on_enter": "Send messages by Enter key",
     "send_on_enter_tooltip": "Nachricht senden bei ENTER",
-    "upvote_for_label": "Vote for:",
     "version": "App Version: ",
     "vote_for_delegates_button": "Vote for delegates",
     "wallets_list": "Liste der Geldbörsen"
@@ -182,12 +173,6 @@
     "connect_camera": "Connect the camera and try again",
     "grant_camera_permissions": "Erteilen Sie Kamera Berechtigungen in den Browsereinstellungen und versuchen Sie es erneut",
     "hold_your_device": "Hold your device steady for 2-3 seconds towards the QR code you want to scan",
-    "login": {
-      "modal_header": "Scan QR code with a passphrase"
-    },
-    "new-chat": {
-      "modal_header": "Scan QR code with ADM wallet address"
-    },
     "no_camera_access": "Kein zugriff auf die kamera",
     "no_camera_found": "No camera found",
     "no_camera_stream": "Kein Video Stream von Kamera",
@@ -232,8 +217,6 @@
     "crypto": "Cryptocurrency",
     "decode_from_camera": "Scan QR with camera",
     "decode_from_image": "Read QR from image",
-    "error_chat_fee": "To send {crypto} from chat, you also need 0.001 ADM",
-    "error_erc20_fee": "You also need {fee} to pay the transfer fee",
     "error_field_is_required": "Field is required",
     "error_incorrect_address": "Keine gültige {crypto} Wallet Adresse",
     "error_incorrect_amount": "Kein gültiger Betrag",
@@ -241,7 +224,6 @@
     "error_no_amount": "Bitte gib hier einen Betrag ein",
     "error_not_enough": "Nicht genug Token",
     "error_same_recipient": "Recipient address can not be same as sender address",
-    "error_transfer_send": "Error while sending transaction",
     "error_unknown": "Unknown error. Weak connection?",
     "error_no_hash": "Failed. Unable to get Tx hash",
     "final_amount_label": "Betrag inklusive Transaktionsgebühr",
@@ -250,6 +232,7 @@
     "max_transfer": "Max to transfer",
     "no_address_text": "This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.",
     "no_address_title": "Recipient has no {crypto} wallet yet",
+    "page_title": "Send funds",
     "send_button": "Betrag senden",
     "to_address_label": "An die Adresse",
     "to_name_label": "To {name}"
@@ -261,16 +244,10 @@
     "delegate_forging_time": "Forging time",
     "delegate_link": "Link",
     "delegate_uptime": "Uptime",
-    "downvote_for_label": "Downvote for:",
     "downvotes": "Downvotes",
-    "filter_placeholder": "Name or ADAMANT wallet address",
-    "min": "min",
-    "no_data_available": "No data available",
     "no_money": "You need 50 ADM to vote",
-    "now": "Now!",
     "page_title": "Votes",
     "search": "Search",
-    "sec": "sec",
     "select_delegates": "First select delegates",
     "sent": "Votes have been sent",
     "stake_info": "Um ADM einzusetzen und belohnungen zu erhalten, stimmen sie für einen aktiven Forging-Pool, dem sie vertrauen. Mehr dazu lesen sie im <a target=\"_blank\" href=\"https://news.adamant.im/hodl-list-of-adamant-pools-join-in-and-get-rewards-491a98610f4b\">ADAMANT blog</a>.",
@@ -282,11 +259,9 @@
     "total_new_votes": "Total new votes",
     "total_votes": "Total votes",
     "transaction_confirm_await": "Transaction is running, please be patient…",
-    "upvote_for_label": "Vote for:",
     "upvotes": "Upvotes",
     "vote_button_text": "Vote",
     "vote_request_limit": "Vote request limit: {limit}",
-    "voting_cost": "Voting cost",
     "waiting_confirmations": "Waiting for confirmations"
   },
   "wallets": {

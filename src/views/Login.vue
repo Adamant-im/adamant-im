@@ -1,14 +1,22 @@
 <template>
-  <v-row justify="center" no-gutters :class="className">
+  <v-row justify="center" no-gutters :class="`${className} pa-4`">
     <container>
       <div :class="`${className}__buttons`">
         <div class="text-right">
           <language-switcher :prepend-icon="mdiChevronRight" />
         </div>
-        <div :class="`${className}__settings-button`">
-          <v-btn @click="$router.push('/options/nodes')" icon variant="plain" :size="32">
-            <v-icon :icon="mdiCog" />
-          </v-btn>
+        <div :class="`${className}__settings-button-container`">
+          <router-link to="/options/nodes" custom #default="{ navigate }">
+            <v-btn
+              @click="navigate"
+              icon
+              variant="plain"
+              :size="32"
+              :class="`${className}__settings-button`"
+            >
+              <v-icon :icon="mdiCog" />
+            </v-btn>
+          </router-link>
         </div>
       </div>
 
@@ -193,23 +201,26 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
 
 .login-page {
   height: 100%;
 
   &__title {
-    font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-      Arial, sans-serif;
+    font-family:
+      -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+      sans-serif;
     font-weight: 100;
     font-size: 40px;
     line-height: 40px;
     text-transform: uppercase;
   }
   &__subtitle {
-    font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-      Arial, sans-serif;
+    font-family:
+      -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+      sans-serif;
     font-weight: 100;
     font-size: 18px;
   }
@@ -219,29 +230,46 @@ export default defineComponent({
   &__buttons {
     position: relative;
   }
-  &__settings-button {
+  &__settings-button-container {
     position: absolute;
     right: 0;
     margin-right: 8px;
-    color: map-get($adm-colors, 'grey-transparent');
+  }
+  &__settings-button {
+    &:hover > ::v-deep(.v-btn__overlay) {
+      display: block;
+      opacity: 0.06;
+    }
   }
 }
 
 /** Themes **/
 .v-theme--light {
   .login-page {
-    &__icon,
     &__title,
-    &__subtitle,
-    &__settings-button {
-      color: map-get($adm-colors, 'regular');
+    &__subtitle {
+      color: map.get(colors.$adm-colors, 'regular');
+    }
+
+    &__icon {
+      color: map.get(colors.$adm-colors, 'black2');
+      opacity: 0.62;
+
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 }
 .v-theme--dark {
   .login-page {
     &__icon {
-      color: map-get($shades, 'white');
+      color: map.get(colors.$adm-colors, 'grey-transparent');
+
+      &:hover {
+        color: map.get(colors.$adm-colors, 'secondary');
+        opacity: 1;
+      }
     }
   }
 }

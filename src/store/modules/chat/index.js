@@ -9,16 +9,23 @@ import {
   createTransaction,
   createReaction,
   normalizeMessage,
-  createAttachment
+  createAttachment,
+  queueSignedMessage
 } from '@/lib/chat/helpers'
 import { i18n } from '@/i18n'
 import { isNumeric } from '@/lib/numericHelpers'
-import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
+import {
+  CHAT_ACTUALITY_BUFFER_MS,
+  Cryptos,
+  TransactionStatus as TS,
+  MessageType
+} from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
 import { uploadFiles } from '../../../lib/files'
 import { generateAdamantChats } from './utils/generateAdamantChats'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
+import adamant from '@/lib/adamant'
 
 export let interval
 
@@ -49,7 +56,8 @@ const state = () => ({
   lastMessageHeight: 0, // `height` value of the last message
   isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
   offset: 0, // for loading chat list with pagination. -1 if all of chats loaded
-  noActiveNodesDialog: undefined // true - visible dialog, false - hidden dialog, but shown before, undefined - not shown
+  noActiveNodesDialog: undefined, // true - visible dialog, false - hidden dialog, but shown before, undefined - not shown
+  chatsActualUntil: 0
 })
 
 const getters = {
@@ -72,6 +80,15 @@ const getters = {
     }
 
     return []
+  },
+
+  /**
+   * Returns the timeout for chatsActual
+   * @depends options.useSocketConnection
+   * @returns {number}
+   */
+  chatsPollingTimeout: (state, getters, rootState) => {
+    return rootState.options.useSocketConnection ? SOCKET_ENABLED_TIMEOUT : SOCKET_DISABLED_TIMEOUT
   },
 
   reactions: (state, getters) => (transactionId, partnerId) => {
@@ -276,12 +293,14 @@ const getters = {
         const message = getters.lastMessage(partnerId)
 
         return {
-          timestamp: Date.now(), // give priority to new chats without messages (will be overwritten by ...message)
-          ...message,
+          lastMessage: {
+            timestamp: Date.now(), // give priority to new chats without messages (will be overwritten by ...message)
+            ...message
+          },
           contactId: partnerId
         }
       })
-      .sort((left, right) => right.timestamp - left.timestamp)
+      .sort((left, right) => right.lastMessage.timestamp - left.lastMessage.timestamp)
   },
 
   scrollPosition: (state) => (contactId) => {
@@ -354,6 +373,10 @@ const mutations = {
    */
   setFulfilled(state, value) {
     state.isFulfilled = value
+  },
+
+  setChatsActualUntil(state, value) {
+    state.chatsActualUntil = value
   },
 
   /**
@@ -643,15 +666,21 @@ const actions = {
    * This is a temporary solution until the sockets are implemented.
    * @returns {Promise}
    */
-  getNewMessages({ state, commit, dispatch }) {
+  getNewMessages({ getters, state, commit, dispatch }) {
     if (!state.isFulfilled) {
       return Promise.reject(new Error('Chat is not fulfilled'))
     }
 
     return getChats(state.lastMessageHeight).then((result) => {
-      const { messages, lastMessageHeight } = result
+      const { messages, lastMessageHeight, nodeTimestamp } = result
+      const chatsActualInterval = getters.chatsPollingTimeout
 
       dispatch('pushMessages', messages)
+
+      const validUntil =
+        adamant.toTimestamp(nodeTimestamp) + chatsActualInterval + CHAT_ACTUALITY_BUFFER_MS
+
+      commit('setChatsActualUntil', validUntil)
 
       if (lastMessageHeight > 0) {
         commit('setHeight', lastMessageHeight)
@@ -712,55 +741,62 @@ const actions = {
    * @param {string} replyToId Optional
    * @returns {Promise}
    */
-  sendMessage({ commit, rootState }, { message, recipientId, replyToId }) {
-    const messageObject = createMessage({
-      message,
-      recipientId,
-      senderId: rootState.address,
-      replyToId
-    })
+  async sendMessage({ commit, rootState }, { message, recipientId, replyToId }) {
+    let id
+    try {
+      const type = replyToId
+        ? MessageType.RICH_CONTENT_MESSAGE
+        : MessageType.BASIC_ENCRYPTED_MESSAGE
 
-    commit('pushMessage', {
-      message: messageObject,
-      userId: rootState.address
-    })
+      const messageAsset = replyToId
+        ? replyMessageAsset({
+            replyToId,
+            replyMessage: message
+          })
+        : message
 
-    const type = replyToId ? MessageType.RICH_CONTENT_MESSAGE : MessageType.BASIC_ENCRYPTED_MESSAGE
-    const messageAsset = replyToId
-      ? replyMessageAsset({
-          replyToId,
-          replyMessage: message
-        })
-      : message
-
-    return queueMessage(messageAsset, recipientId, type)
-      .then((res) => {
-        // @todo this check must be performed on the server
-        if (!res.success) {
-          throw new Error(i18n.global.t('chats.message_rejected'))
-        }
-
-        // update `message.status` to 'REGISTERED'
-        // and `message.id` with `realId` from server
-        commit('updateMessage', {
-          id: messageObject.id,
-          realId: res.transactionId,
-          status: TS.REGISTERED, // not confirmed yet, wait to be stored in the blockchain (optional line)
-          partnerId: recipientId
-        })
-
-        return res
+      const signedTransaction = await admApi.signChatMessageTransaction({
+        to: recipientId,
+        message: messageAsset,
+        type
       })
-      .catch((err) => {
-        // update `message.status` to 'REJECTED'
+
+      id = adamant.getTransactionId(signedTransaction)
+
+      const messageObject = createMessage({
+        id,
+        message,
+        recipientId,
+        senderId: rootState.address,
+        replyToId
+      })
+
+      commit('pushMessage', {
+        message: messageObject,
+        userId: rootState.address
+      })
+
+      const transaction = await queueSignedMessage(signedTransaction)
+
+      if (!transaction.success) {
+        throw new Error(i18n.global.t('chats.message_rejected'))
+      }
+
+      commit('updateMessage', {
+        id,
+        status: TS.REGISTERED,
+        partnerId: recipientId
+      })
+    } catch (error) {
+      if (id) {
         commit('updateMessage', {
-          id: messageObject.id,
+          id,
           status: TS.REJECTED,
           partnerId: recipientId
         })
-
-        throw err // call the error again so that it can be processed inside view
-      })
+      }
+      throw error
+    }
   },
 
   /**
@@ -1032,14 +1068,12 @@ const actions = {
 
   startInterval: {
     root: true,
-    handler({ dispatch, rootState }) {
+    handler({ dispatch, getters }) {
       function repeat() {
         dispatch('getNewMessages')
           .catch((err) => console.error(err))
           .then(() => {
-            const timeout = rootState.options.useSocketConnection
-              ? SOCKET_ENABLED_TIMEOUT
-              : SOCKET_DISABLED_TIMEOUT
+            const timeout = getters.chatsPollingTimeout
             interval = setTimeout(repeat, timeout)
           })
       }

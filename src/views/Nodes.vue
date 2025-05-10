@@ -1,54 +1,21 @@
 <template>
-  <div :class="className">
-    <app-toolbar-centered app :title="$t('options.nodes_list')" :show-back="true" flat fixed />
-
-    <v-container fluid class="px-0 container--with-app-toolbar">
-      <v-row justify="center" no-gutters>
-        <container padding>
-          <NodesTable />
-        </container>
-      </v-row>
-    </v-container>
-  </div>
+  <NodesTable />
 </template>
 
-<script>
-import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
+<script setup lang="ts">
 import NodesTable from '@/components/nodes/NodesTable.vue'
 import { nodesManager } from '@/lib/nodes'
+import { useStore } from 'vuex'
+import { onMounted, onBeforeUnmount } from 'vue'
 
-export default {
-  components: {
-    NodesTable,
-    AppToolbarCentered
-  },
-  data: () => ({
-    pagination: {
-      sortBy: 'name'
-    },
-    timer: null
-  }),
-  computed: {
-    className: () => 'nodes-view'
-  },
-  mounted() {
-    this.$store.dispatch('nodes/updateStatus')
+const store = useStore()
 
-    nodesManager.updateHealthcheckInterval('onScreen')
-  },
-  beforeUnmount() {
-    nodesManager.updateHealthcheckInterval('normal')
-  }
-}
+onMounted(() => {
+  store.dispatch('nodes/updateStatus')
+  nodesManager.updateHealthcheckInterval('onScreen')
+})
+
+onBeforeUnmount(() => {
+  nodesManager.updateHealthcheckInterval('normal')
+})
 </script>
-
-<style lang="scss" scoped>
-@import 'vuetify/settings';
-
-.nodes-view {
-}
-
-/** Themes **/
-.v-theme--light {
-}
-</style>
