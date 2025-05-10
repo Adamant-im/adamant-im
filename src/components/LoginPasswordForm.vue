@@ -35,14 +35,14 @@
           </v-btn>
         </slot>
       </v-col>
-      <v-col cols="12" class="a-text-regular mt-8">
-        {{ t('login_via_password.remove_password_hint') }}
-      </v-col>
-      <v-col cols="12">
-        <v-btn class="a-btn-link" variant="text" size="small" @click="removePassword">
+      <div class="text-center mt-11">
+        <h3 class="a-text-regular">
+          {{ t('login_via_password.remove_password_hint') }}
+        </h3>
+        <v-btn class="a-btn-link mt-2" variant="text" size="small" @click="removePassword">
           {{ t('login_via_password.remove_password') }}
         </v-btn>
-      </v-col>
+      </div>
     </v-row>
   </v-form>
 </template>

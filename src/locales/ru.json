@@ -164,7 +164,9 @@
     "save_qr_code_to_images": "Сохранить в изображениях",
     "save_qr_code_tooltip": "Сохранить пассфразу как изображение с QR-кодом. ⚠️ Высокий риск утечки.",
     "scan_qr_code_button_tooltip": "Сканировать камерой QR-код с парольной фразой",
-    "subheader": "Децентрализованный мессенджер"
+    "subheader": "Децентрализованный мессенджер",
+    "show_passphrase_tooltip": "Показать пассфразу",
+    "hide_passphrase_tooltip": "Скрыть пассфразу"
   },
   "login_via_password": {
     "article": "блоге АДАМАНТа",
