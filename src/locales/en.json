@@ -164,7 +164,9 @@
     "save_qr_code_to_images": "Save to images",
     "save_qr_code_tooltip": "Save passphrase as a QR code. ⚠️ High risk of leakage.",
     "scan_qr_code_button_tooltip": "Scan QR code with passphrase using your camera",
-    "subheader": "Decentralized messenger"
+    "subheader": "Decentralized messenger",
+    "show_passphrase_tooltip": "Show passphrase",
+    "hide_passphrase_tooltip": "Hide passphrase"
   },
   "login_via_password": {
     "article": "ADAMANT Blog",
