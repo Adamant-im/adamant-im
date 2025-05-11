@@ -53,6 +53,7 @@ import { onBeforeRouteUpdate, RouteLocationNormalizedLoaded, useRoute, useRouter
 import { useI18n } from 'vue-i18n'
 import navigationGuard from '@/router/navigationGuard'
 import { CoinTransaction } from '@/lib/nodes/types/transaction'
+import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 
 const props = withDefaults(
   defineProps<{
@@ -99,6 +100,10 @@ const transactions = computed(() => {
   })
 })
 const hasTransactions = computed(() => transactions.value && transactions.value.length > 0)
+const nodes = computed<NodeStatusResult[]>(
+  () => store.getters[`nodes/${props.crypto.toLowerCase()}`]
+)
+const areNodesDisabled = computed(() => nodes.value?.some((node) => node.status === 'disabled'))
 
 onBeforeRouteUpdate((to, from, next) => {
   navigationGuard.transactions(to, from, next)
@@ -125,6 +130,10 @@ const getNewTransactions = () => {
           message = t('errors.all_nodes_offline', {
             crypto: err.nodeLabel.toUpperCase()
           })
+
+          if (!areNodesDisabled.value) {
+            return
+          }
         } else if (err instanceof AllNodesDisabledError) {
           message = t('errors.all_nodes_disabled', {
             crypto: err.nodeLabel.toUpperCase()
