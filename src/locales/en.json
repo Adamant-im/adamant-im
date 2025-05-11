@@ -164,7 +164,9 @@
     "save_qr_code_to_images": "Save to images",
     "save_qr_code_tooltip": "Save passphrase as a QR code. ⚠️ High risk of leakage.",
     "scan_qr_code_button_tooltip": "Scan QR code with passphrase using your camera",
-    "subheader": "Decentralized messenger"
+    "subheader": "Decentralized messenger",
+    "show_passphrase_tooltip": "Show passphrase",
+    "hide_passphrase_tooltip": "Hide passphrase"
   },
   "login_via_password": {
     "article": "ADAMANT Blog",
@@ -355,6 +357,7 @@
     "no_address_title": "Recipient has no public {crypto} wallet",
     "legacy_address_text": "This user has a legacy {crypto} wallet. It will automatically update when they log in using the newest app version.",
     "legacy_address_title": "Recipient has legacy {crypto} wallet",
+    "page_title": "Send funds",
     "send_button": "Send",
     "to_address_label": "To Address",
     "to_name_label": "To {name}",

@@ -109,7 +109,7 @@ import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 import Icon from '@/components/icons/BaseIcon.vue'
 import currency from '@/filters/currencyAmountWithSymbol'
 import formatDate from '@/filters/dateBrief'
-import { formatMessage } from '@/lib/markdown'
+import { formatChatPreviewMessage } from '@/lib/markdown'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { isStringEqualCI } from '@/lib/textHelpers'
@@ -196,7 +196,7 @@ const lastMessageTextLocalized = computed(() =>
 )
 const lastMessageTextNoFormats = computed(() => {
   if (isAdamantChat(contactId.value) || store.state.options.formatMessages) {
-    return formatMessage(lastMessageTextLocalized.value)
+    return formatChatPreviewMessage(lastMessageTextLocalized.value)
   }
 
   return lastMessageTextLocalized.value

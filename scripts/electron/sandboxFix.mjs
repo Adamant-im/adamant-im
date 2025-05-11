@@ -16,10 +16,10 @@ const afterPackHook = async (params) => {
 
   const executable = path.join(params.appOutDir, params.packager.executableName)
 
-  const binPath = path.join(path.dirname(executable), `${params.packager.executableName}.bin`)
-
   const loaderScript = `#!/usr/bin/env bash
-exec "${binPath}" "--no-sandbox" "$@"
+set -u
+SCRIPT_DIR="$( cd "$( dirname "\${BASH_SOURCE[0]}" )" && pwd )"
+exec "$SCRIPT_DIR/${params.packager.executableName}.bin" "--no-sandbox" "$@"
 `
   try {
     await fs.rename(executable, executable + '.bin')

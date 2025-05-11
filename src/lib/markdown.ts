@@ -67,23 +67,29 @@ export function renderMarkdown(text = '') {
  * @param {string} text text to process
  * @returns {string} resulting clear text of the first line
  */
-export function removeFormats(text = '') {
-  const node = document.createElement('div')
-  const textWithSymbol = text.replace(/\n/g, '↵ ')
-  node.innerHTML = marked.parse(sanitizeHTML(textWithSymbol), { async: false })
-
-  return node.textContent || node.innerText || ''
-}
-
-export function formatMessage(text = '') {
+export function formatMessageBasic(text = '') {
   const node = document.createElement('div')
 
   const textWithSymbol = text.replace(/\n/g, LINE_BREAK_VISUAL)
   node.innerHTML = marked.parse(sanitizeHTML(textWithSymbol), { async: false })
 
-  const textWithoutHtml = node.textContent || node.innerText || ''
+  let textWithoutHtml = node.textContent || node.innerText || ''
+
+  textWithoutHtml = textWithoutHtml
+    .replace(LINE_SEPARATOR, LINE_BREAK_VISUAL)
+    .split(LINE_BREAK_VISUAL)
+    // strip all markdown heading signs (#) but only if they are at the beginning of the line
+    .map((line) => line.replace(/^[#]+ /, ''))
+    .join(LINE_BREAK_VISUAL)
 
   return textWithoutHtml
-    .replace(LINE_SEPARATOR, LINE_BREAK_VISUAL)
-    .replace(/↵/g, '<span class="arrow-return">↵</span>')
+}
+
+/**
+ * Formats a message for display in a chat preview
+ * @param {string} text text to process
+ * @returns {string} resulting clear text of the first line
+ */
+export function formatChatPreviewMessage(text = '') {
+  return formatMessageBasic(text).replace(/↵/g, '<span class="arrow-return">↵</span>')
 }

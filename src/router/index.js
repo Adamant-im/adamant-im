@@ -183,7 +183,7 @@ const routes = [
 
 const router = createRouter({
   history:
-    process.env.VUE_APP_ELECTRON_MODE === 'production'
+    import.meta.env.VITE_ROUTER_HISTORY_MODE === 'hash'
       ? createWebHashHistory()
       : createWebHistory(),
   routes,
