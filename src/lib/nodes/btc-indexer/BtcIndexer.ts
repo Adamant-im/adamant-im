@@ -19,9 +19,13 @@ export class BtcIndexer extends Node<AxiosInstance> {
 
   protected async checkHealth() {
     const time = Date.now()
-    const blockNumber = await this.client.get('/blocks/tip/height').then((res) => {
-      return Number(res.data) || 0
-    })
+    const blockNumber = await this.client
+      .get('/blocks/tip/height', {
+        baseURL: this.preferAltIp ? this.altIp : this.url
+      })
+      .then((res) => {
+        return Number(res.data) || 0
+      })
 
     return {
       height: Number(blockNumber),

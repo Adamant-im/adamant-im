@@ -19,7 +19,11 @@ export class DogeIndexer extends Node<AxiosInstance> {
 
   protected async checkHealth() {
     const time = Date.now()
-    const height = await this.client.get('/api/status').then((res) => res.data.info.blocks)
+    const height = await this.client
+      .get('/api/status', {
+        baseURL: this.preferAltIp ? this.altIp : this.url
+      })
+      .then((res) => res.data.info.blocks)
 
     return {
       height,
