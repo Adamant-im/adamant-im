@@ -122,7 +122,7 @@ const el = ref<HTMLElement | null>(null)
 const displayedPassphrase = computed(() => {
   return showSuggestedPassphrase.value
     ? passphrase.value
-    : '*** *** *** *** *** *** *** *** *** *** *** *** '
+    : '⁕⁕⁕ ⁕⁕⁕ ⁕⁕⁕ ⁕⁕⁕ ⁕⁕⁕ ⁕⁕⁕ ⁕⁕⁕ ⁕⁕⁕ ⁕⁕⁕ ⁕⁕⁕ ⁕⁕⁕ ⁕⁕⁕'
 })
 
 const passphraseVisibilityTooltip = computed(() => {
@@ -227,6 +227,7 @@ const togglePassphraseVisibility = () => {
     }
   }
   &__icons {
+    margin-top: -4px;
     > *:not(:first-child) {
       margin-left: 20px;
     }
