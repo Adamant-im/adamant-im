@@ -41,12 +41,19 @@
 </template>
 
 <script lang="ts" setup>
-import { useRoute } from 'vue-router'
-import { computed, useTemplateRef, ref, provide } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { computed, useTemplateRef, ref, provide, onMounted, onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex'
 import LeftSide from '@/components/LeftSide.vue'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { sidebarLayoutKey } from '@/lib/constants'
+import { useChatStateStore } from '@/stores/modal-state'
+import { storeToRefs } from 'pinia'
+
+const store = useStore()
+const chatStateStore = useChatStateStore()
+const route = useRoute()
+const router = useRouter()
 
 const sidebarLayoutRef = useTemplateRef('sidebarLayout')
 
@@ -66,9 +73,6 @@ const classes = {
 }
 
 const layout = computed(() => route.meta.layout || 'default')
-
-const route = useRoute()
-const store = useStore()
 
 const SAVED_WIDTH_KEY = 'aside_width'
 
@@ -145,7 +149,66 @@ if (SAVED_WIDTH_KEY) {
     asideWidth.value = value
   }
 }
+
+const {
+  actionsDropdownMessageId,
+  isShowPartnerInfoDialog,
+  isShowFreeTokensDialog,
+  isShowSetPasswordDialog,
+  isChatMenuOpen,
+  isEmojiPickerOpen
+} = storeToRefs(chatStateStore)
+const { setShowChatStartDialog } = chatStateStore
+const isSnackbarShowing = computed(() => store.state.snackbar.show)
+const noActiveNodesDialog = computed(() => store.state.chat.noActiveNodesDialog)
+const isShowChatStartDialog = computed({
+  get: () => chatStateStore.isShowChatStartDialog,
+  set: (value) => setShowChatStartDialog(value)
+})
+
+const canPressEscape = computed(() => {
+  return (
+    !noActiveNodesDialog.value &&
+    !isShowChatStartDialog.value &&
+    !isShowFreeTokensDialog.value &&
+    !isShowSetPasswordDialog.value &&
+    !isSnackbarShowing.value &&
+    !isShowPartnerInfoDialog.value &&
+    !isChatMenuOpen.value &&
+    !isEmojiPickerOpen.value &&
+    actionsDropdownMessageId.value === -1
+  )
+})
+
+const onKeydownHandler = (e: KeyboardEvent) => {
+  if (canPressEscape.value && e.key === 'Escape') {
+    if (route.query.from?.includes('chats')) {
+      router.push(route.query.from as string)
+      return
+    }
+
+    const parentRoute = route.matched.length > 1 ? route.matched.at(-2) : null
+
+    if (parentRoute) {
+      router.push({
+        name: parentRoute.name,
+        params: { ...route.params }
+      })
+
+      return
+    }
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('keydown', onKeydownHandler)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onKeydownHandler)
+})
 </script>
+
 <style lang="scss" scoped>
 @use 'sass:map';
 @use 'vuetify/settings';

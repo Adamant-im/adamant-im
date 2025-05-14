@@ -91,8 +91,7 @@ import {
   ref,
   watch
 } from 'vue'
-import { useChatStateStore } from '@/stores/chat-state'
-import { storeToRefs } from 'pinia'
+import { useChatStateStore } from '@/stores/modal-state'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { useChatsSpinner } from '@/hooks/useChatsSpinner'
@@ -111,50 +110,29 @@ const props = withDefaults(
 )
 
 const store = useStore()
+const chatStateStore = useChatStateStore()
 const router = useRouter()
+const route = useRoute()
 const { t } = useI18n()
 const showSpinner = useChatsSpinner()
-const route = useRoute()
-const chatStateStore = useChatStateStore()
 
 const className = 'chats-view'
 
-const {
-  actionsDropdownMessageId,
-  isShowPartnerInfoDialog,
-  isShowFreeTokensDialog,
-  isChatMenuOpen,
-  isEmojiPickerOpen
-} = storeToRefs(chatStateStore)
 const { setShowChatStartDialog } = chatStateStore
+
+const isShowChatStartDialog = computed({
+  get: () => chatStateStore.isShowChatStartDialog,
+  set: (value) => setShowChatStartDialog(value)
+})
 
 const lastPartnerId = ref<string | null>(null)
 const savedRoute = ref(null)
 const loading = ref(false)
 const noMoreChats = ref(false)
 const loadingSeparator = ref<InstanceType<typeof ChatPreview>[]>([])
-
 const chatPagePartnerId = computed(() => {
   // We assume partnerId to always be a string
   return route.params.partnerId as string
-})
-const isSnackbarShowing = computed(() => store.state.snackbar.show)
-const noActiveNodesDialog = computed(() => store.state.chat.noActiveNodesDialog)
-const isShowChatStartDialog = computed({
-  get: () => chatStateStore.isShowChatStartDialog,
-  set: (value) => setShowChatStartDialog(value)
-})
-const canPressEscape = computed(() => {
-  return (
-    !noActiveNodesDialog.value &&
-    !isShowChatStartDialog.value &&
-    !isShowFreeTokensDialog.value &&
-    !isSnackbarShowing.value &&
-    !isShowPartnerInfoDialog.value &&
-    !isChatMenuOpen.value &&
-    !isEmojiPickerOpen.value &&
-    actionsDropdownMessageId.value === -1
-  )
 })
 const isFulfilled = computed(() => store.state.chat.isFulfilled)
 const lastMessages = computed(() => store.getters['chat/lastMessages'])
@@ -189,13 +167,11 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-  document.addEventListener('keydown', onKeydownHandler)
   setShowChatStartDialog(props.showNewContact)
   attachScrollListener()
 })
 
 onBeforeUnmount(() => {
-  document.removeEventListener('keydown', onKeydownHandler)
   destroyScrollListener()
 })
 
@@ -211,20 +187,6 @@ watch(chatPagePartnerId, (value) => {
 
 const checkIsActive = (contactId: string) => {
   return route.name !== 'Chats' && contactId === lastPartnerId.value
-}
-
-const onKeydownHandler = (e: KeyboardEvent) => {
-  if (canPressEscape.value) {
-    if (e.key === 'Escape') {
-      if (route.query.from?.includes('chats')) {
-        router.push(route.query.from as string)
-        return
-      }
-      router.push({
-        name: 'Chats'
-      })
-    }
-  }
 }
 
 const openChat = (partnerId: string, messageText?: string) => {

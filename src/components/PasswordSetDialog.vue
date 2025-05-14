@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useI18n } from 'vue-i18n'
@@ -97,7 +97,9 @@ const userPasswordAgreementLink = UserPasswordArticleLink
 
 const show = computed({
   get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value)
+  set: (value) => {
+    emit('update:modelValue', value)
+  }
 })
 
 const isValidForm = computed(() => password.value.length > 0)
@@ -134,20 +136,4 @@ const submit = () => {
       show.value = false
     })
 }
-
-const onKeydownHandler = (e: KeyboardEvent) => {
-  if (e.key === 'Escape' && show.value) {
-    e.stopPropagation()
-    show.value = false
-    window.removeEventListener('keydown', onKeydownHandler, true)
-  }
-}
-
-onMounted(() => {
-  window.addEventListener('keydown', onKeydownHandler, true)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('keydown', onKeydownHandler, true)
-})
 </script>
