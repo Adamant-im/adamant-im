@@ -362,6 +362,10 @@ const actionsMenuMessageId = ref<string | -1>(-1)
 const replyMessageId = ref<string | -1>(-1)
 const showEmojiPicker = ref(false)
 
+// to handle loading spinner and allow fetching messages while the spinner is shown
+// in case of connection troubles while first fetching
+const allowFetchingMessages = ref(true)
+
 const chatStateStore = useChatStateStore()
 
 const { setShowFreeTokensDialog, setActionsDropdownMessageId } = chatStateStore
@@ -745,17 +749,26 @@ const isTransaction = (type: string) => {
 }
 const fetchChatMessages = () => {
   if (noMoreMessages.value) return
-  if (loading.value) return
+  if (loading.value && !allowFetchingMessages.value) return
 
   loading.value = true
 
   return store
     .dispatch('chat/getChatRoomMessages', { contactId: props.partnerId })
+    .then(() => {
+      loading.value = false
+      allowFetchingMessages.value = false
+    })
     .catch(() => {
-      noMoreMessages.value = true
+      if (store.getters['chat/chatListOffset'] === -1) {
+        noMoreMessages.value = true
+        loading.value = false
+        allowFetchingMessages.value = false
+      }
+
+      allowFetchingMessages.value = true
     })
     .finally(() => {
-      loading.value = false
       chatRef.value.maintainScrollPosition()
     })
 }
