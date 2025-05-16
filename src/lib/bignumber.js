@@ -115,4 +115,4 @@ BigNumber.prototype.toBuffer = function (opts) {
   return buf
 }
 
-export default BigNumber
+export { BigNumber }
