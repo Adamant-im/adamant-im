@@ -167,11 +167,11 @@ export const TransactionAdditionalStatus = {
 }
 
 export const tsIcon = function (status: TransactionStatusType) {
-  if (status === TransactionStatus.CONFIRMED) {
+  if (status === TransactionStatus.CONFIRMED || status === TransactionStatus.REGISTERED) {
     return mdiCheck
   }
 
-  if (status === TransactionStatus.PENDING || status === TransactionStatus.REGISTERED) {
+  if (status === TransactionStatus.PENDING) {
     return mdiClockOutline
   }
 
