@@ -2,14 +2,15 @@ import { Endpoints } from './types/api/endpoints'
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import type { NodeInfo } from '@/types/wallets'
 
 /**
  * ETH Indexer API
  * https://github.com/Adamant-im/ETH-transactions-storage
  */
 export class EthIndexer extends Node<AxiosInstance> {
-  constructor(url: string) {
-    super(url, 'eth', 'service', NODE_LABELS.EthIndexer)
+  constructor(endpoint: NodeInfo) {
+    super(endpoint, 'eth', 'service', NODE_LABELS.EthIndexer)
   }
 
   protected buildClient(): AxiosInstance {
@@ -30,6 +31,7 @@ export class EthIndexer extends Node<AxiosInstance> {
     return this.client
       .request({
         ...requestConfig,
+        baseURL: this.preferAltIp ? this.altIp : this.url,
         url: path,
         method,
         params: method === 'GET' ? params : undefined,

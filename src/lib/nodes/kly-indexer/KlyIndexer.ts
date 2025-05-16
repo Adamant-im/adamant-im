@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import type { NodeInfo } from '@/types/wallets'
 import { Endpoints } from './types/api/endpoints'
 
 /**
@@ -8,8 +9,8 @@ import { Endpoints } from './types/api/endpoints'
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class KlyIndexer extends Node<AxiosInstance> {
-  constructor(url: string) {
-    super(url, 'kly', 'service', NODE_LABELS.KlyIndexer)
+  constructor(endpoint: NodeInfo) {
+    super(endpoint, 'kly', 'service', NODE_LABELS.KlyIndexer)
   }
 
   protected buildClient(): AxiosInstance {
@@ -31,6 +32,7 @@ export class KlyIndexer extends Node<AxiosInstance> {
     return this.client
       .request({
         ...requestConfig,
+        baseURL: this.preferAltIp ? this.altIp : this.url,
         url: path,
         method,
         params: method === 'GET' ? params : undefined,
