@@ -180,8 +180,6 @@ export default defineComponent({
 .nodes-table {
   margin-left: -24px;
   margin-right: -24px;
-  width: 100%;
-  max-width: unset !important;
 
   &__info {
     :deep(a) {

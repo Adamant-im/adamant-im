@@ -47,7 +47,7 @@ import { computed, nextTick } from 'vue'
 import ChatEmojis from '@/components/Chat/ChatEmojis.vue'
 import { isMobile } from '@/lib/display-mobile'
 import { mdiSend } from '@mdi/js'
-import { useChatStateStore } from '@/stores/chat-state'
+import { useChatStateStore } from '@/stores/modal-state'
 
 export default {
   components: { ChatEmojis },

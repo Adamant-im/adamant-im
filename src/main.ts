@@ -22,7 +22,7 @@ import 'dayjs/locale/ru'
 
 const app = createApp(App)
 
-app.config.globalProperties.appVersion = packageJSON.version
+app.provide('appVersion', packageJSON.version)
 
 app.use(router)
 app.use(store)

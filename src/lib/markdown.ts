@@ -78,7 +78,7 @@ export function formatMessageBasic(text = '') {
   textWithoutHtml = textWithoutHtml
     .replace(LINE_SEPARATOR, LINE_BREAK_VISUAL)
     .split(LINE_BREAK_VISUAL)
-    // strip all markdown heading signs (#) but only if they are at the beginning of the line 
+    // strip all markdown heading signs (#) but only if they are at the beginning of the line
     .map((line) => line.replace(/^[#]+ /, ''))
     .join(LINE_BREAK_VISUAL)
 
@@ -91,6 +91,5 @@ export function formatMessageBasic(text = '') {
  * @returns {string} resulting clear text of the first line
  */
 export function formatChatPreviewMessage(text = '') {
-  return formatMessageBasic(text)
-    .replace(/↵/g, '<span class="arrow-return">↵</span>')
+  return formatMessageBasic(text).replace(/↵/g, '<span class="arrow-return">↵</span>')
 }
