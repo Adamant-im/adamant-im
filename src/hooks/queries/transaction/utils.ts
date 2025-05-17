@@ -17,8 +17,8 @@ import axios from 'axios'
 export function retryFactory(crypto: CryptoSymbol, transactionId: string) {
   const txFetchInfo = getTxFetchInfo(crypto)
 
-  return (failureCount: number, error: Error): boolean => {
-    if (isAllNodesDisabledError(error) || axios.isAxiosError(error)) {
+  return (failureCount: number, error: unknown): boolean => {
+    if (isAllNodesDisabledError(error as Error) || axios.isAxiosError(error)) {
       return true
     }
 
