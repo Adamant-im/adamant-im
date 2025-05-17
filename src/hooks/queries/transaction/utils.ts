@@ -18,6 +18,8 @@ export function retryFactory(crypto: CryptoSymbol, transactionId: string) {
   const txFetchInfo = getTxFetchInfo(crypto)
 
   return (failureCount: number, error: unknown): boolean => {
+    console.log('error: ', error)
+
     if (isAllNodesDisabledError(error as Error) || isAxiosError(error)) {
       return true
     }
