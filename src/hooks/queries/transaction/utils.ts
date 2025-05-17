@@ -22,11 +22,6 @@ export function retryFactory(crypto: CryptoSymbol, transactionId: string) {
   const txFetchInfo = getTxFetchInfo(crypto)
 
   return (failureCount: number, error: unknown): boolean => {
-    console.log('isAllNodesDisabledError(error as Error)', isAllNodesDisabledError(error as Error))
-    console.log('isNodeOfflineError(error as Error)', isNodeOfflineError(error as Error))
-    console.log('error instanceof AllNodesOfflineError', error instanceof AllNodesOfflineError)
-    console.log('isAxiosError(error)', isAxiosError(error))
-
     if (
       isAllNodesDisabledError(error as Error) ||
       isNodeOfflineError(error as Error) ||
