@@ -11,11 +11,17 @@ import {
   INSTANT_SEND_INTERVAL,
   INSTANT_SEND_TIME
 } from '@/lib/transactionsFetching'
+import { isAllNodesDisabledError } from '@/lib/nodes/utils/errors'
+import axios from 'axios'
 
 export function retryFactory(crypto: CryptoSymbol, transactionId: string) {
   const txFetchInfo = getTxFetchInfo(crypto)
 
-  return (failureCount: number): boolean => {
+  return (failureCount: number, error: Error): boolean => {
+    if (isAllNodesDisabledError(error) || axios.isAxiosError(error)) {
+      return true
+    }
+
     const pendingTransaction = PendingTxStore.get(crypto)
     const isPendingTransaction = pendingTransaction?.id === transactionId
 
