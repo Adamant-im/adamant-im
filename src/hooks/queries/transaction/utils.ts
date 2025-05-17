@@ -11,14 +11,28 @@ import {
   INSTANT_SEND_INTERVAL,
   INSTANT_SEND_TIME
 } from '@/lib/transactionsFetching'
-import { isAllNodesDisabledError } from '@/lib/nodes/utils/errors'
+import {
+  AllNodesOfflineError,
+  isAllNodesDisabledError,
+  isNodeOfflineError
+} from '@/lib/nodes/utils/errors'
 import { isAxiosError } from 'axios'
 
 export function retryFactory(crypto: CryptoSymbol, transactionId: string) {
   const txFetchInfo = getTxFetchInfo(crypto)
 
   return (failureCount: number, error: unknown): boolean => {
-    if (isAllNodesDisabledError(error as Error) || isAxiosError(error)) {
+    console.log('isAllNodesDisabledError(error as Error)', isAllNodesDisabledError(error as Error))
+    console.log('isNodeOfflineError(error as Error)', isNodeOfflineError(error as Error))
+    console.log('error instanceof AllNodesOfflineError', error instanceof AllNodesOfflineError)
+    console.log('isAxiosError(error)', isAxiosError(error))
+
+    if (
+      isAllNodesDisabledError(error as Error) ||
+      isNodeOfflineError(error as Error) ||
+      error instanceof AllNodesOfflineError ||
+      isAxiosError(error)
+    ) {
       return true
     }
 
