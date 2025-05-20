@@ -12,9 +12,9 @@ import {
   INSTANT_SEND_TIME
 } from '@/lib/transactionsFetching'
 import {
-  AllNodesOfflineError,
   isAllNodesDisabledError,
-  isNodeOfflineError
+  isNodeOfflineError,
+  isAllNodesOfflineError
 } from '@/lib/nodes/utils/errors'
 import { isAxiosError } from 'axios'
 
@@ -25,7 +25,7 @@ export function retryFactory(crypto: CryptoSymbol, transactionId: string) {
     if (
       isAllNodesDisabledError(error as Error) ||
       isNodeOfflineError(error as Error) ||
-      error instanceof AllNodesOfflineError ||
+      isAllNodesOfflineError(error as Error) ||
       isAxiosError(error)
     ) {
       return true
