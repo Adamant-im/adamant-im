@@ -18,6 +18,6 @@ export function useTransactionStatus(
     }
     if (isFetching.value) return TransactionStatus.PENDING
 
-    return TransactionStatus.UNKNOWN
+    return TransactionStatus.PENDING
   })
 }

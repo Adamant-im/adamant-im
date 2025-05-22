@@ -13,10 +13,24 @@ import {
 } from '@/lib/transactionsFetching'
 import {
   isAllNodesDisabledError,
-  isNodeOfflineError,
-  isAllNodesOfflineError
+  isAllNodesOfflineError,
+  isNodeOfflineError
 } from '@/lib/nodes/utils/errors'
 import { isAxiosError } from 'axios'
+
+const isNew = (
+  txFetchInfo: ReturnType<typeof getTxFetchInfo>,
+  transaction?: {
+    timestamp?: number
+  }
+) => {
+  const { newPendingAttempts, newPendingInterval } = txFetchInfo
+
+  return (
+    transaction?.timestamp &&
+    Date.now() - transaction.timestamp < newPendingAttempts * newPendingInterval
+  )
+}
 
 export function retryFactory(crypto: CryptoSymbol, transactionId: string) {
   const txFetchInfo = getTxFetchInfo(crypto)
@@ -32,11 +46,13 @@ export function retryFactory(crypto: CryptoSymbol, transactionId: string) {
     }
 
     const pendingTransaction = PendingTxStore.get(crypto)
+
     const isPendingTransaction = pendingTransaction?.id === transactionId
 
-    const attempts = isPendingTransaction
-      ? txFetchInfo.newPendingAttempts
-      : txFetchInfo.oldPendingAttempts
+    const attempts =
+      isPendingTransaction && isNew(txFetchInfo, pendingTransaction)
+        ? txFetchInfo.newPendingAttempts
+        : txFetchInfo.oldPendingAttempts
 
     return failureCount + 1 < attempts
   }
@@ -47,13 +63,12 @@ export function retryDelayFactory(crypto: CryptoSymbol, transactionId: string) {
 
   return (): number => {
     const pendingTransaction = PendingTxStore.get(crypto)
+
     const isPendingTransaction = pendingTransaction?.id === transactionId
 
-    const delay = isPendingTransaction
+    return isPendingTransaction && isNew(txFetchInfo, pendingTransaction)
       ? txFetchInfo.newPendingInterval
       : txFetchInfo.oldPendingInterval
-
-    return delay
   }
 }
 
@@ -79,7 +94,9 @@ export function refetchIntervalFactory(
       : txFetchInfo.registeredInterval
   }
 
-  return txFetchInfo.registeredInterval
+  return transaction?.status === TransactionStatus.PENDING && isNew(txFetchInfo, transaction)
+    ? txFetchInfo.newPendingInterval
+    : txFetchInfo.registeredInterval
 }
 
 export function refetchOnMountFn(transaction?: { status: TransactionStatusType }) {
