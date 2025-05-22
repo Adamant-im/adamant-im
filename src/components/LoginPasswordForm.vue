@@ -72,7 +72,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'login'): void
-  (e: 'error', error: string, isIndefinite?: boolean): void
+  (e: 'error', error: string): void
   (e: 'update:modelValue', value: string): void
 }>()
 
@@ -110,7 +110,7 @@ const submit = () => {
     })
     .catch((err) => {
       if (!isOnline.value) {
-        emit('error', t('connection.offline'), true)
+        emit('error', t('connection.offline'))
         emit('login')
 
         router.push({ name: 'Chats' })

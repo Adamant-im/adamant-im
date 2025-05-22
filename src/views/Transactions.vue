@@ -78,9 +78,7 @@ const cryptoModule = computed(() => {
   return props.crypto.toLowerCase()
 })
 
-const isRecentLoading = computed(() => {
-  return store.getters[`${cryptoModule.value}/areRecentLoading`]
-})
+const isRecentLoading = computed(() => store.getters[`${cryptoModule.value}/areRecentLoading`])
 
 const isOlderLoading = computed(() => store.getters[`${cryptoModule.value}/areOlderLoading`])
 
@@ -151,11 +149,11 @@ const onScroll = (event: Event) => {
   const target = event.target as HTMLElement
 
   const height = target.offsetHeight
-  const windowHeight = window.innerHeight
+  const scrollHeight = target.scrollHeight
   const scrollPosition = Math.ceil(target.scrollTop || 0)
 
   // If we've scrolled to the very bottom, fetch the older transactions from server
-  if (!isOlderLoading.value && windowHeight + scrollPosition >= height) {
+  if (!isOlderLoading.value && height + scrollPosition >= scrollHeight) {
     store.dispatch(`${cryptoModule.value}/getOldTransactions`)
   }
   // If we've scrolled to the very top, fetch the recent transactions from server
