@@ -5,10 +5,18 @@
         <div class="text-right">
           <language-switcher :prepend-icon="mdiChevronRight" />
         </div>
-        <div :class="`${className}__settings-button`">
-          <v-btn @click="$router.push('/options/nodes')" icon variant="plain" :size="32">
-            <v-icon :icon="mdiCog" />
-          </v-btn>
+        <div :class="`${className}__settings-button-container`">
+          <router-link to="/options/nodes" custom #default="{ navigate }">
+            <v-btn
+              @click="navigate"
+              icon
+              variant="plain"
+              :size="32"
+              :class="`${className}__settings-button`"
+            >
+              <v-icon :icon="mdiCog" />
+            </v-btn>
+          </router-link>
         </div>
       </div>
 
@@ -222,29 +230,46 @@ export default defineComponent({
   &__buttons {
     position: relative;
   }
-  &__settings-button {
+  &__settings-button-container {
     position: absolute;
     right: 0;
     margin-right: 8px;
-    color: map.get(colors.$adm-colors, 'grey-transparent');
+  }
+  &__settings-button {
+    &:hover > ::v-deep(.v-btn__overlay) {
+      display: block;
+      opacity: 0.06;
+    }
   }
 }
 
 /** Themes **/
 .v-theme--light {
   .login-page {
-    &__icon,
     &__title,
-    &__subtitle,
-    &__settings-button {
+    &__subtitle {
       color: map.get(colors.$adm-colors, 'regular');
+    }
+
+    &__icon {
+      color: map.get(colors.$adm-colors, 'black2');
+      opacity: 0.62;
+
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 }
 .v-theme--dark {
   .login-page {
     &__icon {
-      color: map.get(settings.$shades, 'white');
+      color: map.get(colors.$adm-colors, 'grey-transparent');
+
+      &:hover {
+        color: map.get(colors.$adm-colors, 'secondary');
+        opacity: 1;
+      }
     }
   }
 }
