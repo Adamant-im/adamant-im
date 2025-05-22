@@ -44,13 +44,18 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue'
 import ChatEmojis from '@/components/Chat/ChatEmojis.vue'
 import { isMobile } from '@/lib/display-mobile'
 import { mdiSend } from '@mdi/js'
 import { useChatStateStore } from '@/stores/chat-state'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
+import { VTextarea } from 'vuetify/components'
+
+type Textarea = VTextarea & {
+  calculateInputHeight: () => void
+}
 
 const store = useStore()
 const chatStateStore = useChatStateStore()
@@ -89,7 +94,7 @@ const message = ref('')
 const botCommandIndex = ref<number | null>(null)
 const botCommandSelectionMode = ref(false)
 const isInputFocused = ref(false)
-const messageTextarea = ref()
+const messageTextarea = useTemplateRef<Textarea | null>('messageTextarea')
 
 const className = 'a-chat'
 const classes = [
@@ -159,7 +164,7 @@ watch(
   (newVal) => {
     nextTick(() => {
       if (!newVal && !isInputFocused.value) {
-        messageTextarea.value.focus()
+        messageTextarea.value?.focus()
       }
     })
   }
@@ -201,7 +206,7 @@ const onInput = () => {
 }
 
 const emojiPicture = (emoji: string) => {
-  const caretPosition = messageTextarea.value.selectionStart
+  const caretPosition = messageTextarea.value?.selectionStart || undefined
 
   let before = message.value.slice(0, caretPosition)
   const after = message.value.slice(caretPosition)
@@ -222,10 +227,10 @@ const emojiPicture = (emoji: string) => {
   closeElement()
 
   // Set the cursor position to after the newly inserted text
-  const newCaretPosition = caretPosition + emojiLength
+  const newCaretPosition = (caretPosition || 0) + emojiLength
   focus()
   nextTick(() => {
-    messageTextarea.value.setSelectionRange(newCaretPosition, newCaretPosition)
+    messageTextarea.value?.setSelectionRange(newCaretPosition, newCaretPosition)
   })
   onInput()
 }
@@ -264,7 +269,7 @@ const submitMessage = () => {
 }
 
 const calculateInputHeight = () => {
-  nextTick(messageTextarea.value.calculateInputHeight)
+  nextTick(messageTextarea.value?.calculateInputHeight)
 }
 
 const addLineFeed = () => {
@@ -272,7 +277,7 @@ const addLineFeed = () => {
 }
 
 const focus = () => {
-  messageTextarea.value.focus()
+  messageTextarea.value?.focus()
 }
 
 const selectCommand = (event: KeyboardEvent) => {

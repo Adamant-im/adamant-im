@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, useTemplateRef } from 'vue'
 import throttle from 'lodash/throttle'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import Styler from 'stylefire'
@@ -82,9 +82,13 @@ const props = withDefaults(defineProps<Props>(), {
   locale: 'en'
 })
 
-const emit = defineEmits(['scroll', 'scroll:bottom', 'scroll:top'])
+const emit = defineEmits<{
+  (e: 'scroll', scrollPosition: number, isBottom: boolean): void
+  (e: 'scroll:bottom'): void
+  (e: 'scroll:top'): void
+}>()
 
-const messagesRef = ref<HTMLDivElement | null>(null)
+const messagesRef = useTemplateRef<HTMLDivElement | null>('messagesRef')
 const currentScrollHeight = ref(0)
 const currentScrollTop = ref(0)
 const currentClientHeight = ref(0)
