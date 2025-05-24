@@ -753,24 +753,21 @@ const fetchChatMessages = () => {
 
   loading.value = true
 
-  return store
-    .dispatch('chat/getChatRoomMessages', { contactId: props.partnerId })
-    .then(() => {
+  try {
+    await store.dispatch('chat/getChatRoomMessages', { contactId: props.partnerId })
+    loading.value = false
+    allowFetchingMessages.value = false
+  } catch {
+    if (store.getters['chat/chatListOffset'] === -1) {
+      noMoreMessages.value = true
       loading.value = false
       allowFetchingMessages.value = false
-    })
-    .catch(() => {
-      if (store.getters['chat/chatListOffset'] === -1) {
-        noMoreMessages.value = true
-        loading.value = false
-        allowFetchingMessages.value = false
-      }
+    }
 
-      allowFetchingMessages.value = true
-    })
-    .finally(() => {
-      chatRef.value.maintainScrollPosition()
-    })
+    allowFetchingMessages.value = true
+  } finally {
+    chatRef.value.maintainScrollPosition()
+  }
 }
 const fetchUntilFindTransaction = (transactionId: string) => {
   const fetchMessages = async () => {
