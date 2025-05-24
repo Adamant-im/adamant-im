@@ -33,6 +33,7 @@ async function run(branch = 'master') {
 
   await updateProductionConfig(config)
   await updateDevelopmentConfig(config)
+  await updateTestnetConfig(config)
   await updateTorConfig(config)
 
   console.log('Coins updated successfully')
@@ -76,6 +77,7 @@ async function initCoins() {
       defaultGasLimit: coin.defaultGasLimit,
       defaultGasPriceGwei: coin.defaultGasPriceGwei,
       txFetchInfo: coin.txFetchInfo,
+      timeout: coin.timeout,
       txConsistencyMaxTime: coin.txConsistencyMaxTime,
       defaultOrdinalLevel: coin.defaultOrdinalLevel,
       explorerTx: coin.explorerTx
@@ -150,6 +152,16 @@ function updateProductionConfig(configs) {
 
 function updateDevelopmentConfig(configs) {
   return updateConfig(configs, 'development')
+}
+
+function updateTestnetConfig(configs) {
+  const testnetConfigs = _.mapValues(configs, (config) => {
+    if (config.testnet) config.nodes.list = config.testnet.nodes.list
+
+    return config
+  });
+
+  return updateConfig(testnetConfigs, 'testnet')
 }
 
 function updateTorConfig(configs) {

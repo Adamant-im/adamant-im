@@ -27,7 +27,7 @@
       <template #prepend-inner>
         <chat-emojis
           @keydown.capture.esc="closeElement"
-          :open="emojiPickerOpen"
+          :open="isEmojiPickerOpen"
           @onChange="onToggleEmojiPicker"
           @get-emoji-picture="emojiPicture"
         ></chat-emojis>
@@ -43,10 +43,11 @@
 </template>
 
 <script>
-import { nextTick } from 'vue'
+import { computed, nextTick } from 'vue'
 import ChatEmojis from '@/components/Chat/ChatEmojis.vue'
 import { isMobile } from '@/lib/display-mobile'
 import { mdiSend } from '@mdi/js'
+import { useChatStateStore } from '@/stores/modal-state'
 
 export default {
   components: { ChatEmojis },
@@ -85,14 +86,22 @@ export default {
   },
   emits: ['message', 'esc', 'error'],
   setup() {
+    const chatStateStore = useChatStateStore()
+
+    const { setEmojiPickerOpen } = chatStateStore
+
+    const isEmojiPickerOpen = computed({
+      get: () => chatStateStore.isEmojiPickerOpen,
+      set: setEmojiPickerOpen
+    })
 
     return {
+      isEmojiPickerOpen,
       mdiSend
     }
   },
   data: () => ({
     message: '',
-    emojiPickerOpen: false,
     botCommandIndex: null,
     botCommandSelectionMode: false,
     isInputFocused: false
@@ -176,10 +185,10 @@ export default {
       }
     },
     openElement() {
-      this.emojiPickerOpen = true
+      this.isEmojiPickerOpen = true
     },
     closeElement() {
-      this.emojiPickerOpen = false
+      this.isEmojiPickerOpen = false
       setTimeout(() => this.focus(), 0)
     },
     onInput: function () {
@@ -221,7 +230,7 @@ export default {
     },
 
     onToggleEmojiPicker(state) {
-      this.emojiPickerOpen = state
+      this.isEmojiPickerOpen = state
 
       this.focus()
     },
@@ -298,8 +307,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
 
 /**
  * 1. Limit height of message form.
@@ -361,10 +371,10 @@ export default {
   .a-chat__form {
     :deep(.v-textarea) {
       .v-field__input {
-        caret-color: map-get($adm-colors, 'primary');
+        caret-color: map.get(colors.$adm-colors, 'primary');
 
         &::placeholder {
-          color: map-get($adm-colors, 'muted');
+          color: map.get(colors.$adm-colors, 'muted');
         }
       }
     }
@@ -375,10 +385,10 @@ export default {
   .a-chat__form {
     :deep(.v-textarea) {
       .v-field__input {
-        caret-color: map-get($adm-colors, 'primary');
+        caret-color: map.get(colors.$adm-colors, 'primary');
 
         &::placeholder {
-          color: rgba(map-get($shades, 'white'), 70%);
+          color: rgba(map.get(settings.$shades, 'white'), 70%);
         }
       }
     }

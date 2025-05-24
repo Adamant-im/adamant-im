@@ -1,6 +1,7 @@
 <template>
-  <div v-if="show" class="progress-fog">
+  <div class="progress-fog">
     <v-progress-circular
+      v-show="showSpinner"
       :size="150"
       :stroke="1"
       class="progress-circular"
@@ -13,8 +14,8 @@
 <script>
 export default {
   props: {
-    show: {
-      default: false,
+    showSpinner: {
+      default: true,
       type: Boolean
     }
   }
