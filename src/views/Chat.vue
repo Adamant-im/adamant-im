@@ -22,13 +22,14 @@
 </template>
 
 <script>
+import { computed } from 'vue'
+
 import Chat from '@/components/Chat/Chat.vue'
 import PartnerInfo from '@/components/PartnerInfo.vue'
 import partnerName from '@/mixins/partnerName'
 import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import { useScreenSize } from '@/hooks/useScreenSize'
-import { computed } from 'vue'
-import { useChatStateStore } from '@/stores/chat-state'
+import { useChatStateStore } from '@/stores/modal-state'
 
 export default {
   components: {

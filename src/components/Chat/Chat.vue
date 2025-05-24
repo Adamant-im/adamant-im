@@ -317,7 +317,7 @@ import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useChatsSpinner } from '@/hooks/useChatsSpinner'
 import ProgressIndicator from '@/components/ProgressIndicator.vue'
-import { useChatStateStore } from '@/stores/chat-state'
+import { useChatStateStore } from '@/stores/modal-state'
 import ChatPlaceholder from '@/components/Chat/ChatPlaceholder.vue'
 import { watchImmediate } from '@vueuse/core'
 

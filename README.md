@@ -119,9 +119,16 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 
 ## Self-hosted
 
-If you are unable to access [adm.im](https://adm.im) (e.g., due to censorship), you can run a self-hosted version of ADAMANT Messenger. We always encourage people to build it from source.
+If you are unable to access [adm.im](https://adm.im) (e.g., due to censorship), you can run a self-hosted instance of ADAMANT Messenger to:
 
-You can build and deploy the app to GitHub Pages. Follow the instructions below.
++ Increase reliability and decentralization of the ADAMANT Messenger ecosystem.
++ Help other users access the messenger in countries with a strong Internet limitations.
+
+We always encourage people to build it from source.
+
+As an option, you can build and deploy the app to GitHub Pages.
+
+Follow the instructions below.
 
 ### Enable GH Actions
 
@@ -138,3 +145,5 @@ You can build and deploy the app to GitHub Pages. Follow the instructions below.
 4. Click **Run workflow**.
 5. Wait until the build succeeds.
 6. Open ADAMANT Messenger at `username.github.io/adamant-im`
+
+You can as well point your GitHub Pages subdomain to a [custom domain](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site).

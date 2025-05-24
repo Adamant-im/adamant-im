@@ -48,7 +48,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, useTemplateRef, wa
 import ChatEmojis from '@/components/Chat/ChatEmojis.vue'
 import { isMobile } from '@/lib/display-mobile'
 import { mdiSend } from '@mdi/js'
-import { useChatStateStore } from '@/stores/chat-state'
+import { useChatStateStore } from '@/stores/modal-state'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { VTextarea } from 'vuetify/components'
