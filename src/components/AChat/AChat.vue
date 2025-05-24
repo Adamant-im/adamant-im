@@ -10,7 +10,10 @@
           <v-progress-circular
             v-show="loading"
             indeterminate
-            :class="[classes.spinner, !messages.length ? `${classes.spinner}_no-messages` : '']"
+            :class="{
+              [classes.spinner]: true,
+              [`${classes.spinner}_no-messages`]: !messages.length
+            }"
             :size="20"
             style="z-index: 100"
           />

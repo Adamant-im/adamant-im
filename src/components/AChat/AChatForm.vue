@@ -1,5 +1,5 @@
 <template>
-  <div :class="classes">
+  <div :class="classList">
     <v-divider v-if="showDivider" class="a-chat__divider" />
 
     <slot name="reply-preview" />
@@ -97,7 +97,7 @@ const isInputFocused = ref(false)
 const messageTextarea = useTemplateRef<Textarea | null>('messageTextarea')
 
 const className = 'a-chat'
-const classes = [
+const classList = [
   `${className}__form`,
   {
     [`${className}__form--is-active`]: !!message.value
@@ -109,7 +109,7 @@ const isEmojiPickerOpen = computed({
   set: setEmojiPickerOpen
 })
 const placeholder = computed(() => props.label ?? t('chats.type_a_message'))
-const isDesktopDevice = computed(() => !isMobile())
+const isDesktopDevice = !isMobile()
 const listeners = computed(() => {
   return {
     keypress: (e: KeyboardEvent) => {
