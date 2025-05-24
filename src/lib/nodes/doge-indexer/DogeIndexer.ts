@@ -2,14 +2,15 @@ import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import type { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import type { NodeInfo } from '@/types/wallets'
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class DogeIndexer extends Node<AxiosInstance> {
-  constructor(url: string) {
-    super(url, 'doge', 'service', NODE_LABELS.DogeIndexer)
+  constructor(endpoint: NodeInfo) {
+    super(endpoint, 'doge', 'service', NODE_LABELS.DogeIndexer)
   }
 
   protected buildClient(): AxiosInstance {
@@ -19,7 +20,9 @@ export class DogeIndexer extends Node<AxiosInstance> {
   protected async checkHealth() {
     const time = Date.now()
     const height = await this.client
-      .get('/api/status')
+      .get('/api/status', {
+        baseURL: this.preferAltIp ? this.altIp : this.url
+      })
       .then((res) => res.data.info.blocks)
 
     return {
@@ -40,6 +43,7 @@ export class DogeIndexer extends Node<AxiosInstance> {
     return this.client
       .request({
         ...requestConfig,
+        baseURL: this.preferAltIp ? this.altIp : this.url,
         url: path,
         method,
         params: method === 'GET' ? params : undefined,
