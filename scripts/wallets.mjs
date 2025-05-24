@@ -77,6 +77,7 @@ async function initCoins() {
       defaultGasLimit: coin.defaultGasLimit,
       defaultGasPriceGwei: coin.defaultGasPriceGwei,
       txFetchInfo: coin.txFetchInfo,
+      timeout: coin.timeout,
       txConsistencyMaxTime: coin.txConsistencyMaxTime,
       defaultOrdinalLevel: coin.defaultOrdinalLevel,
       explorerTx: coin.explorerTx

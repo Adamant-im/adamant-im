@@ -11,7 +11,7 @@ import { AllCryptos } from '@/lib/constants/cryptos'
  *
  * @param {function} next Resolves the hook (redirect to Chats)
  */
-export function navigateByURI(next = undefined) {
+export function navigateByURI(next = null) {
   const contact = parseURIasAIP()
 
   if (contact.address) {
