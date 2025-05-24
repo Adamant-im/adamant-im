@@ -435,8 +435,8 @@ watch(lastMessage, () => {
   })
 })
 
-watch(isFulfilled, (value) => {
-  if (value && (!chatPage.value || chatPage.value <= 0)) fetchChatMessages()
+watch(isFulfilled, async (value) => {
+  if (value && (!chatPage.value || chatPage.value <= 0)) await fetchChatMessages()
 })
 
 watch(replyMessageId, (messageId) => {
@@ -451,8 +451,8 @@ watch(replyMessageId, (messageId) => {
 onBeforeMount(() => {
   window.addEventListener('keydown', onKeyPress)
 })
-onMounted(() => {
-  if (isFulfilled.value && chatPage.value <= 0) fetchChatMessages()
+onMounted(async () => {
+  if (isFulfilled.value && chatPage.value <= 0) await fetchChatMessages()
   scrollBehavior()
   nextTick(() => {
     isScrolledToBottom.value = chatRef.value.isScrolledToBottom()
@@ -603,8 +603,8 @@ const markAsRead = () => {
   store.commit('chat/markAsRead', props.partnerId)
 }
 
-const onScrollTop = () => {
-  fetchChatMessages()
+const onScrollTop = async () => {
+  await fetchChatMessages()
 }
 
 const onScrollBottom = () => {
@@ -747,7 +747,7 @@ const openTransaction = (transaction: NormalizedChatMessageTransaction) => {
 const isTransaction = (type: string) => {
   return type in Cryptos || type === 'UNKNOWN_CRYPTO'
 }
-const fetchChatMessages = () => {
+const fetchChatMessages = async () => {
   if (noMoreMessages.value) return
   if (loading.value && !allowFetchingMessages.value) return
 
