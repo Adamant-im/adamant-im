@@ -12,11 +12,13 @@ const state = () => ({
   currentWallet: Cryptos.ADM, // current Wallet Tab on Account view (this is not an option)
   useSocketConnection: true,
   suppressWarningOnAddressesNotification: false,
-  currentRate: Rates.USD
+  currentRate: Rates.USD,
+  scrollTopPosition: 0
 })
 
 const getters = {
-  isLoginViaPassword: (state) => state.stayLoggedIn
+  isLoginViaPassword: (state) => state.stayLoggedIn,
+  scrollTopPosition: (state) => state.scrollTopPosition
 }
 
 const mutations = {
