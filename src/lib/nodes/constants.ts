@@ -43,7 +43,5 @@ export const NODE_LABELS: NodeLabels = {
   RatesInfo: 'rates-info'
 }
 
-// When time delta was from nodes,
-// it was always from -2 to -7, so it's some sort of middle value.
 // Default timeDelta (s) in case there's no connection to get it from a node
-export const DEFAULT_TIME_DELTA = -5
+export const DEFAULT_TIME_DELTA = 1

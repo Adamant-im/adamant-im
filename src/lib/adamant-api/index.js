@@ -10,6 +10,7 @@ import { i18n } from '@/i18n'
 import store from '@/store'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { parseCryptoAddressesKVStxs } from '@/lib/store-crypto-address'
+import { DEFAULT_TIME_DELTA } from '@/lib/nodes/constants.js'
 
 Queue.configure(Promise)
 
@@ -171,9 +172,7 @@ export function signChatMessageTransaction(params) {
   transaction.asset = { chat }
   transaction.recipientId = to
 
-  const timeDelta = client.getTimeDelta()
-
-  return signTransaction(transaction, timeDelta)
+  return signTransaction(transaction, DEFAULT_TIME_DELTA)
 }
 
 /**
