@@ -50,6 +50,7 @@ export let interval
 
 const UPDATE_BALANCE_INTERVAL = 5000
 const UPDATE_BALANCE_INTERVAL_FOR_NEW_ACCOUNT = 1500
+const BALANCE_INVALID_TIMEOUT = 5 * 60 * 1000
 
 /**
  * @type { import("vuex").StoreOptions } store
@@ -64,7 +65,8 @@ const store = {
     passphrase: '',
     password: '',
     publicKeys: {},
-    isOnline: true
+    isOnline: true,
+    balanceActualUntil: 0
   }),
   getters: {
     isLogged: (state) => state.passphrase.length > 0,
@@ -127,6 +129,9 @@ const store = {
     },
     setIsOnline(state, value) {
       state.isOnline = value
+    },
+    setBalanceActualUntil(state, value) {
+      state.balanceActualUntil = value
     }
   },
   actions: {
@@ -216,6 +221,7 @@ const store = {
           if (account.balance > Fees.KVS) {
             flushCryptoAddresses()
           }
+          commit('setBalanceActualUntil', Date.now() + BALANCE_INVALID_TIMEOUT)
         })
         .catch((err) => {
           commit('setBalanceStatus', FetchStatus.Error)
@@ -279,9 +285,7 @@ const storeInstance = createStore(store)
 window.store = storeInstance
 
 // Need to init persistence plugin before other, because they use info from wallets
-registerVuexPlugins(storeInstance, [
-  walletsPersistencePlugin,
-])
+registerVuexPlugins(storeInstance, [walletsPersistencePlugin])
 
 registerCryptoModules(storeInstance)
 registerVuexPlugins(storeInstance, [
