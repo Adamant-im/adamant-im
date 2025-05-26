@@ -36,9 +36,10 @@ export default {
 </script>
 
 <style lang="scss">
-@import 'vuetify/settings';
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .delegates-table-head {
   &__td {
@@ -50,7 +51,7 @@ export default {
 .v-theme--light {
   .delegates-table-head {
     &__td {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
   }
 }

@@ -21,6 +21,7 @@ export type NormalizedChatMessageTransaction = Pick<
   senderPublicKey?: string
   asset: any // @todo types
   localFiles?: LocalFile[] // in case of attachments
+  readonly?: boolean
 }
 
 export function normalizeMessage(

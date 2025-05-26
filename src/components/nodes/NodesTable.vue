@@ -172,14 +172,14 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .nodes-table {
   margin-left: -24px;
   margin-right: -24px;
-  max-width: unset !important;
 
   &__info {
     :deep(a) {
@@ -198,7 +198,7 @@ export default defineComponent({
   }
 }
 
-@media #{map-get($display-breakpoints, 'sm-and-down')} {
+@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
   .nodes-table {
     margin-left: -16px;
     margin-right: -16px;
@@ -209,12 +209,12 @@ export default defineComponent({
   .nodes-table {
     &__checkbox {
       :deep(.v-label) {
-        color: map-get($adm-colors, 'regular');
+        color: map.get(colors.$adm-colors, 'regular');
       }
       :deep(.v-input--selection-controls__ripple),
       :deep(.v-input--selection-controls__input) i {
-        color: map-get($adm-colors, 'regular') !important;
-        caret-color: map-get($adm-colors, 'regular') !important;
+        color: map.get(colors.$adm-colors, 'regular') !important;
+        caret-color: map.get(colors.$adm-colors, 'regular') !important;
       }
     }
   }

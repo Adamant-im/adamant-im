@@ -76,9 +76,10 @@ export default {
 </script>
 
 <style lang="scss">
-@import 'vuetify/settings';
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .delegate-vote-checkbox {
   &__icon {
@@ -91,13 +92,13 @@ export default {
 .v-theme--light {
   .delegate-vote-checkbox {
     &__icon {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
       &--good {
-        color: map-get($adm-colors, 'good');
+        color: map.get(colors.$adm-colors, 'good');
       }
 
       &--danger {
-        color: map-get($adm-colors, 'danger');
+        color: map.get(colors.$adm-colors, 'danger');
       }
     }
   }
@@ -107,11 +108,11 @@ export default {
   .delegate-vote-checkbox {
     &__icon {
       &--good {
-        color: map-get($adm-colors, 'good');
+        color: map.get(colors.$adm-colors, 'good');
       }
       
       &--danger {
-        color: map-get($adm-colors, 'danger');
+        color: map.get(colors.$adm-colors, 'danger');
       }
     }
   }

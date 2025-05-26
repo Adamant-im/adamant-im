@@ -69,8 +69,9 @@ export default {
 }
 </script>
 <style lang="scss">
-@import '@/assets/styles/settings/_colors.scss';
-@import 'vuetify/settings';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
 
 .node-url {
   &__domain,
@@ -86,7 +87,7 @@ export default {
     &__domain,
     &__protocol,
     &__port {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
   }
 }
@@ -96,7 +97,7 @@ export default {
     &__domain,
     &__protocol,
     &__port {
-      color: map-get($adm-colors, 'grey-transparent');
+      color: map.get(colors.$adm-colors, 'grey-transparent');
     }
   }
 }

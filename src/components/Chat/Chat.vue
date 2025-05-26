@@ -1,6 +1,6 @@
 <template>
   <v-card class="chat">
-    <free-tokens-dialog v-model="showFreeTokensDialog" />
+    <free-tokens-dialog v-model="isShowFreeTokensDialog" />
     <a-chat
       ref="chatRef"
       :messages="messages"
@@ -74,13 +74,29 @@
         <chat-toolbar :partner-id="partnerId">
           <template #avatar-toolbar>
             <ChatAvatar
+              v-if="!showSpinner"
               class="chat-avatar"
               :user-id="partnerId"
               use-public-key
               @click="onClickAvatar(partnerId)"
             />
+            <v-progress-circular
+              v-else
+              class="connection-spinner ml-1 mr-4"
+              indeterminate
+              :size="32"
+            />
           </template>
         </chat-toolbar>
+      </template>
+
+      <template #placeholder>
+        <chat-placeholder
+          v-if="!isWelcomeChat(partnerId)"
+          :show-placeholder="showNewChatPlaceholder"
+          :is-getting-public-key="isGettingPublicKey"
+          :is-key-missing="isKeyMissing"
+        />
       </template>
 
       <template #message="{ message, sender }">
@@ -96,7 +112,7 @@
           @swipe:left="onSwipeLeft(message)"
           @longpress="onMessageLongPress(message)"
         >
-          <template #avatar>
+          <template #avatar v-if="sender">
             <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
           </template>
 
@@ -130,7 +146,7 @@
           @swipe:left="onSwipeLeft(message)"
           @longpress="onMessageLongPress(message)"
         >
-          <template #avatar>
+          <template #avatar v-if="sender">
             <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
           </template>
 
@@ -194,6 +210,7 @@
           :send-on-enter="sendMessageOnEnter"
           :show-divider="true"
           :label="t('chats.message')"
+          :should-disable-input="shouldDisableInput"
           :message-text="
             $route.query.messageText || $store.getters['draftMessage/draftMessage'](partnerId)
           "
@@ -205,6 +222,7 @@
         >
           <template #append>
             <chat-menu
+              v-model="isMenuOpen"
               class="chat-menu"
               :partner-id="partnerId"
               :reply-to-id="replyMessageId !== -1 ? replyMessageId : undefined"
@@ -254,7 +272,7 @@
         </v-badge>
       </template>
     </a-chat>
-    <ProgressIndicator :show="replyLoadingChatHistory" />
+    <ProgressIndicator v-if="replyLoadingChatHistory" />
   </v-card>
 </template>
 
@@ -293,11 +311,15 @@ import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import FreeTokensDialog from '@/components/FreeTokensDialog.vue'
 import { isMobile } from '@/lib/display-mobile'
 import { isAdamantChat, isWelcomeChat, isWelcomeMessage } from '@/lib/chat/meta/utils'
-import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import AChatAttachment from '@/components/AChat/AChatAttachment/AChatAttachment.vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import { useChatsSpinner } from '@/hooks/useChatsSpinner'
+import ProgressIndicator from '@/components/ProgressIndicator.vue'
+import { useChatStateStore } from '@/stores/modal-state'
+import ChatPlaceholder from '@/components/Chat/ChatPlaceholder.vue'
+import { watchImmediate } from '@vueuse/core'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -317,6 +339,10 @@ const emit = defineEmits(['click:chat-avatar'])
 const router = useRouter()
 const store = useStore()
 const { t } = useI18n()
+const showSpinner = useChatsSpinner()
+
+const isMenuOpen = ref(false)
+const isFirstCallSkipped = ref(false)
 
 const attachments = useAttachments(props.partnerId)()
 const handleAttachments = (files: FileData[]) => {
@@ -344,15 +370,39 @@ const replyLoadingChatHistory = ref(false)
 const noMoreMessages = ref(false)
 const isScrolledToBottom = ref(true)
 const visibilityId = ref<number | boolean | null>(null)
-const showFreeTokensDialog = ref(false)
 const flashingMessageId = ref<string | -1>(-1)
 const actionsMenuMessageId = ref<string | -1>(-1)
-const actionsDropdownMessageId = ref<string | -1>(-1)
 const replyMessageId = ref<string | -1>(-1)
 const showEmojiPicker = ref(false)
+const showNewChatPlaceholder = ref(false)
+const isGettingPublicKey = ref(false)
+const isKeyMissing = ref(false)
+
+const chatStateStore = useChatStateStore()
+
+const { setShowFreeTokensDialog, setActionsDropdownMessageId } = chatStateStore
+
+const isShowFreeTokensDialog = computed({
+  get: () => chatStateStore.isShowFreeTokensDialog,
+  set: setShowFreeTokensDialog
+})
+
+const actionsDropdownMessageId = computed({
+  get: () => chatStateStore.actionsDropdownMessageId,
+  set: setActionsDropdownMessageId
+})
 
 const messages = computed(() => store.getters['chat/messages'](props.partnerId))
+const userMessages = computed(() =>
+  messages.value.filter(
+    (message: NormalizedChatMessageTransaction) => message.senderId === userId.value
+  )
+)
 const userId = computed(() => store.state.address)
+const isNewChat = computed(() => store.getters['chat/isNewChat'](props.partnerId))
+const shouldDisableInput = computed(
+  () => isGettingPublicKey.value || isKeyMissing.value || !store.state.publicKeys[props.partnerId]
+)
 
 const getPartnerName = (address: string) => {
   const name: string = store.getters['partners/displayName'](address) || ''
@@ -373,6 +423,7 @@ const chatPage = computed<number>(() => store.getters['chat/chatPage'](props.par
 const scrollPosition = computed<number | false>(() =>
   store.getters['chat/scrollPosition'](props.partnerId)
 )
+
 const numOfNewMessages = computed<number>(() =>
   store.getters['chat/numOfNewMessages'](props.partnerId)
 )
@@ -385,6 +436,7 @@ const actionMessage = computed<NormalizedChatMessageTransaction>(() =>
 
 const chatFormRef = ref<any>(null) // @todo type
 const chatRef = ref<any>(null) // @todo type
+
 // Scroll to the bottom every time window focused by desktop notification
 watch(
   () => store.state.notification.desktopActivateClickCount,
@@ -418,11 +470,35 @@ watch(replyMessageId, (messageId) => {
   })
 })
 
-onBeforeMount(() => {
-  window.addEventListener('keyup', onKeyPress)
+watch(userMessages, () => {
+  // isFirstCallSkipped needed in order to properly handle reloading of a chat where the last
+  // message was from the partner and not you (do not show placeholder)
+  if (isFulfilled.value && isFirstCallSkipped.value) {
+    showNewChatPlaceholder.value = !userMessages.value.length
+  } else {
+    isFirstCallSkipped.value = true
+  }
 })
-onMounted(() => {
-  if (isFulfilled.value && chatPage.value <= 0) fetchChatMessages()
+
+watchImmediate(messages, (updatedMessages) => {
+  if (isFulfilled.value && !updatedMessages.length) {
+    store.commit('chat/addNewChat', { partnerId: props.partnerId })
+  }
+})
+
+onBeforeMount(() => {
+  window.addEventListener('keydown', onKeyPress)
+})
+
+onMounted(async () => {
+  if (isNewChat.value) {
+    showNewChatPlaceholder.value = true
+  }
+
+  if (chatPage.value <= 0) await fetchChatMessages()
+
+  await handleEmptyChat()
+
   scrollBehavior()
   nextTick(() => {
     isScrolledToBottom.value = chatRef.value.isScrolledToBottom()
@@ -437,16 +513,49 @@ onMounted(() => {
   }
 })
 onBeforeUnmount(() => {
-  window.removeEventListener('keyup', onKeyPress)
+  window.removeEventListener('keydown', onKeyPress)
   Visibility.unbind(Number(visibilityId.value))
+
+  if (isNewChat.value) {
+    store.commit('chat/removeNewChat', props.partnerId)
+  }
 })
+
+const handleEmptyChat = async () => {
+  showNewChatPlaceholder.value = !userMessages.value.length
+
+  if (!messages.value.length) {
+    store.commit('chat/addNewChat', { partnerId: props.partnerId })
+  }
+
+  if (isNewChat.value) {
+    const partnerName = store.getters['chat/getPartnerName'](props.partnerId)
+
+    await createChat(props.partnerId, partnerName)
+  }
+}
+
+const createChat = async (partnerId: string, partnerName: string) => {
+  try {
+    isGettingPublicKey.value = true
+    await store.dispatch('chat/createChat', {
+      partnerId,
+      partnerName
+    })
+  } catch {
+    vibrate.long()
+    isKeyMissing.value = true
+  } finally {
+    isGettingPublicKey.value = false
+  }
+}
 
 /**
  * Validate message before sending.
  * @param message
  * @returns If `false` then validation passed without errors.
  */
-function validateMessage(message: string): string | false {
+const validateMessage = (message: string): string | false => {
   if (hasAttachment.value) {
     // When attaching files, the message is not mandatory
     return false
@@ -487,7 +596,7 @@ const cancelPreviewFile = () => {
 const onMessageError = (error: string) => {
   switch (error) {
     case validationErrors.notEnoughFundsNewAccount:
-      showFreeTokensDialog.value = true
+      setShowFreeTokensDialog(true)
       return
     case validationErrors.notEnoughFunds:
       store.dispatch('snackbar/show', { message: t('chats.no_money') })
@@ -707,7 +816,8 @@ const openTransaction = (transaction: NormalizedChatMessageTransaction) => {
         txId: transaction.hash
       },
       query: {
-        fromChat: 'true'
+        fromChat: 'true',
+        from: `/chats/${props.partnerId}`
       }
     })
   }
@@ -775,21 +885,39 @@ const scrollBehavior = () => {
   })
 }
 const onKeyPress = (e: KeyboardEvent) => {
-  if (e.code === 'Enter' && !showFreeTokensDialog.value) chatFormRef.value.focus()
+  if (e.code === 'Enter' && !isShowFreeTokensDialog.value) {
+    chatFormRef.value.focus()
+  }
 }
 </script>
 
 <style scoped lang="scss">
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+
 .chat-menu {
   margin-right: 8px;
 }
 .chat {
-  height: 100vh;
+  height: calc(100vh - var(--v-layout-bottom));
   box-shadow: none;
   background-color: transparent !important;
 }
 
 .chat-avatar {
   margin-right: 12px;
+}
+
+/** Themes **/
+.v-theme--light {
+  .connection-spinner {
+    color: map.get(colors.$adm-colors, 'grey');
+  }
+}
+
+.v-theme--dark {
+  .connection-spinner {
+    color: map.get(colors.$adm-colors, 'regular');
+  }
 }
 </style>
