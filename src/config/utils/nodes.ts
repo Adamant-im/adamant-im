@@ -1,4 +1,4 @@
-import { NodeInfo } from '@/types/wallets'
+import type { NodeInfo } from '@/types/wallets'
 import { BlockchainSymbol } from './types'
 import config from '../index'
 
