@@ -84,7 +84,6 @@ import { useRoute, useRouter } from 'vue-router'
 import {
   computed,
   onActivated,
-  onBeforeMount,
   onBeforeUnmount,
   onDeactivated,
   onMounted,
@@ -95,6 +94,7 @@ import { useChatStateStore } from '@/stores/modal-state'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { useChatsSpinner } from '@/hooks/useChatsSpinner'
+import { computedEager } from '@vueuse/core'
 
 const scrollOffset = 64
 
@@ -110,11 +110,11 @@ const props = withDefaults(
 )
 
 const store = useStore()
-const chatStateStore = useChatStateStore()
 const router = useRouter()
-const route = useRoute()
 const { t } = useI18n()
 const showSpinner = useChatsSpinner()
+const route = useRoute()
+const chatStateStore = useChatStateStore()
 
 const className = 'chats-view'
 
@@ -128,8 +128,9 @@ const isShowChatStartDialog = computed({
 const lastPartnerId = ref<string | null>(null)
 const savedRoute = ref(null)
 const loading = ref(false)
-const noMoreChats = ref(false)
 const loadingSeparator = ref<InstanceType<typeof ChatPreview>[]>([])
+
+const noMoreChats = computedEager(() => store.getters['chat/chatListOffset'] === -1)
 const chatPagePartnerId = computed(() => {
   // We assume partnerId to always be a string
   return route.params.partnerId as string
@@ -162,10 +163,6 @@ onDeactivated(() => {
   }
 })
 
-onBeforeMount(() => {
-  noMoreChats.value = store.getters['chat/chatListOffset'] === -1
-})
-
 onMounted(() => {
   setShowChatStartDialog(props.showNewContact)
   attachScrollListener()
@@ -189,7 +186,16 @@ const checkIsActive = (contactId: string) => {
   return route.name !== 'Chats' && contactId === lastPartnerId.value
 }
 
-const openChat = (partnerId: string, messageText?: string) => {
+const openChat = (
+  partnerId: string,
+  messageText?: string,
+  partnerName?: string,
+  retrieveKey = false
+) => {
+  if (retrieveKey) {
+    store.commit('chat/addNewChat', { partnerId, partnerName })
+  }
+
   router.push({
     name: 'Chat',
     params: { partnerId },
@@ -246,15 +252,9 @@ const loadChatsPaged = () => {
   if (loading.value || noMoreChats.value) return
 
   loading.value = true
-  store
-    .dispatch('chat/loadChatsPaged')
-    .catch(() => {
-      noMoreChats.value = true
-    })
-    .finally(() => {
-      loading.value = false
-      onScroll() // update messages and remove loadingSeparator, if needed
-    })
+  store.dispatch('chat/loadChatsPaged').finally(() => {
+    loading.value = false
+  })
 }
 
 const messagesCount = (partnerId: string) => {
