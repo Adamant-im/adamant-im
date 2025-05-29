@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - dev
+  workflow_dispatch:
 
 env:
   GH_TOKEN: ${{ secrets.github_token }}
