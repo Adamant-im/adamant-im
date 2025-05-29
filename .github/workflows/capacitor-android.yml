@@ -58,7 +58,8 @@ jobs:
             --keystorepass $ANDROID_KEYSTORE_PASSWORD \
             --keystorealias $ANDROID_KEYSTORE_ALIAS \
             --keystorealiaspass $ANDROID_KEYSTORE_ALIAS_PASSWORD \
-            --androidreleasetype APK
+            --androidreleasetype APK \
+            --signing-type apksigner
 
       - name: Build and Sign Android App (AAB) 🛠️
         run: |
