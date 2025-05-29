@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - dev
+      - fix/add-apk-build-android
   workflow_dispatch:
 
 env:
