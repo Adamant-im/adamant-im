@@ -10,13 +10,19 @@
           <v-progress-circular
             v-show="loading"
             indeterminate
-            color="primary"
-            size="24"
+            :class="{
+              [classes.spinner]: true,
+              [`${classes.spinner}_no-messages`]: !messages.length
+            }"
+            :size="20"
             style="z-index: 100"
           />
         </div>
 
         <div ref="messagesRef" :class="classes.bodyMessages">
+          <div>
+            <slot name="placeholder" />
+          </div>
           <template v-for="message in messages" :key="message.id">
             <slot
               name="message"
@@ -42,8 +48,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { ref, onMounted, onBeforeUnmount, defineComponent, PropType } from 'vue'
+<script lang="ts" setup>
+import { ref, onMounted, onBeforeUnmount, useTemplateRef } from 'vue'
 import throttle from 'lodash/throttle'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import Styler from 'stylefire'
@@ -60,204 +66,226 @@ const classes = {
   body: `${className}__body`,
   bodyMessages: `${className}__body-messages`,
   fab: `${className}__fab`,
-  overlay: `${className}__overlay`
+  overlay: `${className}__overlay`,
+  spinner: `${className}__spinner`
 }
 
-export default defineComponent({
-  props: {
-    messages: {
-      type: Array as PropType<NormalizedChatMessageTransaction[]>,
-      default: () => []
-    },
-    partners: {
-      type: Array as PropType<User[]>,
-      default: () => []
-    },
-    userId: {
-      type: String,
-      required: true
-    },
-    loading: {
-      type: Boolean,
-      default: false
-    },
-    locale: {
-      type: String,
-      default: 'en'
-    }
-  },
-  emits: ['scroll', 'scroll:bottom', 'scroll:top'],
-  setup(props, { emit }) {
-    const messagesRef = ref<HTMLDivElement | null>(null)
-    const currentScrollHeight = ref(0)
-    const currentScrollTop = ref(0)
-    const currentClientHeight = ref(0)
+type Props = {
+  messages: NormalizedChatMessageTransaction[]
+  partners: User[]
+  userId: string
+  loading: boolean
+  locale: string
+}
 
-    const resizeHandler = () => {
-      if (!messagesRef.value) return
+const props = withDefaults(defineProps<Props>(), {
+  messages: () => [],
+  partners: () => [],
+  loading: false,
+  locale: 'en'
+})
 
-      const clientHeightDelta = currentClientHeight.value - messagesRef.value.clientHeight
+const emit = defineEmits<{
+  (e: 'scroll', scrollPosition: number, isBottom: boolean): void
+  (e: 'scroll:bottom'): void
+  (e: 'scroll:top'): void
+}>()
 
-      const nonVisibleClientHeight =
-        messagesRef.value.scrollHeight -
-        messagesRef.value.clientHeight -
-        Math.ceil(messagesRef.value.scrollTop)
-      const scrolledToBottom = nonVisibleClientHeight === 0
+const messagesRef = useTemplateRef<HTMLDivElement | null>('messagesRef')
+const currentScrollHeight = ref(0)
+const currentScrollTop = ref(0)
+const currentClientHeight = ref(0)
 
-      if (!scrolledToBottom) {
-        messagesRef.value.scrollTop += clientHeightDelta
-      }
+const resizeHandler = () => {
+  if (!messagesRef.value) return
 
-      currentClientHeight.value = messagesRef.value.clientHeight
-    }
+  const clientHeightDelta = currentClientHeight.value - messagesRef.value.clientHeight
 
-    const resizeObserver = ref(new ResizeObserver(resizeHandler))
+  const nonVisibleClientHeight =
+    messagesRef.value.scrollHeight -
+    messagesRef.value.clientHeight -
+    Math.ceil(messagesRef.value.scrollTop)
+  const scrolledToBottom = nonVisibleClientHeight === 0
 
-    const emitScroll = throttle(
-      () => emit('scroll', currentScrollTop.value, isScrolledToBottom()),
-      200
-    )
+  if (!scrolledToBottom) {
+    messagesRef.value.scrollTop += clientHeightDelta
+  }
 
-    const attachScrollListener = () => {
-      messagesRef.value?.addEventListener('scroll', onScroll)
-    }
+  currentClientHeight.value = messagesRef.value.clientHeight
+}
 
-    const destroyScrollListener = () => {
-      messagesRef.value?.removeEventListener('scroll', onScroll)
-    }
+const resizeObserver = ref(new ResizeObserver(resizeHandler))
 
-    const onScroll = () => {
-      if (!messagesRef.value) return
+const emitScroll = throttle(() => emit('scroll', currentScrollTop.value, isScrolledToBottom()), 200)
 
-      const scrollHeight = messagesRef.value.scrollHeight
-      const scrollTop = Math.ceil(messagesRef.value.scrollTop)
-      const clientHeight = messagesRef.value.clientHeight
+const attachScrollListener = () => {
+  messagesRef.value?.addEventListener('scroll', onScroll)
+}
 
-      if (scrollHeight - scrollTop === clientHeight) {
-        emit('scroll:bottom')
-      } else if (scrollTop === 0) {
-        currentScrollHeight.value = scrollHeight
-        emit('scroll:top')
-      }
+const destroyScrollListener = () => {
+  messagesRef.value?.removeEventListener('scroll', onScroll)
+}
 
-      currentScrollTop.value = scrollTop
-      currentScrollHeight.value = scrollHeight
+const onScroll = () => {
+  if (!messagesRef.value) return
 
-      emitScroll()
-    }
+  const scrollHeight = messagesRef.value.scrollHeight
+  const scrollTop = Math.ceil(messagesRef.value.scrollTop)
+  const clientHeight = messagesRef.value.clientHeight
 
-    const maintainScrollPosition = () => {
-      if (!messagesRef.value) return
+  if (scrollHeight - scrollTop === clientHeight) {
+    emit('scroll:bottom')
+  } else if (scrollTop === 0) {
+    currentScrollHeight.value = scrollHeight
+    emit('scroll:top')
+  }
 
-      messagesRef.value.scrollTop =
-        messagesRef.value.scrollHeight - currentScrollHeight.value + currentScrollTop.value
-    }
+  currentScrollTop.value = scrollTop
+  currentScrollHeight.value = scrollHeight
 
-    const scrollToBottom = () => {
-      if (messagesRef.value) {
-        messagesRef.value.scrollTop = messagesRef.value.scrollHeight
-      }
-    }
+  emitScroll()
+}
 
-    const scrollTo = (position: number) => {
-      if (messagesRef.value) {
-        messagesRef.value.scrollTop = position
-      }
-    }
+const maintainScrollPosition = () => {
+  if (!messagesRef.value) return
 
-    const scrollToMessage = (index: number) => {
-      if (!messagesRef.value) return
+  messagesRef.value.scrollTop =
+    messagesRef.value.scrollHeight - currentScrollHeight.value + currentScrollTop.value
+}
 
-      const elements = messagesRef.value.children
+const scrollToBottom = () => {
+  if (messagesRef.value && messagesRef.value.scrollHeight) {
+    messagesRef.value.scrollTop = messagesRef.value.scrollHeight
+  }
+}
 
-      if (!elements) return
+const scrollTo = (position: number) => {
+  if (messagesRef.value) {
+    messagesRef.value.scrollTop = position
+  }
+}
 
-      const element = elements[elements.length - 1 - index] as HTMLElement
+const scrollToMessage = (index: number) => {
+  if (!messagesRef.value) return
 
-      if (element) {
-        messagesRef.value.scrollTop = element.offsetTop - 16
-      } else {
-        scrollToBottom()
-      }
-    }
+  const elements = messagesRef.value.children
 
-    const scrollToMessageEasy = async (index: number): Promise<boolean> => {
-      if (!messagesRef.value) return false
+  if (!elements) return
 
-      const elements = messagesRef.value.children
+  const element = elements[elements.length - 1 - index] as HTMLElement
 
-      if (!elements) return false
+  if (element) {
+    messagesRef.value.scrollTop = element.offsetTop - 16
+  } else {
+    scrollToBottom()
+  }
+}
 
-      const element = elements[elements.length - 1 - index] as HTMLElement
+const scrollToMessageEasy = async (index: number): Promise<boolean> => {
+  if (!messagesRef.value) return false
 
-      if (!element) return false
+  const elements = messagesRef.value.children
 
-      return new Promise((resolve) => {
-        scrollIntoView(element, {
-          behavior: (instructions) => {
-            const [{ el, top }] = instructions
-            const styler = Styler(el)
+  if (!elements) return false
 
-            if (el.scrollTop === top) {
-              resolve(false)
-              return
-            }
+  const element = elements[elements.length - 1 - index] as HTMLElement
 
-            animate({
-              from: el.scrollTop,
-              to: top,
-              duration: SCROLL_TO_REPLIED_MESSAGE_ANIMATION_DURATION,
-              onUpdate: (top) => styler.set('scrollTop', top),
-              onComplete: () => resolve(true)
-            })
-          },
-          block: 'center'
+  if (!element) return false
+
+  return new Promise((resolve) => {
+    scrollIntoView(element, {
+      behavior: (instructions) => {
+        const [{ el, top }] = instructions
+        const styler = Styler(el)
+
+        if (el.scrollTop === top) {
+          resolve(false)
+          return
+        }
+
+        animate({
+          from: el.scrollTop,
+          to: top,
+          duration: SCROLL_TO_REPLIED_MESSAGE_ANIMATION_DURATION,
+          onUpdate: (top) => styler.set('scrollTop', top),
+          onComplete: () => resolve(true)
         })
-      })
-    }
-
-    const isScrolledToBottom = () => {
-      if (!messagesRef.value) return false
-
-      const scrollOffset =
-        messagesRef.value.scrollHeight -
-        Math.ceil(messagesRef.value.scrollTop) -
-        messagesRef.value.clientHeight
-
-      return scrollOffset <= 60
-    }
-
-    const getSenderMeta = (senderId: string) => {
-      return props.partners.find((partner) => isStringEqualCI(partner.id, senderId))
-    }
-
-    onMounted(() => {
-      attachScrollListener()
-
-      if (messagesRef.value) {
-        currentClientHeight.value = messagesRef.value.clientHeight
-        resizeObserver.value.observe(messagesRef.value)
-      }
+      },
+      block: 'center'
     })
+  })
+}
 
-    onBeforeUnmount(() => {
-      destroyScrollListener()
-      if (messagesRef.value) {
-        resizeObserver.value?.unobserve(messagesRef.value)
-      }
-    })
+const isScrolledToBottom = () => {
+  if (!messagesRef.value) return false
 
-    return {
-      classes,
-      messagesRef,
-      maintainScrollPosition,
-      scrollToBottom,
-      scrollTo,
-      scrollToMessage,
-      scrollToMessageEasy,
-      getSenderMeta,
-      isScrolledToBottom
-    }
+  const scrollOffset =
+    messagesRef.value.scrollHeight -
+    Math.ceil(messagesRef.value.scrollTop) -
+    messagesRef.value.clientHeight
+
+  return scrollOffset <= 60
+}
+
+const getSenderMeta = (senderId: string) => {
+  return props.partners.find((partner) => isStringEqualCI(partner.id, senderId))
+}
+
+onMounted(() => {
+  attachScrollListener()
+
+  if (messagesRef.value) {
+    currentClientHeight.value = messagesRef.value.clientHeight
+    resizeObserver.value.observe(messagesRef.value)
   }
 })
+
+onBeforeUnmount(() => {
+  destroyScrollListener()
+  if (messagesRef.value) {
+    resizeObserver.value?.unobserve(messagesRef.value)
+  }
+})
+
+defineExpose({
+  scrollToBottom,
+  isScrolledToBottom,
+  scrollToMessageEasy,
+  maintainScrollPosition,
+  scrollToMessage,
+  scrollTo
+})
 </script>
+
+<style lang="scss" scoped>
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/components/_chat.scss';
+
+.a-chat {
+  &__spinner {
+    margin-top: 26px;
+
+    &_no-messages {
+      margin-top: chat.$placeholder-height + 42px;
+    }
+  }
+}
+
+/** Themes **/
+.v-theme--light {
+  .a-chat {
+    &__spinner {
+      color: map.get(colors.$adm-colors, 'grey');
+    }
+  }
+}
+
+.v-theme--dark {
+  .a-chat {
+    &__spinner {
+      color: map.get(colors.$adm-colors, 'regular');
+    }
+  }
+}
+</style>
