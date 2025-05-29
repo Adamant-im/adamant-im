@@ -8,7 +8,7 @@ import {
   sendSpecialMessage,
   getCurrentAccount
 } from '@/lib/adamant-api'
-import { Fees, FetchStatus } from '@/lib/constants'
+import { CryptosInfo, Fees, FetchStatus } from '@/lib/constants'
 import { encryptPassword } from '@/lib/idb/crypto'
 import { flushCryptoAddresses, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import { registerCryptoModules } from './utils/registerCryptoModules'
@@ -48,9 +48,9 @@ import servicesPlugin from './modules/services/services-plugin'
 
 export let interval
 
-const UPDATE_BALANCE_INTERVAL = 5000
-const UPDATE_BALANCE_INTERVAL_FOR_NEW_ACCOUNT = 1500
-const BALANCE_INVALID_TIMEOUT = 5 * 60 * 1000
+const UPDATE_BALANCE_INTERVAL = CryptosInfo.ADM.balanceCheckInterval
+const UPDATE_BALANCE_INTERVAL_FOR_NEW_ACCOUNT = CryptosInfo.ADM.balanceCheckIntervalNewAccount
+const BALANCE_INVALID_TIMEOUT = CryptosInfo.ADM.balanceValidInterval
 
 /**
  * @type { import("vuex").StoreOptions } store
@@ -246,6 +246,7 @@ const store = {
                 ))
             )
         }
+        dispatch('initBalanceUpdate').catch((err) => console.error(err))
         repeat()
       }
     },

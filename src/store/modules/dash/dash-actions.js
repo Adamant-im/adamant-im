@@ -1,5 +1,6 @@
 import baseActions from '../btc-base/btc-base-actions'
 import DashApi from '../../../lib/bitcoin/dash-api'
+import { CryptosInfo } from '@/lib/constants/index.js'
 
 /**
  * Fetches DASH transactions. Paging is not supported at the moment.
@@ -47,6 +48,7 @@ const getOldTransactions = (api, context) => {
 export default {
   ...baseActions({
     apiCtor: DashApi,
+    balanceCheckInterval: CryptosInfo.DASH.balanceCheckInterval,
     getOldTransactions,
     getNewTransactions
   })

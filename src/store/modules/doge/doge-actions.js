@@ -1,5 +1,6 @@
 import baseActions from '../btc-base/btc-base-actions'
 import DogeApi from '../../../lib/bitcoin/doge-api'
+import { CryptosInfo } from '@/lib/constants/index.js'
 
 const getNewTransactions = (api, context) => {
   context.commit('areRecentLoading', true)
@@ -39,6 +40,7 @@ const getOldTransactions = (api, context) => {
 export default {
   ...baseActions({
     apiCtor: DogeApi,
+    balanceCheckInterval: CryptosInfo.DOGE.balanceCheckInterval,
     getOldTransactions,
     getNewTransactions
   })
