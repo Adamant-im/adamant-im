@@ -147,6 +147,7 @@ const store = {
     loginViaPassword({ commit, dispatch }, password) {
       return loginViaPassword(password, this).then((account) => {
         commit('setIDBReady', true)
+        commit('setPassphrase', account.passphrase)
 
         // retrieve wallet data
         dispatch('afterLogin', account.passphrase)
@@ -249,7 +250,18 @@ const store = {
       handler() {
         clearTimeout(interval)
       }
-    }
+    },
+    async getPrivateKeyForPush({ state }) {
+    if (!state.passphrase) return '';
+    
+      const { getMyPrivateKey, isReady } = await import('@/lib/adamant-api');
+      
+      if (!isReady()) {
+        return '';
+      }
+      
+      return getMyPrivateKey();
+  },
   },
   modules: {
     adm: admModule, // ADM transfers

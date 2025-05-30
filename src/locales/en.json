@@ -266,7 +266,12 @@
     "use_full_date_tooltip": "Displays dates as 2021-01-17 instead of relative terms like 'Yesterday' or 'Today'",
     "version": "App Version:",
     "vote_for_delegates_button": "Vote for delegates",
-    "wallets_list": "Wallet list"
+    "wallets_list": "Wallet list",
+    "notifications_info": "Notification modes\n\nDisabled\nNo notifications.\n\nBackground Fetch\nYour device fetchs for new messages by itself. No external calls.\n\nPush\nNotifications sent to your device by ADAMANT Notification Service. You will receive notification almost instantly after a message was sent and approved by the Blockchain — a few seconds delay. But this mode requires your device to register it's Device Token in the Service's database. Device tokens are safe and secure, and this option is recommended in most cases.\n\nYou can read more about device registration on ADAMANT's Github page.\n\n",
+    "push_subscribe_success": "Successfully subscribed to push notifications",
+    "push_register_error": "Failed to register device for push notifications",
+    "push_unsubscribe_success": "Successfully unsubscribed from push notifications",
+    "push_unregister_error": "Failed to unregister device from push notifications"
   },
   "region": "en-US",
   "rows_per_page": "Rows per page",

@@ -6,6 +6,7 @@ const state = () => ({
   allowSoundNotifications: true,
   allowTabNotifications: true,
   allowPushNotifications: false,
+  allowNotificationType: 0,
   darkTheme: true,
   formatMessages: true,
   useFullDate: false,

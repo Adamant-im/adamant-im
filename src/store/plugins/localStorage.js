@@ -13,6 +13,7 @@ const vuexPersistence = new VuexPersistence({
         allowSoundNotifications: state.options.allowSoundNotifications,
         allowTabNotifications: state.options.allowTabNotifications,
         allowPushNotifications: state.options.allowPushNotifications,
+        allowNotificationType: state.options.allowNotificationType,
         darkTheme: state.options.darkTheme,
         formatMessages: state.options.formatMessages,
         useFullDate: state.options.useFullDate,

@@ -200,3 +200,5 @@ export function getChatRoomMessages(
   params: GetChatRoomMessagesParams,
   recursive: boolean = false
 ): Promise<Array<ReturnType<typeof decodeChat>>>
+
+export function getMyPrivateKey(): string

@@ -260,3 +260,12 @@ export const REACT_EMOJIS = {
 } as const
 
 export const sidebarLayoutKey = Symbol('sidebarLayout')
+
+export const ADAMANT_NOTIFICATION_SERVICE_ADDRESS = 'U922832474468487910'
+export const VAPID_KEY =
+  'BOUaH-qBAFhcEzR3sETwqJDDP-WjWShYr3NAXFQwHTXT0ZIQirLuTTgL7U20kAzsFD5FE4nvTWbF1iSiAMGnyiY'
+export const notificationType = {
+  'No Notifications': 0,
+  'Background Fetch': 1,
+  Push: 2
+}

@@ -96,7 +96,6 @@ adamant.makeKeypair = function (hash) {
   }
 }
 
-
 /**
  * Calculates tx id
  * @param {object} transaction
