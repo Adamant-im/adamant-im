@@ -5,6 +5,8 @@ on:
     branches:
       - master
       - dev
+      - fix/add-apk-build-android
+  workflow_dispatch:
 
 env:
   GH_TOKEN: ${{ secrets.github_token }}
@@ -22,14 +24,17 @@ jobs:
       - name: Checkout repository 🛎️
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK 20
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'zulu'
+          java-version: '20'
+          distribution: 'oracle'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+
+      - name: Install ApkSigner
+        run: sudo apt install -y apksigner
 
       - name: Setup Node version 🍀
         uses: actions/setup-node@v4
@@ -58,7 +63,8 @@ jobs:
             --keystorepass $ANDROID_KEYSTORE_PASSWORD \
             --keystorealias $ANDROID_KEYSTORE_ALIAS \
             --keystorealiaspass $ANDROID_KEYSTORE_ALIAS_PASSWORD \
-            --androidreleasetype APK
+            --androidreleasetype APK \
+            --signing-type apksigner
 
       - name: Build and Sign Android App (AAB) 🛠️
         run: |
