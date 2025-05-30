@@ -21,6 +21,7 @@ let interval
  * @property {function(BtcBaseApi, object): Promise} getOldTransactions function to get the old transactions list (second arg is a Vuex context)
  * @property {function(function(): BtcBaseApi): object} customActions function to create custom actions for the current crypto (optional)
  * @property {number || undefined} balanceCheckInterval interval (ms) between balance updates for specific coins
+ * @property {number || undefined} balanceValidInterval interval (ms) until specific balance becomes invalid
  * @property {number} fetchRetryTimeout interval (ms) between attempts to fetch the registered transaction details
  */
 
@@ -93,9 +94,11 @@ function createActions(options) {
 
         try {
           const balance = await api.getBalance()
+          const validInterval = options.balanceValidInterval || CryptosInfo.BTC.balanceValidInterval
 
           commit('status', { balance })
           commit('setBalanceStatus', FetchStatus.Success)
+          commit('setBalanceActualUntil', Date.now() + validInterval)
         } catch (err) {
           commit('setBalanceStatus', FetchStatus.Error)
           console.warn(err)

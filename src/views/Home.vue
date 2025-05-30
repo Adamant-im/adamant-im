@@ -15,7 +15,7 @@
               center-active
             >
               <v-tab
-                v-for="wallet in wallets"
+                v-for="(wallet, index) in wallets"
                 :key="wallet.cryptoCurrency"
                 :value="wallet.cryptoCurrency"
                 @wheel="onWheel"
@@ -23,7 +23,7 @@
                 <wallet-tab
                   :wallet="wallet"
                   :fiat-currency="currentCurrency"
-                  :is-balance-valid="isBalanceValid"
+                  :is-balance-valid="balances[index]"
                 />
               </v-tab>
             </v-tabs>
@@ -90,7 +90,7 @@ const { t } = useI18n()
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
-const isBalanceValid = useBalanceCheck()
+const balances = useBalanceCheck()
 
 const className = 'account-view'
 

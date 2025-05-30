@@ -25,6 +25,7 @@ const customActions = (getAccount) => ({
 
         commit('status', { balance, nonce })
         commit('setBalanceStatus', FetchStatus.Success)
+        commit('setBalanceActualUntil', Date.now() + CryptosInfo.KLY.balanceValidInterval)
       } catch (err) {
         commit('setBalanceStatus', FetchStatus.Error)
         console.warn(err)

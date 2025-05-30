@@ -41,6 +41,7 @@ export default {
   ...baseActions({
     apiCtor: DogeApi,
     balanceCheckInterval: CryptosInfo.DOGE.balanceCheckInterval,
+    balanceValidInterval: CryptosInfo.DOGE.balanceValidInterval,
     getOldTransactions,
     getNewTransactions
   })

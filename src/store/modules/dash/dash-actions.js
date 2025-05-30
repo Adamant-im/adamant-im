@@ -49,6 +49,7 @@ export default {
   ...baseActions({
     apiCtor: DashApi,
     balanceCheckInterval: CryptosInfo.DASH.balanceCheckInterval,
+    balanceValidInterval: CryptosInfo.DASH.balanceValidInterval,
     getOldTransactions,
     getNewTransactions
   })

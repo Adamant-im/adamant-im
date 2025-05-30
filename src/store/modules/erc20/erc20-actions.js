@@ -59,6 +59,7 @@ const createSpecificActions = (api) => ({
 
         commit('balance', balance)
         commit('setBalanceStatus', FetchStatus.Success)
+        commit('setBalanceActualUntil', Date.now() + CryptosInfo.ETH.balanceValidInterval)
       } catch (err) {
         commit('setBalanceStatus', FetchStatus.Error)
         console.warn(err)
