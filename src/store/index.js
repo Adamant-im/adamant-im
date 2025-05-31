@@ -48,9 +48,11 @@ import servicesPlugin from './modules/services/services-plugin'
 
 export let interval
 
-const UPDATE_BALANCE_INTERVAL = CryptosInfo.ADM.balanceCheckInterval
-const UPDATE_BALANCE_INTERVAL_FOR_NEW_ACCOUNT = CryptosInfo.ADM.balanceCheckIntervalNewAccount
-const BALANCE_INVALID_TIMEOUT = CryptosInfo.ADM.balanceValidInterval
+const {
+  balanceCheckInterval: UPDATE_BALANCE_INTERVAL,
+  balanceCheckIntervalNewAccount: UPDATE_BALANCE_INTERVAL_FOR_NEW_ACCOUNT,
+  balanceValidInterval: BALANCE_INVALID_TIMEOUT
+} = CryptosInfo.ADM
 
 /**
  * @type { import("vuex").StoreOptions } store
