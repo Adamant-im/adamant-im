@@ -59,6 +59,9 @@ async function initCoins() {
     coinSymbols[name] = coin.symbol
 
     coins[coin.symbol] = {
+      balanceCheckInterval: coin.balanceCheckInterval,
+      balanceCheckIntervalNewAccount: coin.balanceCheckIntervalNewAccount,
+      balanceValidInterval: coin.balanceValidInterval,
       symbol: coin.symbol,
       name: coin.name,
       nameShort: coin.nameShort,
@@ -159,7 +162,7 @@ function updateTestnetConfig(configs) {
     if (config.testnet) config.nodes.list = config.testnet.nodes.list
 
     return config
-  });
+  })
 
   return updateConfig(testnetConfigs, 'testnet')
 }
