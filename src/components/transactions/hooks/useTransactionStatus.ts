@@ -10,6 +10,9 @@ export function useTransactionStatus(
   inconsistentStatus?: Ref<InconsistentStatus>
 ) {
   return computed(() => {
+    if (transactionStatus?.value) {
+      return transactionStatus?.value
+    }
     if (queryStatus.value === 'error') return TransactionStatus.REJECTED
     if (queryStatus.value === 'success') {
       if (inconsistentStatus?.value) return TransactionStatus.INVALID
