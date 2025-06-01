@@ -1,6 +1,7 @@
 @use 'sass:map';
-@use '../settings/_colors.scss';
 @use 'vuetify/settings';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/generic/_variables.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 
@@ -28,7 +29,7 @@ $scroll-bar-width: 4px;
   height: calc(100dvh - var(--v-layout-bottom));
   position: relative;
 
-  @media (max-width: 799px) {
+  @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
     position: fixed;
     left: 0;
     right: 0;
