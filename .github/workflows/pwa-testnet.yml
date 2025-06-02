@@ -5,10 +5,12 @@ on:
     branches:
       - dev
       - master
+      - feat/github-testnet-deploy
 
 env:
   SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
-  PREVIEW_DOMAIN: https://${{ github.ref_name }}-adamant-testnet.surge.sh
+  PREVIEW_DOMAIN: ${{ github.ref_name == 'master' && 'https://msg-adamant-testnet.surge.sh' || 'https://dev-adamant-testnet.surge.sh' }}
+  CUSTOM_DOMAIN: ${{ github.ref_name == 'master' && 'https://msg-testnet.adamant.im' || 'https://dev-testnet.adamant.im' }}
 
 jobs:
   build-and-deploy-to-surge:
@@ -41,3 +43,4 @@ jobs:
         run: |
           npm install --global surge
           surge ./dist ${{ env.PREVIEW_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
+          surge ./dist ${{ env.CUSTOM_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
