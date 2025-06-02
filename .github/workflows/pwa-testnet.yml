@@ -10,7 +10,7 @@ on:
 env:
   SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
   PREVIEW_DOMAIN: ${{ github.ref_name == 'master' && 'https://msg-adamant-testnet.surge.sh' || 'https://dev-adamant-testnet.surge.sh' }}
-  CUSTOM_DOMAIN: ${{ github.ref_name == 'master' && 'https://msg-testnet.adamant.im' || 'https://dev-testnet.adamant.im' }}
+  CUSTOM_DOMAIN: ${{ github.ref_name == 'master' && 'http://msg-testnet.adamant.im' || 'http://dev-testnet.adamant.im' }}
 
 jobs:
   build-and-deploy-to-surge:
