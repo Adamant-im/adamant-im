@@ -5,7 +5,6 @@ on:
     branches:
       - dev
       - master
-      - feat/github-testnet-deploy
 
 env:
   SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
