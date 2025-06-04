@@ -82,7 +82,8 @@ export function refetchIntervalFactory(
   queryStatus: QueryStatus,
   transaction?: { status: TransactionStatusType; timestamp?: number }
 ) {
-  const { registeredInterval, newPendingInterval, newPendingAttempts } = getTxFetchInfo(crypto)
+  const { registeredInterval, newPendingInterval, oldPendingInterval, newPendingAttempts } =
+    getTxFetchInfo(crypto)
 
   if (
     queryStatus === 'error' ||
@@ -99,10 +100,13 @@ export function refetchIntervalFactory(
       : registeredInterval
   }
 
-  return transaction?.status === TransactionStatus.PENDING &&
-    isNew({ newPendingInterval, newPendingAttempts, transaction })
-    ? newPendingInterval
-    : registeredInterval
+  if (transaction?.status === TransactionStatus.PENDING) {
+    return isNew({ newPendingInterval, newPendingAttempts, transaction })
+      ? newPendingInterval
+      : oldPendingInterval
+  }
+
+  return registeredInterval
 }
 
 export function refetchOnMountFn(transaction?: { status: TransactionStatusType }) {
