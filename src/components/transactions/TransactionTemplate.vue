@@ -262,9 +262,7 @@ const isRejectedTransaction = computed(() => props.transactionStatus === Transac
 
 const txId = computed(() => route.params.txId as string)
 
-const finalStatus = computed(() => {
-  return list.value[txId.value]
-})
+const finalStatus = computed(() => list.value[txId.value])
 
 const formattedTransactionStatus = computed(() => {
   if (finalStatus.value) {
@@ -385,7 +383,6 @@ watch(
     if (value === TransactionStatus.REJECTED) {
       addTransaction(txId.value, value)
     }
-    console.log('status value', value)
   }
 )
 

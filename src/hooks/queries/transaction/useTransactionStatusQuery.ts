@@ -31,10 +31,7 @@ export function useTransactionStatusQuery(
     refetch()
   }
 
-  const finalStatus = computed(() => {
-    return list.value[unref(transactionId)]
-  })
-
+  const finalStatus = computed(() => list.value[unref(transactionId)])
   const inconsistentStatus = useInconsistentStatus(transaction, unref(crypto))
   const transactionStatus = computed(() => {
     if (finalStatus.value) {
