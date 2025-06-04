@@ -1,5 +1,8 @@
 {
   "ADM": {
+    "balanceCheckInterval": 5000,
+    "balanceCheckIntervalNewAccount": 2000,
+    "balanceValidInterval": 300000,
     "symbol": "ADM",
     "name": "ADAMANT Messenger",
     "nameShort": "ADAMANT",
@@ -132,6 +135,8 @@
     "fees": "ethereum"
   },
   "BTC": {
+    "balanceCheckInterval": 50000,
+    "balanceValidInterval": 300000,
     "symbol": "BTC",
     "name": "Bitcoin",
     "qrPrefix": "bitcoin",
@@ -219,6 +224,8 @@
     "fees": "ethereum"
   },
   "DASH": {
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
     "symbol": "DASH",
     "name": "Dash",
     "qrPrefix": "dash",
@@ -269,6 +276,8 @@
     "explorerTx": "https://dashblockexplorer.com/tx/${ID}"
   },
   "DOGE": {
+    "balanceCheckInterval": 30000,
+    "balanceValidInterval": 300000,
     "symbol": "DOGE",
     "name": "Dogecoin",
     "qrPrefix": "doge",
@@ -341,6 +350,8 @@
     "fees": "ethereum"
   },
   "ETH": {
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
     "symbol": "ETH",
     "name": "Ethereum",
     "qrPrefix": "ethereum",
@@ -459,6 +470,8 @@
     "fees": "ethereum"
   },
   "KLY": {
+    "balanceCheckInterval": 50000,
+    "balanceValidInterval": 300000,
     "symbol": "KLY",
     "name": "Klayr",
     "qrPrefix": "klayr",

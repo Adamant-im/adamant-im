@@ -15,12 +15,16 @@
               center-active
             >
               <v-tab
-                v-for="wallet in wallets"
+                v-for="(wallet, index) in wallets"
                 :key="wallet.cryptoCurrency"
                 :value="wallet.cryptoCurrency"
                 @wheel="onWheel"
               >
-                <wallet-tab :wallet="wallet" :fiat-currency="currentCurrency" />
+                <wallet-tab
+                  :wallet="wallet"
+                  :fiat-currency="currentCurrency"
+                  :is-balance-valid="balances[index]"
+                />
               </v-tab>
             </v-tabs>
 
@@ -46,12 +50,12 @@
               >
                 <wallet-card
                   :address="wallet.address"
-                  :balance="wallet.balance"
+                  :all-coin-nodes-disabled="allCoinNodesDisabled"
                   :crypto="wallet.cryptoCurrency"
                   :crypto-name="wallet.cryptoName"
                   :rate="wallet.rate"
                   :current-currency="currentCurrency"
-                  @click:balance="goToTransactions"
+                  @click:balance="handleBalanceClick"
                 >
                   <template #icon>
                     <crypto-icon :crypto="wallet.cryptoCurrency" size="large" />
@@ -79,13 +83,14 @@ import { computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { CoinSymbol } from '@/store/modules/wallets/types'
 import { useI18n } from 'vue-i18n'
+import { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import { useBalanceCheck } from '@/hooks/useBalanceCheck'
 
 const { t } = useI18n()
-
 const store = useStore()
-
 const route = useRoute()
 const router = useRouter()
+const balances = useBalanceCheck()
 
 const className = 'account-view'
 
@@ -105,6 +110,10 @@ const currentCurrency = computed({
   }
 })
 
+const coinNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/coins'])
+const allCoinNodesDisabled = computed(() =>
+  coinNodes.value.every((node) => node.status === 'disabled')
+)
 const wallets = computed(() => {
   const state = store.state
   return orderedVisibleWalletSymbols.value.map((crypto: CoinSymbol) => {
@@ -129,6 +138,14 @@ const wallets = computed(() => {
 })
 
 const updateBalances = () => {
+  if (allCoinNodesDisabled.value) {
+    store.dispatch('snackbar/show', {
+      message: t('home.no_active_nodes_pull_down', {
+        coin: currentWallet.value
+      })
+    })
+  }
+
   store.dispatch('updateBalance', {
     requestedByUser: true
   })
@@ -143,6 +160,23 @@ const goToTransactions = (crypto: string) => {
       crypto
     }
   })
+}
+
+const goToCoinNodes = () => {
+  router.push({
+    name: 'Nodes',
+    state: {
+      tab: 'coins'
+    }
+  })
+}
+
+const handleBalanceClick = (crypto?: string) => {
+  if (crypto && !allCoinNodesDisabled.value) {
+    return goToTransactions(crypto)
+  }
+
+  goToCoinNodes()
 }
 
 const onWheel = (e: WheelEvent) => {

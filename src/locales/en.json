@@ -138,6 +138,8 @@
     "exchanges_on": "Exchanges on {aggregator}",
     "free_adm_btn": "Free coins",
     "free_tokens_link": "https://adamant.im/free-adm-tokens/",
+    "no_active_nodes": "No active nodes",
+    "no_active_nodes_pull_down": "No active {coin} nodes. Review the coin node list",
     "send_btn": "Send funds",
     "send_crypto": "Send {crypto}",
     "share_uri": "Share {crypto} address",

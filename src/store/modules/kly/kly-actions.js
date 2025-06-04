@@ -1,11 +1,13 @@
-import { FetchStatus } from '@/lib/constants'
+import { CryptosInfo, FetchStatus } from '@/lib/constants'
 import baseActions from '../kly-base/kly-base-actions'
 import { kly } from '../../../lib/nodes/kly'
 import shouldUpdate from '../../utils/coinUpdatesGuard'
+import { validateStoredCryptoAddresses } from '@/lib/store-crypto-address.js'
+
+let interval
 
 const customActions = (getAccount) => ({
   updateBalance: {
-    root: true,
     async handler({ commit, rootGetters, state }, payload = {}) {
       const coin = state.crypto
 
@@ -23,10 +25,35 @@ const customActions = (getAccount) => ({
 
         commit('status', { balance, nonce })
         commit('setBalanceStatus', FetchStatus.Success)
+        commit('setBalanceActualUntil', Date.now() + CryptosInfo.KLY.balanceValidInterval)
       } catch (err) {
         commit('setBalanceStatus', FetchStatus.Error)
         console.warn(err)
       }
+    }
+  },
+
+  initBalanceUpdate: {
+    root: true,
+    handler({ dispatch }) {
+      function repeat() {
+        validateStoredCryptoAddresses()
+        dispatch('updateBalance')
+          .catch((err) => console.error(err))
+          .then(() => {
+            interval = setTimeout(() => {
+              repeat()
+            }, Number(CryptosInfo.KLY.balanceCheckInterval))
+          })
+      }
+      repeat()
+    }
+  },
+
+  stopInterval: {
+    root: true,
+    handler() {
+      clearTimeout(interval)
     }
   },
 

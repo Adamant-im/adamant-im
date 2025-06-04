@@ -89,8 +89,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, computed } from 'vue'
+<script lang="ts" setup>
+import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
@@ -108,65 +108,51 @@ const classes = {
 
 type Tab = 'adm' | 'coins' | 'services' | 'ipfs'
 
-export default defineComponent({
-  components: {
-    ServiceNodesTable,
-    AdmNodesTable,
-    CoinNodesTable,
-    IpfsNodesTable
+const { t } = useI18n()
+const store = useStore()
+const tab = ref<Tab>('adm')
+
+const useSocketConnection = computed<boolean>({
+  get() {
+    return store.state.options.useSocketConnection
   },
-  setup() {
-    const { t } = useI18n()
-    const store = useStore()
-    const tab = ref<Tab>('adm')
-
-    const useSocketConnection = computed<boolean>({
-      get() {
-        return store.state.options.useSocketConnection
-      },
-      set(value) {
-        store.commit('options/updateOption', {
-          key: 'useSocketConnection',
-          value
-        })
-      }
+  set(value) {
+    store.commit('options/updateOption', {
+      key: 'useSocketConnection',
+      value
     })
-    const preferFastestAdmNodeOption = computed<boolean>({
-      get() {
-        return store.state.nodes.useFastestAdmNode
-      },
-      set(value) {
-        store.dispatch('nodes/setUseFastestAdmNode', value)
-      }
-    })
+  }
+})
+const preferFastestAdmNodeOption = computed<boolean>({
+  get() {
+    return store.state.nodes.useFastestAdmNode
+  },
+  set(value) {
+    store.dispatch('nodes/setUseFastestAdmNode', value)
+  }
+})
 
-    const preferFastestCoinNodeOption = computed<boolean>({
-      get() {
-        return store.state.nodes.useFastestCoinNode
-      },
-      set(value) {
-        store.dispatch('nodes/setUseFastestCoinNode', value)
-      }
-    })
+const preferFastestCoinNodeOption = computed<boolean>({
+  get() {
+    return store.state.nodes.useFastestCoinNode
+  },
+  set(value) {
+    store.dispatch('nodes/setUseFastestCoinNode', value)
+  }
+})
 
-    const preferFasterServiceNodeOption = computed<boolean>({
-      get() {
-        return store.state.services.useFastestService
-      },
-      set(value) {
-        store.dispatch('services/useFastestService', value)
-      }
-    })
+const preferFasterServiceNodeOption = computed<boolean>({
+  get() {
+    return store.state.services.useFastestService
+  },
+  set(value) {
+    store.dispatch('services/useFastestService', value)
+  }
+})
 
-    return {
-      t,
-      tab,
-      classes,
-      useSocketConnection,
-      preferFastestAdmNodeOption,
-      preferFastestCoinNodeOption,
-      preferFasterServiceNodeOption
-    }
+onMounted(() => {
+  if (history.state.tab) {
+    tab.value = history.state.tab
   }
 })
 </script>

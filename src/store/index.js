@@ -8,7 +8,7 @@ import {
   sendSpecialMessage,
   getCurrentAccount
 } from '@/lib/adamant-api'
-import { Fees, FetchStatus } from '@/lib/constants'
+import { CryptosInfo, Fees, FetchStatus } from '@/lib/constants'
 import { encryptPassword } from '@/lib/idb/crypto'
 import { flushCryptoAddresses, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import { registerCryptoModules } from './utils/registerCryptoModules'
@@ -48,8 +48,11 @@ import servicesPlugin from './modules/services/services-plugin'
 
 export let interval
 
-const UPDATE_BALANCE_INTERVAL = 5000
-const UPDATE_BALANCE_INTERVAL_FOR_NEW_ACCOUNT = 1500
+const {
+  balanceCheckInterval: UPDATE_BALANCE_INTERVAL,
+  balanceCheckIntervalNewAccount: UPDATE_BALANCE_INTERVAL_FOR_NEW_ACCOUNT,
+  balanceValidInterval: BALANCE_INVALID_TIMEOUT
+} = CryptosInfo.ADM
 
 /**
  * @type { import("vuex").StoreOptions } store
@@ -64,7 +67,8 @@ const store = {
     passphrase: '',
     password: '',
     publicKeys: {},
-    isOnline: true
+    isOnline: true,
+    balanceActualUntil: 0
   }),
   getters: {
     isLogged: (state) => state.passphrase.length > 0,
@@ -127,6 +131,9 @@ const store = {
     },
     setIsOnline(state, value) {
       state.isOnline = value
+    },
+    setBalanceActualUntil(state, value) {
+      state.balanceActualUntil = value
     }
   },
   actions: {
@@ -216,6 +223,7 @@ const store = {
           if (account.balance > Fees.KVS) {
             flushCryptoAddresses()
           }
+          commit('setBalanceActualUntil', Date.now() + BALANCE_INVALID_TIMEOUT)
         })
         .catch((err) => {
           commit('setBalanceStatus', FetchStatus.Error)
@@ -240,6 +248,7 @@ const store = {
                 ))
             )
         }
+        dispatch('initBalanceUpdate').catch((err) => console.error(err))
         repeat()
       }
     },
@@ -279,9 +288,7 @@ const storeInstance = createStore(store)
 window.store = storeInstance
 
 // Need to init persistence plugin before other, because they use info from wallets
-registerVuexPlugins(storeInstance, [
-  walletsPersistencePlugin,
-])
+registerVuexPlugins(storeInstance, [walletsPersistencePlugin])
 
 registerCryptoModules(storeInstance)
 registerVuexPlugins(storeInstance, [
