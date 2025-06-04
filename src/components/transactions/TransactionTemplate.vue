@@ -163,7 +163,7 @@ import {
   mdiRefresh
 } from '@mdi/js'
 import { useFormattedDate } from '@/hooks/useFormattedDate'
-import { useFinalTransactions } from '@/stores/rejected-transactions'
+import { useFinalTransactions } from '@/stores/final-transactions'
 import { storeToRefs } from 'pinia'
 
 const className = 'transaction-view'

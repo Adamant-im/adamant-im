@@ -4,7 +4,7 @@ import { useTransactionStatus } from '@/components/transactions/hooks/useTransac
 import { CryptoSymbol, TransactionStatus } from '@/lib/constants'
 import { useTransactionQuery } from './useTransactionQuery'
 import { UseTransactionQueryParams } from './types'
-import { useFinalTransactions } from '@/stores/rejected-transactions'
+import { useFinalTransactions } from '@/stores/final-transactions'
 import { storeToRefs } from 'pinia'
 
 export function useTransactionStatusQuery(
