@@ -378,6 +378,7 @@ watch(
   (value) => {
     if (value === TransactionStatus.PENDING) {
       removeTransaction(txId.value)
+      return
     }
 
     if (value === TransactionStatus.REJECTED) {
