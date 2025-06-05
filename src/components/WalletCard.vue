@@ -21,7 +21,7 @@
           {{ t('home.balance') }}
         </v-list-item-title>
         <v-list-item-subtitle :class="classes.walletCardSubtitle">
-          <p>
+          <p v-if="!allCoinNodesDisabled">
             {{ xs ? calculatedBalance : calculatedFullBalance }} {{ crypto }}
             <span v-if="$store.state.rate.isLoaded" class="a-text-regular">
               ~{{ rate }} {{ currentCurrency }}
@@ -34,6 +34,7 @@
               {{ calculatedFullBalance }}
             </v-tooltip>
           </p>
+          <p v-else>{{ t('home.no_active_nodes') }}</p>
         </v-list-item-subtitle>
 
         <template #append>
@@ -55,8 +56,8 @@
   </v-card>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, ref, PropType } from 'vue'
+<script lang="ts" setup>
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ShareURIDialog from '@/components/ShareURIDialog.vue'
 import WalletCardListActions from '@/components/WalletCardListActions.vue'
@@ -70,6 +71,15 @@ import { mdiShareVariant, mdiChevronRight } from '@mdi/js'
 const SIGNIFICANT_DIGITS = 7
 const className = 'wallet-card'
 
+type Props = {
+  address: string
+  crypto: CryptoSymbol
+  cryptoName: string
+  currentCurrency: string
+  allCoinNodesDisabled: boolean
+  rate: number
+}
+
 const classes = {
   root: className,
   walletCardAction: `${className}__action`,
@@ -80,87 +90,51 @@ const classes = {
   walletCardTitle: `${className}__title`
 }
 
-export default defineComponent({
-  props: {
-    address: {
-      type: String,
-      required: true
-    },
-    crypto: {
-      type: String as PropType<CryptoSymbol>,
-      default: 'ADM'
-    },
-    cryptoName: {
-      type: String,
-      default: 'ADAMANT'
-    },
-    currentCurrency: {
-      type: String,
-      default: 'USD'
-    },
-    rate: {
-      type: Number,
-      required: true
-    }
-  },
-  components: {
-    ShareURIDialog,
-    WalletCardListActions
-  },
-  setup(props) {
-    const { t } = useI18n()
-    const store = useStore()
-    const { xs } = useDisplay()
-    const key = props.crypto.toLowerCase()
-    const showShareURIDialog = ref(false)
+const props = withDefaults(defineProps<Props>(), {
+  crypto: 'ADM',
+  cryptoName: 'ADAMANT',
+  currentCurrency: 'USD'
+})
 
-    const balance = computed(() => {
-      return props.crypto === Cryptos.ADM
-        ? store.state.balance
-        : store.state[key]
-          ? store.state[key].balance
-          : 0
-    })
+const { t } = useI18n()
+const store = useStore()
+const { xs } = useDisplay()
+const key = props.crypto.toLowerCase()
+const showShareURIDialog = ref(false)
 
-    const calculatedBalance = computed(() => {
-      return smartNumber(calculatedFullBalance.value)
-    })
+const balance = computed(() => {
+  return props.crypto === Cryptos.ADM
+    ? store.state.balance
+    : store.state[key]
+      ? store.state[key].balance
+      : 0
+})
 
-    const calculatedFullBalance = computed(() => {
-      return balance.value ? currencyAmount(Number(balance.value), props.crypto, true) : 0
-    })
+const calculatedBalance = computed(() => {
+  return smartNumber(calculatedFullBalance.value)
+})
 
-    const isADM = computed(() => {
-      return props.crypto === Cryptos.ADM
-    })
+const calculatedFullBalance = computed(() => {
+  return balance.value ? currencyAmount(Number(balance.value), props.crypto, true) : 0
+})
 
-    return {
-      t,
-      SIGNIFICANT_DIGITS,
-      classes,
-      calculatedBalance,
-      calculatedFullBalance,
-      isADM,
-      showShareURIDialog,
-      xs,
-      mdiChevronRight,
-      mdiShareVariant
-    }
-  }
+const isADM = computed(() => {
+  return props.crypto === Cryptos.ADM
 })
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .wallet-card {
   &__title {
-    @include a-text-caption();
+    @include mixins.a-text-caption();
   }
   &__subtitle {
-    @include a-text-regular-enlarged();
+    @include mixins.a-text-regular-enlarged();
     line-height: 24px;
     word-break: break-word;
     display: block;
@@ -185,13 +159,13 @@ export default defineComponent({
       background: inherit;
     }
     &__title {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
     &__subtitle {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
     &__action {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
   }
 }
@@ -202,10 +176,10 @@ export default defineComponent({
       background: inherit;
     }
     &__title {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
     &__subtitle {
-      color: rgba(map-get($shades, 'white'), 70%);
+      color: rgba(map.get(settings.$shades, 'white'), 70%);
     }
   }
 }

@@ -45,6 +45,9 @@
         "list": [
           {
             "url": "http://czjsawp2crjmnkliw2h2kpk7wwd3a36zvvnvqgvzmi4t4vc2yzm7j2qd.onion"
+          },
+          {
+            "url": "http://oygscq5p3yfyyi52u2pgdcrgog7vkvtrmayjggxai72tvgftlwkp6lyd.onion"
           }
         ],
         "healthCheck": {
