@@ -12,7 +12,8 @@
             indeterminate
             :class="{
               [classes.spinner]: true,
-              [`${classes.spinner}_no-messages`]: !messages.length
+              [`${classes.spinner}_no-messages`]: !userMessages.length,
+              [`${classes.spinner}_is-getting-key`]: props.isGettingPublicKey
             }"
             :size="20"
             style="z-index: 100"
@@ -72,6 +73,8 @@ const classes = {
 
 type Props = {
   messages: NormalizedChatMessageTransaction[]
+  userMessages: NormalizedChatMessageTransaction[]
+  isGettingPublicKey: boolean
   partners: User[]
   userId: string
   loading: boolean
@@ -80,6 +83,7 @@ type Props = {
 
 const props = withDefaults(defineProps<Props>(), {
   messages: () => [],
+  userMessages: () => [],
   partners: () => [],
   loading: false,
   locale: 'en'
@@ -268,6 +272,10 @@ defineExpose({
 
     &_no-messages {
       margin-top: chat.$placeholder-height + 42px;
+    }
+
+    &_is-getting-key {
+      margin-top: chat.$placeholder-height + 92px;
     }
   }
 }

@@ -5,6 +5,7 @@
       ref="chatRef"
       :messages="messages"
       :partners="partners"
+      :is-getting-public-key="isGettingPublicKey"
       :user-id="userId"
       :loading="loading"
       :locale="$i18n.locale"
@@ -320,6 +321,7 @@ import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import { useChatStateStore } from '@/stores/modal-state'
 import ChatPlaceholder from '@/components/Chat/ChatPlaceholder.vue'
 import { watchImmediate } from '@vueuse/core'
+import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -327,6 +329,7 @@ const validationErrors = {
   notEnoughFundsNewAccount: 'NON_ENOUGH_FUNDS_NEW_ACCOUNT',
   messageTooLong: 'MESSAGE_LENGTH_EXCEED'
 }
+const RETRY_GET_PUBLIC_KEY_INTERVAL = 5000
 
 const props = defineProps({
   partnerId: {
@@ -437,6 +440,8 @@ const replyMessage = computed<NormalizedChatMessageTransaction>(() =>
 const actionMessage = computed<NormalizedChatMessageTransaction>(() =>
   store.getters['chat/messageById'](actionsMenuMessageId.value)
 )
+const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
+const areAdmNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
 
 const chatFormRef = ref<any>(null) // @todo type
 const chatRef = ref<any>(null) // @todo type
@@ -481,6 +486,16 @@ watch(userMessages, () => {
     showNewChatPlaceholder.value = !userMessages.value.length
   } else {
     isFirstCallSkipped.value = true
+  }
+})
+
+watch(areAdmNodesOnline, async (nodesOnline) => {
+  if (nodesOnline && isGettingPublicKey.value) {
+    const partnerName = store.getters['chat/getPartnerName'](props.partnerId)
+    await createChat(props.partnerId, partnerName)
+  }
+  if (nodesOnline && loading.value && allowFetchingMessages.value) {
+    await fetchChatMessages()
   }
 })
 
@@ -546,11 +561,19 @@ const createChat = async (partnerId: string, partnerName: string) => {
       partnerId,
       partnerName
     })
-  } catch {
-    vibrate.long()
-    isKeyMissing.value = true
-  } finally {
     isGettingPublicKey.value = false
+  } catch (error: unknown) {
+    vibrate.long()
+    if ((error as Error).message === t('chats.no_public_key')) {
+      isKeyMissing.value = true
+      isGettingPublicKey.value = false
+    } else {
+      setTimeout(() => {
+        createChat(partnerId, partnerName)
+      }, RETRY_GET_PUBLIC_KEY_INTERVAL)
+    }
+  } finally {
+    loading.value = false
   }
 }
 
