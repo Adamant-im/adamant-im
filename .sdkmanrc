@@ -4,4 +4,4 @@
 # @see https://sdkman.io/usage/#env-command
 # @see https://capacitorjs.com/docs/updating/6-0#update-android-project-variables
 
-java=22.0.2-oracle
+java=17.0.15-zulu
