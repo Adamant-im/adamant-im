@@ -138,6 +138,8 @@
     "exchanges_on": "Биржи на {aggregator}",
     "free_adm_btn": "Бесплатные монеты",
     "free_tokens_link": "https://adamant.im/ru-free-adm-tokens/",
+    "no_active_nodes": "Нет активных нод",
+    "no_active_nodes_pull_down": "Нет активных {coin} нод. Посмотрите список нод",
     "send_btn": "Отправить монеты",
     "send_crypto": "Отправить {crypto}",
     "share_uri": "Поделиться адресом {crypto}",
