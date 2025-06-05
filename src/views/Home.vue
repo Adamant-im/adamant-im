@@ -19,6 +19,7 @@
                 :key="wallet.cryptoCurrency"
                 :value="wallet.cryptoCurrency"
                 @wheel="onWheel"
+                @click="goToTransactions(wallet.cryptoCurrency)"
               >
                 <wallet-tab :wallet="wallet" :fiat-currency="currentCurrency" />
               </v-tab>
