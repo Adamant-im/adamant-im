@@ -2,6 +2,5 @@
 # Add `<key>=<value>` pairs of SDKs to use below.
 #
 # @see https://sdkman.io/usage/#env-command
-# @see https://capacitorjs.com/docs/updating/6-0#update-android-project-variables
 
 java=17.0.15-zulu
