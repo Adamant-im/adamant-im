@@ -1,6 +1,8 @@
 import { createPinia, defineStore, getActivePinia } from 'pinia'
+import piniaPluginPersistedState from 'pinia-plugin-persistedstate'
 
 export const pinia = createPinia()
+pinia.use(piniaPluginPersistedState)
 
 export function resetPinia() {
   const activePinia = getActivePinia()
