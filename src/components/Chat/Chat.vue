@@ -4,6 +4,7 @@
     <a-chat
       ref="chatRef"
       :messages="messages"
+      :user-messages="userMessages"
       :partners="partners"
       :is-getting-public-key="isGettingPublicKey"
       :user-id="userId"

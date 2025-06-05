@@ -13,7 +13,7 @@
             :class="{
               [classes.spinner]: true,
               [`${classes.spinner}_no-messages`]: !userMessages.length,
-              [`${classes.spinner}_is-getting-key`]: props.isGettingPublicKey
+              [`${classes.spinner}_is-getting-key`]: isGettingPublicKey
             }"
             :size="20"
             style="z-index: 100"
