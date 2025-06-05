@@ -374,9 +374,9 @@ const logout = () => {
 
 onMounted(() => {
   nextTick(() => {
-    if (sidebarLayoutRef && scrollTopPosition) {
+    if (sidebarLayoutRef && scrollTopPosition.value) {
       sidebarLayoutRef.value.scrollTo({
-        top: scrollTopPosition
+        top: scrollTopPosition.value
       })
     }
   })
