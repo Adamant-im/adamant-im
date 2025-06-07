@@ -100,7 +100,7 @@
   </component>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { nextTick, computed, ref, useTemplateRef } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
@@ -123,6 +123,7 @@ const store = useStore()
 const route = useRoute()
 const { t } = useI18n()
 
+const logo = '/img/adamant-logo-transparent-512x512.png'
 const className = 'login-page'
 const passphrase = ref('')
 const password = ref('')
