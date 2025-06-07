@@ -3,6 +3,7 @@ import { HttpProvider } from 'web3-providers-http'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import { formatEthVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
+import type { NodeInfo } from '@/types/wallets'
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
@@ -11,16 +12,24 @@ import { formatEthVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
 export class EthNode extends Node<Web3Eth> {
   clientName = ''
 
-  constructor(url: string) {
+  constructor(url: NodeInfo) {
     super(url, 'eth', 'node', NODE_LABELS.EthNode)
   }
 
   protected buildClient(): Web3Eth {
-    return new Web3Eth(new HttpProvider(this.url))
+    const baseURL = this.preferAltIp ? (this.altIp as string) : this.url
+
+    console.info({ baseURL, altIp: this.altIp, url: this.url })
+
+    return new Web3Eth(new HttpProvider(baseURL))
   }
 
   protected async checkHealth() {
     const time = Date.now()
+
+    /** Set `clientUrl` for `HttpProvider` depending on `preferAltIp`. */
+    this.client = this.buildClient()
+
     const blockNumber = await this.client.getBlockNumber()
 
     return {

@@ -3,6 +3,7 @@ import { NodeOfflineError } from '@/lib/nodes/utils/errors'
 import axios, { AxiosInstance, AxiosProgressEvent, AxiosRequestConfig, ResponseType } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import type { NodeInfo } from '@/types/wallets'
 
 type FetchNodeInfoResult = {
   availableSizeInMb: number
@@ -32,8 +33,8 @@ export type RequestConfig<P extends Payload> = {
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class IpfsNode extends Node<AxiosInstance> {
-  constructor(url: string, minNodeVersion = '0.0.0') {
-    super(url, 'ipfs', 'node', NODE_LABELS.IpfsNode, '', minNodeVersion)
+  constructor(endpoint: NodeInfo, minNodeVersion = '0.0.0') {
+    super(endpoint, 'ipfs', 'node', NODE_LABELS.IpfsNode, '', minNodeVersion)
   }
 
   protected buildClient(): AxiosInstance {
@@ -51,8 +52,12 @@ export class IpfsNode extends Node<AxiosInstance> {
    */
   request<P extends Payload = Payload, R = any>(cfg: RequestConfig<P>): Promise<R> {
     const { url, headers, method = 'get', payload, onUploadProgress } = cfg
+    const baseURL = this.preferAltIp ? this.altIp : this.url
+
+    console.info({ baseURL, altIp: this.altIp, url: this.url })
 
     const config: AxiosRequestConfig = {
+      baseURL,
       url,
       method: method.toLowerCase(),
       headers,
@@ -77,7 +82,6 @@ export class IpfsNode extends Node<AxiosInstance> {
         // According to https://github.com/axios/axios#handling-errors this means, that request was sent,
         // but server could not respond.
         if (!error.response && error.request) {
-          this.online = false
           throw new NodeOfflineError()
         }
         throw error
@@ -117,7 +121,7 @@ export class IpfsNode extends Node<AxiosInstance> {
   protected async checkHealth() {
     const time = Date.now()
     const { timestamp } = await this.fetchNodeInfo()
-    this.height = timestamp;
+    this.height = timestamp
 
     return {
       height: this.height,
@@ -127,9 +131,10 @@ export class IpfsNode extends Node<AxiosInstance> {
 
   formatHeight(height: number): string {
     return super.formatHeight(
-      Number(Math.ceil(height / 1000)
-        .toString()
-        .substring(2)
+      Number(
+        Math.ceil(height / 1000)
+          .toString()
+          .substring(2)
       )
     )
   }

@@ -1,3 +1,4 @@
+import type { NodeInfo } from '@/types/wallets/index.ts'
 import { getHealthCheckInterval } from './utils/getHealthcheckConfig'
 import { TNodeLabel } from './constants'
 import { HealthcheckInterval, HealthcheckResult, NodeKind, NodeStatus, NodeType } from './types'
@@ -30,6 +31,10 @@ export abstract class Node<C = unknown> {
   wsPort = '36668'
 
   /**
+   * Node alternative IP
+   */
+  altIp?: string
+  /**
    * Node base URL
    */
   url: string
@@ -57,9 +62,21 @@ export abstract class Node<C = unknown> {
 
   // Healthcheck related params
   /**
+   * Indicates whether a node with alternative IP is available
+   */
+  altIpAvailable = false
+  /**
+   * Indicates whether a node with main URL is available
+   */
+  mainUrlAvailable = true
+  /**
    * Indicates whether node is available.
    */
   online = true
+  /**
+   * Indicates whether prefer a node with alternative IP or not
+   */
+  preferAltIp = false
   /**
    * Node ping estimation
    */
@@ -97,13 +114,16 @@ export abstract class Node<C = unknown> {
   healthcheckInProgress = false
 
   constructor(
-    url: string,
+    endpoint: NodeInfo,
     type: NodeType,
     kind: NodeKind,
     label: TNodeLabel,
     version = '',
     minNodeVersion = ''
   ) {
+    const { alt_ip, url } = endpoint
+
+    this.altIp = alt_ip
     this.url = url
     this.type = type
     this.label = label
@@ -134,8 +154,31 @@ export abstract class Node<C = unknown> {
         this.height = health.height
         this.ping = health.ping
         this.online = true
+
+        if (this.preferAltIp) {
+          console.info(`There was a failed attempt to use domain ${this.url}, using IP by default.`)
+          this.altIpAvailable = true
+        } else {
+          console.info(
+            `Attempt to use domain ${this.url} performed successfully, using domain by default.`
+          )
+          this.mainUrlAvailable = true
+        }
       } catch {
-        this.online = false
+        if (this.preferAltIp) {
+          console.info(
+            `There was failed attempts to use domain ${this.url} and ${this.altIp}, assume node is offline.`
+          )
+          this.altIpAvailable = false
+          this.preferAltIp = false
+          this.online = false
+        } else if (this.mainUrlAvailable) {
+          console.info(
+            `There was a failed attempt to use domain ${this.url}, trying to use IP in the next attempt.`
+          )
+          this.mainUrlAvailable = false
+          this.preferAltIp = true
+        }
       } finally {
         this.healthcheckInProgress = false
       }
@@ -164,6 +207,7 @@ export abstract class Node<C = unknown> {
 
   getStatus() {
     return {
+      alt_ip: this.altIp,
       url: this.url,
       port: this.port,
       hostname: this.hostname,
