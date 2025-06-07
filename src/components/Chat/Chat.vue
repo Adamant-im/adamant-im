@@ -330,7 +330,6 @@ const validationErrors = {
   notEnoughFundsNewAccount: 'NON_ENOUGH_FUNDS_NEW_ACCOUNT',
   messageTooLong: 'MESSAGE_LENGTH_EXCEED'
 }
-const RETRY_GET_PUBLIC_KEY_INTERVAL = 5000
 
 const props = defineProps({
   partnerId: {
@@ -568,10 +567,6 @@ const createChat = async (partnerId: string, partnerName: string) => {
     if ((error as Error).message === t('chats.no_public_key')) {
       isKeyMissing.value = true
       isGettingPublicKey.value = false
-    } else {
-      setTimeout(() => {
-        createChat(partnerId, partnerName)
-      }, RETRY_GET_PUBLIC_KEY_INTERVAL)
     }
   } finally {
     loading.value = false

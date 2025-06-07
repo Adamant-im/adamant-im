@@ -8,6 +8,11 @@ import { Cryptos } from '@/lib/constants'
 /** Modules that will be stored in IDB **/
 const modules = ['adm', 'eth', 'doge', 'kly', 'bnb', 'dash', 'usds', 'res', 'partners', 'delegates']
 
+/** Data of states and fields that must not be saved **/
+const notSavedStates = {
+  chat: ['chats', 'noActiveNodesDialog']
+}
+
 /**
  * Clone modules from state.
  * @param state
@@ -35,7 +40,9 @@ function cloneModules(state) {
   // clone `chat` module, except `chats` key
   if (state.chat) {
     const chat = cloneDeep(state.chat)
-    delete chat.chats
+    notSavedStates.chat.forEach((field) => {
+      delete chat[field]
+    })
 
     modulesToStore.push({
       name: 'chat',
