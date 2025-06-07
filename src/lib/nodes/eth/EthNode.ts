@@ -17,7 +17,11 @@ export class EthNode extends Node<Web3Eth> {
   }
 
   protected buildClient(): Web3Eth {
-    return new Web3Eth(new HttpProvider(this.preferAltIp ? (this.altIp as string) : this.url))
+    const baseURL = this.preferAltIp ? (this.altIp as string) : this.url
+
+    console.info({ baseURL, altIp: this.altIp, url: this.url })
+
+    return new Web3Eth(new HttpProvider(baseURL))
   }
 
   protected async checkHealth() {

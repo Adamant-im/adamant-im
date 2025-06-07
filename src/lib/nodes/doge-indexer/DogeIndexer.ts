@@ -19,9 +19,13 @@ export class DogeIndexer extends Node<AxiosInstance> {
 
   protected async checkHealth() {
     const time = Date.now()
+    const baseURL = this.preferAltIp ? this.altIp : this.url
+
+    console.info({ baseURL, altIp: this.altIp, url: this.url })
+
     const height = await this.client
       .get('/api/status', {
-        baseURL: this.preferAltIp ? this.altIp : this.url
+        baseURL
       })
       .then((res) => res.data.info.blocks)
 
@@ -40,10 +44,14 @@ export class DogeIndexer extends Node<AxiosInstance> {
     params?: Params,
     requestConfig?: AxiosRequestConfig
   ): Promise<Response> {
+    const baseURL = this.preferAltIp ? this.altIp : this.url
+
+    console.info({ baseURL, altIp: this.altIp, url: this.url })
+
     return this.client
       .request({
         ...requestConfig,
-        baseURL: this.preferAltIp ? this.altIp : this.url,
+        baseURL,
         url: path,
         method,
         params: method === 'GET' ? params : undefined,

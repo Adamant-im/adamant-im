@@ -53,8 +53,12 @@ export class AdmNode extends Node<AxiosInstance> {
   request<P extends Payload = Payload, R = any>(cfg: RequestConfig<P>): Promise<R> {
     const { url, method = 'get', payload } = cfg
 
+    const baseURL = this.preferAltIp ? this.altIp : this.url
+
+    console.info({ baseURL, altIp: this.altIp, url: this.url })
+
     const config: AxiosRequestConfig = {
-      baseURL: this.preferAltIp ? this.altIp : this.url,
+      baseURL,
       url,
       method: method.toLowerCase(),
       [method === 'get' ? 'params' : 'data']:

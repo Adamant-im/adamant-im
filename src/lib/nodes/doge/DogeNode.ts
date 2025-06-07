@@ -53,10 +53,14 @@ export class DogeNode extends Node<AxiosInstance> {
     params?: Request,
     requestConfig?: AxiosRequestConfig
   ): Promise<Response> {
+    const baseURL = this.preferAltIp ? this.altIp : this.url
+
+    console.info({ baseURL, altIp: this.altIp, url: this.url })
+
     return this.client
       .request<RpcResponse<Response>>({
         ...requestConfig,
-        baseURL: this.preferAltIp ? this.altIp : this.url,
+        baseURL,
         url: '/',
         method: 'POST',
         data: params

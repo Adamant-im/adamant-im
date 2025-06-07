@@ -27,8 +27,12 @@ export class RateInfoService extends Node<AxiosInstance> {
   }
 
   async getHistory(options: GetHistoryParams) {
+    const baseURL = this.preferAltIp ? this.altIp : this.url
+
+    console.info({ baseURL, altIp: this.altIp, url: this.url })
+
     const response = await this.client.get<RateHistoryInfoResponse>(`/getHistory`, {
-      baseURL: this.preferAltIp ? this.altIp : this.url,
+      baseURL,
       params: options
     })
 

@@ -156,16 +156,26 @@ export abstract class Node<C = unknown> {
         this.online = true
 
         if (this.preferAltIp) {
+          console.info(`There was a failed attempt to use domain ${this.url}, using IP by default.`)
           this.altIpAvailable = true
         } else {
+          console.info(
+            `Attempt to use domain ${this.url} performed successfully, using domain by default.`
+          )
           this.mainUrlAvailable = true
         }
       } catch {
         if (this.preferAltIp) {
+          console.info(
+            `There was failed attempts to use domain ${this.url} and ${this.altIp}, assume node is offline.`
+          )
           this.altIpAvailable = false
           this.preferAltIp = false
           this.online = false
         } else if (this.mainUrlAvailable) {
+          console.info(
+            `There was a failed attempt to use domain ${this.url}, trying to use IP in the next attempt.`
+          )
           this.mainUrlAvailable = false
           this.preferAltIp = true
         }

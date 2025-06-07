@@ -27,11 +27,14 @@ export class EthIndexer extends Node<AxiosInstance> {
     requestConfig?: AxiosRequestConfig
   ): Promise<Endpoints[E]['result']> {
     const [method, path] = endpoint.split(' ')
+    const baseURL = this.preferAltIp ? this.altIp : this.url
+
+    console.info({ baseURL, altIp: this.altIp, url: this.url })
 
     return this.client
       .request({
         ...requestConfig,
-        baseURL: this.preferAltIp ? this.altIp : this.url,
+        baseURL,
         url: path,
         method,
         params: method === 'GET' ? params : undefined,

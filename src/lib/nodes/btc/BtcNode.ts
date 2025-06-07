@@ -51,10 +51,14 @@ export class BtcNode extends Node<AxiosInstance> {
     params?: Params,
     requestConfig?: AxiosRequestConfig
   ): Promise<Result> {
+    const baseURL = this.preferAltIp ? this.altIp : this.url
+
+    console.info({ baseURL, altIp: this.altIp, url: this.url })
+
     return this.client
       .request<RpcResponse<Result>>({
         ...requestConfig,
-        baseURL: this.preferAltIp ? this.altIp : this.url,
+        baseURL,
         method: 'POST',
         data: params
       })

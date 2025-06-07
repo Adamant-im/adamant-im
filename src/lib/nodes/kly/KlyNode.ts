@@ -28,9 +28,13 @@ export class KlyNode extends Node<AxiosInstance> {
     method: M,
     params?: RpcResults[M]['params']
   ): Promise<RpcResults[M]['result']> {
+    const baseURL = this.preferAltIp ? this.altIp : this.url
+
+    console.info({ baseURL, altIp: this.altIp, url: this.url })
+
     return this.client
       .post<JSONRPCResponse<RpcResults[M]['result']>>('/rpc', {
-        baseURL: this.preferAltIp ? this.altIp : this.url,
+        baseURL,
         jsonrpc: '2.0',
         id: uuid(),
         method,

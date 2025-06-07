@@ -28,6 +28,9 @@ export class KlyIndexer extends Node<AxiosInstance> {
     requestConfig?: AxiosRequestConfig
   ): Promise<Endpoints[E]['result']> {
     const [method, path] = endpoint.split(' ')
+    const baseURL = this.preferAltIp ? this.altIp : this.url
+
+    console.info({ baseURL, altIp: this.altIp, url: this.url })
 
     return this.client
       .request({
