@@ -11,6 +11,7 @@ import store from '@/store'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { parseCryptoAddressesKVStxs } from '@/lib/store-crypto-address'
 import { DEFAULT_TIME_DELTA } from '@/lib/nodes/constants.js'
+import constants from '@/lib/constants/index.js'
 
 Queue.configure(Promise)
 
@@ -50,7 +51,9 @@ function signTransaction(transaction, timeDelta) {
     delete transaction.signature
   }
 
-  transaction.timestamp = utils.epochTime() - timeDelta
+  const epochTime = ((Date.now() - constants.EPOCH) / 1000).toFixed(3)
+
+  transaction.timestamp = Math.floor(epochTime - timeDelta)
   transaction.signature = utils.transactionSign(transaction, myKeypair)
 
   return transaction

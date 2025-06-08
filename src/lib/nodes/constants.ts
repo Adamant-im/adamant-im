@@ -44,4 +44,4 @@ export const NODE_LABELS: NodeLabels = {
 }
 
 // Default timeDelta (s) in case there's no connection to get it from a node
-export const DEFAULT_TIME_DELTA = 1
+export const DEFAULT_TIME_DELTA = 0.5
