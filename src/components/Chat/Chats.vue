@@ -41,7 +41,7 @@
             v-if="displayChat(transaction.contactId)"
             :ref="transaction.contactId"
             :is-loading-separator="index === separatorIndex"
-            :is-loading-separator-active="loading"
+            :is-loading-separator-active="loading && areAdmNodesOnline"
             :user-id="userId"
             :contact-id="transaction.contactId"
             :transaction="transaction.lastMessage"

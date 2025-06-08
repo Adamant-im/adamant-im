@@ -9,8 +9,9 @@ import { Cryptos } from '@/lib/constants'
 const modules = ['adm', 'eth', 'doge', 'kly', 'bnb', 'dash', 'usds', 'res', 'partners', 'delegates']
 
 /** Data of states and fields that must not be saved **/
+/** noActiveNodesDialog - we need it to be reinitialized with default value in order to gain proper work **/
 const notSavedStates = {
-  chat: ['chats', 'noActiveNodesDialog']
+  chat: ['noActiveNodesDialog']
 }
 
 /**
@@ -43,6 +44,7 @@ function cloneModules(state) {
     notSavedStates.chat.forEach((field) => {
       delete chat[field]
     })
+    delete chat.chats
 
     modulesToStore.push({
       name: 'chat',

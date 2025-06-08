@@ -102,6 +102,8 @@ const nodes = computed<NodeStatusResult[]>(
   () => store.getters[`nodes/${props.crypto.toLowerCase()}`]
 )
 const areNodesDisabled = computed(() => nodes.value?.some((node) => node.status === 'disabled'))
+const areNodesOnline = computed(() => nodes.value?.some((node) => node.status === 'online'))
+const isOnline = computed(() => store.getters['isOnline'])
 
 onBeforeRouteUpdate((to, from, next) => {
   navigationGuard.transactions(to, from, next)
@@ -216,6 +218,12 @@ const goToChat = (partnerId: string) => {
   })
 }
 
+const handleLoading = (isConnected: boolean) => {
+  if (isConnected && isRecentLoading.value) getNewTransactions()
+  if (isConnected && isOlderLoading.value)
+    store.dispatch(`${cryptoModule.value}/getOldTransactions`)
+}
+
 onMounted(() => {
   if (!isLoginViaPassword.value || isIDBReady.value) {
     getNewTransactions()
@@ -226,6 +234,14 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   sidebarLayoutRef?.value.removeEventListener('scroll', onScroll)
+})
+
+watch(isOnline, (online) => {
+  if (props.crypto !== 'ADM') handleLoading(online as boolean)
+})
+
+watch(areNodesOnline, (nodesOnline) => {
+  if (props.crypto === 'ADM') handleLoading(nodesOnline)
 })
 
 watch(isIDBReady, (newVal) => {
