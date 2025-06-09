@@ -1,17 +1,17 @@
-import utils from '@/lib/adamant'
 import { TransactionStatus as TS } from '@/lib/constants'
 
 /**
  * Creates a message object with uniq ID.
+ * @param {number} id
  * @param {string} recipientId
  * @param {string} senderId
  * @param {string} message
  * @param {string} status
  * @param {string} replyToId Optional
  */
-export function createMessage({ recipientId, senderId, message, status = TS.PENDING, replyToId }) {
+export function createMessage({ id, recipientId, senderId, message, status = TS.PENDING, replyToId }) {
   const transaction = {
-    id: utils.epochTime(), // @todo uuid will be better
+    id,
     recipientId,
     senderId,
     message,

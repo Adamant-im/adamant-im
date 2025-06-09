@@ -130,6 +130,48 @@ export function getPublicKey(address = '') {
 }
 
 /**
+ * Generates and signs a chat message transaction.
+ *
+ * @param {object} params - The transaction parameters.
+ * @param {string} params.to - The recipient's identifier.
+ * @param {number} [params.amount=0] - The transaction amount.
+ * @param {number} [params.type=1] - The message type.
+ * @param {string|object} params.message - The message to be encrypted.
+ * @returns {Promise<object>} The signed transaction object or null on failure.
+ */
+export async function signChatMessageTransaction(params) {
+  const { to, amount, type = 1, message } = params
+
+  const publicKey = await getPublicKey(to)
+
+  const text = typeof message === 'string' ? message : JSON.stringify(message)
+  const encoded = utils.encodeMessage(text, publicKey, myKeypair.privateKey)
+  const chat = {
+    message: encoded.message,
+    own_message: encoded.nonce,
+    type
+  }
+
+  const transaction = newTransaction(Transactions.CHAT_MESSAGE)
+  transaction.amount = amount ? utils.prepareAmount(amount) : 0
+  transaction.asset = { chat }
+  transaction.recipientId = to
+
+  const timeDelta = client.getTimeDelta()
+
+  return signTransaction(transaction, timeDelta)
+}
+
+/**
+ * Send signed transaction
+ * @param {object} signedTransaction
+ * @returns {Promise<object>}
+ */
+export async function sendSignedTransaction(signedTransaction) {
+  return client.sendChatTransaction(signedTransaction)
+}
+
+/**
  * @typedef {Object} MsgParams
  * @property {string} to target address
  * @property {string|object} message message to send (object value will be JSON-serialized)
@@ -145,32 +187,18 @@ export function getPublicKey(address = '') {
  *   type?: number,
  *   amount?: number
  * }} params
- * @returns {Promise<{success: boolean, transactionId: string}>}
+ * @returns {Promise<{success: boolean, transactionId: string, nodeTimestamp: number}>}
  */
-export function sendMessage(params) {
-  return getPublicKey(params.to)
-    .then((publicKey) => {
-      const text =
-        typeof params.message === 'string' ? params.message : JSON.stringify(params.message)
-      const encoded = utils.encodeMessage(text, publicKey, myKeypair.privateKey)
-      const chat = {
-        message: encoded.message,
-        own_message: encoded.nonce,
-        type: params.type || 1
-      }
+export async function sendMessage(params) {
+  try {
+    const signedTransaction = await signChatMessageTransaction(params)
 
-      const transaction = newTransaction(Transactions.CHAT_MESSAGE)
-      transaction.amount = params.amount ? utils.prepareAmount(params.amount) : 0
-      transaction.asset = { chat }
-      transaction.recipientId = params.to
-
-      return client.post('/api/chats/process', (endpoint) => {
-        return { transaction: signTransaction(transaction, endpoint.timeDelta) }
-      })
-    })
-    .catch((reason) => {
-      return reason
-    })
+    if (signedTransaction) {
+      return sendSignedTransaction(signedTransaction)
+    }
+  } catch (reason) {
+    return reason
+  }
 }
 
 /**
@@ -216,7 +244,7 @@ function tryDecodeStoredValue(value) {
   let json = null
   try {
     json = JSON.parse(value)
-  } catch (e) {
+  } catch {
     // Not a JSON => not an encoded value
     return value
   }
@@ -454,7 +482,7 @@ export function getChats(from = 0, offset = 0, orderBy = 'desc') {
   // Doesn't return ADM direct transfer transactions, only messages and in-chat transfers
   // https://github.com/Adamant-im/adamant/wiki/API-Specification#get-chat-transactions
   return client.get('/api/chats/get/', params).then((response) => {
-    const { count, transactions } = response
+    const { count, transactions, nodeTimestamp } = response
 
     const promises = transactions.map((transaction) => {
       const promise = isStringEqualCI(transaction.recipientId, myAddress)
@@ -475,7 +503,8 @@ export function getChats(from = 0, offset = 0, orderBy = 'desc') {
 
     return Promise.all(promises).then((decoded) => ({
       count,
-      transactions: decoded.filter((v) => v)
+      transactions: decoded.filter((v) => v),
+      nodeTimestamp
     }))
   })
 }

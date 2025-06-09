@@ -98,9 +98,10 @@ export default {
 </script>
 
 <style lang="scss">
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
-@import '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .delegates-table-item {
   &__td {
@@ -111,7 +112,7 @@ export default {
   }
 }
 
-@media #{map-get($display-breakpoints, 'sm-and-down')} {
+@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
   .delegates-table-item {
   }
 }
@@ -119,7 +120,7 @@ export default {
 .v-theme--light {
   .delegates-table-item {
     &__td {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
   }
 }
@@ -128,7 +129,7 @@ export default {
   .delegates-table-item {
     &__td {
       border-bottom: none !important;
-      border-top: thin solid map-get($adm-colors, 'regular');
+      border-top: thin solid map.get(colors.$adm-colors, 'regular');
     }
   }
 }

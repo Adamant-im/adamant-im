@@ -116,6 +116,10 @@ export interface TokenGeneral {
   blockTimeFixed?: number
   /** Average block time in ms */
   blockTimeAvg?: number
+  /** Balance checking interval in ms */
+  balanceCheckInterval?: number
+  /** Balance validation interval in ms */
+  balanceValidInterval?: number
   txFetchInfo?: {
     /** Interval between fetching Tx in ms when its current status is "Pending" for new transactions */
     newPendingInterval?: number
@@ -151,6 +155,33 @@ export interface TokenGeneral {
   services?: Record<string, Service>
   /** Additional project links */
   links?: ProjectLink[]
+  testnet?: {
+    /** Project website URL */
+    website?: string
+    /** Explorer URL */
+    explorer?: string
+    /** URL to get tx info */
+    explorerTx?: string
+    /** URL to get address info */
+    explorerAddress?: string
+    nodes?: {
+      /** Node links for API */
+      list: NodeInfo[]
+      healthCheck: NodeHealthcheck
+      displayName: string
+      /**
+       * Minimal node API version
+       * @example "0.8.0"
+       */
+      minVersion?: string
+      /**
+       * A time correction for the message transactions on ADM
+       * @example 500
+       */
+      nodeTimeCorrection?: number
+    }
+    services?: Record<string, Service>
+  }
   tor?: {
     /** Project website URL (Tor) */
     website?: string

@@ -101,8 +101,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
 
 .wallet-balance {
   height: 40px;
@@ -125,7 +126,7 @@ export default defineComponent({
 .v-theme--light {
   .wallet-balance {
     &__status-text {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
   }
 }
@@ -133,7 +134,7 @@ export default defineComponent({
 .v-theme--dark {
   .wallet-balance {
     &__status-text {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
       opacity: 0.7;
     }
   }
