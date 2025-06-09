@@ -152,7 +152,7 @@ const userId = computed(() => store.state.address)
 const unreadMessagesCount = computed(() => store.getters['chat/totalNumOfNewMessages'])
 
 onActivated(() => {
-  if (savedRoute.value) {
+  if (savedRoute.value && !chatPagePartnerId.value) {
     router.push(savedRoute.value)
   }
 })

@@ -198,6 +198,9 @@ export default {
         prevSlide()
       } else if (e.key === 'ArrowRight') {
         nextSlide()
+      } else if (e.key === 'Escape') {
+        e.stopPropagation()
+        closeModal()
       }
     }
 
