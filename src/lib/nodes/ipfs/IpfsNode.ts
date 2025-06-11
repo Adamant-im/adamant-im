@@ -3,6 +3,7 @@ import { NodeOfflineError } from '@/lib/nodes/utils/errors'
 import axios, { AxiosInstance, AxiosProgressEvent, AxiosRequestConfig, ResponseType } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import { getBaseURL } from '@/lib/nodes/utils/getHealthcheckConfig'
 import type { NodeInfo } from '@/types/wallets'
 
 type FetchNodeInfoResult = {
@@ -38,8 +39,10 @@ export class IpfsNode extends Node<AxiosInstance> {
   }
 
   protected buildClient(): AxiosInstance {
+    const baseURL = getBaseURL(this)
+
     return axios.create({
-      baseURL: this.url,
+      baseURL,
       timeout: 60 * 10 * 1000
     })
   }
@@ -52,9 +55,7 @@ export class IpfsNode extends Node<AxiosInstance> {
    */
   request<P extends Payload = Payload, R = any>(cfg: RequestConfig<P>): Promise<R> {
     const { url, headers, method = 'get', payload, onUploadProgress } = cfg
-    const baseURL = this.preferAltIp ? this.altIp : this.url
-
-    console.info({ baseURL, altIp: this.altIp, url: this.url })
+    const baseURL = getBaseURL(this)
 
     const config: AxiosRequestConfig = {
       baseURL,

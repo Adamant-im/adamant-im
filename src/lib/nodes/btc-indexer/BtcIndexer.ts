@@ -2,6 +2,7 @@ import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import { getBaseURL } from '@/lib/nodes/utils/getHealthcheckConfig'
 import type { NodeInfo } from '@/types/wallets'
 
 /**
@@ -14,14 +15,14 @@ export class BtcIndexer extends Node<AxiosInstance> {
   }
 
   protected buildClient(): AxiosInstance {
-    return createBtcLikeClient(this.url)
+    const baseURL = getBaseURL(this)
+
+    return createBtcLikeClient(baseURL)
   }
 
   protected async checkHealth() {
     const time = Date.now()
-    const baseURL = this.preferAltIp ? this.altIp : this.url
-
-    console.info({ baseURL, altIp: this.altIp, url: this.url })
+    const baseURL = getBaseURL(this)
 
     const blockNumber = await this.client
       .get('/blocks/tip/height', {
@@ -46,9 +47,7 @@ export class BtcIndexer extends Node<AxiosInstance> {
     params?: Params,
     requestConfig?: AxiosRequestConfig
   ): Promise<Response> {
-    const baseURL = this.preferAltIp ? this.altIp : this.url
-
-    console.info({ baseURL, altIp: this.altIp, url: this.url })
+    const baseURL = getBaseURL(this)
 
     return this.client
       .request({

@@ -2,6 +2,7 @@ import { Endpoints } from './types/api/endpoints'
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import { getBaseURL } from '@/lib/nodes/utils/getHealthcheckConfig'
 import type { NodeInfo } from '@/types/wallets'
 
 /**
@@ -14,7 +15,9 @@ export class EthIndexer extends Node<AxiosInstance> {
   }
 
   protected buildClient(): AxiosInstance {
-    return axios.create({ baseURL: this.url })
+    const baseURL = getBaseURL(this)
+
+    return axios.create({ baseURL })
   }
 
   /**
@@ -27,9 +30,7 @@ export class EthIndexer extends Node<AxiosInstance> {
     requestConfig?: AxiosRequestConfig
   ): Promise<Endpoints[E]['result']> {
     const [method, path] = endpoint.split(' ')
-    const baseURL = this.preferAltIp ? this.altIp : this.url
-
-    console.info({ baseURL, altIp: this.altIp, url: this.url })
+    const baseURL = getBaseURL(this)
 
     return this.client
       .request({

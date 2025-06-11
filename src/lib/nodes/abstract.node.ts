@@ -1,5 +1,5 @@
 import type { NodeInfo } from '@/types/wallets/index.ts'
-import { getHealthCheckInterval } from './utils/getHealthcheckConfig'
+import { getBaseURL, getHealthCheckInterval } from './utils/getHealthcheckConfig'
 import { TNodeLabel } from './constants'
 import { HealthcheckInterval, HealthcheckResult, NodeKind, NodeStatus, NodeType } from './types'
 import { nodesStorage } from './storage'
@@ -271,9 +271,11 @@ export abstract class Node<C = unknown> {
    * Enables/disables a node.
    */
   toggleNode(active: boolean) {
+    const baseURL = getBaseURL(this)
+
     this.active = active
 
-    nodesStorage.saveActive(this.url, active)
+    nodesStorage.saveActive(baseURL, active)
 
     return this.getStatus()
   }

@@ -21,10 +21,6 @@ export class EthNode extends Node<Web3Eth> {
    * @returns { Web3Eth } Web3 Ethereum module instance.
    */
   protected buildClient(): Web3Eth {
-    const baseURL = this.preferAltIp ? this.altIp : this.url
-
-    console.info({ baseURL, altIp: this.altIp, url: this.url })
-
     return new Web3Eth(new HttpProvider(this.url))
   }
 
@@ -33,10 +29,6 @@ export class EthNode extends Node<Web3Eth> {
    * @returns { Web3Eth } Web3 Ethereum module instance.
    */
   protected buildClientAlt(): Web3Eth {
-    const baseURL = this.preferAltIp ? this.altIp : this.url
-
-    console.info({ baseURL, altIp: this.altIp, url: this.url })
-
     return new Web3Eth(new HttpProvider(this.altIp as string))
   }
 
