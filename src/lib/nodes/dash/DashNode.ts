@@ -2,6 +2,8 @@ import { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import { getBaseURL } from '@/lib/nodes/utils/getHealthcheckConfig'
+import type { NodeInfo } from '@/types/wallets'
 import { RpcRequest, RpcResponse } from './types/api/common'
 import { NetworkInfo } from './types/api/network-info'
 import { BlockchainInfo } from './types/api/blockchain-info'
@@ -11,12 +13,14 @@ import { BlockchainInfo } from './types/api/blockchain-info'
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class DashNode extends Node<AxiosInstance> {
-  constructor(url: string) {
-    super(url, 'dash', 'node', NODE_LABELS.DashNode)
+  constructor(endpoint: NodeInfo) {
+    super(endpoint, 'dash', 'node', NODE_LABELS.DashNode)
   }
 
   protected buildClient(): AxiosInstance {
-    return createBtcLikeClient(this.url)
+    const baseURL = getBaseURL(this)
+
+    return createBtcLikeClient(baseURL)
   }
 
   protected async checkHealth() {
@@ -48,9 +52,12 @@ export class DashNode extends Node<AxiosInstance> {
     params: Request,
     requestConfig?: AxiosRequestConfig
   ): Promise<Result> {
+    const baseURL = getBaseURL(this)
+
     return this.client
       .request<RpcResponse<Result>>({
         ...requestConfig,
+        baseURL,
         url: '/',
         method: 'POST',
         data: params
@@ -70,9 +77,12 @@ export class DashNode extends Node<AxiosInstance> {
     params: Request[],
     requestConfig?: AxiosRequestConfig
   ): Promise<RpcResponse<Result>[]> {
+    const baseURL = getBaseURL(this)
+
     return this.client
       .request<RpcResponse<Result>[]>({
         ...requestConfig,
+        baseURL,
         url: '/',
         method: 'POST',
         data: params

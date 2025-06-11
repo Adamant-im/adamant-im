@@ -3,6 +3,7 @@ import { HttpProvider } from 'web3-providers-http'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import { formatEthVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
+import type { NodeInfo } from '@/types/wallets'
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
@@ -11,17 +12,32 @@ import { formatEthVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
 export class EthNode extends Node<Web3Eth> {
   clientName = ''
 
-  constructor(url: string) {
+  constructor(url: NodeInfo) {
     super(url, 'eth', 'node', NODE_LABELS.EthNode)
   }
 
+  /**
+   * Create client for main URL.
+   * @returns { Web3Eth } Web3 Ethereum module instance.
+   */
   protected buildClient(): Web3Eth {
     return new Web3Eth(new HttpProvider(this.url))
   }
 
+  /**
+   * Create clients for alternative IP.
+   * @returns { Web3Eth } Web3 Ethereum module instance.
+   */
+  protected buildClientAlt(): Web3Eth {
+    return new Web3Eth(new HttpProvider(this.altIp as string))
+  }
+
   protected async checkHealth() {
     const time = Date.now()
-    const blockNumber = await this.client.getBlockNumber()
+    const client = this.preferAltIp ? this.clientAlt : this.client
+    const blockNumber = await client.getBlockNumber()
+
+    console.info({ preferAltIp: this.preferAltIp, clientAlt: this.clientAlt, client: this.client })
 
     return {
       height: Number(blockNumber),
@@ -30,7 +46,9 @@ export class EthNode extends Node<Web3Eth> {
   }
 
   protected async fetchNodeVersion(): Promise<void> {
-    const { clientName, simplifiedVersion } = formatEthVersion(await this.client.getNodeInfo())
+    const client = this.preferAltIp ? this.clientAlt : this.client
+    const { clientName, simplifiedVersion } = formatEthVersion(await client.getNodeInfo())
+
     this.version = simplifiedVersion
     this.clientName = clientName
   }

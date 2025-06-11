@@ -4,6 +4,8 @@ import { GetNodeStatusResponseDto } from '@/lib/schema/client'
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import { getBaseURL } from '@/lib/nodes/utils/getHealthcheckConfig'
+import type { NodeInfo } from '@/types/wallets'
 
 type FetchNodeInfoResult = {
   socketSupport: boolean
@@ -18,6 +20,7 @@ export type Payload =
       (ctx: AdmNode): Record<string, any>
     }
 export type RequestConfig<P extends Payload> = {
+  baseURL?: string
   url: string
   method?: string
   payload?: P
@@ -28,8 +31,8 @@ export type RequestConfig<P extends Payload> = {
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class AdmNode extends Node<AxiosInstance> {
-  constructor(url: string, minNodeVersion = '0.0.0') {
-    super(url, 'adm', 'node', NODE_LABELS.AdmNode, '', minNodeVersion)
+  constructor(endpoint: NodeInfo, minNodeVersion = '0.0.0') {
+    super(endpoint, 'adm', 'node', NODE_LABELS.AdmNode, '', minNodeVersion)
 
     this.wsPort = '36668' // default wsPort
     this.wsProtocol = this.protocol === 'https:' ? 'wss:' : 'ws:'
@@ -37,9 +40,9 @@ export class AdmNode extends Node<AxiosInstance> {
   }
 
   protected buildClient(): AxiosInstance {
-    return axios.create({
-      baseURL: this.url
-    })
+    const baseURL = getBaseURL(this)
+
+    return axios.create({ baseURL })
   }
 
   /**
@@ -50,8 +53,10 @@ export class AdmNode extends Node<AxiosInstance> {
    */
   request<P extends Payload = Payload, R = any>(cfg: RequestConfig<P>): Promise<R> {
     const { url, method = 'get', payload } = cfg
+    const baseURL = getBaseURL(this)
 
     const config: AxiosRequestConfig = {
+      baseURL,
       url,
       method: method.toLowerCase(),
       [method === 'get' ? 'params' : 'data']:
@@ -72,7 +77,6 @@ export class AdmNode extends Node<AxiosInstance> {
         // According to https://github.com/axios/axios#handling-errors this means, that request was sent,
         // but server could not respond.
         if (!error.response && error.request) {
-          this.online = false
           throw new NodeOfflineError()
         }
         throw error

@@ -1,8 +1,10 @@
 import axios, { AxiosInstance } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import { getBaseURL } from '@/lib/nodes/utils/getHealthcheckConfig'
 import { RpcMethod, RpcResults } from './types/api'
 import { JSONRPCResponse } from '@/lib/klayr'
+import type { NodeInfo } from '@/types/wallets'
 import { v4 as uuid } from 'uuid'
 
 /**
@@ -10,12 +12,14 @@ import { v4 as uuid } from 'uuid'
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class KlyNode extends Node<AxiosInstance> {
-  constructor(url: string) {
-    super(url, 'kly', 'node', NODE_LABELS.KlyNode)
+  constructor(endpoint: NodeInfo) {
+    super(endpoint, 'kly', 'node', NODE_LABELS.KlyNode)
   }
 
   protected buildClient(): AxiosInstance {
-    return axios.create({ baseURL: this.url })
+    const baseURL = getBaseURL(this)
+
+    return axios.create({ baseURL })
   }
 
   /**
@@ -27,8 +31,11 @@ export class KlyNode extends Node<AxiosInstance> {
     method: M,
     params?: RpcResults[M]['params']
   ): Promise<RpcResults[M]['result']> {
+    const baseURL = getBaseURL(this)
+
     return this.client
       .post<JSONRPCResponse<RpcResults[M]['result']>>('/rpc', {
+        baseURL,
         jsonrpc: '2.0',
         id: uuid(),
         method,
