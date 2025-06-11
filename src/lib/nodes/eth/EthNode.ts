@@ -9,28 +9,32 @@ import type { NodeInfo } from '@/types/wallets'
  * Encapsulates a node. Provides methods to send API-requests
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
-export class EthNode extends Node<Web3Eth> {
+export class EthNode extends Node<{ altIp: Web3Eth; url: Web3Eth }> {
   clientName = ''
 
   constructor(url: NodeInfo) {
     super(url, 'eth', 'node', NODE_LABELS.EthNode)
   }
 
-  protected buildClient(): Web3Eth {
-    const baseURL = this.preferAltIp ? (this.altIp as string) : this.url
+  /**
+   * Create 2 clients in advance once.
+   * @returns { Web3Eth } Web3 Ethereum module instance.
+   */
+  protected buildClient(): { altIp: Web3Eth; url: Web3Eth } {
+    const baseURL = this.preferAltIp ? this.altIp : this.url
 
     console.info({ baseURL, altIp: this.altIp, url: this.url })
 
-    return new Web3Eth(new HttpProvider(baseURL))
+    return {
+      altIp: new Web3Eth(new HttpProvider(this.altIp as string)),
+      url: new Web3Eth(new HttpProvider(this.url))
+    }
   }
 
   protected async checkHealth() {
     const time = Date.now()
-
-    /** Set `clientUrl` for `HttpProvider` depending on `preferAltIp`. */
-    this.client = this.buildClient()
-
-    const blockNumber = await this.client.getBlockNumber()
+    const client = this.preferAltIp ? this.client.altIp : this.client.url
+    const blockNumber = await client.getBlockNumber()
 
     return {
       height: Number(blockNumber),
@@ -39,7 +43,9 @@ export class EthNode extends Node<Web3Eth> {
   }
 
   protected async fetchNodeVersion(): Promise<void> {
-    const { clientName, simplifiedVersion } = formatEthVersion(await this.client.getNodeInfo())
+    const client = this.preferAltIp ? this.client.altIp : this.client.url
+    const { clientName, simplifiedVersion } = formatEthVersion(await client.getNodeInfo())
+
     this.version = simplifiedVersion
     this.clientName = clientName
   }
