@@ -111,6 +111,7 @@ export abstract class Node<C = unknown> {
   timer?: NodeJS.Timeout
   healthCheckInterval: HealthcheckInterval = 'normal'
   client: C
+  clientAlt: C
   healthcheckInProgress = false
 
   constructor(
@@ -137,6 +138,7 @@ export abstract class Node<C = unknown> {
     this.active = nodesStorage.isActive(url)
 
     this.client = this.buildClient()
+    this.clientAlt = this?.buildClientAlt?.()
 
     if (this.active) {
       void this.fetchNodeVersion()
@@ -263,6 +265,7 @@ export abstract class Node<C = unknown> {
 
   protected abstract checkHealth(): Promise<HealthcheckResult>
   protected abstract buildClient(): C
+  protected abstract buildClientAlt(): C
 
   /**
    * Enables/disables a node.

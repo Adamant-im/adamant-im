@@ -9,7 +9,7 @@ import type { NodeInfo } from '@/types/wallets'
  * Encapsulates a node. Provides methods to send API-requests
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
-export class EthNode extends Node<{ altIp: Web3Eth; url: Web3Eth }> {
+export class EthNode extends Node<Web3Eth> {
   clientName = ''
 
   constructor(url: NodeInfo) {
@@ -17,24 +17,35 @@ export class EthNode extends Node<{ altIp: Web3Eth; url: Web3Eth }> {
   }
 
   /**
-   * Create 2 clients in advance once.
+   * Create client for main URL.
    * @returns { Web3Eth } Web3 Ethereum module instance.
    */
-  protected buildClient(): { altIp: Web3Eth; url: Web3Eth } {
+  protected buildClient(): Web3Eth {
     const baseURL = this.preferAltIp ? this.altIp : this.url
 
     console.info({ baseURL, altIp: this.altIp, url: this.url })
 
-    return {
-      altIp: new Web3Eth(new HttpProvider(this.altIp as string)),
-      url: new Web3Eth(new HttpProvider(this.url))
-    }
+    return new Web3Eth(new HttpProvider(this.url))
+  }
+
+  /**
+   * Create clients for alternative IP.
+   * @returns { Web3Eth } Web3 Ethereum module instance.
+   */
+  protected buildClientAlt(): Web3Eth {
+    const baseURL = this.preferAltIp ? this.altIp : this.url
+
+    console.info({ baseURL, altIp: this.altIp, url: this.url })
+
+    return new Web3Eth(new HttpProvider(this.altIp as string))
   }
 
   protected async checkHealth() {
     const time = Date.now()
-    const client = this.preferAltIp ? this.client.altIp : this.client.url
+    const client = this.preferAltIp ? this.clientAlt : this.client
     const blockNumber = await client.getBlockNumber()
+
+    console.info({ preferAltIp: this.preferAltIp, clientAlt: this.clientAlt, client: this.client })
 
     return {
       height: Number(blockNumber),
@@ -43,7 +54,7 @@ export class EthNode extends Node<{ altIp: Web3Eth; url: Web3Eth }> {
   }
 
   protected async fetchNodeVersion(): Promise<void> {
-    const client = this.preferAltIp ? this.client.altIp : this.client.url
+    const client = this.preferAltIp ? this.clientAlt : this.client
     const { clientName, simplifiedVersion } = formatEthVersion(await client.getNodeInfo())
 
     this.version = simplifiedVersion
