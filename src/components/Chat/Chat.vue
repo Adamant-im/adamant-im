@@ -467,7 +467,7 @@ watch(lastMessage, () => {
 })
 
 watch(isFulfilled, async (value) => {
-  if (value && (!chatPage.value || chatPage.value <= 0)) await fetchChatMessages()
+  if (value && (!chatPage.value || chatPage.value <= 0)) fetchChatMessages()
 })
 
 watch(replyMessageId, (messageId) => {
@@ -490,11 +490,14 @@ watch(userMessages, () => {
 })
 
 watch(areAdmNodesOnline, async (nodesOnline) => {
-  if (nodesOnline && isGettingPublicKey.value) {
+  if (!nodesOnline) return
+
+  if (isGettingPublicKey.value) {
     const partnerName = store.getters['chat/getPartnerName'](props.partnerId)
     await createChat(props.partnerId, partnerName)
   }
-  if (nodesOnline && loading.value && allowFetchingMessages.value) {
+
+  if (loading.value && allowFetchingMessages.value) {
     await fetchChatMessages()
   }
 })
@@ -510,7 +513,9 @@ onBeforeMount(() => {
 })
 
 onMounted(async () => {
-  if (isFulfilled.value && chatPage.value <= 0) await fetchChatMessages()
+  if (isFulfilled.value && chatPage.value <= 0) {
+    await fetchChatMessages()
+  }
 
   if (isNewChat.value) {
     showNewChatPlaceholder.value = true
@@ -706,7 +711,7 @@ const markAsRead = () => {
 }
 
 const onScrollTop = async () => {
-  await fetchChatMessages()
+  fetchChatMessages()
 }
 
 const onScrollBottom = () => {
@@ -864,6 +869,8 @@ const fetchChatMessages = async () => {
       noMoreMessages.value = true
       loading.value = false
       allowFetchingMessages.value = false
+
+      return
     }
 
     allowFetchingMessages.value = true
