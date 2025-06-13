@@ -3,4 +3,4 @@
 #
 # @see https://sdkman.io/usage/#env-command
 
-java=17.0.15-zulu
+java=21.0.7-oracle
