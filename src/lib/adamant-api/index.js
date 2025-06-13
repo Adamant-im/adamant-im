@@ -10,6 +10,8 @@ import { i18n } from '@/i18n'
 import store from '@/store'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { parseCryptoAddressesKVStxs } from '@/lib/store-crypto-address'
+import { DEFAULT_TIME_DELTA } from '@/lib/nodes/constants.js'
+import constants from '@/lib/constants/index.js'
 
 Queue.configure(Promise)
 
@@ -49,7 +51,9 @@ function signTransaction(transaction, timeDelta) {
     delete transaction.signature
   }
 
-  transaction.timestamp = utils.epochTime() - timeDelta
+  const epochTime = ((Date.now() - constants.EPOCH) / 1000).toFixed(3)
+
+  transaction.timestamp = Math.floor(epochTime - timeDelta)
   transaction.signature = utils.transactionSign(transaction, myKeypair)
 
   return transaction
@@ -107,6 +111,7 @@ export function isReady() {
  * @returns {Promise<string>}
  */
 export function getPublicKey(address = '') {
+  // @todo remove returning cached keys and use getCachedPublicKey instead
   const publicKeyCached = store.getters.publicKey(address)
 
   if (publicKeyCached) {
@@ -130,6 +135,19 @@ export function getPublicKey(address = '') {
 }
 
 /**
+ * Retrieves user public key by his address from cached ones
+ * @param {string} address ADM address
+ * @returns {Promise<string>}
+ */
+export function getCachedPublicKey(address = '') {
+  const publicKeyCached = store.getters.publicKey(address)
+
+  if (publicKeyCached) {
+    return publicKeyCached
+  }
+}
+
+/**
  * Generates and signs a chat message transaction.
  *
  * @param {object} params - The transaction parameters.
@@ -137,12 +155,12 @@ export function getPublicKey(address = '') {
  * @param {number} [params.amount=0] - The transaction amount.
  * @param {number} [params.type=1] - The message type.
  * @param {string|object} params.message - The message to be encrypted.
- * @returns {Promise<object>} The signed transaction object or null on failure.
+ * @returns {object} The signed transaction object or null on failure.
  */
-export async function signChatMessageTransaction(params) {
+export function signChatMessageTransaction(params) {
   const { to, amount, type = 1, message } = params
 
-  const publicKey = await getPublicKey(to)
+  const publicKey = getCachedPublicKey(to)
 
   const text = typeof message === 'string' ? message : JSON.stringify(message)
   const encoded = utils.encodeMessage(text, publicKey, myKeypair.privateKey)
@@ -157,9 +175,7 @@ export async function signChatMessageTransaction(params) {
   transaction.asset = { chat }
   transaction.recipientId = to
 
-  const timeDelta = client.getTimeDelta()
-
-  return signTransaction(transaction, timeDelta)
+  return signTransaction(transaction, DEFAULT_TIME_DELTA)
 }
 
 /**

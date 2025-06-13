@@ -4,7 +4,9 @@
     <a-chat
       ref="chatRef"
       :messages="messages"
+      :user-messages="userMessages"
       :partners="partners"
+      :is-getting-public-key="isGettingPublicKey"
       :user-id="userId"
       :loading="loading"
       :locale="$i18n.locale"
@@ -320,6 +322,7 @@ import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import { useChatStateStore } from '@/stores/modal-state'
 import ChatPlaceholder from '@/components/Chat/ChatPlaceholder.vue'
 import { watchImmediate } from '@vueuse/core'
+import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -378,6 +381,10 @@ const showNewChatPlaceholder = ref(false)
 const isGettingPublicKey = ref(false)
 const isKeyMissing = ref(false)
 
+// to handle loading spinner and allow fetching messages while the spinner is shown
+// in case of connection troubles while first fetching
+const allowFetchingMessages = ref(true)
+
 const chatStateStore = useChatStateStore()
 
 const { setShowFreeTokensDialog, setActionsDropdownMessageId } = chatStateStore
@@ -433,6 +440,8 @@ const replyMessage = computed<NormalizedChatMessageTransaction>(() =>
 const actionMessage = computed<NormalizedChatMessageTransaction>(() =>
   store.getters['chat/messageById'](actionsMenuMessageId.value)
 )
+const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
+const areAdmNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
 
 const chatFormRef = ref<any>(null) // @todo type
 const chatRef = ref<any>(null) // @todo type
@@ -457,7 +466,7 @@ watch(lastMessage, () => {
   })
 })
 
-watch(isFulfilled, (value) => {
+watch(isFulfilled, async (value) => {
   if (value && (!chatPage.value || chatPage.value <= 0)) fetchChatMessages()
 })
 
@@ -480,6 +489,19 @@ watch(userMessages, () => {
   }
 })
 
+watch(areAdmNodesOnline, async (nodesOnline) => {
+  if (!nodesOnline) return
+
+  if (isGettingPublicKey.value) {
+    const partnerName = store.getters['chat/getPartnerName'](props.partnerId)
+    await createChat(props.partnerId, partnerName)
+  }
+
+  if (loading.value && allowFetchingMessages.value) {
+    await fetchChatMessages()
+  }
+})
+
 watchImmediate(messages, (updatedMessages) => {
   if (isFulfilled.value && !updatedMessages.length) {
     store.commit('chat/addNewChat', { partnerId: props.partnerId })
@@ -491,11 +513,13 @@ onBeforeMount(() => {
 })
 
 onMounted(async () => {
+  if (isFulfilled.value && chatPage.value <= 0) {
+    await fetchChatMessages()
+  }
+
   if (isNewChat.value) {
     showNewChatPlaceholder.value = true
   }
-
-  if (chatPage.value <= 0) await fetchChatMessages()
 
   await handleEmptyChat()
 
@@ -542,11 +566,15 @@ const createChat = async (partnerId: string, partnerName: string) => {
       partnerId,
       partnerName
     })
-  } catch {
-    vibrate.long()
-    isKeyMissing.value = true
-  } finally {
     isGettingPublicKey.value = false
+  } catch (error: unknown) {
+    vibrate.long()
+    if ((error as Error).message === t('chats.no_public_key')) {
+      isKeyMissing.value = true
+      isGettingPublicKey.value = false
+    }
+  } finally {
+    loading.value = false
   }
 }
 
@@ -682,7 +710,7 @@ const markAsRead = () => {
   store.commit('chat/markAsRead', props.partnerId)
 }
 
-const onScrollTop = () => {
+const onScrollTop = async () => {
   fetchChatMessages()
 }
 
@@ -826,21 +854,29 @@ const openTransaction = (transaction: NormalizedChatMessageTransaction) => {
 const isTransaction = (type: string) => {
   return type in Cryptos || type === 'UNKNOWN_CRYPTO'
 }
-const fetchChatMessages = () => {
+const fetchChatMessages = async () => {
   if (noMoreMessages.value) return
-  if (loading.value) return
+  if (loading.value && !allowFetchingMessages.value) return
 
   loading.value = true
 
-  return store
-    .dispatch('chat/getChatRoomMessages', { contactId: props.partnerId })
-    .catch(() => {
+  try {
+    await store.dispatch('chat/getChatRoomMessages', { contactId: props.partnerId })
+    loading.value = false
+    allowFetchingMessages.value = false
+  } catch {
+    if (store.getters['chat/chatListOffset'] === -1) {
       noMoreMessages.value = true
-    })
-    .finally(() => {
       loading.value = false
-      chatRef.value.maintainScrollPosition()
-    })
+      allowFetchingMessages.value = false
+
+      return
+    }
+
+    allowFetchingMessages.value = true
+  } finally {
+    chatRef.value.maintainScrollPosition()
+  }
 }
 const fetchUntilFindTransaction = (transactionId: string) => {
   const fetchMessages = async () => {
