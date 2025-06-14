@@ -50,7 +50,7 @@
               >
                 <wallet-card
                   :address="wallet.address"
-                  :all-coin-nodes-disabled="checkNodesAvailability(wallet.cryptoCurrency)"
+                  :all-coin-nodes-disabled="areNodesDisabled(wallet.cryptoCurrency)"
                   :crypto="wallet.cryptoCurrency"
                   :crypto-name="wallet.cryptoName"
                   :rate="wallet.rate"
@@ -141,7 +141,7 @@ const wallets = computed(() => {
   })
 })
 
-const checkNodesAvailability = (crypto: CryptoSymbol) => {
+const areNodesDisabled = (crypto: CryptoSymbol) => {
   return crypto === 'ADM' ? allAdmNodesDisabled.value : allCoinNodesDisabled.value
 }
 
