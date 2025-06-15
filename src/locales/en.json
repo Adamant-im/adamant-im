@@ -34,10 +34,10 @@
     "partner_info": "Partner info",
     "partner_name": "Partner name",
     "placeholder": {
-      "anonymous": "\uD83D\uDD76\uFE0F Anonymous: partners never see your IP address",
-      "censorship": "⛓\uFE0F Censorship-resistant blockchain architecture",
-      "encrypted": "\uD83D\uDD10 End-to-end encrypted across all devices",
-      "ipfs": "☁\uFE0F Decentralized IPFS storage for files/media",
+      "anonymous": "\uD83D\uDD76\uFE0F Anonymous: partners never\u00A0see\u00A0your\u00A0IP\u00A0address",
+      "censorship": "⛓\uFE0F Censorship-resistant blockchain\u00A0architecture",
+      "encrypted": "\uD83D\uDD10 End-to-end encrypted across\u00A0all\u00A0devices",
+      "ipfs": "☁\uFE0F Decentralized IPFS storage for\u00A0files/media",
       "can_not_message": "Cannot message this user yet—their account isn't activated",
       "what_does_it_mean": {
         "text": "What does it mean?",

@@ -261,6 +261,7 @@ defineExpose({
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/components/_chat.scss';
+@use 'vuetify/settings';
 
 .a-chat {
   &__spinner {
@@ -268,6 +269,10 @@ defineExpose({
 
     &_no-messages {
       margin-top: chat.$placeholder-height + 42px;
+
+      @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+        margin-top: chat.$placeholder-height-mobile + 42px;
+      }
     }
   }
 }

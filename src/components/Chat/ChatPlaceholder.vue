@@ -79,6 +79,10 @@ function openLink() {
     background: map.get(colors.$adm-colors, 'black');
     border-radius: 8px;
 
+    @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+      height: chat.$placeholder-height-mobile;
+    }
+
     &_public-key {
       height: auto;
       flex-direction: row;
