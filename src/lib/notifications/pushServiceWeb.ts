@@ -1,26 +1,18 @@
+import { initializePushNotifications, revokeToken } from '@/notifications'
 import { BasePushService } from './pushServiceBase'
 import { sendSpecialMessage } from '../adamant-api'
-import { ADAMANT_NOTIFICATION_SERVICE_ADDRESS, VAPID_KEY, MessageType } from '../constants'
+import { ADAMANT_NOTIFICATION_SERVICE_ADDRESS } from '../constants'
 import { signalAsset } from '../adamant-api/asset'
-import { fcm } from '@/firebase'
-import { getToken, deleteToken } from 'firebase/messaging'
-import { firebaseSwRegistrationPromise } from '@/main'
 
 export class WebPushService extends BasePushService {
   private token: string | null = null
   private privateKey: string | null = null
 
   async initialize(): Promise<boolean> {
-    if (!fcm) {
-      console.warn('Firebase Messaging not available - Web Push unavailable')
-      return false
-    }
-
     const baseInitialized = await super.initialize()
     if (!baseInitialized) {
       return false
     }
-
     return true
   }
 
@@ -30,104 +22,46 @@ export class WebPushService extends BasePushService {
   }
 
   async registerDevice(): Promise<void> {
-    if (!fcm) {
-      throw new Error('Firebase Messaging not available')
-    }
-
-    try {
-      if (!firebaseSwRegistrationPromise) {
-        throw new Error('Service Workers not supported')
-      }
-
-      const swRegistration = await firebaseSwRegistrationPromise
-
-      if (!swRegistration) {
-        throw new Error('Firebase Service Worker registration failed')
-      }
-
-      this.token = await getToken(fcm, {
-        vapidKey: VAPID_KEY,
-        serviceWorkerRegistration: swRegistration
-      })
-    } catch (error) {
-      console.error('Failed to get FCM token:', error)
-      throw error
-    }
-
+    this.token = await initializePushNotifications()
     if (!this.token) {
       throw new Error('Failed to get Web Push token')
     }
 
     if (this.deviceId) {
-      try {
-        const signalData = signalAsset(this.deviceId, this.token, 'FCM', 'add')
-        await sendSpecialMessage(
-          ADAMANT_NOTIFICATION_SERVICE_ADDRESS,
-          signalData,
-          MessageType.SIGNAL_MESSAGE
-        )
-      } catch (error) {
-        console.error('Failed to register device with notification service:', error)
-        throw error
-      }
+      await sendSpecialMessage(
+        ADAMANT_NOTIFICATION_SERVICE_ADDRESS,
+        signalAsset(this.deviceId, this.token, 'FCM', 'add')
+      )
     }
   }
 
   async unregisterDevice(): Promise<boolean> {
     if (!this.token || !this.deviceId) return false
 
-    try {
-      await sendSpecialMessage(
-        ADAMANT_NOTIFICATION_SERVICE_ADDRESS,
-        signalAsset(this.deviceId, this.token, 'FCM', 'remove'),
-        MessageType.SIGNAL_MESSAGE
-      )
+    const result = await sendSpecialMessage(
+      ADAMANT_NOTIFICATION_SERVICE_ADDRESS,
+      signalAsset(this.deviceId, this.token, 'FCM', 'remove')
+    )
 
-      const revoked = await this.revokeToken()
-      if (!revoked) {
-        throw new Error('Failed to revoke FCM token')
-      }
-
-      this.token = null
-      this.privateKey = null
-
-      return true
-    } catch (error) {
-      console.error('Failed to unregister device:', error)
-      return false
+    if ('error' in result) {
+      throw result.error
     }
-  }
 
-  private async revokeToken(): Promise<boolean> {
-    if (!fcm) return false
+    const revoked = await revokeToken()
+    if (!revoked) return false
 
-    try {
-      await deleteToken(fcm)
-      return true
-    } catch {
-      return false
-    }
+    this.token = null
+    this.privateKey = null
+
+    return true
   }
 
   setPrivateKey(privateKey: string): void {
     this.privateKey = privateKey
-  }
 
-  clearPrivateKey(): void {
-    this.privateKey = null
-  }
-
-  isInitialized(): boolean {
-    return super.isInitialized()
-  }
-
-  getDeviceId(): string | null {
-    return super.getDeviceId()
-  }
-
-  reset(): void {
-    super.reset()
-    this.token = null
-    this.privateKey = null
+    if (typeof BroadcastChannel !== 'undefined') {
+      const channel = new BroadcastChannel('adm_notifications')
+      channel.postMessage({ privateKey })
+    }
   }
 }

@@ -145,13 +145,7 @@
                 v-model="allowNotificationType"
                 :items="notificationItems"
                 variant="underlined"
-                :loading="isNotificationRegistering"
-                :disabled="isNotificationRegistering"
-              >
-                <template v-slot:item="{ props: itemProps, item }">
-                  <v-list-item v-bind="itemProps" :disabled="item.raw.disabled"></v-list-item>
-                </template>
-              </v-select>
+              />
             </v-col>
           </v-row>
           <div class="a-text-explanation-enlarged">
@@ -222,7 +216,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, inject, computed, onBeforeUnmount, onMounted, Ref, ref } from 'vue'
+import { nextTick, inject, computed, onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue'
 import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant, mdiInformation } from '@mdi/js'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
@@ -236,12 +230,9 @@ import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import { resetPinia } from '@/plugins/pinia'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
 import { useSavedScroll } from '@/hooks/useSavedScroll'
-import { sidebarLayoutKey, NotificationType } from '@/lib/constants'
+import { sidebarLayoutKey, notificationType } from '@/lib/constants'
 import { useChatStateStore } from '@/stores/modal-state'
 import { pushService } from '@/lib/notifications/pushServiceFactory'
-import { usePushNotificationSetup } from '@/hooks/pushNotifications/usePushNotificationSetup'
-import { Capacitor } from '@capacitor/core'
-import { Preferences } from '@capacitor/preferences'
 
 const store = useStore()
 const chatStateStore = useChatStateStore()
@@ -255,19 +246,11 @@ const className = 'settings-view'
 
 const { hasView } = useSavedScroll()
 
-const isAndroid = Capacitor.getPlatform() === 'android'
-
-const notificationItems = computed(() => {
-  return [
-    { title: 'No Notifications', value: NotificationType['NoNotifications'], disabled: false },
-    {
-      title: 'Background Fetch',
-      value: NotificationType['BackgroundFetch'],
-      disabled: isAndroid
-    },
-    { title: 'Push', value: NotificationType['Push'], disabled: false }
-  ]
-})
+const notificationItems = [
+  { title: 'No Notifications', value: notificationType['No Notifications'] },
+  { title: 'Background Fetch', value: notificationType['Background Fetch'] },
+  { title: 'Push', value: notificationType['Push'] }
+]
 
 const infoText = t('options.notifications_info')
 
@@ -355,7 +338,10 @@ const allowNotificationType = computed({
     return store.state.options.allowNotificationType
   },
   set(value) {
-    handleNotificationTypeChange(value)
+    store.commit('options/updateOption', {
+      key: 'allowNotificationType',
+      value
+    })
   }
 })
 
@@ -376,84 +362,72 @@ const darkTheme = computed({
 const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
 const lastSuccessfulNotificationType = ref(allowNotificationType.value)
 
-const handleNotificationTypeChange = async (newVal: number) => {
-  const oldVal = store.state.options.allowNotificationType
+watch(allowNotificationType, (newVal, oldVal) => {
+  if (newVal === lastSuccessfulNotificationType.value) {
+    return
+  }
 
-  if (newVal === oldVal) return
+  const isNotPushNotification =
+    newVal === notificationType['No Notifications'] ||
+    newVal === notificationType['Background Fetch']
 
-  isNotificationRegistering.value = true
+  if (newVal === notificationType['Push']) {
+    setPushNotifications(true)
+  } else if (isNotPushNotification) {
+    if (oldVal === notificationType['Push']) {
+      setPushNotifications(false)
+    } else {
+      lastSuccessfulNotificationType.value = newVal
+    }
+  }
+})
 
+const setPushNotifications = async (enabled: boolean) => {
   try {
-    const isNotPushNotification =
-      newVal === NotificationType['NoNotifications'] ||
-      newVal === NotificationType['BackgroundFetch']
+    if (enabled) {
+      await pushService.initialize()
+      const permissionGranted = await pushService.requestPermissions()
 
-    if (newVal === NotificationType['Push']) {
-      await setPushNotifications(true)
-    } else if (isNotPushNotification && oldVal === NotificationType['Push']) {
-      await setPushNotifications(false)
-    }
-
-    store.commit('options/updateOption', {
-      key: 'allowNotificationType',
-      value: newVal
-    })
-
-    if (isAndroid) {
-      try {
-        await Preferences.set({
-          key: 'allowNotificationType',
-          value: newVal.toString()
+      if (!permissionGranted) {
+        store.dispatch('snackbar/show', {
+          message: t('options.push_denied'),
+          timeout: 5000
         })
-        console.log(`[Options] Synced notification setting to Android: ${newVal}`)
-      } catch (error) {
-        console.error('[Options] Failed to sync with Android:', error)
+        allowNotificationType.value = lastSuccessfulNotificationType.value
+        return
       }
+
+      const privateKey = await store.dispatch('getPrivateKeyForPush')
+      if (privateKey) {
+        pushService.setPrivateKey(privateKey)
+      }
+
+      await pushService.registerDevice()
+      store.dispatch('snackbar/show', {
+        message: t('options.push_subscribe_success'),
+        timeout: 5000
+      })
+    } else {
+      await pushService.unregisterDevice()
+      store.dispatch('snackbar/show', {
+        message: t('options.push_unsubscribe_success'),
+        timeout: 5000
+      })
     }
-
-    syncNotificationSettings(newVal)
-    lastSuccessfulNotificationType.value = newVal
-
-    console.log(`[Options] Notification type changed: ${newVal}`)
+    lastSuccessfulNotificationType.value = allowNotificationType.value
   } catch (error) {
     if (typeof error === 'string') {
-      showSnackbar(error)
-    } else if (error instanceof Error) {
-      showSnackbar(error.message)
+      store.dispatch('snackbar/show', {
+        message: error,
+        timeout: 5000
+      })
     } else {
-      showSnackbar(t('options.push_register_error'))
+      store.dispatch('snackbar/show', {
+        message: t('options.push_register_error'),
+        timeout: 5000
+      })
     }
-  } finally {
-    isNotificationRegistering.value = false
-  }
-}
-
-const setPushNotifications = async (enabled: boolean): Promise<void> => {
-  if (enabled) {
-    const initialized = await pushService.initialize()
-
-    if (!initialized) {
-      throw new Error(t('options.push_not_supported'))
-    }
-
-    const permissionGranted = await pushService.requestPermissions()
-
-    if (!permissionGranted) {
-      throw new Error(t('options.push_denied'))
-    }
-
-    const privateKey = await store.dispatch('getPrivateKeyForPush')
-    if (privateKey) {
-      pushService.setPrivateKey(privateKey)
-    }
-
-    await pushService.registerDevice()
-
-    showSnackbar(t('options.push_subscribe_success'))
-  } else {
-    await pushService.unregisterDevice()
-
-    showSnackbar(t('options.push_unsubscribe_success'))
+    allowNotificationType.value = lastSuccessfulNotificationType.value // reset option in select in case of server error
   }
 }
 

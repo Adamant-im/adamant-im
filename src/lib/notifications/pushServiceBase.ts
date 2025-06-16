@@ -1,36 +1,24 @@
 import { getDeviceId } from '@/firebase'
 
 export interface PushService {
-  // Initialization
   initialize(): Promise<boolean>
-  reset(): void
-
-  // Permissions and registration
   requestPermissions(): Promise<boolean>
+  reset(): void
   registerDevice(): Promise<void>
   unregisterDevice(): Promise<boolean>
-
-  // Private key management
   setPrivateKey(privateKey: string): void
-  clearPrivateKey(): void
-
-  // State getters
-  isInitialized(): boolean
-  getDeviceId(): string | null
 }
 
 export abstract class BasePushService implements PushService {
   protected initialized: boolean = false
   protected deviceId: string | null = null
-
   abstract requestPermissions(): Promise<boolean>
   abstract registerDevice(): Promise<void>
   abstract unregisterDevice(): Promise<boolean>
   abstract setPrivateKey(privateKey: string): void
-  abstract clearPrivateKey(): void
 
   async initialize(): Promise<boolean> {
-    if (this.initialized) {
+    if (this.initialized && this.deviceId) {
       return true
     }
 
@@ -39,22 +27,14 @@ export abstract class BasePushService implements PushService {
       this.initialized = true
       return true
     } catch (error) {
-      console.error('Push service initialization failed:', error)
+      console.log(error)
       this.reset()
-      return false
+      return this.initialized
     }
   }
 
   reset(): void {
     this.initialized = false
     this.deviceId = null
-  }
-
-  isInitialized(): boolean {
-    return this.initialized
-  }
-
-  getDeviceId(): string | null {
-    return this.deviceId
   }
 }

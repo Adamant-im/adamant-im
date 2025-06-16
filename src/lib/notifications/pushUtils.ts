@@ -1,21 +1,45 @@
 import utils from '@/lib/adamant'
-import type { ParsedPushData, NotificationData } from './pushTypes'
+
+export interface ParsedPushData {
+  transactionId: string
+  senderId: string
+  senderPublicKey: string
+  encryptedMessage: string
+  nonce: string
+}
+
+export interface NotificationData {
+  title: string
+  body: string
+  senderId: string
+  transactionId: string
+}
 
 export function parsePushPayload(payload: any): ParsedPushData | null {
-  const txnString = payload.data?.txn || payload.txn
-  if (!txnString) return null
+  try {
+    const txnString = payload.data?.txn || payload.txn || ''
+    if (!txnString) {
+      console.log('No transaction data in push payload')
+      return null
+    }
 
-  const txnData = typeof txnString === 'string' ? JSON.parse(txnString) : txnString
-  const { id, senderId, senderPublicKey, asset } = txnData
+    const txnData = typeof txnString === 'string' ? JSON.parse(txnString) : txnString
 
-  if (!id || !senderId || !senderPublicKey || !asset?.chat) return null
+    if (!txnData.id || !txnData.senderId || !txnData.senderPublicKey || !txnData.asset?.chat) {
+      console.log('Invalid transaction data format in push payload')
+      return null
+    }
 
-  return {
-    transactionId: id,
-    senderId,
-    senderPublicKey,
-    encryptedMessage: asset.chat.message,
-    nonce: asset.chat.own_message
+    return {
+      transactionId: txnData.id,
+      senderId: txnData.senderId,
+      senderPublicKey: txnData.senderPublicKey,
+      encryptedMessage: txnData.asset.chat.message,
+      nonce: txnData.asset.chat.own_message
+    }
+  } catch (error) {
+    console.error('Error parsing push payload:', error)
+    return null
   }
 }
 
@@ -69,6 +93,7 @@ export function navigateToChat(senderId: string, transactionId?: string): void {
           }
         })
       )
+      console.log(`📱 Navigation to chat requested: ${senderId}`)
     }
   } catch (error) {
     console.error('Error navigating to chat:', error)
@@ -97,6 +122,7 @@ export async function processPushNotification(
 ): Promise<boolean> {
   try {
     if (isAppVisible) {
+      console.log('App visible, suppressing notification')
       return false
     }
 
@@ -113,6 +139,7 @@ export async function processPushNotification(
     const notificationData = createNotificationData(decryptedMessage, parsedData)
 
     await showNotificationFn(notificationData)
+    console.log('Push notification processed and shown successfully')
     return true
   } catch (error) {
     console.error('Error processing push notification:', error)

@@ -1,9 +1,10 @@
 import { sendSpecialMessage } from '../adamant-api'
-import { ADAMANT_NOTIFICATION_SERVICE_ADDRESS, MessageType } from '../constants'
+import { ADAMANT_NOTIFICATION_SERVICE_ADDRESS } from '../constants'
 import { BasePushService } from './pushServiceBase'
 import { PushNotifications } from '@capacitor/push-notifications'
-import { LocalNotifications } from '@capacitor/local-notifications'
 import { signalAsset } from '@/lib/adamant-api/asset'
+import { processPushNotification, navigateToChat, NotificationData } from './pushUtils'
+import { App, AppState } from '@capacitor/app'
 import { Capacitor } from '@capacitor/core'
 
 const TOKEN_REGISTRATION_TIMEOUT = 10000
@@ -12,6 +13,7 @@ const TOKEN_CHECK_INTERVAL = 100
 export class AndroidPushService extends BasePushService {
   private token: string | null = null
   private privateKey: string | null = null
+  private isAppInForeground: boolean = true
 
   async initialize(): Promise<boolean> {
     const baseInitialized = await super.initialize()
@@ -19,7 +21,9 @@ export class AndroidPushService extends BasePushService {
       return false
     }
 
-    await LocalNotifications.requestPermissions()
+    this.setupAppStateTracking()
+    await this.setupPushNotificationHandler()
+    await this.setupNotificationClickHandler()
     await this.setupTokenRegistrationHandler()
 
     return true
@@ -57,8 +61,7 @@ export class AndroidPushService extends BasePushService {
     try {
       await sendSpecialMessage(
         ADAMANT_NOTIFICATION_SERVICE_ADDRESS,
-        signalAsset(this.deviceId!, this.token, 'FCM', 'remove'),
-        MessageType.SIGNAL_MESSAGE
+        signalAsset(this.deviceId, this.token, 'FCM', 'remove')
       )
       this.token = null
       return true
@@ -70,39 +73,41 @@ export class AndroidPushService extends BasePushService {
 
   setPrivateKey(privateKey: string): void {
     this.privateKey = privateKey
-
-    if (Capacitor.getPlatform() === 'android') {
-      this.savePrivateKeyToAndroid(privateKey)
-    }
   }
 
-  clearPrivateKey(): void {
-    this.privateKey = null
+  private async setupPushNotificationHandler(): Promise<void> {
+    await PushNotifications.addListener('pushNotificationReceived', async (notification) => {
+      if (this.isAppInForeground || !this.privateKey || !notification.data) {
+        return
+      }
 
-    if (Capacitor.getPlatform() === 'android') {
-      this.clearPrivateKeyFromAndroid()
-    }
+      try {
+        await processPushNotification(
+          notification.data,
+          this.privateKey,
+          this.isAppInForeground,
+          async () => {}
+        )
+      } catch (error) {
+        console.error('Failed to process push notification:', error)
+      }
+    })
   }
 
-  private async savePrivateKeyToAndroid(privateKey: string): Promise<void> {
-    try {
-      const { SecureStoragePlugin } = await import('capacitor-secure-storage-plugin')
-      await SecureStoragePlugin.set({
-        key: 'adamant_private_key',
-        value: privateKey
-      })
-    } catch (error) {
-      console.error('Failed to save private key:', error)
-    }
-  }
+  private async setupNotificationClickHandler(): Promise<void> {
+    await PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
+      const { senderId, transactionId }: NotificationData = notification.notification.data
 
-  private async clearPrivateKeyFromAndroid(): Promise<void> {
-    try {
-      const { SecureStoragePlugin } = await import('capacitor-secure-storage-plugin')
-      await SecureStoragePlugin.remove({ key: 'adamant_private_key' })
-    } catch (error) {
-      console.error('Failed to clear private key:', error)
-    }
+      if (!senderId) {
+        return
+      }
+
+      try {
+        navigateToChat(senderId, transactionId)
+      } catch (error) {
+        console.error('Failed to navigate to chat:', error)
+      }
+    })
   }
 
   private async setupTokenRegistrationHandler(): Promise<void> {
@@ -110,10 +115,15 @@ export class AndroidPushService extends BasePushService {
       const oldToken = this.token
       this.token = tokenData.value
 
+      if (!this.deviceId) {
+        console.error('Device ID not available for token registration')
+        return
+      }
+
       try {
         await this.handleTokenRegistration(oldToken, tokenData.value)
       } catch (error) {
-        console.error('Failed to register token:', error)
+        console.error('Failed to register token in ANS:', error)
         throw error
       }
     })
@@ -128,29 +138,31 @@ export class AndroidPushService extends BasePushService {
     if (oldToken && oldToken !== newToken) {
       await sendSpecialMessage(
         ADAMANT_NOTIFICATION_SERVICE_ADDRESS,
-        signalAsset(this.deviceId!, oldToken, 'FCM', 'remove'),
-        MessageType.SIGNAL_MESSAGE
+        signalAsset(this.deviceId!, oldToken, 'FCM', 'remove')
       )
     }
 
     await sendSpecialMessage(
       ADAMANT_NOTIFICATION_SERVICE_ADDRESS,
-      signalAsset(this.deviceId!, newToken, 'FCM', 'add'),
-      MessageType.SIGNAL_MESSAGE
+      signalAsset(this.deviceId!, newToken, 'FCM', 'add')
     )
   }
 
-  isInitialized(): boolean {
-    return super.isInitialized()
-  }
+  private setupAppStateTracking(): void {
+    if (!Capacitor.isNativePlatform() || typeof App === 'undefined') {
+      return
+    }
 
-  getDeviceId(): string | null {
-    return super.getDeviceId()
-  }
+    App.addListener('appStateChange', (state: AppState) => {
+      this.isAppInForeground = state.isActive
+    })
 
-  reset(): void {
-    super.reset()
-    this.token = null
-    this.privateKey = null
+    App.addListener('resume', () => {
+      this.isAppInForeground = true
+    })
+
+    App.addListener('pause', () => {
+      this.isAppInForeground = false
+    })
   }
 }
