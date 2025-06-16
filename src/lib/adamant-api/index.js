@@ -798,3 +798,10 @@ export async function getChatRoomMessages(address1, address2, paramsArg, recursi
 
   return loadMessages(lastOffset)
 }
+
+export function getMyPrivateKey() {
+  if (!myKeypair || !myKeypair.privateKey) {
+    return ''
+  }
+  return myKeypair.privateKey.toString('hex')
+}
