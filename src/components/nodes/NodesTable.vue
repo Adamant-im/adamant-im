@@ -90,7 +90,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
@@ -110,7 +110,7 @@ type Tab = 'adm' | 'coins' | 'services' | 'ipfs'
 
 const { t } = useI18n()
 const store = useStore()
-const tab = ref<Tab>('adm')
+const tab = ref<Tab>(store.state.options.currentNodesTab)
 
 const useSocketConnection = computed<boolean>({
   get() {
@@ -150,11 +150,13 @@ const preferFasterServiceNodeOption = computed<boolean>({
   }
 })
 
-onMounted(() => {
-  if (history.state.tab) {
-    tab.value = history.state.tab
-  }
-})
+watch(
+  () => store.state.options.currentNodesTab,
+  (currentTab) => {
+    tab.value = currentTab
+  },
+  { immediate: true }
+)
 </script>
 
 <style lang="scss" scoped>

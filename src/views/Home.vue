@@ -171,11 +171,13 @@ const goToTransactions = (crypto: string) => {
 }
 
 const goToCoinNodes = (tab: string) => {
+  store.commit('options/updateOption', {
+    key: 'currentNodesTab',
+    value: tab
+  })
+
   router.push({
-    name: 'Nodes',
-    state: {
-      tab
-    }
+    name: 'Nodes'
   })
 }
 
