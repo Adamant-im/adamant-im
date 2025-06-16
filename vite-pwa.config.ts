@@ -10,12 +10,18 @@ export default mergeConfig(
     plugins: [
       VitePWA({
         registerType: 'autoUpdate',
-        srcDir: 'src',
-        filename: 'service-worker.js',
-        devOptions: {
-          enabled: false
-        },
+        injectRegister: false,
         manifest: manifest,
+        injectManifest: {
+          injectionPoint: undefined
+        },
+        strategies: 'injectManifest',
+        srcDir: 'src',
+        filename: 'firebase-messaging-sw.ts',
+        devOptions: {
+          enabled: true,
+          type: 'module'
+        },
         manifestFilename: 'manifest.json',
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,wasm}'],

@@ -5,5 +5,7 @@ declare global {
   interface Window {
     ep: App<Element>
     store: Store<any>
+    firebaseApp: FirebaseApp
+    fcm: Messaging
   }
 }

@@ -124,14 +124,30 @@
           </div>
         </v-col>
         <v-col cols="12" class="mt-6">
-          <v-checkbox
-            v-model="allowPushNotifications"
-            :label="t('options.enable_push')"
-            color="grey darken-1"
-            density="comfortable"
-            hide-details
-          />
-
+          <v-row no-gutters class="my-0">
+            <v-col cols="6" class="d-flex">
+              <div>
+                {{ t('options.notification_title') }}
+              </div>
+              <v-tooltip
+                :text="infoText"
+                location="end"
+                :max-width="520"
+                :class="`${className}__info-tooltip`"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-icon v-bind="props" :icon="mdiInformation" />
+                </template>
+              </v-tooltip>
+            </v-col>
+            <v-col cols="6" :class="`${className}__notifications-col`" class="my-0">
+              <v-select
+                v-model="allowNotificationType"
+                :items="notificationItems"
+                variant="underlined"
+              />
+            </v-col>
+          </v-row>
           <div class="a-text-explanation-enlarged">
             {{ t('options.enable_push_tooltip') }}
           </div>
@@ -200,8 +216,8 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, inject, computed, onBeforeUnmount, onMounted, Ref, ref } from 'vue'
-import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant } from '@mdi/js'
+import { nextTick, inject, computed, onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue'
+import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant, mdiInformation } from '@mdi/js'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -214,8 +230,9 @@ import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import { resetPinia } from '@/plugins/pinia'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
 import { useSavedScroll } from '@/hooks/useSavedScroll'
-import { sidebarLayoutKey } from '@/lib/constants'
+import { sidebarLayoutKey, notificationType } from '@/lib/constants'
 import { useChatStateStore } from '@/stores/modal-state'
+import { pushService } from '@/lib/notifications/pushServiceFactory'
 
 const store = useStore()
 const chatStateStore = useChatStateStore()
@@ -226,6 +243,14 @@ const theme = useTheme()
 const className = 'settings-view'
 
 const { hasView } = useSavedScroll()
+
+const notificationItems = [
+  { title: 'No Notifications', value: notificationType['No Notifications'] },
+  { title: 'Background Fetch', value: notificationType['Background Fetch'] },
+  { title: 'Push', value: notificationType['Push'] }
+]
+
+const infoText = t('options.notifications_info')
 
 const appVersion = inject('appVersion')
 const sidebarLayoutRef = inject<Ref>(sidebarLayoutKey)
@@ -305,13 +330,13 @@ const allowSoundNotifications = computed({
   }
 })
 
-const allowPushNotifications = computed({
+const allowNotificationType = computed({
   get() {
-    return store.state.options.allowPushNotifications
+    return store.state.options.allowNotificationType
   },
   set(value) {
     store.commit('options/updateOption', {
-      key: 'allowPushNotifications',
+      key: 'allowNotificationType',
       value
     })
   }
@@ -332,6 +357,76 @@ const darkTheme = computed({
 })
 
 const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
+const lastSuccessfulNotificationType = ref(allowNotificationType.value)
+
+watch(allowNotificationType, (newVal, oldVal) => {
+  if (newVal === lastSuccessfulNotificationType.value) {
+    return
+  }
+
+  const isNotPushNotification =
+    newVal === notificationType['No Notifications'] ||
+    newVal === notificationType['Background Fetch']
+
+  if (newVal === notificationType['Push']) {
+    setPushNotifications(true)
+  } else if (isNotPushNotification) {
+    if (oldVal === notificationType['Push']) {
+      setPushNotifications(false)
+    } else {
+      lastSuccessfulNotificationType.value = newVal
+    }
+  }
+})
+
+const setPushNotifications = async (enabled: boolean) => {
+  try {
+    if (enabled) {
+      await pushService.initialize()
+      const permissionGranted = await pushService.requestPermissions()
+
+      if (!permissionGranted) {
+        store.dispatch('snackbar/show', {
+          message: t('options.push_denied'),
+          timeout: 5000
+        })
+        allowNotificationType.value = lastSuccessfulNotificationType.value
+        return
+      }
+
+      const privateKey = await store.dispatch('getPrivateKeyForPush')
+      if (privateKey) {
+        pushService.setPrivateKey(privateKey)
+      }
+
+      await pushService.registerDevice()
+      store.dispatch('snackbar/show', {
+        message: t('options.push_subscribe_success'),
+        timeout: 5000
+      })
+    } else {
+      await pushService.unregisterDevice()
+      store.dispatch('snackbar/show', {
+        message: t('options.push_unsubscribe_success'),
+        timeout: 5000
+      })
+    }
+    lastSuccessfulNotificationType.value = allowNotificationType.value
+  } catch (error) {
+    if (typeof error === 'string') {
+      store.dispatch('snackbar/show', {
+        message: error,
+        timeout: 5000
+      })
+    } else {
+      store.dispatch('snackbar/show', {
+        message: t('options.push_register_error'),
+        timeout: 5000
+      })
+    }
+    allowNotificationType.value = lastSuccessfulNotificationType.value // reset option in select in case of server error
+  }
+}
 
 const isDevModeEnabled = computed({
   get() {
@@ -380,6 +475,7 @@ const logout = () => {
   resetPinia()
   store.dispatch('stopInterval')
   store.dispatch('logout')
+  pushService.reset()
 
   if (isLoginViaPassword.value) {
     return clearDb()
@@ -493,6 +589,18 @@ onBeforeUnmount(() => {
   }
   :deep(.v-checkbox) {
     margin-left: -8px;
+  }
+  &__info-tooltip {
+    white-space: break-spaces;
+    :deep(.v-overlay__content) {
+      padding-top: 24px;
+      color: white;
+      background-color: map.get(colors.$adm-colors, 'regular');
+    }
+  }
+  &__notifications-col {
+    height: 60px;
+    margin-top: -10px !important;
   }
 }
 
