@@ -213,6 +213,7 @@ onBeforeUnmount(() => {
 @use 'sass:map';
 @use 'vuetify/settings';
 @use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/generic/_variables.scss';
 
 .sidebar {
   display: flex;
@@ -246,14 +247,14 @@ onBeforeUnmount(() => {
       cursor: ew-resize;
     }
 
-    @media (max-width: 799px) {
+    @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
       width: 100%;
       max-width: unset;
       min-width: 100%;
     }
 
     &--has-view {
-      @media (max-width: 799px) {
+      @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
         display: none;
       }
     }
