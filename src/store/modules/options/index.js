@@ -1,11 +1,14 @@
-import { Cryptos, Rates } from '@/lib/constants'
+import {
+  Cryptos,
+  Rates
+} from '@/lib/constants'
 
 const state = () => ({
   stayLoggedIn: false, // if true, messages and passphrase will be stored encrypted. If false, localStorage will be cleared after logout
   sendMessageOnEnter: true,
   allowSoundNotifications: true,
   allowTabNotifications: true,
-  allowPushNotifications: false,
+  allowNotificationType: 0,
   darkTheme: true,
   formatMessages: true,
   useFullDate: false,
@@ -44,7 +47,10 @@ const getters = {
 }
 
 const mutations = {
-  updateOption(state, { key, value }) {
+  updateOption(state, {
+    key,
+    value
+  }) {
     if (key in state) {
       state[key] = value
     }
