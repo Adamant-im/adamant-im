@@ -95,7 +95,11 @@ export abstract class Client<N extends Node> {
   // This method can throw an error if there are no online nodes.
   // Better use "useClient()" method.
   getClient(): N['client'] {
-    return this.getNode().client
+    const node = this.getNode()
+
+    // Ethereum nodes return a new client every time depending on `preferDomain` property.
+    if (node.type === 'eth') return (node.client as () => N['client'])()
+    else return node.client
   }
 
   /**

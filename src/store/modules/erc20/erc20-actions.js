@@ -13,7 +13,7 @@ const STATUS_INTERVAL = 25000
 const initTransaction = async (api, context, ethAddress, amount, nonce, increaseFee) => {
   const contract = new EthContract(Erc20, context.state.contractAddress)
 
-  const gasPrice = await api.useClient((client) => client.getGasPrice())
+  const gasPrice = await api.useClient((client) => client().getGasPrice())
 
   const transaction = {
     from: context.state.address,
@@ -27,7 +27,7 @@ const initTransaction = async (api, context, ethAddress, amount, nonce, increase
   }
 
   const gasLimit = await api
-    .useClient((client) => client.estimateGas(transaction))
+    .useClient((client) => client().estimateGas(transaction))
     .catch(() => BigInt(DEFAULT_ERC20_TRANSFER_GAS_LIMIT))
   transaction.gasLimit = increaseFee ? ethUtils.increaseFee(gasLimit) : gasLimit
 
