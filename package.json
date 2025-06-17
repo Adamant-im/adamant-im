@@ -40,9 +40,9 @@
   },
   "dependencies": {
     "@capacitor-community/file-opener": "^7.0.1",
-    "@capacitor/android": "^7.0.0",
-    "@capacitor/core": "^7.0.0",
-    "@capacitor/filesystem": "^7.0.0",
+    "@capacitor/android": "^7.3.0",
+    "@capacitor/core": "^7.3.0",
+    "@capacitor/filesystem": "^7.1.1",
     "@emoji-mart/data": "^1.2.1",
     "@klayr/codec": "^0.5.1",
     "@klayr/cryptography": "^4.1.1",
@@ -123,7 +123,7 @@
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
-    "@capacitor/cli": "^7.0.0",
+    "@capacitor/cli": "^7.3.0",
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.7.1",
     "@commitlint/types": "^19.8.0",
