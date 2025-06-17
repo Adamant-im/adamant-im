@@ -58,30 +58,8 @@ async function initCoins() {
     coinDirNames[coin.symbol] = name
     coinSymbols[name] = coin.symbol
 
-    coins[coin.symbol] = {
-      symbol: coin.symbol,
-      name: coin.name,
-      nameShort: coin.nameShort,
-      qrPrefix: coin.qqPrefix,
-      minBalance: coin.minBalance,
-      regexAddress: coin.regexAddress,
-      decimals: coin.decimals,
-      minTransferAmount: coin.minTransferAmount,
-      contractId: coin.contractId,
-      nodes: coin.nodes,
-      createCoin: coin.createCoin,
-      cryptoTransferDecimals: coin.cryptoTransferDecimals,
-      defaultFee: coin.defaultFee,
-      fixedFee: coin.fixedFee,
-      defaultVisibility: coin.defaultVisibility,
-      defaultGasLimit: coin.defaultGasLimit,
-      defaultGasPriceGwei: coin.defaultGasPriceGwei,
-      txFetchInfo: coin.txFetchInfo,
-      timeout: coin.timeout,
-      txConsistencyMaxTime: coin.txConsistencyMaxTime,
-      defaultOrdinalLevel: coin.defaultOrdinalLevel,
-      explorerTx: coin.explorerTx
-    }
+    const { qqPrefix: qrPrefix, ...rest } = coin
+    coins[rest.symbol] = { qrPrefix, ...rest }
 
     if (coin.createCoin) {
       const nodeName = coin.symbol.toLowerCase()
@@ -159,7 +137,7 @@ function updateTestnetConfig(configs) {
     if (config.testnet) config.nodes.list = config.testnet.nodes.list
 
     return config
-  });
+  })
 
   return updateConfig(testnetConfigs, 'testnet')
 }

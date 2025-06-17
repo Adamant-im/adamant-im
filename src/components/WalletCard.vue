@@ -21,7 +21,7 @@
           {{ t('home.balance') }}
         </v-list-item-title>
         <v-list-item-subtitle :class="classes.walletCardSubtitle">
-          <p>
+          <p v-if="!allCoinNodesDisabled">
             {{ xs ? calculatedBalance : calculatedFullBalance }} {{ crypto }}
             <span v-if="$store.state.rate.isLoaded" class="a-text-regular">
               ~{{ rate }} {{ currentCurrency }}
@@ -34,6 +34,7 @@
               {{ calculatedFullBalance }}
             </v-tooltip>
           </p>
+          <p v-else>{{ t('home.no_active_nodes') }}</p>
         </v-list-item-subtitle>
 
         <template #append>
@@ -55,8 +56,8 @@
   </v-card>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, ref, PropType } from 'vue'
+<script lang="ts" setup>
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ShareURIDialog from '@/components/ShareURIDialog.vue'
 import WalletCardListActions from '@/components/WalletCardListActions.vue'
@@ -70,6 +71,15 @@ import { mdiShareVariant, mdiChevronRight } from '@mdi/js'
 const SIGNIFICANT_DIGITS = 7
 const className = 'wallet-card'
 
+type Props = {
+  address: string
+  crypto: CryptoSymbol
+  cryptoName: string
+  currentCurrency: string
+  allCoinNodesDisabled: boolean
+  rate: number
+}
+
 const classes = {
   root: className,
   walletCardAction: `${className}__action`,
@@ -80,73 +90,36 @@ const classes = {
   walletCardTitle: `${className}__title`
 }
 
-export default defineComponent({
-  props: {
-    address: {
-      type: String,
-      required: true
-    },
-    crypto: {
-      type: String as PropType<CryptoSymbol>,
-      default: 'ADM'
-    },
-    cryptoName: {
-      type: String,
-      default: 'ADAMANT'
-    },
-    currentCurrency: {
-      type: String,
-      default: 'USD'
-    },
-    rate: {
-      type: Number,
-      required: true
-    }
-  },
-  components: {
-    ShareURIDialog,
-    WalletCardListActions
-  },
-  setup(props) {
-    const { t } = useI18n()
-    const store = useStore()
-    const { xs } = useDisplay()
-    const key = props.crypto.toLowerCase()
-    const showShareURIDialog = ref(false)
+const props = withDefaults(defineProps<Props>(), {
+  crypto: 'ADM',
+  cryptoName: 'ADAMANT',
+  currentCurrency: 'USD'
+})
 
-    const balance = computed(() => {
-      return props.crypto === Cryptos.ADM
-        ? store.state.balance
-        : store.state[key]
-          ? store.state[key].balance
-          : 0
-    })
+const { t } = useI18n()
+const store = useStore()
+const { xs } = useDisplay()
+const key = props.crypto.toLowerCase()
+const showShareURIDialog = ref(false)
 
-    const calculatedBalance = computed(() => {
-      return smartNumber(calculatedFullBalance.value)
-    })
+const balance = computed(() => {
+  return props.crypto === Cryptos.ADM
+    ? store.state.balance
+    : store.state[key]
+      ? store.state[key].balance
+      : 0
+})
 
-    const calculatedFullBalance = computed(() => {
-      return balance.value ? currencyAmount(Number(balance.value), props.crypto, true) : 0
-    })
+const calculatedBalance = computed(() => {
+  return smartNumber(calculatedFullBalance.value)
+})
 
-    const isADM = computed(() => {
-      return props.crypto === Cryptos.ADM
-    })
+const calculatedFullBalance = computed(() => {
+  return balance.value ? currencyAmount(Number(balance.value), props.crypto, true) : 0
+})
 
-    return {
-      t,
-      SIGNIFICANT_DIGITS,
-      classes,
-      calculatedBalance,
-      calculatedFullBalance,
-      isADM,
-      showShareURIDialog,
-      xs,
-      mdiChevronRight,
-      mdiShareVariant
-    }
-  }
+const isADM = computed(() => {
+  return props.crypto === Cryptos.ADM
 })
 </script>
 

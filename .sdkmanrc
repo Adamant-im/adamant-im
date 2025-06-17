@@ -1,0 +1,6 @@
+# Enable auto-env through the `sdkman_auto_env` config.
+# Add `<key>=<value>` pairs of SDKs to use below.
+#
+# @see https://sdkman.io/usage/#env-command
+
+java=17.0.15-zulu
