@@ -23,11 +23,11 @@ jobs:
       - name: Checkout repository 🛎️
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up OpenJDK LTS by JetBrains
         uses: actions/setup-java@v4
         with:
           java-version: '21'
-          distribution: 'oracle'
+          distribution: 'jetbrains'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
