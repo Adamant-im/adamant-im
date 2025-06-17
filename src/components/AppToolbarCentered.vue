@@ -12,7 +12,7 @@
           </v-toolbar-title>
           <v-progress-circular
             class="spinner"
-            v-show="!isOnline && hasSpinner"
+            v-show="!areAdmNodesOnline && hasSpinner"
             indeterminate
             :size="24"
           />
@@ -27,6 +27,7 @@ import BackButton from '@/components/common/BackButton/BackButton.vue'
 import { useStore } from 'vuex'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 
 type Props = {
   title?: string
@@ -60,7 +61,9 @@ const router = useRouter()
 
 const className = 'app-toolbar-centered'
 
-const isOnline = computed(() => store.getters['isOnline'])
+const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
+const areAdmNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
+
 const classes = computed(() => {
   return {
     'v-toolbar--fixed': props.app,
