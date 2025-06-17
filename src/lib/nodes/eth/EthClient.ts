@@ -120,9 +120,13 @@ export class EthClient extends Client<EthNode> {
    */
   getClientInstance(): Web3Eth {
     const node = this.getNode()
-    const client = node.preferAltIp ? node.clientAlt : node.client
+    const client = node.preferDomain ? node.client : node.clientAlt
 
-    console.info({ preferAltIp: node.preferAltIp, clientAlt: node.clientAlt, client: node.client })
+    console.info({
+      preferDomain: node.preferDomain,
+      clientAlt: node.clientAlt,
+      client: node.client
+    })
 
     return client
   }

@@ -34,10 +34,14 @@ export class EthNode extends Node<Web3Eth> {
 
   protected async checkHealth() {
     const time = Date.now()
-    const client = this.preferAltIp ? this.clientAlt : this.client
+    const client = this.preferDomain ? this.client : this.clientAlt
     const blockNumber = await client.getBlockNumber()
 
-    console.info({ preferAltIp: this.preferAltIp, clientAlt: this.clientAlt, client: this.client })
+    console.info({
+      preferDomain: this.preferDomain,
+      clientAlt: this.clientAlt,
+      client: this.client
+    })
 
     return {
       height: Number(blockNumber),
@@ -46,7 +50,7 @@ export class EthNode extends Node<Web3Eth> {
   }
 
   protected async fetchNodeVersion(): Promise<void> {
-    const client = this.preferAltIp ? this.clientAlt : this.client
+    const client = this.preferDomain ? this.client : this.clientAlt
     const { clientName, simplifiedVersion } = formatEthVersion(await client.getNodeInfo())
 
     this.version = simplifiedVersion

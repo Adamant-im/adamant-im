@@ -20,8 +20,9 @@ export class RateInfoService extends Node<AxiosInstance> {
   }
 
   async getAllRates(): Promise<RateInfoResponse> {
+    const baseURL = getBaseURL(this)
     const response = await this.client.get<RateInfoResponse>('/get', {
-      baseURL: this.preferAltIp ? this.altIp : this.url
+      baseURL
     })
 
     return response.data

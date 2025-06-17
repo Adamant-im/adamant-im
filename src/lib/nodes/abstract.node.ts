@@ -76,7 +76,7 @@ export abstract class Node<C = unknown> {
   /**
    * Indicates whether prefer a node with alternative IP or not
    */
-  preferAltIp = false
+  preferDomain = true
   /**
    * Node ping estimation
    */
@@ -157,7 +157,7 @@ export abstract class Node<C = unknown> {
         this.ping = health.ping
         this.online = true
 
-        if (!this.preferAltIp) {
+        if (this.preferDomain) {
           console.info(
             `Attempt to use domain ${this.url} performed successfully, using domain by default.`
           )
@@ -168,18 +168,18 @@ export abstract class Node<C = unknown> {
           )
         }
       } catch {
-        if (!this.preferAltIp && this.mainUrlAvailable) {
+        if (this.preferDomain && this.mainUrlAvailable) {
           console.info(
             `There was a failed attempt to use domain ${this.url}, trying to use IP ${this.altIp} in the next attempt.`
           )
           this.mainUrlAvailable = false
-          this.preferAltIp = true
+          this.preferDomain = false
         } else {
           console.info(
             `There was failed attempts to use domain ${this.url} and IP ${this.altIp}, assume node is offline.`
           )
           this.online = false
-          this.preferAltIp = false
+          this.preferDomain = true
         }
       } finally {
         this.healthcheckInProgress = false
