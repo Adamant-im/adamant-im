@@ -65,7 +65,7 @@ export default defineConfig({
    * Some old libs like `promise-queue` and `readable-stream` still uses Webpack.
    */
   define: {
-    'process.browser': {},
+    'process.browser': 'true',
     'process.env': {}
   },
   optimizeDeps: {
