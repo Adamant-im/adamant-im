@@ -68,7 +68,7 @@ export abstract class Node<C = unknown> {
   /**
    * Indicates whether a node with main URL is available
    */
-  mainUrlAvailable = true
+  availableByDomain = true
   /**
    * Indicates whether node is available.
    */
@@ -161,18 +161,18 @@ export abstract class Node<C = unknown> {
           console.info(
             `Attempt to use domain ${this.url} performed successfully, using domain by default.`
           )
-          this.mainUrlAvailable = true
+          this.availableByDomain = true
         } else {
           console.info(
             `There was a failed attempt to use domain ${this.url}, using IP ${this.altIp} by default.`
           )
         }
       } catch {
-        if (this.preferDomain && this.mainUrlAvailable) {
+        if (this.preferDomain && this.availableByDomain) {
           console.info(
             `There was a failed attempt to use domain ${this.url}, trying to use IP ${this.altIp} in the next attempt.`
           )
-          this.mainUrlAvailable = false
+          this.availableByDomain = false
           this.preferDomain = false
         } else {
           console.info(
