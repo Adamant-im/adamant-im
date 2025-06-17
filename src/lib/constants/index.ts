@@ -166,12 +166,12 @@ export const TransactionAdditionalStatus = {
   ADM_REGISTERED: 'adm_registered' // ADM tx, registered in a blockchain, but has 0 confirmations yet
 }
 
-export const tsIcon = function (status: TransactionStatusType) {
-  if (status === TransactionStatus.CONFIRMED || status === TransactionStatus.REGISTERED) {
+export const tsIcon = function (status: TransactionStatusType, isMessage = false) {
+  if (status === TransactionStatus.CONFIRMED || (isMessage && status === TransactionStatus.REGISTERED)) {
     return mdiCheck
   }
 
-  if (status === TransactionStatus.PENDING) {
+  if (status === TransactionStatus.PENDING || status === TransactionStatus.REGISTERED) {
     return mdiClockOutline
   }
 

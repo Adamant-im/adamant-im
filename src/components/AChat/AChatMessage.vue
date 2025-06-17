@@ -139,7 +139,7 @@ export default defineComponent({
 
     const showAvatar = computed(() => !isWelcomeChat(partnerId.value))
 
-    const statusIcon = computed(() => tsIcon(props.transaction.status))
+    const statusIcon = computed(() => tsIcon(props.transaction.status, true))
     const isOutgoingMessage = computed(() =>
       isStringEqualCI(props.transaction.senderId, userId.value)
     )
