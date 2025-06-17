@@ -52,6 +52,8 @@ export function useTransactionStatusQuery(
   )
 
   watch(status, (value) => {
+    console.log('value', value)
+
     if (value === TransactionStatus.REJECTED || value === TransactionStatus.CONFIRMED) {
       addTransaction(unref(transactionId), value)
     }

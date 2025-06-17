@@ -14,11 +14,16 @@ export const useFinalTransactions = defineStore(
       delete list.value[id]
     }
 
+    const $reset = () => {
+      list.value = {}
+    }
+
     return {
       list,
 
       addTransaction,
-      removeTransaction
+      removeTransaction,
+      $reset
     }
   },
   {
