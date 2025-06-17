@@ -3,4 +3,4 @@
 #
 # @see https://sdkman.io/usage/#env-command
 
-java=21.0.7-oracle
+java=21.0.7-jbr
