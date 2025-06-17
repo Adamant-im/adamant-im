@@ -381,7 +381,7 @@ watch(
       return
     }
 
-    if (value === TransactionStatus.REJECTED) {
+    if (value === TransactionStatus.REJECTED || value === TransactionStatus.CONFIRMED) {
       addTransaction(txId.value, value)
     }
   }

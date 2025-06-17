@@ -52,7 +52,7 @@ export function useTransactionStatusQuery(
   )
 
   watch(status, (value) => {
-    if (value === TransactionStatus.REJECTED) {
+    if (value === TransactionStatus.REJECTED || value === TransactionStatus.CONFIRMED) {
       addTransaction(unref(transactionId), value)
     }
   })
