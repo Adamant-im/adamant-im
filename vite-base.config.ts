@@ -61,9 +61,7 @@ export default defineConfig({
   server: {
     port: 8080
   },
-  /**
-   * Some old libs like `promise-queue` and `readable-stream` still uses Webpack.
-   */
+  // Some old libs like `promise-queue` and `readable-stream` still uses Webpack.
   define: {
     'process.browser': 'true',
     'process.env': {}
