@@ -149,7 +149,7 @@ const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
 const areAdmNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
 
 onActivated(() => {
-  if (savedRoute.value) {
+  if (savedRoute.value && !chatPagePartnerId.value) {
     router.push(savedRoute.value)
   }
 })
