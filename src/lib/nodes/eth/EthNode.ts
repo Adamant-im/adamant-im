@@ -2,7 +2,6 @@ import Web3Eth from 'web3-eth'
 import { HttpProvider } from 'web3-providers-http'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
-import { getBaseURL } from '@/lib/nodes/utils/getHealthcheckConfig'
 import { formatEthVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
 import type { NodeInfo } from '@/types/wallets'
 
@@ -22,7 +21,10 @@ export class EthNode extends Node<() => Web3Eth> {
    * @returns { Web3Eth } Web3 Ethereum module instance.
    */
   protected buildClient(): () => Web3Eth {
-    return () => new Web3Eth(new HttpProvider(getBaseURL(this)))
+    const clientMain = new Web3Eth(new HttpProvider(this.url))
+    const clientAlt = new Web3Eth(new HttpProvider(this.altIp as string))
+
+    return () => (this.preferDomain ? clientMain : clientAlt)
   }
 
   protected async checkHealth() {
