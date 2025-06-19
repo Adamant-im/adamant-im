@@ -4,7 +4,7 @@
     <a-chat
       ref="chatRef"
       :messages="messages"
-      :user-messages="userMessages"
+      :show-new-chat-placeholder="showNewChatPlaceholder"
       :partners="partners"
       :is-getting-public-key="isGettingPublicKey"
       :user-id="userId"
@@ -94,7 +94,7 @@
 
       <template #placeholder>
         <chat-placeholder
-          v-if="!isWelcomeChat(partnerId)"
+          ref="placeholderRef"
           :show-placeholder="showNewChatPlaceholder"
           :is-getting-public-key="isGettingPublicKey"
           :is-key-missing="isKeyMissing"
@@ -285,7 +285,16 @@ import { emojiWeight } from '@/lib/chat/emoji-weight/emojiWeight'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { vibrate } from '@/lib/vibrate'
 import { useAttachments } from '@/stores/attachments'
-import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import {
+  computed,
+  nextTick,
+  onBeforeMount,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import Visibility from 'visibilityjs'
 import copyToClipboard from 'copy-to-clipboard'
 
@@ -345,7 +354,6 @@ const { t } = useI18n()
 const showSpinner = useChatsSpinner()
 
 const isMenuOpen = ref(false)
-const isFirstCallSkipped = ref(false)
 
 const attachments = useAttachments(props.partnerId)()
 const handleAttachments = (files: FileData[]) => {
@@ -377,9 +385,9 @@ const flashingMessageId = ref<string | -1>(-1)
 const actionsMenuMessageId = ref<string | -1>(-1)
 const replyMessageId = ref<string | -1>(-1)
 const showEmojiPicker = ref(false)
-const showNewChatPlaceholder = ref(false)
 const isGettingPublicKey = ref(false)
 const isKeyMissing = ref(false)
+const placeholderRef = useTemplateRef<HTMLDivElement | null>('placeholderRef')
 
 // to handle loading spinner and allow fetching messages while the spinner is shown
 // in case of connection troubles while first fetching
@@ -442,9 +450,19 @@ const actionMessage = computed<NormalizedChatMessageTransaction>(() =>
 )
 const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
 const areAdmNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
+const allowPlaceholder = computed(
+  () =>
+    !isWelcomeChat(props.partnerId) &&
+    (isNewChat.value || chatPage.value >= 1 || isAdamantChat(props.partnerId))
+)
+const showNewChatPlaceholder = computed(() => allowPlaceholder.value && !userMessages.value.length)
 
 const chatFormRef = ref<any>(null) // @todo type
 const chatRef = ref<any>(null) // @todo type
+
+watch(placeholderRef, () => {
+  console.log(placeholderRef.value?.clientHeight)
+})
 
 // Scroll to the bottom every time window focused by desktop notification
 watch(
@@ -479,16 +497,6 @@ watch(replyMessageId, (messageId) => {
   })
 })
 
-watch(userMessages, () => {
-  // isFirstCallSkipped needed in order to properly handle reloading of a chat where the last
-  // message was from the partner and not you (do not show placeholder)
-  if (isFulfilled.value && isFirstCallSkipped.value) {
-    showNewChatPlaceholder.value = !userMessages.value.length
-  } else {
-    isFirstCallSkipped.value = true
-  }
-})
-
 watch(areAdmNodesOnline, async (nodesOnline) => {
   if (!nodesOnline) return
 
@@ -517,10 +525,6 @@ onMounted(async () => {
     await fetchChatMessages()
   }
 
-  if (isNewChat.value) {
-    showNewChatPlaceholder.value = true
-  }
-
   await handleEmptyChat()
 
   scrollBehavior()
@@ -546,8 +550,6 @@ onBeforeUnmount(() => {
 })
 
 const handleEmptyChat = async () => {
-  showNewChatPlaceholder.value = !userMessages.value.length
-
   if (!messages.value.length) {
     store.commit('chat/addNewChat', { partnerId: props.partnerId })
   }

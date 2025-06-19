@@ -11,9 +11,7 @@
             v-show="loading"
             indeterminate
             :class="{
-              [classes.spinner]: true,
-              [`${classes.spinner}_no-messages`]: !userMessages.length,
-              [`${classes.spinner}_is-getting-key`]: isGettingPublicKey
+              [classes.spinner]: true
             }"
             :size="20"
             style="z-index: 100"
@@ -73,7 +71,7 @@ const classes = {
 
 type Props = {
   messages: NormalizedChatMessageTransaction[]
-  userMessages: NormalizedChatMessageTransaction[]
+  showNewChatPlaceholder: boolean
   isGettingPublicKey: boolean
   partners: User[]
   userId: string
@@ -83,7 +81,7 @@ type Props = {
 
 const props = withDefaults(defineProps<Props>(), {
   messages: () => [],
-  userMessages: () => [],
+  showNewChatPlaceholder: false,
   partners: () => [],
   loading: false,
   locale: 'en'
