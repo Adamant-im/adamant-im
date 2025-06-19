@@ -69,16 +69,21 @@ export function validateStoredCryptoAddresses() {
     return isErc20(crypto) || crypto === 'ADM'
   }
 
+  // Retrieve and store user's public crypto addresses
   Object.keys(Cryptos).forEach((crypto) => {
     if (skip(crypto)) return
+
     const address = store.state[crypto.toLowerCase()].address
+
     if (address) {
       if (!store.state.adm.validatedCryptos[crypto]) {
         const key = `${crypto.toLowerCase()}:address`
+
         admApi.getStored(key, store.state.address, 20).then((txs) => {
           // It may be empty array: no addresses stored yet for this crypto
           if (txs) {
             let validateInfo = parseCryptoAddressesKVStxs(txs, crypto)
+
             if (validateInfo && !validateInfo.onlyLegacyLiskAddress) {
               // Some address(es) is stored
               validateInfo.isSomeAddressStored = true
@@ -89,6 +94,7 @@ export function validateStoredCryptoAddresses() {
                 isSomeAddressStored: false
               }
             }
+
             store.state.adm.validatedCryptos[crypto] = validateInfo
           }
         })
@@ -96,41 +102,53 @@ export function validateStoredCryptoAddresses() {
     }
   })
 
+  // Verify that stored public crypto addresses are valid
+
   let isAllValidated = true
-  const validateSummary = {}
-  validateSummary.isAllRight = true
-  validateSummary.wrongCoins = []
-  validateSummary.manyAddressesCoins = []
+  const validateSummary = {
+    isAllRight: true,
+    wrongCoins: [],
+    manyAddressesCoins: []
+  }
 
   for (const crypto of Object.keys(Cryptos)) {
     if (skip(crypto)) continue
-    if (!store.state.adm.validatedCryptos[crypto]) {
+
+    const validateInfo = store.state.adm.validatedCryptos[crypto]
+
+    // Wait while we retrieve public addresses for all cryptos
+    if (!validateInfo) {
       isAllValidated = false
       break
     }
-    if (!validateSummary.isSomeAddressStored) continue
 
-    if (!store.state.adm.validatedCryptos[crypto].isMainAddressValid) {
+    // If no public public address for some crypto is stored, skip it
+    if (!validateInfo.isSomeAddressStored) continue
+
+    if (!validateInfo.isMainAddressValid) {
       validateSummary.isAllRight = false
       validateSummary.isWrongAddress = true
       validateSummary.wrongCoin = crypto
       validateSummary.wrongCoins.push(crypto)
       validateSummary.correctAddress = store.state[crypto.toLowerCase()].address
-      validateSummary.storedAddress = store.state.adm.validatedCryptos[crypto].mainAddress
+      validateSummary.storedAddress = validateInfo.mainAddress
     }
 
-    if (store.state.adm.validatedCryptos[crypto].addressesCount > 1) {
+    if (validateInfo.addressesCount > 1) {
       validateSummary.isAllRight = false
       validateSummary.isManyAddresses = true
       validateSummary.manyAddressesCoin = crypto
       validateSummary.manyAddressesCoins.push(crypto)
-      validateSummary.manyAddresses = store.state.adm.validatedCryptos[crypto].storedAddresses
+      validateSummary.manyAddresses = validateInfo.storedAddresses
     }
   }
 
+  // Set a flag that we finished with crypto addresses validation
+  // And show warning dialog, if noticed that something is wrong with them
   if (isAllValidated) {
     store.state.adm.validatedCryptos.summary = validateSummary
     store.state.adm.addressesValidated = true
+
     if (!store.state.options.suppressWarningOnAddressesNotification) {
       vueBus.emit('warningOnAddressDialog', validateSummary)
     }

@@ -1,6 +1,11 @@
 import store from '@/store'
 
 export default (to, from, next) => {
+  if (!to.meta.requiresAuth) {
+    next()
+    return
+  }
+
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     const isLogged = store.getters.isLogged
 

@@ -3,7 +3,7 @@
 import Notify from 'notifyjs'
 import Visibility from 'visibilityjs'
 import currency from '@/filters/currencyAmountWithSymbol'
-import { removeFormats } from '@/lib/markdown'
+import { formatMessageBasic } from '@/lib/markdown'
 import { isAdamantChat } from '@/lib/chat/meta/utils'
 
 let _this
@@ -80,7 +80,7 @@ class PushNotification extends Notification {
       message = this.lastUnread.message
     }
     const processedMessage = this.store.state.options.formatMessages
-      ? removeFormats(message)
+      ? formatMessageBasic(message)
       : message
     return `${this.partnerIdentity}: ${processedMessage}`
   }
