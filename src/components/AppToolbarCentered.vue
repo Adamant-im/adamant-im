@@ -61,6 +61,7 @@ const router = useRouter()
 const className = 'app-toolbar-centered'
 
 const isOnline = computed(() => store.getters['isOnline'])
+
 const classes = computed(() => {
   return {
     'v-toolbar--fixed': props.app,
