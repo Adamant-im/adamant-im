@@ -5,6 +5,7 @@ import Visibility from 'visibilityjs'
 import currency from '@/filters/currencyAmountWithSymbol'
 import { formatMessageBasic } from '@/lib/markdown'
 import { isAdamantChat } from '@/lib/chat/meta/utils'
+import { notificationType } from '@/lib/constants'
 
 let _this
 
@@ -39,8 +40,8 @@ class Notification {
     return isAdmChat ? this.i18n.t(name) : name
   }
 
-  get pushAllowed() {
-    return this.store.state.options.allowPushNotifications
+  get bgFetchNotificationAllowed() {
+    return this.store.state.options.allowNotificationType === notificationType['Background Fetch']
   }
 
   get soundAllowed() {
@@ -90,6 +91,11 @@ class PushNotification extends Notification {
   }
 
   notify(messageArrived) {
+    const isBackgroundFetch =
+      this.store.state.options.allowNotificationType === notificationType['Background Fetch']
+    if (!isBackgroundFetch) {
+      return
+    }
     try {
       Notify.requestPermission(
         // Permission granted
@@ -127,8 +133,8 @@ class PushNotification extends Notification {
             message: this.i18n.t('options.push_denied')
           })
           this.store.commit('options/updateOption', {
-            key: 'allowPushNotifications',
-            value: false
+            key: 'allowNotificationType',
+            value: notificationType['No Notifications'] // = 0
           })
         }
       )
@@ -139,8 +145,8 @@ class PushNotification extends Notification {
         message: this.i18n.t('options.push_not_supported')
       })
       this.store.commit('options/updateOption', {
-        key: 'allowPushNotifications',
-        value: false
+        key: 'allowNotificationType',
+        value: notificationType['No Notifications'] // = 0
       })
     }
   }
@@ -214,7 +220,7 @@ export default class extends Notification {
 
   start() {
     this.interval = window.setInterval(() => {
-      if (this.pushAllowed) {
+      if (this.bgFetchNotificationAllowed) {
         this.push.notify(this.messageArrived)
       }
       if (this.soundAllowed) {
