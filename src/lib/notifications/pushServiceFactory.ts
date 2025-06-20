@@ -4,7 +4,7 @@ import { AndroidPushService } from './pushServiceAndroid'
 import { WebPushService } from './pushServiceWeb'
 
 export function createPushService(): PushService {
-  if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
+  if (Capacitor.getPlatform() === 'android') {
     return new AndroidPushService()
   } else {
     return new WebPushService()
