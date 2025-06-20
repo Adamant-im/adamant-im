@@ -23,7 +23,6 @@ type Method =
   | 'getaddressbalance'
 
 export type RpcRequest<P = any, M extends Method | string = string> = {
-  baseURL?: string
   method: M
   params?: P
 }

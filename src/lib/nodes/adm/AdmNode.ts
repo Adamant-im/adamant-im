@@ -20,7 +20,6 @@ export type Payload =
       (ctx: AdmNode): Record<string, any>
     }
 export type RequestConfig<P extends Payload> = {
-  baseURL?: string
   url: string
   method?: string
   payload?: P
