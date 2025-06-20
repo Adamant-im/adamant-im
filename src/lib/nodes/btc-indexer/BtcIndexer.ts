@@ -15,9 +15,7 @@ export class BtcIndexer extends Node<AxiosInstance> {
   }
 
   protected buildClient(): AxiosInstance {
-    const baseURL = getBaseURL(this)
-
-    return createBtcLikeClient(baseURL)
+    return createBtcLikeClient(this.url)
   }
 
   protected async checkHealth() {

@@ -15,9 +15,7 @@ export class KlyIndexer extends Node<AxiosInstance> {
   }
 
   protected buildClient(): AxiosInstance {
-    const baseURL = getBaseURL(this)
-
-    return axios.create({ baseURL: `${baseURL}/api/v3` })
+    return axios.create({ baseURL: `${this.url}/api/v3` })
   }
 
   /**

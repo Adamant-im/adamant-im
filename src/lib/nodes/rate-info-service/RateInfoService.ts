@@ -14,9 +14,7 @@ export class RateInfoService extends Node<AxiosInstance> {
   }
 
   protected buildClient(): AxiosInstance {
-    const baseURL = getBaseURL(this)
-
-    return axios.create({ baseURL })
+    return axios.create({ baseURL: this.url })
   }
 
   async getAllRates(): Promise<RateInfoResponse> {

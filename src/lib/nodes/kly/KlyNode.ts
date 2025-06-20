@@ -17,9 +17,7 @@ export class KlyNode extends Node<AxiosInstance> {
   }
 
   protected buildClient(): AxiosInstance {
-    const baseURL = getBaseURL(this)
-
-    return axios.create({ baseURL })
+    return axios.create({ baseURL: this.url })
   }
 
   /**

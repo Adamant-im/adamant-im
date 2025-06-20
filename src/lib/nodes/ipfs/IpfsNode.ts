@@ -39,10 +39,8 @@ export class IpfsNode extends Node<AxiosInstance> {
   }
 
   protected buildClient(): AxiosInstance {
-    const baseURL = getBaseURL(this)
-
     return axios.create({
-      baseURL,
+      baseURL: this.url,
       timeout: 60 * 10 * 1000
     })
   }
