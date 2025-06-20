@@ -2,7 +2,6 @@ import { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
-import { getBaseURL } from '@/lib/nodes/utils/getHealthcheckConfig'
 import { formatDogeVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
 import type { NodeInfo } from '@/types/wallets'
 import { RpcRequest, RpcResponse } from './types/api/common'
@@ -54,7 +53,7 @@ export class DogeNode extends Node<AxiosInstance> {
     params?: Request,
     requestConfig?: AxiosRequestConfig
   ): Promise<Response> {
-    const baseURL = getBaseURL(this)
+    const baseURL = this.getBaseURL(this)
 
     return this.client
       .request<RpcResponse<Response>>({

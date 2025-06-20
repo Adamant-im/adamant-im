@@ -3,7 +3,6 @@ import { NodeOfflineError } from '@/lib/nodes/utils/errors'
 import axios, { AxiosInstance, AxiosProgressEvent, AxiosRequestConfig, ResponseType } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
-import { getBaseURL } from '@/lib/nodes/utils/getHealthcheckConfig'
 import type { NodeInfo } from '@/types/wallets'
 
 type FetchNodeInfoResult = {
@@ -53,7 +52,7 @@ export class IpfsNode extends Node<AxiosInstance> {
    */
   request<P extends Payload = Payload, R = any>(cfg: RequestConfig<P>): Promise<R> {
     const { url, headers, method = 'get', payload, onUploadProgress } = cfg
-    const baseURL = getBaseURL(this)
+    const baseURL = this.getBaseURL(this)
 
     const config: AxiosRequestConfig = {
       baseURL,

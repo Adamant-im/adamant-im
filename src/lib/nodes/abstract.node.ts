@@ -1,5 +1,5 @@
 import type { NodeInfo } from '@/types/wallets/index.ts'
-import { getBaseURL, getHealthCheckInterval } from './utils/getHealthcheckConfig'
+import { getHealthCheckInterval } from './utils/getHealthcheckConfig'
 import { TNodeLabel } from './constants'
 import { HealthcheckInterval, HealthcheckResult, NodeKind, NodeStatus, NodeType } from './types'
 import { nodesStorage } from './storage'
@@ -205,6 +205,19 @@ export abstract class Node<C = unknown> {
     this.onStatusChangeCallback = callback
   }
 
+  /**
+   * Get base URL for requests depending on availability of a node's domain.
+   * @param { Node } node A node instance.
+   * @returns { string } Base URL.
+   */
+  getBaseURL(node: Node): string {
+    const baseURL = node.preferDomain ? node.url : (node.altIp as string)
+
+    console.info({ baseURL, altIp: node.altIp, url: node.url })
+
+    return baseURL
+  }
+
   getStatus() {
     return {
       alt_ip: this.altIp,
@@ -268,7 +281,7 @@ export abstract class Node<C = unknown> {
    * Enables/disables a node.
    */
   toggleNode(active: boolean) {
-    const baseURL = getBaseURL(this)
+    const baseURL = this.getBaseURL(this)
 
     this.active = active
 

@@ -5,7 +5,6 @@ import { NODE_LABELS } from '@/lib/nodes/constants'
 import { RateInfoResponse } from '@/lib/nodes/rate-info-service/types/RateInfoResponse'
 import { RateHistoryInfoResponse } from '@/lib/nodes/rate-info-service/types/RateHistoryInfoResponse'
 import { GetHistoryParams } from '@/lib/nodes/rate-info-service/types/GetHistoryParams'
-import { getBaseURL } from '@/lib/nodes/utils/getHealthcheckConfig'
 import type { NodeInfo } from '@/types/wallets'
 
 export class RateInfoService extends Node<AxiosInstance> {
@@ -18,7 +17,7 @@ export class RateInfoService extends Node<AxiosInstance> {
   }
 
   async getAllRates(): Promise<RateInfoResponse> {
-    const baseURL = getBaseURL(this)
+    const baseURL = this.getBaseURL(this)
     const response = await this.client.get<RateInfoResponse>('/get', {
       baseURL
     })
@@ -27,7 +26,7 @@ export class RateInfoService extends Node<AxiosInstance> {
   }
 
   async getHistory(options: GetHistoryParams) {
-    const baseURL = getBaseURL(this)
+    const baseURL = this.getBaseURL(this)
 
     const response = await this.client.get<RateHistoryInfoResponse>(`/getHistory`, {
       baseURL,

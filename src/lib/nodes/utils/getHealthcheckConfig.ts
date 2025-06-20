@@ -1,5 +1,4 @@
 import config from '@/config'
-import { Node } from '@/lib/nodes/abstract.node'
 import { TNodeLabel } from '@/lib/nodes/constants'
 import { HealthcheckInterval } from '@/lib/nodes/types'
 import type { NodeHealthcheck } from '@/types/wallets'
@@ -49,17 +48,4 @@ export function getHealthCheckInterval(nodeLabel: TNodeLabel, interval: Healthch
         `getNodeHealthCheckInterval: Interval ${interval} is not defined in the Node's config`
       )
   }
-}
-
-/**
- * Get base URL for requests depending on availability of a node's domain.
- * @param { Node } node A node instance.
- * @returns { string } Base URL.
- */
-export function getBaseURL(node: Node): string {
-  const baseURL = node.preferDomain ? node.url : (node.altIp as string)
-
-  console.info({ baseURL, altIp: node.altIp, url: node.url })
-
-  return baseURL
 }

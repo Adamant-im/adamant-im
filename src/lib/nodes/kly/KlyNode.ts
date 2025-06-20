@@ -1,7 +1,6 @@
 import axios, { AxiosInstance } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
-import { getBaseURL } from '@/lib/nodes/utils/getHealthcheckConfig'
 import { RpcMethod, RpcResults } from './types/api'
 import { JSONRPCResponse } from '@/lib/klayr'
 import type { NodeInfo } from '@/types/wallets'
@@ -29,7 +28,7 @@ export class KlyNode extends Node<AxiosInstance> {
     method: M,
     params?: RpcResults[M]['params']
   ): Promise<RpcResults[M]['result']> {
-    const baseURL = getBaseURL(this)
+    const baseURL = this.getBaseURL(this)
 
     return this.client
       .post<JSONRPCResponse<RpcResults[M]['result']>>('/rpc', {
