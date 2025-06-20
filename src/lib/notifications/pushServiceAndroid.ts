@@ -1,11 +1,15 @@
 import { sendSpecialMessage } from '../adamant-api'
 import { ADAMANT_NOTIFICATION_SERVICE_ADDRESS } from '../constants'
 import { BasePushService } from './pushServiceBase'
-import { PushNotifications } from '@capacitor/push-notifications'
+import { PushNotifications, PushNotificationSchema } from '@capacitor/push-notifications'
 import { signalAsset } from '@/lib/adamant-api/asset'
 import { processPushNotification, navigateToChat, NotificationData } from './pushUtils'
 import { App, AppState } from '@capacitor/app'
 import { Capacitor } from '@capacitor/core'
+
+interface PushNotification extends PushNotificationSchema {
+  data: NotificationData
+}
 
 const TOKEN_REGISTRATION_TIMEOUT = 10000
 const TOKEN_CHECK_INTERVAL = 100
@@ -76,22 +80,25 @@ export class AndroidPushService extends BasePushService {
   }
 
   private async setupPushNotificationHandler(): Promise<void> {
-    await PushNotifications.addListener('pushNotificationReceived', async (notification) => {
-      if (this.isAppInForeground || !this.privateKey || !notification.data) {
-        return
-      }
+    await PushNotifications.addListener(
+      'pushNotificationReceived',
+      async (notification: PushNotification) => {
+        if (this.isAppInForeground || !this.privateKey || !notification.data) {
+          return
+        }
 
-      try {
-        await processPushNotification(
-          notification.data,
-          this.privateKey,
-          this.isAppInForeground,
-          async () => {}
-        )
-      } catch (error) {
-        console.error('Failed to process push notification:', error)
+        try {
+          await processPushNotification(
+            notification.data,
+            this.privateKey,
+            this.isAppInForeground,
+            async () => {}
+          )
+        } catch (error) {
+          console.error('Failed to process push notification:', error)
+        }
       }
-    })
+    )
   }
 
   private async setupNotificationClickHandler(): Promise<void> {
