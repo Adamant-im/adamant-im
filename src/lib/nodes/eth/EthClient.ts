@@ -26,7 +26,7 @@ export class EthClient extends Client<EthNode> {
   }
 
   async isTransactionFinalized(hash: string): Promise<boolean> {
-    const client = this.getClientInstance()
+    const client = this.getNodeClient()
 
     try {
       const transaction = await client.getTransaction(hash)
@@ -44,7 +44,7 @@ export class EthClient extends Client<EthNode> {
    * @param address Owner's ETH address
    */
   async getEthTransaction(hash: string, address: string) {
-    const client = this.getClientInstance()
+    const client = this.getNodeClient()
 
     try {
       const transaction = await client.getTransaction(hash)
@@ -72,7 +72,7 @@ export class EthClient extends Client<EthNode> {
    * @param crypto Crypto symbol
    */
   async getErc20Transaction(hash: string, address: string, crypto: CryptoSymbol) {
-    const client = this.getClientInstance()
+    const client = this.getNodeClient()
 
     try {
       const transaction = await client.getTransaction(hash)
@@ -94,7 +94,7 @@ export class EthClient extends Client<EthNode> {
   }
 
   sendSignedTransaction(...args: Parameters<Web3Eth['sendSignedTransaction']>): Promise<string> {
-    const client = this.getClientInstance()
+    const client = this.getNodeClient()
 
     return new Promise((resolve, reject) => {
       try {
@@ -115,23 +115,21 @@ export class EthClient extends Client<EthNode> {
   }
 
   /**
-   * Get client instance depending on availability of a domain.
+   * Get node client instance depending on availability of a domain.
    * @returns { Web3Eth } Web3 Ethereum module instance.
    */
-  getClientInstance(): Web3Eth {
-    const node = this.getNode()
-
-    return node.client()
+  getNodeClient(): Web3Eth {
+    return this.getNode().client()
   }
 
   async getNonce(address: string) {
-    const client = this.getClientInstance()
+    const client = this.getNodeClient()
 
     return client.getTransactionCount(address)
   }
 
   async getHeight() {
-    const client = this.getClientInstance()
+    const client = this.getNodeClient()
     const blockNumber = await client.getBlockNumber()
 
     return Number(blockNumber)
