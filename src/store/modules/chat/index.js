@@ -778,6 +778,7 @@ const actions = {
         }
 
         commit('createEmptyChat', partnerId)
+        commit('removeNewChat', partnerId)
 
         return key
       })
