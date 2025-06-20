@@ -22,9 +22,14 @@ export class EthNode extends Node<() => Web3Eth> {
    */
   protected buildClient(): () => Web3Eth {
     const clientMain = new Web3Eth(new HttpProvider(this.url))
-    const clientAlt = new Web3Eth(new HttpProvider(this.altIp as string))
 
-    return () => (this.preferDomain ? clientMain : clientAlt)
+    if (this.altIp) {
+      const clientAlt = new Web3Eth(new HttpProvider(this.altIp))
+
+      return () => (this.preferDomain ? clientMain : clientAlt)
+    } else {
+      return () => clientMain
+    }
   }
 
   protected async checkHealth() {
