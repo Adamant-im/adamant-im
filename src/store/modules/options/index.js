@@ -10,6 +10,7 @@ const state = () => ({
   formatMessages: true,
   useFullDate: false,
   currentWallet: Cryptos.ADM, // current Wallet Tab on Account view (this is not an option)
+  currentNodesTab: 'adm',
   useSocketConnection: true,
   suppressWarningOnAddressesNotification: false,
   currentRate: Rates.USD,
@@ -18,7 +19,8 @@ const state = () => ({
 
 const getters = {
   isLoginViaPassword: (state) => state.stayLoggedIn,
-  scrollTopPosition: (state) => state.scrollTopPosition
+  scrollTopPosition: (state) => state.scrollTopPosition,
+  currentNodesTab: (state) => state.currentNodesTab
 }
 
 const mutations = {
