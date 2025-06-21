@@ -5,24 +5,16 @@
 
       <v-divider />
 
-      <div :class="classes.body">
-        <div class="text-center py-2">
-          <v-progress-circular
-            v-show="loading"
-            indeterminate
-            :class="{
-              [classes.spinner]: true,
-              [`${classes.spinner}_no-messages`]: !messages.length
-            }"
-            :size="20"
-            style="z-index: 100"
-          />
+      <div :class="classes.body" ref="bodyRef">
+        <div v-show="loading" :class="classes.spinnerWrapper" :style="{ top: spinnerTop + 'px' }">
+          <v-progress-circular indeterminate :size="20" :class="classes.spinner" />
         </div>
 
         <div ref="messagesRef" :class="classes.bodyMessages">
-          <div>
+          <div ref="placeholderRef">
             <slot name="placeholder" />
           </div>
+
           <template v-for="message in messages" :key="message.id">
             <slot
               name="message"
@@ -49,7 +41,15 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onBeforeUnmount, useTemplateRef } from 'vue'
+import {
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  computed,
+  withDefaults,
+  defineProps,
+  defineEmits
+} from 'vue'
 import throttle from 'lodash/throttle'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import Styler from 'stylefire'
@@ -67,11 +67,14 @@ const classes = {
   bodyMessages: `${className}__body-messages`,
   fab: `${className}__fab`,
   overlay: `${className}__overlay`,
-  spinner: `${className}__spinner`
+  spinner: `${className}__spinner`,
+  spinnerWrapper: `${className}__spinner-wrapper`
 }
 
 type Props = {
   messages: NormalizedChatMessageTransaction[]
+  showNewChatPlaceholder: boolean
+  isGettingPublicKey: boolean
   partners: User[]
   userId: string
   loading: boolean
@@ -80,6 +83,7 @@ type Props = {
 
 const props = withDefaults(defineProps<Props>(), {
   messages: () => [],
+  showNewChatPlaceholder: false,
   partners: () => [],
   loading: false,
   locale: 'en'
@@ -91,10 +95,16 @@ const emit = defineEmits<{
   (e: 'scroll:top'): void
 }>()
 
-const messagesRef = useTemplateRef<HTMLDivElement | null>('messagesRef')
+const messagesRef = ref<HTMLElement | null>(null)
+const placeholderRef = ref<HTMLElement | null>(null)
+const bodyRef = ref<HTMLElement | null>(null)
+
 const currentScrollHeight = ref(0)
 const currentScrollTop = ref(0)
 const currentClientHeight = ref(0)
+
+const placeholderHeight = ref(0)
+const scrollTop = ref(0)
 
 const resizeHandler = () => {
   if (!messagesRef.value) return
@@ -118,30 +128,24 @@ const resizeObserver = ref(new ResizeObserver(resizeHandler))
 
 const emitScroll = throttle(() => emit('scroll', currentScrollTop.value, isScrolledToBottom()), 200)
 
-const attachScrollListener = () => {
-  messagesRef.value?.addEventListener('scroll', onScroll)
-}
-
-const destroyScrollListener = () => {
-  messagesRef.value?.removeEventListener('scroll', onScroll)
-}
-
 const onScroll = () => {
   if (!messagesRef.value) return
 
   const scrollHeight = messagesRef.value.scrollHeight
-  const scrollTop = Math.ceil(messagesRef.value.scrollTop)
+  const scrollTopVal = Math.ceil(messagesRef.value.scrollTop)
   const clientHeight = messagesRef.value.clientHeight
 
-  if (scrollHeight - scrollTop === clientHeight) {
+  if (scrollHeight - scrollTopVal === clientHeight) {
     emit('scroll:bottom')
-  } else if (scrollTop === 0) {
+  } else if (scrollTopVal === 0) {
     currentScrollHeight.value = scrollHeight
     emit('scroll:top')
   }
 
-  currentScrollTop.value = scrollTop
+  currentScrollTop.value = scrollTopVal
   currentScrollHeight.value = scrollHeight
+
+  scrollTop.value = scrollTopVal
 
   emitScroll()
 }
@@ -169,9 +173,6 @@ const scrollToMessage = (index: number) => {
   if (!messagesRef.value) return
 
   const elements = messagesRef.value.children
-
-  if (!elements) return
-
   const element = elements[elements.length - 1 - index] as HTMLElement
 
   if (element) {
@@ -185,9 +186,6 @@ const scrollToMessageEasy = async (index: number): Promise<boolean> => {
   if (!messagesRef.value) return false
 
   const elements = messagesRef.value.children
-
-  if (!elements) return false
-
   const element = elements[elements.length - 1 - index] as HTMLElement
 
   if (!element) return false
@@ -219,31 +217,38 @@ const scrollToMessageEasy = async (index: number): Promise<boolean> => {
 const isScrolledToBottom = () => {
   if (!messagesRef.value) return false
 
-  const scrollOffset =
+  const offset =
     messagesRef.value.scrollHeight -
     Math.ceil(messagesRef.value.scrollTop) -
     messagesRef.value.clientHeight
 
-  return scrollOffset <= 60
+  return offset <= 60
 }
 
 const getSenderMeta = (senderId: string) => {
-  return props.partners.find((partner) => isStringEqualCI(partner.id, senderId))
+  return props.partners.find((p) => isStringEqualCI(p.id, senderId))
 }
 
 onMounted(() => {
-  attachScrollListener()
-
+  messagesRef.value?.addEventListener('scroll', onScroll)
   if (messagesRef.value) {
     currentClientHeight.value = messagesRef.value.clientHeight
     resizeObserver.value.observe(messagesRef.value)
   }
+
+  const updatePlaceholderHeight = () => {
+    placeholderHeight.value = placeholderRef.value?.clientHeight || 0
+  }
+  updatePlaceholderHeight()
+  if (placeholderRef.value) {
+    new ResizeObserver(updatePlaceholderHeight).observe(placeholderRef.value)
+  }
 })
 
 onBeforeUnmount(() => {
-  destroyScrollListener()
+  messagesRef.value?.removeEventListener('scroll', onScroll)
   if (messagesRef.value) {
-    resizeObserver.value?.unobserve(messagesRef.value)
+    resizeObserver.value.unobserve(messagesRef.value)
   }
 })
 
@@ -255,6 +260,16 @@ defineExpose({
   scrollToMessage,
   scrollTo
 })
+
+const spinnerTop = computed(() => {
+  if (
+    (props.showNewChatPlaceholder || props.isGettingPublicKey) &&
+    scrollTop.value < placeholderHeight.value + 12
+  ) {
+    return placeholderHeight.value - scrollTop.value + 48
+  }
+  return 36
+})
 </script>
 
 <style lang="scss" scoped>
@@ -263,12 +278,22 @@ defineExpose({
 @use '@/assets/styles/components/_chat.scss';
 
 .a-chat {
-  &__spinner {
-    margin-top: 26px;
+  &__body {
+    position: relative;
+  }
 
-    &_no-messages {
-      margin-top: chat.$placeholder-height + 42px;
-    }
+  &__body-messages {
+    overflow-y: auto;
+  }
+
+  &__spinner-wrapper {
+    position: absolute;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 100;
   }
 }
 

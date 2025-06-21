@@ -338,6 +338,14 @@ const getters = {
     return (chat && chat.page) || 0
   },
 
+  isNoNodesDialogAllowed: (state, getters, rootState, rootGetters) => (err) => {
+    const isOnline = rootState.isOnline
+    const admNodes = rootGetters['nodes/adm']
+    const areAdmNodesDisabled = admNodes.some((node) => node.status === 'disabled')
+
+    return isOnline && areAdmNodesDisabled && isAllNodesOfflineError(err)
+  },
+
   /**
    * Offset for chat list
    */
@@ -608,7 +616,7 @@ const actions = {
         commit('setFulfilled', true)
       })
       .catch((err) => {
-        if (isAllNodesDisabledError(err) || isAllNodesOfflineError(err)) {
+        if (isAllNodesDisabledError(err) || getters.isNoNodesDialogAllowed(err)) {
           commit('setNoActiveNodesDialog', true)
           setTimeout(() => dispatch('loadChats'), 5000) // retry in 5 seconds
         }
@@ -665,7 +673,7 @@ const actions = {
         }
       })
       .catch((err) => {
-        if (isAllNodesDisabledError(err) || isAllNodesOfflineError(err)) {
+        if (isAllNodesDisabledError(err) || getters.isNoNodesDialogAllowed(err)) {
           commit('setNoActiveNodesDialog', true)
         }
         throw err
@@ -770,6 +778,7 @@ const actions = {
         }
 
         commit('createEmptyChat', partnerId)
+        commit('removeNewChat', partnerId)
 
         return key
       })
@@ -798,7 +807,7 @@ const actions = {
           })
         : message
 
-      const signedTransaction = await admApi.signChatMessageTransaction({
+      const signedTransaction = admApi.signChatMessageTransaction({
         to: recipientId,
         message: messageAsset,
         type

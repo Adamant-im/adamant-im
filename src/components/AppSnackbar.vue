@@ -25,43 +25,35 @@
   </v-snackbar>
 </template>
 
-<script>
+<script lang="ts" setup>
 import { mdiClose } from '@mdi/js'
+import { useI18n } from 'vue-i18n'
+import { computed } from 'vue'
+import { useStore } from 'vuex'
 
-export default {
-  setup() {
-    return {
-      mdiClose
-    }
+const className = 'app-snackbar'
+
+const { t } = useI18n()
+const store = useStore()
+
+const show = computed({
+  get() {
+    return store.state.snackbar.show
   },
-  computed: {
-    className: () => 'app-snackbar',
-    show: {
-      get() {
-        return this.$store.state.snackbar.show
-      },
-      set(value) {
-        if (!value) {
-          this.$store.commit('snackbar/resetOptions', value)
-        }
-
-        this.$store.commit('snackbar/changeState', value)
-      }
-    },
-    message() {
-      return this.$store.state.snackbar.message
-    },
-    color() {
-      return this.$store.state.snackbar.color
-    },
-    timeout() {
-      return this.$store.state.snackbar.timeout
-    },
-    variant() {
-      return this.$store.state.snackbar.variant
+  set(value: boolean) {
+    if (!value) {
+      store.commit('snackbar/resetOptions', value)
     }
+
+    store.commit('snackbar/changeState', value)
   }
-}
+})
+const message = computed(() => store.state.snackbar.message)
+const color = computed(() => store.state.snackbar.color)
+const variant = computed(() => store.state.snackbar.variant)
+const timeout = computed(() =>
+  message.value === t('connection.offline') ? -1 : store.state.snackbar.timeout
+)
 </script>
 
 <style lang="scss" scoped>

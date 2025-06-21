@@ -191,7 +191,7 @@ export default function createActions(config) {
         })
     },
 
-    getNewTransactions(context) {
+    async getNewTransactions(context) {
       // Magic here helps to refresh Tx list when browser deletes it
       if (Object.keys(context.state.transactions).length < context.state.transactionsCount) {
         context.state.transactionsCount = 0
@@ -213,19 +213,16 @@ export default function createActions(config) {
 
       context.commit('areRecentLoading', true)
 
-      return ethIndexer
-        .getTransactions(options)
-        .then((transactions) => {
-          context.commit('areRecentLoading', false)
-          context.commit('transactions', { transactions, updateTimestamps: true })
-        })
-        .catch((err) => {
-          context.commit('areRecentLoading', false)
-          return Promise.reject(err)
-        })
+      const transactions = await ethIndexer.getTransactions(options)
+
+      if (transactions) {
+        context.commit('transactions', { transactions, updateTimestamps: true })
+      }
+
+      context.commit('areRecentLoading', false)
     },
 
-    getOldTransactions(context) {
+    async getOldTransactions(context) {
       // If we already have the most old transaction for this address, no need to request anything
       if (context.state.bottomReached) return Promise.resolve()
 
@@ -243,20 +240,17 @@ export default function createActions(config) {
 
       context.commit('areOlderLoading', true)
 
-      return ethIndexer
-        .getTransactions(options)
-        .then((transactions) => {
-          context.commit('areOlderLoading', false)
-          context.commit('transactions', { transactions, updateTimestamps: true })
+      const transactions = await ethIndexer.getTransactions(options)
 
-          if (transactions.length === 0) {
-            context.commit('bottom', true)
-          }
-        })
-        .catch((err) => {
-          context.commit('areOlderLoading', false)
-          return Promise.reject(err)
-        })
+      if (transactions) {
+        context.commit('transactions', { transactions, updateTimestamps: true })
+
+        if (transactions.length === 0) {
+          context.commit('bottom', true)
+        }
+      }
+
+      context.commit('areOlderLoading', false)
     }
   }
 }
