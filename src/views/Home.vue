@@ -86,6 +86,7 @@ import { CoinSymbol } from '@/store/modules/wallets/types'
 import { useI18n } from 'vue-i18n'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { useBalanceCheck } from '@/hooks/useBalanceCheck'
+import { Tab, TABS } from '@/components/nodes/types'
 
 const { t } = useI18n()
 const store = useStore()
@@ -171,7 +172,7 @@ const goToTransactions = (crypto: string) => {
   })
 }
 
-const goToCoinNodes = (tab: string) => {
+const goToCoinNodes = (tab: Tab) => {
   store.commit('options/updateOption', {
     key: 'currentNodesTab',
     value: tab
@@ -185,11 +186,11 @@ const goToCoinNodes = (tab: string) => {
 const handleBalanceClick = (crypto: string) => {
   const isAdm = crypto === 'ADM'
 
-  if (isAdm && allAdmNodesDisabled.value) {
-    return goToCoinNodes('adm')
-  }
-  if (!isAdm && allCoinNodesDisabled.value) {
-    return goToCoinNodes('coins')
+  const targetType = isAdm ? TABS.adm : TABS.coins
+  const isDisabled = isAdm ? allAdmNodesDisabled.value : allCoinNodesDisabled.value
+
+  if (isDisabled) {
+    return goToCoinNodes(targetType)
   }
 
   goToTransactions(crypto)
