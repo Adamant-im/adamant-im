@@ -559,20 +559,24 @@ const handleEmptyChat = async () => {
 }
 
 const createChat = async (partnerId: string, partnerName: string) => {
-  try {
-    isGettingPublicKey.value = true
-    await store.dispatch('chat/createChat', {
+  isGettingPublicKey.value = true
+  store
+    .dispatch('chat/createChat', {
       partnerId,
       partnerName
     })
-    isGettingPublicKey.value = false
-  } catch (error: unknown) {
-    vibrate.long()
-    if ((error as Error).message === t('chats.no_public_key')) {
-      isKeyMissing.value = true
-      isGettingPublicKey.value = false
-    }
-  }
+    .then((key) => {
+      if (key) {
+        isGettingPublicKey.value = false
+      }
+    })
+    .catch((error: unknown) => {
+      vibrate.long()
+      if ((error as Error).message === t('chats.no_public_key')) {
+        isKeyMissing.value = true
+        isGettingPublicKey.value = false
+      }
+    })
 }
 
 /**
