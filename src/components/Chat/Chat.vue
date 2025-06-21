@@ -561,11 +561,9 @@ const handleEmptyChat = async () => {
 const createChat = async (partnerId: string, partnerName: string) => {
   try {
     isGettingPublicKey.value = true
-    await nextTick(async () => {
-      await store.dispatch('chat/createChat', {
-        partnerId,
-        partnerName
-      })
+    await store.dispatch('chat/createChat', {
+      partnerId,
+      partnerName
     })
     isGettingPublicKey.value = false
   } catch (error: unknown) {
