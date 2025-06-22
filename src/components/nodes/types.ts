@@ -5,4 +5,4 @@ export const TABS = {
   ipfs: 'ipfs'
 } as const
 
-export type Tab = keyof typeof TABS
+export type Tab = (typeof TABS)[keyof typeof TABS]
