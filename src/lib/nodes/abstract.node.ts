@@ -190,6 +190,8 @@ export abstract class Node<C = unknown> {
       () => this.startHealthcheck(),
       getHealthCheckInterval(this.label, this.online ? this.healthCheckInterval : 'crucial')
     )
+
+    return this
   }
 
   updateHealthCheckInterval(interval: HealthcheckInterval) {
