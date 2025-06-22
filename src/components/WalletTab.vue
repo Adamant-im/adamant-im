@@ -2,7 +2,7 @@
   <crypto-icon :class="classes.cryptoIcon" :crypto="wallet.cryptoCurrency" size="medium" />
 
   <div>
-    <div v-if="formattedBalance">{{ formattedBalance }}</div>
+    <div v-if="formattedBalance">{{ isBalanceValid ? formattedBalance : '...' }}</div>
     <div v-else-if="isBalanceLoading" :class="classes.balanceLoading">
       <v-icon :icon="mdiDotsHorizontal" size="18" />
     </div>
@@ -23,10 +23,9 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, watch } from 'vue'
+<script lang="ts" setup>
+import { computed, watch } from 'vue'
 import { useStore } from 'vuex'
-import type { PropType } from 'vue'
 
 import { Cryptos, FetchStatus } from '@/lib/constants'
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
@@ -54,66 +53,46 @@ export type Wallet = {
   hasBalanceLoaded: boolean
 }
 
-export default defineComponent({
-  components: {
-    CryptoIcon
-  },
-  props: {
-    wallet: {
-      type: Object as PropType<Wallet>,
-      required: true
-    },
-    fiatCurrency: {
-      type: String,
-      required: true
-    }
-  },
-  setup(props) {
-    const store = useStore()
+type Props = {
+  wallet: Wallet
+  fiatCurrency: string
+  isBalanceValid: boolean
+}
 
-    const currentBalance = computed(() => props.wallet.balance)
+const props = defineProps<Props>()
 
-    const isRateLoaded = computed(() => store.state.rate.isLoaded && props.wallet.rate)
-    const balanceStatus = computed(() => {
-      const { cryptoCurrency } = props.wallet
-      const cryptoModuleName = cryptoCurrency.toLowerCase()
+const store = useStore()
 
-      if (cryptoCurrency === Cryptos.ADM) {
-        return store.state.balanceStatus
-      }
+const currentBalance = computed(() => props.wallet.balance)
 
-      return store.state[cryptoModuleName].balanceStatus
-    })
+const isRateLoaded = computed(() => store.state.rate.isLoaded && props.wallet.rate)
+const balanceStatus = computed(() => {
+  const { cryptoCurrency } = props.wallet
+  const cryptoModuleName = cryptoCurrency.toLowerCase()
 
-    const isBalanceLoading = computed(() => balanceStatus.value === FetchStatus.Loading)
-    const fetchBalanceSucceeded = computed(() => balanceStatus.value === FetchStatus.Success)
+  if (cryptoCurrency === Cryptos.ADM) {
+    return store.state.balanceStatus
+  }
 
-    const formattedBalance = computed(() => {
-      const formatted = numberFormat(props.wallet.balance, 4)
+  return store.state[cryptoModuleName].balanceStatus
+})
 
-      if (props.wallet.balance || fetchBalanceSucceeded.value) {
-        return formatted
-      }
+const isBalanceLoading = computed(() => balanceStatus.value === FetchStatus.Loading)
+const fetchBalanceSucceeded = computed(() => balanceStatus.value === FetchStatus.Success)
 
-      return null
-    })
+const formattedBalance = computed(() => {
+  const formatted = numberFormat(props.wallet.balance, 4)
 
-    watch(currentBalance, (newBalance, oldBalance) => {
-      if (oldBalance < newBalance) {
-        vibrate.doubleVeryShort()
-      }
-    })
+  if (props.wallet.balance || fetchBalanceSucceeded.value) {
+    return formatted
+  }
 
-    return {
-      classes,
-      isRateLoaded,
-      isBalanceLoading,
-      fetchBalanceSucceeded,
-      formattedBalance,
-      mdiDotsHorizontal,
-      mdiHelpCircleOutline,
-      numberFormat
-    }
+  return null
+})
+
+watch(currentBalance, (newBalance, oldBalance) => {
+  if (oldBalance < newBalance) {
+    vibrate.doubleVeryShort()
   }
 })
 </script>

@@ -1,14 +1,17 @@
 import * as ethUtils from '../../../lib/eth-utils'
-import { FetchStatus, DEFAULT_ERC20_TRANSFER_GAS_LIMIT } from '@/lib/constants'
+import { FetchStatus, DEFAULT_ERC20_TRANSFER_GAS_LIMIT, CryptosInfo } from '@/lib/constants'
 import EthContract from 'web3-eth-contract'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
 import shouldUpdate from '../../utils/coinUpdatesGuard'
+import { validateStoredCryptoAddresses } from '@/lib/store-crypto-address.js'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
 /** Status update interval is 25 sec: ERC20 balance */
 const STATUS_INTERVAL = 25000
+/** Interval for updating balances */
+let interval
 
 const initTransaction = async (api, context, ethAddress, amount, nonce, increaseFee) => {
   const contract = new EthContract(Erc20, context.state.contractAddress)
@@ -36,7 +39,6 @@ const initTransaction = async (api, context, ethAddress, amount, nonce, increase
 
 const createSpecificActions = (api) => ({
   updateBalance: {
-    root: true,
     async handler({ commit, rootGetters, state }, payload = {}) {
       const coin = state.crypto
 
@@ -57,10 +59,35 @@ const createSpecificActions = (api) => ({
 
         commit('balance', balance)
         commit('setBalanceStatus', FetchStatus.Success)
+        commit('setBalanceActualUntil', Date.now() + CryptosInfo.ETH.balanceValidInterval)
       } catch (err) {
         commit('setBalanceStatus', FetchStatus.Error)
         console.warn(err)
       }
+    }
+  },
+
+  initBalanceUpdate: {
+    root: true,
+    handler({ dispatch }) {
+      function repeat() {
+        validateStoredCryptoAddresses()
+        dispatch('updateBalance')
+          .catch((err) => console.error(err))
+          .then(() => {
+            interval = setTimeout(() => {
+              repeat()
+            }, CryptosInfo.ETH.balanceCheckInterval)
+          })
+      }
+      repeat()
+    }
+  },
+
+  stopInterval: {
+    root: true,
+    handler() {
+      clearTimeout(interval)
     }
   },
 

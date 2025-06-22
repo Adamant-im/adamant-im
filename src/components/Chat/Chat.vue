@@ -90,6 +90,15 @@
         </chat-toolbar>
       </template>
 
+      <template #placeholder>
+        <chat-placeholder
+          v-if="!isWelcomeChat(partnerId)"
+          :show-placeholder="showNewChatPlaceholder"
+          :is-getting-public-key="isGettingPublicKey"
+          :is-key-missing="isKeyMissing"
+        />
+      </template>
+
       <template #message="{ message, sender }">
         <a-chat-message
           v-if="message.type === 'message'"
@@ -103,7 +112,7 @@
           @swipe:left="onSwipeLeft(message)"
           @longpress="onMessageLongPress(message)"
         >
-          <template #avatar>
+          <template #avatar v-if="sender">
             <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
           </template>
 
@@ -137,7 +146,7 @@
           @swipe:left="onSwipeLeft(message)"
           @longpress="onMessageLongPress(message)"
         >
-          <template #avatar>
+          <template #avatar v-if="sender">
             <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
           </template>
 
@@ -201,6 +210,7 @@
           :send-on-enter="sendMessageOnEnter"
           :show-divider="true"
           :label="t('chats.message')"
+          :should-disable-input="shouldDisableInput"
           :message-text="
             $route.query.messageText || $store.getters['draftMessage/draftMessage'](partnerId)
           "
@@ -307,7 +317,9 @@ import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useChatsSpinner } from '@/hooks/useChatsSpinner'
 import ProgressIndicator from '@/components/ProgressIndicator.vue'
-import { useChatStateStore } from '@/stores/chat-state'
+import { useChatStateStore } from '@/stores/modal-state'
+import ChatPlaceholder from '@/components/Chat/ChatPlaceholder.vue'
+import { watchImmediate } from '@vueuse/core'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -330,6 +342,7 @@ const { t } = useI18n()
 const showSpinner = useChatsSpinner()
 
 const isMenuOpen = ref(false)
+const isFirstCallSkipped = ref(false)
 
 const attachments = useAttachments(props.partnerId)()
 const handleAttachments = (files: FileData[]) => {
@@ -361,6 +374,9 @@ const flashingMessageId = ref<string | -1>(-1)
 const actionsMenuMessageId = ref<string | -1>(-1)
 const replyMessageId = ref<string | -1>(-1)
 const showEmojiPicker = ref(false)
+const showNewChatPlaceholder = ref(false)
+const isGettingPublicKey = ref(false)
+const isKeyMissing = ref(false)
 
 const chatStateStore = useChatStateStore()
 
@@ -377,7 +393,16 @@ const actionsDropdownMessageId = computed({
 })
 
 const messages = computed(() => store.getters['chat/messages'](props.partnerId))
+const userMessages = computed(() =>
+  messages.value.filter(
+    (message: NormalizedChatMessageTransaction) => message.senderId === userId.value
+  )
+)
 const userId = computed(() => store.state.address)
+const isNewChat = computed(() => store.getters['chat/isNewChat'](props.partnerId))
+const shouldDisableInput = computed(
+  () => isGettingPublicKey.value || isKeyMissing.value || !store.state.publicKeys[props.partnerId]
+)
 
 const getPartnerName = (address: string) => {
   const name: string = store.getters['partners/displayName'](address) || ''
@@ -398,6 +423,7 @@ const chatPage = computed<number>(() => store.getters['chat/chatPage'](props.par
 const scrollPosition = computed<number | false>(() =>
   store.getters['chat/scrollPosition'](props.partnerId)
 )
+
 const numOfNewMessages = computed<number>(() =>
   store.getters['chat/numOfNewMessages'](props.partnerId)
 )
@@ -444,11 +470,35 @@ watch(replyMessageId, (messageId) => {
   })
 })
 
+watch(userMessages, () => {
+  // isFirstCallSkipped needed in order to properly handle reloading of a chat where the last
+  // message was from the partner and not you (do not show placeholder)
+  if (isFulfilled.value && isFirstCallSkipped.value) {
+    showNewChatPlaceholder.value = !userMessages.value.length
+  } else {
+    isFirstCallSkipped.value = true
+  }
+})
+
+watchImmediate(messages, (updatedMessages) => {
+  if (isFulfilled.value && !updatedMessages.length) {
+    store.commit('chat/addNewChat', { partnerId: props.partnerId })
+  }
+})
+
 onBeforeMount(() => {
   window.addEventListener('keydown', onKeyPress)
 })
-onMounted(() => {
-  if (isFulfilled.value && chatPage.value <= 0) fetchChatMessages()
+
+onMounted(async () => {
+  if (isNewChat.value) {
+    showNewChatPlaceholder.value = true
+  }
+
+  if (chatPage.value <= 0) await fetchChatMessages()
+
+  await handleEmptyChat()
+
   scrollBehavior()
   nextTick(() => {
     isScrolledToBottom.value = chatRef.value.isScrolledToBottom()
@@ -465,14 +515,47 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeyPress)
   Visibility.unbind(Number(visibilityId.value))
+
+  if (isNewChat.value) {
+    store.commit('chat/removeNewChat', props.partnerId)
+  }
 })
+
+const handleEmptyChat = async () => {
+  showNewChatPlaceholder.value = !userMessages.value.length
+
+  if (!messages.value.length) {
+    store.commit('chat/addNewChat', { partnerId: props.partnerId })
+  }
+
+  if (isNewChat.value) {
+    const partnerName = store.getters['chat/getPartnerName'](props.partnerId)
+
+    await createChat(props.partnerId, partnerName)
+  }
+}
+
+const createChat = async (partnerId: string, partnerName: string) => {
+  try {
+    isGettingPublicKey.value = true
+    await store.dispatch('chat/createChat', {
+      partnerId,
+      partnerName
+    })
+  } catch {
+    vibrate.long()
+    isKeyMissing.value = true
+  } finally {
+    isGettingPublicKey.value = false
+  }
+}
 
 /**
  * Validate message before sending.
  * @param message
  * @returns If `false` then validation passed without errors.
  */
-function validateMessage(message: string): string | false {
+const validateMessage = (message: string): string | false => {
   if (hasAttachment.value) {
     // When attaching files, the message is not mandatory
     return false
