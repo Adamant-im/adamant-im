@@ -19,25 +19,7 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
   }
 
   try {
-    const swPath = import.meta.env.PROD ? '/firebase-messaging-sw.js' : '/dev-sw.js?dev-sw'
-
-    const swType = import.meta.env.PROD ? 'classic' : 'module'
-
-    const registration = await navigator.serviceWorker.register(swPath, {
-      type: swType as WorkerType,
-      scope: '/'
-    })
-
-    if (registration.installing) {
-      await new Promise<void>((resolve) => {
-        registration.installing?.addEventListener('statechange', (e) => {
-          if ((e.target as ServiceWorker).state === 'activated') {
-            resolve()
-          }
-        })
-      })
-    }
-
+    const registration = await navigator.serviceWorker.ready
     return registration
   } catch {
     return null
@@ -47,7 +29,12 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
 export async function initializePushNotifications(): Promise<string | null> {
   if (!fcm) return null
 
-  const swRegistration = await registerServiceWorker()
+  let swRegistration = await registerServiceWorker()
+
+  if (!swRegistration) {
+    swRegistration = await navigator.serviceWorker.ready
+  }
+
   if (!swRegistration) return null
 
   try {
