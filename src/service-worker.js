@@ -1,11 +1,34 @@
+import {
+  precacheAndRoute,
+  cleanupOutdatedCaches,
+  createHandlerBoundToURL
+} from 'workbox-precaching'
+import { NavigationRoute, registerRoute } from 'workbox-routing'
+import { clientsClaim } from 'workbox-core'
+
+// PWA
+self.skipWaiting()
+clientsClaim()
+precacheAndRoute(self.__WB_MANIFEST)
+cleanupOutdatedCaches()
+registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')))
+
+// FIREBASE
 import { initializeApp } from 'firebase/app'
 import { getMessaging, onBackgroundMessage, isSupported } from 'firebase/messaging/sw'
-import { firebaseConfig } from '@/lib/firebase-config'
-import { processPushNotification, notifyClient } from '@/lib/notifications/pushUtils'
-const swSelf = globalThis as unknown as ServiceWorkerGlobalScope
 
-const firebaseApp = initializeApp(firebaseConfig)
-let messaging: any = null
+const firebaseConfig = {
+  apiKey: 'AIzaSyDgtB_hqwL1SS_YMYepRMmXYhmc7154wmU',
+  authDomain: 'adamant-messenger.firebaseapp.com',
+  databaseURL: 'https://adamant-messenger.firebaseio.com',
+  projectId: 'adamant-messenger',
+  storageBucket: 'adamant-messenger.appspot.com',
+  messagingSenderId: '987518845753',
+  appId: '1:987518845753:web:6585b11ca36bac4c251ee8'
+}
+
+const firebaseApp = initializeApp(firebaseConfig, 'sw-app')
+let messaging = null
 let isMessagingSupported = false
 
 isSupported()
@@ -20,15 +43,7 @@ isSupported()
     isMessagingSupported = false
   })
 
-swSelf.addEventListener('install', (event) => {
-  event.waitUntil(swSelf.skipWaiting())
-})
-
-swSelf.addEventListener('activate', (event) => {
-  event.waitUntil(swSelf.clients.claim())
-})
-
-let privateKey: string = ''
+let privateKey = ''
 let hasPrivateKey = false
 const channel = new BroadcastChannel('adm_notifications')
 
@@ -43,9 +58,9 @@ channel.onmessage = (event) => {
   }
 }
 
-async function isAppVisible(): Promise<boolean> {
+async function isAppVisible() {
   try {
-    const clients = await swSelf.clients.matchAll({
+    const clients = await self.clients.matchAll({
       type: 'window',
       includeUncontrolled: true
     })
@@ -56,12 +71,49 @@ async function isAppVisible(): Promise<boolean> {
   }
 }
 
+async function processPushNotification(payload, privateKey, isAppVisible, showNotificationFn) {
+  try {
+    if (isAppVisible) {
+      console.log('App visible, suppressing notification')
+      return false
+    }
+
+    const notificationData = {
+      title: 'ADAMANT Messenger',
+      body: 'New message received',
+      senderId: payload.data?.senderId || 'unknown',
+      transactionId: payload.data?.transactionId || Date.now().toString()
+    }
+
+    await showNotificationFn(notificationData)
+    console.log('Push notification processed and shown successfully')
+    return true
+  } catch (error) {
+    console.error('Error processing push notification:', error)
+    return false
+  }
+}
+
+function notifyClient(client, senderId, transactionId) {
+  try {
+    client.postMessage({
+      action: 'OPEN_CHAT',
+      partnerId: senderId,
+      transactionId: transactionId,
+      fromNotification: true
+    })
+    console.log(`Message sent to client for chat: ${senderId}`)
+  } catch (error) {
+    console.error('Error sending message to client:', error)
+  }
+}
+
 function setupPushHandler() {
   if (!messaging || !isMessagingSupported) {
     return
   }
 
-  onBackgroundMessage(messaging, async (payload: any) => {
+  onBackgroundMessage(messaging, async (payload) => {
     if (!hasPrivateKey) {
       return
     }
@@ -69,7 +121,7 @@ function setupPushHandler() {
     const appVisible = await isAppVisible()
 
     if (appVisible) {
-      const clients = await swSelf.clients.matchAll({ type: 'window' })
+      const clients = await self.clients.matchAll({ type: 'window' })
       for (const client of clients) {
         if (client.focused) {
           client.postMessage({
@@ -97,12 +149,13 @@ function setupPushHandler() {
         }
       }
 
-      await swSelf.registration.showNotification(notificationData.title, notificationOptions)
+      await self.registration.showNotification(notificationData.title, notificationOptions)
     })
   })
 }
 
-swSelf.addEventListener('notificationclick', (event) => {
+// Firebase notification click handler
+self.addEventListener('notificationclick', (event) => {
   event.notification.close()
 
   const data = event.notification.data
@@ -113,14 +166,14 @@ swSelf.addEventListener('notificationclick', (event) => {
   event.waitUntil(
     (async () => {
       try {
-        const clientList = await swSelf.clients.matchAll({
+        const clientList = await self.clients.matchAll({
           type: 'window',
           includeUncontrolled: true
         })
 
         // Try to focus existing window
         const existingClient = clientList.find((client) =>
-          client.url.includes(swSelf.location.origin)
+          client.url.includes(self.location.origin)
         )
 
         if (existingClient) {
@@ -130,7 +183,7 @@ swSelf.addEventListener('notificationclick', (event) => {
         }
 
         // Open new window if no existing one
-        const newClient = await swSelf.clients.openWindow(`/chats/${data.senderId}`)
+        const newClient = await self.clients.openWindow(`/chats/${data.senderId}`)
         if (newClient) {
           setTimeout(() => {
             notifyClient(newClient, data.senderId, data.transactionId)
@@ -146,7 +199,7 @@ swSelf.addEventListener('notificationclick', (event) => {
 // Cleanup old notifications daily
 setInterval(
   () => {
-    swSelf.registration.getNotifications().then((notifications) => {
+    self.registration.getNotifications().then((notifications) => {
       const now = Date.now()
       const maxAge = 24 * 60 * 60 * 1000
 
