@@ -74,7 +74,6 @@ async function isAppVisible() {
 async function processPushNotification(payload, privateKey, isAppVisible, showNotificationFn) {
   try {
     if (isAppVisible) {
-      console.log('App visible, suppressing notification')
       return false
     }
 
@@ -86,7 +85,6 @@ async function processPushNotification(payload, privateKey, isAppVisible, showNo
     }
 
     await showNotificationFn(notificationData)
-    console.log('Push notification processed and shown successfully')
     return true
   } catch (error) {
     console.error('Error processing push notification:', error)

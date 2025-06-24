@@ -1,19 +1,5 @@
 import utils from '@/lib/adamant'
-
-export interface ParsedPushData {
-  transactionId: string
-  senderId: string
-  senderPublicKey: string
-  encryptedMessage: string
-  nonce: string
-}
-
-export interface NotificationData {
-  title: string
-  body: string
-  senderId: string
-  transactionId: string
-}
+import type { ParsedPushData, NotificationData } from './pushTypes'
 
 export function parsePushPayload(payload: any): ParsedPushData | null {
   try {
@@ -122,7 +108,6 @@ export async function processPushNotification(
 ): Promise<boolean> {
   try {
     if (isAppVisible) {
-      console.log('App visible, suppressing notification')
       return false
     }
 
@@ -139,7 +124,6 @@ export async function processPushNotification(
     const notificationData = createNotificationData(decryptedMessage, parsedData)
 
     await showNotificationFn(notificationData)
-    console.log('Push notification processed and shown successfully')
     return true
   } catch (error) {
     console.error('Error processing push notification:', error)
