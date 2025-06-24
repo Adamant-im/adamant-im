@@ -8,7 +8,7 @@
       :partners="partners"
       :is-getting-public-key="isGettingPublicKey"
       :user-id="userId"
-      :loading="loading"
+      :loading="loading && !isGettingPublicKey"
       :locale="$i18n.locale"
       @scroll:top="onScrollTop"
       @scroll:bottom="onScrollBottom"
@@ -470,7 +470,7 @@ watch(lastMessage, () => {
   })
 })
 
-watch(isFulfilled, async (value) => {
+watch(isFulfilled, (value) => {
   if (value && (!chatPage.value || chatPage.value <= 0)) fetchChatMessages()
 })
 
@@ -514,7 +514,7 @@ onBeforeMount(() => {
   const loadedOnce = chatPage.value >= 1 || store.getters['chat/chatOffset'](props.partnerId) === -1
   const hasUserMessages = cachedMessages.some((message) => message.senderId === userId.value)
 
-  if (chatExists && (noMessagesAtAll || (loadedOnce && !hasUserMessages))) {
+  if (isNewChat.value || (chatExists && (noMessagesAtAll || (loadedOnce && !hasUserMessages)))) {
     showNewChatPlaceholder.value = true
   }
 
@@ -522,7 +522,7 @@ onBeforeMount(() => {
 })
 
 onMounted(async () => {
-  if (isFulfilled.value && chatPage.value <= 0) {
+  if (!isNewChat.value && isFulfilled.value && chatPage.value <= 0) {
     await fetchChatMessages()
   }
 

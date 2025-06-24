@@ -64,6 +64,13 @@ import { mdiFile, mdiImage, mdiPlusCircleOutline } from '@mdi/js'
 import { useChatStateStore } from '@/stores/modal-state'
 import type { FileData } from '@/lib/files'
 import { CoinSymbol } from '@/store/modules/wallets/types'
+import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
+
+const fetchingErrors = {
+  liskLegacy: 'Only legacy Lisk address',
+  noAddress: 'No crypto wallet address',
+  connection: 'Connection error'
+} as const
 
 const emit = defineEmits<{
   (e: 'files', value: FileData[]): void
@@ -123,14 +130,19 @@ function sendFunds(selectedCrypto: string) {
     .catch((e: Error) => {
       crypto.value = selectedCrypto
 
-      if (e.message.includes('Only legacy Lisk address')) {
+      if (e.message.includes(fetchingErrors.liskLegacy)) {
         dialogTitle.value = t('transfer.legacy_address_title', { crypto: selectedCrypto })
         dialogText.value = t('transfer.legacy_address_text', { crypto: selectedCrypto })
       }
 
-      if (e.message.includes('No crypto wallet address')) {
+      if (e.message.includes(fetchingErrors.noAddress)) {
         dialogTitle.value = t('transfer.no_address_title', { crypto: selectedCrypto })
         dialogText.value = t('transfer.no_address_text', { crypto: selectedCrypto })
+      }
+
+      if (e.message.includes(fetchingErrors.connection)) {
+        dialogTitle.value = t('transfer.no_address_title_offline', { crypto: selectedCrypto })
+        dialogText.value = t('transfer.no_address_text_offline', { crypto: selectedCrypto })
       }
 
       dialog.value = true
@@ -148,11 +160,16 @@ function fetchCryptoAddress(selectedCrypto: string): Promise<any> {
       partner: partnerId,
       moreInfo: true
     })
+    .catch((error: Error) => {
+      if (isAllNodesOfflineError(error) || isAllNodesDisabledError(error)) {
+        throw new Error(fetchingErrors.connection)
+      }
+    })
     .then((address: any) => {
       if (!address) {
-        throw new Error('No crypto wallet address')
+        throw new Error(fetchingErrors.noAddress)
       } else if (address.onlyLegacyLiskAddress) {
-        throw new Error('Only legacy Lisk address')
+        throw new Error(fetchingErrors.liskLegacy)
       }
 
       return address
