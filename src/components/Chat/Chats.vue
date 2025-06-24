@@ -251,24 +251,22 @@ const onScroll = (event?: Event) => {
   }
 }
 
-const loadChatsPaged = () => {
+const loadChatsPaged = async () => {
   if ((loading.value || noMoreChats.value) && !allowRetry.value) return
 
   loading.value = true
-  store
-    .dispatch('chat/loadChatsPaged')
-    .then(() => {
+  try {
+    await store.dispatch('chat/loadChatsPages')
+    loading.value = false
+    allowRetry.value = false
+  } catch (err: unknown) {
+    if (!isAllNodesOfflineError(err as Error)) {
       loading.value = false
       allowRetry.value = false
-    })
-    .catch((err: unknown) => {
-      if (!isAllNodesOfflineError(err as Error)) {
-        loading.value = false
-        allowRetry.value = false
-        return
-      }
-      allowRetry.value = true
-    })
+      return
+    }
+    allowRetry.value = true
+  }
 }
 
 const messagesCount = (partnerId: string) => {

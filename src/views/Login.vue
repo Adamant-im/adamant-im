@@ -123,7 +123,6 @@ const store = useStore()
 const route = useRoute()
 const { t } = useI18n()
 
-const logo = '/img/adamant-logo-transparent-512x512.png'
 const className = 'login-page'
 const passphrase = ref('')
 const password = ref('')
