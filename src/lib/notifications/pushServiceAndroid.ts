@@ -1,15 +1,12 @@
 import { sendSpecialMessage } from '../adamant-api'
 import { ADAMANT_NOTIFICATION_SERVICE_ADDRESS } from '../constants'
 import { BasePushService } from './pushServiceBase'
-import { PushNotifications, PushNotificationSchema } from '@capacitor/push-notifications'
+import { PushNotifications } from '@capacitor/push-notifications'
 import { signalAsset } from '@/lib/adamant-api/asset'
-import { processPushNotification, navigateToChat, NotificationData } from './pushUtils'
+import { processPushNotification, navigateToChat } from './pushUtils'
 import { App, AppState } from '@capacitor/app'
 import { Capacitor } from '@capacitor/core'
-
-interface PushNotification extends PushNotificationSchema {
-  data: NotificationData
-}
+import { NotificationData, PushNotification } from './pushTypes'
 
 const TOKEN_REGISTRATION_TIMEOUT = 10000
 const TOKEN_CHECK_INTERVAL = 100
