@@ -83,12 +83,17 @@ const goBack = () => {
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
+@use '@/assets/styles/generic/_variables.scss';
 @use 'vuetify/settings';
 
 .chat-toolbar {
   flex-grow: 0;
   flex-shrink: 0;
   padding-left: 12px;
+
+  @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
+    padding-left: 0;
+  }
 
   &__messages-counter {
     position: relative;
