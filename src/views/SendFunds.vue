@@ -6,88 +6,84 @@
       :recipient-address="recipientAddress"
       :amount-to-send="amountToSend"
       :address-readonly="comeFromChat"
-      :reply-to-id="$route.query.replyToId"
+      :reply-to-id="replyToId"
       @send="onSend"
       @error="onError"
     />
   </navigation-wrapper>
 </template>
 
-<script>
+<script setup lang="ts">
 import validateAddress from '@/lib/validateAddress'
 import { isNumeric } from '@/lib/numericHelpers'
 
 import SendFundsForm from '@/components/SendFundsForm.vue'
-import { AllCryptos } from '@/lib/constants/cryptos'
+import { AllCryptos, CryptoSymbol } from '@/lib/constants/cryptos'
 import { vibrate } from '@/lib/vibrate'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
+import { computed, onMounted, ref } from 'vue'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 
-export default {
-  components: {
-    NavigationWrapper,
-    SendFundsForm
-  },
-  data: () => ({
-    cryptoCurrency: AllCryptos.ADM,
-    recipientAddress: '',
-    amountToSend: undefined
-  }),
-  setup() {
-    const className = 'send-funds'
+const store = useStore()
+const route = useRoute()
+const router = useRouter()
 
-    return {
-      className
-    }
-  },
-  computed: {
-    comeFromChat() {
-      return this.recipientAddress.length > 0
-    }
-  },
-  created() {
-    this.validateCryptoCurrency()
-    this.validateRecipientAddress()
-    this.validateAmountToSend()
-  },
-  methods: {
-    validateCryptoCurrency() {
-      if (
-        this.$route.params.cryptoCurrency &&
-        Object.keys(AllCryptos).includes(this.$route.params.cryptoCurrency)
-      ) {
-        this.cryptoCurrency = this.$route.params.cryptoCurrency
-      }
-    },
-    validateRecipientAddress() {
-      if (validateAddress('ADM', this.$route.params.recipientAddress)) {
-        this.recipientAddress = this.$route.params.recipientAddress
-      }
-    },
-    validateAmountToSend() {
-      if (isNumeric(this.$route.params.amountToSend)) {
-        this.amountToSend = parseFloat(this.$route.params.amountToSend)
-      }
-    },
-    onSend(transactionId, crypto) {
-      const userComeFrom = this.$route.query.from
+const className = 'send-funds'
+const replyToId = typeof route.query.replyToId === 'string' ? route.query.replyToId : undefined
 
-      vibrate.doubleVeryShort()
+const cryptoCurrency = ref('ADM')
+const recipientAddress = ref('')
+const amountToSend = ref<number | undefined>(undefined)
 
-      if (userComeFrom) {
-        this.$router.replace(userComeFrom)
-      } else {
-        this.$router.replace(`/transactions/${crypto}/${transactionId}`)
-      }
-    },
-    onError(message) {
-      vibrate.tripleVeryShort()
-      this.$store.dispatch('snackbar/show', {
-        message,
-        timeout: 3000,
-        variant: 'outlined'
-      })
-    }
+const comeFromChat = computed(() => recipientAddress.value.length > 0)
+
+onMounted(() => {
+  validateCryptoCurrency()
+  validateRecipientAddress()
+  validateAmountToSend()
+})
+
+const validateCryptoCurrency = () => {
+  if (
+    route.params.cryptoCurrency &&
+    Object.keys(AllCryptos).includes(route.params.cryptoCurrency as string)
+  ) {
+    cryptoCurrency.value = route.params.cryptoCurrency as string
   }
+}
+
+const validateRecipientAddress = () => {
+  if (validateAddress('ADM', route.params.recipientAddress as string)) {
+    recipientAddress.value = route.params.recipientAddress as string
+  }
+}
+
+const validateAmountToSend = () => {
+  if (isNumeric(route.params.amountToSend)) {
+    amountToSend.value = parseFloat(route.params.amountToSend as string)
+  }
+}
+
+const onSend = (transactionId: string, crypto: CryptoSymbol) => {
+  const userComeFrom = route.query.from as string
+
+  vibrate.doubleVeryShort()
+
+  if (userComeFrom) {
+    router.replace(userComeFrom)
+  } else {
+    router.replace(`/transactions/${crypto}/${transactionId}`)
+  }
+}
+
+const onError = (message: string) => {
+  vibrate.tripleVeryShort()
+  store.dispatch('snackbar/show', {
+    message,
+    timeout: 3000,
+    variant: 'outlined'
+  })
 }
 </script>
 <style scoped lang="scss">
