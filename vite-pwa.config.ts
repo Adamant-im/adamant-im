@@ -10,8 +10,13 @@ export default mergeConfig(
     plugins: [
       VitePWA({
         registerType: 'autoUpdate',
+        strategies: 'injectManifest',
         srcDir: 'src',
         filename: 'service-worker.js',
+        injectManifest: {
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,wasm}'],
+          maximumFileSizeToCacheInBytes: 5000000
+        },
         devOptions: {
           enabled: false
         },

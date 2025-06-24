@@ -5,7 +5,7 @@ const state = () => ({
   sendMessageOnEnter: true,
   allowSoundNotifications: true,
   allowTabNotifications: true,
-  allowPushNotifications: false,
+  allowNotificationType: 0, // 0 - No Notifications, 1 - Background Fetch, 2 - Push
   darkTheme: true,
   formatMessages: true,
   useFullDate: false,
