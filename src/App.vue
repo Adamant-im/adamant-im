@@ -101,9 +101,12 @@ const handleOpenChat = (event: Event) => {
 }
 
 const handleServiceWorkerMessage = (event: MessageEvent) => {
+  if (!event.data) {
+    return
+  }
   const data = event.data
 
-  if (data && data.action === 'OPEN_CHAT' && data.partnerId) {
+  if (data.action === 'OPEN_CHAT' && data.partnerId) {
     if (
       router.currentRoute.value.name !== 'Chat' ||
       router.currentRoute.value.params.partnerId !== data.partnerId
@@ -126,17 +129,19 @@ watch(
       try {
         const privateKey = await store.dispatch('getPrivateKeyForPush')
 
-        if (privateKey) {
-          if (Capacitor.isNativePlatform()) {
-            const { pushService } = await import('@/lib/notifications/pushServiceFactory')
-            pushService.setPrivateKey(privateKey)
-            await pushService.initialize()
-            await pushService.registerDevice()
-          } else {
-            const { pushService } = await import('@/lib/notifications/pushServiceFactory')
-            pushService.setPrivateKey(privateKey)
-            await registerServiceWorker()
-          }
+        if (!privateKey) {
+          return
+        }
+
+        if (Capacitor.isNativePlatform()) {
+          const { pushService } = await import('@/lib/notifications/pushServiceFactory')
+          pushService.setPrivateKey(privateKey)
+          await pushService.initialize()
+          await pushService.registerDevice()
+        } else {
+          const { pushService } = await import('@/lib/notifications/pushServiceFactory')
+          pushService.setPrivateKey(privateKey)
+          await registerServiceWorker()
         }
       } catch (error) {
         store.dispatch('snackbar/show', {
