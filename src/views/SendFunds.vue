@@ -30,9 +30,10 @@ const route = useRoute()
 const router = useRouter()
 
 const className = 'send-funds'
+const replacingPages = ['Chat', 'Chats', 'Options']
 const replyToId = typeof route.query.replyToId === 'string' ? route.query.replyToId : undefined
 
-const cryptoCurrency = ref('ADM')
+const cryptoCurrency = ref(route.params.cryptoCurrency as string)
 const recipientAddress = ref('')
 const amountToSend = ref<number | undefined>(undefined)
 
@@ -42,6 +43,16 @@ onMounted(() => {
   validateCryptoCurrency()
   validateRecipientAddress()
   validateAmountToSend()
+})
+
+onBeforeRouteLeave((to, from, next) => {
+  const willBeReplaced = replacingPages.includes(to.name as string)
+
+  store.commit('options/updateOption', {
+    key: 'wasSendingFunds',
+    value: willBeReplaced
+  })
+  next()
 })
 
 const validateCryptoCurrency = () => {

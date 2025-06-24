@@ -10,6 +10,7 @@ const state = () => ({
   formatMessages: true,
   useFullDate: false,
   currentWallet: Cryptos.ADM, // current Wallet Tab on Account view (this is not an option)
+  wasSendingFunds: false, // if user was on SendFunds page (e.g. to open it again when returning from chats)
   currentNodesTab: 'adm',
   useSocketConnection: true,
   suppressWarningOnAddressesNotification: false,

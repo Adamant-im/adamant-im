@@ -6,7 +6,7 @@
       </template>
 
       <v-list-item-title :class="`${className}__title`">
-        {{ $t('home.send_crypto', { crypto }) }}
+        {{ t('home.send_crypto', { crypto }) }}
       </v-list-item-title>
     </v-list-item>
 
@@ -17,7 +17,7 @@
         </template>
 
         <v-list-item-title :class="`${className}__title`">
-          {{ $t('home.stake_and_earn_btn') }}
+          {{ t('home.stake_and_earn_btn') }}
         </v-list-item-title>
       </v-list-item>
 
@@ -27,7 +27,7 @@
         </template>
 
         <v-list-item-title :class="`${className}__title`">
-          {{ $t('home.buy_tokens_btn') }}
+          {{ t('home.buy_tokens_btn') }}
         </v-list-item-title>
       </v-list-item>
 
@@ -37,7 +37,7 @@
         </template>
 
         <v-list-item-title :class="`${className}__title`">
-          {{ $t('home.free_adm_btn') }}
+          {{ t('home.free_adm_btn') }}
         </v-list-item-title>
       </v-list-item>
     </template>
