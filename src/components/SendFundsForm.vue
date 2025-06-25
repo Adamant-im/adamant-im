@@ -206,7 +206,6 @@ import * as transactions from '@klayr/transactions'
 import { KLY_DECIMALS } from '@/lib/klayr/klayr-constants'
 
 import {
-  INCREASE_FEE_MULTIPLIER,
   Cryptos,
   TransactionStatus as TS,
   isErc20,
@@ -950,15 +949,12 @@ export default {
       return right.length <= units
     },
     calculateTransferFee(amount) {
-      const coef = this.increaseFee ? INCREASE_FEE_MULTIPLIER : 1
-      return (
-        coef *
-        this.$store.getters[`${this.currency.toLowerCase()}/fee`](
-          amount || this.balance,
-          this.cryptoAddress,
-          this.textData,
-          this.account.isNew
-        )
+      return this.$store.getters[`${this.currency.toLowerCase()}/fee`](
+        amount || this.balance,
+        this.cryptoAddress,
+        this.textData,
+        this.account.isNew,
+        this.increaseFee
       )
     }
   }

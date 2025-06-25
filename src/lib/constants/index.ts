@@ -119,10 +119,10 @@ export const RE_KLY_ADDRESS_LEGACY = /^[0-9]{2,21}L$/
 /** Gas limit value for the ETH transfers */
 export const DEFAULT_ETH_TRANSFER_GAS_LIMIT = (CryptosInfo['ETH'] as any).defaultGasLimit // @todo fix type in adamant-wallets
 /** Gas limit value for the ERC-20 transfers */
-export const DEFAULT_ERC20_TRANSFER_GAS_LIMIT = DEFAULT_ETH_TRANSFER_GAS_LIMIT * 2.4
+export const DEFAULT_ERC20_TRANSFER_GAS_LIMIT = 58000
 
 /** Increase fee multiplier. Used as a checkbox on SendFundsForm */
-export const INCREASE_FEE_MULTIPLIER = 1.5
+export const INCREASE_FEE_MULTIPLIER = 1.3
 
 export { AllCryptos, AllCryptosOrder, Cryptos, CryptosInfo, CryptosOrder, type CryptoSymbol }
 
