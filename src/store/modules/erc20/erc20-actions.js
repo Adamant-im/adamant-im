@@ -13,7 +13,7 @@ const STATUS_INTERVAL = 25000
 /** Interval for updating balances */
 let interval
 
-const initTransaction = async (api, context, ethAddress, amount, nonce, increaseFee) => {
+const initTransaction = async (api, context, ethAddress, amount, nonce) => {
   const contract = new EthContract(Erc20, context.state.contractAddress)
 
   const gasPrice = await api.useClient((client) => client.getGasPrice())
@@ -32,7 +32,7 @@ const initTransaction = async (api, context, ethAddress, amount, nonce, increase
   const gasLimit = await api
     .useClient((client) => client.estimateGas(transaction))
     .catch(() => BigInt(DEFAULT_ERC20_TRANSFER_GAS_LIMIT))
-  transaction.gasLimit = increaseFee ? ethUtils.increaseFee(gasLimit) : gasLimit
+  transaction.gasLimit = gasLimit
 
   return transaction
 }
