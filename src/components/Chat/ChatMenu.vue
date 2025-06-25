@@ -141,7 +141,7 @@ function sendFunds(selectedCrypto: string) {
       }
 
       if (e.message.includes(fetchingErrors.connection)) {
-        dialogTitle.value = t('transfer.no_address_title_offline', { crypto: selectedCrypto })
+        dialogTitle.value = t('transfer.no_address_title_offline')
         dialogText.value = t('transfer.no_address_text_offline', { crypto: selectedCrypto })
       }
 
