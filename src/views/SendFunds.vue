@@ -61,7 +61,8 @@ onBeforeRouteLeave((to, from, next) => {
         wasSendingFunds: willBeReplaced,
         cryptoCurrency: sendFundsFormRef.value?.currency,
         recipientAddress: sendFundsFormRef.value?.cryptoAddress,
-        amountToSend: sendFundsFormRef.value?.amountString
+        amountToSend: sendFundsFormRef.value?.amountString,
+        increaseFee: sendFundsFormRef.value?.increaseFee
       }
     })
   } else {
@@ -78,7 +79,7 @@ onBeforeRouteLeave((to, from, next) => {
         ...currentData,
         amountFromChat: isChatPath ? '' : formAmountString,
         comment: isChatPath ? '' : formComment,
-        increaseFee: isChatPath ? false : formIncreaseFee
+        increaseFeeChat: isChatPath ? false : formIncreaseFee
       }
     })
   }

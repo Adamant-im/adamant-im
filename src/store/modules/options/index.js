@@ -17,7 +17,8 @@ const state = () => ({
     amountToSend: '', // amount to send from Home page
     amountFromChat: '', // amount to send from Chat page
     comment: '',
-    increaseFee: false
+    increaseFee: false,
+    increaseFeeChat: false
   }, // save state in case of returning to Home page (if was left from SendFunds)
   currentNodesTab: 'adm',
   useSocketConnection: true,
@@ -36,7 +37,8 @@ const getters = {
   savedAmountToSend: (state) => state.sendFundsData.amountToSend,
   savedAmountFromChat: (state) => state.sendFundsData.amountFromChat,
   savedComment: (state) => state.sendFundsData.comment,
-  savedIncreaseFee: (state) => state.sendFundsData.increaseFee
+  savedIncreaseFee: (state) => state.sendFundsData.increaseFee,
+  savedIncreaseFeeChat: (state) => state.sendFundsData.increaseFeeChat
 }
 
 const mutations = {
