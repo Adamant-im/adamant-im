@@ -100,7 +100,7 @@
   </component>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { nextTick, computed, ref, useTemplateRef } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'

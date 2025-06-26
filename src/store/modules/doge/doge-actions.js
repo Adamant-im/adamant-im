@@ -2,39 +2,29 @@ import baseActions from '../btc-base/btc-base-actions'
 import DogeApi from '../../../lib/bitcoin/doge-api'
 import { CryptosInfo } from '@/lib/constants/index.js'
 
-const getNewTransactions = (api, context) => {
+const getNewTransactions = async (api, context) => {
   context.commit('areRecentLoading', true)
-  return api.getTransactions({}).then(
-    (result) => {
-      context.commit('areRecentLoading', false)
-      context.commit('transactions', result.items)
-    },
-    (error) => {
-      context.commit('areRecentLoading', false)
-      return Promise.reject(error)
-    }
-  )
+  const result = await api.getTransactions({})
+  if (result) {
+    context.commit('transactions', result.items)
+  }
+  context.commit('areRecentLoading', false)
 }
 
-const getOldTransactions = (api, context) => {
+const getOldTransactions = async (api, context) => {
   // If we already have the most old transaction for this address, no need to request anything
   if (context.state.bottomReached) return Promise.resolve()
 
   const from = Object.keys(context.state.transactions).length
   context.commit('areOlderLoading', true)
-  return api.getTransactions({ from }).then(
-    (result) => {
-      context.commit('areOlderLoading', false)
-      context.commit('transactions', result.items)
-      if (!result.hasMore) {
-        context.commit('bottom', true)
-      }
-    },
-    (error) => {
-      context.commit('areOlderLoading', false)
-      return Promise.reject(error)
+  const result = await api.getTransactions({ from })
+  if (result) {
+    context.commit('transactions', result.items)
+    if (!result.hasMore) {
+      context.commit('bottom', true)
     }
-  )
+  }
+  context.commit('areOlderLoading', false)
 }
 
 export default {

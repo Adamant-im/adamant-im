@@ -41,7 +41,7 @@
             v-if="displayChat(transaction.contactId)"
             :ref="transaction.contactId"
             :is-loading-separator="index === separatorIndex"
-            :is-loading-separator-active="loading"
+            :is-loading-separator-active="loading && areAdmNodesOnline"
             :user-id="userId"
             :contact-id="transaction.contactId"
             :transaction="transaction.lastMessage"
@@ -81,20 +81,14 @@ import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
 import { useRoute, useRouter } from 'vue-router'
-import {
-  computed,
-  onActivated,
-  onBeforeUnmount,
-  onDeactivated,
-  onMounted,
-  ref,
-  watch
-} from 'vue'
+import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, watch } from 'vue'
 import { useChatStateStore } from '@/stores/modal-state'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { useChatsSpinner } from '@/hooks/useChatsSpinner'
 import { computedEager } from '@vueuse/core'
+import { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import { isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
 const scrollOffset = 64
 
@@ -129,6 +123,7 @@ const lastPartnerId = ref<string | null>(null)
 const savedRoute = ref(null)
 const loading = ref(false)
 const loadingSeparator = ref<InstanceType<typeof ChatPreview>[]>([])
+const allowRetry = ref(false)
 
 const noMoreChats = computedEager(() => store.getters['chat/chatListOffset'] === -1)
 const chatPagePartnerId = computed(() => {
@@ -150,6 +145,8 @@ const separatorIndex = computed(() => {
 })
 const userId = computed(() => store.state.address)
 const unreadMessagesCount = computed(() => store.getters['chat/totalNumOfNewMessages'])
+const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
+const areAdmNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
 
 onActivated(() => {
   if (savedRoute.value && !chatPagePartnerId.value) {
@@ -179,6 +176,12 @@ watch(chatPagePartnerId, (value) => {
 
   if (!value && route.name === 'Chats') {
     savedRoute.value = null
+  }
+})
+
+watch(areAdmNodesOnline, (nodesOnline) => {
+  if (nodesOnline && loading.value) {
+    loadChatsPaged()
   }
 })
 
@@ -248,13 +251,22 @@ const onScroll = (event?: Event) => {
   }
 }
 
-const loadChatsPaged = () => {
-  if (loading.value || noMoreChats.value) return
+const loadChatsPaged = async () => {
+  if ((loading.value || noMoreChats.value) && !allowRetry.value) return
 
   loading.value = true
-  store.dispatch('chat/loadChatsPaged').finally(() => {
+  try {
+    await store.dispatch('chat/loadChatsPages')
     loading.value = false
-  })
+    allowRetry.value = false
+  } catch (err: unknown) {
+    if (!isAllNodesOfflineError(err as Error)) {
+      loading.value = false
+      allowRetry.value = false
+      return
+    }
+    allowRetry.value = true
+  }
 }
 
 const messagesCount = (partnerId: string) => {

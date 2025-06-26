@@ -207,7 +207,6 @@ function createActions(options) {
           }
         }
       } catch (err) {
-        commit('areRecentLoading', false)
         throw err
       }
     },
@@ -243,7 +242,6 @@ function createActions(options) {
           commit('bottom', true)
         }
       } catch (err) {
-        commit('areOlderLoading', false)
         throw err
       }
     },
