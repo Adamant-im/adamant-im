@@ -633,6 +633,8 @@ export default {
     // if from chats
     if (this.$route.query.from) {
       this.amountString = this.$store.getters['options/savedAmountFromChat']
+      this.comment = this.$store.getters['options/savedComment']
+      this.increaseFee = this.$store.getters['options/savedIncreaseFee']
     }
 
     // create watcher after setting default from props

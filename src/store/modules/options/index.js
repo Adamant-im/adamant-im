@@ -15,7 +15,9 @@ const state = () => ({
     cryptoCurrency: 'ADM',
     recipientAddress: '',
     amountToSend: '', // amount to send from Home page
-    amountFromChat: '' // amount to send from Chat page
+    amountFromChat: '', // amount to send from Chat page
+    comment: '',
+    increaseFee: false
   }, // save state in case of returning to Home page (if was left from SendFunds)
   currentNodesTab: 'adm',
   useSocketConnection: true,
@@ -32,7 +34,9 @@ const getters = {
   savedCryptoCurrency: (state) => state.sendFundsData.cryptoCurrency,
   savedRecipientAddress: (state) => state.sendFundsData.recipientAddress,
   savedAmountToSend: (state) => state.sendFundsData.amountToSend,
-  savedAmountFromChat: (state) => state.sendFundsData.amountFromChat
+  savedAmountFromChat: (state) => state.sendFundsData.amountFromChat,
+  savedComment: (state) => state.sendFundsData.comment,
+  savedIncreaseFee: (state) => state.sendFundsData.increaseFee
 }
 
 const mutations = {

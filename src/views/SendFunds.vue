@@ -65,11 +65,20 @@ onBeforeRouteLeave((to, from, next) => {
       }
     })
   } else {
+    const isChatPath = to.path.includes('chat')
+    const {
+      amountString: formAmountString,
+      comment: formComment,
+      increaseFee: formIncreaseFee
+    } = sendFundsFormRef.value || {}
+
     store.commit('options/updateOption', {
       key: 'sendFundsData',
       value: {
         ...currentData,
-        amountFromChat: sendFundsFormRef.value?.amountString
+        amountFromChat: isChatPath ? '' : formAmountString,
+        comment: isChatPath ? '' : formComment,
+        increaseFee: isChatPath ? false : formIncreaseFee
       }
     })
   }
