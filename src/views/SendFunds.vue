@@ -1,6 +1,7 @@
 <template>
   <navigation-wrapper :class="className">
     <send-funds-form
+      ref="sendFundsFormRef"
       class="pt-5"
       :crypto-currency="cryptoCurrency"
       :recipient-address="recipientAddress"
@@ -36,6 +37,7 @@ const replyToId = typeof route.query.replyToId === 'string' ? route.query.replyT
 const cryptoCurrency = ref(route.params.cryptoCurrency as string)
 const recipientAddress = ref('')
 const amountToSend = ref<number | undefined>(undefined)
+const sendFundsFormRef = ref<any>()
 
 const comeFromChat = computed(() => recipientAddress.value.length > 0)
 
@@ -46,12 +48,31 @@ onMounted(() => {
 })
 
 onBeforeRouteLeave((to, from, next) => {
-  const willBeReplaced = replacingPages.includes(to.name as string)
+  const currentData = store.state.options.sendFundsData
 
-  store.commit('options/updateOption', {
-    key: 'wasSendingFunds',
-    value: willBeReplaced
-  })
+  // if not from chats
+  if (!route.query.from) {
+    const willBeReplaced = replacingPages.includes(to.name as string)
+
+    store.commit('options/updateOption', {
+      key: 'sendFundsData',
+      value: {
+        ...currentData,
+        wasSendingFunds: willBeReplaced,
+        cryptoCurrency: sendFundsFormRef.value?.currency,
+        recipientAddress: sendFundsFormRef.value?.cryptoAddress,
+        amountToSend: sendFundsFormRef.value?.amountString
+      }
+    })
+  } else {
+    store.commit('options/updateOption', {
+      key: 'sendFundsData',
+      value: {
+        ...currentData,
+        amountFromChat: sendFundsFormRef.value?.amountString
+      }
+    })
+  }
   next()
 })
 

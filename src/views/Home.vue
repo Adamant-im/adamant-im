@@ -223,6 +223,12 @@ watch(currentWallet, (value) => {
   if (route.name === 'Transactions') {
     goToTransactions(value)
   }
+
+  if (route.name === 'SendFunds') {
+    router.push({
+      name: 'Home'
+    })
+  }
 })
 </script>
 

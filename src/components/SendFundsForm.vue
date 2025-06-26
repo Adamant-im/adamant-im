@@ -621,6 +621,20 @@ export default {
     this.address = this.recipientAddress
     this.amount = this.amountToSend
 
+    const isSaved = this.$store.getters['options/wasSendingFunds']
+
+    // if not from chats
+    if (isSaved && !this.$route.query.from) {
+      this.amountString = this.$store.getters['options/savedAmountToSend']
+      this.address = this.$store.getters['options/savedRecipientAddress']
+      this.cryptoAddress = this.$store.getters['options/savedRecipientAddress']
+    }
+
+    // if from chats
+    if (this.$route.query.from) {
+      this.amountString = this.$store.getters['options/savedAmountFromChat']
+    }
+
     // create watcher after setting default from props
     this.$watch('currency', () => {
       this.$refs.form.validate()
