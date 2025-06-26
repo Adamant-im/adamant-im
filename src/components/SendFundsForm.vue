@@ -373,7 +373,9 @@ export default {
      * @returns {number}
      */
     transferFee() {
-      return this.calculateTransferFee(this.amount)
+      return isErc20(this.currency)
+        ? this.$store.state[this.currency.toLowerCase()].fee || 0
+        : this.calculateTransferFee(this.amount)
     },
 
     /**
@@ -601,6 +603,14 @@ export default {
       const amountRate = (this.finalAmountFixed * currentRate).toFixed(2)
 
       return `${amountRate} ${this.currentCurrency}`
+    },
+    feeCalculationParams() {
+      return {
+        amount: this.amount,
+        cryptoAddress: this.cryptoAddress,
+        increaseFee: this.increaseFee,
+        currency: this.currency
+      }
     }
   },
   watch: {
@@ -613,6 +623,14 @@ export default {
     },
     cryptoAddress(cryptoAddress) {
       this.checkIsNewAccount(cryptoAddress)
+    },
+    feeCalculationParams: {
+      handler() {
+        if (isErc20(this.currency)) {
+          this.updateErc20Fee()
+        }
+      },
+      deep: true
     }
   },
   created() {
@@ -956,6 +974,17 @@ export default {
         this.account.isNew,
         this.increaseFee
       )
+    },
+    updateErc20Fee() {
+      this.$store
+        .dispatch(`${this.currency.toLowerCase()}/updateFee`, {
+          amount: this.amount,
+          address: this.cryptoAddress,
+          increaseFee: this.increaseFee
+        })
+        .catch((err) => {
+          console.warn('Error updating ERC20 fee:', err)
+        })
     }
   }
 }
