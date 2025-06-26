@@ -65,7 +65,7 @@ onBeforeRouteLeave((to, from, next) => {
       }
     })
   } else {
-    const isChatPath = to.path.includes('chat')
+    const isChatPath = to.path.includes('chats')
     const {
       amountString: formAmountString,
       comment: formComment,
