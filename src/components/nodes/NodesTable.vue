@@ -90,7 +90,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
@@ -98,7 +98,6 @@ import { AdmNodesTable } from './adm'
 import { CoinNodesTable } from './coins'
 import { ServiceNodesTable } from './services'
 import { IpfsNodesTable } from './ipfs'
-import { Tab } from '@/components/nodes/types'
 
 const className = 'nodes-table'
 const classes = {
@@ -107,19 +106,11 @@ const classes = {
   checkbox: `${className}__checkbox`
 }
 
+type Tab = 'adm' | 'coins' | 'services' | 'ipfs'
+
 const { t } = useI18n()
 const store = useStore()
-const tab = computed<Tab>({
-  get() {
-    return store.getters['options/currentNodesTab']
-  },
-  set(value) {
-    store.commit('options/updateOption', {
-      key: 'currentNodesTab',
-      value
-    })
-  }
-})
+const tab = ref<Tab>('adm')
 
 const useSocketConnection = computed<boolean>({
   get() {
@@ -156,6 +147,12 @@ const preferFasterServiceNodeOption = computed<boolean>({
   },
   set(value) {
     store.dispatch('services/useFastestService', value)
+  }
+})
+
+onMounted(() => {
+  if (history.state.tab) {
+    tab.value = history.state.tab
   }
 })
 </script>

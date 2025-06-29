@@ -19,6 +19,7 @@
                 :key="wallet.cryptoCurrency"
                 :value="wallet.cryptoCurrency"
                 @wheel="onWheel"
+                @click="goToTransactions(wallet.cryptoCurrency)"
               >
                 <wallet-tab
                   :wallet="wallet"
@@ -50,7 +51,7 @@
               >
                 <wallet-card
                   :address="wallet.address"
-                  :all-coin-nodes-disabled="areNodesDisabled(wallet.cryptoCurrency)"
+                  :all-coin-nodes-disabled="allCoinNodesDisabled"
                   :crypto="wallet.cryptoCurrency"
                   :crypto-name="wallet.cryptoName"
                   :rate="wallet.rate"
@@ -85,7 +86,6 @@ import { CoinSymbol } from '@/store/modules/wallets/types'
 import { useI18n } from 'vue-i18n'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { useBalanceCheck } from '@/hooks/useBalanceCheck'
-import { Tab, TABS } from '@/components/nodes/types'
 
 const { t } = useI18n()
 const store = useStore()
@@ -111,10 +111,6 @@ const currentCurrency = computed({
   }
 })
 
-const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
-const allAdmNodesDisabled = computed(() =>
-  admNodes.value.every((node) => node.status === 'disabled')
-)
 const coinNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/coins'])
 const allCoinNodesDisabled = computed(() =>
   coinNodes.value.every((node) => node.status === 'disabled')
@@ -142,10 +138,6 @@ const wallets = computed(() => {
   })
 })
 
-const areNodesDisabled = (crypto: CryptoSymbol) => {
-  return crypto === 'ADM' ? allAdmNodesDisabled.value : allCoinNodesDisabled.value
-}
-
 const updateBalances = () => {
   if (allCoinNodesDisabled.value) {
     store.dispatch('snackbar/show', {
@@ -171,28 +163,21 @@ const goToTransactions = (crypto: string) => {
   })
 }
 
-const goToCoinNodes = (tab: Tab) => {
-  store.commit('options/updateOption', {
-    key: 'currentNodesTab',
-    value: tab
-  })
-
+const goToCoinNodes = () => {
   router.push({
-    name: 'Nodes'
+    name: 'Nodes',
+    state: {
+      tab: 'coins'
+    }
   })
 }
 
-const handleBalanceClick = (crypto: string) => {
-  const isAdm = crypto === 'ADM'
-
-  const targetType = isAdm ? TABS.adm : TABS.coins
-  const isDisabled = isAdm ? allAdmNodesDisabled.value : allCoinNodesDisabled.value
-
-  if (isDisabled) {
-    return goToCoinNodes(targetType)
+const handleBalanceClick = (crypto?: string) => {
+  if (crypto && !allCoinNodesDisabled.value) {
+    return goToTransactions(crypto)
   }
 
-  goToTransactions(crypto)
+  goToCoinNodes()
 }
 
 const onWheel = (e: WheelEvent) => {
@@ -222,12 +207,6 @@ const currentWallet = computed({
 watch(currentWallet, (value) => {
   if (route.name === 'Transactions') {
     goToTransactions(value)
-  }
-
-  if (route.name === 'SendFunds') {
-    router.push({
-      name: 'Home'
-    })
   }
 })
 </script>
