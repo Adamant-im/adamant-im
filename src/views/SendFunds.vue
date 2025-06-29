@@ -22,7 +22,7 @@ import SendFundsForm from '@/components/SendFundsForm.vue'
 import { AllCryptos, CryptoSymbol } from '@/lib/constants/cryptos'
 import { vibrate } from '@/lib/vibrate'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeMount, ref } from 'vue'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
@@ -34,14 +34,14 @@ const className = 'send-funds'
 const replacingPages = ['Chat', 'Chats', 'Options']
 const replyToId = typeof route.query.replyToId === 'string' ? route.query.replyToId : undefined
 
-const cryptoCurrency = ref(route.params.cryptoCurrency as string)
+const cryptoCurrency = ref(AllCryptos.ADM)
 const recipientAddress = ref('')
 const amountToSend = ref<number | undefined>(undefined)
 const sendFundsFormRef = ref<any>()
 
 const comeFromChat = computed(() => recipientAddress.value.length > 0)
 
-onMounted(() => {
+onBeforeMount(() => {
   validateCryptoCurrency()
   validateRecipientAddress()
   validateAmountToSend()
@@ -51,7 +51,7 @@ onBeforeRouteLeave((to, from, next) => {
   const currentData = store.state.options.sendFundsData
 
   // if not from chats
-  if (!route.query.from) {
+  if (!comeFromChat.value) {
     const willBeReplaced = replacingPages.includes(to.name as string)
 
     store.commit('options/updateOption', {
@@ -91,7 +91,7 @@ const validateCryptoCurrency = () => {
     route.params.cryptoCurrency &&
     Object.keys(AllCryptos).includes(route.params.cryptoCurrency as string)
   ) {
-    cryptoCurrency.value = route.params.cryptoCurrency as string
+    cryptoCurrency.value = route.params.cryptoCurrency as CryptoSymbol
   }
 }
 
