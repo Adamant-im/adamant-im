@@ -220,7 +220,6 @@ const currentWallet = computed({
 })
 
 watch(currentWallet, (value) => {
-  console.log(route.name)
   if (route.name === 'Transactions' || route.name === 'Transaction') {
     goToTransactions(value)
   }
