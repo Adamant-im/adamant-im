@@ -1,38 +1,30 @@
 <template>
-  <div>
-    <app-toolbar-centered app :title="$t('home.send_btn')" flat fixed />
-
-    <v-container fluid class="px-0 container--with-app-toolbar">
-      <v-row justify="center" no-gutters>
-        <container padding>
-          <send-funds-form
-            class="pt-5"
-            :crypto-currency="cryptoCurrency"
-            :recipient-address="recipientAddress"
-            :amount-to-send="amountToSend"
-            :address-readonly="comeFromChat"
-            :reply-to-id="$route.query.replyToId"
-            @send="onSend"
-            @error="onError"
-          />
-        </container>
-      </v-row>
-    </v-container>
-  </div>
+  <navigation-wrapper :class="className">
+    <send-funds-form
+      class="pt-5"
+      :crypto-currency="cryptoCurrency"
+      :recipient-address="recipientAddress"
+      :amount-to-send="amountToSend"
+      :address-readonly="comeFromChat"
+      :reply-to-id="$route.query.replyToId"
+      @send="onSend"
+      @error="onError"
+    />
+  </navigation-wrapper>
 </template>
 
 <script>
 import validateAddress from '@/lib/validateAddress'
 import { isNumeric } from '@/lib/numericHelpers'
 
-import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import SendFundsForm from '@/components/SendFundsForm.vue'
 import { AllCryptos } from '@/lib/constants/cryptos'
 import { vibrate } from '@/lib/vibrate'
+import NavigationWrapper from '@/components/NavigationWrapper.vue'
 
 export default {
   components: {
-    AppToolbarCentered,
+    NavigationWrapper,
     SendFundsForm
   },
   data: () => ({
@@ -40,6 +32,13 @@ export default {
     recipientAddress: '',
     amountToSend: undefined
   }),
+  setup() {
+    const className = 'send-funds'
+
+    return {
+      className
+    }
+  },
   computed: {
     comeFromChat() {
       return this.recipientAddress.length > 0
@@ -81,7 +80,7 @@ export default {
       }
     },
     onError(message) {
-      vibrate.tripleVeryShort();
+      vibrate.tripleVeryShort()
       this.$store.dispatch('snackbar/show', {
         message,
         timeout: 3000,
@@ -91,3 +90,14 @@ export default {
   }
 }
 </script>
+<style scoped lang="scss">
+.send-funds {
+  position: relative;
+
+  &__content {
+    overflow-y: auto;
+    height: calc(100vh - var(--v-layout-bottom) - var(--toolbar-height));
+    padding-top: var(--toolbar-height);
+  }
+}
+</style>

@@ -86,11 +86,13 @@ async function downloadFileNatively(blobUrl: string, filename: string): Promise<
       Filesystem.writeFile({
         path: filename,
         data: base64Data!,
-        directory: Directory.Documents
+        directory: Directory.Data
       })
         .then(resolve)
         .catch(reject)
     }
+
+    reader.onerror = reject
   })
 }
 
@@ -196,6 +198,9 @@ export default {
         prevSlide()
       } else if (e.key === 'ArrowRight') {
         nextSlide()
+      } else if (e.key === 'Escape') {
+        e.stopPropagation()
+        closeModal()
       }
     }
 

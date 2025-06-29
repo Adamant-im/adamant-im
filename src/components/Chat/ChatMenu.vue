@@ -1,35 +1,37 @@
 <template>
   <div>
-    <v-menu eager>
+    <v-menu eager v-model="isChatMenuOpen">
       <template #activator="{ props }">
         <v-icon class="chat-menu__icon" v-bind="props" :icon="mdiPlusCircleOutline" size="28" />
       </template>
+
       <UploadFile
+        ref="uploadImageRef"
         :partnerId="partnerId"
         :accept="acceptImage"
         @file="handleFileSelected"
-        ref="UploadImageRef"
       />
-      <UploadFile :partnerId="partnerId" @file="handleFileSelected" ref="UploadFileRef" />
+      <UploadFile ref="uploadFileRef" :partnerId="partnerId" @file="handleFileSelected" />
+
       <v-list class="chat-menu__list">
         <!-- Attach Image -->
-        <v-list-item @click="$refs.UploadImageRef.$refs.fileInput.click()">
+        <v-list-item @click="uploadImageRef?.$el?.click()">
           <template #prepend>
             <icon-box>
               <v-icon :icon="mdiImage" />
             </icon-box>
           </template>
-          <v-list-item-title>{{ $t('chats.attach_image') }}</v-list-item-title>
+          <v-list-item-title>{{ t('chats.attach_image') }}</v-list-item-title>
         </v-list-item>
 
         <!-- Attach File -->
-        <v-list-item @click="$refs.UploadFileRef.$refs.fileInput.click()">
+        <v-list-item @click="uploadFileRef?.$el?.click()">
           <template #prepend>
             <icon-box>
               <v-icon :icon="mdiFile" />
             </icon-box>
           </template>
-          <v-list-item-title>{{ $t('chats.attach_file') }}</v-list-item-title>
+          <v-list-item-title>{{ t('chats.attach_file') }}</v-list-item-title>
         </v-list-item>
 
         <!-- Cryptos -->
@@ -37,8 +39,9 @@
           <template #prepend>
             <crypto-icon :crypto="c" box-centered />
           </template>
-
-          <v-list-item-title>{{ $t('chats.send_crypto', { crypto: c }) }}</v-list-item-title>
+          <v-list-item-title>
+            {{ t('chats.send_crypto', { crypto: c }) }}
+          </v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -47,114 +50,130 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, useTemplateRef } from 'vue'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
 import { Cryptos } from '@/lib/constants'
 import ChatDialog from '@/components/Chat/ChatDialog.vue'
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import IconBox from '@/components/icons/IconBox.vue'
 import UploadFile from '../UploadFile.vue'
 import { mdiFile, mdiImage, mdiPlusCircleOutline } from '@mdi/js'
+import { useChatStateStore } from '@/stores/modal-state'
+import type { FileData } from '@/lib/files'
+import { CoinSymbol } from '@/store/modules/wallets/types'
+import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
+const fetchingErrors = {
+  liskLegacy: 'Only legacy Lisk address',
+  noAddress: 'No crypto wallet address',
+  connection: 'Connection error'
+} as const
 
-export default {
-  components: {
-    IconBox,
-    ChatDialog,
-    CryptoIcon,
-    UploadFile
-  },
-  emits: ['files'],
-  props: {
-    partnerId: {
-      type: String,
-      default: ''
-    },
-    replyToId: {
-      type: String
-    }
-  },
-  setup() {
-    return {
-      mdiFile,
-      mdiImage,
-      mdiPlusCircleOutline
-    }
-  },
-  data: () => ({
-    dialog: false,
-    dialogTitle: '',
-    dialogText: '',
-    crypto: '',
-    filesList: [],
-    acceptImage: 'image/* , video/*',
-    acceptFile: 'application/* ,text/*, audio/*'
-  }),
-  computed: {
-    orderedVisibleWalletSymbols() {
-      return this.$store.getters['wallets/getVisibleOrderedWalletSymbols']
-    },
-    wallets() {
-      return this.orderedVisibleWalletSymbols.map((crypto) => {
-        return crypto.symbol
+const emit = defineEmits<{
+  (e: 'files', value: FileData[]): void
+}>()
+
+const { partnerId = '', replyToId } = defineProps<{
+  partnerId?: string
+  replyToId?: string
+}>()
+
+const router = useRouter()
+const store = useStore()
+const { t } = useI18n()
+const chatStateStore = useChatStateStore()
+
+const { setChatMenuOpen } = chatStateStore
+
+const uploadImageRef = useTemplateRef<InstanceType<typeof UploadFile>>('uploadImageRef')
+const uploadFileRef = useTemplateRef<InstanceType<typeof UploadFile>>('uploadFileRef')
+
+const dialog = ref(false)
+const dialogTitle = ref('')
+const dialogText = ref('')
+const crypto = ref('')
+const acceptImage = 'image/* , video/*'
+
+const isChatMenuOpen = computed({
+  get: () => chatStateStore.isChatMenuOpen,
+  set: setChatMenuOpen
+})
+
+const orderedVisibleWalletSymbols = computed(
+  () => store.getters['wallets/getVisibleOrderedWalletSymbols']
+)
+
+const wallets = computed(() => orderedVisibleWalletSymbols.value.map((c: CoinSymbol) => c.symbol))
+
+function handleFileSelected(imageData: FileData) {
+  emit('files', [imageData])
+}
+
+function sendFunds(selectedCrypto: string) {
+  fetchCryptoAddress(selectedCrypto)
+    .then(() => {
+      router.push({
+        name: 'SendFunds',
+        params: {
+          cryptoCurrency: selectedCrypto,
+          recipientAddress: partnerId || ''
+        },
+        query: {
+          from: `/chats/${partnerId}`,
+          replyToId
+        }
       })
-    }
-  },
-  methods: {
-    handleFileSelected(imageData) {
-      this.$emit('files', [imageData])
-    },
-    sendFunds(crypto) {
-      // check if user has crypto wallet
-      // otherwise show dialog
-      this.fetchCryptoAddress(crypto)
-        .then(() => {
-          this.$router.push({
-            name: 'SendFunds',
-            params: {
-              cryptoCurrency: crypto,
-              recipientAddress: this.partnerId
-            },
-            query: {
-              from: `/chats/${this.partnerId}`,
-              replyToId: this.replyToId
-            }
-          })
-        })
-        .catch((e) => {
-          this.crypto = crypto
-          if (e.toString().includes('Only legacy Lisk address')) {
-            this.dialogTitle = this.$t('transfer.legacy_address_title', { crypto })
-            this.dialogText = this.$t('transfer.legacy_address_text', { crypto })
-          }
-          if (e.toString().includes('No crypto wallet address')) {
-            this.dialogTitle = this.$t('transfer.no_address_title', { crypto })
-            this.dialogText = this.$t('transfer.no_address_text', { crypto })
-          }
-          this.dialog = true
-        })
-    },
-    fetchCryptoAddress(crypto) {
-      if (crypto === Cryptos.ADM) {
-        return Promise.resolve()
+    })
+    .catch((e: Error) => {
+      crypto.value = selectedCrypto
+
+      if (e.message.includes(fetchingErrors.liskLegacy)) {
+        dialogTitle.value = t('transfer.legacy_address_title', { crypto: selectedCrypto })
+        dialogText.value = t('transfer.legacy_address_text', { crypto: selectedCrypto })
       }
 
-      return this.$store
-        .dispatch('partners/fetchAddress', {
-          crypto,
-          partner: this.partnerId,
-          moreInfo: true
-        })
-        .then((address) => {
-          if (!address) {
-            throw new Error('No crypto wallet address')
-          } else if (address.onlyLegacyLiskAddress) {
-            throw new Error('Only legacy Lisk address')
-          }
+      if (e.message.includes(fetchingErrors.noAddress)) {
+        dialogTitle.value = t('transfer.no_address_title', { crypto: selectedCrypto })
+        dialogText.value = t('transfer.no_address_text', { crypto: selectedCrypto })
+      }
 
-          return address
-        })
-    }
+      if (e.message.includes(fetchingErrors.connection)) {
+        dialogTitle.value = t('transfer.no_address_title_offline')
+        dialogText.value = t('transfer.no_address_text_offline', { crypto: selectedCrypto })
+      }
+
+      dialog.value = true
+    })
+}
+
+function fetchCryptoAddress(selectedCrypto: string): Promise<any> {
+  if (selectedCrypto === Cryptos.ADM) {
+    return Promise.resolve()
   }
+
+  return store
+    .dispatch('partners/fetchAddress', {
+      crypto: selectedCrypto,
+      partner: partnerId,
+      moreInfo: true
+    })
+    .catch((error: Error) => {
+      if (isAllNodesOfflineError(error) || isAllNodesDisabledError(error)) {
+        throw new Error(fetchingErrors.connection)
+      }
+    })
+    .then((address: any) => {
+      if (!address) {
+        throw new Error(fetchingErrors.noAddress)
+      } else if (address.onlyLegacyLiskAddress) {
+        throw new Error(fetchingErrors.liskLegacy)
+      }
+
+      return address
+    })
 }
 </script>
 

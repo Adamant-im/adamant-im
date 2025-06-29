@@ -33,6 +33,18 @@
     "ok": "OK",
     "partner_info": "Partner info",
     "partner_name": "Partner name",
+    "placeholder": {
+      "anonymous": "\uD83D\uDD76\uFE0F Anonymous: partners never see your IP address",
+      "censorship": "⛓\uFE0F Censorship-resistant blockchain architecture",
+      "encrypted": "\uD83D\uDD10 End-to-end encrypted across all devices",
+      "ipfs": "☁\uFE0F Decentralized IPFS storage for files/media",
+      "can_not_message": "Cannot message this user yet—their account isn't activated",
+      "what_does_it_mean": {
+        "text": "What does it mean?",
+        "link": "https://news.adamant.im/chats-and-uninitialized-accounts-in-adamant-5035438e2fcd"
+      },
+      "public-key": "Retrieving your partner’s key to encrypt messages…"
+    },
     "received_label": "Received",
     "recipient": "Partner address",
     "recipient_tooltip": "Partner ADM address like U1234567890987654321 or Share link",
@@ -44,6 +56,7 @@
     "start_chat": "Start chat",
     "title": "Chats",
     "too_long": "The message is too long",
+    "type_a_message": "Type a message",
     "invalid_message": "Invalid message",
     "message_not_found": "Message not found",
     "free_adm_disclaimer": "ADAMANT is unique among messengers—it's truly decentralized. Every action, including messaging, incurs a network fee of 0.001 ADM. To start messaging now, get your free welcome coins.",
@@ -125,6 +138,8 @@
     "exchanges_on": "Exchanges on {aggregator}",
     "free_adm_btn": "Free coins",
     "free_tokens_link": "https://adamant.im/free-adm-tokens/",
+    "no_active_nodes": "No active nodes",
+    "no_active_nodes_pull_down": "No active {coin} nodes. Review the coin node list",
     "send_btn": "Send funds",
     "send_crypto": "Send {crypto}",
     "share_uri": "Share {crypto} address",
@@ -164,7 +179,9 @@
     "save_qr_code_to_images": "Save to images",
     "save_qr_code_tooltip": "Save passphrase as a QR code. ⚠️ High risk of leakage.",
     "scan_qr_code_button_tooltip": "Scan QR code with passphrase using your camera",
-    "subheader": "Decentralized messenger"
+    "subheader": "Decentralized messenger",
+    "show_passphrase_tooltip": "Show passphrase",
+    "hide_passphrase_tooltip": "Hide passphrase"
   },
   "login_via_password": {
     "article": "ADAMANT Blog",
@@ -353,8 +370,11 @@
     "invalid_qr_code": "QR code does not contain an address or unrecognizable",
     "no_address_text": "This user hasn't activated their public {crypto} wallet yet",
     "no_address_title": "Recipient has no public {crypto} wallet",
+    "no_address_text_offline": "Failed to retrieve the user's public {crypto} wallet address. Please check your connection.",
+    "no_address_title_offline": "Connection issue",
     "legacy_address_text": "This user has a legacy {crypto} wallet. It will automatically update when they log in using the newest app version.",
     "legacy_address_title": "Recipient has legacy {crypto} wallet",
+    "page_title": "Send funds",
     "send_button": "Send",
     "to_address_label": "To Address",
     "to_name_label": "To {name}",

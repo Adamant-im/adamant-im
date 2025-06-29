@@ -14,12 +14,22 @@ import {
 } from '@/lib/chat/helpers'
 import { i18n } from '@/i18n'
 import { isNumeric } from '@/lib/numericHelpers'
-import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
+import {
+  CHAT_ACTUALITY_BUFFER_MS,
+  Cryptos,
+  CryptosInfo,
+  TransactionStatus as TS,
+  MessageType
+} from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
 import { uploadFiles } from '../../../lib/files'
 import { generateAdamantChats } from './utils/generateAdamantChats'
-import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
+import {
+  AllNodesOfflineError,
+  isAllNodesDisabledError,
+  isAllNodesOfflineError
+} from '@/lib/nodes/utils/errors'
 import adamant from '@/lib/adamant'
 
 export let interval
@@ -51,7 +61,10 @@ const state = () => ({
   lastMessageHeight: 0, // `height` value of the last message
   isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
   offset: 0, // for loading chat list with pagination. -1 if all of chats loaded
-  noActiveNodesDialog: undefined // true - visible dialog, false - hidden dialog, but shown before, undefined - not shown
+  noActiveNodesDialog: undefined, // true - visible dialog, false - hidden dialog, but shown before, undefined - not shown
+  newChats: {}, // { [partnerId]: partnerName }, for pointing if a chat needs further handling after being opened
+  chatsActualUntil: 0,
+  pendingMessages: {}
 })
 
 const getters = {
@@ -74,6 +87,15 @@ const getters = {
     }
 
     return []
+  },
+
+  /**
+   * Returns the timeout for chatsActual
+   * @depends options.useSocketConnection
+   * @returns {number}
+   */
+  chatsPollingTimeout: (state, getters, rootState) => {
+    return rootState.options.useSocketConnection ? SOCKET_ENABLED_TIMEOUT : SOCKET_DISABLED_TIMEOUT
   },
 
   reactions: (state, getters) => (transactionId, partnerId) => {
@@ -278,12 +300,14 @@ const getters = {
         const message = getters.lastMessage(partnerId)
 
         return {
-          timestamp: Date.now(), // give priority to new chats without messages (will be overwritten by ...message)
-          ...message,
+          lastMessage: {
+            timestamp: Date.now(), // give priority to new chats without messages (will be overwritten by ...message)
+            ...message
+          },
           contactId: partnerId
         }
       })
-      .sort((left, right) => right.timestamp - left.timestamp)
+      .sort((left, right) => right.lastMessage.timestamp - left.lastMessage.timestamp)
   },
 
   scrollPosition: (state) => (contactId) => {
@@ -314,11 +338,27 @@ const getters = {
     return (chat && chat.page) || 0
   },
 
+  isNoNodesDialogAllowed: (state, getters, rootState, rootGetters) => (err) => {
+    const isOnline = rootState.isOnline
+    const admNodes = rootGetters['nodes/adm']
+    const areAdmNodesDisabled = admNodes.some((node) => node.status === 'disabled')
+
+    return isOnline && areAdmNodesDisabled && isAllNodesOfflineError(err)
+  },
+
   /**
    * Offset for chat list
    */
   chatListOffset: (state) => {
     return state.offset
+  },
+
+  isNewChat: (state) => (partnerId) => {
+    return partnerId in state.newChats
+  },
+
+  getPartnerName: (state) => (partnerId) => {
+    return state.newChats[partnerId]
   }
 }
 
@@ -358,6 +398,10 @@ const mutations = {
     state.isFulfilled = value
   },
 
+  setChatsActualUntil(state, value) {
+    state.chatsActualUntil = value
+  },
+
   /**
    * Create empty chat.
    * @param {string} partnerId
@@ -371,6 +415,14 @@ const mutations = {
     }
 
     state.chats[partnerId] = createChat()
+  },
+
+  addNewChat(state, { partnerId, partnerName }) {
+    state.newChats[partnerId] = partnerName
+  },
+
+  removeNewChat(state, partnerId) {
+    delete state.newChats[partnerId]
   },
 
   /**
@@ -510,10 +562,30 @@ const mutations = {
     state.noActiveNodesDialog = value
   },
 
+  addPendingMessage(state, { messageId, recipientId, timeout, type, files }) {
+    state.pendingMessages[messageId] = {
+      recipientId,
+      timeout,
+      type,
+      files
+    }
+  },
+
+  deletePendingMessage(state, messageId) {
+    if (state.pendingMessages[messageId]) {
+      clearTimeout(state.pendingMessages[messageId].timeout)
+      delete state.pendingMessages[messageId]
+    }
+  },
+
   reset(state) {
     state.chats = {}
     state.lastMessageHeight = 0
     state.isFulfilled = false
+    state.offset = 0
+    state.noActiveNodesDialog = undefined
+    state.newChats = {}
+    state.chatsActualUntil = 0
   }
 }
 
@@ -544,7 +616,7 @@ const actions = {
         commit('setFulfilled', true)
       })
       .catch((err) => {
-        if (isAllNodesDisabledError(err) || isAllNodesOfflineError(err)) {
+        if (isAllNodesDisabledError(err) || getters.isNoNodesDialogAllowed(err)) {
           commit('setNoActiveNodesDialog', true)
           setTimeout(() => dispatch('loadChats'), 5000) // retry in 5 seconds
         }
@@ -601,7 +673,7 @@ const actions = {
         }
       })
       .catch((err) => {
-        if (isAllNodesDisabledError(err) || isAllNodesOfflineError(err)) {
+        if (isAllNodesDisabledError(err) || getters.isNoNodesDialogAllowed(err)) {
           commit('setNoActiveNodesDialog', true)
         }
         throw err
@@ -645,15 +717,21 @@ const actions = {
    * This is a temporary solution until the sockets are implemented.
    * @returns {Promise}
    */
-  getNewMessages({ state, commit, dispatch }) {
+  getNewMessages({ getters, state, commit, dispatch }) {
     if (!state.isFulfilled) {
       return Promise.reject(new Error('Chat is not fulfilled'))
     }
 
     return getChats(state.lastMessageHeight).then((result) => {
-      const { messages, lastMessageHeight } = result
+      const { messages, lastMessageHeight, nodeTimestamp } = result
+      const chatsActualInterval = getters.chatsPollingTimeout
 
       dispatch('pushMessages', messages)
+
+      const validUntil =
+        adamant.toTimestamp(nodeTimestamp) + chatsActualInterval + CHAT_ACTUALITY_BUFFER_MS
+
+      commit('setChatsActualUntil', validUntil)
 
       if (lastMessageHeight > 0) {
         commit('setHeight', lastMessageHeight)
@@ -700,6 +778,7 @@ const actions = {
         }
 
         commit('createEmptyChat', partnerId)
+        commit('removeNewChat', partnerId)
 
         return key
       })
@@ -714,7 +793,7 @@ const actions = {
    * @param {string} replyToId Optional
    * @returns {Promise}
    */
-  async sendMessage({ commit, rootState }, { message, recipientId, replyToId }) {
+  async sendMessage({ commit, rootState, dispatch }, { message, recipientId, replyToId }) {
     let id
     try {
       const type = replyToId
@@ -728,7 +807,7 @@ const actions = {
           })
         : message
 
-      const signedTransaction = await admApi.signChatMessageTransaction({
+      const signedTransaction = admApi.signChatMessageTransaction({
         to: recipientId,
         message: messageAsset,
         type
@@ -761,12 +840,39 @@ const actions = {
         partnerId: recipientId
       })
     } catch (error) {
-      if (id) {
+      if (isAllNodesOfflineError(error)) {
+        // if the error is caused by connection we keep the message in PENDING status
+        // and try to resend it after the connection is restored
+
+        // timeout for self deleting out of pending messages
+        const timeout = setTimeout(() => {
+          dispatch('rejectPendingMessage', {
+            messageId: id,
+            recipientId
+          })
+        }, Number(CryptosInfo.ADM.timeout.message))
+
+        // put the message into pending messages object
+        commit('addPendingMessage', {
+          messageId: id,
+          type: MessageType.BASIC_ENCRYPTED_MESSAGE,
+          recipientId,
+          timeout
+        })
+
         commit('updateMessage', {
           id,
-          status: TS.REJECTED,
+          status: TS.PENDING,
           partnerId: recipientId
         })
+      } else {
+        if (id) {
+          commit('updateMessage', {
+            id,
+            status: TS.REJECTED,
+            partnerId: recipientId
+          })
+        }
       }
       throw error
     }
@@ -782,7 +888,10 @@ const actions = {
    * @param {string} replyToId Optional
    * @returns {Promise}
    */
-  async sendAttachment({ commit, rootState }, { files, message, recipientId, replyToId }) {
+  async sendAttachment(
+    { commit, rootState, dispatch },
+    { files, message, recipientId, replyToId }
+  ) {
     const recipientPublicKey = await getPublicKey(recipientId)
     const senderPublicKey = await getPublicKey(rootState.address)
 
@@ -826,6 +935,7 @@ const actions = {
       newAsset = replyToId
         ? { replyto_id: replyToId, reply_message: attachmentAsset(files, message, uploadData.cids) }
         : attachmentAsset(files, message, uploadData.cids)
+
       commit('updateMessage', {
         id: messageObject.id,
         partnerId: recipientId,
@@ -833,17 +943,19 @@ const actions = {
       })
       console.debug('Updated CIDs after upload', newAsset)
     } catch (err) {
-      commit('updateMessage', {
-        id: messageObject.id,
-        status: TS.REJECTED,
-        partnerId: recipientId
-      })
+      if (!isAllNodesOfflineError(err)) {
+        commit('updateMessage', {
+          id: messageObject.id,
+          status: TS.REJECTED,
+          partnerId: recipientId
+        })
 
-      for (const [cid] of cids) {
-        commit('attachment/resetUploadProgress', { cid }, { root: true })
+        for (const [cid] of cids) {
+          commit('attachment/resetUploadProgress', { cid }, { root: true })
+        }
+
+        throw err
       }
-
-      throw err
     }
 
     for (const [cid] of cids) {
@@ -852,6 +964,10 @@ const actions = {
 
     return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
       .then((res) => {
+        if (isAllNodesOfflineError(res)) {
+          throw new AllNodesOfflineError('ipfs')
+        }
+
         if (!res.success) {
           throw new Error(i18n.global.t('chats.message_rejected'))
         }
@@ -868,12 +984,40 @@ const actions = {
         return res
       })
       .catch((err) => {
-        // update `message.status` to 'REJECTED'
-        commit('updateMessage', {
-          id: messageObject.id,
-          status: TS.REJECTED,
-          partnerId: recipientId
-        })
+        // update `message.status` to 'REJECTED' if the error is not caused by connection
+        if (!isAllNodesOfflineError(err)) {
+          commit('updateMessage', {
+            id: messageObject.id,
+            status: TS.REJECTED,
+            partnerId: recipientId
+          })
+        } else {
+          // if the error is caused by connection we keep the message in PENDING status
+          // and try to resend it after the connection is restored
+
+          // timeout for self deleting out of pending messages
+          const timeout = setTimeout(() => {
+            dispatch('rejectPendingMessage', {
+              messageId: messageObject.id,
+              recipientId
+            })
+          }, Number(CryptosInfo.ADM.timeout.attachment))
+
+          // put the message into pending messages object
+          commit('addPendingMessage', {
+            messageId: messageObject.id,
+            type: MessageType.RICH_CONTENT_MESSAGE,
+            recipientId,
+            timeout,
+            files
+          })
+
+          commit('updateMessage', {
+            id: messageObject.id,
+            status: TS.PENDING,
+            partnerId: recipientId
+          })
+        }
 
         throw err // call the error again so that it can be processed inside view
       })
@@ -885,7 +1029,7 @@ const actions = {
    * @param {number} id Message Id
    * @returns {Promise}
    */
-  resendMessage({ getters, commit }, { recipientId, messageId }) {
+  resendMessage({ getters, commit, dispatch }, { recipientId, messageId }) {
     const message = getters.partnerMessageById(recipientId, messageId)
 
     // update message status from `rejected` to `sent`
@@ -913,27 +1057,136 @@ const actions = {
             throw new Error(i18n.global.t('chats.message_rejected'))
           }
 
-          commit('updateMessage', {
-            id: messageId,
-            realId: res.transactionId,
-            status: TS.REGISTERED,
-            partnerId: recipientId
+          dispatch('registerPendingMessage', {
+            transactionId: res.transactionId,
+            messageId,
+            recipientId
           })
 
           return res
         })
-        .catch((err) => {
-          commit('updateMessage', {
-            id: messageId,
-            status: TS.REJECTED,
-            partnerId: recipientId
-          })
+        .catch((error) => {
+          if (!isAllNodesOfflineError(error)) {
+            dispatch('rejectPendingMessage', {
+              messageId,
+              recipientId
+            })
+          }
 
-          throw err
+          throw error
         })
     }
 
     return Promise.reject(new Error('Message not found in history'))
+  },
+
+  /**
+   * Resend attachment, in case the connection fails at upload or at send.
+   * @param {string} recipientId
+   * @param {number} messageId
+   * @param {FileData[]} files
+   * @returns {Promise}
+   */
+  async resendAttachment({ getters, commit, dispatch }, { recipientId, messageId, files }) {
+    const message = getters.partnerMessageById(recipientId, messageId)
+    if (!message) {
+      return Promise.reject(new Error('Message not found in history'))
+    }
+
+    // in case the files were not fully uploaded or uploaded incorrectly we
+    // reupload them from scratch to resend a message with attachments
+    const cidsOld = files.map((file) => [file.cid, file.preview?.cid]).filter(Boolean)
+    for (const [cid] of cidsOld) {
+      commit('attachment/resetUploadProgress', { cid }, { root: true })
+    }
+    commit('updateMessage', {
+      id: messageId,
+      status: TS.PENDING,
+      partnerId: recipientId
+    })
+
+    let uploadData
+    try {
+      uploadData = await uploadFiles(files, (progress) => {
+        for (const [cid] of cidsOld) {
+          commit('attachment/setUploadProgress', { cid, progress }, { root: true })
+        }
+      })
+    } catch (err) {
+      for (const [cid] of cidsOld) {
+        commit('attachment/resetUploadProgress', { cid }, { root: true })
+      }
+
+      if (!isAllNodesOfflineError(err)) {
+        dispatch('rejectPendingMessage', {
+          messageId,
+          recipientId
+        })
+
+        throw err
+      }
+    }
+
+    const newAsset = message.isReply
+      ? {
+          replyto_id: message.asset.replyto_id,
+          reply_message: attachmentAsset(files, message.message, uploadData.cids)
+        }
+      : attachmentAsset(files, message.message, uploadData.cids)
+
+    commit('updateMessage', {
+      id: messageId,
+      asset: newAsset,
+      partnerId: recipientId
+    })
+
+    for (const [cid] of cidsOld) {
+      commit('attachment/resetUploadProgress', { cid }, { root: true })
+    }
+
+    return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
+      .then((res) => {
+        if (!res.success) {
+          throw new Error(i18n.global.t('chats.message_rejected'))
+        }
+        dispatch('registerPendingMessage', {
+          transactionId: res.transactionId,
+          messageId,
+          recipientId
+        })
+        return res
+      })
+      .catch((err) => {
+        if (!isAllNodesOfflineError(err)) {
+          dispatch('rejectPendingMessage', {
+            messageId,
+            recipientId
+          })
+        }
+
+        throw err
+      })
+  },
+
+  registerPendingMessage({ commit }, { messageId, recipientId, transactionId }) {
+    commit('updateMessage', {
+      id: messageId,
+      realId: transactionId,
+      status: TS.REGISTERED,
+      partnerId: recipientId
+    })
+
+    commit('deletePendingMessage', messageId)
+  },
+
+  rejectPendingMessage({ commit }, { messageId, recipientId }) {
+    commit('updateMessage', {
+      messageId,
+      status: TS.REJECTED,
+      partnerId: recipientId
+    })
+
+    commit('deletePendingMessage', messageId)
   },
 
   /**
@@ -1041,14 +1294,12 @@ const actions = {
 
   startInterval: {
     root: true,
-    handler({ dispatch, rootState }) {
+    handler({ dispatch, getters }) {
       function repeat() {
         dispatch('getNewMessages')
           .catch((err) => console.error(err))
           .then(() => {
-            const timeout = rootState.options.useSocketConnection
-              ? SOCKET_ENABLED_TIMEOUT
-              : SOCKET_DISABLED_TIMEOUT
+            const timeout = getters.chatsPollingTimeout
             interval = setTimeout(repeat, timeout)
           })
       }
