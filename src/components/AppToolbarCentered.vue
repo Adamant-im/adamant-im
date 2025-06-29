@@ -12,7 +12,7 @@
           </v-toolbar-title>
           <v-progress-circular
             class="spinner"
-            v-show="(consideredOffline || allAdmNodesDisabled) && hasSpinner"
+            v-show="consideredOffline && hasSpinner"
             indeterminate
             :size="24"
           />
@@ -27,8 +27,6 @@ import BackButton from '@/components/common/BackButton/BackButton.vue'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useConsiderOffline } from '@/hooks/useConsiderOffline'
-import { NodeStatusResult } from '@/lib/nodes/abstract.node'
-import { useStore } from 'vuex'
 
 type Props = {
   title?: string
@@ -56,18 +54,12 @@ const props = withDefaults(defineProps<Props>(), {
   sticky: false
 })
 
-const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
 const className = 'app-toolbar-centered'
 
 const { consideredOffline } = useConsiderOffline()
-
-const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
-const allAdmNodesDisabled = computed(() =>
-  admNodes.value.every((node) => node.status === 'disabled')
-)
 
 const classes = computed(() => {
   return {

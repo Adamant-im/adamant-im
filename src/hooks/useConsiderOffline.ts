@@ -8,11 +8,27 @@ export function useConsiderOffline() {
   const isOnline = computed(() => store.getters['isOnline'])
 
   const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
-  const admNodesDisabled = computed(() => admNodes.value.some((node) => node.status === 'disabled'))
-  const admNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
+  const coinNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/coins'])
+  const servicesNodes = computed<NodeStatusResult[]>(() => store.getters['services/services'])
+  const ipfsNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/ipfs'])
+
+  const allNodes = computed<NodeStatusResult[]>(() => [
+    ...admNodes.value,
+    ...coinNodes.value,
+    ...servicesNodes.value,
+    ...ipfsNodes.value
+  ])
+
+  const everyNodeDisabled = computed(() =>
+    allNodes.value.every((node) => node.status === 'disabled')
+  )
+  const anyNodeOnline = computed(() => allNodes.value.some((node) => node.status === 'online'))
 
   const consideredOffline = computed(
-    () => !isOnline.value || (!admNodesOnline.value && !admNodesDisabled.value)
+    () =>
+      !isOnline.value ||
+      (!anyNodeOnline.value && !everyNodeDisabled.value) ||
+      everyNodeDisabled.value
   )
 
   return {
