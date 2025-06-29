@@ -35,6 +35,9 @@
           />
         </v-list-item-title>
       </template>
+
+
+      123213
       <div
         :class="[
           `${className}__inconsistent-status`,
@@ -384,7 +387,8 @@ watch(
     if (value === TransactionStatus.REJECTED || value === TransactionStatus.CONFIRMED) {
       addTransaction(txId.value, value)
     }
-  }
+  },
+  { immediate: true}
 )
 
 const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decimals) => {
