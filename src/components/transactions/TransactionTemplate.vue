@@ -36,8 +36,6 @@
         </v-list-item-title>
       </template>
 
-
-      123213
       <div
         :class="[
           `${className}__inconsistent-status`,
