@@ -373,7 +373,7 @@ export default {
      * @returns {number}
      */
     transferFee() {
-      return isErc20(this.currency)
+      return isEthBased(this.currency)
         ? this.$store.state[this.currency.toLowerCase()].fee || 0
         : this.calculateTransferFee(this.amount)
     },
@@ -626,8 +626,8 @@ export default {
     },
     feeCalculationParams: {
       handler() {
-        if (isErc20(this.currency)) {
-          this.updateErc20Fee()
+        if (isEthBased(this.currency)) {
+          this.updateEthBasedFee()
         }
       },
       deep: true
@@ -975,7 +975,7 @@ export default {
         this.increaseFee
       )
     },
-    updateErc20Fee() {
+    updateEthBasedFee() {
       this.$store
         .dispatch(`${this.currency.toLowerCase()}/updateFee`, {
           amount: this.amount,
@@ -983,7 +983,7 @@ export default {
           increaseFee: this.increaseFee
         })
         .catch((err) => {
-          console.warn('Error updating ERC20 fee:', err)
+          console.warn(`Error updating ${this.currency} fee:`, err)
         })
     }
   }
