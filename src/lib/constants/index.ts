@@ -116,9 +116,6 @@ export const RE_KLY_ADDRESS_LEGACY = /^[0-9]{2,21}L$/
  * when each specific transaction is created
  */
 
-/** Gas limit value for the ETH transfers */
-export const DEFAULT_ETH_TRANSFER_GAS_LIMIT = (CryptosInfo['ETH'] as any).defaultGasLimit // @todo fix type in adamant-wallets
-
 export { AllCryptos, AllCryptosOrder, Cryptos, CryptosInfo, CryptosOrder, type CryptoSymbol }
 
 export default {
@@ -255,3 +252,5 @@ export const REACT_EMOJIS = {
 } as const
 
 export const sidebarLayoutKey = Symbol('sidebarLayout')
+
+export const DEFAULT_ESTIMATE_ADDRESS = '0x0000000000000000000000000000000000000000'
