@@ -206,7 +206,6 @@ import * as transactions from '@klayr/transactions'
 import { KLY_DECIMALS } from '@/lib/klayr/klayr-constants'
 
 import {
-  INCREASE_FEE_MULTIPLIER,
   Cryptos,
   TransactionStatus as TS,
   isErc20,
@@ -374,7 +373,9 @@ export default {
      * @returns {number}
      */
     transferFee() {
-      return this.calculateTransferFee(this.amount)
+      return isErc20(this.currency)
+        ? this.$store.state[this.currency.toLowerCase()].fee || 0
+        : this.calculateTransferFee(this.amount)
     },
 
     /**
@@ -602,6 +603,14 @@ export default {
       const amountRate = (this.finalAmountFixed * currentRate).toFixed(2)
 
       return `${amountRate} ${this.currentCurrency}`
+    },
+    feeCalculationParams() {
+      return {
+        amount: this.amount,
+        cryptoAddress: this.cryptoAddress,
+        increaseFee: this.increaseFee,
+        currency: this.currency
+      }
     }
   },
   watch: {
@@ -614,6 +623,14 @@ export default {
     },
     cryptoAddress(cryptoAddress) {
       this.checkIsNewAccount(cryptoAddress)
+    },
+    feeCalculationParams: {
+      handler() {
+        if (isErc20(this.currency)) {
+          this.updateErc20Fee()
+        }
+      },
+      deep: true
     }
   },
   created() {
@@ -950,16 +967,24 @@ export default {
       return right.length <= units
     },
     calculateTransferFee(amount) {
-      const coef = this.increaseFee ? INCREASE_FEE_MULTIPLIER : 1
-      return (
-        coef *
-        this.$store.getters[`${this.currency.toLowerCase()}/fee`](
-          amount || this.balance,
-          this.cryptoAddress,
-          this.textData,
-          this.account.isNew
-        )
+      return this.$store.getters[`${this.currency.toLowerCase()}/fee`](
+        amount || this.balance,
+        this.cryptoAddress,
+        this.textData,
+        this.account.isNew,
+        this.increaseFee
       )
+    },
+    updateErc20Fee() {
+      this.$store
+        .dispatch(`${this.currency.toLowerCase()}/updateFee`, {
+          amount: this.amount,
+          address: this.cryptoAddress,
+          increaseFee: this.increaseFee
+        })
+        .catch((err) => {
+          console.warn('Error updating ERC20 fee:', err)
+        })
     }
   }
 }
