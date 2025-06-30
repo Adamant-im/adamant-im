@@ -1,5 +1,5 @@
 import * as ethUtils from '../../../lib/eth-utils'
-import { FetchStatus, CryptosInfo } from '@/lib/constants'
+import { FetchStatus, CryptosInfo, DEFAULT_ESTIMATE_ADDRESS } from '@/lib/constants'
 import EthContract from 'web3-eth-contract'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
@@ -12,8 +12,6 @@ let lastStatusUpdate = 0
 const STATUS_INTERVAL = 25000
 /** Interval for updating balances */
 let interval
-
-const DEFAULT_ESTIMATE_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 const initTransaction = async (api, context, ethAddress, amount, nonce) => {
   const contract = new EthContract(Erc20, context.state.contractAddress)
