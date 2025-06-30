@@ -2,10 +2,10 @@
   <crypto-icon :class="classes.cryptoIcon" :crypto="wallet.cryptoCurrency" size="medium" />
 
   <div>
-    <div v-if="isBalanceLoading" :class="classes.balanceLoading">
+    <div v-if="formattedBalance">{{ isBalanceValid ? formattedBalance : '...' }}</div>
+    <div v-else-if="isBalanceLoading" :class="classes.balanceLoading">
       <v-icon :icon="mdiDotsHorizontal" size="18" />
     </div>
-    <div v-else-if="fetchBalanceSucceeded">{{ numberFormat(wallet.balance, 4) }}</div>
     <div v-else :class="classes.balanceError">
       <v-icon :icon="mdiHelpCircleOutline" size="18" />
     </div>
@@ -23,16 +23,15 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent } from 'vue'
+<script lang="ts" setup>
+import { computed, watch } from 'vue'
 import { useStore } from 'vuex'
-import type { PropType } from 'vue'
 
 import { Cryptos, FetchStatus } from '@/lib/constants'
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import numberFormat from '@/filters/numberFormat'
-import { mdiDotsHorizontal,  mdiHelpCircleOutline } from '@mdi/js'
-
+import { mdiDotsHorizontal, mdiHelpCircleOutline } from '@mdi/js'
+import { vibrate } from '@/lib/vibrate'
 
 const className = 'wallet-tab'
 const classes = {
@@ -43,7 +42,7 @@ const classes = {
   rates: `${className}__rates`
 }
 
-type Wallet = {
+export type Wallet = {
   address: string
   balance: number
   cryptoName: string
@@ -54,54 +53,54 @@ type Wallet = {
   hasBalanceLoaded: boolean
 }
 
-export default defineComponent({
-  components: {
-    CryptoIcon
-  },
-  props: {
-    wallet: {
-      type: Object as PropType<Wallet>,
-      required: true
-    },
-    fiatCurrency: {
-      type: String,
-      required: true
-    }
-  },
-  setup(props) {
-    const store = useStore()
+type Props = {
+  wallet: Wallet
+  fiatCurrency: string
+  isBalanceValid: boolean
+}
 
-    const isRateLoaded = computed(() => store.state.rate.isLoaded && props.wallet.rate)
-    const balanceStatus = computed(() => {
-      const { cryptoCurrency } = props.wallet
-      const cryptoModuleName = cryptoCurrency.toLowerCase()
+const props = defineProps<Props>()
 
-      if (cryptoCurrency === Cryptos.ADM) {
-        return store.state.balanceStatus
-      }
+const store = useStore()
 
-      return store.state[cryptoModuleName].balanceStatus
-    })
+const currentBalance = computed(() => props.wallet.balance)
 
-    const isBalanceLoading = computed(() => balanceStatus.value === FetchStatus.Loading)
-    const fetchBalanceSucceeded = computed(() => balanceStatus.value === FetchStatus.Success)
+const isRateLoaded = computed(() => store.state.rate.isLoaded && props.wallet.rate)
+const balanceStatus = computed(() => {
+  const { cryptoCurrency } = props.wallet
+  const cryptoModuleName = cryptoCurrency.toLowerCase()
 
-    return {
-      classes,
-      isRateLoaded,
-      isBalanceLoading,
-      fetchBalanceSucceeded,
-      mdiDotsHorizontal,
-      mdiHelpCircleOutline,
-      numberFormat
-    }
+  if (cryptoCurrency === Cryptos.ADM) {
+    return store.state.balanceStatus
+  }
+
+  return store.state[cryptoModuleName].balanceStatus
+})
+
+const isBalanceLoading = computed(() => balanceStatus.value === FetchStatus.Loading)
+const fetchBalanceSucceeded = computed(() => balanceStatus.value === FetchStatus.Success)
+
+const formattedBalance = computed(() => {
+  const formatted = numberFormat(props.wallet.balance, 4)
+
+  if (props.wallet.balance || fetchBalanceSucceeded.value) {
+    return formatted
+  }
+
+  return null
+})
+
+watch(currentBalance, (newBalance, oldBalance) => {
+  if (oldBalance < newBalance) {
+    vibrate.doubleVeryShort()
   }
 })
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
 
 .wallet-tab {
   &__crypto-icon {
@@ -124,7 +123,7 @@ export default defineComponent({
 .v-theme--light {
   .wallet-tab {
     &__rates {
-      color: map-get($adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'muted');
     }
   }
 }

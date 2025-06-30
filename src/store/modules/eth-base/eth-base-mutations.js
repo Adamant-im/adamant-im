@@ -14,6 +14,10 @@ export default {
     state.balanceStatus = status
   },
 
+  setBalanceActualUntil(state, value) {
+    state.balanceActualUntil = value
+  },
+
   /** Set ETH account */
   account(state, account) {
     state.address = account.address

@@ -6,7 +6,7 @@
       </template>
 
       <v-list-item-title :class="`${className}__title`">
-        {{ $t('home.send_crypto', { crypto }) }}
+        {{ t('home.send_crypto', { crypto }) }}
       </v-list-item-title>
     </v-list-item>
 
@@ -17,7 +17,7 @@
         </template>
 
         <v-list-item-title :class="`${className}__title`">
-          {{ $t('home.stake_and_earn_btn') }}
+          {{ t('home.stake_and_earn_btn') }}
         </v-list-item-title>
       </v-list-item>
 
@@ -27,7 +27,7 @@
         </template>
 
         <v-list-item-title :class="`${className}__title`">
-          {{ $t('home.buy_tokens_btn') }}
+          {{ t('home.buy_tokens_btn') }}
         </v-list-item-title>
       </v-list-item>
 
@@ -37,7 +37,7 @@
         </template>
 
         <v-list-item-title :class="`${className}__title`">
-          {{ $t('home.free_adm_btn') }}
+          {{ t('home.free_adm_btn') }}
         </v-list-item-title>
       </v-list-item>
     </template>
@@ -46,82 +46,70 @@
   </v-list>
 </template>
 
-<script>
-import { AllCryptos } from '@/lib/constants/cryptos'
+<script setup lang="ts">
+import { CryptoSymbol } from '@/lib/constants/cryptos'
 import BuyTokensDialog from '@/components/BuyTokensDialog.vue'
 import Icon from '@/components/icons/BaseIcon.vue'
 import StakeIcon from '@/components/icons/common/Stake.vue'
 import { websiteUriToOnion } from '@/lib/uri'
 
 import { mdiBankTransferOut, mdiFinance, mdiGift } from '@mdi/js'
+import { computed, ref } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
+const className = 'wallet-actions'
 
-export default {
-  components: {
-    BuyTokensDialog,
-    Icon,
-    StakeIcon
-  },
-  props: {
-    crypto: {
-      type: String,
-      default: AllCryptos.ADM,
-      validator: (v) => v in AllCryptos
-    },
-    isADM: {
-      required: true,
-      type: Boolean
+type Props = {
+  crypto: CryptoSymbol
+  isADM: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  crypto: 'ADM'
+})
+
+const store = useStore()
+const router = useRouter()
+const { t } = useI18n()
+
+const showBuyTokensDialog = ref(false)
+
+const hasAdmTokens = computed(() => store.state.balance > 0)
+
+const sendFunds = () => {
+  router.push({
+    name: 'SendFunds',
+    params: {
+      cryptoCurrency: props.crypto
     }
-  },
-  setup() {
-    return {
-      mdiBankTransferOut,
-      mdiFinance,
-      mdiGift
-    }
-  },
-  data: () => ({
-    showBuyTokensDialog: false
-  }),
-  computed: {
-    className: () => 'wallet-actions',
-    hasAdmTokens() {
-      return this.$store.state.balance > 0
-    }
-  },
-  methods: {
-    sendFunds() {
-      this.$router.push({
-        name: 'SendFunds',
-        params: {
-          cryptoCurrency: this.crypto
-        }
-      })
-    },
-    stakeAndEarn() {
-      this.$router.push('/votes')
-    },
-    buyTokens() {
-      this.showBuyTokensDialog = true
-    },
-    getFreeTokens() {
-      const link = websiteUriToOnion(
-        this.$t('home.free_tokens_link') + '?wallet=' + this.$store.state.address
-      )
-      window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
-    }
-  }
+  })
+}
+
+const stakeAndEarn = () => {
+  router.push('/votes')
+}
+
+const buyTokens = () => {
+  showBuyTokensDialog.value = true
+}
+
+const getFreeTokens = () => {
+  const link = websiteUriToOnion(t('home.free_tokens_link') + '?wallet=' + store.state.address)
+  window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
 }
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .wallet-actions {
   &__title {
-    @include a-text-caption-light();
+    @include mixins.a-text-caption-light();
   }
   :deep(.v-list-item__prepend) {
     > .v-icon {
@@ -148,7 +136,7 @@ export default {
   .wallet-actions {
     &__title,
     &__icon {
-      color: map-get($adm-colors, 'regular');
+      color: map.get(colors.$adm-colors, 'regular');
     }
   }
 }
@@ -157,7 +145,7 @@ export default {
   .wallet-actions {
     &__title,
     &__icon {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
   }
 }

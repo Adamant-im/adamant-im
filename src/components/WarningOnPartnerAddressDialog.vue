@@ -7,11 +7,23 @@
 
       <v-divider class="a-divider" />
 
-      <!-- eslint-disable vue/no-v-html -- Safe with DOMPurify.sanitize() content -->
-      <v-card-text>
-        <div :class="`${className}__disclaimer a-text-regular-enlarged`" v-html="content()" />
+      <v-card-text :class="`${className}__card-text`">
+        <div :class="`${className}__disclaimer a-text-regular-enlarged`">
+          {{ about() }}
+        </div>
+
+        <div :class="`${className}__disclaimer ${className}__highlight a-text-regular-enlarged`">
+          {{ details() }}
+        </div>
+
+        <div :class="`${className}__disclaimer a-text-regular-enlarged`">
+          {{ reasons() }}
+        </div>
+
+        <div :class="`${className}__disclaimer a-text-regular-enlarged`">
+          {{ action() }}
+        </div>
       </v-card-text>
-      <!-- eslint-enable vue/no-v-html -->
 
       <v-col cols="12" class="text-center">
         <v-btn :class="[`${className}__btn-hide`, 'a-btn-primary']" @click="hide()">
@@ -26,7 +38,6 @@
 </template>
 
 <script>
-import DOMPurify from 'dompurify'
 import { mdiAlert } from '@mdi/js'
 
 export default {
@@ -58,28 +69,25 @@ export default {
     }
   },
   methods: {
-    header: function () {
-      return (
-        this.$t('transfer.warning_on_partner_address.warning') +
-        ': ' +
-        this.$t('transfer.warning_on_partner_address.headline')
-      )
+    header() {
+      return this.$t('transfer.warning_on_partner_address.headline')
     },
-    content: function () {
-      let contents = '<p>' + this.$t('transfer.warning_on_partner_address.about') + '</p>'
-      contents +=
-        '<p class="a-text-attention">' +
-        this.$t('transfer.warning_on_partner_address.specifics_many_addresses', {
-          crypto: this.info.coin,
-          partner_account: this.info.ADMaddress,
-          partner_name: this.info.ADMname,
-          manyAddresses: this.info.coinAddresses
-        })
-      contents += '</p>'
-      contents += '<p>' + this.$t('transfer.warning_on_partner_address.reasons')
-      contents += ' ' + this.$t('transfer.warning_on_partner_address.what_to_do') + '</p>'
-      contents = DOMPurify.sanitize(contents)
-      return contents
+    about() {
+      return this.$t('transfer.warning_on_partner_address.about')
+    },
+    details() {
+      return this.$t('transfer.warning_on_partner_address.specifics_many_addresses', {
+        crypto: this.info.coin,
+        partner_account: this.info.ADMaddress,
+        partner_name: this.info.ADMname,
+        manyAddresses: this.info.coinAddresses
+      })
+    },
+    reasons() {
+      return this.$t('transfer.warning_on_partner_address.reasons')
+    },
+    action() {
+      return this.$t('transfer.warning_on_partner_address.what_to_do')
     },
     hide() {
       this.show = false
@@ -92,17 +100,29 @@ export default {
   }
 }
 </script>
+
 <style lang="scss" scoped>
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/_settings.scss';
+
 .warning-on-partner-address-dialog {
+  &__card-text {
+    padding: 16px !important;
+  }
   &__disclaimer {
     margin-top: 10px;
   }
-  &__btn-hide {
-    margin-top: 15px;
-    margin-bottom: 30px;
+  &__highlight {
+    background-color: rgba(map.get(colors.$adm-colors, 'attention'), 0.6);
+    padding: 10px;
   }
   &__btn-icon {
     margin-right: 8px;
+  }
+  &__btn-hide {
+    margin-top: 15px;
+    margin-bottom: 20px;
   }
 }
 </style>
