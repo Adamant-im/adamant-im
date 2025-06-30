@@ -7,6 +7,7 @@ import _ from 'lodash'
 const CRYPTOS_DATA_FILE_PATH = resolve('src/lib/constants/cryptos/data.json')
 const CRYPTOS_ICONS_DIR_PATH = resolve('src/components/icons/cryptos')
 const GENERAL_ASSETS_PATH = resolve('adamant-wallets/assets/general')
+const BLOCKCHAINS_ASSETS_PATH = resolve('adamant-wallets/assets/blockchains')
 const BRANCH = process.argv[2]
 
 void run(BRANCH)
@@ -79,30 +80,57 @@ async function initCoins() {
 }
 
 async function applyBlockchains(coins, coinSymbols) {
-  const blockchainsPath = resolve('adamant-wallets', 'assets', 'blockchains')
+  await forEachDir(BLOCKCHAINS_ASSETS_PATH, async ({ name: blockchainName }) => {
+    const blockchainPath = join(BLOCKCHAINS_ASSETS_PATH, blockchainName)
+    const blockchainInfoPath = join(blockchainPath, 'info.json')
 
-  await forEachDir(blockchainsPath, async ({ name: blockchainName }) => {
-    const blockchainPath = join(blockchainsPath, blockchainName)
-    const infoPath = join(blockchainPath, 'info.json')
+    const blockchainInfo = await parseJsonFile(blockchainInfoPath)
 
-    const info = await parseJsonFile(infoPath)
+    if (blockchainInfo.status !== 'active') {
+      return
+    }
 
-    await forEachDir(blockchainPath, async ({ name: coinName }) => {
-      const coinPath = join(blockchainPath, coinName, 'info.json')
-      const coin = await parseJsonFile(coinPath)
+    const mainCoinName = blockchainInfo.mainCoin
+    const mainCoinSymbol = coinSymbols[mainCoinName]
 
-      if (!coins[coin.symbol]) {
+    let mainCoinInfo = {}
+    if (mainCoinSymbol && coins[mainCoinSymbol]) {
+      mainCoinInfo = coins[mainCoinSymbol]
+    }
+
+    await forEachDir(blockchainPath, async ({ name: tokenDirName }) => {
+      const tokenSpecificPath = join(blockchainPath, tokenDirName, 'info.json')
+
+      let tokenSpecificInfo = {}
+      try {
+        tokenSpecificInfo = await parseJsonFile(tokenSpecificPath)
+      } catch {
         return
       }
 
-      coins[coin.symbol] = {
-        ...coins[coin.symbol],
-        ...coin,
-        mainCoin: coinSymbols[info.mainCoin],
-        type: info.type,
-        defaultGasLimit: info.defaultGasLimit,
-        fees: info.fees
+      const tokenSymbol = tokenSpecificInfo.symbol
+      if (!tokenSymbol || !coins[tokenSymbol] || tokenSpecificInfo.status !== 'active') {
+        return
       }
+
+      const mergedTokenInfo = _.merge(
+        {},
+        coins[tokenSymbol],
+        mainCoinInfo,
+        {
+          mainCoin: mainCoinSymbol,
+          type: blockchainInfo.type,
+          defaultGasLimit: blockchainInfo.defaultGasLimit,
+          fees: blockchainInfo.fees,
+          nodes: blockchainInfo.nodes,
+          services: blockchainInfo.services,
+          tor: blockchainInfo.tor,
+          ..._.omit(blockchainInfo, ['mainCoin', 'status'])
+        },
+        tokenSpecificInfo
+      )
+
+      coins[tokenSymbol] = mergedTokenInfo
     })
   })
 }
