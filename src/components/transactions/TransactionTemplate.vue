@@ -35,10 +35,11 @@
           />
         </v-list-item-title>
       </template>
+
       <div
         :class="[
           `${className}__inconsistent-status`,
-          `${className}__inconsistent-status--${transactionStatus}`
+          `${className}__inconsistent-status--${finalStatus || transactionStatus}`
         ]"
       >
         <v-icon
@@ -51,7 +52,6 @@
         }}<span v-if="inconsistentStatus">{{
           ': ' + t(`transaction.inconsistent_reasons.${inconsistentStatus}`, { crypto })
         }}</span>
-        <!--            <span v-if="status.addStatus">{{ ': ' + status.addDescription }}</span>-->
       </div>
     </v-list-item>
 
@@ -164,6 +164,8 @@ import {
   mdiRefresh
 } from '@mdi/js'
 import { useFormattedDate } from '@/hooks/useFormattedDate'
+import { useFinalTransactions } from '@/stores/final-transactions'
+import { storeToRefs } from 'pinia'
 
 const className = 'transaction-view'
 
@@ -223,6 +225,11 @@ const props = defineProps({
 
 const emit = defineEmits(['refetch-status'])
 const store = useStore()
+const finalTransactionsStore = useFinalTransactions()
+
+const { addTransaction, removeTransaction } = finalTransactionsStore
+const { list } = storeToRefs(finalTransactionsStore)
+
 const router = useRouter()
 const route = useRoute()
 const { t } = useI18n()
@@ -254,7 +261,15 @@ const isPendingQuery = computed(() => props.queryStatus === 'pending')
 
 const isRejectedTransaction = computed(() => props.transactionStatus === TransactionStatus.REJECTED)
 
+const txId = computed(() => route.params.txId as string)
+
+const finalStatus = computed(() => list.value[txId.value])
+
 const formattedTransactionStatus = computed(() => {
+  if (finalStatus.value) {
+    return t(`transaction.statuses.${finalStatus.value}`)
+  }
+
   if (isPendingQuery.value) return Symbols.HOURGLASS
 
   return t(`transaction.statuses.${props.transactionStatus}`)
@@ -357,6 +372,21 @@ watch(
     getHistoryRates()
   },
   { immediate: true }
+)
+
+watch(
+  () => props.transactionStatus,
+  (value) => {
+    if (value === TransactionStatus.PENDING) {
+      removeTransaction(txId.value)
+      return
+    }
+
+    if (value === TransactionStatus.REJECTED || value === TransactionStatus.CONFIRMED) {
+      addTransaction(txId.value, value)
+    }
+  },
+  { immediate: true}
 )
 
 const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decimals) => {

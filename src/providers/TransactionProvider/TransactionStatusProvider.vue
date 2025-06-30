@@ -40,11 +40,10 @@ export default defineComponent({
       return isNotFinalized.value && isSupportedCrypto.value
     })
 
-    const { queryStatus, status, inconsistentStatus, refetch } = useTransactionStatusQuery(
-      transactionId,
-      crypto.value as CryptoSymbol,
-      { enabled: queryEnabled }
-    )
+    const { queryStatus, status, inconsistentStatus, refetch, finalStatus } =
+      useTransactionStatusQuery(transactionId, crypto.value as CryptoSymbol, {
+        enabled: queryEnabled
+      })
 
     const transactionStatus = computed(() => {
       if (props.transaction.type === 'UNKNOWN_CRYPTO') {
@@ -68,7 +67,9 @@ export default defineComponent({
       status: transactionStatus,
       inconsistentStatus,
       statusIcon,
-      refetch
+      refetch,
+      transactionId,
+      finalStatus
     }
   }
 })

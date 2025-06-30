@@ -216,7 +216,7 @@ const numOfNewMessages = computed(() => store.getters['chat/numOfNewMessages'](c
 const createdAt = computed(() => props.transaction.timestamp)
 
 const status = computed(() => props.transaction.status)
-const admStatusIcon = computed(() => tsIcon(status.value))
+const admStatusIcon = computed(() => tsIcon(status.value, isTransferType.value))
 const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 </script>
 
