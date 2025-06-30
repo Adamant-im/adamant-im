@@ -113,7 +113,9 @@ const getNewTransactions = () => {
   const doNotUpdate =
     (route.meta.previousRoute as RouteLocationNormalizedLoaded)?.params?.txId &&
     !isFulfilled.value &&
-    (route.meta.previousPreviousRoute as RouteLocationNormalizedLoaded)?.name
+    (route.meta.previousPreviousRoute as RouteLocationNormalizedLoaded)?.name &&
+    (route.meta.previousRoute as RouteLocationNormalizedLoaded)?.params?.crypto ===
+      cryptoModule.value.toUpperCase()
 
   if (doNotUpdate) {
     isFulfilled.value = true
