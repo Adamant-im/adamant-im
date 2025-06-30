@@ -58,6 +58,7 @@ import { clearDb } from '@/lib/idb'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useSaveCursor } from '@/hooks/useSaveCursor'
+import { useConsiderOffline } from '@/hooks/useConsiderOffline'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 
 const className = 'login-form'
@@ -79,6 +80,8 @@ const emit = defineEmits<{
 const router = useRouter()
 const store = useStore()
 const { t } = useI18n()
+const { consideredOffline } = useConsiderOffline()
+
 const passwordInput = useTemplateRef('passwordInput')
 const showSpinner = ref(false)
 const showPassword = ref(false)
@@ -96,7 +99,7 @@ const password = computed({
     emit('update:modelValue', value)
   }
 })
-const isOnline = computed(() => store.getters['isOnline'])
+
 const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
 const admNodesDisabled = computed(() => admNodes.value.some((node) => node.status === 'disabled'))
 
@@ -109,13 +112,13 @@ const submit = () => {
       emit('login')
     })
     .catch((err) => {
-      if (!isOnline.value) {
+      if (err?.message === 'Invalid password') {
+        emit('error', t('login_via_password.incorrect_password'))
+      } else if (consideredOffline.value) {
         emit('error', t('connection.offline'))
         emit('login')
 
         router.push({ name: 'Chats' })
-      } else if (err?.message === 'Invalid password') {
-        emit('error', t('login_via_password.incorrect_password'))
       } else if (isAxiosError(err)) {
         emit('error', t('login.invalid_passphrase'))
       } else if (isAllNodesOfflineError(err)) {

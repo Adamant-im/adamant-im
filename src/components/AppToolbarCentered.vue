@@ -12,7 +12,7 @@
           </v-toolbar-title>
           <v-progress-circular
             class="spinner"
-            v-show="!isOnline && hasSpinner"
+            v-show="consideredOffline && hasSpinner"
             indeterminate
             :size="24"
           />
@@ -24,9 +24,9 @@
 
 <script lang="ts" setup>
 import BackButton from '@/components/common/BackButton/BackButton.vue'
-import { useStore } from 'vuex'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useConsiderOffline } from '@/hooks/useConsiderOffline'
 
 type Props = {
   title?: string
@@ -54,13 +54,12 @@ const props = withDefaults(defineProps<Props>(), {
   sticky: false
 })
 
-const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
 const className = 'app-toolbar-centered'
 
-const isOnline = computed(() => store.getters['isOnline'])
+const { consideredOffline } = useConsiderOffline()
 
 const classes = computed(() => {
   return {
