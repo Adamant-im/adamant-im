@@ -13,6 +13,8 @@ const STATUS_INTERVAL = 25000
 /** Interval for updating balances */
 let interval
 
+const DEFAULT_ESTIMATE_ADDRESS = '0x0000000000000000000000000000000000000000'
+
 const initTransaction = async (api, context, ethAddress, amount, nonce) => {
   const contract = new EthContract(Erc20, context.state.contractAddress)
 
@@ -96,7 +98,7 @@ const createSpecificActions = (api) => ({
           value: '0x0',
           data: contract.methods
             .transfer(
-              address || '0x0000000000000000000000000000000000000000',
+              address || DEFAULT_ESTIMATE_ADDRESS,
               ethUtils.toWhole(amount || 1, state.decimals)
             )
             .encodeABI()
@@ -122,11 +124,7 @@ const createSpecificActions = (api) => ({
 
       const fee = ethUtils.calculateFee(Math.round(finalGasLimit), Math.round(finalGasPrice))
 
-      commit('gasData', {
-        gasPrice: Math.round(finalGasPrice),
-        gasLimit: Math.round(finalGasLimit),
-        fee: Number(fee)
-      })
+      commit('setFee', Number(fee))
     }
   },
 

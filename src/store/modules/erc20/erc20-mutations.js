@@ -7,11 +7,8 @@ export default (getInitialState) => ({
     resetState(state, getInitialState())
   },
 
-  /** Gas price, gas limit and fee */
-  gasData(state, payload) {
-    state.gasPrice = payload.gasPrice
-    state.gasLimit = payload.gasLimit
-    state.fee = payload.fee
+  setFee(state, fee) {
+    state.fee = fee
   },
 
   ...baseMutations
