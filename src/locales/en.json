@@ -370,6 +370,8 @@
     "invalid_qr_code": "QR code does not contain an address or unrecognizable",
     "no_address_text": "This user hasn't activated their public {crypto} wallet yet",
     "no_address_title": "Recipient has no public {crypto} wallet",
+    "no_address_text_offline": "Failed to retrieve the user's public {crypto} wallet address. Please check your connection.",
+    "no_address_title_offline": "Connection issue",
     "legacy_address_text": "This user has a legacy {crypto} wallet. It will automatically update when they log in using the newest app version.",
     "legacy_address_title": "Recipient has legacy {crypto} wallet",
     "page_title": "Send funds",
