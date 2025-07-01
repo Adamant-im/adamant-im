@@ -295,13 +295,6 @@ const spinnerTop = computed(() => {
     justify-content: center;
     pointer-events: none;
     z-index: 100;
-    &_no-messages {
-      margin-top: chat.$placeholder-height + 42px;
-
-      @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-        margin-top: chat.$placeholder-height-mobile + 42px;
-      }
-    }
   }
 }
 

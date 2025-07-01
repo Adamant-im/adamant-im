@@ -71,17 +71,13 @@ function openLink() {
     margin: auto;
     display: flex;
     flex-direction: column;
-    height: chat.$placeholder-height;
+    height: auto;
     justify-content: flex-start;
     align-items: center;
     row-gap: 5px;
     padding: 16px;
     background: map.get(colors.$adm-colors, 'black');
     border-radius: 8px;
-
-    @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-      height: chat.$placeholder-height-mobile;
-    }
 
     &_public-key {
       height: auto;
