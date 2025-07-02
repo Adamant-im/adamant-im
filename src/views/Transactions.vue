@@ -34,13 +34,13 @@
       </v-list>
 
       <h3 v-else class="a-text-caption text-center mt-6">
-        {{ $t('transaction.no_transactions') }}
+        {{ t('transaction.no_transactions') }}
       </h3>
     </template>
   </navigation-wrapper>
 </template>
 
-<script>
+<script lang="ts" setup>
 import InlineSpinner from '@/components/InlineSpinner.vue'
 import TransactionListItem from '@/components/TransactionListItem.vue'
 import { isStringEqualCI } from '@/lib/textHelpers'
@@ -49,202 +49,206 @@ import { useSavedScroll } from '@/hooks/useSavedScroll'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useStore } from 'vuex'
-import { onBeforeRouteUpdate, useRoute } from 'vue-router'
+import { onBeforeRouteUpdate, RouteLocationNormalizedLoaded, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import navigationGuard from '@/router/navigationGuard'
+import { CoinTransaction } from '@/lib/nodes/types/transaction'
+import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 
-export default {
-  components: {
-    NavigationWrapper,
-    InlineSpinner,
-    TransactionListItem
-  },
-  props: {
-    crypto: {
-      default: 'ADM',
-      type: String
-    }
-  },
-  setup(props) {
-    const className = 'transactions'
+const props = withDefaults(
+  defineProps<{
+    crypto: string
+  }>(),
+  {
+    crypto: 'ADM'
+  }
+)
 
-    const classes = {
-      root: className,
-      content: `${className}__content`
-    }
+const store = useStore()
+const router = useRouter()
+const route = useRoute()
+const { t } = useI18n()
 
-    const store = useStore()
-    const route = useRoute()
-    const { t } = useI18n()
+const { hasView, sidebarLayoutRef } = useSavedScroll()
 
-    const { hasView, sidebarLayoutRef } = useSavedScroll()
+const isFulfilled = ref(false)
+const isRejected = ref(false)
 
-    const isFulfilled = ref(false)
-    const isRejected = ref(false)
-    const isUpdating = ref(false)
+const cryptoModule = computed(() => {
+  return props.crypto.toLowerCase()
+})
 
-    const cryptoModule = computed(() => {
-      return props.crypto.toLowerCase()
-    })
+const isRecentLoading = computed(() => store.getters[`${cryptoModule.value}/areRecentLoading`])
 
-    const isRecentLoading = computed(() => {
-      return store.getters[`${cryptoModule.value}/areRecentLoading`]
-    })
+const isOlderLoading = computed(() => store.getters[`${cryptoModule.value}/areOlderLoading`])
 
-    const isOlderLoading = computed(() => store.getters[`${cryptoModule.value}/areOlderLoading`])
+const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
+const isIDBReady = computed(() => store.state.IDBReady)
+const transactions = computed(() => {
+  const transactions: (CoinTransaction & { data?: string })[] =
+    store.getters[`${cryptoModule.value}/sortedTransactions`]
 
-    const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
-    const isIDBReady = computed(() => store.state.IDBReady)
+  const address = store.state[props.crypto.toLowerCase()].address
+  return transactions.filter((tx) => {
+    // Filter invalid "fake" transactions (from chat rich message)
+    return (
+      Object.prototype.hasOwnProperty.call(tx, 'amount') &&
+      (isStringEqualCI(tx.recipientId, address) || isStringEqualCI(tx.senderId, address))
+    )
+  })
+})
+const hasTransactions = computed(() => transactions.value && transactions.value.length > 0)
+const nodes = computed<NodeStatusResult[]>(
+  () => store.getters[`nodes/${props.crypto.toLowerCase()}`]
+)
+const areNodesDisabled = computed(() => nodes.value?.some((node) => node.status === 'disabled'))
+const areNodesOnline = computed(() => nodes.value?.some((node) => node.status === 'online'))
+const isOnline = computed(() => store.getters['isOnline'])
 
-    onBeforeRouteUpdate((to, from, next) => {
-      navigationGuard.transactions(to, from, next)
-    })
+onBeforeRouteUpdate((to, from, next) => {
+  navigationGuard.transactions(to, from, next)
+})
 
-    const getNewTransactions = () => {
-      const doNotUpdate =
-        route.meta.previousRoute?.params?.txId &&
-        !isFulfilled.value &&
-        route.meta.previousPreviousRoute &&
-        route.meta.previousPreviousRoute.name
+const getNewTransactions = () => {
+  const doNotUpdate =
+    (route.meta.previousRoute as RouteLocationNormalizedLoaded)?.params?.txId &&
+    !isFulfilled.value &&
+    (route.meta.previousPreviousRoute as RouteLocationNormalizedLoaded)?.name &&
+    (route.meta.previousRoute as RouteLocationNormalizedLoaded)?.params?.crypto ===
+      cryptoModule.value.toUpperCase()
 
-      if (doNotUpdate) {
+  if (doNotUpdate) {
+    isFulfilled.value = true
+  } else {
+    store
+      .dispatch(`${cryptoModule.value}/getNewTransactions`)
+      .then(() => {
         isFulfilled.value = true
-      } else {
-        store
-          .dispatch(`${cryptoModule.value}/getNewTransactions`)
-          .then(() => {
-            isFulfilled.value = true
-          })
-          .catch((err) => {
-            isRejected.value = true
-            let message = err.message
-            if (err instanceof AllNodesOfflineError) {
-              message = t('errors.all_nodes_offline', {
-                crypto: err.nodeLabel.toUpperCase()
-              })
-            } else if (err instanceof AllNodesDisabledError) {
-              message = t('errors.all_nodes_disabled', {
-                crypto: err.nodeLabel.toUpperCase()
-              })
-            }
-
-            store.dispatch('snackbar/show', {
-              message
-            })
-          })
-      }
-    }
-
-    const onScroll = (event) => {
-      const { target } = event
-
-      const height = target.offsetHeight
-      const windowHeight = window.innerHeight
-      const scrollPosition = Math.ceil(target.scrollTop || 0)
-
-      // If we've scrolled to the very bottom, fetch the older transactions from server
-      if (!isOlderLoading.value && windowHeight + scrollPosition >= height) {
-        store.dispatch(`${cryptoModule.value}/getOldTransactions`)
-      }
-      // If we've scrolled to the very top, fetch the recent transactions from server
-      if (!isRecentLoading.value && scrollPosition === 0) {
-        getNewTransactions()
-      }
-    }
-
-    onMounted(() => {
-      if (!isLoginViaPassword.value || isIDBReady.value) {
-        getNewTransactions()
-      }
-
-      sidebarLayoutRef.value.addEventListener('scroll', onScroll)
-    })
-
-    onBeforeUnmount(() => {
-      sidebarLayoutRef.value.removeEventListener('scroll', onScroll)
-    })
-
-    watch(isIDBReady, (newVal) => {
-      if (newVal) {
-        getNewTransactions()
-      }
-    })
-
-    return {
-      cryptoModule,
-      classes,
-      hasView,
-      isOlderLoading,
-      isRecentLoading,
-      isFulfilled,
-      isRejected,
-      isUpdating,
-      onScroll
-    }
-  },
-  computed: {
-    transactions() {
-      const transactions = this.$store.getters[`${this.cryptoModule}/sortedTransactions`]
-
-      const address = this.$store.state[this.crypto.toLowerCase()].address
-      return transactions.filter((tx) => {
-        // Filter invalid "fake" transactions (from chat rich message)
-        return (
-          Object.prototype.hasOwnProperty.call(tx, 'amount') &&
-          (isStringEqualCI(tx.recipientId, address) || isStringEqualCI(tx.senderId, address))
-        )
       })
-    },
-    hasTransactions() {
-      return this.transactions && this.transactions.length > 0
-    }
-  },
-  methods: {
-    sender(transaction) {
-      const { senders, senderId } = transaction
-      const onlySender = senderId && (!senders || senders.length === 1)
-      if (onlySender) {
-        return senderId
-      } else if (senders) {
-        return this.formatAddresses(senders)
-      }
-    },
-    recipient(transaction) {
-      const { recipientId, recipients } = transaction
-      const onlyRecipient = recipientId && (!recipients || recipients.length === 1)
-      if (onlyRecipient) {
-        return recipientId
-      } else if (recipients) {
-        return this.formatAddresses(recipients)
-      }
-    },
-    formatAddresses(addresses) {
-      const count = addresses.length
-      return addresses.includes(this.$store.state[this.crypto.toLowerCase()].address)
-        ? `${
-            this.$t('transaction.me') +
-            ' (' +
-            this.$store.state[this.cryptoModule].address +
-            ') ' +
-            this.$t('transaction.addresses', count - 1)
-          }`
-        : addresses[0] + ' ' + this.$t('transaction.addresses', count - 1)
-    },
-    goToTransaction(transactionId) {
-      this.$router.push({
-        name: 'Transaction',
-        params: {
-          crypto: this.crypto,
-          txId: transactionId
+      .catch((err) => {
+        isRejected.value = true
+        let message = err.message
+        if (err instanceof AllNodesOfflineError) {
+          message = t('errors.all_nodes_offline', {
+            crypto: err.nodeLabel.toUpperCase()
+          })
+
+          if (!areNodesDisabled.value) {
+            return
+          }
+        } else if (err instanceof AllNodesDisabledError) {
+          message = t('errors.all_nodes_disabled', {
+            crypto: err.nodeLabel.toUpperCase()
+          })
         }
+
+        store.dispatch('snackbar/show', {
+          message
+        })
       })
-    },
-    goToChat(partnerId) {
-      this.$router.push({
-        name: 'Chat',
-        params: { partnerId }
-      })
-    }
   }
 }
+
+const onScroll = (event: Event) => {
+  const target = event.target as HTMLElement
+
+  const height = target.offsetHeight
+  const scrollHeight = target.scrollHeight
+  const scrollPosition = Math.ceil(target.scrollTop || 0)
+
+  // If we've scrolled to the very bottom, fetch the older transactions from server
+  if (!isOlderLoading.value && height + scrollPosition >= scrollHeight) {
+    store.dispatch(`${cryptoModule.value}/getOldTransactions`)
+  }
+  // If we've scrolled to the very top, fetch the recent transactions from server
+  if (!isRecentLoading.value && scrollPosition === 0) {
+    getNewTransactions()
+  }
+}
+
+const sender = (transaction: CoinTransaction & { senders?: string[] }) => {
+  const { senders, senderId } = transaction
+  const onlySender = senderId && (!senders || senders.length === 1)
+  if (onlySender) {
+    return senderId
+  } else if (senders) {
+    return formatAddresses(senders)
+  }
+
+  return ''
+}
+
+const recipient = (transaction: CoinTransaction & { recipients?: string[] }) => {
+  const { recipientId, recipients } = transaction
+  const onlyRecipient = recipientId && (!recipients || recipients.length === 1)
+  if (onlyRecipient) {
+    return recipientId
+  } else if (recipients) {
+    return formatAddresses(recipients)
+  }
+
+  return ''
+}
+
+const formatAddresses = (addresses: string[]) => {
+  const count = addresses.length
+  return addresses.includes(store.state[props.crypto.toLowerCase()].address)
+    ? `${
+        t('transaction.me') +
+        ' (' +
+        store.state[cryptoModule.value].address +
+        ') ' +
+        t('transaction.addresses', count - 1)
+      }`
+    : addresses[0] + ' ' + t('transaction.addresses', count - 1)
+}
+
+const goToTransaction = (transactionId: string) => {
+  router.push({
+    name: 'Transaction',
+    params: {
+      crypto: props.crypto,
+      txId: transactionId
+    }
+  })
+}
+
+const goToChat = (partnerId: string) => {
+  router.push({
+    name: 'Chat',
+    params: { partnerId }
+  })
+}
+
+const handleLoading = (isConnected: boolean) => {
+  if (isConnected && isRecentLoading.value) getNewTransactions()
+  if (isConnected && isOlderLoading.value)
+    store.dispatch(`${cryptoModule.value}/getOldTransactions`)
+}
+
+onMounted(() => {
+  if (!isLoginViaPassword.value || isIDBReady.value) {
+    getNewTransactions()
+  }
+
+  sidebarLayoutRef?.value.addEventListener('scroll', onScroll)
+})
+
+onBeforeUnmount(() => {
+  sidebarLayoutRef?.value.removeEventListener('scroll', onScroll)
+})
+
+watch(isOnline, (online) => {
+  if (props.crypto !== 'ADM') handleLoading(online as boolean)
+})
+
+watch(areNodesOnline, (nodesOnline) => {
+  if (props.crypto === 'ADM') handleLoading(nodesOnline)
+})
+
+watch(isIDBReady, (newVal) => {
+  if (newVal) {
+    getNewTransactions()
+  }
+})
 </script>

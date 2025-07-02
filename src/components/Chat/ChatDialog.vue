@@ -1,16 +1,18 @@
 <template>
   <v-dialog v-model="show" width="500">
     <v-card>
-      <v-card-title class="headline">
+      <v-card-title class="a-text-header">
         {{ title }}
       </v-card-title>
 
-      <v-card-text>{{ text }}</v-card-text>
+      <v-divider class="a-divider" />
+
+      <v-card-text class="pa-4">{{ text }}</v-card-text>
 
       <v-card-actions>
         <v-spacer />
 
-        <v-btn variant="text" @click="show = false">
+        <v-btn variant="text" class="a-btn-regular" @click="show = false">
           {{ $t('chats.ok') }}
         </v-btn>
       </v-card-actions>

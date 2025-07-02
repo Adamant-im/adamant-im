@@ -4,9 +4,11 @@
     <a-chat
       ref="chatRef"
       :messages="messages"
+      :show-new-chat-placeholder="showNewChatPlaceholder"
       :partners="partners"
+      :is-getting-public-key="isGettingPublicKey"
       :user-id="userId"
-      :loading="loading"
+      :loading="loading && !isGettingPublicKey"
       :locale="$i18n.locale"
       @scroll:top="onScrollTop"
       @scroll:bottom="onScrollBottom"
@@ -92,7 +94,6 @@
 
       <template #placeholder>
         <chat-placeholder
-          v-if="!isWelcomeChat(partnerId)"
           :show-placeholder="showNewChatPlaceholder"
           :is-getting-public-key="isGettingPublicKey"
           :is-key-missing="isKeyMissing"
@@ -320,6 +321,7 @@ import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import { useChatStateStore } from '@/stores/modal-state'
 import ChatPlaceholder from '@/components/Chat/ChatPlaceholder.vue'
 import { watchImmediate } from '@vueuse/core'
+import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -342,7 +344,6 @@ const { t } = useI18n()
 const showSpinner = useChatsSpinner()
 
 const isMenuOpen = ref(false)
-const isFirstCallSkipped = ref(false)
 
 const attachments = useAttachments(props.partnerId)()
 const handleAttachments = (files: FileData[]) => {
@@ -374,9 +375,12 @@ const flashingMessageId = ref<string | -1>(-1)
 const actionsMenuMessageId = ref<string | -1>(-1)
 const replyMessageId = ref<string | -1>(-1)
 const showEmojiPicker = ref(false)
-const showNewChatPlaceholder = ref(false)
 const isGettingPublicKey = ref(false)
 const isKeyMissing = ref(false)
+
+// to handle loading spinner and allow fetching messages while the spinner is shown
+// in case of connection troubles while first fetching
+const allowFetchingMessages = ref(true)
 
 const chatStateStore = useChatStateStore()
 
@@ -433,6 +437,15 @@ const replyMessage = computed<NormalizedChatMessageTransaction>(() =>
 const actionMessage = computed<NormalizedChatMessageTransaction>(() =>
   store.getters['chat/messageById'](actionsMenuMessageId.value)
 )
+const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
+const areAdmNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
+const allowPlaceholder = computed(
+  () =>
+    !isWelcomeChat(props.partnerId) &&
+    (isNewChat.value || chatPage.value >= 1 || isAdamantChat(props.partnerId))
+)
+
+const showNewChatPlaceholder = ref(false)
 
 const chatFormRef = ref<any>(null) // @todo type
 const chatRef = ref<any>(null) // @todo type
@@ -470,13 +483,16 @@ watch(replyMessageId, (messageId) => {
   })
 })
 
-watch(userMessages, () => {
-  // isFirstCallSkipped needed in order to properly handle reloading of a chat where the last
-  // message was from the partner and not you (do not show placeholder)
-  if (isFulfilled.value && isFirstCallSkipped.value) {
-    showNewChatPlaceholder.value = !userMessages.value.length
-  } else {
-    isFirstCallSkipped.value = true
+watch(areAdmNodesOnline, async (nodesOnline) => {
+  if (!nodesOnline) return
+
+  if (isGettingPublicKey.value) {
+    const partnerName = store.getters['chat/getPartnerName'](props.partnerId)
+    await createChat(props.partnerId, partnerName)
+  }
+
+  if (loading.value && allowFetchingMessages.value) {
+    await fetchChatMessages()
   }
 })
 
@@ -487,15 +503,28 @@ watchImmediate(messages, (updatedMessages) => {
 })
 
 onBeforeMount(() => {
+  const cachedMessages: NormalizedChatMessageTransaction[] = store.getters['chat/messages'](
+    props.partnerId
+  )
+
+  const chatExists = !!store.state.chat.chats[props.partnerId]
+  const noMessagesAtAll = cachedMessages.length === 0
+
+  // chatOffset check - for adamant chats (e.g. donation, Adelina) because they might have chatPage = 0
+  const loadedOnce = chatPage.value >= 1 || store.getters['chat/chatOffset'](props.partnerId) === -1
+  const hasUserMessages = cachedMessages.some((message) => message.senderId === userId.value)
+
+  if (isNewChat.value || (chatExists && (noMessagesAtAll || (loadedOnce && !hasUserMessages)))) {
+    showNewChatPlaceholder.value = true
+  }
+
   window.addEventListener('keydown', onKeyPress)
 })
 
 onMounted(async () => {
-  if (isNewChat.value) {
-    showNewChatPlaceholder.value = true
+  if (!isNewChat.value && isFulfilled.value && chatPage.value <= 0) {
+    await fetchChatMessages()
   }
-
-  if (chatPage.value <= 0) await fetchChatMessages()
 
   await handleEmptyChat()
 
@@ -515,16 +544,10 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeyPress)
   Visibility.unbind(Number(visibilityId.value))
-
-  if (isNewChat.value) {
-    store.commit('chat/removeNewChat', props.partnerId)
-  }
 })
 
 const handleEmptyChat = async () => {
-  showNewChatPlaceholder.value = !userMessages.value.length
-
-  if (!messages.value.length) {
+  if (!messages.value.length && !store.state.chat.chats[props.partnerId]) {
     store.commit('chat/addNewChat', { partnerId: props.partnerId })
   }
 
@@ -536,18 +559,24 @@ const handleEmptyChat = async () => {
 }
 
 const createChat = async (partnerId: string, partnerName: string) => {
-  try {
-    isGettingPublicKey.value = true
-    await store.dispatch('chat/createChat', {
+  isGettingPublicKey.value = true
+  store
+    .dispatch('chat/createChat', {
       partnerId,
       partnerName
     })
-  } catch {
-    vibrate.long()
-    isKeyMissing.value = true
-  } finally {
-    isGettingPublicKey.value = false
-  }
+    .then((key) => {
+      if (key) {
+        isGettingPublicKey.value = false
+      }
+    })
+    .catch((error: unknown) => {
+      vibrate.long()
+      if ((error as Error).message === t('chats.no_public_key')) {
+        isKeyMissing.value = true
+        isGettingPublicKey.value = false
+      }
+    })
 }
 
 /**
@@ -682,7 +711,7 @@ const markAsRead = () => {
   store.commit('chat/markAsRead', props.partnerId)
 }
 
-const onScrollTop = () => {
+const onScrollTop = async () => {
   fetchChatMessages()
 }
 
@@ -826,21 +855,33 @@ const openTransaction = (transaction: NormalizedChatMessageTransaction) => {
 const isTransaction = (type: string) => {
   return type in Cryptos || type === 'UNKNOWN_CRYPTO'
 }
-const fetchChatMessages = () => {
+
+const fetchChatMessages = async () => {
   if (noMoreMessages.value) return
-  if (loading.value) return
+  if (loading.value && !allowFetchingMessages.value) return
 
   loading.value = true
 
-  return store
-    .dispatch('chat/getChatRoomMessages', { contactId: props.partnerId })
-    .catch(() => {
+  try {
+    await store.dispatch('chat/getChatRoomMessages', { contactId: props.partnerId })
+    showNewChatPlaceholder.value = allowPlaceholder.value && !userMessages.value.length
+    loading.value = false
+    allowFetchingMessages.value = false
+
+    if (store.getters['chat/chatOffset'](props.partnerId) === -1) {
       noMoreMessages.value = true
-    })
-    .finally(() => {
+    }
+  } catch {
+    if (store.getters['chat/chatOffset'](props.partnerId) !== -1) {
+      return (allowFetchingMessages.value = true)
+    }
+    loading.value = false
+  } finally {
+    if (isWelcomeChat(props.partnerId)) {
       loading.value = false
-      chatRef.value.maintainScrollPosition()
-    })
+    }
+    chatRef.value.maintainScrollPosition()
+  }
 }
 const fetchUntilFindTransaction = (transactionId: string) => {
   const fetchMessages = async () => {

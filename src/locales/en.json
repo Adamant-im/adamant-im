@@ -34,10 +34,10 @@
     "partner_info": "Partner info",
     "partner_name": "Partner name",
     "placeholder": {
-      "anonymous": "\uD83D\uDD76\uFE0F Anonymous: partners never see your IP address",
-      "censorship": "⛓\uFE0F Censorship-resistant blockchain architecture",
-      "encrypted": "\uD83D\uDD10 End-to-end encrypted across all devices",
-      "ipfs": "☁\uFE0F Decentralized IPFS storage for files/media",
+      "anonymous": "\uD83D\uDD76\uFE0F Anonymous: partners never\u00A0see\u00A0your\u00A0IP\u00A0address",
+      "censorship": "⛓\uFE0F Censorship-resistant blockchain\u00A0architecture",
+      "encrypted": "\uD83D\uDD10 End-to-end encrypted across\u00A0all\u00A0devices",
+      "ipfs": "☁\uFE0F Decentralized IPFS storage for\u00A0files/media",
       "can_not_message": "Cannot message this user yet—their account isn't activated",
       "what_does_it_mean": {
         "text": "What does it mean?",
@@ -370,6 +370,8 @@
     "invalid_qr_code": "QR code does not contain an address or unrecognizable",
     "no_address_text": "This user hasn't activated their public {crypto} wallet yet",
     "no_address_title": "Recipient has no public {crypto} wallet",
+    "no_address_text_offline": "Failed to retrieve the user's public {crypto} wallet address. Please check your connection.",
+    "no_address_title_offline": "Connection issue",
     "legacy_address_text": "This user has a legacy {crypto} wallet. It will automatically update when they log in using the newest app version.",
     "legacy_address_title": "Recipient has legacy {crypto} wallet",
     "page_title": "Send funds",

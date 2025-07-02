@@ -4,6 +4,7 @@ import navigationGuard from '@/router/navigationGuard'
 import IsLogged from '@/middlewares/isLogged'
 import AuthMiddleware from '@/middlewares/auth'
 import DocumentTitle from '@/middlewares/title'
+import KeepSendFunds from '@/middlewares/keepSendFunds'
 import Chat from '@/views/Chat.vue'
 
 import Login from '@/views/Login.vue'
@@ -202,5 +203,6 @@ const router = createRouter({
 router.beforeEach(IsLogged)
 router.beforeEach(AuthMiddleware)
 router.beforeEach(DocumentTitle)
+router.beforeEach(KeepSendFunds)
 
 export { router }
