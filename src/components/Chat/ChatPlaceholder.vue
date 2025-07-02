@@ -71,7 +71,7 @@ function openLink() {
     margin: auto;
     display: flex;
     flex-direction: column;
-    height: chat.$placeholder-height;
+    height: auto;
     justify-content: flex-start;
     align-items: center;
     row-gap: 5px;

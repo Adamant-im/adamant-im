@@ -276,6 +276,7 @@ const spinnerTop = computed(() => {
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/components/_chat.scss';
+@use 'vuetify/settings';
 
 .a-chat {
   &__body {
