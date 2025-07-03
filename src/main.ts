@@ -36,6 +36,17 @@ registerGlobalComponents(app)
 
 app.mount('#app')
 
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker
+    .register('/firebase/firebase-messaging-sw.js', { scope: '/firebase/' })
+    .then((reg) => {
+      console.log('[firebase SW] registered', reg.scope)
+    })
+    .catch((err) => {
+      console.error('[firebase SW] registration failed', err)
+    })
+}
+
 window.ep = app
 
 document.title = i18n.global.t('app_title')

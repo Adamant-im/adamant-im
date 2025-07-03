@@ -59,7 +59,36 @@ onMounted(() => {
   window.addEventListener('keydown', onKeydownHandler, true)
   window.addEventListener('openChat', handleOpenChat)
   navigator.serviceWorker?.addEventListener('message', handleServiceWorkerMessage)
+
+  if (typeof BroadcastChannel !== 'undefined') {
+    const channel = new BroadcastChannel('adm_notifications')
+
+    // Send initial settings to firebase-messaging SW
+    setTimeout(() => {
+      const currentNotificationType = store.state.options.allowNotificationType
+      channel.postMessage({ notificationType: currentNotificationType })
+
+      if (currentNotificationType === notificationType['Push'] && store.state.passphrase) {
+        sendPrivateKeyToFirebaseSW()
+      }
+    }, 1000)
+  }
 })
+
+const sendPrivateKeyToFirebaseSW = async () => {
+  try {
+    if (store.state.passphrase) {
+      const privateKey = await store.dispatch('getPrivateKeyForPush')
+      if (privateKey && typeof BroadcastChannel !== 'undefined') {
+        const channel = new BroadcastChannel('adm_notifications')
+        channel.postMessage({ privateKey })
+        setTimeout(() => channel.close(), 1000)
+      }
+    }
+  } catch (error) {
+    console.error('Error sending private key to Firebase SW:', error)
+  }
+}
 
 onBeforeUnmount(() => {
   notifications.value?.stop()
@@ -142,6 +171,8 @@ watch(
           const { pushService } = await import('@/lib/notifications/pushServiceFactory')
           pushService.setPrivateKey(privateKey)
           await registerServiceWorker()
+
+          sendPrivateKeyToFirebaseSW()
         }
       } catch (error) {
         store.dispatch('snackbar/show', {
