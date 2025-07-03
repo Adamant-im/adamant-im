@@ -239,7 +239,7 @@ export async function encodeFile(file, params) {
  * @param {object} payload message payload
  */
 export function sendSpecialMessage(to, payload) {
-  return sendMessage({ to, message: payload, type: MessageType.RICH_CONTENT_MESSAGE })
+  return sendMessage({ to, message: payload, type: MessageType.SIGNAL_MESSAGE })
 }
 
 /**

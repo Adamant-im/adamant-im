@@ -359,10 +359,24 @@ const darkTheme = computed({
 const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
 const lastSuccessfulNotificationType = ref(allowNotificationType.value)
 
+const syncPushSettings = (notificationType: number) => {
+  if (typeof BroadcastChannel !== 'undefined') {
+    const channel = new BroadcastChannel('adm_notifications')
+    channel.postMessage({ notificationType })
+    console.log('📡 Options: Synced notification settings with Firebase SW:', notificationType)
+
+    setTimeout(() => {
+      channel.close()
+    }, 1000)
+  }
+}
+
 watch(allowNotificationType, (newVal, oldVal) => {
   if (newVal === lastSuccessfulNotificationType.value) {
     return
   }
+
+  syncPushSettings(newVal)
 
   const isNotPushNotification =
     newVal === notificationType['No Notifications'] ||
@@ -382,7 +396,16 @@ watch(allowNotificationType, (newVal, oldVal) => {
 const setPushNotifications = async (enabled: boolean) => {
   try {
     if (enabled) {
-      await pushService.initialize()
+      const initialized = await pushService.initialize()
+
+      if (!initialized) {
+        store.dispatch('snackbar/show', {
+          message: t('options.push_not_supported'),
+          timeout: 5000
+        })
+        allowNotificationType.value = lastSuccessfulNotificationType.value
+        return
+      }
       const permissionGranted = await pushService.requestPermissions()
 
       if (!permissionGranted) {

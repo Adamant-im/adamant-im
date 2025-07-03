@@ -29,19 +29,27 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
 export async function initializePushNotifications(): Promise<string | null> {
   if (!fcm) return null
 
-  let swRegistration = await registerServiceWorker()
+  let swRegistration = await navigator.serviceWorker.getRegistration('/firebase/')
 
   if (!swRegistration) {
-    swRegistration = await navigator.serviceWorker.ready
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+    swRegistration = await navigator.serviceWorker.getRegistration('/firebase/')
   }
 
-  if (!swRegistration) return null
+  if (!swRegistration) {
+    return null
+  }
 
   try {
+    if (!fcm) {
+      throw new Error('Firebase Messaging not available')
+    }
+
     const token = await getToken(fcm, {
       vapidKey: VAPID_KEY,
       serviceWorkerRegistration: swRegistration
     })
+
     return token || null
   } catch (error) {
     console.error('FCM Token error:', error)
