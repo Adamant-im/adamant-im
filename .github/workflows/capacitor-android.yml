@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - dev
+  workflow_dispatch:
 
 env:
   GH_TOKEN: ${{ secrets.github_token }}
@@ -13,7 +14,6 @@ env:
   ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
   ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
   ANDROID_KEYSTORE_ALIAS_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASSWORD }}
-  ANDROID_RELEASE_TYPE: 'AAB' # APK or AAB
 
 jobs:
   release:
@@ -23,14 +23,17 @@ jobs:
       - name: Checkout repository 🛎️
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK LTS
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'zulu'
+          java-version: '21'
+          distribution: 'jetbrains'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+
+      - name: Install ApkSigner
+        run: sudo apt install -y apksigner
 
       - name: Setup Node version 🍀
         uses: actions/setup-node@v4
@@ -51,7 +54,7 @@ jobs:
           base64 -d android/keystore.base64 > android/app.keystore
           rm android/keystore.base64
 
-      - name: Build and Sign Android App 🛠️
+      - name: Build and Sign Android App (APK) 🛠️
         run: |
           npx cap sync
           npx cap build android \
@@ -59,13 +62,25 @@ jobs:
             --keystorepass $ANDROID_KEYSTORE_PASSWORD \
             --keystorealias $ANDROID_KEYSTORE_ALIAS \
             --keystorealiaspass $ANDROID_KEYSTORE_ALIAS_PASSWORD \
-            --androidreleasetype $ANDROID_RELEASE_TYPE
+            --androidreleasetype APK \
+            --signing-type apksigner
+
+      - name: Build and Sign Android App (AAB) 🛠️
+        run: |
+          npx cap sync
+          npx cap build android \
+            --keystorepath $ANDROID_KEYSTORE_PATH \
+            --keystorepass $ANDROID_KEYSTORE_PASSWORD \
+            --keystorealias $ANDROID_KEYSTORE_ALIAS \
+            --keystorealiaspass $ANDROID_KEYSTORE_ALIAS_PASSWORD \
+            --androidreleasetype AAB
 
       - name: Save artifacts 💾
         uses: actions/upload-artifact@v4
         with:
           name: android-release-app
           path: |
+            android/app/build/outputs/apk/release/*
             android/app/build/outputs/bundle/release/*
 
       - name: Clean Keystore file 🧹

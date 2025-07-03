@@ -32,7 +32,7 @@ export default {
    * Retrieves new transactions: those that follow the most recently retrieved one.
    * @param {any} context Vuex action context
    */
-  getNewTransactions(context) {
+  async getNewTransactions(context) {
     const options = {}
     options.minAmount = 1
     // Magic here helps to refresh Tx list when browser deletes it
@@ -51,32 +51,28 @@ export default {
     }
 
     context.commit('areRecentLoading', true)
-    return admApi.getTransactions(options).then(
-      (response) => {
-        context.commit('areRecentLoading', false)
-        if (response.transactions.length > 0) {
-          context.commit('transactions', {
-            transactions: response.transactions,
-            updateTimestamps: true
-          })
-          // get new transactions until we fetch the newest one
-          if (options.fromHeight && response.transactions.length === admApi.TX_CHUNK_SIZE) {
-            this.dispatch('adm/getNewTransactions')
-          }
-        }
-      },
-      (error) => {
-        context.commit('areRecentLoading', false)
-        return Promise.reject(error)
+
+    const response = await admApi.getTransactions(options)
+
+    if (response) {
+      context.commit('transactions', {
+        transactions: response.transactions,
+        updateTimestamps: true
+      })
+      // get new transactions until we fetch the newest one
+      if (options.fromHeight && response.transactions.length === admApi.TX_CHUNK_SIZE) {
+        this.dispatch('adm/getNewTransactions')
       }
-    )
+    }
+
+    context.commit('areRecentLoading', false)
   },
 
   /**
    * Retrieves old transactions: those that preceded the oldest among the retrieved ones.
    * @param {any} context Vuex action context
    */
-  getOldTransactions(context) {
+  async getOldTransactions(context) {
     // If we already have the most old transaction for this address, no need to request anything
     if (context.state.bottomReached) return Promise.resolve()
 
@@ -88,27 +84,25 @@ export default {
     options.orderBy = 'timestamp:desc'
 
     context.commit('areOlderLoading', true)
-    return admApi.getTransactions(options).then(
-      (response) => {
-        context.commit('areOlderLoading', false)
-        const hasResult = Array.isArray(response.transactions) && response.transactions.length
-        if (hasResult) {
-          context.commit('transactions', {
-            transactions: response.transactions,
-            updateTimestamps: true
-          })
-        }
-        // Successful but empty response means, that the oldest transaction for the current
-        // address has been received already
-        if (response.success && !hasResult) {
-          context.commit('bottom', true)
-        }
-      },
-      (error) => {
-        context.commit('areOlderLoading', false)
-        return Promise.reject(error)
+
+    const response = await admApi.getTransactions(options)
+
+    if (response) {
+      const hasResult = Array.isArray(response.transactions) && response.transactions.length
+      if (hasResult) {
+        context.commit('transactions', {
+          transactions: response.transactions,
+          updateTimestamps: true
+        })
       }
-    )
+      // Successful but empty response means, that the oldest transaction for the current
+      // address has been received already
+      if (response.success && !hasResult) {
+        context.commit('bottom', true)
+      }
+    }
+
+    context.commit('areOlderLoading', false)
   },
 
   /**

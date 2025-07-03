@@ -89,8 +89,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, computed } from 'vue'
+<script lang="ts" setup>
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
@@ -98,6 +98,7 @@ import { AdmNodesTable } from './adm'
 import { CoinNodesTable } from './coins'
 import { ServiceNodesTable } from './services'
 import { IpfsNodesTable } from './ipfs'
+import { Tab } from '@/components/nodes/types'
 
 const className = 'nodes-table'
 const classes = {
@@ -106,80 +107,68 @@ const classes = {
   checkbox: `${className}__checkbox`
 }
 
-type Tab = 'adm' | 'coins' | 'services' | 'ipfs'
-
-export default defineComponent({
-  components: {
-    ServiceNodesTable,
-    AdmNodesTable,
-    CoinNodesTable,
-    IpfsNodesTable
+const { t } = useI18n()
+const store = useStore()
+const tab = computed<Tab>({
+  get() {
+    return store.getters['options/currentNodesTab']
   },
-  setup() {
-    const { t } = useI18n()
-    const store = useStore()
-    const tab = ref<Tab>('adm')
-
-    const useSocketConnection = computed<boolean>({
-      get() {
-        return store.state.options.useSocketConnection
-      },
-      set(value) {
-        store.commit('options/updateOption', {
-          key: 'useSocketConnection',
-          value
-        })
-      }
+  set(value) {
+    store.commit('options/updateOption', {
+      key: 'currentNodesTab',
+      value
     })
-    const preferFastestAdmNodeOption = computed<boolean>({
-      get() {
-        return store.state.nodes.useFastestAdmNode
-      },
-      set(value) {
-        store.dispatch('nodes/setUseFastestAdmNode', value)
-      }
-    })
+  }
+})
 
-    const preferFastestCoinNodeOption = computed<boolean>({
-      get() {
-        return store.state.nodes.useFastestCoinNode
-      },
-      set(value) {
-        store.dispatch('nodes/setUseFastestCoinNode', value)
-      }
+const useSocketConnection = computed<boolean>({
+  get() {
+    return store.state.options.useSocketConnection
+  },
+  set(value) {
+    store.commit('options/updateOption', {
+      key: 'useSocketConnection',
+      value
     })
+  }
+})
+const preferFastestAdmNodeOption = computed<boolean>({
+  get() {
+    return store.state.nodes.useFastestAdmNode
+  },
+  set(value) {
+    store.dispatch('nodes/setUseFastestAdmNode', value)
+  }
+})
 
-    const preferFasterServiceNodeOption = computed<boolean>({
-      get() {
-        return store.state.services.useFastestService
-      },
-      set(value) {
-        store.dispatch('services/useFastestService', value)
-      }
-    })
+const preferFastestCoinNodeOption = computed<boolean>({
+  get() {
+    return store.state.nodes.useFastestCoinNode
+  },
+  set(value) {
+    store.dispatch('nodes/setUseFastestCoinNode', value)
+  }
+})
 
-    return {
-      t,
-      tab,
-      classes,
-      useSocketConnection,
-      preferFastestAdmNodeOption,
-      preferFastestCoinNodeOption,
-      preferFasterServiceNodeOption
-    }
+const preferFasterServiceNodeOption = computed<boolean>({
+  get() {
+    return store.state.services.useFastestService
+  },
+  set(value) {
+    store.dispatch('services/useFastestService', value)
   }
 })
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .nodes-table {
   margin-left: -24px;
   margin-right: -24px;
-  max-width: unset !important;
 
   &__info {
     :deep(a) {
@@ -198,7 +187,7 @@ export default defineComponent({
   }
 }
 
-@media #{map-get($display-breakpoints, 'sm-and-down')} {
+@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
   .nodes-table {
     margin-left: -16px;
     margin-right: -16px;
@@ -209,12 +198,12 @@ export default defineComponent({
   .nodes-table {
     &__checkbox {
       :deep(.v-label) {
-        color: map-get($adm-colors, 'regular');
+        color: map.get(colors.$adm-colors, 'regular');
       }
       :deep(.v-input--selection-controls__ripple),
       :deep(.v-input--selection-controls__input) i {
-        color: map-get($adm-colors, 'regular') !important;
-        caret-color: map-get($adm-colors, 'regular') !important;
+        color: map.get(colors.$adm-colors, 'regular') !important;
+        caret-color: map.get(colors.$adm-colors, 'regular') !important;
       }
     }
   }

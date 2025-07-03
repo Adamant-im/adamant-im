@@ -43,6 +43,8 @@ mac:
       - arm64
 
 afterSign: 'scripts/electron/notarize.cjs'
+afterPack: 'scripts/electron/sandboxFix.mjs'
+
 
 # Config for OSX dmg
 dmg:
