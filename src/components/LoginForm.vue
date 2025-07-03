@@ -6,7 +6,7 @@
         <v-text-field
           ref="passphraseInput"
           v-model="passphrase"
-          :label="$t('login.password_label')"
+          :label="t('login.password_label')"
           autocomplete="current-password"
           :class="classes.textField"
           class="text-center"
@@ -40,7 +40,7 @@
             size="24"
             class="mr-4"
           />
-          {{ $t('login.login_button') }}
+          {{ t('login.login_button') }}
         </v-btn>
       </slot>
     </v-row>
@@ -53,9 +53,9 @@
   </v-form>
 </template>
 
-<script>
+<script setup lang="ts">
 import { validateMnemonic } from 'bip39'
-import { computed, ref, defineComponent, useTemplateRef } from 'vue'
+import { computed, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
@@ -63,6 +63,7 @@ import { isAxiosError } from 'axios'
 import { isAllNodesOfflineError, isAllNodesDisabledError } from '@/lib/nodes/utils/errors'
 import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useSaveCursor } from '@/hooks/useSaveCursor'
+import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 
 const className = 'login-form'
 const classes = {
@@ -70,93 +71,83 @@ const classes = {
   textField: `${className}__textfield`
 }
 
-export default defineComponent({
-  props: {
-    modelValue: {
-      type: String,
-      default: ''
-    }
+type Props = {
+  modelValue: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: ''
+})
+
+const emit = defineEmits<{
+  (e: 'login'): void
+  (e: 'error', errorMessage: string): void
+  (e: 'update:modelValue', value: string): void
+}>()
+
+const router = useRouter()
+const store = useStore()
+const { t } = useI18n()
+const showSpinner = ref(false)
+const showPassphrase = ref(false)
+const passphraseInput = useTemplateRef('passphraseInput')
+
+const togglePassphraseVisibility = () => {
+  showPassphrase.value = !showPassphrase.value
+}
+
+useSaveCursor(passphraseInput, showPassphrase)
+
+const passphrase = computed({
+  get() {
+    return props.modelValue
   },
-  emits: ['login', 'error', 'update:modelValue'],
-  setup(props, { emit }) {
-    const router = useRouter()
-    const store = useStore()
-    const { t } = useI18n()
-    const showSpinner = ref(false)
-    const showPassphrase = ref(false)
-    const passphraseInput = useTemplateRef('passphraseInput')
+  set(value) {
+    emit('update:modelValue', value)
+  }
+})
 
-    const togglePassphraseVisibility = () => {
-      showPassphrase.value = !showPassphrase.value
-    }
-
-    useSaveCursor(passphraseInput, showPassphrase)
-
-    const passphrase = computed({
-      get() {
-        return props.modelValue
-      },
-      set(value) {
-        emit('update:modelValue', value)
+const submit = () => {
+  if (!validateMnemonic(passphrase.value)) {
+    return emit('error', t('login.invalid_passphrase'))
+  }
+  freeze()
+  login()
+}
+const login = () => {
+  const promise = store.dispatch('login', passphrase.value)
+  promise
+    .then(() => {
+      emit('login')
+    })
+    .catch((err) => {
+      if (isAxiosError(err)) {
+        emit('error', t('login.invalid_passphrase'))
+      } else if (isAllNodesOfflineError(err)) {
+        emit('error', t('errors.all_nodes_offline', { crypto: err.nodeLabel.toUpperCase() }))
+      } else if (isAllNodesDisabledError(err)) {
+        emit('error', t('errors.all_nodes_disabled', { crypto: err.nodeLabel.toUpperCase() }))
+        router.push({ name: 'Nodes' })
+      } else {
+        emit('error', t('errors.something_went_wrong'))
       }
+      console.log(err)
+    })
+    .finally(() => {
+      antiFreeze()
     })
 
-    const isOnline = computed(() => store.getters['isOnline'])
+  return promise
+}
+const freeze = () => {
+  showSpinner.value = true
+}
+const antiFreeze = () => {
+  showSpinner.value = false
+}
 
-    const submit = () => {
-      if (!validateMnemonic(passphrase.value)) {
-        return emit('error', t('login.invalid_passphrase'))
-      }
-      freeze()
-      login()
-    }
-    const login = () => {
-      const promise = store.dispatch('login', passphrase.value)
-      promise
-        .then(() => {
-          emit('login')
-        })
-        .catch((err) => {
-          if (!isOnline.value) {
-            emit('error', t('connection.offline'))
-            router.push({ name: 'Nodes' })
-          } else if (isAxiosError(err)) {
-            emit('error', t('login.invalid_passphrase'))
-          } else if (isAllNodesOfflineError(err)) {
-            emit('error', t('errors.all_nodes_offline', { crypto: err.nodeLabel.toUpperCase() }))
-          } else if (isAllNodesDisabledError(err)) {
-            emit('error', t('errors.all_nodes_disabled', { crypto: err.nodeLabel.toUpperCase() }))
-            router.push({ name: 'Nodes' })
-          } else {
-            emit('error', t('errors.something_went_wrong'))
-          }
-          console.log(err)
-        })
-        .finally(() => {
-          antiFreeze()
-        })
-
-      return promise
-    }
-    const freeze = () => {
-      showSpinner.value = true
-    }
-    const antiFreeze = () => {
-      showSpinner.value = false
-    }
-
-    return {
-      showSpinner,
-      passphrase,
-      passphraseInput,
-      showPassphrase,
-      classes,
-      mdiEye,
-      mdiEyeOff,
-      togglePassphraseVisibility,
-      submit
-    }
-  }
+defineExpose({
+  submit
 })
 </script>
 
