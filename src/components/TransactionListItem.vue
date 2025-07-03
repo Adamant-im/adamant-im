@@ -38,8 +38,8 @@
 
       <v-list-item-subtitle :class="`${className}__date`" class="a-text-explanation-small">
         <span v-if="!isStatusVisibleTransaction">{{ formatDate(createdAt) }}</span>
-        <span v-else-if="status" :class="`${className}__status ${className}__status--${status}`">{{
-          $t(`transaction.statuses.${status}`)
+        <span v-else-if="txStatus" :class="`${className}__status ${className}__status--${txStatus}`">{{
+          $t(`transaction.statuses.${txStatus}`)
         }}</span>
       </v-list-item-subtitle>
 
@@ -69,6 +69,9 @@ import currencyAmount from '@/filters/currencyAmount'
 import { timestampInSec } from '@/filters/helpers'
 import currency from '@/filters/currencyAmountWithSymbol'
 import { mdiAirplaneLanding, mdiAirplaneTakeoff, mdiMessageOutline, mdiMessageText } from '@mdi/js'
+import { computed } from 'vue'
+import { useFinalTransactions } from '@/stores/final-transactions.js'
+import { storeToRefs } from 'pinia'
 
 export default {
   mixins: [partnerName],
@@ -109,8 +112,18 @@ export default {
     }
   },
   emits: ['click:transaction', 'click:icon'],
-  setup() {
+  setup(props) {
+    const finalTransactionsStore = useFinalTransactions()
+    const { list } = storeToRefs(finalTransactionsStore)
+
+    const finalStatus = computed(() => list.value[props.id])
+
+    const txStatus = computed(() => {
+      return finalStatus.value ?? props.status
+    })
+
     return {
+      txStatus,
       mdiAirplaneLanding,
       mdiAirplaneTakeoff,
       mdiMessageOutline,
@@ -201,9 +214,9 @@ export default {
     },
     isStatusVisibleTransaction() {
       return (
-        this.status === TransactionStatus.PENDING ||
-        this.status === TransactionStatus.REGISTERED ||
-        this.status === TransactionStatus.REJECTED
+        this.txStatus === TransactionStatus.PENDING ||
+        this.txStatus === TransactionStatus.REGISTERED ||
+        this.txStatus === TransactionStatus.REJECTED
       )
     }
   },

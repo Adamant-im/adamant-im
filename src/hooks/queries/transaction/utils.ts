@@ -11,34 +11,69 @@ import {
   INSTANT_SEND_INTERVAL,
   INSTANT_SEND_TIME
 } from '@/lib/transactionsFetching'
+import {
+  isAllNodesDisabledError,
+  isAllNodesOfflineError,
+  isNodeOfflineError
+} from '@/lib/nodes/utils/errors'
+import { isAxiosError } from 'axios'
+
+const isNew = ({
+  newPendingAttempts,
+  newPendingInterval,
+  transaction
+}: {
+  newPendingAttempts: number
+  newPendingInterval: number
+  transaction?: {
+    timestamp?: number
+  }
+}) => {
+  return (
+    transaction?.timestamp &&
+    Date.now() - transaction.timestamp < newPendingAttempts * newPendingInterval
+  )
+}
 
 export function retryFactory(crypto: CryptoSymbol, transactionId: string) {
-  const txFetchInfo = getTxFetchInfo(crypto)
+  const { newPendingAttempts, oldPendingAttempts, newPendingInterval } = getTxFetchInfo(crypto)
 
-  return (failureCount: number): boolean => {
+  return (failureCount: number, error: unknown): boolean => {
+    if (
+      isAllNodesDisabledError(error as Error) ||
+      isNodeOfflineError(error as Error) ||
+      isAllNodesOfflineError(error as Error) ||
+      isAxiosError(error)
+    ) {
+      return true
+    }
+
     const pendingTransaction = PendingTxStore.get(crypto)
+
     const isPendingTransaction = pendingTransaction?.id === transactionId
 
-    const attempts = isPendingTransaction
-      ? txFetchInfo.newPendingAttempts
-      : txFetchInfo.oldPendingAttempts
+    const attempts =
+      isPendingTransaction &&
+      isNew({ newPendingAttempts, newPendingInterval, transaction: pendingTransaction })
+        ? newPendingAttempts
+        : oldPendingAttempts
 
     return failureCount + 1 < attempts
   }
 }
 
 export function retryDelayFactory(crypto: CryptoSymbol, transactionId: string) {
-  const txFetchInfo = getTxFetchInfo(crypto)
+  const { newPendingInterval, oldPendingInterval, newPendingAttempts } = getTxFetchInfo(crypto)
 
   return (): number => {
     const pendingTransaction = PendingTxStore.get(crypto)
+
     const isPendingTransaction = pendingTransaction?.id === transactionId
 
-    const delay = isPendingTransaction
-      ? txFetchInfo.newPendingInterval
-      : txFetchInfo.oldPendingInterval
-
-    return delay
+    return isPendingTransaction &&
+      isNew({ newPendingInterval, newPendingAttempts, transaction: pendingTransaction })
+      ? newPendingInterval
+      : oldPendingInterval
   }
 }
 
@@ -47,7 +82,8 @@ export function refetchIntervalFactory(
   queryStatus: QueryStatus,
   transaction?: { status: TransactionStatusType; timestamp?: number }
 ) {
-  const txFetchInfo = getTxFetchInfo(crypto)
+  const { registeredInterval, newPendingInterval, oldPendingInterval, newPendingAttempts } =
+    getTxFetchInfo(crypto)
 
   if (
     queryStatus === 'error' ||
@@ -61,10 +97,16 @@ export function refetchIntervalFactory(
   if (isInstantSendPossible(crypto) && transaction?.timestamp) {
     return Date.now() - transaction.timestamp < INSTANT_SEND_TIME
       ? INSTANT_SEND_INTERVAL
-      : txFetchInfo.registeredInterval
+      : registeredInterval
   }
 
-  return txFetchInfo.registeredInterval
+  if (transaction?.status === TransactionStatus.PENDING) {
+    return isNew({ newPendingInterval, newPendingAttempts, transaction })
+      ? newPendingInterval
+      : oldPendingInterval
+  }
+
+  return registeredInterval
 }
 
 export function refetchOnMountFn(transaction?: { status: TransactionStatusType }) {

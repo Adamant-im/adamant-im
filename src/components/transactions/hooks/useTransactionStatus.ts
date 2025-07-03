@@ -10,6 +10,9 @@ export function useTransactionStatus(
   inconsistentStatus?: Ref<InconsistentStatus>
 ) {
   return computed(() => {
+    if (transactionStatus?.value) {
+      return transactionStatus?.value
+    }
     if (queryStatus.value === 'error') return TransactionStatus.REJECTED
     if (queryStatus.value === 'success') {
       if (inconsistentStatus?.value) return TransactionStatus.INVALID
@@ -18,6 +21,6 @@ export function useTransactionStatus(
     }
     if (isFetching.value) return TransactionStatus.PENDING
 
-    return TransactionStatus.UNKNOWN
+    return TransactionStatus.PENDING
   })
 }
