@@ -4,12 +4,6 @@ importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging-comp
 importScripts('https://cdnjs.cloudflare.com/ajax/libs/tweetnacl/1.0.3/nacl.min.js')
 importScripts('/js/ed2curve.min.js')
 
-const NOTIFICATION_TYPES = {
-  NO_NOTIFICATIONS: 0,
-  BACKGROUND_FETCH: 1,
-  PUSH: 2
-}
-
 // Checking double notifications
 const processedEvents = new Set()
 setInterval(() => processedEvents.clear(), 2 * 60 * 1000) // 2 minutes
@@ -28,15 +22,11 @@ firebase.initializeApp(firebaseConfig)
 const messaging = firebase.messaging()
 
 let privateKey = ''
-let currentUserAddress = ''
 let notificationSettings = {
   type: 2, // Default: PUSH
   initialized: false
 }
 const channel = new BroadcastChannel('adm_notifications')
-
-// Resolvers for settings initialization promises
-let settingsInitializedResolvers = []
 
 // Utillites for decoding
 function hexToBytes(hex) {
@@ -90,13 +80,12 @@ async function isAppVisible() {
 
 // Block firebase service notifications
 const originalShowNotification = self.registration.showNotification.bind(self.registration)
+let ourNotificationInProgress = false
 
 self.registration.showNotification = function (title, options) {
-  // Allow only our notifications with specific markers
-  if (options?.data?.type === 'push' && title === 'ADAMANT Messenger') {
+  if (ourNotificationInProgress) {
     return originalShowNotification(title, options)
   }
-
   return Promise.resolve() // return promise as original functions returns promise
 }
 
@@ -108,103 +97,47 @@ channel.onmessage = (event) => {
     privateKey = data.privateKey
   }
 
-  if (data?.clearPrivateKey) {
-    privateKey = ''
-  }
-
-  if (data?.currentUserAddress) {
-    currentUserAddress = data.currentUserAddress
-  }
-
   if (data?.notificationType !== undefined) {
     notificationSettings.type = data.notificationType
     notificationSettings.initialized = true
-
-    // Resolve all waiting promises
-    settingsInitializedResolvers.forEach((resolve) => resolve())
-    settingsInitializedResolvers = []
   }
 }
 
-function parseTransactionPayload(payload) {
-  if (!payload.data?.txn) {
-    return null
-  }
+// Handling background messages
+messaging.onBackgroundMessage(async (payload) => {
+  if (!payload.data?.txn) return
 
+  let transaction, eventId
   try {
-    const transaction = JSON.parse(payload.data.txn)
-    return {
-      transaction,
-      eventId: transaction.id
-    }
+    transaction = JSON.parse(payload.data.txn)
+    eventId = transaction.id
   } catch (error) {
     console.warn('Invalid transaction JSON:', error)
-    return null
-  }
-}
-
-function isEventProcessed(eventId) {
-  if (!eventId || processedEvents.has(eventId)) {
-    return true
-  }
-  processedEvents.add(eventId)
-  return false
-}
-
-function waitForSettingsEvent() {
-  return new Promise((resolve) => {
-    settingsInitializedResolvers.push(resolve)
-
-    // Timeout fallback
-    setTimeout(() => {
-      const index = settingsInitializedResolvers.indexOf(resolve)
-      if (index !== -1) {
-        settingsInitializedResolvers.splice(index, 1)
-        resolve()
-      }
-    }, 3000)
-  })
-}
-
-async function ensureSettingsInitialized() {
-  if (notificationSettings.initialized) {
     return
   }
 
-  await waitForSettingsEvent()
+  if (!eventId || processedEvents.has(eventId)) return
+  processedEvents.add(eventId)
 
+  // Wait for settings if needed
   if (!notificationSettings.initialized) {
-    notificationSettings.initialized = true
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+    if (!notificationSettings.initialized) {
+      notificationSettings.initialized = true
+    }
   }
-}
 
-function isPushEnabled() {
-  return notificationSettings.type === NOTIFICATION_TYPES.PUSH
-}
-
-messaging.onBackgroundMessage(async (payload) => {
-  const parsed = parseTransactionPayload(payload)
-  if (!parsed) return
-
-  const { transaction, eventId } = parsed
-
-  if (isEventProcessed(eventId)) return
-
-  await ensureSettingsInitialized()
-
-  if (!isPushEnabled() || (await isAppVisible())) {
+  if (notificationSettings.type !== 2 || (await isAppVisible())) {
     return
   }
 
   const senderId = transaction.senderId
-  const recipientId = transaction.recipientId
   const transactionId = transaction.id
-  const senderName = payload.notification?.title || transaction.senderId
-  let messageText = `New message from ${senderName} (open app to decrypt)`
+  let messageText = 'Message received'
 
   const decryptedMessage = decryptMessage(transaction, privateKey)
   if (decryptedMessage) {
-    const partnerTitle = payload.notification?.title || senderId
+    const partnerTitle = payload.notification?.title || senderId.substring(0, 12)
     messageText = `${partnerTitle}: ${decryptedMessage}`
   }
 
@@ -214,13 +147,16 @@ messaging.onBackgroundMessage(async (payload) => {
     tag: `adamant-push-${senderId}`,
     badge: '/img/icons/android-chrome-192x192.png',
     renotify: true,
-    data: { senderId, recipientId, transactionId, type: 'push' }
+    data: { senderId, transactionId, type: 'push' }
   }
 
+  ourNotificationInProgress = true
   try {
     await self.registration.showNotification('ADAMANT Messenger', notificationOptions)
   } catch (error) {
     console.error('Failed to show notification:', error)
+  } finally {
+    ourNotificationInProgress = false
   }
 })
 
@@ -233,14 +169,9 @@ self.addEventListener('notificationclick', (event) => {
   event.waitUntil(
     (async () => {
       try {
-        // Block click if notification is not for current user
-        if (data?.recipientId !== currentUserAddress && currentUserAddress) {
-          return
-        }
-
         const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
 
-        // Set focus to the existing window
+        // Focus on the excisting window
         const existingClient = clients.find((client) => client.url.includes(self.location.origin))
         if (existingClient) {
           await existingClient.focus()
@@ -256,8 +187,9 @@ self.addEventListener('notificationclick', (event) => {
           return
         }
 
-        // Open a new window (always root as user will need to login)
-        await self.clients.openWindow('/')
+        // Open a new window
+        const url = data?.senderId ? `/chats/${data.senderId}` : '/'
+        await self.clients.openWindow(url)
       } catch (error) {
         console.error('Click handler error:', error)
       }
