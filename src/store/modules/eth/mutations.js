@@ -25,9 +25,5 @@ export default {
   /** ETH account has been published */
   isPublished(state) {
     state.isPublished = true
-  },
-
-  setFee(state, fee) {
-    state.fee = fee
   }
 }
