@@ -1,5 +1,5 @@
 import * as ethUtils from '../../../lib/eth-utils'
-import { FetchStatus, CryptosInfo, DEFAULT_ESTIMATE_ADDRESS } from '@/lib/constants'
+import { FetchStatus, CryptosInfo } from '@/lib/constants'
 import EthContract from 'web3-eth-contract'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
@@ -64,58 +64,6 @@ const createSpecificActions = (api) => ({
         commit('setBalanceStatus', FetchStatus.Error)
         console.warn(err)
       }
-    }
-  },
-
-  updateFee: {
-    async handler({ commit, rootGetters, state }, { amount, address, increaseFee = false } = {}) {
-      // Get gas price from ETH (real blockchain data)
-      const ethGasPrice = rootGetters['eth/gasPrice']
-      if (!ethGasPrice) return
-
-      // Get crypto configuration
-      const cryptoInfo = CryptosInfo[state.crypto]
-      if (!cryptoInfo) return
-
-      let gasPrice = ethGasPrice
-      let gasLimit
-
-      // Try to get real gas limit, fallback to default
-      try {
-        const contract = new EthContract(Erc20, state.contractAddress)
-        const transaction = {
-          from: state.address,
-          to: state.contractAddress,
-          value: '0x0',
-          data: contract.methods
-            .transfer(
-              address || DEFAULT_ESTIMATE_ADDRESS,
-              ethUtils.toWhole(amount || 1, state.decimals)
-            )
-            .encodeABI()
-        }
-
-        gasLimit = await api.useClient((client) => client.estimateGas(transaction))
-        gasLimit = Number(gasLimit)
-      } catch (error) {
-        console.warn('EstimateGas failed, using default gas limit:', error.message)
-        gasLimit = cryptoInfo.defaultGasLimit
-      }
-
-      const reliabilityGasPricePercent = cryptoInfo.reliabilityGasPricePercent
-      const reliabilityGasLimitPercent = cryptoInfo.reliabilityGasLimitPercent
-
-      const finalGasLimit = gasLimit + (gasLimit * reliabilityGasLimitPercent) / 100
-      let finalGasPrice = gasPrice + (gasPrice * reliabilityGasPricePercent) / 100
-
-      if (increaseFee) {
-        const increasedGasPricePercent = cryptoInfo.increasedGasPricePercent
-        finalGasPrice = finalGasPrice + (finalGasPrice * increasedGasPricePercent) / 100
-      }
-
-      const fee = ethUtils.calculateFee(Math.round(finalGasLimit), Math.round(finalGasPrice))
-
-      commit('setFee', Number(fee))
     }
   },
 
