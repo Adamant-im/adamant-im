@@ -7,5 +7,9 @@ export default (getInitialState) => ({
     resetState(state, getInitialState())
   },
 
+  setFee(state, fee) {
+    state.fee = fee
+  },
+
   ...baseMutations
 })

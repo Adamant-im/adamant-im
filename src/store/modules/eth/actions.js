@@ -1,9 +1,12 @@
 import * as utils from '@/lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
-import { CryptosInfo, DEFAULT_ETH_TRANSFER_GAS_LIMIT, FetchStatus } from '@/lib/constants'
+import { CryptosInfo, FetchStatus } from '@/lib/constants'
 import { storeCryptoAddress, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import shouldUpdate from '../../utils/coinUpdatesGuard'
+
+/** Gas limit value for the ETH transfers */
+const DEFAULT_ETH_TRANSFER_GAS_LIMIT = CryptosInfo['ETH'].defaultGasLimit
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
@@ -20,7 +23,7 @@ function storeEthAddress(context) {
   storeCryptoAddress(context.state.crypto, context.state.address)
 }
 
-const initTransaction = async (api, context, ethAddress, amount, nonce, increaseFee) => {
+const initTransaction = async (api, context, ethAddress, amount, nonce) => {
   const gasPrice = await api.useClient((client) => client.getGasPrice())
 
   const transaction = {
@@ -34,7 +37,7 @@ const initTransaction = async (api, context, ethAddress, amount, nonce, increase
   const gasLimit = await api
     .useClient((client) => client.estimateGas(transaction))
     .catch(() => BigInt(DEFAULT_ETH_TRANSFER_GAS_LIMIT))
-  transaction.gasLimit = increaseFee ? utils.increaseFee(gasLimit) : gasLimit
+  transaction.gasLimit = gasLimit
 
   return transaction
 }

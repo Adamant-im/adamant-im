@@ -7,7 +7,6 @@ export default () => {
     decimals: CryptosInfo['ETH'].decimals,
     gasPrice: 0,
     blockNumber: 0,
-    fee: 0,
     isPublished: false, // Indicates whether ETH address has been published to the KVS
     ...baseState()
   }

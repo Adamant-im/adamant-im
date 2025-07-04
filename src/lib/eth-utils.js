@@ -3,7 +3,6 @@ import * as web3Utils from 'web3-utils'
 import { privateKeyToAccount } from 'web3-eth-accounts'
 import BigNumber from 'bignumber.js'
 import cache from '@/store/cache.js'
-import { INCREASE_FEE_MULTIPLIER } from '@/lib/constants'
 
 const HD_KEY_PATH = "m/44'/60'/3'/1/0"
 
@@ -106,15 +105,4 @@ export function toFraction(amount, decimals, separator = '.') {
   fraction = fraction.replace(/0+$/, '')
 
   return whole + (fraction ? separator + fraction : '')
-}
-
-/**
- * @param {bigint | number} gasLimit
- * @param {number} multiplier
- * @returns {bigint} Increased fee
- */
-export function increaseFee(gasLimit, multiplier = INCREASE_FEE_MULTIPLIER) {
-  const increasedGasLimit = BigNumber(Number(gasLimit)).multipliedBy(multiplier).toNumber()
-
-  return BigInt(Math.round(increasedGasLimit))
 }
