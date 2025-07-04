@@ -252,5 +252,3 @@ export const REACT_EMOJIS = {
 } as const
 
 export const sidebarLayoutKey = Symbol('sidebarLayout')
-
-export const DEFAULT_ESTIMATE_ADDRESS = '0x0000000000000000000000000000000000000000'

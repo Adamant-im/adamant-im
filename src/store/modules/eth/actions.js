@@ -1,12 +1,12 @@
 import * as utils from '@/lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
-import { CryptosInfo, FetchStatus, DEFAULT_ESTIMATE_ADDRESS } from '@/lib/constants'
+import { CryptosInfo, FetchStatus } from '@/lib/constants'
 import { storeCryptoAddress, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import shouldUpdate from '../../utils/coinUpdatesGuard'
 
 /** Gas limit value for the ETH transfers */
-export const DEFAULT_ETH_TRANSFER_GAS_LIMIT = CryptosInfo['ETH'].defaultGasLimit // @todo fix type in adamant-wallets
+const DEFAULT_ETH_TRANSFER_GAS_LIMIT = CryptosInfo['ETH'].defaultGasLimit
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
@@ -151,41 +151,6 @@ const createSpecificActions = (api) => ({
         context.dispatch('updateStatus')
       }
     }, delay)
-  },
-  updateFee: {
-    async handler({ commit, rootGetters, state }, { amount, address, increaseFee = false } = {}) {
-      // Get gas price from ETH (real blockchain data)
-      const gasPrice = rootGetters['eth/gasPrice']
-      if (!gasPrice) return
-
-      const cryptoInfo = CryptosInfo.ETH
-      let gasLimit
-
-      // Try to get real gas limit, fallback to default
-      try {
-        const transaction = {
-          from: state.address,
-          to: address || DEFAULT_ESTIMATE_ADDRESS,
-          value: BigInt(utils.toWei(amount || 0.00001))
-        }
-        gasLimit = await api.useClient((client) => client.estimateGas(transaction))
-        gasLimit = Number(gasLimit)
-      } catch (error) {
-        console.warn('EstimateGas failed, using default gas limit:', error.message)
-        gasLimit = cryptoInfo.defaultGasLimit
-      }
-
-      const finalGasLimit = gasLimit + (gasLimit * cryptoInfo.reliabilityGasLimitPercent) / 100
-      let finalGasPrice =
-        Number(gasPrice) + (Number(gasPrice) * cryptoInfo.reliabilityGasPricePercent) / 100
-
-      if (increaseFee) {
-        finalGasPrice = finalGasPrice + (finalGasPrice * cryptoInfo.increasedGasPricePercent) / 100
-      }
-
-      const fee = utils.calculateFee(Math.round(finalGasLimit), Math.round(finalGasPrice))
-      commit('setFee', Number(fee))
-    }
   }
 })
 

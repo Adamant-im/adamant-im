@@ -1,5 +1,5 @@
 import * as ethUtils from '../../../lib/eth-utils'
-import { FetchStatus, CryptosInfo, DEFAULT_ESTIMATE_ADDRESS } from '@/lib/constants'
+import { FetchStatus, CryptosInfo } from '@/lib/constants'
 import EthContract from 'web3-eth-contract'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
