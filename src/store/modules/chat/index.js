@@ -554,8 +554,8 @@ const mutations = {
     }
   },
 
-  setNoActiveNodesDialog(state, value) {
-    if (state.noActiveNodesDialog === false) {
+  setNoActiveNodesDialog(state, { value, afterSendingMessage = false }) {
+    if (state.noActiveNodesDialog === false && !afterSendingMessage) {
       return // do not show dialog again
     }
 
@@ -617,7 +617,7 @@ const actions = {
       })
       .catch((err) => {
         if (isAllNodesDisabledError(err) || getters.isNoNodesDialogAllowed(err)) {
-          commit('setNoActiveNodesDialog', true)
+          commit('setNoActiveNodesDialog', { value: true })
           setTimeout(() => dispatch('loadChats'), 5000) // retry in 5 seconds
         }
       })
@@ -674,7 +674,7 @@ const actions = {
       })
       .catch((err) => {
         if (isAllNodesDisabledError(err) || getters.isNoNodesDialogAllowed(err)) {
-          commit('setNoActiveNodesDialog', true)
+          commit('setNoActiveNodesDialog', { value: true })
         }
         throw err
       })
@@ -844,6 +844,8 @@ const actions = {
         // if the error is caused by connection we keep the message in PENDING status
         // and try to resend it after the connection is restored
 
+        commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
+
         // timeout for self deleting out of pending messages
         const timeout = setTimeout(() => {
           dispatch('rejectPendingMessage', {
@@ -866,6 +868,10 @@ const actions = {
           partnerId: recipientId
         })
       } else {
+        if (isAllNodesDisabledError(error)) {
+          commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
+        }
+
         if (id) {
           commit('updateMessage', {
             id,
@@ -944,6 +950,10 @@ const actions = {
       console.debug('Updated CIDs after upload', newAsset)
     } catch (err) {
       if (!isAllNodesOfflineError(err)) {
+        if (isAllNodesDisabledError(err)) {
+          commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
+        }
+
         commit('updateMessage', {
           id: messageObject.id,
           status: TS.REJECTED,
@@ -957,6 +967,8 @@ const actions = {
         throw err
       }
     }
+
+    commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
 
     for (const [cid] of cids) {
       commit('attachment/resetUploadProgress', { cid }, { root: true })

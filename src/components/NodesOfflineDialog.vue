@@ -60,7 +60,7 @@ export default {
         return store.state.chat.noActiveNodesDialog
       },
       set() {
-        store.commit('chat/setNoActiveNodesDialog', false)
+        store.commit('chat/setNoActiveNodesDialog', { value: false })
       }
     })
 
