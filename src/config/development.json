@@ -184,6 +184,14 @@
         {
           "url": "https://btcnode3.adamant.im/bitcoind",
           "alt_ip": "http://195.201.242.108:44099/bitcoind"
+        },
+        {
+          "url": "https://btcnode1.bbry.org/bitcoind",
+          "alt_ip": "http://100.42.184.57:8617/bitcoind"
+        },
+        {
+          "url": "https://btcnode3.bbry.org/bitcoind",
+          "alt_ip": "http://23.105.226.67:39914/bitcoind"
         }
       ],
       "healthCheck": {
@@ -343,6 +351,14 @@
         {
           "url": "https://ethnode3.adamant.im",
           "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
         }
       ],
       "healthCheck": {
