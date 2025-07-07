@@ -42,8 +42,6 @@ const createSpecificActions = (api) => ({
     async handler({ commit, rootGetters, state }, payload = {}) {
       const coin = state.crypto
 
-      console.log('here')
-
       if (!shouldUpdate(() => rootGetters['wallets/getVisibility'](coin))) {
         return
       }

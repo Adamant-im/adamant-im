@@ -84,8 +84,6 @@ function createActions(options) {
       async handler({ commit, rootGetters, state }, payload = {}) {
         const coin = state.crypto
 
-        console.log(coin)
-
         if (!shouldUpdate(() => rootGetters['wallets/getVisibility'](coin))) {
           return
         }
