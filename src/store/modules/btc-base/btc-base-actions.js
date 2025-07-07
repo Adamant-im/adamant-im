@@ -84,6 +84,8 @@ function createActions(options) {
       async handler({ commit, rootGetters, state }, payload = {}) {
         const coin = state.crypto
 
+        console.log(coin)
+
         if (!shouldUpdate(() => rootGetters['wallets/getVisibility'](coin))) {
           return
         }
@@ -103,6 +105,14 @@ function createActions(options) {
           commit('setBalanceStatus', FetchStatus.Error)
           console.warn(err)
         }
+      }
+    },
+
+    /** Wrapper to manually request balance update if needed */
+    requestBalanceUpdate: {
+      root: true,
+      handler({ dispatch }) {
+        dispatch('updateBalance')
       }
     },
 

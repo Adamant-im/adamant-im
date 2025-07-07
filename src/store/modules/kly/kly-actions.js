@@ -33,6 +33,14 @@ const customActions = (getAccount) => ({
     }
   },
 
+  /** Wrapper to manually request balance update if needed */
+  requestBalanceUpdate: {
+    root: true,
+    handler({ dispatch }) {
+      dispatch('updateBalance')
+    }
+  },
+
   initBalanceUpdate: {
     root: true,
     handler({ dispatch }) {

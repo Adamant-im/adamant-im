@@ -42,6 +42,8 @@ const createSpecificActions = (api) => ({
     async handler({ commit, rootGetters, state }, payload = {}) {
       const coin = state.crypto
 
+      console.log('here')
+
       if (!shouldUpdate(() => rootGetters['wallets/getVisibility'](coin))) {
         return
       }
@@ -64,6 +66,14 @@ const createSpecificActions = (api) => ({
         commit('setBalanceStatus', FetchStatus.Error)
         console.warn(err)
       }
+    }
+  },
+
+  /** Wrapper to manually request balance update if needed */
+  requestBalanceUpdate: {
+    root: true,
+    handler({ dispatch }) {
+      dispatch('updateBalance')
     }
   },
 
