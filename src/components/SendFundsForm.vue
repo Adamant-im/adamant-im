@@ -381,7 +381,8 @@ export default {
      * @returns {string}
      */
     transferFeeFixed() {
-      return BigNumber(this.transferFee).toFixed()
+      const decimals = CryptosInfo['ETH'].cryptoTransferDecimals
+      return BigNumber(this.transferFee).toFixed(decimals)
     },
 
     /**
@@ -416,7 +417,8 @@ export default {
      * @returns {string}
      */
     finalAmountFixed() {
-      return BigNumber(this.finalAmount).toFixed()
+      const decimals = CryptosInfo[this.currency].cryptoTransferDecimals
+      return BigNumber(this.finalAmount).toFixed(decimals)
     },
 
     /**
@@ -613,6 +615,13 @@ export default {
     },
     cryptoAddress(cryptoAddress) {
       this.checkIsNewAccount(cryptoAddress)
+    },
+    increaseFee(newValue) {
+      const storageKey = isEthBased(this.currency) ? 'ETH' : this.currency
+      localStorage.setItem(`increaseFee_${storageKey}`, newValue)
+    },
+    currency() {
+      this.restoreIncreaseFeeState()
     }
   },
   created() {
@@ -942,7 +951,7 @@ export default {
       return amount >= min
     },
     validateNaturalUnits(amount, currency) {
-      const units = CryptosInfo[currency].decimals
+      const units = CryptosInfo[currency].cryptoTransferDecimals
 
       const [, right = ''] = BigNumber(amount).toFixed().split('.')
 
@@ -956,6 +965,11 @@ export default {
         this.account.isNew,
         this.increaseFee
       )
+    },
+    restoreIncreaseFeeState() {
+      const storageKey = isEthBased(this.currency) ? 'ETH' : this.currency
+      const saved = localStorage.getItem(`increaseFee_${storageKey}`)
+      this.increaseFee = saved === 'true'
     }
   }
 }

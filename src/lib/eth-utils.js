@@ -106,3 +106,13 @@ export function toFraction(amount, decimals, separator = '.') {
 
   return whole + (fraction ? separator + fraction : '')
 }
+
+/**
+ * Calculates reliable value by adding percentage margin
+ * @param {number} baseValue base value (gasLimit or gasPrice)
+ * @param {number} reliabilityPercent percentage to add (e.g., 10 for 10%)
+ * @returns {number} value with reliability margin
+ */
+export function calculateReliableValue(baseValue, reliabilityPercent) {
+  return baseValue * (1 + reliabilityPercent / 100)
+}

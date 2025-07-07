@@ -1,30 +1,34 @@
 import baseGetters from '../eth-base/eth-base-getters'
 import { CryptosInfo } from '@/lib/constants'
-import * as ethUtils from '../../../lib/eth-utils'
+import { calculateReliableValue, calculateFee } from '@/lib/eth-utils'
 
 export default {
   gasPrice(state, getters, rootState, rootGetters) {
     return rootGetters['eth/gasPrice']
   },
 
-  fee:
-    (state, getters, rootState, rootGetters) =>
-    (amount, address, textData, isNewAccount, increaseFee) => {
-      const ethGasPrice = rootGetters['eth/gasPrice']
+  finalGasPrice: (state, getters, rootState, rootGetters) => (increaseFee) => {
+    const ethGasPrice = rootGetters['eth/gasPrice']
+    const tokenInfo = CryptosInfo[state.crypto]
 
-      const tokenInfo = CryptosInfo[state.crypto]
-      const gasLimit = tokenInfo.defaultGasLimit
+    const reliableGasPrice = Number(ethGasPrice) * (1 + tokenInfo.reliabilityGasPricePercent / 100)
 
-      const finalGasLimit = gasLimit + (gasLimit * tokenInfo.reliabilityGasLimitPercent) / 100
-      let finalGasPrice =
-        Number(ethGasPrice) + (Number(ethGasPrice) * tokenInfo.reliabilityGasPricePercent) / 100
+    if (increaseFee) {
+      return reliableGasPrice * (1 + tokenInfo.increasedGasPricePercent / 100)
+    }
 
-      if (increaseFee) {
-        finalGasPrice = finalGasPrice + (finalGasPrice * tokenInfo.increasedGasPricePercent) / 100
-      }
+    return reliableGasPrice
+  },
 
-      return Number(ethUtils.calculateFee(Math.round(finalGasLimit), Math.round(finalGasPrice)))
-    },
+  fee: (state, getters) => (amount, address, textData, isNewAccount, increaseFee) => {
+    const finalGasPrice = getters.finalGasPrice(increaseFee)
+    const reliableGasLimit = calculateReliableValue(
+      CryptosInfo[state.crypto].defaultGasLimit,
+      CryptosInfo[state.crypto].reliabilityGasLimitPercent
+    )
+
+    return Number(calculateFee(Math.round(reliableGasLimit), Math.round(finalGasPrice)))
+  },
 
   ...baseGetters
 }
