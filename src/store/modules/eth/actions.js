@@ -5,9 +5,6 @@ import { CryptosInfo, FetchStatus } from '@/lib/constants'
 import { storeCryptoAddress, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import shouldUpdate from '../../utils/coinUpdatesGuard'
 
-/** Gas limit value for the ETH transfers */
-const DEFAULT_ETH_TRANSFER_GAS_LIMIT = CryptosInfo['ETH'].defaultGasLimit
-
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
 /** Status update interval is 25 sec: ETH balance, gas price, last block height */
@@ -23,8 +20,8 @@ function storeEthAddress(context) {
   storeCryptoAddress(context.state.crypto, context.state.address)
 }
 
-const initTransaction = async (api, context, ethAddress, amount, nonce) => {
-  const gasPrice = await api.useClient((client) => client.getGasPrice())
+const initTransaction = async (api, context, ethAddress, amount, nonce, increaseFee) => {
+  const gasPrice = BigInt(Math.round(context.getters.finalGasPrice(increaseFee)))
 
   const transaction = {
     from: context.state.address,
@@ -36,7 +33,7 @@ const initTransaction = async (api, context, ethAddress, amount, nonce) => {
 
   const gasLimit = await api
     .useClient((client) => client.estimateGas(transaction))
-    .catch(() => BigInt(DEFAULT_ETH_TRANSFER_GAS_LIMIT))
+    .catch(() => BigInt(CryptosInfo['ETH'].defaultGasLimit))
   transaction.gasLimit = gasLimit
 
   return transaction
@@ -131,7 +128,7 @@ const createSpecificActions = (api) => ({
       .then((price) => {
         context.commit('gasPrice', {
           gasPrice: Number(price),
-          fee: +(+utils.calculateFee(DEFAULT_ETH_TRANSFER_GAS_LIMIT, price)).toFixed(8)
+          fee: +(+utils.calculateFee(CryptosInfo['ETH'].defaultGasLimit, price)).toFixed(8)
         })
       })
       .catch((err) => console.warn(err))
