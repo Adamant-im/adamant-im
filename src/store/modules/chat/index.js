@@ -26,6 +26,7 @@ import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
 import { uploadFiles } from '../../../lib/files'
 import { generateAdamantChats } from './utils/generateAdamantChats'
 import {
+  AllNodesDisabledError,
   AllNodesOfflineError,
   isAllNodesDisabledError,
   isAllNodesOfflineError
@@ -844,8 +845,6 @@ const actions = {
         // if the error is caused by connection we keep the message in PENDING status
         // and try to resend it after the connection is restored
 
-        commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
-
         // timeout for self deleting out of pending messages
         const timeout = setTimeout(() => {
           dispatch('rejectPendingMessage', {
@@ -968,8 +967,6 @@ const actions = {
       }
     }
 
-    commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
-
     for (const [cid] of cids) {
       commit('attachment/resetUploadProgress', { cid }, { root: true })
     }
@@ -977,7 +974,11 @@ const actions = {
     return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
       .then((res) => {
         if (isAllNodesOfflineError(res)) {
-          throw new AllNodesOfflineError('ipfs')
+          throw new AllNodesOfflineError('adm')
+        }
+
+        if (isAllNodesDisabledError(res)) {
+          throw new AllNodesDisabledError('adm')
         }
 
         if (!res.success) {
@@ -998,6 +999,10 @@ const actions = {
       .catch((err) => {
         // update `message.status` to 'REJECTED' if the error is not caused by connection
         if (!isAllNodesOfflineError(err)) {
+          if (isAllNodesDisabledError(err)) {
+            commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
+          }
+
           commit('updateMessage', {
             id: messageObject.id,
             status: TS.REJECTED,

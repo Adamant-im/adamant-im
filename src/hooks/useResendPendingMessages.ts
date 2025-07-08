@@ -26,6 +26,7 @@ export function useResendPendingMessages() {
   )
 
   watchImmediate([areAdmNodesOnline, areIpfsNodesOnline], ([admOnline, ipfsOnline]) => {
+    console.log('admOnline: ', admOnline, 'ipfsOnline: ', ipfsOnline)
     const hasMessagesWithFiles = Object.values(pendingMessages.value).some(
       (message) => message.files && message.files.length > 0
     )
