@@ -851,7 +851,7 @@ const actions = {
             messageId: id,
             recipientId
           })
-        }, Number(CryptosInfo.ADM.timeout.message))
+        }, 30000)
 
         // put the message into pending messages object
         commit('addPendingMessage', {
@@ -1198,7 +1198,7 @@ const actions = {
 
   rejectPendingMessage({ commit }, { messageId, recipientId }) {
     commit('updateMessage', {
-      messageId,
+      id: messageId,
       status: TS.REJECTED,
       partnerId: recipientId
     })
