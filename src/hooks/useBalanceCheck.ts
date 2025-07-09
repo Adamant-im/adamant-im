@@ -31,6 +31,7 @@ export function useBalanceCheck() {
   )
 
   const updateBalance = async () => {
+    await store.dispatch('requestBalanceUpdate')
     await store.dispatch('updateBalance', {
       requestedByUser: true
     })

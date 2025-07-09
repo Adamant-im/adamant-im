@@ -2,12 +2,9 @@
   <crypto-icon :class="classes.cryptoIcon" :crypto="wallet.cryptoCurrency" size="medium" />
 
   <div>
-    <div v-if="formattedBalance">{{ isBalanceValid ? formattedBalance : '...' }}</div>
-    <div v-else-if="isBalanceLoading" :class="classes.balanceLoading">
+    <div v-if="isBalanceValid && !isRefreshing">{{ formattedBalance }}</div>
+    <div v-else :class="classes.balanceLoading">
       <v-icon :icon="mdiDotsHorizontal" size="18" />
-    </div>
-    <div v-else :class="classes.balanceError">
-      <v-icon :icon="mdiHelpCircleOutline" size="18" />
     </div>
 
     <div>
@@ -27,10 +24,9 @@
 import { computed, watch } from 'vue'
 import { useStore } from 'vuex'
 
-import { Cryptos, FetchStatus } from '@/lib/constants'
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import numberFormat from '@/filters/numberFormat'
-import { mdiDotsHorizontal, mdiHelpCircleOutline } from '@mdi/js'
+import { mdiDotsHorizontal } from '@mdi/js'
 import { vibrate } from '@/lib/vibrate'
 
 const className = 'wallet-tab'
@@ -57,6 +53,7 @@ type Props = {
   wallet: Wallet
   fiatCurrency: string
   isBalanceValid: boolean
+  isRefreshing: boolean
 }
 
 const props = defineProps<Props>()
@@ -66,29 +63,8 @@ const store = useStore()
 const currentBalance = computed(() => props.wallet.balance)
 
 const isRateLoaded = computed(() => store.state.rate.isLoaded && props.wallet.rate)
-const balanceStatus = computed(() => {
-  const { cryptoCurrency } = props.wallet
-  const cryptoModuleName = cryptoCurrency.toLowerCase()
 
-  if (cryptoCurrency === Cryptos.ADM) {
-    return store.state.balanceStatus
-  }
-
-  return store.state[cryptoModuleName].balanceStatus
-})
-
-const isBalanceLoading = computed(() => balanceStatus.value === FetchStatus.Loading)
-const fetchBalanceSucceeded = computed(() => balanceStatus.value === FetchStatus.Success)
-
-const formattedBalance = computed(() => {
-  const formatted = numberFormat(props.wallet.balance, 4)
-
-  if (props.wallet.balance || fetchBalanceSucceeded.value) {
-    return formatted
-  }
-
-  return null
-})
+const formattedBalance = computed(() => numberFormat(props.wallet.balance, 4))
 
 watch(currentBalance, (newBalance, oldBalance) => {
   if (oldBalance < newBalance) {
