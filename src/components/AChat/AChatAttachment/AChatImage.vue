@@ -89,9 +89,10 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
-@import '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .a-chat-image {
   &__placeholder {
@@ -114,19 +115,19 @@ export default defineComponent({
 .v-theme--light {
   .a-chat-image {
     &__placeholder {
-      background-color: map-get($adm-colors, 'secondary2');
+      background-color: map.get(colors.$adm-colors, 'secondary2');
 
       &--transparent {
-        background-color: rgba(map-get($adm-colors, 'grey'), 0.35);
+        background-color: rgba(map.get(colors.$adm-colors, 'grey'), 0.35);
       }
     }
 
     &__error {
-      background-color: map-get($adm-colors, 'secondary2');
+      background-color: map.get(colors.$adm-colors, 'secondary2');
     }
 
     &__error-icon {
-      color: map-get($grey, 'darken-1');
+      color: map.get(settings.$grey, 'darken-1');
     }
   }
 }
@@ -134,19 +135,19 @@ export default defineComponent({
 .v-theme--dark {
   .a-chat-image {
     &__placeholder {
-      background-color: map-get($adm-colors, 'muted');
+      background-color: map.get(colors.$adm-colors, 'muted');
 
       &--transparent {
-        background-color: map-get($adm-colors, 'muted');
+        background-color: map.get(colors.$adm-colors, 'muted');
       }
     }
 
     &__error {
-      background-color: map-get($adm-colors, 'muted');
+      background-color: map.get(colors.$adm-colors, 'muted');
     }
 
     &__error-icon {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
   }
 }

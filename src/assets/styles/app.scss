@@ -1,13 +1,13 @@
-@import './settings/_colors.scss';
+@forward './settings/_colors.scss';
 
-@import './generic/_variables.scss';
-@import './generic/_vuetify.scss';
-@import './generic/_layout.scss';
-@import './generic/_animations.scss';
-@import './generic/_list.scss';
+@forward './generic/_variables.scss';
+@forward './generic/_vuetify.scss';
+@forward './generic/_layout.scss';
+@forward './generic/_animations.scss';
+@forward './generic/_list.scss';
 
-@import './components/_chat.scss';
-@import './components/_login-form.scss';
-@import './components/_arrow-return.scss';
+@forward './components/_chat.scss';
+@forward './components/_login-form.scss';
+@forward './components/_arrow-return.scss';
 
-@import './themes/adamant/_index.scss';
+@forward './themes/adamant/_index.scss';

@@ -1,6 +1,7 @@
 import * as admApi from '../../../lib/adamant-api'
 import { isErc20, Cryptos } from '../../../lib/constants'
 import { parseCryptoAddressesKVStxs } from '../../../lib/store-crypto-address'
+import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors.js'
 
 const CONTACT_LIST_KEY = 'contact_list'
 const UPDATE_TIMEOUT = 3 * 60 * 1000 // 3 min
@@ -109,6 +110,11 @@ export default {
           payload,
           error
         )
+
+        if (isAllNodesOfflineError(error) || isAllNodesDisabledError(error)) {
+          throw error
+        }
+
         return false
       }
     )

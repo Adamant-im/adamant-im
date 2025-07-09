@@ -1,4 +1,4 @@
-import { isNodeOfflineError } from '@/lib/nodes/utils/errors'
+import { isNodeOfflineError, AllNodesOfflineError } from '@/lib/nodes/utils/errors'
 import { AxiosProgressEvent } from 'axios'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import { IpfsNode, Payload, RequestConfig } from './IpfsNode'
@@ -69,7 +69,7 @@ export class IpfsClient extends Client<IpfsNode> {
       // All nodes seem to be offline: let's refresh the statuses
       this.checkHealth()
       // But there's nothing we can do right now
-      return Promise.reject(new Error('No online nodes at the moment'))
+      return Promise.reject(new AllNodesOfflineError('ipfs'))
     }
 
     return node.request(config).catch((error) => {
