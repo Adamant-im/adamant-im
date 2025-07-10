@@ -860,7 +860,7 @@ const actions = {
             messageId: id,
             recipientId
           })
-        }, 30000)
+        }, Number(CryptosInfo.ADM.timeout.message))
 
         // put the message into pending messages object
         commit('addPendingMessage', {
