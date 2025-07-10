@@ -7,7 +7,14 @@ export function useTrackConnection() {
   const store = useStore()
   const { consideredOffline } = useConsiderOffline()
 
+  let firstCallSkipped = false
+
   watch(consideredOffline, (isOffline) => {
+    if (!firstCallSkipped) {
+      firstCallSkipped = true
+      return
+    }
+
     const type = isOffline ? 'offline' : 'online'
 
     store.dispatch('snackbar/show', {
