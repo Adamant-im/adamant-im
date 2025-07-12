@@ -24,6 +24,7 @@
                   :wallet="wallet"
                   :fiat-currency="currentCurrency"
                   :is-balance-valid="balances[index]"
+                  :is-refreshing="isRefreshing"
                 />
               </v-tab>
             </v-tabs>
@@ -79,7 +80,7 @@ import { PullDown } from '@/components/common/PullDown'
 import { Cryptos, CryptosInfo, CryptoSymbol, isErc20 } from '@/lib/constants'
 import { vibrate } from '@/lib/vibrate'
 import { useStore } from 'vuex'
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { CoinSymbol } from '@/store/modules/wallets/types'
 import { useI18n } from 'vue-i18n'
@@ -94,6 +95,8 @@ const router = useRouter()
 const balances = useBalanceCheck()
 
 const className = 'account-view'
+
+const isRefreshing = ref(false)
 
 const orderedVisibleWalletSymbols = computed(() => {
   return store.getters['wallets/getVisibleOrderedWalletSymbols']
@@ -155,9 +158,15 @@ const updateBalances = () => {
     })
   }
 
-  store.dispatch('updateBalance', {
-    requestedByUser: true
-  })
+  isRefreshing.value = true
+
+  store
+    .dispatch('updateBalance', {
+      requestedByUser: true
+    })
+    .finally(() => {
+      isRefreshing.value = false
+    })
 
   vibrate.veryShort()
 }
