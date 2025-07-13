@@ -322,6 +322,7 @@ import { useChatStateStore } from '@/stores/modal-state'
 import ChatPlaceholder from '@/components/Chat/ChatPlaceholder.vue'
 import { watchImmediate } from '@vueuse/core'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import { isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -873,6 +874,14 @@ const fetchChatMessages = async () => {
     }
   } catch {
     if (store.getters['chat/chatOffset'](props.partnerId) !== -1) {
+      if (areAdmNodesOnline.value) {
+        // give health check time to be finished and then retry in case of miscoordination of nodes statuses
+        // (when areAdmNodesOnline says there are some nodes online, but the request fails with allNodesOffline error)
+        return setTimeout(async () => {
+          await fetchChatMessages()
+        }, 5000)
+      }
+
       return (allowFetchingMessages.value = true)
     }
     loading.value = false
