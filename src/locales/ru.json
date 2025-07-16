@@ -117,6 +117,32 @@
     "offline": "Нет подключения к Интернету",
     "online": "Подключение восстановлено"
   },
+  "dev_screens": {
+    "title": "Инструменты разработчика",
+    "vibrations": "Вибрации",
+    "adamant_wallets": "Adamant-Wallets"
+  },
+  "dev_vibrations": {
+    "custom_pattern": "Произвольный паттерн",
+    "pattern_placeholder": "Пример: 100,200,300",
+    "play": "Играть",
+    "presets": "Заготовки",
+    "very_short": "Очень короткая",
+    "short": "Короткая",
+    "medium": "Средняя",
+    "long": "Длинная",
+    "double_very_short": "Двойная очень короткая",
+    "triple_very_short": "Тройная очень короткая",
+    "double_short": "Двойная короткая"
+  },
+  "dev_wallets": {
+    "configuration": "Конфигурация",
+    "select_coin": "Выберите монету",
+    "select_blockchain": "Выберите контекст",
+    "select_property": "Выберите свойство",
+    "result": "Результат",
+    "copy_value": "Копировать значение"
+  },
   "error": "Ошибка",
   "errors": {
     "something_went_wrong": "Что-то пошло не так. Детали ошибки в консоли",
@@ -268,7 +294,8 @@
     "use_full_date_tooltip": "Всегда показывать даты в полном формате, например, 2021-01-17 вместо 'Вчера' и 'Сегодня'",
     "version": "Версия приложения:",
     "vote_for_delegates_button": "Голосовать за делегатов",
-    "wallets_list": "Список кошельков"
+    "wallets_list": "Список кошельков",
+    "dev_screens": "Экраны разработчика"
   },
   "region": "ru-RU",
   "rows_per_page": "Строк на страницу",
