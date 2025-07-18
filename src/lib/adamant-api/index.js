@@ -10,6 +10,9 @@ import { i18n } from '@/i18n'
 import store from '@/store'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { parseCryptoAddressesKVStxs } from '@/lib/store-crypto-address'
+import { DEFAULT_TIME_DELTA } from '@/lib/nodes/constants.js'
+import constants from '@/lib/constants/index.js'
+import { isAllNodesOfflineError } from '@/lib/nodes/utils/errors.js'
 
 Queue.configure(Promise)
 
@@ -49,7 +52,9 @@ function signTransaction(transaction, timeDelta) {
     delete transaction.signature
   }
 
-  transaction.timestamp = utils.epochTime() - timeDelta
+  const epochTime = ((Date.now() - constants.EPOCH) / 1000).toFixed(3)
+
+  transaction.timestamp = Math.floor(epochTime - timeDelta)
   transaction.signature = utils.transactionSign(transaction, myKeypair)
 
   return transaction
@@ -107,6 +112,11 @@ export function isReady() {
  * @returns {Promise<string>}
  */
 export function getPublicKey(address = '') {
+  if (address === store.state.address && myKeypair.publicKey) {
+    return Promise.resolve(myKeypair.publicKey.toString('hex'))
+  }
+
+  // @todo remove returning cached keys and use getCachedPublicKey instead
   const publicKeyCached = store.getters.publicKey(address)
 
   if (publicKeyCached) {
@@ -130,6 +140,59 @@ export function getPublicKey(address = '') {
 }
 
 /**
+ * Retrieves user public key by his address from cached ones
+ * @param {string} address ADM address
+ * @returns {Promise<string>}
+ */
+export function getCachedPublicKey(address = '') {
+  const publicKeyCached = store.getters.publicKey(address)
+
+  if (publicKeyCached) {
+    return publicKeyCached
+  }
+}
+
+/**
+ * Generates and signs a chat message transaction.
+ *
+ * @param {object} params - The transaction parameters.
+ * @param {string} params.to - The recipient's identifier.
+ * @param {number} [params.amount=0] - The transaction amount.
+ * @param {number} [params.type=1] - The message type.
+ * @param {string|object} params.message - The message to be encrypted.
+ * @returns {object} The signed transaction object or null on failure.
+ */
+export function signChatMessageTransaction(params) {
+  const { to, amount, type = 1, message } = params
+
+  const publicKey = getCachedPublicKey(to)
+
+  const text = typeof message === 'string' ? message : JSON.stringify(message)
+  const encoded = utils.encodeMessage(text, publicKey, myKeypair.privateKey)
+  const chat = {
+    message: encoded.message,
+    own_message: encoded.nonce,
+    type
+  }
+
+  const transaction = newTransaction(Transactions.CHAT_MESSAGE)
+  transaction.amount = amount ? utils.prepareAmount(amount) : 0
+  transaction.asset = { chat }
+  transaction.recipientId = to
+
+  return signTransaction(transaction, DEFAULT_TIME_DELTA)
+}
+
+/**
+ * Send signed transaction
+ * @param {object} signedTransaction
+ * @returns {Promise<object>}
+ */
+export async function sendSignedTransaction(signedTransaction) {
+  return client.sendChatTransaction(signedTransaction)
+}
+
+/**
  * @typedef {Object} MsgParams
  * @property {string} to target address
  * @property {string|object} message message to send (object value will be JSON-serialized)
@@ -145,32 +208,18 @@ export function getPublicKey(address = '') {
  *   type?: number,
  *   amount?: number
  * }} params
- * @returns {Promise<{success: boolean, transactionId: string}>}
+ * @returns {Promise<{success: boolean, transactionId: string, nodeTimestamp: number}>}
  */
-export function sendMessage(params) {
-  return getPublicKey(params.to)
-    .then((publicKey) => {
-      const text =
-        typeof params.message === 'string' ? params.message : JSON.stringify(params.message)
-      const encoded = utils.encodeMessage(text, publicKey, myKeypair.privateKey)
-      const chat = {
-        message: encoded.message,
-        own_message: encoded.nonce,
-        type: params.type || 1
-      }
+export async function sendMessage(params) {
+  try {
+    const signedTransaction = await signChatMessageTransaction(params)
 
-      const transaction = newTransaction(Transactions.CHAT_MESSAGE)
-      transaction.amount = params.amount ? utils.prepareAmount(params.amount) : 0
-      transaction.asset = { chat }
-      transaction.recipientId = params.to
-
-      return client.post('/api/chats/process', (endpoint) => {
-        return { transaction: signTransaction(transaction, endpoint.timeDelta) }
-      })
-    })
-    .catch((reason) => {
-      return reason
-    })
+    if (signedTransaction) {
+      return sendSignedTransaction(signedTransaction)
+    }
+  } catch (reason) {
+    return reason
+  }
 }
 
 /**
@@ -216,7 +265,7 @@ function tryDecodeStoredValue(value) {
   let json = null
   try {
     json = JSON.parse(value)
-  } catch (e) {
+  } catch {
     // Not a JSON => not an encoded value
     return value
   }
@@ -454,7 +503,7 @@ export function getChats(from = 0, offset = 0, orderBy = 'desc') {
   // Doesn't return ADM direct transfer transactions, only messages and in-chat transfers
   // https://github.com/Adamant-im/adamant/wiki/API-Specification#get-chat-transactions
   return client.get('/api/chats/get/', params).then((response) => {
-    const { count, transactions } = response
+    const { count, transactions, nodeTimestamp } = response
 
     const promises = transactions.map((transaction) => {
       const promise = isStringEqualCI(transaction.recipientId, myAddress)
@@ -475,7 +524,8 @@ export function getChats(from = 0, offset = 0, orderBy = 'desc') {
 
     return Promise.all(promises).then((decoded) => ({
       count,
-      transactions: decoded.filter((v) => v)
+      transactions: decoded.filter((v) => v),
+      nodeTimestamp
     }))
   })
 }

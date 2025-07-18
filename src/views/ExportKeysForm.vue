@@ -110,7 +110,7 @@ import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
 import { ref, defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
-import { mdiContentCopy, mdiDotsVertical, mdiEye,mdiEyeOff } from '@mdi/js'
+import { mdiContentCopy, mdiDotsVertical, mdiEye, mdiEyeOff } from '@mdi/js'
 
 
 function getBtcKey(crypto, passphrase, asWif) {
@@ -124,7 +124,9 @@ function getBtcKey(crypto, passphrase, asWif) {
   }
 }
 
-function getKlyKey(crypto, passphrase) {
+function getKlyKey(passphrase) {
+  const crypto = 'KLY';
+
   const keyPair = getKlyAccount(crypto, passphrase).keyPair
   const key = keyPair.secretKey.toString('hex')
 
@@ -186,7 +188,7 @@ export default defineComponent({
         const dash = getBtcKey(Cryptos.DASH, passphrase.value, true)
         const doge = getBtcKey(Cryptos.DOGE, passphrase.value, true)
 
-        const kly = getKlyKey(Cryptos.KLY, passphrase.value)
+        const kly = getKlyKey(passphrase.value)
 
         keys.value = [bitcoin, eth, doge, dash, kly]
       }, 0)

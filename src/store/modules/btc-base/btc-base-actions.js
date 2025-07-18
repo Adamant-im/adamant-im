@@ -1,6 +1,6 @@
-import BigNumber from '@/lib/bignumber'
+import { BigNumber } from '@/lib/bignumber'
 import BtcBaseApi from '@/lib/bitcoin/btc-base-api'
-import { FetchStatus } from '@/lib/constants'
+import { CryptosInfo, FetchStatus } from '@/lib/constants'
 import { nodes } from '@/lib/nodes'
 import {
   assertNoPendingTransaction,
@@ -8,10 +8,11 @@ import {
   invalidatePendingTransaction,
   PendingTxStore
 } from '@/lib/pending-transactions'
-import { storeCryptoAddress } from '@/lib/store-crypto-address'
+import { storeCryptoAddress, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import shouldUpdate from '@/store/utils/coinUpdatesGuard'
 
 const DEFAULT_CUSTOM_ACTIONS = () => ({})
+let interval
 
 /**
  * @typedef {Object} Options
@@ -19,6 +20,8 @@ const DEFAULT_CUSTOM_ACTIONS = () => ({})
  * @property {function(BtcBaseApi, object): Promise} getNewTransactions function to get the new transactions list (second arg is a Vuex context)
  * @property {function(BtcBaseApi, object): Promise} getOldTransactions function to get the old transactions list (second arg is a Vuex context)
  * @property {function(function(): BtcBaseApi): object} customActions function to create custom actions for the current crypto (optional)
+ * @property {number || undefined} balanceCheckInterval interval (ms) between balance updates for specific coins
+ * @property {number || undefined} balanceValidInterval interval (ms) until specific balance becomes invalid
  * @property {number} fetchRetryTimeout interval (ms) between attempts to fetch the registered transaction details
  */
 
@@ -78,7 +81,6 @@ function createActions(options) {
      * @returns {Promise<void>}
      */
     updateBalance: {
-      root: true,
       async handler({ commit, rootGetters, state }, payload = {}) {
         const coin = state.crypto
 
@@ -92,13 +94,47 @@ function createActions(options) {
 
         try {
           const balance = await api.getBalance()
+          const validInterval = options.balanceValidInterval || CryptosInfo.BTC.balanceValidInterval
 
           commit('status', { balance })
           commit('setBalanceStatus', FetchStatus.Success)
+          commit('setBalanceActualUntil', Date.now() + validInterval)
         } catch (err) {
           commit('setBalanceStatus', FetchStatus.Error)
           console.warn(err)
         }
+      }
+    },
+
+    /** Wrapper to manually request balance update if needed */
+    requestBalanceUpdate: {
+      root: true,
+      handler({ dispatch }) {
+        dispatch('updateBalance')
+      }
+    },
+
+    initBalanceUpdate: {
+      root: true,
+      handler({ dispatch }) {
+        function repeat() {
+          validateStoredCryptoAddresses()
+          dispatch('updateBalance')
+            .catch((err) => console.error(err))
+            .then(() => {
+              interval = setTimeout(() => {
+                repeat()
+              }, options.balanceCheckInterval || CryptosInfo.BTC.balanceCheckInterval)
+            })
+        }
+        repeat()
+      }
+    },
+
+    stopInterval: {
+      root: true,
+      handler() {
+        clearTimeout(interval)
       }
     },
 

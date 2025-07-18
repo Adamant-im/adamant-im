@@ -60,7 +60,7 @@ export default {
         return store.state.chat.noActiveNodesDialog
       },
       set() {
-        store.commit('chat/setNoActiveNodesDialog', false)
+        store.commit('chat/setNoActiveNodesDialog', { value: false })
       }
     })
 
@@ -75,8 +75,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import 'vuetify/_settings.scss';
-@import '@/assets/styles/settings/_colors.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/_settings.scss';
 
 .all-nodes-disabled-dialog {
   &__card-title {
@@ -100,7 +101,7 @@ export default {
 .v-theme--dark {
   .all-nodes-disabled-dialog {
     &__disclaimer {
-      color: map-get($shades, 'white');
+      color: map.get(settings.$shades, 'white');
     }
   }
 }

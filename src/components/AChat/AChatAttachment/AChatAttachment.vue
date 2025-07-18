@@ -238,8 +238,9 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-@import '@/assets/styles/settings/_colors.scss';
-@import '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .a-chat__attachments {
   width: 500px;
@@ -272,8 +273,8 @@ export default defineComponent({
 
 .v-theme--light {
   .a-chat-file {
-    background-color: map-get($adm-colors, 'secondary');
-    color: map-get($adm-colors, 'regular');
+    background-color: map.get(colors.$adm-colors, 'secondary');
+    color: map.get(colors.$adm-colors, 'regular');
   }
 }
 

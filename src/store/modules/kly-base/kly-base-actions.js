@@ -1,4 +1,4 @@
-import BigNumber from '@/lib/bignumber'
+import { BigNumber } from '@/lib/bignumber'
 import { KlayrAccount, KLY_TXS_PER_PAGE } from '../../../lib/klayr'
 import { getKlayrTimestamp } from '../../../lib/klayr/klayr-utils'
 import adm from '../../../lib/nodes/adm'
@@ -207,7 +207,6 @@ function createActions(options) {
           }
         }
       } catch (err) {
-        commit('areRecentLoading', false)
         throw err
       }
     },
@@ -243,7 +242,6 @@ function createActions(options) {
           commit('bottom', true)
         }
       } catch (err) {
-        commit('areOlderLoading', false)
         throw err
       }
     },

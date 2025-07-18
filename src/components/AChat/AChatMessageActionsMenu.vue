@@ -55,7 +55,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import '@/assets/styles/components/_chat.scss';
+@use '@/assets/styles/components/_chat.scss';
 
 $padding-x: 16px;
 
@@ -73,7 +73,7 @@ $padding-x: 16px;
 
     &--right {
       left: unset !important;
-      right: $padding-x + $scroll-bar-width;
+      right: $padding-x + chat.$scroll-bar-width;
     }
   }
 }

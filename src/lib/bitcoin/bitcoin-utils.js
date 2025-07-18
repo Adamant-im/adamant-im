@@ -1,5 +1,5 @@
 import * as bitcoin from 'bitcoinjs-lib'
-import BigNumber from '@/lib/bignumber'
+import { BigNumber } from '@/lib/bignumber'
 
 /**
  * Checks if the supplied string is a valid BTC address

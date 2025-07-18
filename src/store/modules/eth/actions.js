@@ -1,14 +1,16 @@
 import * as utils from '@/lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
-import { DEFAULT_ETH_TRANSFER_GAS_LIMIT, FetchStatus } from '@/lib/constants'
-import { storeCryptoAddress } from '@/lib/store-crypto-address'
+import { CryptosInfo, DEFAULT_ETH_TRANSFER_GAS_LIMIT, FetchStatus } from '@/lib/constants'
+import { storeCryptoAddress, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import shouldUpdate from '../../utils/coinUpdatesGuard'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
 /** Status update interval is 25 sec: ETH balance, gas price, last block height */
 const STATUS_INTERVAL = 25000
+
+let interval
 
 /**
  * Stores ETH address to the ADAMANT KVS if it's not there yet
@@ -39,7 +41,6 @@ const initTransaction = async (api, context, ethAddress, amount, nonce, increase
 
 const createSpecificActions = (api) => ({
   updateBalance: {
-    root: true,
     async handler({ commit, rootGetters, state }, payload = {}) {
       const coin = state.crypto
 
@@ -59,10 +60,43 @@ const createSpecificActions = (api) => ({
 
         commit('balance', balance)
         commit('setBalanceStatus', FetchStatus.Success)
+        commit('setBalanceActualUntil', Date.now() + CryptosInfo.ETH.balanceValidInterval)
       } catch (err) {
         commit('setBalanceStatus', FetchStatus.Error)
         console.warn(err)
       }
+    }
+  },
+
+  /** Wrapper to manually request balance update if needed */
+  requestBalanceUpdate: {
+    root: true,
+    handler({ dispatch }) {
+      dispatch('updateBalance')
+    }
+  },
+
+  initBalanceUpdate: {
+    root: true,
+    handler({ dispatch }) {
+      function repeat() {
+        validateStoredCryptoAddresses()
+        dispatch('updateBalance')
+          .catch((err) => console.error(err))
+          .then(() => {
+            interval = setTimeout(() => {
+              repeat()
+            }, CryptosInfo.ETH.balanceCheckInterval)
+          })
+      }
+      repeat()
+    }
+  },
+
+  stopInterval: {
+    root: true,
+    handler() {
+      clearTimeout(interval)
     }
   },
 

@@ -55,8 +55,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/settings/_colors.scss';
-@import '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .preview-file {
   width: 80px;
@@ -92,7 +93,7 @@ export default defineComponent({
 .v-theme--light {
   .preview-file {
     &__remove-icon {
-      background-color: map-get($adm-colors, 'regular');
+      background-color: map.get(colors.$adm-colors, 'regular');
       color: white;
     }
   }
@@ -101,7 +102,7 @@ export default defineComponent({
 .v-theme--dark {
   .preview-file {
     &__remove-icon {
-      background-color: map-get($adm-colors, 'regular');
+      background-color: map.get(colors.$adm-colors, 'regular');
       color: white;
     }
   }

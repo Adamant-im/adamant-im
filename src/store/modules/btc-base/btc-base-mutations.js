@@ -23,6 +23,10 @@ export default (initialState) => ({
     state.balanceStatus = status
   },
 
+  setBalanceActualUntil(state, value) {
+    state.balanceActualUntil = value
+  },
+
   /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */
   bottom(state, value) {
     state.bottomReached = value

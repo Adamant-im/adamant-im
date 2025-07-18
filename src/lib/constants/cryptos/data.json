@@ -1,11 +1,37 @@
 {
   "ADM": {
-    "symbol": "ADM",
+    "qrPrefix": "adm",
     "name": "ADAMANT Messenger",
     "nameShort": "ADAMANT",
-    "qrPrefix": "adm",
+    "website": "https://adamant.im",
+    "description": "Decentralized Messenger",
+    "explorer": "https://explorer.adamant.im",
+    "explorerTx": "https://explorer.adamant.im/tx/${ID}",
+    "explorerAddress": "https://explorer.adamant.im/address/${ID}",
     "regexAddress": "^U([0-9]{6,21})$",
+    "symbol": "ADM",
+    "type": "coin",
     "decimals": 8,
+    "cryptoTransferDecimals": 8,
+    "fixedFee": 0.5,
+    "status": "active",
+    "createCoin": true,
+    "defaultVisibility": true,
+    "defaultOrdinalLevel": 0,
+    "consensus": "dPoS",
+    "blockTimeFixed": 5000,
+    "balanceCheckInterval": 5000,
+    "balanceCheckIntervalNewAccount": 2000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 4000,
+      "registeredInterval": 4000
+    },
+    "timeout": {
+      "message": 300000,
+      "attachment": 300000
+    },
     "nodes": {
       "displayName": "adm-node",
       "list": [
@@ -70,6 +96,25 @@
         {
           "url": "https://debate.bbry.org",
           "alt_ip": "http://54.197.36.175:56666"
+        },
+        {
+          "url": "https://lake.bbry.org",
+          "alt_ip": "http://100.42.184.57:27579"
+        },
+        {
+          "url": "https://sunshine.bbry.org",
+          "alt_ip": "http://23.105.226.67:28785"
+        },
+        {
+          "url": "https://unusual.bbry.org",
+          "alt_ip": "http://51.15.238.199:13682"
+        },
+        {
+          "url": "https://clown.bbry.org",
+          "alt_ip": "http://65.108.52.254:6687"
+        },
+        {
+          "url": "http://100.42.184.57:27579"
         }
       ],
       "healthCheck": {
@@ -81,39 +126,344 @@
       "minVersion": "0.8.0",
       "nodeTimeCorrection": 500
     },
-    "createCoin": true,
-    "cryptoTransferDecimals": 8,
-    "fixedFee": 0.5,
-    "defaultVisibility": true,
-    "txFetchInfo": {
-      "newPendingInterval": 4000,
-      "oldPendingInterval": 4000,
-      "registeredInterval": 4000
+    "services": {
+      "infoService": {
+        "displayName": "rates-info",
+        "description": {
+          "software": "adamant-currencyinfo-services",
+          "github": "https://github.com/Adamant-im/adamant-currencyinfo-services",
+          "docs": "https://github.com/Adamant-im/adamant-currencyinfo-services/wiki/InfoServices-API-documentation"
+        },
+        "list": [
+          {
+            "url": "https://info.adamant.im",
+            "alt_ip": "http://5.161.98.136:33088"
+          },
+          {
+            "url": "https://info2.adm.im",
+            "alt_ip": "http://207.180.210.95:33088"
+          },
+          {
+            "url": "https://currencyinfo1.bbry.org",
+            "alt_ip": "http://147.93.132.93:1948"
+          },
+          {
+            "url": "https://currencyinfo2.bbry.org",
+            "alt_ip": "http://51.15.238.199:18958"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 6000000
+        }
+      },
+      "ipfsNode": {
+        "displayName": "ipfs-node",
+        "description": {
+          "software": "ipfs-node",
+          "github": "https://github.com/Adamant-im/ipfs-node",
+          "docs": "https://github.com/Adamant-im/ipfs-node/blob/master/README.md"
+        },
+        "list": [
+          {
+            "url": "https://ipfs4.adm.im",
+            "alt_ip": "http://95.216.45.88:44099"
+          },
+          {
+            "url": "https://ipfs5.adamant.im",
+            "alt_ip": "http://62.72.43.99:44099"
+          },
+          {
+            "url": "https://ipfs6.adamant.business",
+            "alt_ip": "http://75.119.138.235:44099"
+          },
+          {
+            "url": "https://ipfs4.bbry.org",
+            "alt_ip": "http://65.108.52.254:61399"
+          },
+          {
+            "url": "https://ipfs5.bbry.org",
+            "alt_ip": "http://23.105.226.67:41511"
+          },
+          {
+            "url": "https://ipfs6.bbry.org",
+            "alt_ip": "http://100.42.184.57:56777"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 6000000
+        }
+      }
     },
-    "defaultOrdinalLevel": 0,
-    "explorerTx": "https://explorer.adamant.im/tx/${ID}"
+    "links": [
+      {
+        "name": "github",
+        "url": "https://github.com/adamant-im"
+      },
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/adamant_im"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://adamant.im/whitepaper/adamant-whitepaper-en.pdf"
+      }
+    ],
+    "testnet": {
+      "website": "https://adamant.im",
+      "explorer": "https://testnet.adamant.im",
+      "explorerTx": "https://testnet.adamant.im/tx/${ID}",
+      "explorerAddress": "https://testnet.adamant.im/address/${ID}",
+      "nodes": {
+        "displayName": "adm-node",
+        "list": [
+          {
+            "url": "https://testnode1.adamant.im",
+            "alt_ip": "http://162.55.32.80:36667"
+          },
+          {
+            "url": "http://81.0.247.181:36667"
+          },
+          {
+            "url": "http://95.217.19.144:36667"
+          },
+          {
+            "url": "https://testnode4.adm.im",
+            "alt_ip": "http://157.90.229.236:36667"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 10
+        },
+        "minVersion": "0.9.0",
+        "nodeTimeCorrection": 500
+      },
+      "services": {
+        "infoService": {
+          "displayName": "rates-info",
+          "description": {
+            "software": "adamant-currencyinfo-services",
+            "github": "https://github.com/Adamant-im/adamant-currencyinfo-services",
+            "docs": "https://github.com/Adamant-im/adamant-currencyinfo-services/wiki/InfoServices-API-documentation"
+          },
+          "list": [
+            {
+              "url": "https://info.adamant.im",
+              "alt_ip": "http://5.161.98.136:33088"
+            },
+            {
+              "url": "https://info2.adm.im",
+              "alt_ip": "http://207.180.210.95:33088"
+            },
+            {
+              "url": "https://currencyinfo1.bbry.org",
+              "alt_ip": "http://147.93.132.93:1948"
+            },
+            {
+              "url": "https://currencyinfo2.bbry.org",
+              "alt_ip": "http://51.15.238.199:18958"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 300000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000,
+            "threshold": 6000000
+          }
+        },
+        "ipfsNode": {
+          "displayName": "ipfs-node",
+          "description": {
+            "software": "ipfs-node",
+            "github": "https://github.com/Adamant-im/ipfs-node",
+            "docs": "https://github.com/Adamant-im/ipfs-node/blob/master/README.md"
+          },
+          "list": [
+            {
+              "url": "https://ipfs1test.adamant.im"
+            },
+            {
+              "url": "https://ipfs2test.adamant.im"
+            },
+            {
+              "url": "https://ipfs3test.adamant.im"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 300000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000,
+            "threshold": 6000000
+          }
+        }
+      }
+    },
+    "tor": {
+      "website": "http://adamantim24okpwfr4wxjgsh6vtw4odoiabhsfaqaktnfqzrjrspjuid.onion",
+      "explorer": "http://srovpmanmrbmbqe63vp5nycsa3j3g6be3bz46ksmo35u5pw7jjtjamid.onion",
+      "explorerTx": "http://srovpmanmrbmbqe63vp5nycsa3j3g6be3bz46ksmo35u5pw7jjtjamid.onion/tx/${ID}",
+      "explorerAddress": "http://srovpmanmrbmbqe63vp5nycsa3j3g6be3bz46ksmo35u5pw7jjtjamid.onion/address/${ID}",
+      "nodes": {
+        "displayName": "adm-node",
+        "list": [
+          {
+            "url": "http://37g5to2z6bdoeegun4hms2hvkfbdxh4rcon4e3p267wtfkh4ji2ns6id.onion"
+          },
+          {
+            "url": "http://fqjcvsibnbwhlwxndzqzziapiwoidgn24avfiauu4wo2fc3yyiy2qcid.onion"
+          },
+          {
+            "url": "http://omhrhpc45njpgzp4fggtndazaodwuwvb5in6hsn3k7tvaqennmfaa2qd.onion"
+          },
+          {
+            "url": "http://uxu6vnnrrnl7tmo7i657yvs4jbgdz734xvufryoi326az5dzufuwboad.onion"
+          },
+          {
+            "url": "http://rukehjd2yalzgny7mdjqtzown2mazsaeh4zr7zjdg4l5afkgc3z2kgqd.onion"
+          },
+          {
+            "url": "http://osd7qoluu6akud6b2brxxi3bhidrbx54yqm5swr3rjwjz2cvposigiqd.onion"
+          },
+          {
+            "url": "http://nkacjpsif6wpc6x7qvavyr2vnvqolwnxxl5qciolhqdkzmgy5mgoajyd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 10
+        },
+        "minVersion": "0.8.0",
+        "nodeTimeCorrection": 500
+      },
+      "services": {
+        "infoService": {
+          "displayName": "rates-info",
+          "description": {
+            "software": "adamant-currencyinfo-services",
+            "github": "https://github.com/Adamant-im/adamant-currencyinfo-services",
+            "docs": "https://github.com/Adamant-im/adamant-currencyinfo-services/wiki/InfoServices-API-documentation"
+          },
+          "list": [
+            {
+              "url": "http://czjsawp2crjmnkliw2h2kpk7wwd3a36zvvnvqgvzmi4t4vc2yzm7j2qd.onion"
+            },
+            {
+              "url": "http://oygscq5p3yfyyi52u2pgdcrgog7vkvtrmayjggxai72tvgftlwkp6lyd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 300000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000,
+            "threshold": 6000000
+          }
+        },
+        "ipfsNode": {
+          "displayName": "ipfs-node",
+          "description": {
+            "software": "ipfs-node",
+            "github": "https://github.com/Adamant-im/ipfs-node",
+            "docs": "https://github.com/Adamant-im/ipfs-node/blob/master/README.md"
+          },
+          "list": [
+            {
+              "url": "http://z455rax4mwcseyc7efog7czrbwdvphwocatl5sjcc6htcoj2k2vz7dad.onion"
+            },
+            {
+              "url": "http://cds45bjd7ynxkffxpzfifnm55r6vmhgocvpvonjmry3mrskuhda6z7qd.onion"
+            },
+            {
+              "url": "http://3ytwoe62bqw264v4rkaqpn5iovdg3oxly5tx2uc5qijkrdqixm6tmdyd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 300000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000,
+            "threshold": 6000000
+          }
+        }
+      }
+    }
   },
   "BNB": {
-    "symbol": "BNB",
     "name": "Binance Coin",
-    "decimals": 18,
-    "contractId": "0xB8c77482e45F1F44dE1745F52C74426C631bDD52",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://bnbchain.org",
+    "description": "Cryptocurrency that powers the BNB Chain ecosystem",
+    "explorer": "https://explorer.bnbchain.org",
+    "symbol": "BNB",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "github",
+        "url": "https://github.com/bnb-chain"
+      },
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/BNBChain"
+      },
+      {
+        "name": "reddit",
+        "url": "http://reddit.com/r/bnbchainofficial"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://github.com/bnb-chain/whitepaper"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "contractId": "0xB8c77482e45F1F44dE1745F52C74426C631bDD52",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "BTC": {
-    "symbol": "BTC",
-    "name": "Bitcoin",
     "qrPrefix": "bitcoin",
-    "minBalance": 0.00001,
+    "name": "Bitcoin",
+    "website": "https://bitcoin.org",
+    "description": "Bitcoin is a cryptocurrency and worldwide payment system. It is the first decentralized digital currency, as the system works without a central bank or single administrator.",
+    "explorer": "https://bitcoinexplorer.org",
+    "explorerTx": "https://bitcoinexplorer.org/tx/${ID}",
+    "explorerAddress": "https://bitcoinexplorer.org/address/${ID}",
     "regexAddress": "^bc1[a-zA-Z0-9]{39,59}$|^[13][1-9A-HJ-NP-Za-km-z]{25,34}$",
+    "symbol": "BTC",
+    "type": "coin",
     "decimals": 8,
+    "minBalance": 0.00001,
+    "cryptoTransferDecimals": 8,
     "minTransferAmount": 0.00000546,
+    "defaultFee": 0.00003153,
+    "status": "active",
+    "createCoin": true,
+    "defaultVisibility": true,
+    "defaultOrdinalLevel": 10,
+    "consensus": "PoW",
+    "blockTimeAvg": 600000,
+    "balanceCheckInterval": 50000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 10000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 40000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 10800000,
     "nodes": {
       "displayName": "btc-node",
       "list": [
@@ -124,6 +474,14 @@
         {
           "url": "https://btcnode3.adamant.im/bitcoind",
           "alt_ip": "http://195.201.242.108:44099/bitcoind"
+        },
+        {
+          "url": "https://btcnode1.bbry.org/bitcoind",
+          "alt_ip": "http://100.42.184.57:8617/bitcoind"
+        },
+        {
+          "url": "https://btcnode3.bbry.org/bitcoind",
+          "alt_ip": "http://23.105.226.67:39914/bitcoind"
         }
       ],
       "healthCheck": {
@@ -133,72 +491,230 @@
         "threshold": 2
       }
     },
-    "createCoin": true,
-    "cryptoTransferDecimals": 8,
-    "defaultFee": 0.00003153,
-    "defaultVisibility": true,
-    "txFetchInfo": {
-      "newPendingInterval": 10000,
-      "oldPendingInterval": 3000,
-      "registeredInterval": 40000,
-      "newPendingAttempts": 20,
-      "oldPendingAttempts": 4
+    "services": {
+      "btcIndexer": {
+        "displayName": "btc-indexer",
+        "description": {
+          "software": "Esplora/Electrs",
+          "github": "https://github.com/blockstream/electrs",
+          "docs": "https://github.com/blockstream/esplora/blob/master/API.md"
+        },
+        "list": [
+          {
+            "url": "https://btcnode1.adamant.im",
+            "alt_ip": "http://176.9.38.204:44099"
+          },
+          {
+            "url": "https://btcnode3.adamant.im",
+            "alt_ip": "http://195.201.242.108:44099"
+          },
+          {
+            "url": "https://btcnode1.bbry.org",
+            "alt_ip": "http://100.42.184.57:8617"
+          },
+          {
+            "url": "https://btcnode3.bbry.org",
+            "alt_ip": "http://23.105.226.67:39914"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
     },
-    "txConsistencyMaxTime": 10800000,
-    "defaultOrdinalLevel": 10,
-    "explorerTx": "https://bitcoinexplorer.org/tx/${ID}"
+    "links": [
+      {
+        "name": "github",
+        "url": "https://github.com/bitcoin"
+      },
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/Bitcoin"
+      },
+      {
+        "name": "reddit",
+        "url": "https://reddit.com/r/Bitcoin"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://bitcoin.org/bitcoin.pdf"
+      }
+    ],
+    "tor": {
+      "nodes": {
+        "displayName": "btc-node",
+        "list": [
+          {
+            "url": "http://cc6ibzkfeseuwnmtjc6hlsd44bzg2sr3shbv7n35nj2rk2vm6dmtlnqd.onion/bitcoind"
+          },
+          {
+            "url": "http://grnpvgtlrfws3424l726td5lctsod3hq2at4lhiasmedpxygbo5u2bqd.onion/bitcoind"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 360000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 2
+        }
+      },
+      "services": {
+        "btcIndexer": {
+          "displayName": "btc-indexer",
+          "description": {
+            "software": "Esplora/Electrs",
+            "github": "https://github.com/blockstream/electrs",
+            "docs": "https://github.com/blockstream/esplora/blob/master/API.md"
+          },
+          "list": [
+            {
+              "url": "http://cc6ibzkfeseuwnmtjc6hlsd44bzg2sr3shbv7n35nj2rk2vm6dmtlnqd.onion"
+            },
+            {
+              "url": "http://grnpvgtlrfws3424l726td5lctsod3hq2at4lhiasmedpxygbo5u2bqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    }
   },
   "BUSD": {
-    "symbol": "BUSD",
     "name": "Binance USD",
-    "decimals": 18,
-    "contractId": "0x4fabb145d64652a948d72533023f6e7a623c7c53",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://www.binance.com/en/busd",
+    "description": "A regulated, fiat-backed stablecoin pegged to the US dollar",
+    "symbol": "BUSD",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/PaxosGlobal"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/paxosglobal/busd-contract"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "contractId": "0x4fabb145d64652a948d72533023f6e7a623c7c53",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "BZZ": {
-    "symbol": "BZZ",
     "name": "Swarm",
-    "decimals": 16,
-    "contractId": "0x19062190B1925b5b6689D7073fDfC8c2976EF8Cb",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultVisibility": false,
-    "defaultGasLimit": 58000,
-    "defaultOrdinalLevel": 95,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://www.ethswarm.org",
+    "description": "BZZ is the Swarm Network’s native token. Users of the network’s services (i.e. bandwidth and storage) use it to compensate the providers, or node operators, for those services.",
+    "symbol": "BZZ",
     "type": "ERC20",
+    "decimals": 16,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/ethswarm"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/ethersphere"
+      },
+      {
+        "name": "reddit",
+        "url": "https://www.reddit.com/r/ethswarm/"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://www.ethswarm.org/swarm-whitepaper.pdf"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 95,
+    "contractId": "0x19062190B1925b5b6689D7073fDfC8c2976EF8Cb",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "DAI": {
-    "symbol": "DAI",
     "name": "Dai",
-    "decimals": 18,
-    "contractId": "0x6b175474e89094c44da98b954eedeac495271d0f",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultVisibility": false,
-    "defaultGasLimit": 58000,
-    "defaultOrdinalLevel": 80,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://makerdao.com",
+    "description": "A decentralized, unbiased, collateral-backed cryptocurrency soft-pegged to the US Dollar",
+    "symbol": "DAI",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/MakerDAO"
+      },
+      {
+        "name": "reddit",
+        "url": "https://www.reddit.com/r/MakerDAO"
+      },
+      {
+        "name": "github",
+        "url": "https://etherscan.io/token/github.com/makerdao"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://makerdao.com/en/whitepaper"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 80,
+    "contractId": "0x6b175474e89094c44da98b954eedeac495271d0f",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "DASH": {
-    "symbol": "DASH",
-    "name": "Dash",
     "qrPrefix": "dash",
-    "minBalance": 0.0001,
+    "name": "Dash",
+    "website": "https://dash.org",
+    "description": "Dash (DASH) is digital cash designed to offer financial freedom to everyone. Payments are instant, easy and secure, with near-zero fees.",
+    "explorer": "https://dashblockexplorer.com",
+    "explorerTx": "https://dashblockexplorer.com/tx/${ID}",
+    "explorerAddress": "https://dashblockexplorer.com/address/${ID}",
     "regexAddress": "^[7X][1-9A-HJ-NP-Za-km-z]{33,}$",
+    "research": "https://research.binance.com/en/projects/dash",
+    "symbol": "DASH",
+    "type": "coin",
     "decimals": 8,
+    "minBalance": 0.0001,
+    "cryptoTransferDecimals": 8,
     "minTransferAmount": 0.00002,
+    "fixedFee": 0.0001,
+    "status": "active",
+    "createCoin": true,
+    "defaultVisibility": true,
+    "defaultOrdinalLevel": 70,
+    "consensus": "PoW",
+    "blockTimeAvg": 160000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 5000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 30000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 800000,
     "nodes": {
       "displayName": "dash-node",
       "list": [
@@ -209,6 +725,14 @@
         {
           "url": "https://dashnode2.adamant.im",
           "alt_ip": "http://207.180.210.95:44099"
+        },
+        {
+          "url": "https://dashnode1.bbry.org",
+          "alt_ip": "http://23.105.226.67:45272"
+        },
+        {
+          "url": "https://dashnode2.bbry.org",
+          "alt_ip": "http://51.15.238.199:50353"
         }
       ],
       "healthCheck": {
@@ -218,28 +742,76 @@
         "threshold": 3
       }
     },
-    "createCoin": true,
+    "links": [
+      {
+        "name": "github",
+        "url": "https://github.com/dashpay/dash"
+      },
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/Dashpay"
+      },
+      {
+        "name": "reddit",
+        "url": "https://reddit.com/r/dashpay"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://github.com/dashpay/dash/wiki/Whitepaper"
+      }
+    ],
+    "tor": {
+      "nodes": {
+        "displayName": "dash-node",
+        "list": [
+          {
+            "url": "http://ldod53womnlwjmd4noq5yuq26xx3mmbrr4uogkfymuakhofjcuqeygad.onion"
+          },
+          {
+            "url": "http://eq2blda45h4kakbuq3g4stcgatiwqaefgmxzfsfuiahpdbt2pvbbepad.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 210000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 3
+        }
+      }
+    }
+  },
+  "DOGE": {
+    "qrPrefix": "doge",
+    "name": "Dogecoin",
+    "website": "https://dogecoin.com",
+    "description": "Dogecoin is an open source peer-to-peer digital currency, favored by Shiba Inus worldwide. Introduced as a joke currency on 6 December 2013, Dogecoin quickly developed its own online community.",
+    "explorer": "https://dogechain.info",
+    "explorerTx": "https://dogechain.info/tx/${ID}",
+    "explorerAddress": "https://dogechain.info/address/${ID}",
+    "regexAddress": "^[A|D|9][A-Z0-9]([0-9a-zA-Z]{9,})$",
+    "research": "https://research.binance.com/en/projects/dogecoin",
+    "symbol": "DOGE",
+    "type": "coin",
+    "decimals": 8,
     "cryptoTransferDecimals": 8,
-    "fixedFee": 0.0001,
+    "minTransferAmount": 1,
+    "fixedFee": 1,
+    "status": "active",
+    "createCoin": true,
     "defaultVisibility": true,
+    "defaultOrdinalLevel": 70,
+    "consensus": "PoW",
+    "blockTimeAvg": 60000,
+    "balanceCheckInterval": 30000,
+    "balanceValidInterval": 300000,
     "txFetchInfo": {
       "newPendingInterval": 5000,
       "oldPendingInterval": 3000,
-      "registeredInterval": 30000,
+      "registeredInterval": 20000,
       "newPendingAttempts": 20,
       "oldPendingAttempts": 4
     },
-    "txConsistencyMaxTime": 800000,
-    "defaultOrdinalLevel": 70,
-    "explorerTx": "https://dashblockexplorer.com/tx/${ID}"
-  },
-  "DOGE": {
-    "symbol": "DOGE",
-    "name": "Dogecoin",
-    "qrPrefix": "doge",
-    "regexAddress": "^[A|D|9][A-Z0-9]([0-9a-zA-Z]{9,})$",
-    "decimals": 8,
-    "minTransferAmount": 1,
+    "txConsistencyMaxTime": 900000,
     "nodes": {
       "displayName": "doge-node",
       "list": [
@@ -254,6 +826,18 @@
         {
           "url": "https://dogenode3.adm.im",
           "alt_ip": "http://95.216.45.88:44098"
+        },
+        {
+          "url": "https://dogenode1.bbry.org",
+          "alt_ip": "http://147.93.132.93:14778"
+        },
+        {
+          "url": "https://dogenode2.bbry.org",
+          "alt_ip": "http://51.15.238.199:7954"
+        },
+        {
+          "url": "https://dogenode3.bbry.org",
+          "alt_ip": "http://65.108.52.254:25556"
         }
       ],
       "healthCheck": {
@@ -263,40 +847,167 @@
         "threshold": 3
       }
     },
-    "createCoin": true,
-    "cryptoTransferDecimals": 8,
-    "fixedFee": 1,
-    "defaultVisibility": true,
-    "txFetchInfo": {
-      "newPendingInterval": 5000,
-      "oldPendingInterval": 3000,
-      "registeredInterval": 20000,
-      "newPendingAttempts": 20,
-      "oldPendingAttempts": 4
+    "services": {
+      "dogeIndexer": {
+        "displayName": "doge-indexer",
+        "description": {
+          "software": "Esplora/Electrs",
+          "github": "https://github.com/blockstream/electrs",
+          "docs": "https://github.com/blockstream/esplora/blob/master/API.md"
+        },
+        "list": [
+          {
+            "url": "https://dogenode1.adamant.im/api",
+            "alt_ip": "http://5.9.99.62:44099/api"
+          },
+          {
+            "url": "https://dogenode2.adamant.im/api",
+            "alt_ip": "http://176.9.32.126:44098/api"
+          },
+          {
+            "url": "https://dogenode3.adm.im/api",
+            "alt_ip": "http://95.216.45.88:44098/api"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 390000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 3
+        }
+      }
     },
-    "txConsistencyMaxTime": 900000,
-    "defaultOrdinalLevel": 70,
-    "explorerTx": "https://dogechain.info/tx/${ID}"
+    "links": [
+      {
+        "name": "github",
+        "url": "https://github.com/dogecoin/dogecoin"
+      },
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/dogecoin"
+      },
+      {
+        "name": "reddit",
+        "url": "https://reddit.com/r/dogecoin"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://github.com/dogecoin/dogecoin/blob/master/README.md"
+      }
+    ],
+    "tor": {
+      "nodes": {
+        "displayName": "doge-node",
+        "list": [
+          {
+            "url": "http://mtg4mq43p67cbj6qwcqgppjv7uzm7ximjlzapsbnbh5ls6zqkjsq26ad.onion"
+          },
+          {
+            "url": "http://bfu3iiofsagyhi22zijfilbkzlzbalpylhhfcluqmezx2avdwcxut7yd.onion"
+          },
+          {
+            "url": "http://tdl25bmpwystxnm6hxzqdrkaxxdicknbigs5umob2nlgcbbqgidd64qd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 390000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 3
+        }
+      },
+      "services": {
+        "dogeIndexer": {
+          "displayName": "doge-indexer",
+          "description": {
+            "software": "Esplora/Electrs",
+            "github": "https://github.com/blockstream/electrs",
+            "docs": "https://github.com/blockstream/esplora/blob/master/API.md"
+          },
+          "list": [
+            {
+              "url": "http://mtg4mq43p67cbj6qwcqgppjv7uzm7ximjlzapsbnbh5ls6zqkjsq26ad.onion/api"
+            },
+            {
+              "url": "http://bfu3iiofsagyhi22zijfilbkzlzbalpylhhfcluqmezx2avdwcxut7yd.onion/api"
+            },
+            {
+              "url": "http://tdl25bmpwystxnm6hxzqdrkaxxdicknbigs5umob2nlgcbbqgidd64qd.onion/api"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 390000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000,
+            "threshold": 3
+          }
+        }
+      }
+    }
   },
   "ENS": {
-    "symbol": "ENS",
     "name": "Ethereum Name Service",
-    "decimals": 18,
-    "contractId": "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://ens.domains",
+    "description": "Ethereum Name Service is a distributed, open, and extensible naming system based on the Ethereum blockchain",
+    "symbol": "ENS",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/ensdomains"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/ensdomains"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "contractId": "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "ETH": {
-    "symbol": "ETH",
-    "name": "Ethereum",
     "qrPrefix": "ethereum",
+    "name": "Ethereum",
+    "website": "https://ethereum.org",
+    "description": "Open source platform to write and distribute decentralized applications",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
     "regexAddress": "^0x[0-9a-fA-F]{40}$",
+    "symbol": "ETH",
+    "type": "coin",
     "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": true,
+    "defaultVisibility": true,
+    "defaultOrdinalLevel": 20,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 10,
+    "reliabilityGasLimitPercent": 5,
+    "increasedGasPricePercent": 25,
+    "defaultGasPriceGwei": 5,
+    "defaultGasLimit": 22000,
+    "warningGasPriceGwei": 25,
     "nodes": {
       "displayName": "eth-node",
       "list": [
@@ -307,6 +1018,14 @@
         {
           "url": "https://ethnode3.adamant.im",
           "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
         }
       ],
       "healthCheck": {
@@ -316,102 +1035,314 @@
         "threshold": 5
       }
     },
-    "createCoin": true,
-    "cryptoTransferDecimals": 6,
-    "defaultVisibility": true,
-    "defaultGasLimit": 22000,
-    "defaultGasPriceGwei": 10,
-    "txFetchInfo": {
-      "newPendingInterval": 4000,
-      "oldPendingInterval": 3000,
-      "registeredInterval": 5000,
-      "newPendingAttempts": 20,
-      "oldPendingAttempts": 4
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
     },
-    "txConsistencyMaxTime": 1200000,
-    "defaultOrdinalLevel": 20,
-    "explorerTx": "https://etherscan.io/tx/${ID}"
+    "links": [
+      {
+        "name": "github",
+        "url": "https://github.com/ethereum"
+      },
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/ethereum"
+      },
+      {
+        "name": "reddit",
+        "url": "https://reddit.com/r/ethereum"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://github.com/ethereum/wiki/wiki/White-Paper"
+      }
+    ],
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    }
   },
   "FLOKI": {
-    "symbol": "FLOKI",
     "name": "Floki",
-    "decimals": 9,
-    "contractId": "0xcf0c122c6b73ff809c693db761e7baebe62b6a2e",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultVisibility": false,
-    "defaultGasLimit": 58000,
-    "defaultOrdinalLevel": 100,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://floki.com",
+    "description": "FLOKI is the utility token of the Floki ecosystem",
+    "symbol": "FLOKI",
     "type": "ERC20",
+    "decimals": 9,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/RealFlokiInu"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/floki-inu"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://docs.floki.com/floki-whitepaper"
+      },
+      {
+        "name": "reddit",
+        "url": "https://www.reddit.com/r/Floki"
+      },
+      {
+        "name": "discord",
+        "url": "https://discord.gg/floki"
+      },
+      {
+        "name": "telegram",
+        "url": "https://t.me/FlokiInuToken"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "contractId": "0xcf0c122c6b73ff809c693db761e7baebe62b6a2e",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "FLUX": {
-    "symbol": "FLUX",
     "name": "Flux",
-    "decimals": 8,
-    "contractId": "0x720CD16b011b987Da3518fbf38c3071d4F0D1495",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultVisibility": false,
-    "defaultGasLimit": 58000,
-    "defaultOrdinalLevel": 90,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://runonflux.io",
+    "description": "Flux is the cryptocurrency that powers the Flux ecosystem.",
+    "symbol": "FLUX",
     "type": "ERC20",
+    "decimals": 8,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/RunOnFlux"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/RunOnFlux"
+      },
+      {
+        "name": "reddit",
+        "url": "https://www.reddit.com/r/Flux_Official"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://whitepaper.app.runonflux.io"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 90,
+    "contractId": "0x720CD16b011b987Da3518fbf38c3071d4F0D1495",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "GT": {
-    "symbol": "GT",
     "name": "Gate",
-    "decimals": 18,
-    "contractId": "0xe66747a101bff2dba3697199dcce5b743b454759",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultVisibility": false,
-    "defaultGasLimit": 58000,
-    "defaultOrdinalLevel": 115,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://gatechain.io",
+    "description": "Public blockchain which facilitates digital asset transfers",
+    "symbol": "GT",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/gatechain_io"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/gatechain"
+      },
+      {
+        "name": "discord",
+        "url": "https://discord.gg/TADecrzfcP"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "contractId": "0xe66747a101bff2dba3697199dcce5b743b454759",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "HOT": {
-    "symbol": "HOT",
     "name": "Holo",
-    "decimals": 18,
-    "contractId": "0x6c6ee5e31d828de241282b9606c8e98ea48526e2",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://holo.host",
+    "description": "Holo is a peer-to-peer platform for distributed applications based on a cloud storage infrastructure",
+    "symbol": "HOT",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/H_O_L_O_"
+      },
+      {
+        "name": "reddit",
+        "url": "https://www.reddit.com/r/holochain"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/Holo-Host"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://holo.host/whitepapers"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "contractId": "0x6c6ee5e31d828de241282b9606c8e98ea48526e2",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "INJ": {
-    "symbol": "INJ",
     "name": "Injective",
-    "regexAddress": "^(inj)[a-zA-HJ-NP-Z0-9]{25,39}$",
-    "decimals": 18,
-    "contractId": "0xe28b3b32b6c345a34ff64674606124dd5aceca30",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
+    "website": "https://injective.com",
+    "description": "An open, interoperable smart contract platform optimized for DeFi applications",
+    "explorer": "https://explorer.injective.network",
     "explorerTx": "https://explorer.injective.network/transaction/${ID}",
-    "status": "active",
-    "mainCoin": "ETH",
+    "explorerAddress": "https://explorer.injective.network/account/${ID}",
+    "explorerContract": "https://explorer.injective.network/contract/${ID}",
+    "regexAddress": "^(inj)[a-zA-HJ-NP-Z0-9]{25,39}$",
+    "symbol": "INJ",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "consensus": "PoS",
+    "blockTimeFixed": 1100,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/Injective_"
+      },
+      {
+        "name": "reddit",
+        "url": "https://www.reddit.com/r/injective"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/InjectiveLabs"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 200,
+    "contractId": "0xe28b3b32b6c345a34ff64674606124dd5aceca30",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "KLY": {
-    "symbol": "KLY",
-    "name": "Klayr",
     "qrPrefix": "klayr",
-    "minBalance": 0.05,
+    "name": "Klayr",
+    "website": "https://klayr.xyz",
+    "description": "Blockchain application platform",
+    "explorer": "https://explorer.klayr.xyz",
+    "explorerTx": "https://explorer.klayr.xyz/transaction/${ID}",
+    "explorerAddress": "https://explorer.klayr.xyz/account/${ID}",
     "regexAddress": "^kly[a-z2-9]{38}$",
+    "symbol": "KLY",
+    "type": "coin",
     "decimals": 8,
+    "minBalance": 0.05,
+    "cryptoTransferDecimals": 8,
+    "defaultFee": 0.00164,
+    "status": "active",
+    "createCoin": true,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 50,
+    "consensus": "dPoS",
+    "blockTimeFixed": 10000,
+    "balanceCheckInterval": 50000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 3000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 15,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 60000,
     "nodes": {
       "displayName": "kly-node",
       "list": [
@@ -431,280 +1362,718 @@
         "threshold": 5
       }
     },
-    "createCoin": true,
-    "cryptoTransferDecimals": 8,
-    "defaultFee": 0.00164,
-    "defaultVisibility": true,
-    "txFetchInfo": {
-      "newPendingInterval": 3000,
-      "oldPendingInterval": 3000,
-      "registeredInterval": 5000,
-      "newPendingAttempts": 15,
-      "oldPendingAttempts": 4
+    "services": {
+      "klyService": {
+        "displayName": "kly-indexer",
+        "description": {
+          "software": "klayr-service",
+          "github": "https://github.com/KlayrHQ/klayr-service",
+          "docs": "https://klayr.xyz/documentation/klayr-service"
+        },
+        "list": [
+          {
+            "url": "https://klyservice2.adamant.im",
+            "alt_ip": "http://109.176.199.130:44098"
+          },
+          {
+            "url": "https://klyservice3.adm.im",
+            "alt_ip": "http://37.27.205.78:44098"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
     },
-    "txConsistencyMaxTime": 60000,
-    "defaultOrdinalLevel": 50,
-    "explorerTx": "https://explorer.klayr.xyz/transaction/${ID}"
+    "links": [
+      {
+        "name": "github",
+        "url": "https://github.com/klayrHQ"
+      },
+      {
+        "name": "twitter",
+        "url": "https://x.com/KlayrHQ"
+      },
+      {
+        "name": "reddit",
+        "url": "https://reddit.com/r/klayr"
+      }
+    ],
+    "tor": {
+      "nodes": {
+        "displayName": "kly-node",
+        "list": [
+          {
+            "url": "http://5fr7uybpxecid5gikrm65hstsfhve2772keyqdvxirsiywlyo6zap6yd.onion"
+          },
+          {
+            "url": "http://5rmyjfvazkg5gcyo3gwvdinykvycsleeebumdm6zlj6dhf6gshpelfid.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 270000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "klyService": {
+          "displayName": "kly-indexer",
+          "description": {
+            "software": "klayr-service",
+            "github": "https://github.com/KlayrHQ/klayr-service",
+            "docs": "https://klayr.xyz/documentation/klayr-service"
+          },
+          "list": [
+            {
+              "url": "http://3om4mobnbppxuexwufprp4cle4fivstooqqap6yoll5qk3kikesmqgad.onion"
+            },
+            {
+              "url": "http://xif2b7cchtn27aq2qypjc6p3phamrt4fdc3gbl5e6kk2fw3ypovre5id.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    }
   },
   "LINK": {
-    "symbol": "LINK",
     "name": "Chainlink",
-    "decimals": 18,
-    "contractId": "0x514910771af9ca656af840dff83e8264ecf986ca",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://chain.link",
+    "description": "Chainlink is a decentralized blockchain oracle network built on Ethereum",
+    "symbol": "LINK",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/chainlink"
+      },
+      {
+        "name": "reddit",
+        "url": "https://www.reddit.com/r/Chainlink"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/smartcontractkit"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://research.chain.link/whitepaper-v2.pdf"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 200,
+    "contractId": "0x514910771af9ca656af840dff83e8264ecf986ca",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "MANA": {
-    "symbol": "MANA",
     "name": "Decentraland",
-    "decimals": 18,
-    "contractId": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://decentraland.org",
+    "description": "Decentraland is a decentralized virtual reality world that is powered by the Ethereum blockchain",
+    "symbol": "MANA",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/decentraland"
+      },
+      {
+        "name": "reddit",
+        "url": "https://www.reddit.com/r/decentraland"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/decentraland"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://decentraland.org/whitepaper.pdf"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "contractId": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "MATIC": {
-    "symbol": "MATIC",
     "name": "Polygon",
-    "regexAddress": "^0x[0-9a-fA-F]{40}$",
-    "decimals": 18,
-    "contractId": "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
+    "website": "https://polygon.technology",
+    "description": "Tokens used to govern and secure the Polygon network and pay transaction fees",
+    "explorer": "https://polygonscan.com",
     "explorerTx": "https://polygonscan.com/tx/${ID}",
-    "status": "active",
-    "mainCoin": "ETH",
+    "explorerAddress": "https://polygonscan.com/address/${ID}",
+    "explorerContract": "https://polygonscan.com/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
+    "symbol": "MATIC",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "consensus": "PoS",
+    "blockTimeAvg": 2250,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/0xPolygon"
+      },
+      {
+        "name": "reddit",
+        "url": "https://www.reddit.com/r/0xPolygon"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/maticnetwork"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://github.com/maticnetwork/whitepaper"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "contractId": "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "PAXG": {
-    "symbol": "PAXG",
     "name": "PAX Gold",
-    "decimals": 18,
-    "contractId": "0x45804880de22913dafe09f4980848ece6ecbaf78",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://paxos.com/paxgold",
+    "description": "PAXG is an ERC-20 stablecoin backed by physical gold reserves, held in custody by the Paxos Trust Company",
+    "symbol": "PAXG",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/PaxosGlobal"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/paxosglobal/paxos-gold-contract"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://paxos.com/wp-content/uploads/2019/09/PAX-Gold-Whitepaper.pdf"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 100,
+    "contractId": "0x45804880de22913dafe09f4980848ece6ecbaf78",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "QNT": {
-    "symbol": "QNT",
     "name": "Quant",
-    "decimals": 18,
-    "contractId": "0x4a220E6096B25EADb88358cb44068A3248254675",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://quant.network",
+    "description": "An operating system distributed ledger technology— and Overledger Network — for connecting different blockchain networks.",
+    "symbol": "QNT",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/quant_network"
+      },
+      {
+        "name": "reddit",
+        "url": "https://www.reddit.com/r/QuantNetwork/"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/quantnetwork"
+      },
+      {
+        "name": "whitepaper",
+        "url": "http://files.quant.network/files.quant.network/Quant_Overledger_Whitepaper_v0.1.pdf"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "contractId": "0x4a220E6096B25EADb88358cb44068A3248254675",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "REN": {
-    "symbol": "REN",
     "name": "Ren",
-    "decimals": 18,
-    "contractId": "0x408e41876cccdc0f92210600ef50372656052a38",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://renproject.io",
+    "description": "Ren is an open and community-driven protocol that enables the movement of value between blockchains",
+    "symbol": "REN",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/renprotocol"
+      },
+      {
+        "name": "reddit",
+        "url": "https://www.reddit.com/r/RenProject"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/renproject"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "contractId": "0x408e41876cccdc0f92210600ef50372656052a38",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "SKL": {
-    "symbol": "SKL",
     "name": "SKALE",
-    "decimals": 18,
-    "contractId": "0x00c83aecc790e8a4453e5dd3b0b4b3680501a7a7",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultVisibility": false,
-    "defaultGasLimit": 58000,
-    "defaultOrdinalLevel": 85,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://skale.space",
+    "description": "SKALE is a Layer-2 Ethereum sidechain network that creates a high-throughput, low-latency, low-cost environment for decentralized app development",
+    "symbol": "SKL",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/SkaleNetwork"
+      },
+      {
+        "name": "reddit",
+        "url": "https://www.reddit.com/r/SKALEnetwork"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/skalenetwork"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://skale.space/whitepaper"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 85,
+    "contractId": "0x00c83aecc790e8a4453e5dd3b0b4b3680501a7a7",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "SNT": {
-    "symbol": "SNT",
     "name": "Status",
-    "decimals": 18,
-    "contractId": "0x744d70fdbe2ba4cf95131626614a1763df805b9e",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://status.im",
+    "description": "Status is categorized as a mobile and desktop operating system and decentralized browser that incorporates a messaging system",
+    "symbol": "SNT",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/ethstatus"
+      },
+      {
+        "name": "reddit",
+        "url": "https://www.reddit.com/r/statusim"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/status-im"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://status.im/whitepaper.pdf"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "contractId": "0x744d70fdbe2ba4cf95131626614a1763df805b9e",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "SNX": {
-    "symbol": "SNX",
     "name": "Synthetix Network",
-    "decimals": 18,
-    "contractId": "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://www.synthetix.io",
+    "description": "Synthetix is an Ethereum-based protocol that tokenizes underlying assets ranging from commodities to fiat money",
+    "symbol": "SNX",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/synthetix_io"
+      },
+      {
+        "name": "reddit",
+        "url": "https://www.reddit.com/r/synthetix_io"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/Synthetixio/synthetix"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 200,
+    "contractId": "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "STORJ": {
-    "symbol": "STORJ",
     "name": "Storj",
-    "decimals": 8,
-    "contractId": "0xb64ef51c888972c908cfacf59b47c1afbc0ab8ac",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultVisibility": false,
-    "defaultGasLimit": 58000,
-    "defaultOrdinalLevel": 105,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://www.storj.io",
+    "description": "Storj is an open-source cloud storage platform",
+    "symbol": "STORJ",
     "type": "ERC20",
+    "decimals": 8,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/storj"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/storj"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://www.storj.io/storj.pdf"
+      },
+      {
+        "name": "reddit",
+        "url": "https://www.reddit.com/r/storj"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 105,
+    "contractId": "0xb64ef51c888972c908cfacf59b47c1afbc0ab8ac",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "TUSD": {
-    "symbol": "TUSD",
     "name": "TrueUSD",
-    "decimals": 18,
-    "contractId": "0x0000000000085d4780b73119b644ae5ecd22b376",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://trueusd.com",
+    "description": "TUSD is the first independently verified digital asset redeemable 1-for-1 in US dollars",
+    "symbol": "TUSD",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/tusd_official"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/trusttoken/contracts-pre22"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://trueusd.com/pdf/TUSD_WhitePaper.pdf"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 100,
+    "contractId": "0x0000000000085d4780b73119b644ae5ecd22b376",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "UNI": {
-    "symbol": "UNI",
     "name": "Uniswap",
-    "decimals": 18,
-    "contractId": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://uniswap.org",
+    "description": "Uniswap is a decentralized cryptocurrency exchange that uses a set of smart contracts to execute trades on its exchange",
+    "symbol": "UNI",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/uniswap"
+      },
+      {
+        "name": "reddit",
+        "url": "https://www.reddit.com/r/UniSwap"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/Uniswap"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://uniswap.org/whitepaper-v3.pdf"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "contractId": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "USDC": {
-    "symbol": "USDC",
     "name": "USD Coin",
-    "decimals": 6,
-    "contractId": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultVisibility": true,
-    "defaultGasLimit": 58000,
-    "defaultOrdinalLevel": 40,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://www.centre.io/usdc",
+    "description": "An open source, smart contract-based stablecoin",
+    "symbol": "USDC",
     "type": "ERC20",
+    "decimals": 6,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/centre_io"
+      },
+      {
+        "name": "reddit",
+        "url": "https://www.reddit.com/r/USDC/"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/centrehq"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://f.hubspotusercontent30.net/hubfs/9304636/PDF/centre-whitepaper.pdf"
+      }
+    ],
+    "defaultVisibility": true,
+    "defaultOrdinalLevel": 40,
+    "contractId": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "USDP": {
+    "name": "Pax Dollar",
+    "website": "https://www.paxos.com/usdp",
+    "description": "PAX Dollar is a regulated stablecoin collateralized 1:1 by United States Dollars held in US bank",
     "symbol": "USDP",
-    "name": "PAX Dollar",
-    "decimals": 18,
-    "contractId": "0x8e870d67f660d95d5be530380d0ec0bd388289e1",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/paxosglobal"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/paxosglobal/usdp-contracts"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 100,
+    "contractId": "0x8e870d67f660d95d5be530380d0ec0bd388289e1",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "USDS": {
-    "symbol": "USDS",
     "name": "Stably USD",
-    "decimals": 6,
-    "contractId": "0xa4bdb11dc0a2bec88d24a3aa1e6bb17201112ebe",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://stably.io/usds",
+    "description": "One-to-one U.S. Dollar backed, redeemable stablecoin",
+    "symbol": "USDS",
     "type": "ERC20",
+    "decimals": 6,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/stably_official"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "contractId": "0xa4bdb11dc0a2bec88d24a3aa1e6bb17201112ebe",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "USDT": {
-    "symbol": "USDT",
     "name": "Tether",
-    "decimals": 6,
-    "contractId": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultVisibility": true,
-    "defaultGasLimit": 58000,
-    "defaultOrdinalLevel": 30,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://tether.to",
+    "description": "Stablecoin pegged to the US Dollar",
+    "symbol": "USDT",
     "type": "ERC20",
+    "decimals": 6,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/Tether_to"
+      },
+      {
+        "name": "reddit",
+        "url": "https://www.reddit.com/r/Tether"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://assets.ctfassets.net/vyse88cgwfbl/5UWgHMvz071t2Cq5yTw5vi/c9798ea8db99311bf90ebe0810938b01/TetherWhitePaper.pdf"
+      }
+    ],
+    "defaultVisibility": true,
+    "defaultOrdinalLevel": 30,
+    "contractId": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "VERSE": {
-    "symbol": "VERSE",
     "name": "Verse",
-    "decimals": 18,
-    "contractId": "0x249cA82617eC3DfB2589c4c17ab7EC9765350a18",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultVisibility": false,
-    "defaultGasLimit": 58000,
-    "defaultOrdinalLevel": 95,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://www.getverse.com",
+    "description": "VERSE is the reward and utility token for the Bitcoin.com ecosystem",
+    "symbol": "VERSE",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/BitcoinCom"
+      },
+      {
+        "name": "medium",
+        "url": "https://blog.bitcoin.com"
+      },
+      {
+        "name": "telegram",
+        "url": "https://t.me/GetVerse"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://www.getverse.com/verse-whitepaper.pdf"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 95,
+    "contractId": "0x249cA82617eC3DfB2589c4c17ab7EC9765350a18",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "WOO": {
-    "symbol": "WOO",
     "name": "WOO Network",
-    "decimals": 18,
-    "contractId": "0x4691937a7508860f876c9c0a2a617e7d9e945d4b",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://woo.network",
+    "description": "WOO Network is a system of centralized finance and decentralized finance services designed to enable deeper liquidity for various cryptocurrency market participants",
+    "symbol": "WOO",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/WOOnetwork"
+      },
+      {
+        "name": "reddit",
+        "url": "https://www.reddit.com/r/WOO_X"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://woo.org/Litepaper.pdf"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "contractId": "0x4691937a7508860f876c9c0a2a617e7d9e945d4b",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   },
   "XCN": {
-    "symbol": "XCN",
     "name": "Onyxcoin",
-    "decimals": 18,
-    "contractId": "0xa2cd3d43c775978a96bdbf12d733d5a1ed94fb18",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultVisibility": false,
-    "defaultGasLimit": 58000,
-    "defaultOrdinalLevel": 110,
-    "status": "active",
-    "mainCoin": "ETH",
+    "website": "https://onyx.org",
+    "description": "Onyx DeFi Liquidity Protocol supported by the Onyx DAO",
+    "symbol": "XCN",
     "type": "ERC20",
+    "decimals": 18,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "createCoin": false,
+    "links": [
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/OnyxProtocol"
+      },
+      {
+        "name": "github",
+        "url": "https://github.com/Onyx-Protocol"
+      },
+      {
+        "name": "whitepaper",
+        "url": "https://onyx.org/Whitepaper.pdf"
+      },
+      {
+        "name": "telegram_chat",
+        "url": "https://t.me/OnyxOrg"
+      },
+      {
+        "name": "blog",
+        "url": "https://medium.com/OnyxProtocol"
+      }
+    ],
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 110,
+    "contractId": "0xa2cd3d43c775978a96bdbf12d733d5a1ed94fb18",
+    "mainCoin": "ETH",
+    "defaultGasLimit": 58000,
     "fees": "ethereum"
   }
 }

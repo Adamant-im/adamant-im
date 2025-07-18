@@ -55,8 +55,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/settings/_colors.scss';
-@import '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .files-preview {
   border-radius: 8px;
@@ -82,17 +83,17 @@ export default defineComponent({
 
 .v-theme--light {
   .files-preview {
-    background-color: map-get($adm-colors, 'secondary');
-    color: map-get($adm-colors, 'regular');
-    border-left: 3px solid map-get($adm-colors, 'attention');
+    background-color: map.get(colors.$adm-colors, 'secondary');
+    color: map.get(colors.$adm-colors, 'regular');
+    border-left: 3px solid map.get(colors.$adm-colors, 'attention');
   }
 }
 
 .v-theme--dark {
   .files-preview {
-    background-color: map-get($adm-colors, 'secondary2-slightly-transparent2');
+    background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent2');
     color: #fff;
-    border-left: 3px solid map-get($adm-colors, 'attention');
+    border-left: 3px solid map.get(colors.$adm-colors, 'attention');
   }
 }
 </style>

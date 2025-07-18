@@ -189,7 +189,11 @@
 <script>
 import { adm } from '@/lib/nodes'
 import klyIndexer from '@/lib/nodes/kly-indexer'
-import { AllNodesDisabledError, AllNodesOfflineError, NoInternetConnectionError } from '@/lib/nodes/utils/errors'
+import {
+  AllNodesDisabledError,
+  AllNodesOfflineError,
+  NoInternetConnectionError
+} from '@/lib/nodes/utils/errors'
 import { PendingTransactionError } from '@/lib/pending-transactions'
 import axios from 'axios'
 import { computed, nextTick } from 'vue'
@@ -234,7 +238,6 @@ import { MAX_UINT64 } from '@klayr/validator'
 
 import { mdiDotsVertical, mdiMenuDown } from '@mdi/js'
 import { useStore } from 'vuex'
-
 
 /**
  * @returns {string | boolean}
@@ -290,7 +293,7 @@ export default {
     const isOnline = computed(() => store.getters['isOnline'])
 
     const checkIsOnline = () => {
-      return navigator.onLine || isOnline.value;
+      return navigator.onLine || isOnline.value
     }
 
     return {
@@ -617,6 +620,23 @@ export default {
     this.currency = this.cryptoCurrency
     this.address = this.recipientAddress
     this.amount = this.amountToSend
+
+    const isSaved = this.$store.getters['options/wasSendingFunds']
+
+    // if not from chats
+    if (isSaved && !this.$route.query.from) {
+      this.amountString = this.$store.getters['options/savedAmountToSend']
+      this.address = this.$store.getters['options/savedRecipientAddress']
+      this.cryptoAddress = this.$store.getters['options/savedRecipientAddress']
+      this.increaseFee = this.$store.getters['options/savedIncreaseFee']
+    }
+
+    // if from chats
+    if (this.$route.query.from) {
+      this.amountString = this.$store.getters['options/savedAmountFromChat']
+      this.comment = this.$store.getters['options/savedComment']
+      this.increaseFee = this.$store.getters['options/savedIncreaseFeeChat']
+    }
 
     // create watcher after setting default from props
     this.$watch('currency', () => {
