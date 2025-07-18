@@ -337,6 +337,7 @@ export default {
     showWarningOnPartnerAddressDialog: false,
     warningOnPartnerInfo: {},
     klayrOptionalMessage: '',
+    estimatedGasLimit: null,
 
     // Account exists check
     // Currently works only with KLY
@@ -382,7 +383,7 @@ export default {
      */
     transferFeeFixed() {
       const decimals = CryptosInfo['ETH'].cryptoTransferDecimals
-      return BigNumber(this.transferFee).toFixed(decimals)
+      return BigNumber(this.transferFee).decimalPlaces(decimals).toString()
     },
 
     /**
@@ -418,7 +419,7 @@ export default {
      */
     finalAmountFixed() {
       const decimals = CryptosInfo[this.currency].cryptoTransferDecimals
-      return BigNumber(this.finalAmount).toFixed(decimals)
+      return BigNumber(this.finalAmount).decimalPlaces(decimals).toString()
     },
 
     /**
@@ -613,8 +614,12 @@ export default {
         this.amount = 0
       }
     },
+    amount() {
+      this.updateGasEstimate()
+    },
     cryptoAddress(cryptoAddress) {
       this.checkIsNewAccount(cryptoAddress)
+      this.updateGasEstimate()
     },
     increaseFee(newValue) {
       const storageKey = isEthBased(this.currency) ? 'ETH' : this.currency
@@ -622,6 +627,7 @@ export default {
     },
     currency() {
       this.restoreIncreaseFeeState()
+      this.estimatedGasLimit = null
     }
   },
   created() {
@@ -963,13 +969,43 @@ export default {
         this.cryptoAddress,
         this.textData,
         this.account.isNew,
-        this.increaseFee
+        this.increaseFee,
+        this.estimatedGasLimit
       )
     },
     restoreIncreaseFeeState() {
       const storageKey = isEthBased(this.currency) ? 'ETH' : this.currency
       const saved = localStorage.getItem(`increaseFee_${storageKey}`)
       this.increaseFee = saved === 'true'
+    },
+    async updateGasEstimate() {
+      if (!isEthBased(this.currency)) {
+        return
+      }
+
+      if (
+        this.amount === 0 ||
+        !this.cryptoAddress ||
+        !validateAddress(this.currency, this.cryptoAddress)
+      ) {
+        this.estimatedGasLimit = null
+        return
+      }
+
+      try {
+        const gasLimit = await this.$store.dispatch(
+          `${this.currency.toLowerCase()}/estimateGasLimit`,
+          {
+            amount: this.amount,
+            address: this.cryptoAddress
+          }
+        )
+
+        this.estimatedGasLimit = gasLimit
+      } catch (error) {
+        console.warn(`${this.currency} EstimateGas failed:`, error)
+        this.estimatedGasLimit = null
+      }
     }
   }
 }
