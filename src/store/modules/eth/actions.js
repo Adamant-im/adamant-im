@@ -21,7 +21,7 @@ function storeEthAddress(context) {
 }
 
 const initTransaction = async (api, context, ethAddress, amount, nonce, increaseFee) => {
-  const gasPrice = BigInt(Math.round(context.getters.finalGasPrice(increaseFee)))
+  const gasPrice = BigInt(context.getters.finalGasPrice(increaseFee))
 
   const transaction = {
     from: context.state.address,
@@ -148,6 +148,25 @@ const createSpecificActions = (api) => ({
         context.dispatch('updateStatus')
       }
     }, delay)
+  },
+
+  estimateGasLimit: {
+    async handler({ state }, { amount, address }) {
+      try {
+        const transaction = {
+          from: state.address,
+          to: address,
+          value: utils.toWei(amount)
+        }
+
+        const gasLimit = await api.useClient((client) => client.estimateGas(transaction))
+
+        return Number(gasLimit)
+      } catch (error) {
+        console.warn('ETH EstimateGas failed:', error)
+        return null
+      }
+    }
   }
 })
 

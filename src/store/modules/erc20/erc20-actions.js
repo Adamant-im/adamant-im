@@ -16,7 +16,7 @@ let interval
 const initTransaction = async (api, context, ethAddress, amount, nonce, increaseFee) => {
   const contract = new EthContract(Erc20, context.state.contractAddress)
 
-  const gasPrice = BigInt(Math.round(context.getters.finalGasPrice(increaseFee)))
+  const gasPrice = BigInt(context.getters.finalGasPrice(increaseFee))
 
   const transaction = {
     from: context.state.address,
@@ -65,62 +65,11 @@ const createSpecificActions = (api) => ({
     }
   },
 
+  /** Wrapper to manually request balance update if needed */
   requestBalanceUpdate: {
     root: true,
     handler({ dispatch }) {
       dispatch('updateBalance')
-    }
-  },
-
-  updateFee: {
-    async handler({ commit, rootGetters, state }, { amount, address, increaseFee = false } = {}) {
-      // Get gas price from ETH (real blockchain data)
-      const ethGasPrice = rootGetters['eth/gasPrice']
-      if (!ethGasPrice) return
-
-      // Get crypto configuration
-      const cryptoInfo = CryptosInfo[state.crypto]
-      if (!cryptoInfo) return
-
-      let gasPrice = ethGasPrice
-      let gasLimit
-
-      // Try to get real gas limit, fallback to default
-      try {
-        const contract = new EthContract(Erc20, state.contractAddress)
-        const transaction = {
-          from: state.address,
-          to: state.contractAddress,
-          value: '0x0',
-          data: contract.methods
-            .transfer(
-              address || DEFAULT_ESTIMATE_ADDRESS,
-              ethUtils.toWhole(amount || 1, state.decimals)
-            )
-            .encodeABI()
-        }
-
-        gasLimit = await api.useClient((client) => client.estimateGas(transaction))
-        gasLimit = Number(gasLimit)
-      } catch (error) {
-        console.warn('EstimateGas failed, using default gas limit:', error.message)
-        gasLimit = cryptoInfo.defaultGasLimit
-      }
-
-      const reliabilityGasPricePercent = cryptoInfo.reliabilityGasPricePercent
-      const reliabilityGasLimitPercent = cryptoInfo.reliabilityGasLimitPercent
-
-      const finalGasLimit = gasLimit + (gasLimit * reliabilityGasLimitPercent) / 100
-      let finalGasPrice = gasPrice + (gasPrice * reliabilityGasPricePercent) / 100
-
-      if (increaseFee) {
-        const increasedGasPricePercent = cryptoInfo.increasedGasPricePercent
-        finalGasPrice = finalGasPrice + (finalGasPrice * increasedGasPricePercent) / 100
-      }
-
-      const fee = ethUtils.calculateFee(Math.round(finalGasLimit), Math.round(finalGasPrice))
-
-      commit('setFee', Number(fee))
     }
   },
 
@@ -188,6 +137,30 @@ const createSpecificActions = (api) => ({
         })
     } catch (err) {
       console.warn(err)
+    }
+  },
+
+  estimateGasLimit: {
+    async handler({ state }, { amount, address }) {
+      try {
+        const contract = new EthContract(Erc20, state.contractAddress)
+
+        const amountWei = ethUtils.toWhole(amount, state.decimals)
+
+        const transaction = {
+          from: state.address,
+          to: state.contractAddress,
+          value: '0x0',
+          data: contract.methods.transfer(address, amountWei).encodeABI()
+        }
+
+        const gasLimit = await api.useClient((client) => client.estimateGas(transaction))
+
+        return Number(gasLimit)
+      } catch (error) {
+        console.warn('ERC20 EstimateGas failed:', error)
+        return null
+      }
     }
   }
 })
