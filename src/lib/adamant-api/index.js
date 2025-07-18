@@ -12,6 +12,7 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import { parseCryptoAddressesKVStxs } from '@/lib/store-crypto-address'
 import { DEFAULT_TIME_DELTA } from '@/lib/nodes/constants.js'
 import constants from '@/lib/constants/index.js'
+import { isAllNodesOfflineError } from '@/lib/nodes/utils/errors.js'
 
 Queue.configure(Promise)
 
@@ -111,6 +112,10 @@ export function isReady() {
  * @returns {Promise<string>}
  */
 export function getPublicKey(address = '') {
+  if (address === store.state.address && myKeypair.publicKey) {
+    return Promise.resolve(myKeypair.publicKey.toString('hex'))
+  }
+
   // @todo remove returning cached keys and use getCachedPublicKey instead
   const publicKeyCached = store.getters.publicKey(address)
 

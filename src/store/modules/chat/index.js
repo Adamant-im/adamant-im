@@ -26,6 +26,7 @@ import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
 import { uploadFiles } from '../../../lib/files'
 import { generateAdamantChats } from './utils/generateAdamantChats'
 import {
+  AllNodesDisabledError,
   AllNodesOfflineError,
   isAllNodesDisabledError,
   isAllNodesOfflineError
@@ -554,8 +555,8 @@ const mutations = {
     }
   },
 
-  setNoActiveNodesDialog(state, value) {
-    if (state.noActiveNodesDialog === false) {
+  setNoActiveNodesDialog(state, { value, afterSendingMessage = false }) {
+    if (state.noActiveNodesDialog === false && !afterSendingMessage) {
       return // do not show dialog again
     }
 
@@ -617,7 +618,7 @@ const actions = {
       })
       .catch((err) => {
         if (isAllNodesDisabledError(err) || getters.isNoNodesDialogAllowed(err)) {
-          commit('setNoActiveNodesDialog', true)
+          commit('setNoActiveNodesDialog', { value: true })
           setTimeout(() => dispatch('loadChats'), 5000) // retry in 5 seconds
         }
       })
@@ -674,7 +675,7 @@ const actions = {
       })
       .catch((err) => {
         if (isAllNodesDisabledError(err) || getters.isNoNodesDialogAllowed(err)) {
-          commit('setNoActiveNodesDialog', true)
+          commit('setNoActiveNodesDialog', { value: true })
         }
         throw err
       })
@@ -844,6 +845,15 @@ const actions = {
         // if the error is caused by connection we keep the message in PENDING status
         // and try to resend it after the connection is restored
 
+        dispatch(
+          'snackbar/show',
+          {
+            message: i18n.global.t(`connection.offline`),
+            timeout: 3000
+          },
+          { root: true }
+        )
+
         // timeout for self deleting out of pending messages
         const timeout = setTimeout(() => {
           dispatch('rejectPendingMessage', {
@@ -866,6 +876,10 @@ const actions = {
           partnerId: recipientId
         })
       } else {
+        if (isAllNodesDisabledError(error)) {
+          commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
+        }
+
         if (id) {
           commit('updateMessage', {
             id,
@@ -889,7 +903,7 @@ const actions = {
    * @returns {Promise}
    */
   async sendAttachment(
-    { commit, rootState, dispatch },
+    { commit, rootState, dispatch, rootGetters },
     { files, message, recipientId, replyToId }
   ) {
     const recipientPublicKey = await getPublicKey(recipientId)
@@ -923,6 +937,14 @@ const actions = {
     console.debug('Updated CIDs and Nonces', newAsset)
 
     try {
+      const areAdmNodesDisabled = rootGetters['nodes/adm'].every(
+        (node) => node.status === 'disabled'
+      )
+
+      if (areAdmNodesDisabled) {
+        throw new AllNodesDisabledError('adm')
+      }
+
       const uploadData = await uploadFiles(files, (progress) => {
         for (const [cid] of cids) {
           commit('attachment/setUploadProgress', { cid, progress }, { root: true })
@@ -944,6 +966,10 @@ const actions = {
       console.debug('Updated CIDs after upload', newAsset)
     } catch (err) {
       if (!isAllNodesOfflineError(err)) {
+        if (isAllNodesDisabledError(err)) {
+          commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
+        }
+
         commit('updateMessage', {
           id: messageObject.id,
           status: TS.REJECTED,
@@ -965,7 +991,11 @@ const actions = {
     return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
       .then((res) => {
         if (isAllNodesOfflineError(res)) {
-          throw new AllNodesOfflineError('ipfs')
+          throw new AllNodesOfflineError('adm')
+        }
+
+        if (isAllNodesDisabledError(res)) {
+          throw new AllNodesDisabledError('adm')
         }
 
         if (!res.success) {
@@ -986,6 +1016,10 @@ const actions = {
       .catch((err) => {
         // update `message.status` to 'REJECTED' if the error is not caused by connection
         if (!isAllNodesOfflineError(err)) {
+          if (isAllNodesDisabledError(err)) {
+            commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
+          }
+
           commit('updateMessage', {
             id: messageObject.id,
             status: TS.REJECTED,
@@ -994,6 +1028,15 @@ const actions = {
         } else {
           // if the error is caused by connection we keep the message in PENDING status
           // and try to resend it after the connection is restored
+
+          dispatch(
+            'snackbar/show',
+            {
+              message: i18n.global.t(`connection.offline`),
+              timeout: 3000
+            },
+            { root: true }
+          )
 
           // timeout for self deleting out of pending messages
           const timeout = setTimeout(() => {
@@ -1181,7 +1224,7 @@ const actions = {
 
   rejectPendingMessage({ commit }, { messageId, recipientId }) {
     commit('updateMessage', {
-      messageId,
+      id: messageId,
       status: TS.REJECTED,
       partnerId: recipientId
     })
