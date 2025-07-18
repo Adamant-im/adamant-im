@@ -903,7 +903,7 @@ const actions = {
    * @returns {Promise}
    */
   async sendAttachment(
-    { commit, rootState, dispatch },
+    { commit, rootState, dispatch, rootGetters },
     { files, message, recipientId, replyToId }
   ) {
     const recipientPublicKey = await getPublicKey(recipientId)
@@ -937,6 +937,14 @@ const actions = {
     console.debug('Updated CIDs and Nonces', newAsset)
 
     try {
+      const areAdmNodesDisabled = rootGetters['nodes/adm'].every(
+        (node) => node.status === 'disabled'
+      )
+
+      if (areAdmNodesDisabled) {
+        throw new AllNodesDisabledError('adm')
+      }
+
       const uploadData = await uploadFiles(files, (progress) => {
         for (const [cid] of cids) {
           commit('attachment/setUploadProgress', { cid, progress }, { root: true })
