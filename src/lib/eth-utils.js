@@ -3,7 +3,6 @@ import * as web3Utils from 'web3-utils'
 import { privateKeyToAccount } from 'web3-eth-accounts'
 import BigNumber from 'bignumber.js'
 import cache from '@/store/cache.js'
-import { INCREASE_FEE_MULTIPLIER } from '@/lib/constants'
 
 const HD_KEY_PATH = "m/44'/60'/3'/1/0"
 
@@ -109,12 +108,11 @@ export function toFraction(amount, decimals, separator = '.') {
 }
 
 /**
- * @param {bigint | number} gasLimit
- * @param {number} multiplier
- * @returns {bigint} Increased fee
+ * Calculates reliable value by adding percentage margin
+ * @param {number} baseValue base value (gasLimit or gasPrice)
+ * @param {number} reliabilityPercent percentage to add (e.g., 10 for 10%)
+ * @returns {number} value with reliability margin
  */
-export function increaseFee(gasLimit, multiplier = INCREASE_FEE_MULTIPLIER) {
-  const increasedGasLimit = BigNumber(Number(gasLimit)).multipliedBy(multiplier).toNumber()
-
-  return BigInt(Math.round(increasedGasLimit))
+export function calculateReliableValue(baseValue, reliabilityPercent) {
+  return baseValue * (1 + reliabilityPercent / 100)
 }

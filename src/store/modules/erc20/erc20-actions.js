@@ -1,5 +1,5 @@
 import * as ethUtils from '../../../lib/eth-utils'
-import { FetchStatus, DEFAULT_ERC20_TRANSFER_GAS_LIMIT, CryptosInfo } from '@/lib/constants'
+import { FetchStatus, CryptosInfo } from '@/lib/constants'
 import EthContract from 'web3-eth-contract'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
@@ -16,7 +16,7 @@ let interval
 const initTransaction = async (api, context, ethAddress, amount, nonce, increaseFee) => {
   const contract = new EthContract(Erc20, context.state.contractAddress)
 
-  const gasPrice = await api.useClient((client) => client.getGasPrice())
+  const gasPrice = BigInt(context.getters.finalGasPrice(increaseFee))
 
   const transaction = {
     from: context.state.address,
@@ -24,15 +24,13 @@ const initTransaction = async (api, context, ethAddress, amount, nonce, increase
     value: '0x0',
     gasPrice,
     nonce,
-    data: contract.methods
-      .transfer(ethAddress, ethUtils.toWhole(amount, context.state.decimals))
-      .encodeABI()
+    data: contract.methods.transfer(ethAddress, amount).encodeABI()
   }
 
   const gasLimit = await api
     .useClient((client) => client.estimateGas(transaction))
-    .catch(() => BigInt(DEFAULT_ERC20_TRANSFER_GAS_LIMIT))
-  transaction.gasLimit = increaseFee ? ethUtils.increaseFee(gasLimit) : gasLimit
+    .catch(() => BigInt(CryptosInfo[context.state.crypto].defaultGasLimit))
+  transaction.gasLimit = gasLimit
 
   return transaction
 }
@@ -139,6 +137,30 @@ const createSpecificActions = (api) => ({
         })
     } catch (err) {
       console.warn(err)
+    }
+  },
+
+  estimateGasLimit: {
+    async handler({ state }, { amount, address }) {
+      try {
+        const contract = new EthContract(Erc20, state.contractAddress)
+
+        const amountWei = ethUtils.toWhole(amount, state.decimals)
+
+        const transaction = {
+          from: state.address,
+          to: state.contractAddress,
+          value: '0x0',
+          data: contract.methods.transfer(address, amountWei).encodeABI()
+        }
+
+        const gasLimit = await api.useClient((client) => client.estimateGas(transaction))
+
+        return Number(gasLimit)
+      } catch (error) {
+        console.warn('ERC20 EstimateGas failed:', error)
+        return null
+      }
     }
   }
 })
