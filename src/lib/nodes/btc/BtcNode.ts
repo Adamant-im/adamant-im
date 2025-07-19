@@ -3,6 +3,7 @@ import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import { formatBtcVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
+import type { NodeInfo } from '@/types/wallets'
 import { RpcRequest, RpcResponse } from './types/api/common'
 import { NetworkInfo } from './types/api/network-info'
 import { BlockchainInfo } from './types/api/blockchain-info'
@@ -12,8 +13,8 @@ import { BlockchainInfo } from './types/api/blockchain-info'
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class BtcNode extends Node<AxiosInstance> {
-  constructor(url: string) {
-    super(url, 'btc', 'node', NODE_LABELS.BtcNode)
+  constructor(endpoint: NodeInfo) {
+    super(endpoint, 'btc', 'node', NODE_LABELS.BtcNode)
   }
 
   protected buildClient(): AxiosInstance {
@@ -50,9 +51,12 @@ export class BtcNode extends Node<AxiosInstance> {
     params?: Params,
     requestConfig?: AxiosRequestConfig
   ): Promise<Result> {
+    const baseURL = this.getBaseURL(this)
+
     return this.client
       .request<RpcResponse<Result>>({
         ...requestConfig,
+        baseURL,
         method: 'POST',
         data: params
       })
