@@ -5,6 +5,7 @@ import Visibility from 'visibilityjs'
 import currency from '@/filters/currencyAmountWithSymbol'
 import { formatMessageBasic } from '@/lib/markdown'
 import { isAdamantChat } from '@/lib/chat/meta/utils'
+import { joinUrl } from '@/lib/uri.js'
 
 let _this
 
@@ -149,7 +150,7 @@ class PushNotification extends Notification {
 class SoundNotification extends Notification {
   constructor(ctx) {
     super(ctx)
-    this.audio = new Audio(import.meta.env.BASE_URL  + '/sound/bbpro_link.mp3')
+    this.audio = new Audio(joinUrl(import.meta.env.BASE_URL, '/sound/bbpro_link.mp3'))
   }
 
   notify(messageArrived) {
