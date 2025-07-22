@@ -1,4 +1,7 @@
 import { ManifestOptions } from 'vite-plugin-pwa'
+import { joinUrl } from '@/lib/uri.js'
+
+const BASE = import.meta.env.BASE_URL
 
 export const manifest: Partial<ManifestOptions> = {
   name: 'ADAMANT Messenger',
@@ -7,53 +10,53 @@ export const manifest: Partial<ManifestOptions> = {
     'ADAMANT is a decentralized anonymous messenger based on the blockchain system. It’s independent of any governments or corporations, and even developers due to the distributed network infrastructure that contains an open-source code.',
   icons: [
     {
-      src: '/img/icons/android-chrome-36x36.png',
+      src: joinUrl(BASE, 'img/icons/android-chrome-36x36.png'),
       sizes: '36x36',
       type: 'image/png'
     },
     {
-      src: '/img/icons/android-chrome-48x48.png',
+      src: joinUrl(BASE, 'img/icons/android-chrome-48x48.png'),
       sizes: '48x48',
       type: 'image/png'
     },
     {
-      src: '/img/icons/android-chrome-72x72.png',
+      src: joinUrl(BASE, 'img/icons/android-chrome-72x72.png'),
       sizes: '72x72',
       type: 'image/png'
     },
     {
-      src: '/img/icons/android-chrome-96x96.png',
+      src: joinUrl(BASE, 'img/icons/android-chrome-96x96.png'),
       sizes: '96x96',
       type: 'image/png'
     },
     {
-      src: '/img/icons/android-chrome-144x144.png',
+      src: joinUrl(BASE, 'img/icons/android-chrome-144x144.png'),
       sizes: '144x144',
       type: 'image/png'
     },
     {
-      src: '/img/icons/android-chrome-192x192.png',
+      src: joinUrl(BASE, 'img/icons/android-chrome-192x192.png'),
       sizes: '192x192',
       type: 'image/png'
     },
     {
-      src: '/img/icons/android-chrome-256x256.png',
+      src: joinUrl(BASE, 'img/icons/android-chrome-256x256.png'),
       sizes: '256x256',
       type: 'image/png'
     },
     {
-      src: '/img/icons/android-chrome-384x384.png',
+      src: joinUrl(BASE, 'img/icons/android-chrome-384x384.png'),
       sizes: '384x384',
       type: 'image/png'
     },
     {
-      src: '/img/icons/android-chrome-512x512.png',
+      src: joinUrl(BASE, 'img/icons/android-chrome-512x512.png'),
       sizes: '512x512',
       type: 'image/png',
       purpose: 'any'
     },
     {
-      src: '/img/icons/android-chrome-1024x1024.png',
+      src: joinUrl(BASE, 'img/icons/android-chrome-1024x1024.png'),
       sizes: '1024x1024',
       type: 'image/png'
     }

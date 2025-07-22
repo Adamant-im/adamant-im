@@ -15,7 +15,7 @@ export default mergeConfig(
         devOptions: {
           enabled: false
         },
-        manifest: { ...manifest, start_url: viteBaseConfig.base, scope: viteBaseConfig.base },
+        manifest: manifest,
         manifestFilename: 'manifest.json',
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,wasm}'],
