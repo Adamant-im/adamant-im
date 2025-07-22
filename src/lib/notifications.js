@@ -149,7 +149,7 @@ class PushNotification extends Notification {
 class SoundNotification extends Notification {
   constructor(ctx) {
     super(ctx)
-    this.audio = new Audio('/sound/bbpro_link.mp3')
+    this.audio = new Audio(import.meta.env.BASE_URL  + '/sound/bbpro_link.mp3')
   }
 
   notify(messageArrived) {
