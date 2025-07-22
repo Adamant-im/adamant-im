@@ -6,19 +6,20 @@
 
         <v-row no-gutters>
           <v-col cols="12" md="4" class="pr-0 pr-md-2 mb-3">
-            <v-select
+            <v-autocomplete
               v-model="selectedCoin"
               :items="coinOptions"
               :label="t('dev_wallets.select_coin')"
               item-title="label"
               item-value="value"
               variant="outlined"
+              clearable
               @update:modelValue="onCoinChange"
             />
           </v-col>
 
           <v-col cols="12" md="4" class="pr-0 pr-md-2 mb-3">
-            <v-select
+            <v-autocomplete
               v-model="selectedBlockchain"
               :items="blockchainOptions"
               :label="t('dev_wallets.select_blockchain')"
@@ -26,12 +27,14 @@
               item-title="label"
               item-value="value"
               variant="outlined"
+              clearable
+              autocomplete="off"
               @update:modelValue="onBlockchainChange"
             />
           </v-col>
 
           <v-col cols="12" md="4" class="mb-3">
-            <v-select
+            <v-autocomplete
               v-model="selectedProperty"
               :items="propertyOptions"
               :label="t('dev_wallets.select_property')"
@@ -39,6 +42,8 @@
               item-title="label"
               item-value="value"
               variant="outlined"
+              clearable
+              autocomplete="off"
             />
           </v-col>
         </v-row>
@@ -101,10 +106,14 @@ const coinOptions = computed(() => {
 
 const blockchainOptions = computed(() => {
   if (!selectedCoin.value) {
-    return
+    return []
   }
 
   const coin = CryptosInfo[selectedCoin.value]
+  if (!coin) {
+    return []
+  }
+
   const options = [{ label: 'Main Properties', value: 'main' }]
 
   const additionalContexts: Array<{ key: keyof TokenGeneral; label: string }> = [
@@ -130,6 +139,10 @@ const targetObject = computed(() => {
   }
 
   const coin = CryptosInfo[selectedCoin.value]
+  if (!coin) {
+    return null
+  }
+
   const target = selectedBlockchain.value === 'main' ? coin : coin[selectedBlockchain.value]
 
   return target
