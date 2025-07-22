@@ -5,7 +5,7 @@ import Visibility from 'visibilityjs'
 import currency from '@/filters/currencyAmountWithSymbol'
 import { formatMessageBasic } from '@/lib/markdown'
 import { isAdamantChat } from '@/lib/chat/meta/utils'
-import { joinUrl } from '@/lib/uri.js'
+import { joinUrl } from '@/lib/urlFormatter.js'
 
 let _this
 
