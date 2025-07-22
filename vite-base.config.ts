@@ -15,6 +15,8 @@ import { excludeBip39Wordlists } from './vite-config/rollup/excludeBip39Wordlist
 const env = loadEnv('production', process.cwd())
 const basePublicPath = env.VITE_PUBLIC_PATH || '/'
 
+console.log('basePublicPath', basePublicPath)
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
