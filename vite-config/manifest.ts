@@ -1,7 +1,9 @@
 import { ManifestOptions } from 'vite-plugin-pwa'
 import { joinUrl } from '../src/lib/urlFormatter'
+import { loadEnv } from 'vite'
 
-const BASE = import.meta.env.BASE_URL
+const env = loadEnv('production', process.cwd())
+const BASE = env.VITE_PUBLIC_PATH || '/'
 
 export const manifest: Partial<ManifestOptions> = {
   name: 'ADAMANT Messenger',
