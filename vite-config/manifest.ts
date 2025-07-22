@@ -1,5 +1,5 @@
 import { ManifestOptions } from 'vite-plugin-pwa'
-import { joinUrl } from '@/lib/uri.js'
+import { joinUrl } from '../src/lib/uri.js'
 
 const BASE = import.meta.env.BASE_URL
 
