@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - dev
+      - fix/pages
   workflow_dispatch:
 
 env:
