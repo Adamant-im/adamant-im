@@ -127,8 +127,7 @@ const createSpecificActions = (api) => ({
       .useClient((client) => client.getGasPrice())
       .then((price) => {
         context.commit('gasPrice', {
-          gasPrice: Number(price),
-          fee: +(+utils.calculateFee(CryptosInfo['ETH'].defaultGasLimit, price)).toFixed(8)
+          gasPrice: price.toString()
         })
       })
       .catch((err) => console.warn(err))
@@ -148,25 +147,6 @@ const createSpecificActions = (api) => ({
         context.dispatch('updateStatus')
       }
     }, delay)
-  },
-
-  estimateGasLimit: {
-    async handler({ state }, { amount, address }) {
-      try {
-        const transaction = {
-          from: state.address,
-          to: address,
-          value: utils.toWei(amount)
-        }
-
-        const gasLimit = await api.useClient((client) => client.estimateGas(transaction))
-
-        return Number(gasLimit)
-      } catch (error) {
-        console.warn('ETH EstimateGas failed:', error)
-        return null
-      }
-    }
   }
 })
 

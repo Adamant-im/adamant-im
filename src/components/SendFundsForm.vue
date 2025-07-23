@@ -382,8 +382,12 @@ export default {
      * @returns {string}
      */
     transferFeeFixed() {
-      const decimals = CryptosInfo['ETH'].cryptoTransferDecimals
-      return BigNumber(this.transferFee).decimalPlaces(decimals).toString()
+      const feeCurrency = isErc20(this.currency) ? 'ETH' : this.currency
+      const decimals = CryptosInfo[feeCurrency].cryptoTransferDecimals
+      return BigNumber(this.transferFee)
+        .decimalPlaces(decimals)
+        .toString()
+        .replace(/\.?0+$/, '') // delete trailing zeroes
     },
 
     /**
