@@ -13,9 +13,23 @@ env:
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: github.repository == 'feat/deweb' # restrict deploying only from master
 
     steps:
+      - name: Show github.repository
+        run: echo "github.repository = ${{ github.repository }}"
+
+      - name: Show github.ref
+        run: echo "github.ref = ${{ github.ref }}"
+
+      - name: Show github.head_ref
+        run: echo "github.head_ref = ${{ github.head_ref }}"
+
+      - name: Show github.event_name
+        run: echo "github.event_name = ${{ github.event_name }}"
+
+      - name: Show github.sha
+        run: echo "github.sha = ${{ github.sha }}"
+
       - name: Checkout repository 🛎️
         uses: actions/checkout@v4
 
