@@ -1,9 +1,6 @@
 name: Massa DeWeb
 
 on:
-  push:
-    branches:
-      - feat/deweb
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -33,6 +30,17 @@ jobs:
           npm run schema:generate
           npm run build
           rm -rf dist/screenshots
+
+      - name: Upload to Massa DeWeb 🌐
+        env:
+          SECRET_KEY: ${{ secrets.MASSA_ACCOUNT_SECRET_KEY }}
+          CONTRACT_ADDRESS: ${{ secrets.MASSA_WEBSITE_CONTRACT_ADDRESS }}
+        run: |
+          npx @massalabs/deweb-cli upload ./dist \
+            --node_url https://mainnet.massa.net/api/v2 \
+            --address $CONTRACT_ADDRESS \
+            --accept_disclaimer \
+            --yes
 
       - name: Save artifacts 💾
         uses: actions/upload-artifact@v4
