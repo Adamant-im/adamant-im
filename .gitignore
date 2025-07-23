@@ -34,8 +34,6 @@ yarn-error.log*
 /dist-electron
 # Electron app will be placed here after packaging
 /release-electron
-# Massa DeWeb
-/dist-deweb
 
 # Yarn
 .yarn

@@ -26,17 +26,19 @@ jobs:
       - name: Install dependencies ⚙️
         run: npm ci
 
+      # Screenshots are removed to save space on Massa DeWeb
       - name: Build PWA 🛠️
         run: |
           npm run schema:generate
           npm run deweb:build
+          rm -rf dist/screenshots
 
       - name: Upload to Massa DeWeb 🌐
         env:
           SECRET_KEY: ${{ secrets.MASSA_ACCOUNT_SECRET_KEY }}
           CONTRACT_ADDRESS: ${{ secrets.MASSA_WEBSITE_CONTRACT_ADDRESS }}
         run: |
-          npx @massalabs/deweb-cli upload ./dist-deweb \
+          npx @massalabs/deweb-cli upload ./dist \
             --node_url https://mainnet.massa.net/api/v2 \
             --address $CONTRACT_ADDRESS \
             --accept_disclaimer \
@@ -45,4 +47,4 @@ jobs:
       - name: Save artifacts 💾
         uses: actions/upload-artifact@v4
         with:
-          path: dist-deweb
+          path: dist
