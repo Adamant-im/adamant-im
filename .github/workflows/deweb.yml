@@ -30,7 +30,7 @@ jobs:
       - name: Build PWA 🛠️
         run: |
           npm run schema:generate
-          npm run deweb:build
+          npm run build
           rm -rf dist/screenshots
 
       - name: Upload to Massa DeWeb 🌐
