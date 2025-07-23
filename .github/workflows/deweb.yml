@@ -39,7 +39,8 @@ jobs:
           npx @massalabs/deweb-cli upload ./dist-deweb \
             --node_url https://mainnet.massa.net/api/v2 \
             --address $CONTRACT_ADDRESS \
-            --accept_disclaimer
+            --accept_disclaimer \
+            --yes
 
       - name: Save artifacts 💾
         uses: actions/upload-artifact@v4
