@@ -17,6 +17,7 @@ const initTransaction = async (api, context, ethAddress, amount, nonce, increase
   const contract = new EthContract(Erc20, context.state.contractAddress)
 
   const gasPrice = BigInt(context.getters.finalGasPrice(increaseFee))
+  const amountWei = ethUtils.toWhole(amount, context.state.decimals)
 
   const transaction = {
     from: context.state.address,
@@ -24,7 +25,7 @@ const initTransaction = async (api, context, ethAddress, amount, nonce, increase
     value: '0x0',
     gasPrice,
     nonce,
-    data: contract.methods.transfer(ethAddress, amount).encodeABI()
+    data: contract.methods.transfer(ethAddress, amountWei).encodeABI()
   }
 
   const gasLimit = await api
@@ -137,30 +138,6 @@ const createSpecificActions = (api) => ({
         })
     } catch (err) {
       console.warn(err)
-    }
-  },
-
-  estimateGasLimit: {
-    async handler({ state }, { amount, address }) {
-      try {
-        const contract = new EthContract(Erc20, state.contractAddress)
-
-        const amountWei = ethUtils.toWhole(amount, state.decimals)
-
-        const transaction = {
-          from: state.address,
-          to: state.contractAddress,
-          value: '0x0',
-          data: contract.methods.transfer(address, amountWei).encodeABI()
-        }
-
-        const gasLimit = await api.useClient((client) => client.estimateGas(transaction))
-
-        return Number(gasLimit)
-      } catch (error) {
-        console.warn('ERC20 EstimateGas failed:', error)
-        return null
-      }
     }
   }
 })
