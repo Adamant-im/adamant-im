@@ -1,0 +1,48 @@
+name: Massa DeWeb
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  GH_TOKEN: ${{ secrets.github_token }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'master' # restrict deploying only from master
+
+    steps:
+      - name: Checkout repository 🛎️
+        uses: actions/checkout@v4
+
+      - name: Setup Node version 🍀
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies ⚙️
+        run: npm ci
+
+      # Screenshots are removed to save space on Massa DeWeb
+      - name: Build PWA 🛠️
+        run: |
+          npm run schema:generate
+          npm run build
+          rm -rf dist/screenshots
+
+      - name: Upload to Massa DeWeb 🌐
+        env:
+          SECRET_KEY: ${{ secrets.MASSA_ACCOUNT_SECRET_KEY }}
+          CONTRACT_ADDRESS: ${{ secrets.MASSA_WEBSITE_CONTRACT_ADDRESS }}
+        run: |
+          npx @massalabs/deweb-cli upload ./dist \
+            --node_url https://mainnet.massa.net/api/v2 \
+            --address $CONTRACT_ADDRESS \
+            --accept_disclaimer \
+            --yes
+
+      - name: Save artifacts 💾
+        uses: actions/upload-artifact@v4
+        with:
+          path: dist
