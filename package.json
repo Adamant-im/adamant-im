@@ -30,6 +30,7 @@
     "android:prebuild": "vue-tsc && vite build --config vite-android.config.ts",
     "android:build": "node scripts/capacitor/build-android.mjs",
     "android:generate-assets": "npx @capacitor/assets generate --android --assetPath capacitor/assets --iconBackgroundColor '#FFF' --iconBackgroundColorDark '#000' --splashBackgroundColor '#FFF' --splashBackgroundColorDark '#000'",
+    "deweb:build": "vue-tsc && vite build --config vite-deweb.config.ts",
     "https": "vite preview --https",
     "test": "vitest",
     "coverage": "vitest run --coverage",
