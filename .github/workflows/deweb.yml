@@ -13,7 +13,7 @@ env:
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: github.ref_name == 'feat/deweb' # restrict deploying only from master
+    if: github.ref_name == 'master' # restrict deploying only from master
 
     steps:
       - name: Checkout repository 🛎️
