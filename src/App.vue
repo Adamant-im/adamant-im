@@ -85,6 +85,17 @@ setLocale()
 <style lang="scss" scoped>
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
+.application--linear-gradient {
+  overflow: hidden;
+
+  &:deep(.v-application__wrap) {
+    min-height: unset;
+    margin-top: env(safe-area-inset-top);
+    height: calc(100vh - env(safe-area-inset-bottom) - env(safe-area-inset-top));
+    height: calc(100dvh - env(safe-area-inset-bottom) - env(safe-area-inset-top));
+  }
+}
+
 .v-theme--light.application--linear-gradient {
   @include mixins.linear-gradient-light();
 }
