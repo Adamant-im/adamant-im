@@ -274,7 +274,7 @@ onBeforeUnmount(() => {
     flex: 1 1 auto;
     overflow-y: auto;
     overflow-x: hidden;
-    height: 100%;
+    height: calc(100vh - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top));
     width: calc(100% - var(--asideWidth));
 
     &:deep(> .v-container) {
