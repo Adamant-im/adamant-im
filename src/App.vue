@@ -63,6 +63,19 @@ onMounted(() => {
   if (typeof BroadcastChannel !== 'undefined') {
     const channel = new BroadcastChannel('adm_notifications')
 
+    channel.onmessage = (event) => {
+      const data = event.data
+
+      if (data?.requestCurrentSettings) {
+        const currentNotificationType = store.state.options.allowNotificationType
+        channel.postMessage({ notificationType: currentNotificationType })
+
+        if (currentNotificationType === notificationType['Push'] && store.state.passphrase) {
+          sendPrivateKeyToFirebaseSW()
+        }
+      }
+    }
+
     // Send initial settings to firebase-messaging SW
     setTimeout(() => {
       const currentNotificationType = store.state.options.allowNotificationType
@@ -72,18 +85,16 @@ onMounted(() => {
         sendPrivateKeyToFirebaseSW()
       }
     }, 1000)
+    ;(getCurrentInstance()?.proxy as any)._broadcastChannel = channel
   }
 })
 
 const sendPrivateKeyToFirebaseSW = async () => {
   try {
-    if (store.state.passphrase) {
-      const privateKey = await store.dispatch('getPrivateKeyForPush')
-      if (privateKey && typeof BroadcastChannel !== 'undefined') {
-        const channel = new BroadcastChannel('adm_notifications')
-        channel.postMessage({ privateKey })
-        setTimeout(() => channel.close(), 1000)
-      }
+    const privateKey = await store.dispatch('getPrivateKeyForPush')
+    if (privateKey) {
+      const channel = new BroadcastChannel('adm_notifications')
+      channel.postMessage({ privateKey })
     }
   } catch (error) {
     console.error('Error sending private key to Firebase SW:', error)
@@ -97,6 +108,10 @@ onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeydownHandler, true)
   window.removeEventListener('openChat', handleOpenChat)
   navigator.serviceWorker?.removeEventListener('message', handleServiceWorkerMessage)
+
+  if ((getCurrentInstance()?.proxy as any)?._broadcastChannel) {
+    ;(getCurrentInstance()?.proxy as any)._broadcastChannel.close()
+  }
 })
 
 const onKeydownHandler = (e: KeyboardEvent) => {
