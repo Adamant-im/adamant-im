@@ -97,6 +97,10 @@ channel.onmessage = (event) => {
     privateKey = data.privateKey
   }
 
+  if (data?.clearPrivateKey) {
+    privateKey = ''
+  }
+
   if (data?.notificationType !== undefined) {
     notificationSettings.type = data.notificationType
     notificationSettings.initialized = true
