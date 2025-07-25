@@ -10,8 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, getCurrentInstance, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, onBeforeUnmount, onMounted, getCurrentInstance, ref } from 'vue'
 import dayjs from 'dayjs'
 import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
 import UploadAttachmentExitPrompt from '@/components/UploadAttachmentExitPrompt.vue'
@@ -21,16 +20,12 @@ import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { useResendPendingMessages } from '@/hooks/useResendPendingMessages'
 import { useTrackConnection } from '@/hooks/useTrackConnection'
-import { notificationType } from '@/lib/constants'
-import { registerServiceWorker } from '@/notifications'
-import { Capacitor } from '@capacitor/core'
+import { usePushNotificationSetup } from '@/hooks/usePushNotificationSetup'
 
 useResendPendingMessages()
 useTrackConnection()
+usePushNotificationSetup()
 
-const { t } = useI18n()
-
-const router = useRouter()
 const store = useStore()
 const isSnackbarShowing = computed(() => store.state.snackbar.show)
 
@@ -42,84 +37,30 @@ const themeName = computed(() => {
   return store.state.options.darkTheme ? ThemeName.Dark : ThemeName.Light
 })
 
-const isPushNotification = computed(() => {
-  return store.state.options.allowNotificationType === notificationType['Push']
-})
-
 const { locale } = useI18n()
 
 onMounted(() => {
   const instance = getCurrentInstance()
 
   if (instance) {
-    const notifications = new Notifications(instance.proxy)
-    notifications.start()
+    const notificationsInstance = new Notifications(instance.proxy)
+    notifications.value = notificationsInstance
+    notificationsInstance.start()
   }
 
   window.addEventListener('keydown', onKeydownHandler, true)
-  window.addEventListener('openChat', handleOpenChat)
-  navigator.serviceWorker?.addEventListener('message', handleServiceWorkerMessage)
-
-  if (typeof BroadcastChannel !== 'undefined') {
-    const channel = new BroadcastChannel('adm_notifications')
-
-    channel.onmessage = (event) => {
-      const data = event.data
-
-      if (data?.requestCurrentSettings) {
-        const currentNotificationType = store.state.options.allowNotificationType
-        channel.postMessage({ notificationType: currentNotificationType })
-
-        if (currentNotificationType === notificationType['Push'] && store.state.passphrase) {
-          sendPrivateKeyToFirebaseSW()
-        }
-      }
-    }
-
-    // Send initial settings to firebase-messaging SW
-    setTimeout(() => {
-      const currentNotificationType = store.state.options.allowNotificationType
-      channel.postMessage({ notificationType: currentNotificationType })
-
-      if (currentNotificationType === notificationType['Push'] && store.state.passphrase) {
-        sendPrivateKeyToFirebaseSW()
-      }
-    }, 1000)
-    ;(getCurrentInstance()?.proxy as any)._broadcastChannel = channel
-  }
 })
-
-const sendPrivateKeyToFirebaseSW = async () => {
-  try {
-    const privateKey = await store.dispatch('getPrivateKeyForPush')
-    if (privateKey) {
-      const channel = new BroadcastChannel('adm_notifications')
-      channel.postMessage({ privateKey })
-    }
-  } catch (error) {
-    console.error('Error sending private key to Firebase SW:', error)
-  }
-}
 
 onBeforeUnmount(() => {
   notifications.value?.stop()
   store.dispatch('stopInterval')
-
   window.removeEventListener('keydown', onKeydownHandler, true)
-  window.removeEventListener('openChat', handleOpenChat)
-  navigator.serviceWorker?.removeEventListener('message', handleServiceWorkerMessage)
-
-  if ((getCurrentInstance()?.proxy as any)?._broadcastChannel) {
-    ;(getCurrentInstance()?.proxy as any)._broadcastChannel.close()
-  }
 })
 
 const onKeydownHandler = (e: KeyboardEvent) => {
-  if (e.key === 'Escape') {
-    if (isSnackbarShowing.value) {
-      e.stopPropagation()
-      store.commit('snackbar/changeState', false)
-    }
+  if (e.key === 'Escape' && isSnackbarShowing.value) {
+    e.stopPropagation()
+    store.commit('snackbar/changeState', false)
   }
 }
 
@@ -133,71 +74,6 @@ const setLocale = () => {
   locale.value = localeFromStorage
   dayjs.locale(localeFromStorage)
 }
-
-const handleOpenChat = (event: Event) => {
-  const detail = (event as CustomEvent).detail
-  if (detail && detail.partnerId) {
-    router.push({
-      name: 'Chat',
-      params: { partnerId: detail.partnerId }
-    })
-  }
-}
-
-const handleServiceWorkerMessage = (event: MessageEvent) => {
-  if (!event.data) {
-    return
-  }
-  const data = event.data
-
-  if (data.action === 'OPEN_CHAT' && data.partnerId) {
-    if (
-      router.currentRoute.value.name !== 'Chat' ||
-      router.currentRoute.value.params.partnerId !== data.partnerId
-    ) {
-      router.push({
-        name: 'Chat',
-        params: { partnerId: data.partnerId }
-      })
-    }
-
-    window.focus()
-  }
-}
-
-// auto register push notification when user authorizes and push notifications are enabled
-watch(
-  () => store.state.passphrase,
-  async (encodedPassphrase, oldPassphrase) => {
-    if (encodedPassphrase && !oldPassphrase && isPushNotification.value) {
-      try {
-        const privateKey = await store.dispatch('getPrivateKeyForPush')
-
-        if (!privateKey) {
-          return
-        }
-
-        if (Capacitor.isNativePlatform()) {
-          const { pushService } = await import('@/lib/notifications/pushServiceFactory')
-          pushService.setPrivateKey(privateKey)
-          await pushService.initialize()
-          await pushService.registerDevice()
-        } else {
-          const { pushService } = await import('@/lib/notifications/pushServiceFactory')
-          pushService.setPrivateKey(privateKey)
-          await registerServiceWorker()
-
-          sendPrivateKeyToFirebaseSW()
-        }
-      } catch (error) {
-        store.dispatch('snackbar/show', {
-          message: typeof error === 'string' ? error : t('options.push_register_error'),
-          timeout: 5000
-        })
-      }
-    }
-  }
-)
 
 setLocale()
 </script>
