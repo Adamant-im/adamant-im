@@ -86,7 +86,6 @@ setLocale()
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .application--main {
-  overflow: hidden;
   flex: none;
   position: relative;
   height: calc(100vh - env(safe-area-inset-bottom) - env(safe-area-inset-top));
