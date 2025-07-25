@@ -145,6 +145,8 @@
                 v-model="allowNotificationType"
                 :items="notificationItems"
                 variant="underlined"
+                :loading="isNotificationRegistering"
+                :disabled="isNotificationRegistering"
               />
             </v-col>
           </v-row>
@@ -216,7 +218,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, inject, computed, onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue'
+import { nextTick, inject, computed, onBeforeUnmount, onMounted, Ref, ref } from 'vue'
 import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant, mdiInformation } from '@mdi/js'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
@@ -256,6 +258,7 @@ const appVersion = inject('appVersion')
 const sidebarLayoutRef = inject<Ref>(sidebarLayoutKey)
 
 const tapCount = ref(0)
+const isNotificationRegistering = ref(false)
 
 const isPasswordDialogDisplayed = computed({
   get() {
@@ -335,10 +338,7 @@ const allowNotificationType = computed({
     return store.state.options.allowNotificationType
   },
   set(value) {
-    store.commit('options/updateOption', {
-      key: 'allowNotificationType',
-      value
-    })
+    handleNotificationTypeChange(value)
   }
 })
 
@@ -363,91 +363,73 @@ const syncPushSettings = (notificationType: number) => {
   if (typeof BroadcastChannel !== 'undefined') {
     const channel = new BroadcastChannel('adm_notifications')
     channel.postMessage({ notificationType })
-    console.log('📡 Options: Synced notification settings with Firebase SW:', notificationType)
-
-    setTimeout(() => {
-      channel.close()
-    }, 1000)
   }
 }
 
-watch(allowNotificationType, (newVal, oldVal) => {
-  if (newVal === lastSuccessfulNotificationType.value) {
-    return
-  }
+const handleNotificationTypeChange = async (newVal: number) => {
+  const oldVal = store.state.options.allowNotificationType
 
-  syncPushSettings(newVal)
+  if (newVal === oldVal) return
 
-  const isNotPushNotification =
-    newVal === notificationType['No Notifications'] ||
-    newVal === notificationType['Background Fetch']
+  isNotificationRegistering.value = true
 
-  if (newVal === notificationType['Push']) {
-    setPushNotifications(true)
-  } else if (isNotPushNotification) {
-    if (oldVal === notificationType['Push']) {
-      setPushNotifications(false)
-    } else {
-      lastSuccessfulNotificationType.value = newVal
-    }
-  }
-})
-
-const setPushNotifications = async (enabled: boolean) => {
   try {
-    if (enabled) {
-      const initialized = await pushService.initialize()
+    const isNotPushNotification =
+      newVal === notificationType['No Notifications'] ||
+      newVal === notificationType['Background Fetch']
 
-      if (!initialized) {
-        store.dispatch('snackbar/show', {
-          message: t('options.push_not_supported'),
-          timeout: 5000
-        })
-        allowNotificationType.value = lastSuccessfulNotificationType.value
-        return
-      }
-      const permissionGranted = await pushService.requestPermissions()
-
-      if (!permissionGranted) {
-        store.dispatch('snackbar/show', {
-          message: t('options.push_denied'),
-          timeout: 5000
-        })
-        allowNotificationType.value = lastSuccessfulNotificationType.value
-        return
-      }
-
-      const privateKey = await store.dispatch('getPrivateKeyForPush')
-      if (privateKey) {
-        pushService.setPrivateKey(privateKey)
-      }
-
-      await pushService.registerDevice()
-      store.dispatch('snackbar/show', {
-        message: t('options.push_subscribe_success'),
-        timeout: 5000
-      })
-    } else {
-      await pushService.unregisterDevice()
-      store.dispatch('snackbar/show', {
-        message: t('options.push_unsubscribe_success'),
-        timeout: 5000
-      })
+    if (newVal === notificationType['Push']) {
+      await setPushNotifications(true)
+    } else if (isNotPushNotification && oldVal === notificationType['Push']) {
+      await setPushNotifications(false)
     }
-    lastSuccessfulNotificationType.value = allowNotificationType.value
+
+    store.commit('options/updateOption', {
+      key: 'allowNotificationType',
+      value: newVal
+    })
+
+    syncPushSettings(newVal)
+    lastSuccessfulNotificationType.value = newVal
   } catch (error) {
     if (typeof error === 'string') {
-      store.dispatch('snackbar/show', {
-        message: error,
-        timeout: 5000
-      })
+      showSnackbar(error)
+    } else if (error instanceof Error) {
+      showSnackbar(error.message)
     } else {
-      store.dispatch('snackbar/show', {
-        message: t('options.push_register_error'),
-        timeout: 5000
-      })
+      showSnackbar(t('options.push_register_error'))
     }
-    allowNotificationType.value = lastSuccessfulNotificationType.value // reset option in select in case of server error
+  } finally {
+    isNotificationRegistering.value = false
+  }
+}
+
+const setPushNotifications = async (enabled: boolean): Promise<void> => {
+  if (enabled) {
+    const initialized = await pushService.initialize()
+
+    if (!initialized) {
+      throw new Error(t('options.push_not_supported'))
+    }
+
+    const permissionGranted = await pushService.requestPermissions()
+
+    if (!permissionGranted) {
+      throw new Error(t('options.push_denied'))
+    }
+
+    const privateKey = await store.dispatch('getPrivateKeyForPush')
+    if (privateKey) {
+      pushService.setPrivateKey(privateKey)
+    }
+
+    await pushService.registerDevice()
+
+    showSnackbar(t('options.push_subscribe_success'))
+  } else {
+    await pushService.unregisterDevice()
+
+    showSnackbar(t('options.push_unsubscribe_success'))
   }
 }
 
@@ -477,10 +459,7 @@ const onCheckStayLoggedIn = () => {
         isPasswordDialogDisplayed.value = true
       })
       .catch(() => {
-        store.dispatch('snackbar/show', {
-          message: t('options.idb_not_supported'),
-          timeout: 5000
-        })
+        showSnackbar(t('options.idb_not_supported'))
       })
   } else {
     clearDb().then(() => {
@@ -527,6 +506,13 @@ const onVersionClick = () => {
       timeout: 3000
     })
   }
+}
+
+const showSnackbar = (message: string, timeout: number = 5000) => {
+  store.dispatch('snackbar/show', {
+    message,
+    timeout
+  })
 }
 
 onMounted(() => {
