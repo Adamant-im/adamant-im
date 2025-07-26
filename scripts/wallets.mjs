@@ -39,6 +39,14 @@ async function run(branch = 'master') {
   console.log('Coins updated successfully')
 }
 
+function mergeCoinInfo(base, override) {
+  const result = { ...base }
+  Object.keys(override).forEach((key) => {
+    result[key] = override[key]
+  })
+  return result
+}
+
 async function initCoins() {
   const config = {}
   const coins = {}
@@ -48,7 +56,6 @@ async function initCoins() {
 
   await forEachDir(GENERAL_ASSETS_PATH, async ({ name }) => {
     const path = join(GENERAL_ASSETS_PATH, name, 'info.json')
-
     const coin = await parseJsonFile(path)
 
     if (coin.status !== 'active') {
@@ -58,8 +65,7 @@ async function initCoins() {
     coinDirNames[coin.symbol] = name
     coinSymbols[name] = coin.symbol
 
-    const { qqPrefix: qrPrefix, ...rest } = coin
-    coins[rest.symbol] = { qrPrefix, ...rest }
+    coins[coin.symbol] = coin
 
     if (coin.createCoin) {
       const nodeName = coin.symbol.toLowerCase()
@@ -86,18 +92,28 @@ async function applyBlockchains(coins, coinSymbols) {
     const infoPath = join(blockchainPath, 'info.json')
 
     const info = await parseJsonFile(infoPath)
+    const mainCoinInfo = coinSymbols[info.mainCoin] ? coins[coinSymbols[info.mainCoin]] : {}
 
     await forEachDir(blockchainPath, async ({ name: coinName }) => {
       const coinPath = join(blockchainPath, coinName, 'info.json')
       const coin = await parseJsonFile(coinPath)
 
+      let tokenData = coins[coin.symbol] || {}
+
       if (!coins[coin.symbol]) {
-        return
+        const generalTokenPath = join(GENERAL_ASSETS_PATH, coinName, 'info.json')
+        const generalTokenInfo = await parseJsonFile(generalTokenPath)
+        if (generalTokenInfo.status === 'active') {
+          tokenData = generalTokenInfo
+        }
       }
 
+      let result = mergeCoinInfo(mainCoinInfo, tokenData)
+      result = mergeCoinInfo(result, _.omit(info, ['mainCoin']))
+      result = mergeCoinInfo(result, coin)
+
       coins[coin.symbol] = {
-        ...coins[coin.symbol],
-        ...coin,
+        ...result,
         mainCoin: coinSymbols[info.mainCoin],
         type: info.type,
         defaultGasLimit: info.defaultGasLimit,
