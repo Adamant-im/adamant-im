@@ -222,6 +222,8 @@ onBeforeUnmount(() => {
 
   &__with-aside {
     max-width: 1512px;
+    height: 100%;
+
     @media (min-width: 1513px) {
       border-right: 2px solid black;
       border-left: 2px solid black;
@@ -231,13 +233,17 @@ onBeforeUnmount(() => {
   &__aside {
     width: var(--asideWidth);
     min-height: 100%;
-    height: calc(100vh - var(--v-layout-bottom));
+    height: calc(100% - var(--v-layout-bottom));
     border-right: 2px solid black;
     position: relative;
     max-width: 75%;
     user-select: none;
 
-    &::after {
+    @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
+      border-right: none;
+    }
+
+      &::after {
       content: '';
       position: absolute;
       right: 0;
@@ -245,6 +251,10 @@ onBeforeUnmount(() => {
       width: 10px;
       height: 100%;
       cursor: ew-resize;
+
+      @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
+        content: none;
+      }
     }
 
     @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
@@ -264,7 +274,7 @@ onBeforeUnmount(() => {
     flex: 1 1 auto;
     overflow-y: auto;
     overflow-x: hidden;
-    height: calc(100vh - var(--v-layout-bottom));
+    height: calc(100vh - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top));
     width: calc(100% - var(--asideWidth));
 
     &:deep(> .v-container) {
