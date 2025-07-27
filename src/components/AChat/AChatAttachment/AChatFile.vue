@@ -80,7 +80,6 @@ import IconFile from '@/components/icons/common/IconFile.vue'
 import { useStore } from 'vuex'
 import { AChatFileLoader } from './AChatFileLoader'
 import { mdiImageOff } from '@mdi/js'
-import { useConsiderOffline } from '@/hooks/useConsiderOffline'
 
 const className = 'a-chat-file'
 const classes = {
@@ -121,9 +120,6 @@ const isImage = computed(() => {
   return ['jpg', 'jpeg', 'png'].includes(props.file.extension!)
 })
 
-const { consideredOffline } = useConsiderOffline()
-
-
 const fileName = computed(() =>
   isLocalFile(props.file) ? props.file.file.name : props.file.name || 'UNNAMED'
 )
@@ -150,10 +146,6 @@ const fileSize = computed(() => {
 
 const uploadProgress = computed(() => {
   if (isLocalFile(props.file)) {
-    if (consideredOffline.value) {
-      return 0;
-    }
-
     return store.getters['attachment/getUploadProgress'](props.file.file.cid)
   }
 
