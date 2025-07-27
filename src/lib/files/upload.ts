@@ -1,20 +1,15 @@
 import { FileData } from './types'
 import ipfs from '@/lib/nodes/ipfs'
 
-export async function uploadFiles(
-  files: FileData[],
-  onUploadProgress?: (progress: number) => void
-) {
+export async function uploadFile(file: FileData, onUploadProgress?: (progress: number) => void) {
   const formData = new FormData()
 
-  for (const file of files) {
-    const blob = new Blob([file.encoded.binary], { type: 'application/octet-stream' })
-    formData.append('files', blob, file.file.name)
+  const blob = new Blob([file.encoded.binary], { type: 'application/octet-stream' })
+  formData.append('files', blob, file.file.name)
 
-    if (file.preview) {
-      const blob = new Blob([file.preview.encoded.binary], { type: 'application/octet-stream' })
-      formData.append('files', blob, 'preview-' + file.file.name)
-    }
+  if (file.preview) {
+    const blob = new Blob([file.preview.encoded.binary], { type: 'application/octet-stream' })
+    formData.append('files', blob, 'preview-' + file.file.name)
   }
 
   onUploadProgress?.(0) // set initial progress to 0

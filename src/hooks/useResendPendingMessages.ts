@@ -9,6 +9,7 @@ type PendingMessage = {
   timeout: ReturnType<typeof setTimeout>
   type: number
   files?: FileData[]
+  cids?: [string, string | undefined][]
 }
 
 export function useResendPendingMessages() {
@@ -48,6 +49,7 @@ export function useResendPendingMessages() {
           .dispatch('chat/resendAttachment', {
             recipientId: msg.recipientId,
             files: msg.files,
+            cids: msg.cids,
             messageId: id
           })
           .then((res) => {
