@@ -201,7 +201,7 @@ export interface AttachmentAsset {
  * AIP-18: https://github.com/Adamant-im/AIPs/pull/54/files
  * @param {Array<FileData>} files
  * @param {string} [comment] Optional comment associated with the transaction
- * @param {Array<[string, string]>} [cids] List of files IDs after uploading to IPFS. First element is the ID of original file, second is ID of preview.
+ * @param {Array<[string, string][]>} [cids] List of files IDs after uploading to IPFS. First element is the ID of original file, second is ID of preview.
  */
 export function attachmentAsset(
   files: FileData[],
