@@ -387,7 +387,7 @@ export default {
       return BigNumber(this.transferFee)
         .decimalPlaces(decimals)
         .toString()
-        .replace(/\.?0+$/, '') // delete trailing zeroes
+        .replace(/\.0+$|(\.\d*?)0+$/, '$1') // delete trailing zeroes
     },
 
     /**
@@ -423,7 +423,10 @@ export default {
      */
     finalAmountFixed() {
       const decimals = CryptosInfo[this.currency].cryptoTransferDecimals
-      return BigNumber(this.finalAmount).decimalPlaces(decimals).toString()
+      return BigNumber(this.finalAmount)
+        .decimalPlaces(decimals)
+        .toString()
+        .replace(/\.0+$|(\.\d*?)0+$/, '$1')
     },
 
     /**
