@@ -949,7 +949,7 @@ const onKeyPress = (e: KeyboardEvent) => {
   margin-right: 8px;
 }
 .chat {
-  height: calc(100vh - var(--v-layout-bottom));
+  height: 100%;
   box-shadow: none;
   background-color: transparent !important;
 }
