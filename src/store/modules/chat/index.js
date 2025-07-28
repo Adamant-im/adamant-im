@@ -919,7 +919,6 @@ const actions = {
       files,
       replyToId
     })
-    console.debug('Message', messageObject)
 
     commit('pushMessage', {
       message: messageObject,
@@ -935,7 +934,6 @@ const actions = {
       partnerId: recipientId,
       asset: newAsset
     })
-    console.debug('Updated CIDs and Nonces', newAsset)
 
     const areAdmNodesDisabled = rootGetters['nodes/adm'].every((node) => node.status === 'disabled')
 
@@ -951,8 +949,6 @@ const actions = {
       files,
       cids
     })
-
-    console.debug('Files uploaded', uploadData)
 
     // Heisenbug: After uploading an MP4 file, the CID returned by the IPFS node differs from the locally computed one.
     // So we update the CIDs one more time, just to be sure.
@@ -988,8 +984,6 @@ const actions = {
         throw uploadData.error
       }
     }
-
-    console.debug('Updated CIDs after upload', newAsset)
 
     return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
       .then((res) => {
@@ -1207,49 +1201,42 @@ const actions = {
   },
 
   async uploadConsistently({ commit, rootGetters }, { files, cids }) {
-    const uploadedCids = cids.filter(
-      ([cid]) => rootGetters['attachment/getUploadProgress'](cid) === 100
-    )
+    const getProgress = (cid) => rootGetters['attachment/getUploadProgress'](cid)
 
-    const notUploadedCids = cids.filter(
-      ([cid]) => rootGetters['attachment/getUploadProgress'](cid) !== 100
-    )
-    const notUploadedFiles = files.filter((file) =>
-      notUploadedCids.some(([cid]) => cid === file.cid)
-    )
+    const fileByCid = files.reduce((acc, file) => {
+      acc[file.cid] = file
+      return acc
+    }, {})
 
-    notUploadedCids.forEach(([cid]) => {
-      commit('attachment/setUploadProgress', { cid, progress: 0 }, { root: true })
-    })
+    const uploaded = []
+    const toUpload = []
 
-    for (const [index, file] of notUploadedFiles.entries()) {
-      const [cid] = notUploadedCids[index]
-
-      try {
-        const uploadedFile = await uploadFile(file, (progress) => {
-          commit('attachment/setUploadProgress', { cid, progress }, { root: true })
-        })
-
-        commit('attachment/resetUploadProgress', { cid }, { root: true })
-
-        uploadedCids.push(uploadedFile.cids)
-      } catch (error) {
+    for (const [cid, previewCid] of cids) {
+      if (getProgress(cid) === 100) {
+        uploaded.push([cid, previewCid])
+      } else {
+        toUpload.push({ cid, previewCid })
         commit('attachment/setUploadProgress', { cid, progress: 0 }, { root: true })
-
-        const oldCidsMutated = cids
-
-        for (const [index, cid] of uploadedCids.entries()) {
-          oldCidsMutated[index] = cid
-        }
-
-        return {
-          newCids: oldCidsMutated,
-          error
-        }
       }
     }
 
-    return { newCids: uploadedCids }
+    for (const { cid } of toUpload) {
+      try {
+        const { cids: newCids } = await uploadFile(fileByCid[cid], (progress) =>
+          commit('attachment/setUploadProgress', { cid, progress }, { root: true })
+        )
+
+        commit('attachment/resetUploadProgress', { cid }, { root: true })
+        uploaded.push(newCids)
+      } catch (error) {
+        commit('attachment/setUploadProgress', { cid, progress: 0 }, { root: true })
+
+        const fallback = uploaded.concat(cids.slice(uploaded.length))
+        return { newCids: fallback, error }
+      }
+    }
+
+    return { newCids: uploaded }
   },
 
   registerPendingMessage({ commit }, { messageId, recipientId, transactionId }) {
