@@ -256,7 +256,7 @@ const loadChatsPaged = async () => {
 
   loading.value = true
   try {
-    await store.dispatch('chat/loadChatsPaged')
+    await store.dispatch('chat/loadChatsPages')
     loading.value = false
     allowRetry.value = false
   } catch (err: unknown) {
