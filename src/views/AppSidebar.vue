@@ -229,11 +229,6 @@ onBeforeUnmount(() => {
   }
 
   &__aside {
-    @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
-      margin-top: env(safe-area-inset-top);
-      height: calc(100vh - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top));
-    }
-
     width: var(--asideWidth);
     min-height: 100%;
     height: calc(100vh - var(--v-layout-bottom));
@@ -241,6 +236,12 @@ onBeforeUnmount(() => {
     position: relative;
     max-width: 75%;
     user-select: none;
+
+    @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
+      margin-top: env(safe-area-inset-top);
+      height: calc(100vh - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top));
+      border-right: none;
+    }
 
     &::after {
       content: '';
@@ -250,6 +251,10 @@ onBeforeUnmount(() => {
       width: 10px;
       height: 100%;
       cursor: ew-resize;
+
+      @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
+        content: none;
+      }
     }
 
     @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
