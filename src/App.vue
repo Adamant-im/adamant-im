@@ -84,8 +84,6 @@ setLocale()
 
 <style lang="scss" scoped>
 @use '@/assets/styles/themes/adamant/_mixins.scss';
-@use 'sass:map';
-@use '@/assets/styles/generic/_variables.scss';
 
 .v-theme--light.application--linear-gradient {
   @include mixins.linear-gradient-light();
