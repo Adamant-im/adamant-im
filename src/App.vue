@@ -83,17 +83,18 @@ setLocale()
 </script>
 
 <style lang="scss" scoped>
-@use 'sass:map';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
-@use '@/assets/styles/generic/_variables.scss';
 
 .application--main {
   flex: none;
   position: relative;
   height: calc(100vh - env(safe-area-inset-bottom) - env(safe-area-inset-top));
-  height: calc(100dvh - env(safe-area-inset-bottom) - env(safe-area-inset-top));
   margin-top: env(safe-area-inset-top);
   overflow-y: scroll;
+
+  &:deep(.v-bottom-navigation) {
+    bottom: env(safe-area-inset-top);
+  }
 }
 
 .v-theme--light.application--linear-gradient {

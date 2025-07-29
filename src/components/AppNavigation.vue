@@ -5,7 +5,6 @@
     height="50"
     class="app-navigation"
     :elevation="0"
-    :absolute="absolute"
   >
     <!-- Wallet -->
     <v-btn v-if="walletShouldBeVisible" to="/home" :exact="true" draggable="false">
