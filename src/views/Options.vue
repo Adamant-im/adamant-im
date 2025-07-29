@@ -224,12 +224,15 @@ import { useSavedScroll } from '@/hooks/useSavedScroll'
 import { sidebarLayoutKey, notificationType } from '@/lib/constants'
 import { useChatStateStore } from '@/stores/modal-state'
 import { pushService } from '@/lib/notifications/pushServiceFactory'
+import { usePushNotificationSetup } from '@/hooks/pushNotifications/usePushNotificationSetup'
 
 const store = useStore()
 const chatStateStore = useChatStateStore()
 const router = useRouter()
 const { t } = useI18n()
 const theme = useTheme()
+
+const { syncNotificationSettings } = usePushNotificationSetup()
 
 const className = 'settings-view'
 
@@ -347,13 +350,6 @@ const darkTheme = computed({
 const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
 const lastSuccessfulNotificationType = ref(allowNotificationType.value)
 
-const syncPushSettings = (notificationType: number) => {
-  if (typeof BroadcastChannel !== 'undefined') {
-    const channel = new BroadcastChannel('adm_notifications')
-    channel.postMessage({ notificationType })
-  }
-}
-
 const handleNotificationTypeChange = async (newVal: number) => {
   const oldVal = store.state.options.allowNotificationType
 
@@ -377,7 +373,7 @@ const handleNotificationTypeChange = async (newVal: number) => {
       value: newVal
     })
 
-    syncPushSettings(newVal)
+    syncNotificationSettings(newVal)
     lastSuccessfulNotificationType.value = newVal
   } catch (error) {
     if (typeof error === 'string') {
