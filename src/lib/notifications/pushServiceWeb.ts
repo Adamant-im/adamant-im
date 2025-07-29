@@ -5,6 +5,7 @@ import { ADAMANT_NOTIFICATION_SERVICE_ADDRESS, VAPID_KEY } from '../constants'
 import { signalAsset } from '../adamant-api/asset'
 import { fcm } from '@/firebase'
 import { getToken } from 'firebase/messaging'
+
 export class WebPushService extends BasePushService {
   private token: string | null = null
   private privateKey: string | null = null
@@ -19,6 +20,7 @@ export class WebPushService extends BasePushService {
     if (!baseInitialized) {
       return false
     }
+
     return true
   }
 
@@ -51,8 +53,6 @@ export class WebPushService extends BasePushService {
       const signalData = signalAsset(this.deviceId, this.token, 'FCM', 'add')
       await sendSpecialMessage(ADAMANT_NOTIFICATION_SERVICE_ADDRESS, signalData)
     }
-
-    this.ensurePrivateKeyInSW()
   }
 
   async unregisterDevice(): Promise<boolean> {
@@ -83,18 +83,5 @@ export class WebPushService extends BasePushService {
 
   setPrivateKey(privateKey: string): void {
     this.privateKey = privateKey
-    this.ensurePrivateKeyInSW()
-  }
-
-  private ensurePrivateKeyInSW(): void {
-    if (!this.privateKey) {
-      return
-    }
-
-    if (typeof BroadcastChannel !== 'undefined') {
-      const channel = new BroadcastChannel('adm_notifications')
-      channel.postMessage({ privateKey: this.privateKey })
-      setTimeout(() => channel.close(), 1000)
-    }
   }
 }

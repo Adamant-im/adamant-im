@@ -5,14 +5,19 @@ import { useRouter } from 'vue-router'
 import { Capacitor } from '@capacitor/core'
 import { notificationType } from '@/lib/constants'
 import { registerServiceWorker } from '@/notifications'
+import { useWebPushNotifications } from './useWebPushNotifications'
+import { useAndroidPushNotifications } from './useAndroidPushNotifications'
 
 export function usePushNotificationSetup() {
   const store = useStore()
   const { t } = useI18n()
   const router = useRouter()
 
-  const broadcastChannel = ref<BroadcastChannel | null>(null)
+  const platform = Capacitor.getPlatform()
   const registrationInProgress = ref(false)
+
+  const webPush = platform === 'web' ? useWebPushNotifications() : null
+  const androidPush = platform === 'android' ? useAndroidPushNotifications() : null
 
   const isPushNotification = computed(() => {
     return store.state.options.allowNotificationType === notificationType['Push']
@@ -27,17 +32,29 @@ export function usePushNotificationSetup() {
     }
   }
 
-  const sendPrivateKeyToFirebaseSW = async () => {
+  const sendPrivateKeyToFirebaseSW = async (): Promise<boolean> => {
     const privateKey = await getPrivateKey()
-    if (privateKey && broadcastChannel.value) {
-      broadcastChannel.value.postMessage({ privateKey })
+    if (!privateKey) return false
+
+    if (webPush) {
+      return webPush.sendPrivateKey(privateKey)
     }
+    if (androidPush) {
+      return await androidPush.sendPrivateKey(privateKey)
+    }
+
+    return false
   }
 
-  const clearPrivateKeyFromSW = () => {
-    if (broadcastChannel.value) {
-      broadcastChannel.value.postMessage({ clearPrivateKey: true })
+  const clearPrivateKeyFromSW = async (): Promise<boolean> => {
+    if (webPush) {
+      return webPush.clearPrivateKey()
     }
+    if (androidPush) {
+      return await androidPush.clearPrivateKey()
+    }
+
+    return false
   }
 
   const handleChannelMessage = (event: MessageEvent) => {
@@ -49,30 +66,27 @@ export function usePushNotificationSetup() {
   }
 
   const sendCurrentSettings = async () => {
-    if (!broadcastChannel.value) return
-
     const currentNotificationType = store.state.options.allowNotificationType
-    broadcastChannel.value.postMessage({ notificationType: currentNotificationType })
+    const privateKey = store.state.passphrase ? await getPrivateKey() : undefined
 
-    if (currentNotificationType === notificationType['Push'] && store.state.passphrase) {
-      await sendPrivateKeyToFirebaseSW()
+    const settings = {
+      type: currentNotificationType,
+      privateKey: privateKey || undefined
+    }
+
+    if (webPush) {
+      webPush.syncNotificationSettings(settings)
+    }
+    if (androidPush) {
+      await androidPush.syncNotificationSettings(settings)
     }
   }
 
   const syncPushSettings = (notificationType: number) => {
-    if (broadcastChannel.value) {
-      broadcastChannel.value.postMessage({ notificationType })
+    if (webPush) {
+      webPush.syncNotificationSettings({ type: notificationType })
     }
-  }
-
-  const setupBroadcastChannel = () => {
-    if (typeof BroadcastChannel === 'undefined') return
-
-    broadcastChannel.value = new BroadcastChannel('adm_notifications')
-    broadcastChannel.value.onmessage = handleChannelMessage
-
-    // Timeout for wait sw initialization
-    setTimeout(sendCurrentSettings, 1000)
+    // Android settings are managed through pushService directly
   }
 
   const handleOpenChat = (event: Event) => {
@@ -165,12 +179,13 @@ export function usePushNotificationSetup() {
   const setupNotificationSettingsWatcher = () => {
     watch(
       () => store.state.options.allowNotificationType,
-      (newType, oldType) => {
+      async (newType, oldType) => {
         if (newType !== oldType) {
           syncPushSettings(newType)
 
+          // If disabled push - clear key
           if (oldType === notificationType['Push'] && newType !== notificationType['Push']) {
-            clearPrivateKeyFromSW()
+            await clearPrivateKeyFromSW()
           }
         }
       }
@@ -180,12 +195,21 @@ export function usePushNotificationSetup() {
   const setupLogoutWatcher = () => {
     watch(
       () => store.state.passphrase,
-      (newPassphrase, oldPassphrase) => {
+      async (newPassphrase, oldPassphrase) => {
         if (!newPassphrase && oldPassphrase) {
-          clearPrivateKeyFromSW()
+          await clearPrivateKeyFromSW()
         }
       }
     )
+  }
+
+  const syncNotificationSettings = (type: number) => {
+    if (webPush) {
+      webPush.syncNotificationSettings({ type })
+    }
+    if (androidPush) {
+      androidPush.syncNotificationSettings({ type })
+    }
   }
 
   const setupEventListeners = () => {
@@ -198,18 +222,18 @@ export function usePushNotificationSetup() {
     navigator.serviceWorker?.removeEventListener('message', handleServiceWorkerMessage)
   }
 
-  const cleanup = () => {
+  const cleanup = async () => {
     removeEventListeners()
-    clearPrivateKeyFromSW()
-
-    if (broadcastChannel.value) {
-      broadcastChannel.value.close()
-      broadcastChannel.value = null
-    }
+    await clearPrivateKeyFromSW()
   }
 
   const initialize = () => {
-    setupBroadcastChannel()
+    if (webPush) {
+      webPush.setMessageHandler(handleChannelMessage)
+
+      // Send initial settings with delay for SW initialization
+      setTimeout(sendCurrentSettings, 1000)
+    }
     setupEventListeners()
     setupAutoRegistration()
     setupNotificationSettingsWatcher()
@@ -224,6 +248,6 @@ export function usePushNotificationSetup() {
     clearPrivateKeyFromSW,
     isPushNotification,
     registrationInProgress: readonly(registrationInProgress),
-    broadcastChannel: readonly(broadcastChannel)
+    syncNotificationSettings
   }
 }
