@@ -20,7 +20,7 @@ import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { useResendPendingMessages } from '@/hooks/useResendPendingMessages'
 import { useTrackConnection } from '@/hooks/useTrackConnection'
-import { usePushNotificationSetup } from '@/hooks/usePushNotificationSetup'
+import { usePushNotificationSetup } from '@/hooks/pushNotifications/usePushNotificationSetup'
 
 useResendPendingMessages()
 useTrackConnection()
