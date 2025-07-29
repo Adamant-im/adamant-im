@@ -293,6 +293,7 @@ const markAllAsRead = () => {
 @use 'vuetify/settings';
 
 .chats-view {
+  margin-top: env(safe-area-inset-top);
   height: 100%;
 
   &.a-container,

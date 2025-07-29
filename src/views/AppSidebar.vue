@@ -229,6 +229,11 @@ onBeforeUnmount(() => {
   }
 
   &__aside {
+    @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
+      margin-top: env(safe-area-inset-top);
+      height: calc(100vh - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top));
+    }
+
     width: var(--asideWidth);
     min-height: 100%;
     height: calc(100vh - var(--v-layout-bottom));
@@ -261,6 +266,11 @@ onBeforeUnmount(() => {
   }
 
   &__layout {
+    @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
+      margin-top: env(safe-area-inset-top);
+      height: calc(100vh - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top));
+    }
+
     flex: 1 1 auto;
     overflow-y: auto;
     overflow-x: hidden;

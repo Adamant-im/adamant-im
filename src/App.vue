@@ -84,6 +84,18 @@ setLocale()
 
 <style lang="scss" scoped>
 @use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'sass:map';
+@use '@/assets/styles/generic/_variables.scss';
+
+
+@media (max-width: map.get(variables.$breakpoints, 'mobile')) {
+  .application--linear-gradient {
+    &:deep(.v-bottom-navigation) {
+      bottom: calc(0px +  env(safe-area-inset-bottom));
+    }
+  }
+}
+
 
 .v-theme--light.application--linear-gradient {
   @include mixins.linear-gradient-light();
