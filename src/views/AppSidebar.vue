@@ -239,11 +239,7 @@ onBeforeUnmount(() => {
     max-width: 75%;
     user-select: none;
 
-    @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
-      border-right: none;
-    }
-
-      &::after {
+    &::after {
       content: '';
       position: absolute;
       right: 0;
@@ -251,10 +247,6 @@ onBeforeUnmount(() => {
       width: 10px;
       height: 100%;
       cursor: ew-resize;
-
-      @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
-        content: none;
-      }
     }
 
     @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
@@ -274,7 +266,7 @@ onBeforeUnmount(() => {
     flex: 1 1 auto;
     overflow-y: auto;
     overflow-x: hidden;
-    height: 100%;
+    height: calc(100vh - var(--v-layout-bottom));
     width: calc(100% - var(--asideWidth));
 
     &:deep(> .v-container) {

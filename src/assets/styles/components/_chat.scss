@@ -23,14 +23,16 @@ $scroll-bar-width: 4px;
 .a-chat {
   display: block;
   text-decoration: none;
-  height: 100%;
+  height: 100%; // <-- Fallback for Chrome < v108
+  // Chrome supports `dvh, lvh...` units starting with v108.
+  // See https://caniuse.com/viewport-unit-variants
+  height: calc(100dvh - var(--v-layout-bottom));
   position: relative;
 
   @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
     position: fixed;
     left: 0;
     right: 0;
-    bottom: env(safe-area-inset-bottom);
   }
 
   &__content {
