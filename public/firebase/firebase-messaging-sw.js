@@ -4,6 +4,12 @@ importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging-comp
 importScripts('https://cdnjs.cloudflare.com/ajax/libs/tweetnacl/1.0.3/nacl.min.js')
 importScripts('/js/ed2curve.min.js')
 
+const NOTIFICATION_TYPES = {
+  NO_NOTIFICATIONS: 0,
+  BACKGROUND_FETCH: 1,
+  PUSH: 2
+}
+
 // Checking double notifications
 const processedEvents = new Set()
 setInterval(() => processedEvents.clear(), 2 * 60 * 1000) // 2 minutes
@@ -107,31 +113,58 @@ channel.onmessage = (event) => {
   }
 }
 
-// Handling background messages
-messaging.onBackgroundMessage(async (payload) => {
-  if (!payload.data?.txn) return
+function parseTransactionPayload(payload) {
+  if (!payload.data?.txn) {
+    return null
+  }
 
-  let transaction, eventId
   try {
-    transaction = JSON.parse(payload.data.txn)
-    eventId = transaction.id
+    const transaction = JSON.parse(payload.data.txn)
+    return {
+      transaction,
+      eventId: transaction.id
+    }
   } catch (error) {
     console.warn('Invalid transaction JSON:', error)
+    return null
+  }
+}
+
+function isEventProcessed(eventId) {
+  if (!eventId || processedEvents.has(eventId)) {
+    return true
+  }
+  processedEvents.add(eventId)
+  return false
+}
+
+async function ensureSettingsInitialized() {
+  if (notificationSettings.initialized) {
     return
   }
 
-  if (!eventId || processedEvents.has(eventId)) return
-  processedEvents.add(eventId)
+  await new Promise((resolve) => setTimeout(resolve, 2000))
 
-  // Wait for settings if needed
   if (!notificationSettings.initialized) {
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    if (!notificationSettings.initialized) {
-      notificationSettings.initialized = true
-    }
+    notificationSettings.initialized = true
   }
+}
 
-  if (notificationSettings.type !== 2 || (await isAppVisible())) {
+function isPushEnabled() {
+  return notificationSettings.type === NOTIFICATION_TYPES.PUSH
+}
+
+messaging.onBackgroundMessage(async (payload) => {
+  const parsed = parseTransactionPayload(payload)
+  if (!parsed) return
+
+  const { transaction, eventId } = parsed
+
+  if (isEventProcessed(eventId)) return
+
+  await ensureSettingsInitialized()
+
+  if (!isPushEnabled() || (await isAppVisible())) {
     return
   }
 

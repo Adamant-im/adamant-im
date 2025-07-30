@@ -2,30 +2,20 @@ import utils from '@/lib/adamant'
 import type { ParsedPushData, NotificationData } from './pushTypes'
 
 export function parsePushPayload(payload: any): ParsedPushData | null {
-  try {
-    const txnString = payload.data?.txn || payload.txn || ''
-    if (!txnString) {
-      console.log('No transaction data in push payload')
-      return null
-    }
+  const txnString = payload.data?.txn || payload.txn
+  if (!txnString) return null
 
-    const txnData = typeof txnString === 'string' ? JSON.parse(txnString) : txnString
+  const txnData = typeof txnString === 'string' ? JSON.parse(txnString) : txnString
+  const { id, senderId, senderPublicKey, asset } = txnData
 
-    if (!txnData.id || !txnData.senderId || !txnData.senderPublicKey || !txnData.asset?.chat) {
-      console.log('Invalid transaction data format in push payload')
-      return null
-    }
+  if (!id || !senderId || !senderPublicKey || !asset?.chat) return null
 
-    return {
-      transactionId: txnData.id,
-      senderId: txnData.senderId,
-      senderPublicKey: txnData.senderPublicKey,
-      encryptedMessage: txnData.asset.chat.message,
-      nonce: txnData.asset.chat.own_message
-    }
-  } catch (error) {
-    console.error('Error parsing push payload:', error)
-    return null
+  return {
+    transactionId: id,
+    senderId,
+    senderPublicKey,
+    encryptedMessage: asset.chat.message,
+    nonce: asset.chat.own_message
   }
 }
 

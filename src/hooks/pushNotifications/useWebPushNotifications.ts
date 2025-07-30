@@ -5,20 +5,25 @@ export interface WebNotificationSettings {
   privateKey?: string
 }
 
-/**
- * Web-specific composable for managing push notifications
- * Handles only BroadcastChannel communication with Service Worker
- */
 export function useWebPushNotifications() {
   const channel = ref<BroadcastChannel | null>(null)
-  const isSupported = typeof BroadcastChannel !== 'undefined'
+  const isSupported = computed(() => typeof BroadcastChannel !== 'undefined')
 
-  const isActive = computed(() => channel.value !== null)
   /**
-   * Creates BroadcastChannel connection
+   * Gets reference to pushService (always WebPushService on web)
+   */
+  const getPushService = async () => {
+    if (!isSupported.value) return null
+
+    const { pushService } = await import('@/lib/notifications/pushServiceFactory')
+    return pushService
+  }
+
+  /**
+   * Creates BroadcastChannel for Service Worker communication
    */
   const setupChannel = () => {
-    if (!isSupported) return
+    if (!isSupported.value) return
 
     try {
       channel.value = new BroadcastChannel('adm_notifications')
@@ -28,32 +33,54 @@ export function useWebPushNotifications() {
   }
 
   /**
-   * Sends private key to Service Worker
+   * Sends private key to Service Worker via BroadcastChannel
    */
-  const sendPrivateKey = (privateKey: string): boolean => {
-    if (!channel.value || !privateKey) {
-      return false
-    }
+  const sendPrivateKeyToSW = (privateKey: string): boolean => {
+    if (!channel.value) return false
 
     try {
       channel.value.postMessage({ privateKey })
       return true
     } catch (error) {
-      console.error('[Web Push] Failed to send private key:', error)
+      console.error('[Web Push] Failed to send private key to SW:', error)
       return false
     }
   }
 
   /**
-   * Clears private key from Service Worker
+   * Sets private key both in Service Worker and PushService
    */
-  const clearPrivateKey = (): boolean => {
-    if (!channel.value) {
-      return false
+  const setPrivateKey = async (privateKey: string): Promise<boolean> => {
+    if (!isSupported.value) return false
+
+    // Send to Service Worker
+    const swResult = sendPrivateKeyToSW(privateKey)
+
+    // Send to PushService
+    const service = await getPushService()
+    if (service) {
+      service.setPrivateKey(privateKey)
     }
 
+    return swResult
+  }
+
+  /**
+   * Clears private key from both Service Worker and PushService
+   */
+  const clearPrivateKey = async (): Promise<boolean> => {
+    if (!channel.value) return false
+
     try {
+      // Clear from Service Worker
       channel.value.postMessage({ clearPrivateKey: true })
+
+      // Clear from PushService
+      const service = await getPushService()
+      if (service) {
+        service.setPrivateKey('')
+      }
+
       return true
     } catch (error) {
       console.error('[Web Push] Failed to clear private key:', error)
@@ -65,19 +92,15 @@ export function useWebPushNotifications() {
    * Syncs notification settings with Service Worker
    */
   const syncNotificationSettings = (settings: WebNotificationSettings): boolean => {
-    if (!channel.value) {
-      return false
-    }
+    if (!channel.value) return false
 
     try {
-      // Send notification type
       channel.value.postMessage({
         notificationType: settings.type
       })
 
-      // If push notifications and private key exists - send it
       if (settings.privateKey) {
-        sendPrivateKey(settings.privateKey)
+        sendPrivateKeyToSW(settings.privateKey)
       }
 
       return true
@@ -88,12 +111,10 @@ export function useWebPushNotifications() {
   }
 
   /**
-   * Sets message handler for incoming messages from Service Worker
+   * Sets message handler for Service Worker communication
    */
   const setMessageHandler = (handler: (event: MessageEvent) => void): boolean => {
-    if (!channel.value) {
-      return false
-    }
+    if (!channel.value) return false
 
     try {
       channel.value.onmessage = handler
@@ -104,9 +125,7 @@ export function useWebPushNotifications() {
     }
   }
 
-  onMounted(() => {
-    setupChannel()
-  })
+  onMounted(setupChannel)
 
   onBeforeUnmount(() => {
     if (channel.value) {
@@ -116,10 +135,11 @@ export function useWebPushNotifications() {
   })
 
   return {
-    isActive,
-    sendPrivateKey,
+    isSupported,
+    setPrivateKey,
     clearPrivateKey,
     syncNotificationSettings,
-    setMessageHandler
+    setMessageHandler,
+    getPushService
   }
 }
