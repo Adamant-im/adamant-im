@@ -119,11 +119,6 @@ export class AndroidPushService extends BasePushService {
       const oldToken = this.token
       this.token = tokenData.value
 
-      if (!this.deviceId) {
-        console.error('Device ID not available for token registration')
-        return
-      }
-
       try {
         await this.handleTokenRegistration(oldToken, tokenData.value)
       } catch (error) {
@@ -168,5 +163,20 @@ export class AndroidPushService extends BasePushService {
     App.addListener('pause', () => {
       this.isAppInForeground = false
     })
+  }
+
+  isInitialized(): boolean {
+    return super.isInitialized()
+  }
+
+  getDeviceId(): string | null {
+    return super.getDeviceId()
+  }
+
+  reset(): void {
+    super.reset()
+    this.token = null
+    this.privateKey = null
+    this.isAppInForeground = true
   }
 }
