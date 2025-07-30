@@ -2,7 +2,7 @@
   <slot />
 
   <app-snackbar />
-  <app-navigation v-if="showNavigation" absolute />
+  <app-navigation v-if="showNavigation" />
 </template>
 
 <script setup lang="ts">
