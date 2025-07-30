@@ -3,7 +3,7 @@
     <UploadAttachmentExitPrompt />
     <warning-on-addresses-dialog v-model="showWarningOnAddressesDialog" />
 
-    <v-main class="application--main">
+    <v-main>
       <router-view />
     </v-main>
   </v-app>
@@ -84,14 +84,6 @@ setLocale()
 
 <style lang="scss" scoped>
 @use '@/assets/styles/themes/adamant/_mixins.scss';
-
-.application--main {
-  flex: none;
-  position: relative;
-  height: calc(100vh - env(safe-area-inset-bottom) - env(safe-area-inset-top));
-  height: calc(100dvh - env(safe-area-inset-bottom) - env(safe-area-inset-top));
-  margin-top: env(safe-area-inset-top);
-}
 
 .v-theme--light.application--linear-gradient {
   @include mixins.linear-gradient-light();

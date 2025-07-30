@@ -291,8 +291,10 @@ const markAllAsRead = () => {
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use 'vuetify/settings';
+@use '@/assets/styles/generic/_variables.scss';
 
 .chats-view {
+  margin-top: env(safe-area-inset-top);
   height: 100%;
 
   &.a-container,
@@ -331,6 +333,10 @@ const markAllAsRead = () => {
   }
   &__messages {
     &.chats-view__messages--chat {
+      @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
+        max-height: calc(100vh - 56px - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top));
+      }
+
       max-height: calc(100vh - 56px - var(--v-layout-bottom));
       overflow-y: auto;
     }
