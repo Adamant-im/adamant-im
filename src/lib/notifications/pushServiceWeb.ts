@@ -59,17 +59,15 @@ export class WebPushService extends BasePushService {
     if (!this.token || !this.deviceId) return false
 
     try {
-      const result = await sendSpecialMessage(
+      await sendSpecialMessage(
         ADAMANT_NOTIFICATION_SERVICE_ADDRESS,
         signalAsset(this.deviceId, this.token, 'FCM', 'remove')
       )
 
-      if ('error' in result) {
-        throw result.error
-      }
-
       const revoked = await revokeToken()
-      if (!revoked) return false
+      if (!revoked) {
+        throw new Error('Failed to revoke FCM token')
+      }
 
       this.token = null
       this.privateKey = null
@@ -83,5 +81,19 @@ export class WebPushService extends BasePushService {
 
   setPrivateKey(privateKey: string): void {
     this.privateKey = privateKey
+  }
+
+  isInitialized(): boolean {
+    return super.isInitialized()
+  }
+
+  getDeviceId(): string | null {
+    return super.getDeviceId()
+  }
+
+  reset(): void {
+    super.reset()
+    this.token = null
+    this.privateKey = null
   }
 }
