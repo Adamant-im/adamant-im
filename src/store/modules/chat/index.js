@@ -1212,10 +1212,14 @@ const actions = {
       })
   },
 
-  async uploadConsistently({ commit, rootGetters, dispatch }, { files, cids }) {
+  async uploadConsistently({ commit, rootGetters }, { files, cids }) {
     const { subscribeOffline } = useConsiderOffline({ getters: rootGetters })
 
     const getProgress = (cid) => rootGetters['attachment/getUploadProgress'](cid)
+
+    const setUploadProgress = (cid, progress) => {
+      commit('attachment/setUploadProgress', { cid, progress }, { root: true })
+    }
 
     const fileByCid = files.reduce((acc, file) => {
       acc[file.cid] = file
@@ -1230,7 +1234,7 @@ const actions = {
         continue
       }
 
-      dispatch('setUploadProgress', { cid, progress: 0 })
+      setUploadProgress(cid, 0)
 
       const controller = new AbortController()
       const unsubscribe = subscribeOffline(() => {
@@ -1240,14 +1244,14 @@ const actions = {
       try {
         const { cids: newCids } = await uploadFile(
           fileByCid[cid],
-          (progress) => dispatch('setUploadProgress', { cid, progress }),
+          (progress) => setUploadProgress(cid, progress),
           controller.signal
         )
 
         commit('attachment/resetUploadProgress', { cid }, { root: true })
         uploaded.push(newCids)
       } catch (error) {
-        dispatch('setUploadProgress', { cid, progress: 0 })
+        setUploadProgress(cid, 0)
 
         const fallback = uploaded.concat(cids.slice(uploaded.length))
         const errorToThrow =
@@ -1265,10 +1269,6 @@ const actions = {
     }
 
     return { newCids: uploaded }
-  },
-
-  setUploadProgress({ commit }, { cid, progress }) {
-    commit('attachment/setUploadProgress', { cid, progress }, { root: true })
   },
 
   registerPendingMessage({ commit }, { messageId, recipientId, transactionId }) {
