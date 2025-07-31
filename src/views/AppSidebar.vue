@@ -222,8 +222,6 @@ onBeforeUnmount(() => {
 
   &__with-aside {
     max-width: 1512px;
-    height: 100%;
-
     @media (min-width: 1513px) {
       border-right: 2px solid black;
       border-left: 2px solid black;
@@ -233,17 +231,19 @@ onBeforeUnmount(() => {
   &__aside {
     width: var(--asideWidth);
     min-height: 100%;
-    height: calc(100% - var(--v-layout-bottom));
+    height: calc(100vh - var(--v-layout-bottom));
     border-right: 2px solid black;
     position: relative;
     max-width: 75%;
     user-select: none;
 
     @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
+      margin-top: env(safe-area-inset-top);
+      height: calc(100vh - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top));
       border-right: none;
     }
 
-      &::after {
+    &::after {
       content: '';
       position: absolute;
       right: 0;
@@ -271,10 +271,15 @@ onBeforeUnmount(() => {
   }
 
   &__layout {
+    @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
+      margin-top: env(safe-area-inset-top);
+      height: calc(100vh - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top));
+    }
+
     flex: 1 1 auto;
     overflow-y: auto;
     overflow-x: hidden;
-    height: calc(100vh - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top));
+    height: calc(100vh - var(--v-layout-bottom));
     width: calc(100% - var(--asideWidth));
 
     &:deep(> .v-container) {
