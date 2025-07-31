@@ -1238,8 +1238,10 @@ const actions = {
       })
 
       try {
-        const { cids: newCids } = await uploadFile(fileByCid[cid], controller.signal, (progress) =>
-          dispatch('setUploadProgress', { cid, progress })
+        const { cids: newCids } = await uploadFile(
+          fileByCid[cid],
+          (progress) => dispatch('setUploadProgress', { cid, progress }),
+          controller.signal
         )
 
         commit('attachment/resetUploadProgress', { cid }, { root: true })

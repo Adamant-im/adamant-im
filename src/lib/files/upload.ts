@@ -3,8 +3,8 @@ import ipfs from '@/lib/nodes/ipfs'
 
 export async function uploadFile(
   file: FileData,
-  signal?: AbortSignal,
-  onUploadProgress?: (progress: number) => void
+  onUploadProgress?: (progress: number) => void,
+  signal?: AbortSignal
 ) {
   const formData = new FormData()
 
