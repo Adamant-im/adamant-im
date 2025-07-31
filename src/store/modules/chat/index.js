@@ -32,6 +32,7 @@ import {
   isAllNodesOfflineError
 } from '@/lib/nodes/utils/errors'
 import adamant from '@/lib/adamant'
+import { useConsiderOffline } from '@/hooks/useConsiderOffline.js'
 
 export let interval
 
@@ -577,6 +578,12 @@ const mutations = {
     if (state.pendingMessages[messageId]) {
       clearTimeout(state.pendingMessages[messageId].timeout)
       delete state.pendingMessages[messageId]
+    }
+  },
+
+  updatePendingMessage(state, { messageId, cids }) {
+    if (state.pendingMessages[messageId]) {
+      state.pendingMessages[messageId].cids = cids
     }
   },
 
@@ -1176,6 +1183,11 @@ const actions = {
       partnerId: recipientId
     })
 
+    commit('updatePendingMessage', {
+      cids: uploadData.newCids,
+      messageId
+    })
+
     return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
       .then((res) => {
         if (!res.success) {
@@ -1200,7 +1212,9 @@ const actions = {
       })
   },
 
-  async uploadConsistently({ commit, rootGetters }, { files, cids }) {
+  async uploadConsistently({ commit, rootGetters, dispatch }, { files, cids }) {
+    const { subscribeOffline } = useConsiderOffline({ getters: rootGetters })
+
     const getProgress = (cid) => rootGetters['attachment/getUploadProgress'](cid)
 
     const fileByCid = files.reduce((acc, file) => {
@@ -1209,34 +1223,50 @@ const actions = {
     }, {})
 
     const uploaded = []
-    const toUpload = []
 
     for (const [cid, previewCid] of cids) {
       if (getProgress(cid) === 100) {
         uploaded.push([cid, previewCid])
-      } else {
-        toUpload.push({ cid, previewCid })
-        commit('attachment/setUploadProgress', { cid, progress: 0 }, { root: true })
+        continue
       }
-    }
 
-    for (const { cid } of toUpload) {
+      dispatch('setUploadProgress', { cid, progress: 0 })
+
+      const controller = new AbortController()
+      const unsubscribe = subscribeOffline(() => {
+        controller.abort()
+      })
+
       try {
-        const { cids: newCids } = await uploadFile(fileByCid[cid], (progress) =>
-          commit('attachment/setUploadProgress', { cid, progress }, { root: true })
+        const { cids: newCids } = await uploadFile(fileByCid[cid], controller.signal, (progress) =>
+          dispatch('setUploadProgress', { cid, progress })
         )
 
         commit('attachment/resetUploadProgress', { cid }, { root: true })
         uploaded.push(newCids)
       } catch (error) {
-        commit('attachment/setUploadProgress', { cid, progress: 0 }, { root: true })
+        dispatch('setUploadProgress', { cid, progress: 0 })
 
         const fallback = uploaded.concat(cids.slice(uploaded.length))
-        return { newCids: fallback, error }
+        const errorToThrow =
+          controller.signal.aborted || isAllNodesOfflineError(error)
+            ? new AllNodesOfflineError('adm')
+            : error
+
+        return {
+          newCids: fallback,
+          error: errorToThrow
+        }
+      } finally {
+        unsubscribe()
       }
     }
 
     return { newCids: uploaded }
+  },
+
+  setUploadProgress({ commit }, { cid, progress }) {
+    commit('attachment/setUploadProgress', { cid, progress }, { root: true })
   },
 
   registerPendingMessage({ commit }, { messageId, recipientId, transactionId }) {

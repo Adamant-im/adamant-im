@@ -28,7 +28,11 @@ export class IpfsClient extends Client<IpfsNode> {
     })
   }
 
-  async upload(payload: FormData, onUploadProgress?: (progressEvent: AxiosProgressEvent) => void) {
+  async upload(
+    payload: FormData,
+    signal?: AbortSignal,
+    onUploadProgress?: (progressEvent: AxiosProgressEvent) => void
+  ) {
     return this.request({
       method: 'post',
       url: '/api/file/upload',
@@ -36,7 +40,8 @@ export class IpfsClient extends Client<IpfsNode> {
       headers: {
         'Content-Type': 'multipart/form-data'
       },
-      onUploadProgress
+      onUploadProgress,
+      signal
     })
   }
 
