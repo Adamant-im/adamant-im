@@ -17,11 +17,15 @@ export async function uploadFile(
   }
 
   onUploadProgress?.(0) // set initial progress to 0
-  const response = await ipfs.upload(formData, signal, (progress) => {
-    const percentCompleted = Math.round((progress.loaded * 100) / (progress.total || 0))
+  const response = await ipfs.upload(
+    formData,
+    (progress) => {
+      const percentCompleted = Math.round((progress.loaded * 100) / (progress.total || 0))
 
-    onUploadProgress?.(percentCompleted)
-  })
+      onUploadProgress?.(percentCompleted)
+    },
+    signal
+  )
 
   return response
 }

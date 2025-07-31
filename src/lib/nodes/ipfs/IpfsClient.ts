@@ -30,8 +30,8 @@ export class IpfsClient extends Client<IpfsNode> {
 
   async upload(
     payload: FormData,
-    signal?: AbortSignal,
-    onUploadProgress?: (progressEvent: AxiosProgressEvent) => void
+    onUploadProgress?: (progressEvent: AxiosProgressEvent) => void,
+    signal?: AbortSignal
   ) {
     return this.request({
       method: 'post',
