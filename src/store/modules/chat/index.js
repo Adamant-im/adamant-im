@@ -23,7 +23,7 @@ import {
 } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
-import { uploadFiles } from '../../../lib/files'
+import { uploadFile } from '../../../lib/files'
 import { generateAdamantChats } from './utils/generateAdamantChats'
 import {
   AllNodesDisabledError,
@@ -32,6 +32,7 @@ import {
   isAllNodesOfflineError
 } from '@/lib/nodes/utils/errors'
 import adamant from '@/lib/adamant'
+import { useConsiderOffline } from '@/hooks/useConsiderOffline.js'
 
 export let interval
 
@@ -563,12 +564,13 @@ const mutations = {
     state.noActiveNodesDialog = value
   },
 
-  addPendingMessage(state, { messageId, recipientId, timeout, type, files }) {
+  addPendingMessage(state, { messageId, recipientId, timeout, type, files, cids }) {
     state.pendingMessages[messageId] = {
       recipientId,
       timeout,
       type,
-      files
+      files,
+      cids
     }
   },
 
@@ -576,6 +578,12 @@ const mutations = {
     if (state.pendingMessages[messageId]) {
       clearTimeout(state.pendingMessages[messageId].timeout)
       delete state.pendingMessages[messageId]
+    }
+  },
+
+  updatePendingMessage(state, { messageId, cids }) {
+    if (state.pendingMessages[messageId]) {
+      state.pendingMessages[messageId].cids = cids
     }
   },
 
@@ -918,7 +926,6 @@ const actions = {
       files,
       replyToId
     })
-    console.debug('Message', messageObject)
 
     commit('pushMessage', {
       message: messageObject,
@@ -934,39 +941,40 @@ const actions = {
       partnerId: recipientId,
       asset: newAsset
     })
-    console.debug('Updated CIDs and Nonces', newAsset)
 
-    try {
-      const areAdmNodesDisabled = rootGetters['nodes/adm'].every(
-        (node) => node.status === 'disabled'
-      )
+    const areAdmNodesDisabled = rootGetters['nodes/adm'].every((node) => node.status === 'disabled')
 
-      if (areAdmNodesDisabled) {
-        throw new AllNodesDisabledError('adm')
-      }
+    if (areAdmNodesDisabled) {
+      throw new AllNodesDisabledError('adm')
+    }
 
-      const uploadData = await uploadFiles(files, (progress) => {
-        for (const [cid] of cids) {
-          commit('attachment/setUploadProgress', { cid, progress }, { root: true })
+    cids.forEach(([cid]) => {
+      commit('attachment/setUploadProgress', { cid, progress: 0 }, { root: true })
+    })
+
+    const uploadData = await dispatch('uploadConsistently', {
+      files,
+      cids
+    })
+
+    // Heisenbug: After uploading an MP4 file, the CID returned by the IPFS node differs from the locally computed one.
+    // So we update the CIDs one more time, just to be sure.
+    newAsset = replyToId
+      ? {
+          replyto_id: replyToId,
+          reply_message: attachmentAsset(files, message, uploadData.newCids)
         }
-      })
-      console.debug('Files uploaded', uploadData)
+      : attachmentAsset(files, message, uploadData.newCids)
 
-      // Heisenbug: After uploading an MP4 file, the CID returned by the IPFS node differs from the locally computed one.
-      // So we update the CIDs one more time, just to be sure.
-      newAsset = replyToId
-        ? { replyto_id: replyToId, reply_message: attachmentAsset(files, message, uploadData.cids) }
-        : attachmentAsset(files, message, uploadData.cids)
+    commit('updateMessage', {
+      id: messageObject.id,
+      partnerId: recipientId,
+      asset: newAsset
+    })
 
-      commit('updateMessage', {
-        id: messageObject.id,
-        partnerId: recipientId,
-        asset: newAsset
-      })
-      console.debug('Updated CIDs after upload', newAsset)
-    } catch (err) {
-      if (!isAllNodesOfflineError(err)) {
-        if (isAllNodesDisabledError(err)) {
+    if (uploadData.error) {
+      if (!isAllNodesOfflineError(uploadData.error)) {
+        if (isAllNodesDisabledError(uploadData.error)) {
           commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
         }
 
@@ -980,12 +988,8 @@ const actions = {
           commit('attachment/resetUploadProgress', { cid }, { root: true })
         }
 
-        throw err
+        throw uploadData.error
       }
-    }
-
-    for (const [cid] of cids) {
-      commit('attachment/resetUploadProgress', { cid }, { root: true })
     }
 
     return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
@@ -1050,6 +1054,7 @@ const actions = {
           commit('addPendingMessage', {
             messageId: messageObject.id,
             type: MessageType.RICH_CONTENT_MESSAGE,
+            cids: uploadData.newCids,
             recipientId,
             timeout,
             files
@@ -1128,20 +1133,15 @@ const actions = {
    * @param {string} recipientId
    * @param {number} messageId
    * @param {FileData[]} files
+   * @param {cids} cids (in case some files were successfully uploaded and their cids changed)
    * @returns {Promise}
    */
-  async resendAttachment({ getters, commit, dispatch }, { recipientId, messageId, files }) {
+  async resendAttachment({ getters, commit, dispatch }, { recipientId, messageId, files, cids }) {
     const message = getters.partnerMessageById(recipientId, messageId)
     if (!message) {
       return Promise.reject(new Error('Message not found in history'))
     }
 
-    // in case the files were not fully uploaded or uploaded incorrectly we
-    // reupload them from scratch to resend a message with attachments
-    const cidsOld = files.map((file) => [file.cid, file.preview?.cid]).filter(Boolean)
-    for (const [cid] of cidsOld) {
-      commit('attachment/resetUploadProgress', { cid }, { root: true })
-    }
     commit('updateMessage', {
       id: messageId,
       status: TS.PENDING,
@@ -1149,17 +1149,17 @@ const actions = {
     })
 
     let uploadData
-    try {
-      uploadData = await uploadFiles(files, (progress) => {
-        for (const [cid] of cidsOld) {
-          commit('attachment/setUploadProgress', { cid, progress }, { root: true })
-        }
-      })
-    } catch (err) {
-      for (const [cid] of cidsOld) {
-        commit('attachment/resetUploadProgress', { cid }, { root: true })
-      }
 
+    try {
+      uploadData = await dispatch('uploadConsistently', {
+        files,
+        cids
+      })
+
+      if (uploadData.error) {
+        throw uploadData.error
+      }
+    } catch (err) {
       if (!isAllNodesOfflineError(err)) {
         dispatch('rejectPendingMessage', {
           messageId,
@@ -1173,9 +1173,9 @@ const actions = {
     const newAsset = message.isReply
       ? {
           replyto_id: message.asset.replyto_id,
-          reply_message: attachmentAsset(files, message.message, uploadData.cids)
+          reply_message: attachmentAsset(files, message.message, uploadData.newCids)
         }
-      : attachmentAsset(files, message.message, uploadData.cids)
+      : attachmentAsset(files, message.message, uploadData.newCids)
 
     commit('updateMessage', {
       id: messageId,
@@ -1183,9 +1183,10 @@ const actions = {
       partnerId: recipientId
     })
 
-    for (const [cid] of cidsOld) {
-      commit('attachment/resetUploadProgress', { cid }, { root: true })
-    }
+    commit('updatePendingMessage', {
+      cids: uploadData.newCids,
+      messageId
+    })
 
     return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
       .then((res) => {
@@ -1209,6 +1210,65 @@ const actions = {
 
         throw err
       })
+  },
+
+  async uploadConsistently({ commit, rootGetters }, { files, cids }) {
+    const { subscribeOffline } = useConsiderOffline({ getters: rootGetters })
+
+    const getProgress = (cid) => rootGetters['attachment/getUploadProgress'](cid)
+
+    const setUploadProgress = (cid, progress) => {
+      commit('attachment/setUploadProgress', { cid, progress }, { root: true })
+    }
+
+    const fileByCid = files.reduce((acc, file) => {
+      acc[file.cid] = file
+      return acc
+    }, {})
+
+    const uploaded = []
+
+    for (const [cid, previewCid] of cids) {
+      if (getProgress(cid) === 100) {
+        uploaded.push([cid, previewCid])
+        continue
+      }
+
+      setUploadProgress(cid, 0)
+
+      const controller = new AbortController()
+      const unsubscribe = subscribeOffline(() => {
+        controller.abort()
+      })
+
+      try {
+        const { cids: newCids } = await uploadFile(
+          fileByCid[cid],
+          (progress) => setUploadProgress(cid, progress),
+          controller.signal
+        )
+
+        commit('attachment/resetUploadProgress', { cid }, { root: true })
+        uploaded.push(newCids)
+      } catch (error) {
+        setUploadProgress(cid, 0)
+
+        const fallback = uploaded.concat(cids.slice(uploaded.length))
+        const errorToThrow =
+          controller.signal.aborted || isAllNodesOfflineError(error)
+            ? new AllNodesOfflineError('adm')
+            : error
+
+        return {
+          newCids: fallback,
+          error: errorToThrow
+        }
+      } finally {
+        unsubscribe()
+      }
+    }
+
+    return { newCids: uploaded }
   },
 
   registerPendingMessage({ commit }, { messageId, recipientId, transactionId }) {
