@@ -239,7 +239,7 @@ export async function encodeFile(file, params) {
  * @param {object} payload message payload
  */
 export function sendSpecialMessage(to, payload) {
-  return sendMessage({ to, message: payload, type: MessageType.RICH_CONTENT_MESSAGE })
+  return sendMessage({ to, message: payload, type: MessageType.SIGNAL_MESSAGE })
 }
 
 /**
@@ -797,4 +797,11 @@ export async function getChatRoomMessages(address1, address2, paramsArg, recursi
   }
 
   return loadMessages(lastOffset)
+}
+
+export function getMyPrivateKey() {
+  if (!myKeypair || !myKeypair.privateKey) {
+    return ''
+  }
+  return myKeypair.privateKey.toString('hex')
 }

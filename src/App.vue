@@ -20,9 +20,11 @@ import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { useResendPendingMessages } from '@/hooks/useResendPendingMessages'
 import { useTrackConnection } from '@/hooks/useTrackConnection'
+import { usePushNotificationSetup } from '@/hooks/pushNotifications/usePushNotificationSetup'
 
 useResendPendingMessages()
 useTrackConnection()
+usePushNotificationSetup()
 
 const store = useStore()
 const isSnackbarShowing = computed(() => store.state.snackbar.show)
@@ -41,22 +43,24 @@ onMounted(() => {
   const instance = getCurrentInstance()
 
   if (instance) {
-    const notifications = new Notifications(instance.proxy)
-    notifications.start()
+    const notificationsInstance = new Notifications(instance.proxy)
+    notifications.value = notificationsInstance
+    notificationsInstance.start()
   }
+
+  window.addEventListener('keydown', onKeydownHandler, true)
 })
 
 onBeforeUnmount(() => {
   notifications.value?.stop()
   store.dispatch('stopInterval')
+  window.removeEventListener('keydown', onKeydownHandler, true)
 })
 
 const onKeydownHandler = (e: KeyboardEvent) => {
-  if (e.key === 'Escape') {
-    if (isSnackbarShowing.value) {
-      e.stopPropagation()
-      store.commit('snackbar/changeState', false)
-    }
+  if (e.key === 'Escape' && isSnackbarShowing.value) {
+    e.stopPropagation()
+    store.commit('snackbar/changeState', false)
   }
 }
 
@@ -70,14 +74,6 @@ const setLocale = () => {
   locale.value = localeFromStorage
   dayjs.locale(localeFromStorage)
 }
-
-onMounted(() => {
-  window.addEventListener('keydown', onKeydownHandler, true)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('keydown', onKeydownHandler, true)
-})
 
 setLocale()
 </script>
