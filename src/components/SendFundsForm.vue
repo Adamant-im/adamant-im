@@ -206,7 +206,6 @@ import * as transactions from '@klayr/transactions'
 import { KLY_DECIMALS } from '@/lib/klayr/klayr-constants'
 
 import {
-  INCREASE_FEE_MULTIPLIER,
   Cryptos,
   TransactionStatus as TS,
   isErc20,
@@ -338,6 +337,7 @@ export default {
     showWarningOnPartnerAddressDialog: false,
     warningOnPartnerInfo: {},
     klayrOptionalMessage: '',
+    estimatedGasLimit: null,
 
     // Account exists check
     // Currently works only with KLY
@@ -382,7 +382,12 @@ export default {
      * @returns {string}
      */
     transferFeeFixed() {
-      return BigNumber(this.transferFee).toFixed()
+      const feeCurrency = isErc20(this.currency) ? 'ETH' : this.currency
+      const decimals = CryptosInfo[feeCurrency].cryptoTransferDecimals
+      return BigNumber(this.transferFee)
+        .decimalPlaces(decimals)
+        .toString()
+        .replace(/\.0+$|(\.\d*?)0+$/, '$1') // delete trailing zeroes
     },
 
     /**
@@ -417,7 +422,11 @@ export default {
      * @returns {string}
      */
     finalAmountFixed() {
-      return BigNumber(this.finalAmount).toFixed()
+      const decimals = CryptosInfo[this.currency].cryptoTransferDecimals
+      return BigNumber(this.finalAmount)
+        .decimalPlaces(decimals)
+        .toString()
+        .replace(/\.0+$|(\.\d*?)0+$/, '$1')
     },
 
     /**
@@ -612,8 +621,20 @@ export default {
         this.amount = 0
       }
     },
+    amount() {
+      this.updateGasEstimate()
+    },
     cryptoAddress(cryptoAddress) {
       this.checkIsNewAccount(cryptoAddress)
+      this.updateGasEstimate()
+    },
+    increaseFee(newValue) {
+      const storageKey = isEthBased(this.currency) ? 'ETH' : this.currency
+      localStorage.setItem(`increaseFee_${storageKey}`, newValue)
+    },
+    currency() {
+      this.restoreIncreaseFeeState()
+      this.estimatedGasLimit = null
     }
   },
   created() {
@@ -943,23 +964,55 @@ export default {
       return amount >= min
     },
     validateNaturalUnits(amount, currency) {
-      const units = CryptosInfo[currency].decimals
+      const units = CryptosInfo[currency].cryptoTransferDecimals
 
       const [, right = ''] = BigNumber(amount).toFixed().split('.')
 
       return right.length <= units
     },
     calculateTransferFee(amount) {
-      const coef = this.increaseFee ? INCREASE_FEE_MULTIPLIER : 1
-      return (
-        coef *
-        this.$store.getters[`${this.currency.toLowerCase()}/fee`](
-          amount || this.balance,
-          this.cryptoAddress,
-          this.textData,
-          this.account.isNew
-        )
+      return this.$store.getters[`${this.currency.toLowerCase()}/fee`](
+        amount || this.balance,
+        this.cryptoAddress,
+        this.textData,
+        this.account.isNew,
+        this.increaseFee,
+        this.estimatedGasLimit
       )
+    },
+    restoreIncreaseFeeState() {
+      const storageKey = isEthBased(this.currency) ? 'ETH' : this.currency
+      const saved = localStorage.getItem(`increaseFee_${storageKey}`)
+      this.increaseFee = saved === 'true'
+    },
+    async updateGasEstimate() {
+      if (!isEthBased(this.currency)) {
+        return
+      }
+
+      if (
+        this.amount === 0 ||
+        !this.cryptoAddress ||
+        !validateAddress(this.currency, this.cryptoAddress)
+      ) {
+        this.estimatedGasLimit = null
+        return
+      }
+
+      try {
+        const gasLimit = await this.$store.dispatch(
+          `${this.currency.toLowerCase()}/estimateGasLimit`,
+          {
+            amount: this.amount,
+            address: this.cryptoAddress
+          }
+        )
+
+        this.estimatedGasLimit = gasLimit
+      } catch (error) {
+        console.warn(`${this.currency} EstimateGas failed:`, error)
+        this.estimatedGasLimit = null
+      }
     }
   }
 }

@@ -1,7 +1,7 @@
 import * as utils from '@/lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
-import { CryptosInfo, DEFAULT_ETH_TRANSFER_GAS_LIMIT, FetchStatus } from '@/lib/constants'
+import { CryptosInfo, FetchStatus } from '@/lib/constants'
 import { storeCryptoAddress, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import shouldUpdate from '../../utils/coinUpdatesGuard'
 
@@ -21,7 +21,7 @@ function storeEthAddress(context) {
 }
 
 const initTransaction = async (api, context, ethAddress, amount, nonce, increaseFee) => {
-  const gasPrice = await api.useClient((client) => client.getGasPrice())
+  const gasPrice = BigInt(context.getters.finalGasPrice(increaseFee))
 
   const transaction = {
     from: context.state.address,
@@ -33,8 +33,8 @@ const initTransaction = async (api, context, ethAddress, amount, nonce, increase
 
   const gasLimit = await api
     .useClient((client) => client.estimateGas(transaction))
-    .catch(() => BigInt(DEFAULT_ETH_TRANSFER_GAS_LIMIT))
-  transaction.gasLimit = increaseFee ? utils.increaseFee(gasLimit) : gasLimit
+    .catch(() => BigInt(CryptosInfo['ETH'].defaultGasLimit))
+  transaction.gasLimit = gasLimit
 
   return transaction
 }
@@ -127,8 +127,7 @@ const createSpecificActions = (api) => ({
       .useClient((client) => client.getGasPrice())
       .then((price) => {
         context.commit('gasPrice', {
-          gasPrice: Number(price),
-          fee: +(+utils.calculateFee(DEFAULT_ETH_TRANSFER_GAS_LIMIT, price)).toFixed(8)
+          gasPrice: price.toString()
         })
       })
       .catch((err) => console.warn(err))
