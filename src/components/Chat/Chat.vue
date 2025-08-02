@@ -142,7 +142,17 @@
           :flashing="flashingMessageId === message.id"
           :data-id="message.id"
           :partner-id="partnerId"
-          @resend="() => console.debug('Not implemented')"
+          @resend="
+            resendAttachment(
+              partnerId,
+              message.id,
+              message.localFiles?.map((localFile) => localFile.file),
+              message.localFiles?.map((localFile) => [
+                localFile.file.cid,
+                localFile.file.preview?.cid
+              ])
+            )
+          "
           @click:quoted-message="onQuotedMessageClick"
           @swipe:left="onSwipeLeft(message)"
           @longpress="onMessageLongPress(message)"
@@ -322,7 +332,6 @@ import { useChatStateStore } from '@/stores/modal-state'
 import ChatPlaceholder from '@/components/Chat/ChatPlaceholder.vue'
 import { watchImmediate } from '@vueuse/core'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
-import { isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -680,6 +689,15 @@ const resendMessage = (recipientId: string, messageId: string) => {
     })
     console.error(err.message)
   })
+}
+
+const resendAttachment = (
+  recipientId: string,
+  messageId: string,
+  files?: FileData[],
+  cids?: [string, string | undefined][]
+) => {
+  return store.dispatch('chat/resendAttachment', { recipientId, messageId, files, cids })
 }
 
 const sendReaction = (reactToId: string, emoji: string) => {

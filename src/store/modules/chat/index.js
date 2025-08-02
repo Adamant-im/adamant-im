@@ -32,6 +32,7 @@ import {
   isAllNodesOfflineError
 } from '@/lib/nodes/utils/errors'
 import adamant from '@/lib/adamant'
+import { useConsiderOffline } from '@/hooks/useConsiderOffline.js'
 
 export let interval
 
@@ -580,6 +581,12 @@ const mutations = {
     }
   },
 
+  updatePendingMessage(state, { messageId, cids }) {
+    if (state.pendingMessages[messageId]) {
+      state.pendingMessages[messageId].cids = cids
+    }
+  },
+
   reset(state) {
     state.chats = {}
     state.lastMessageHeight = 0
@@ -919,7 +926,6 @@ const actions = {
       files,
       replyToId
     })
-    console.debug('Message', messageObject)
 
     commit('pushMessage', {
       message: messageObject,
@@ -935,7 +941,6 @@ const actions = {
       partnerId: recipientId,
       asset: newAsset
     })
-    console.debug('Updated CIDs and Nonces', newAsset)
 
     const areAdmNodesDisabled = rootGetters['nodes/adm'].every((node) => node.status === 'disabled')
 
@@ -951,8 +956,6 @@ const actions = {
       files,
       cids
     })
-
-    console.debug('Files uploaded', uploadData)
 
     // Heisenbug: After uploading an MP4 file, the CID returned by the IPFS node differs from the locally computed one.
     // So we update the CIDs one more time, just to be sure.
@@ -988,8 +991,6 @@ const actions = {
         throw uploadData.error
       }
     }
-
-    console.debug('Updated CIDs after upload', newAsset)
 
     return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
       .then((res) => {
@@ -1182,6 +1183,11 @@ const actions = {
       partnerId: recipientId
     })
 
+    commit('updatePendingMessage', {
+      cids: uploadData.newCids,
+      messageId
+    })
+
     return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
       .then((res) => {
         if (!res.success) {
@@ -1207,49 +1213,62 @@ const actions = {
   },
 
   async uploadConsistently({ commit, rootGetters }, { files, cids }) {
-    const uploadedCids = cids.filter(
-      ([cid]) => rootGetters['attachment/getUploadProgress'](cid) === 100
-    )
+    const { subscribeOffline } = useConsiderOffline({ getters: rootGetters })
 
-    const notUploadedCids = cids.filter(
-      ([cid]) => rootGetters['attachment/getUploadProgress'](cid) !== 100
-    )
-    const notUploadedFiles = files.filter((file) =>
-      notUploadedCids.some(([cid]) => cid === file.cid)
-    )
+    const getProgress = (cid) => rootGetters['attachment/getUploadProgress'](cid)
 
-    notUploadedCids.forEach(([cid]) => {
-      commit('attachment/setUploadProgress', { cid, progress: 0 }, { root: true })
-    })
+    const setUploadProgress = (cid, progress) => {
+      commit('attachment/setUploadProgress', { cid, progress }, { root: true })
+    }
 
-    for (const [index, file] of notUploadedFiles.entries()) {
-      const [cid] = notUploadedCids[index]
+    const fileByCid = files.reduce((acc, file) => {
+      acc[file.cid] = file
+      return acc
+    }, {})
+
+    const uploaded = []
+
+    for (const [cid, previewCid] of cids) {
+      if (getProgress(cid) === 100) {
+        uploaded.push([cid, previewCid])
+        continue
+      }
+
+      setUploadProgress(cid, 0)
+
+      const controller = new AbortController()
+      const unsubscribe = subscribeOffline(() => {
+        controller.abort()
+      })
 
       try {
-        const uploadedFile = await uploadFile(file, (progress) => {
-          commit('attachment/setUploadProgress', { cid, progress }, { root: true })
-        })
+        const { cids: newCids } = await uploadFile(
+          fileByCid[cid],
+          (progress) => setUploadProgress(cid, progress),
+          controller.signal
+        )
 
         commit('attachment/resetUploadProgress', { cid }, { root: true })
-
-        uploadedCids.push(uploadedFile.cids)
+        uploaded.push(newCids)
       } catch (error) {
-        commit('attachment/setUploadProgress', { cid, progress: 0 }, { root: true })
+        setUploadProgress(cid, 0)
 
-        const oldCidsMutated = cids
-
-        for (const [index, cid] of uploadedCids.entries()) {
-          oldCidsMutated[index] = cid
-        }
+        const fallback = uploaded.concat(cids.slice(uploaded.length))
+        const errorToThrow =
+          controller.signal.aborted || isAllNodesOfflineError(error)
+            ? new AllNodesOfflineError('adm')
+            : error
 
         return {
-          newCids: oldCidsMutated,
-          error
+          newCids: fallback,
+          error: errorToThrow
         }
+      } finally {
+        unsubscribe()
       }
     }
 
-    return { newCids: uploadedCids }
+    return { newCids: uploaded }
   },
 
   registerPendingMessage({ commit }, { messageId, recipientId, transactionId }) {

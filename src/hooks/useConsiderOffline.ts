@@ -1,16 +1,17 @@
-import { computed } from 'vue'
-import { useStore } from 'vuex'
+import { computed, watch } from 'vue'
+import { GetterTree, useStore } from 'vuex'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import { RootState } from '@/store/types'
 
-export function useConsiderOffline() {
-  const store = useStore()
+export function useConsiderOffline(options?: { getters: GetterTree<any, RootState> }) {
+  const getters = options?.getters ?? useStore().getters
 
-  const isOnline = computed(() => store.getters['isOnline'])
+  const isOnline = computed(() => getters['isOnline'])
 
-  const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
-  const coinNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/coins'])
-  const servicesNodes = computed<NodeStatusResult[]>(() => store.getters['services/services'])
-  const ipfsNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/ipfs'])
+  const admNodes = computed<NodeStatusResult[]>(() => getters['nodes/adm'])
+  const coinNodes = computed<NodeStatusResult[]>(() => getters['nodes/coins'])
+  const servicesNodes = computed<NodeStatusResult[]>(() => getters['services/services'])
+  const ipfsNodes = computed<NodeStatusResult[]>(() => getters['nodes/ipfs'])
 
   const allNodes = computed<NodeStatusResult[]>(() => [
     ...admNodes.value,
@@ -43,7 +44,29 @@ export function useConsiderOffline() {
     return !anyNodeOnline.value || everyNodeDisabled.value
   })
 
+  const offlineHandlers = new Set<() => void>()
+
+  const subscribeOffline = (callback: () => void) => {
+    offlineHandlers.add(callback)
+
+    return () => {
+      offlineHandlers.delete(callback)
+    }
+  }
+
+  const unsubscribeOffline = (callback: () => void) => {
+    offlineHandlers.delete(callback)
+  }
+
+  watch(consideredOffline, (isOffline) => {
+    if (isOffline) {
+      offlineHandlers.forEach((cb) => cb())
+    }
+  })
+
   return {
-    consideredOffline
+    consideredOffline,
+    subscribeOffline,
+    unsubscribeOffline
   }
 }

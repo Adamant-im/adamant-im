@@ -1,7 +1,11 @@
 import { FileData } from './types'
 import ipfs from '@/lib/nodes/ipfs'
 
-export async function uploadFile(file: FileData, onUploadProgress?: (progress: number) => void) {
+export async function uploadFile(
+  file: FileData,
+  onUploadProgress?: (progress: number) => void,
+  signal?: AbortSignal
+) {
   const formData = new FormData()
 
   const blob = new Blob([file.encoded.binary], { type: 'application/octet-stream' })
@@ -13,11 +17,15 @@ export async function uploadFile(file: FileData, onUploadProgress?: (progress: n
   }
 
   onUploadProgress?.(0) // set initial progress to 0
-  const response = await ipfs.upload(formData, (progress) => {
-    const percentCompleted = Math.round((progress.loaded * 100) / (progress.total || 0))
+  const response = await ipfs.upload(
+    formData,
+    (progress) => {
+      const percentCompleted = Math.round((progress.loaded * 100) / (progress.total || 0))
 
-    onUploadProgress?.(percentCompleted)
-  })
+      onUploadProgress?.(percentCompleted)
+    },
+    signal
+  )
 
   return response
 }
