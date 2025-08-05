@@ -44,6 +44,8 @@
     "@capacitor/app": "^7.0.1",
     "@capacitor/core": "^7.3.0",
     "@capacitor/filesystem": "^7.1.1",
+    "@capacitor/local-notifications": "^7.0.1",
+    "@capacitor/preferences": "^7.0.1",
     "@capacitor/push-notifications": "^7.0.1",
     "@emoji-mart/data": "^1.2.1",
     "@klayr/codec": "^0.5.1",
