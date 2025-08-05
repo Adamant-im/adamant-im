@@ -42,6 +42,7 @@ import IconBox from '@/components/icons/IconBox.vue'
 import { mdiClose } from '@mdi/js'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { joinUrl } from '@/lib/urlFormatter'
 
 const props = defineProps({
   address: {
@@ -70,7 +71,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 
 const className = 'partner-info-dialog'
-const logo = '/img/adm-qr-invert.png'
+const logo = joinUrl(import.meta.env.BASE_URL, '/img/adm-qr-invert.png')
 const opts = { scale: 8.8 }
 
 const show = computed({

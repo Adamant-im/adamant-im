@@ -19,12 +19,12 @@
                 :key="wallet.cryptoCurrency"
                 :value="wallet.cryptoCurrency"
                 @wheel="onWheel"
-                @click="goToTransactions(wallet.cryptoCurrency)"
               >
                 <wallet-tab
                   :wallet="wallet"
                   :fiat-currency="currentCurrency"
                   :is-balance-valid="balances[index]"
+                  :is-refreshing="isRefreshing"
                 />
               </v-tab>
             </v-tabs>
@@ -51,7 +51,7 @@
               >
                 <wallet-card
                   :address="wallet.address"
-                  :all-coin-nodes-disabled="allCoinNodesDisabled"
+                  :all-coin-nodes-disabled="areNodesDisabled(wallet.cryptoCurrency)"
                   :crypto="wallet.cryptoCurrency"
                   :crypto-name="wallet.cryptoName"
                   :rate="wallet.rate"
@@ -80,12 +80,13 @@ import { PullDown } from '@/components/common/PullDown'
 import { Cryptos, CryptosInfo, CryptoSymbol, isErc20 } from '@/lib/constants'
 import { vibrate } from '@/lib/vibrate'
 import { useStore } from 'vuex'
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { CoinSymbol } from '@/store/modules/wallets/types'
 import { useI18n } from 'vue-i18n'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { useBalanceCheck } from '@/hooks/useBalanceCheck'
+import { Tab, TABS } from '@/components/nodes/types'
 
 const { t } = useI18n()
 const store = useStore()
@@ -94,6 +95,8 @@ const router = useRouter()
 const balances = useBalanceCheck()
 
 const className = 'account-view'
+
+const isRefreshing = ref(false)
 
 const orderedVisibleWalletSymbols = computed(() => {
   return store.getters['wallets/getVisibleOrderedWalletSymbols']
@@ -111,6 +114,10 @@ const currentCurrency = computed({
   }
 })
 
+const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
+const allAdmNodesDisabled = computed(() =>
+  admNodes.value.every((node) => node.status === 'disabled')
+)
 const coinNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/coins'])
 const allCoinNodesDisabled = computed(() =>
   coinNodes.value.every((node) => node.status === 'disabled')
@@ -138,6 +145,10 @@ const wallets = computed(() => {
   })
 })
 
+const areNodesDisabled = (crypto: CryptoSymbol) => {
+  return crypto === 'ADM' ? allAdmNodesDisabled.value : allCoinNodesDisabled.value
+}
+
 const updateBalances = () => {
   if (allCoinNodesDisabled.value) {
     store.dispatch('snackbar/show', {
@@ -147,9 +158,15 @@ const updateBalances = () => {
     })
   }
 
-  store.dispatch('updateBalance', {
-    requestedByUser: true
-  })
+  isRefreshing.value = true
+
+  store
+    .dispatch('updateBalance', {
+      requestedByUser: true
+    })
+    .finally(() => {
+      isRefreshing.value = false
+    })
 
   vibrate.veryShort()
 }
@@ -163,21 +180,28 @@ const goToTransactions = (crypto: string) => {
   })
 }
 
-const goToCoinNodes = () => {
+const goToCoinNodes = (tab: Tab) => {
+  store.commit('options/updateOption', {
+    key: 'currentNodesTab',
+    value: tab
+  })
+
   router.push({
-    name: 'Nodes',
-    state: {
-      tab: 'coins'
-    }
+    name: 'Nodes'
   })
 }
 
-const handleBalanceClick = (crypto?: string) => {
-  if (crypto && !allCoinNodesDisabled.value) {
-    return goToTransactions(crypto)
+const handleBalanceClick = (crypto: string) => {
+  const isAdm = crypto === 'ADM'
+
+  const targetType = isAdm ? TABS.adm : TABS.coins
+  const isDisabled = isAdm ? allAdmNodesDisabled.value : allCoinNodesDisabled.value
+
+  if (isDisabled) {
+    return goToCoinNodes(targetType)
   }
 
-  goToCoinNodes()
+  goToTransactions(crypto)
 }
 
 const onWheel = (e: WheelEvent) => {
@@ -205,8 +229,14 @@ const currentWallet = computed({
 })
 
 watch(currentWallet, (value) => {
-  if (route.name === 'Transactions') {
+  if (route.name === 'Transactions' || route.name === 'Transaction') {
     goToTransactions(value)
+  }
+
+  if (route.name === 'SendFunds') {
+    router.push({
+      name: 'Home'
+    })
   }
 })
 </script>

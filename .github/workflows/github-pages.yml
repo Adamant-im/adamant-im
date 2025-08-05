@@ -38,7 +38,7 @@ jobs:
           npm run schema:generate
           npm run build
         env:
-          VITE_PUBLIC_PATH: ${{ github.event.repository.name }}
+          VITE_PUBLIC_PATH: "/${{ github.event.repository.name }}/"
           VITE_ROUTER_HISTORY_MODE: hash
 
       - name: Upload artifacts 📁

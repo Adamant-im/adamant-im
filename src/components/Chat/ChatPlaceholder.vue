@@ -26,6 +26,7 @@
 
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
+import { joinUrl } from '@/lib/urlFormatter'
 
 const { t } = useI18n()
 
@@ -36,8 +37,7 @@ type Props = {
 }
 
 defineProps<Props>()
-
-const logo = '/img/adamant-logo-transparent-512x512.png'
+const logo = joinUrl(import.meta.env.BASE_URL, '/img/adamant-logo-transparent-512x512.png');
 const className = 'chat-placeholder'
 const classes = {
   root: className,
@@ -71,7 +71,7 @@ function openLink() {
     margin: auto;
     display: flex;
     flex-direction: column;
-    height: chat.$placeholder-height;
+    height: auto;
     justify-content: flex-start;
     align-items: center;
     row-gap: 5px;

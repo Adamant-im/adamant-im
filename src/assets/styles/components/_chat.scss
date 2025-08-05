@@ -20,8 +20,6 @@ $chat-avatar-size: 40px;
 
 $scroll-bar-width: 4px;
 
-$placeholder-height: 248px;
-
 .a-chat {
   display: block;
   text-decoration: none;
@@ -35,6 +33,9 @@ $placeholder-height: 248px;
     position: fixed;
     left: 0;
     right: 0;
+    bottom: env(safe-area-inset-bottom);
+    top: env(safe-area-inset-top);
+    height: calc(100dvh - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top));
   }
 
   &__content {
