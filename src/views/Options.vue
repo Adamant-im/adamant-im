@@ -236,6 +236,8 @@ import { sidebarLayoutKey, notificationType } from '@/lib/constants'
 import { useChatStateStore } from '@/stores/modal-state'
 import { pushService } from '@/lib/notifications/pushServiceFactory'
 import { usePushNotificationSetup } from '@/hooks/pushNotifications/usePushNotificationSetup'
+import { Capacitor } from '@capacitor/core'
+import { Preferences } from '@capacitor/preferences'
 
 const store = useStore()
 const chatStateStore = useChatStateStore()
@@ -380,13 +382,29 @@ const handleNotificationTypeChange = async (newVal: number) => {
       await setPushNotifications(false)
     }
 
+    // Обновляем в Vuex
     store.commit('options/updateOption', {
       key: 'allowNotificationType',
       value: newVal
     })
 
+    // КРИТИЧНО: Синхронизируем с Android через Capacitor Preferences
+    if (Capacitor.getPlatform() === 'android') {
+      try {
+        await Preferences.set({
+          key: 'allowNotificationType',
+          value: newVal.toString()
+        })
+        console.log(`[Options] Synced notification setting to Android: ${newVal}`)
+      } catch (error) {
+        console.error('[Options] Failed to sync with Android:', error)
+      }
+    }
+
     syncNotificationSettings(newVal)
     lastSuccessfulNotificationType.value = newVal
+
+    console.log(`[Options] Notification type changed: ${newVal}`)
   } catch (error) {
     if (typeof error === 'string') {
       showSnackbar(error)
