@@ -1,5 +1,7 @@
 import dotenv from 'dotenv'
 import { $ } from 'execa'
+import { renameSync } from 'fs'
+import { readFileSync } from 'fs'
 
 dotenv.config({
   path: 'capacitor.env'
@@ -22,4 +24,11 @@ async function run() {
     '--signing-type apksigner'
   ]
   await $$`cap build android ${buildArgs}`
+
+
+  const version = JSON.parse(readFileSync('package.json', 'utf-8')).version
+  const src = 'android/app/build/outputs/apk/release/app-release-signed.apk'
+  const dest = `android/app/build/outputs/apk/release/ADAMANT.Messenger-${version}-signed.apk`
+
+  renameSync(src, dest)
 }
