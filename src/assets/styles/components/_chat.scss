@@ -108,7 +108,6 @@ $scroll-bar-width: 4px;
 
     & + & {
       margin-top: unset; // resets margins of `.v-row + .v-row`
-      margin-bottom: 16px;
     }
 
     &--right {
