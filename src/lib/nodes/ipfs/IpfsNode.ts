@@ -3,6 +3,7 @@ import { NodeOfflineError } from '@/lib/nodes/utils/errors'
 import axios, { AxiosInstance, AxiosProgressEvent, AxiosRequestConfig, ResponseType } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import type { NodeInfo } from '@/types/wallets'
 
 type FetchNodeInfoResult = {
   availableSizeInMb: number
@@ -33,8 +34,8 @@ export type RequestConfig<P extends Payload> = {
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class IpfsNode extends Node<AxiosInstance> {
-  constructor(url: string, minNodeVersion = '0.0.0') {
-    super(url, 'ipfs', 'node', NODE_LABELS.IpfsNode, '', minNodeVersion)
+  constructor(endpoint: NodeInfo, minNodeVersion = '0.0.0') {
+    super(endpoint, 'ipfs', 'node', NODE_LABELS.IpfsNode, '', minNodeVersion)
   }
 
   protected buildClient(): AxiosInstance {
@@ -52,8 +53,10 @@ export class IpfsNode extends Node<AxiosInstance> {
    */
   request<P extends Payload = Payload, R = any>(cfg: RequestConfig<P>): Promise<R> {
     const { url, headers, method = 'get', payload, signal, onUploadProgress } = cfg
+    const baseURL = this.getBaseURL(this)
 
     const config: AxiosRequestConfig = {
+      baseURL,
       url,
       method: method.toLowerCase(),
       headers,
@@ -79,7 +82,6 @@ export class IpfsNode extends Node<AxiosInstance> {
         // According to https://github.com/axios/axios#handling-errors this means, that request was sent,
         // but server could not respond.
         if (!error.response && error.request) {
-          this.online = false
           throw new NodeOfflineError()
         }
         throw error
