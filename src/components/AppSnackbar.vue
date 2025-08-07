@@ -5,7 +5,7 @@
     :color="color"
     :class="[className, { outlined: variant === 'outlined' }]"
     :variant="variant"
-    location="bottom"
+    location="center"
     width="100%"
     :multi-line="message.length > 50"
     @click:outside="show = false"
