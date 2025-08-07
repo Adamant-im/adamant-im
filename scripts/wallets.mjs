@@ -2,7 +2,7 @@ import { $ } from 'execa'
 
 import { copyFile, readdir, readFile, writeFile, mkdir, rm } from 'fs/promises'
 import { resolve, join } from 'path'
-import _ from 'lodash'
+import { capitalize, mapValues, mergeWith, isArray, omit, chain } from 'lodash'
 
 const CRYPTOS_DATA_FILE_PATH = resolve('src/lib/constants/cryptos/data.json')
 const CRYPTOS_ICONS_DIR_PATH = resolve('src/components/icons/cryptos')
@@ -39,14 +39,6 @@ async function run(branch = 'master') {
   console.log('Coins updated successfully')
 }
 
-function mergeCoinInfo(base, override) {
-  const result = { ...base }
-  Object.keys(override).forEach((key) => {
-    result[key] = override[key]
-  })
-  return result
-}
-
 async function initCoins() {
   const config = {}
   const coins = {}
@@ -74,7 +66,7 @@ async function initCoins() {
   })
 
   // Sort by key (coin symbol)
-  const sortedCoins = _.chain(coins).toPairs().sortBy(0).fromPairs().value()
+  const sortedCoins = chain(coins).toPairs().sortBy(0).fromPairs().value()
 
   return {
     coins: sortedCoins,
@@ -108,9 +100,12 @@ async function applyBlockchains(coins, coinSymbols) {
         }
       }
 
-      let result = mergeCoinInfo(mainCoinInfo, tokenData)
-      result = mergeCoinInfo(result, _.omit(info, ['mainCoin']))
-      result = mergeCoinInfo(result, coin)
+      const result = {
+        ...mainCoinInfo,
+        ...tokenData,
+        ...omit(info, ['mainCoin']),
+        ...coin
+      }
 
       coins[coin.symbol] = {
         ...result,
@@ -129,7 +124,7 @@ async function copyIcons(coins, coinDirNames) {
   await mkdir(CRYPTOS_ICONS_DIR_PATH)
 
   for (const [name, coin] of Object.entries(coins)) {
-    const iconComponentName = `${_.capitalize(coin.symbol)}Icon.vue`
+    const iconComponentName = `${capitalize(coin.symbol)}Icon.vue`
 
     const iconPathDestination = join(CRYPTOS_ICONS_DIR_PATH, iconComponentName)
     await copyFile(
@@ -149,7 +144,7 @@ function updateDevelopmentConfig(configs) {
 }
 
 function updateTestnetConfig(configs) {
-  const testnetConfigs = _.mapValues(configs, (config) => {
+  const testnetConfigs = mapValues(configs, (config) => {
     if (config.testnet) config.nodes.list = config.testnet.nodes.list
 
     return config
@@ -159,11 +154,11 @@ function updateTestnetConfig(configs) {
 }
 
 function updateTorConfig(configs) {
-  const torConfigs = _.mapValues(configs, (config) => {
-    const torConfig = _.mergeWith(config, config.tor, (value, srcValue) => {
+  const torConfigs = mapValues(configs, (config) => {
+    const torConfig = mergeWith(config, config.tor, (value, srcValue) => {
       // customizer overrides `nodes`, `services` and `links`
       // instead of merging them
-      if (_.isArray(srcValue)) {
+      if (isArray(srcValue)) {
         return srcValue
       }
     })
