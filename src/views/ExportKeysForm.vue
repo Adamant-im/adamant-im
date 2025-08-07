@@ -235,6 +235,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .export-keys-form {
   &__keys {
+    margin-top: 12px;
     margin-bottom: 24px;
   }
   &__disclaimer {
