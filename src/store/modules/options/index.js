@@ -24,7 +24,8 @@ const state = () => ({
   useSocketConnection: true,
   suppressWarningOnAddressesNotification: false,
   currentRate: Rates.USD,
-  scrollTopPosition: 0
+  scrollTopPosition: 0,
+  devModeEnabled: false // Dev screens access
 })
 
 const getters = {
@@ -38,7 +39,8 @@ const getters = {
   savedAmountFromChat: (state) => state.sendFundsData.amountFromChat,
   savedComment: (state) => state.sendFundsData.comment,
   savedIncreaseFee: (state) => state.sendFundsData.increaseFee,
-  savedIncreaseFeeChat: (state) => state.sendFundsData.increaseFeeChat
+  savedIncreaseFeeChat: (state) => state.sendFundsData.increaseFeeChat,
+  isDevModeEnabled: (state) => state.devModeEnabled
 }
 
 const mutations = {
