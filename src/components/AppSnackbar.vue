@@ -67,9 +67,7 @@ const timeout = computed(() =>
     bottom: calc(var(--v-layout-bottom, 0px) + env(safe-area-inset-bottom, 0px) + 16px);
 
     @media (max-width: 768px) {
-      bottom: calc(
-        100dvh - 80dvh + var(--v-layout-bottom, 0px) + env(safe-area-inset-bottom, 0px) + 16px
-      );
+      bottom: calc(100dvh - 80dvh + var(--v-layout-bottom, 0px) + env(safe-area-inset-bottom, 0px));
     }
   }
 
