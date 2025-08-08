@@ -129,6 +129,10 @@ const doubleShort = () => vibrate.doubleShort()
 .dev-vibrations-view {
   padding: 24px;
 
+  @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+    padding: 16px;
+  }
+
   &__section {
     margin-bottom: 32px;
   }
@@ -158,13 +162,6 @@ const doubleShort = () => vibrate.doubleShort()
       color: map.get(colors.$adm-colors, 'regular');
       border-color: map.get(colors.$adm-colors, 'secondary2');
     }
-  }
-}
-
-/** Breakpoints **/
-@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-  .dev-vibrations-view {
-    padding: 16px;
   }
 }
 </style>

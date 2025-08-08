@@ -126,7 +126,7 @@ const routes = [
           {
             path: '/options/dev-screens',
             name: 'DevScreens',
-            component: () => import('@/views/DevScreens.vue'),
+            component: () => import('@/views/devScreens/DevScreens.vue'),
             meta: {
               requiresAuth: true,
               layout: 'no-container'
@@ -135,7 +135,7 @@ const routes = [
           {
             path: '/options/dev-screens/vibrations',
             name: 'DevVibrations',
-            component: () => import('@/views/DevVibrations.vue'),
+            component: () => import('@/views/devScreens/DevVibrations.vue'),
             meta: {
               requiresAuth: true,
               layout: 'no-container'
@@ -144,7 +144,7 @@ const routes = [
           {
             path: '/options/dev-screens/adamant-wallets',
             name: 'DevAdamantWallets',
-            component: () => import('@/views/DevAdamantWallets.vue'),
+            component: () => import('@/views/devScreens/DevAdamantWallets.vue'),
             meta: {
               requiresAuth: true,
               layout: 'no-container'

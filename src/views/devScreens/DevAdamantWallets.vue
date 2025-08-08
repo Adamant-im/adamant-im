@@ -231,6 +231,15 @@ const copyValue = () => {
     border: 1px solid;
     max-height: 300px;
     overflow-y: auto;
+
+    @media #{map.get(settings.$display-breakpoints, 'md-and-down')} {
+      font-size: 11px;
+    }
+
+    @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+      font-size: 10px;
+      padding: 8px;
+    }
   }
 }
 
@@ -256,24 +265,6 @@ const copyValue = () => {
       background-color: rgba(255, 255, 255, 0.05);
       border-color: rgba(255, 255, 255, 0.12);
       color: rgba(255, 255, 255, 0.87);
-    }
-  }
-}
-
-/** Breakpoints **/
-@media #{map.get(settings.$display-breakpoints, 'md-and-down')} {
-  .dev-wallets-view {
-    &__json-output {
-      font-size: 11px;
-    }
-  }
-}
-
-@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-  .dev-wallets-view {
-    &__json-output {
-      font-size: 10px;
-      padding: 8px;
     }
   }
 }

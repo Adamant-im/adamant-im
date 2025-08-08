@@ -36,7 +36,6 @@ const className = 'dev-screens-view'
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
-@use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
 
 .dev-screens-view {
@@ -46,6 +45,13 @@ const className = 'dev-screens-view'
     margin-right: -24px;
     padding-left: 24px;
     padding-right: 24px;
+
+    @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+      margin-left: -16px;
+      margin-right: -16px;
+      padding-left: 16px;
+      padding-right: 16px;
+    }
   }
 
   .dev-list {
@@ -55,6 +61,16 @@ const className = 'dev-screens-view'
     :deep(.v-list-item) {
       padding-inline-start: 24px;
       padding-inline-end: 24px;
+
+      @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+        padding-inline-start: 16px;
+        padding-inline-end: 16px;
+      }
+    }
+
+    @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+      margin-left: -16px;
+      margin-right: -16px;
     }
   }
 }
@@ -69,28 +85,6 @@ const className = 'dev-screens-view'
 
     .v-divider {
       border-color: map.get(colors.$adm-colors, 'secondary2');
-    }
-  }
-}
-
-/** Breakpoints **/
-@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-  .dev-screens-view {
-    &__title {
-      margin-left: -16px;
-      margin-right: -16px;
-      padding-left: 16px;
-      padding-right: 16px;
-    }
-
-    .dev-list {
-      margin-left: -16px;
-      margin-right: -16px;
-
-      :deep(.v-list-item) {
-        padding-inline-start: 16px;
-        padding-inline-end: 16px;
-      }
     }
   }
 }
