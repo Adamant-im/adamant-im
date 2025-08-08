@@ -6,6 +6,5 @@ export default (getInitialState) => ({
   reset(state) {
     resetState(state, getInitialState())
   },
-
   ...baseMutations
 })
