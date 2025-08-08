@@ -225,7 +225,7 @@ import { sendMessage } from '@/lib/adamant-api'
 import { replyMessageAsset } from '@/lib/adamant-api/asset'
 
 import validateAddress from '@/lib/validateAddress'
-import { formatNumber, isNumeric } from '@/lib/numericHelpers'
+import { formatNumber, isNumeric, trimTrailingZeros } from '@/lib/numericHelpers'
 import partnerName from '@/mixins/partnerName'
 
 import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressDialog.vue'
@@ -384,10 +384,9 @@ export default {
     transferFeeFixed() {
       const feeCurrency = isErc20(this.currency) ? 'ETH' : this.currency
       const decimals = CryptosInfo[feeCurrency].cryptoTransferDecimals
-      return BigNumber(this.transferFee)
-        .decimalPlaces(decimals)
-        .toString()
-        .replace(/\.0+$|(\.\d*?)0+$/, '$1') // delete trailing zeroes
+      const formatted = BigNumber(this.transferFee).decimalPlaces(decimals).toString()
+
+      return trimTrailingZeros(formatted)
     },
 
     /**
@@ -423,10 +422,9 @@ export default {
      */
     finalAmountFixed() {
       const decimals = CryptosInfo[this.currency].cryptoTransferDecimals
-      return BigNumber(this.finalAmount)
-        .decimalPlaces(decimals)
-        .toString()
-        .replace(/\.0+$|(\.\d*?)0+$/, '$1')
+      const formatted = BigNumber(this.finalAmount).decimalPlaces(decimals).toString()
+
+      return trimTrailingZeros(formatted)
     },
 
     /**
@@ -622,11 +620,11 @@ export default {
       }
     },
     amount() {
-      this.updateGasEstimate()
+      this.estimateGasLimit()
     },
     cryptoAddress(cryptoAddress) {
       this.checkIsNewAccount(cryptoAddress)
-      this.updateGasEstimate()
+      this.estimateGasLimit()
     },
     increaseFee(newValue) {
       const storageKey = isEthBased(this.currency) ? 'ETH' : this.currency
@@ -985,7 +983,7 @@ export default {
       const saved = localStorage.getItem(`increaseFee_${storageKey}`)
       this.increaseFee = saved === 'true'
     },
-    async updateGasEstimate() {
+    async estimateGasLimit() {
       if (!isEthBased(this.currency)) {
         return
       }

@@ -1,7 +1,6 @@
 import { sortTransactionsFn } from '@/store/utils/sortTransactionsFn'
 import { CryptosInfo } from '@/lib/constants'
 import { calculateReliableValue, calculateFee } from '@/lib/eth-utils'
-import { BigNumber } from 'bignumber.js'
 
 export default {
   transaction: (state) => (id) => state.transactions[id],
@@ -34,22 +33,21 @@ export default {
    */
   finalGasPrice: (state, getters, rootState, rootGetters) => (increaseFee) => {
     const gasPrice = rootGetters['eth/gasPrice']
+    const tokenInfo = CryptosInfo[state.crypto]
     const ethInfo = CryptosInfo['ETH']
 
+    const reliabilityPercent =
+      tokenInfo.reliabilityGasPricePercent ?? ethInfo.reliabilityGasPricePercent
+    const increasePercent = tokenInfo.increasedGasPricePercent ?? ethInfo.increasedGasPricePercent
+
     const reliableGasPrice = calculateReliableValue(
-      BigNumber(gasPrice).toNumber(),
-      ethInfo.reliabilityGasPricePercent
+      gasPrice,
+      reliabilityPercent,
+      increaseFee,
+      increasePercent
     )
 
-    if (increaseFee) {
-      const increasedGasPrice = calculateReliableValue(
-        reliableGasPrice,
-        ethInfo.increasedGasPricePercent
-      )
-      return BigNumber(increasedGasPrice).integerValue().toString()
-    }
-
-    return BigNumber(reliableGasPrice).integerValue().toString()
+    return reliableGasPrice.integerValue().toString()
   },
   /**
    * Calculate transaction fee
@@ -67,7 +65,9 @@ export default {
       let gasLimit
 
       if (estimatedGasLimit && amount > 0) {
-        gasLimit = calculateReliableValue(estimatedGasLimit, ethInfo.reliabilityGasLimitPercent)
+        const reliabilityGasLimitPercent =
+          tokenInfo.reliabilityGasLimitPercent ?? ethInfo.reliabilityGasLimitPercent
+        gasLimit = calculateReliableValue(estimatedGasLimit, reliabilityGasLimitPercent)
       } else {
         gasLimit = tokenInfo.defaultGasLimit
       }

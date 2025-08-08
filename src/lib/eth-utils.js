@@ -108,11 +108,24 @@ export function toFraction(amount, decimals, separator = '.') {
 }
 
 /**
- * Calculates reliable value by adding percentage margin
- * @param {number} baseValue base value (gasLimit or gasPrice)
+ * Calculates reliable value by adding percentage margin and optional increase
+ * @param {number|string|BigNumber} baseValue base value (gasLimit or gasPrice)
  * @param {number} reliabilityPercent percentage to add (e.g., 10 for 10%)
- * @returns {number} value with reliability margin
+ * @param {boolean} [applyIncrease] whether to apply the increase fee
+ * @param {number} [increasePercent] additional percentage for increased fee (e.g., 50 for 50%)
+ * @returns {BigNumber} value with reliability margin (and optional increase) as BigNumber
  */
-export function calculateReliableValue(baseValue, reliabilityPercent) {
-  return baseValue * (1 + reliabilityPercent / 100)
+export function calculateReliableValue(
+  baseValue,
+  reliabilityPercent,
+  applyIncrease,
+  increasePercent
+) {
+  let result = BigNumber(baseValue).times(1 + reliabilityPercent / 100)
+
+  if (applyIncrease) {
+    result = result.times(1 + increasePercent / 100)
+  }
+
+  return result
 }

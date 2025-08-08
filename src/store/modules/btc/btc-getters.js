@@ -3,6 +3,7 @@ import { BigNumber } from '@/lib/bignumber'
 import { CryptosInfo } from '@/lib/constants'
 
 const MULTIPLIER = 1e8
+const BTC_DEFAULT_INCREASE_FEE_PERCENT = 50
 
 export default {
   ...baseGetters,
@@ -30,8 +31,7 @@ export default {
     let finalFee = BigNumber(calculation.fee).div(MULTIPLIER)
 
     if (increaseFee) {
-      const cryptoInfo = CryptosInfo['BTC']
-      finalFee = finalFee.times(1 + cryptoInfo.increasedGasPricePercent / 100)
+      finalFee = finalFee.times(1 + BTC_DEFAULT_INCREASE_FEE_PERCENT / 100)
     }
 
     return finalFee.decimalPlaces(CryptosInfo['BTC'].cryptoTransferDecimals)

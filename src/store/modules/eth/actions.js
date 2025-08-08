@@ -31,10 +31,9 @@ const initTransaction = async (api, context, ethAddress, amount, nonce, increase
     nonce
   }
 
-  const gasLimit = await api
+  transaction.gasLimit = await api
     .useClient((client) => client.estimateGas(transaction))
     .catch(() => BigInt(CryptosInfo['ETH'].defaultGasLimit))
-  transaction.gasLimit = gasLimit
 
   return transaction
 }

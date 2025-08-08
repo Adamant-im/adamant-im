@@ -269,22 +269,20 @@ export default function createActions(config) {
         try {
           let transaction
 
-          if (isErc20(state.crypto)) {
-            const contract = new EthContract(Erc20, state.contractAddress)
-            const amountWei = utils.toWhole(amount, state.decimals)
+          const isToken = isErc20(state.crypto)
+          const toAddress = isToken ? state.contractAddress : address
+          const value = isToken ? '0x0' : utils.toWei(amount)
+          const data = isToken
+            ? new EthContract(Erc20, state.contractAddress).methods
+                .transfer(address, utils.toWhole(amount, state.decimals))
+                .encodeABI()
+            : undefined
 
-            transaction = {
-              from: state.address,
-              to: state.contractAddress,
-              value: '0x0', // ERC20 transfers don't send ETH
-              data: contract.methods.transfer(address, amountWei).encodeABI()
-            }
-          } else {
-            transaction = {
-              from: state.address,
-              to: address,
-              value: utils.toWei(amount)
-            }
+          transaction = {
+            from: state.address,
+            to: toAddress,
+            value,
+            ...(data && { data })
           }
 
           const gasLimit = await api.useClient((client) => client.estimateGas(transaction))
