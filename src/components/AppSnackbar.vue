@@ -5,7 +5,7 @@
     :color="color"
     :class="[className, { outlined: variant === 'outlined' }]"
     :variant="variant"
-    location="center"
+    location="bottom"
     width="100%"
     :multi-line="message.length > 50"
     @click:outside="show = false"
@@ -63,6 +63,16 @@ const timeout = computed(() =>
 @use 'vuetify/settings';
 
 .app-snackbar {
+  :deep(.v-overlay__content) {
+    bottom: calc(var(--v-layout-bottom, 0px) + env(safe-area-inset-bottom, 0px) + 16px);
+
+    @media (max-width: 768px) {
+      bottom: calc(
+        100dvh - 80dvh + var(--v-layout-bottom, 0px) + env(safe-area-inset-bottom, 0px) + 16px
+      );
+    }
+  }
+
   :deep(.v-snackbar__wrapper) {
     @include mixins.a-text-regular-enlarged();
 
