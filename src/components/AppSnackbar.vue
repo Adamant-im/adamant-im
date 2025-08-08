@@ -63,6 +63,10 @@ const timeout = computed(() =>
 @use 'vuetify/settings';
 
 .app-snackbar {
+  :deep(.v-overlay__content) {
+    bottom: calc(10dvh + var(--v-layout-bottom, 0px) + env(safe-area-inset-bottom, 0px));
+  }
+
   :deep(.v-snackbar__wrapper) {
     @include mixins.a-text-regular-enlarged();
 
