@@ -64,11 +64,7 @@ const timeout = computed(() =>
 
 .app-snackbar {
   :deep(.v-overlay__content) {
-    @media (max-width: 768px) {
-      bottom: calc(
-        var(--v-layout-bottom, 0px) + env(safe-area-inset-bottom, 0px) + (100svh - 100dvh)
-      );
-    }
+    bottom: calc(10dvh + var(--v-layout-bottom, 0px) + env(safe-area-inset-bottom, 0px));
   }
 
   :deep(.v-snackbar__wrapper) {
