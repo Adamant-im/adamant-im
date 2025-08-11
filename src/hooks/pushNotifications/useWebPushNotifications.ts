@@ -10,6 +10,21 @@ export function useWebPushNotifications() {
   const isSupported = computed(() => typeof BroadcastChannel !== 'undefined')
 
   /**
+   * Closes the broadcast channel in case of error for preventing memory leaks
+   */
+  const safeCloseChannel = () => {
+    if (channel.value) {
+      try {
+        channel.value.close()
+      } catch (error) {
+        console.warn('[Web Push] Error closing BroadcastChannel:', error)
+      } finally {
+        channel.value = null
+      }
+    }
+  }
+
+  /**
    * Gets reference to pushService (always WebPushService on web)
    */
   const getPushService = async () => {
@@ -29,6 +44,7 @@ export function useWebPushNotifications() {
       channel.value = new BroadcastChannel('adm_notifications')
     } catch (error) {
       console.error('[Web Push] Failed to create BroadcastChannel:', error)
+      channel.value = null
     }
   }
 
@@ -43,6 +59,7 @@ export function useWebPushNotifications() {
       return true
     } catch (error) {
       console.error('[Web Push] Failed to send private key to SW:', error)
+      safeCloseChannel()
       return false
     }
   }
@@ -84,6 +101,7 @@ export function useWebPushNotifications() {
       return true
     } catch (error) {
       console.error('[Web Push] Failed to clear private key:', error)
+      safeCloseChannel()
       return false
     }
   }
@@ -106,6 +124,7 @@ export function useWebPushNotifications() {
       return true
     } catch (error) {
       console.error('[Web Push] Failed to sync settings:', error)
+      safeCloseChannel()
       return false
     }
   }
@@ -121,18 +140,14 @@ export function useWebPushNotifications() {
       return true
     } catch (error) {
       console.error('[Web Push] Failed to set message handler:', error)
+      safeCloseChannel()
       return false
     }
   }
 
   onMounted(setupChannel)
 
-  onBeforeUnmount(() => {
-    if (channel.value) {
-      channel.value.close()
-      channel.value = null
-    }
-  })
+  onBeforeUnmount(safeCloseChannel)
 
   return {
     isSupported,
