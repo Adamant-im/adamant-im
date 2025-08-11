@@ -322,7 +322,6 @@ import { useChatStateStore } from '@/stores/modal-state'
 import ChatPlaceholder from '@/components/Chat/ChatPlaceholder.vue'
 import { watchImmediate } from '@vueuse/core'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
-import { isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -946,7 +945,7 @@ const onKeyPress = (e: KeyboardEvent) => {
 @use '@/assets/styles/settings/_colors.scss';
 
 .chat-menu {
-  margin-right: 8px;
+  margin-right: 12px;
 }
 .chat {
   height: calc(100vh - var(--v-layout-bottom));

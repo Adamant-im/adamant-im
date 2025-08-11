@@ -53,14 +53,44 @@ export default {
 .v-theme--light {
   .chat-emojis {
     &__icon {
-      color: map.get(settings.$grey, 'darken-1');
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: 0;
+        transition: 0.4s;
+        z-index: -1;
+      }
+
+      &:hover::before {
+        opacity: 0.1;
+      }
     }
   }
 }
 .v-theme--dark {
   .chat-emojis {
     &__icon {
-      color: map.get(settings.$shades, 'white');
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: 0;
+        transition: 0.4s;
+        z-index: -1;
+      }
+
+      &:hover::before {
+        opacity: 0.1;
+      }
     }
   }
 }
