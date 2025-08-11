@@ -267,8 +267,6 @@ export default function createActions(config) {
     estimateGasLimit: {
       async handler({ state }, { amount, address }) {
         try {
-          let transaction
-
           const isToken = isErc20(state.crypto)
           const toAddress = isToken ? state.contractAddress : address
           const value = isToken ? '0x0' : utils.toWei(amount)
@@ -278,7 +276,7 @@ export default function createActions(config) {
                 .encodeABI()
             : undefined
 
-          transaction = {
+          const transaction = {
             from: state.address,
             to: toAddress,
             value,
