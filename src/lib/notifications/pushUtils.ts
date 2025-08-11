@@ -69,7 +69,6 @@ export function navigateToChat(senderId: string, transactionId?: string): void {
           }
         })
       )
-      console.log(`📱 Navigation to chat requested: ${senderId}`)
     }
   } catch (error) {
     console.error('Error navigating to chat:', error)

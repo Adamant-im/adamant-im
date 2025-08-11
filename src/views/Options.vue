@@ -382,13 +382,11 @@ const handleNotificationTypeChange = async (newVal: number) => {
       await setPushNotifications(false)
     }
 
-    // Обновляем в Vuex
     store.commit('options/updateOption', {
       key: 'allowNotificationType',
       value: newVal
     })
 
-    // КРИТИЧНО: Синхронизируем с Android через Capacitor Preferences
     if (Capacitor.getPlatform() === 'android') {
       try {
         await Preferences.set({
