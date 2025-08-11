@@ -41,6 +41,7 @@ mac:
     arch: 
       - x64
       - arm64
+      - universal
 
 afterSign: 'scripts/electron/notarize.cjs'
 afterPack: 'scripts/electron/sandboxFix.mjs'
