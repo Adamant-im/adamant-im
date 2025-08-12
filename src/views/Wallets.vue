@@ -93,7 +93,7 @@ const wallets = computed(() => {
     const cryptoName = CryptosInfo[symbol].nameShort || CryptosInfo[symbol].name
     const erc20 = isErc20(symbol)
     const isVisible = crypto.isVisible
-    const type = CryptosInfo[symbol].type ?? 'Blockchain'
+    const type = CryptosInfo[symbol].type === 'ERC20' ? CryptosInfo[symbol].type : 'Blockchain'
 
     return {
       cryptoName,
@@ -161,9 +161,13 @@ onBeforeUnmount(() => {
   }
 }
 
+.v-list {
+  border-radius: 8px;
+}
+
 .v-theme--dark {
   .v-list {
-    background-color: map.get(colors.$adm-colors, 'black2');
+    background-color: #323232;
   }
 }
 </style>
