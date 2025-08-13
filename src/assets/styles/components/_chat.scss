@@ -60,7 +60,7 @@ $scroll-bar-width: 4px;
     scrollbar-gutter: stable both-edges;
     width: 100%;
     height: 100%;
-    padding: 16px 16px 0 16px;
+    padding: 16px 16px 16px 16px;
 
     /* Scrollbar styles (Firefox) */
     scrollbar-color: map.get(settings.$grey, 'lighten-2' transparent);
@@ -108,7 +108,6 @@ $scroll-bar-width: 4px;
 
     & + & {
       margin-top: unset; // resets margins of `.v-row + .v-row`
-      margin-bottom: 16px;
     }
 
     &--right {
