@@ -37,7 +37,6 @@
         <slot name="append" />
         <v-icon
           :color="isDisabled ? 'grey' : 'white'"
-          class="a-chat__send-icon"
           :icon="mdiSend"
           size="28"
           :disabled="isDisabled"
