@@ -1,5 +1,6 @@
 <template>
   <v-menu
+    :open-on-hover="isDesktop"
     :model-value="open"
     :eager="true"
     location="top"
@@ -16,8 +17,8 @@
 </template>
 <script>
 import EmojiPicker from '@/components/EmojiPicker.vue'
-
 import { mdiEmoticonOutline } from '@mdi/js'
+import { useDisplay } from 'vuetify'
 
 export default {
   props: {
@@ -28,8 +29,10 @@ export default {
   },
   emits: ['onChange', 'get-emoji-picture'],
   setup() {
+    const { mdAndUp } = useDisplay()
     return {
-      mdiEmoticonOutline
+      mdiEmoticonOutline,
+      isDesktop: mdAndUp
     }
   },
   methods: {
