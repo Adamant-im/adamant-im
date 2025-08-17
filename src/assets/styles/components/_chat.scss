@@ -401,7 +401,10 @@ $scroll-bar-width: 4px;
     }
 
     &__message {
-      background-color: #fff;
+      background-color: map.get(colors.$adm-colors, 'light-gray');
+      border-style: solid;
+      border-width: 0.1px;
+      border-color: map.get(colors.$adm-colors, 'light-gray2');
       box-shadow:
         0 1px 10px hsla(0, 0%, 39.2%, 0.06),
         0 1px 1px hsla(0, 0%, 39.2%, 0.04),
@@ -514,7 +517,10 @@ $scroll-bar-width: 4px;
     }
 
     &__message {
-      background-color: map.get(colors.$adm-colors, 'black');
+      border-style: solid;
+      border-width: 0.1px;
+      border-color: map.get(colors.$adm-colors, 'black4');
+      background-color: map.get(colors.$adm-colors, 'black3');
       box-shadow:
         0 1px 10px hsla(0, 0%, 39.2%, 0.06),
         0 1px 1px hsla(0, 0%, 39.2%, 0.04),

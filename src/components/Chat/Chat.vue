@@ -113,10 +113,6 @@
           @swipe:left="onSwipeLeft(message)"
           @longpress="onMessageLongPress(message)"
         >
-          <template #avatar v-if="sender">
-            <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
-          </template>
-
           <template #actions v-if="isRealMessage(message)">
             <AChatReactions @click="handleClickReactions(message)" :transaction="message" />
 
@@ -259,15 +255,7 @@
           color="primary"
           :content="numOfNewMessages > 0 ? numOfNewMessages : undefined"
         >
-          <v-btn
-            class="ma-0 grey--text"
-            color="grey lighten-3"
-            icon
-            depressed
-            fab
-            size="small"
-            @click="chatRef.scrollToBottom()"
-          >
+          <v-btn class="scroll-btn" icon fab size="small" @click="chatRef.scrollToBottom()">
             <v-icon :icon="mdiChevronDown" size="x-large" />
           </v-btn>
         </v-badge>
@@ -322,7 +310,6 @@ import { useChatStateStore } from '@/stores/modal-state'
 import ChatPlaceholder from '@/components/Chat/ChatPlaceholder.vue'
 import { watchImmediate } from '@vueuse/core'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
-import { isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -968,6 +955,20 @@ const onKeyPress = (e: KeyboardEvent) => {
 .v-theme--dark {
   .connection-spinner {
     color: map.get(colors.$adm-colors, 'regular');
+  }
+}
+
+.scroll-btn {
+  background-color: rgba(map.get(colors.$adm-colors, 'primary2'), 0.3) !important;
+  border-radius: 50%;
+  box-shadow: none !important;
+
+  .v-icon {
+    color: map.get(colors.$adm-colors, 'primary');
+  }
+
+  &:hover {
+    background-color: rgba(map.get(colors.$adm-colors, 'primary2'), 0.5);
   }
 }
 </style>

@@ -16,7 +16,7 @@
         </template>
       </v-list-item>
 
-      <v-list-item @click="$emit('click:balance', crypto)">
+      <v-list-item :class="classes.walletCardTile" @click="$emit('click:balance', crypto)">
         <v-list-item-title :class="classes.walletCardTitle">
           {{ t('home.balance') }}
         </v-list-item-title>
@@ -148,6 +148,11 @@ const isADM = computed(() => {
   }
   &__list {
     padding: 8px 0 0;
+  }
+
+  &__tile {
+    padding-inline: 16px !important;
+    padding-left: 28px !important;
   }
 }
 

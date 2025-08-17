@@ -266,7 +266,7 @@ watch(currentWallet, (value) => {
     :deep(.v-tab) {
       font-weight: 300;
       font-size: 16px;
-      padding: 6px 4px;
+      padding: 6px 12px;
       letter-spacing: normal;
       min-width: 74px;
       display: flex;
