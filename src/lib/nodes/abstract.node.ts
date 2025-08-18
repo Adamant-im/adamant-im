@@ -214,8 +214,9 @@ export abstract class Node<C = unknown> {
    */
   getBaseURL(node: Node): string {
     const baseURL = node.preferDomain ? node.url : (node.altIp as string)
+    const { altIp, protocol, wsProtocol, url } = node
 
-    console.info({ baseURL, altIp: node.altIp, url: node.url })
+    console.info({ baseURL, altIp, protocol, wsProtocol, url })
 
     return baseURL
   }
