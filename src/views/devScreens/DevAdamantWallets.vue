@@ -14,6 +14,7 @@
               item-value="value"
               variant="outlined"
               clearable
+              :menu-props="mobileMenuProps"
               @update:modelValue="onCoinChange"
             />
           </v-col>
@@ -28,6 +29,7 @@
               item-value="value"
               variant="outlined"
               clearable
+              :menu-props="mobileMenuProps"
               autocomplete="off"
               @update:modelValue="onBlockchainChange"
             />
@@ -43,6 +45,7 @@
               item-value="value"
               variant="outlined"
               clearable
+              :menu-props="mobileMenuProps"
               autocomplete="off"
             />
           </v-col>
@@ -179,6 +182,15 @@ const copyValue = () => {
   copyToClipboard(JSON.stringify(currentValue.value, null, 2))
   store.dispatch('snackbar/show', { message: t('home.copied'), timeout: 2000 })
 }
+
+const mobileMenuProps = computed(() => {
+  if (window.innerWidth < 768) {
+    return {
+      maxHeight: 'calc(100vh - 100px)'
+    }
+  }
+  return {}
+})
 </script>
 
 <style lang="scss" scoped>
@@ -239,6 +251,15 @@ const copyValue = () => {
     @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
       font-size: 10px;
       padding: 8px;
+    }
+  }
+
+  // Remove blue droplet (ripple effect) when clicking on v-autocomplete
+  :deep(.v-autocomplete) {
+    .v-ripple__container,
+    .v-field__overlay,
+    .v-overlay {
+      display: none;
     }
   }
 }
