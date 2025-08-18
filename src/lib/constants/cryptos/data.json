@@ -464,6 +464,7 @@
       "oldPendingAttempts": 4
     },
     "txConsistencyMaxTime": 10800000,
+    "increasedGasPricePercent": 30,
     "nodes": {
       "displayName": "btc-node",
       "list": [
