@@ -154,7 +154,6 @@ export abstract class Node<C = unknown> {
         this.height = health.height
         this.ping = health.ping
         this.online = true
-
         if (this.preferDomain) {
           console.info(
             `Attempt to use domain ${this.url} performed successfully, using domain by default.`
@@ -180,6 +179,7 @@ export abstract class Node<C = unknown> {
           this.preferDomain = true
         }
       } finally {
+        this.updateURL()
         this.healthcheckInProgress = false
       }
 
@@ -290,6 +290,20 @@ export abstract class Node<C = unknown> {
     nodesStorage.saveActive(baseURL, active)
 
     return this.getStatus()
+  }
+
+  /**
+   * Update URL components depending on availability of a node by URL with domain.
+   * `altIp` and `url` always contain 'http:' or 'https:' in address.
+   * @returns { Node } node A node instance.
+   */
+  updateURL() {
+    const baseURL = this.getBaseURL(this)
+
+    this.hostname = new URL(baseURL).hostname
+    this.port = new URL(baseURL).port
+    this.protocol = new URL(baseURL).protocol as HttpProtocol
+    this.wsProtocol = this.protocol === 'https:' ? 'wss:' : 'ws:'
   }
 
   displayVersion() {
