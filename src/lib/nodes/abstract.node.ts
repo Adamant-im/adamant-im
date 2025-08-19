@@ -296,7 +296,6 @@ export abstract class Node<C = unknown> {
   /**
    * Update URL components depending on availability of a node by URL with domain.
    * `altIp` and `url` always contain 'http:' or 'https:' in address.
-   * @returns { Node } node A node instance.
    */
   updateURL() {
     const baseURL = this.getBaseURL(this)
