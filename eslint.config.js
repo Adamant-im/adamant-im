@@ -48,7 +48,7 @@ const config = defineConfig([{
         "plugin:import/recommended",
         "plugin:import/typescript",
     )),
-
+    ignorePatterns: ["tests/", "tests__/"],
     plugins: {
         vue: fixupPluginRules(vue),
         "@typescript-eslint": fixupPluginRules(typescriptEslint),
