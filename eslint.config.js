@@ -1,82 +1,91 @@
-import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-import { defineConfig, globalIgnores } from "eslint/config";
+import { defineConfig, globalIgnores } from 'eslint/config'
 
-import globals from "globals";
+import globals from 'globals'
 
-import { fixupConfigRules, fixupPluginRules } from "@eslint/compat";
+import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
 
-import parser from "vue-eslint-parser";
-import vue from "eslint-plugin-vue";
-import typescriptEslint from "@typescript-eslint/eslint-plugin";
-import js from "@eslint/js";
+import parser from 'vue-eslint-parser'
+import vue from 'eslint-plugin-vue'
+import typescriptEslint from '@typescript-eslint/eslint-plugin'
+import js from '@eslint/js'
 
-import { FlatCompat } from "@eslint/eslintrc";
+import { FlatCompat } from '@eslint/eslintrc'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
-});
+  baseDirectory: __dirname,
+  recommendedConfig: js.configs.recommended,
+  allConfig: js.configs.all
+})
 
-const config = defineConfig([{
+const config = defineConfig([
+  {
     languageOptions: {
-        globals: {
-            ...globals.browser,
-            ...globals.node,
-        },
+      globals: {
+        ...globals.browser,
+        ...globals.node
+      },
 
-        parser: parser,
-        ecmaVersion: 13,
+      parser: parser,
+      ecmaVersion: 13,
 
-        parserOptions: {
-            parser: {
-                js: "espree",
-                ts: "@typescript-eslint/parser",
-                "<template>": "espree",
-            },
-        },
+      parserOptions: {
+        parser: {
+          js: 'espree',
+          ts: '@typescript-eslint/parser',
+          '<template>': 'espree'
+        }
+      }
     },
 
-    extends: fixupConfigRules(compat.extends(
-        "plugin:vue/vue3-essential",
-        "eslint:recommended",
-        "plugin:@typescript-eslint/eslint-recommended",
-        "plugin:@typescript-eslint/recommended",
-        "@vue/eslint-config-prettier/skip-formatting",
-        "plugin:import/recommended",
-        "plugin:import/typescript",
-    )),
-    ignorePatterns: ["tests/", "tests__/"],
+    extends: fixupConfigRules(
+      compat.extends(
+        'plugin:vue/vue3-essential',
+        'eslint:recommended',
+        'plugin:@typescript-eslint/eslint-recommended',
+        'plugin:@typescript-eslint/recommended',
+        '@vue/eslint-config-prettier/skip-formatting',
+        'plugin:import/recommended',
+        'plugin:import/typescript'
+      )
+    ),
+    ignores: ['tests/', 'tests__/'],
     plugins: {
-        vue: fixupPluginRules(vue),
-        "@typescript-eslint": fixupPluginRules(typescriptEslint),
+      vue: fixupPluginRules(vue),
+      '@typescript-eslint': fixupPluginRules(typescriptEslint)
     },
 
     rules: {
-        "@typescript-eslint/no-explicit-any": "off",
+      '@typescript-eslint/no-explicit-any': 'off',
 
-        "@typescript-eslint/no-unused-vars": ["error", {
-            argsIgnorePattern: "_",
-        }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '_'
+        }
+      ],
 
-        "vue/multi-word-component-names": "off",
-        "import/no-unresolved": "error",
-        "import/named": "off",
-        "import/no-named-as-default": "off",
-        "import/no-named-as-default-member": "off",
+      'vue/multi-word-component-names': 'off',
+      'import/no-unresolved': 'error',
+      'import/named': 'off',
+      'import/no-named-as-default': 'off',
+      'import/no-named-as-default-member': 'off'
     },
 
     settings: {
-        "import/resolver": {
-            typescript: true,
-            node: true,
-        },
-    },
-}, globalIgnores(["src/components/icons/cryptos/*.vue"]), globalIgnores(["**/tests/", "**/__tests__/"])]);
+      'import/resolver': {
+        typescript: true,
+        node: true
+      }
+    }
+  },
+  globalIgnores(['src/components/icons/cryptos/*.vue']),
+  globalIgnores(['**/tests/', '**/__tests__/'])
+])
 
-export default config;
+export default config
