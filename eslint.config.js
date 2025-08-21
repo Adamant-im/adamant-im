@@ -1,19 +1,13 @@
-const {
-    defineConfig,
-    globalIgnores,
-} = require("eslint/config");
+import { defineConfig, globalIgnores } from "eslint/config";
 
-const globals = require("globals");
+import globals from "globals";
 
-const {
-    fixupConfigRules,
-    fixupPluginRules,
-} = require("@eslint/compat");
+import { fixupConfigRules, fixupPluginRules } from "@eslint/compat";
 
-const parser = require("vue-eslint-parser");
-const vue = require("eslint-plugin-vue");
-const typescriptEslint = require("@typescript-eslint/eslint-plugin");
-const js = require("@eslint/js");
+import parser from "vue-eslint-parser";
+import vue from "eslint-plugin-vue";
+import typescriptEslint from "@typescript-eslint/eslint-plugin";
+import js from "@eslint/js";
 
 const {
     FlatCompat,
@@ -26,7 +20,7 @@ const compat = new FlatCompat({
 });
 require("@rushstack/eslint-patch/modern-module-resolution");
 
-module.exports = defineConfig([{
+const config = defineConfig([{
     languageOptions: {
         globals: {
             ...globals.browser,
@@ -81,3 +75,5 @@ module.exports = defineConfig([{
         },
     },
 }, globalIgnores(["src/components/icons/cryptos/*.vue"]), globalIgnores(["**/tests/", "**/__tests__/"])]);
+
+export default config;
