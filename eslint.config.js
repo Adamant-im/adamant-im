@@ -1,3 +1,6 @@
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { defineConfig, globalIgnores } from "eslint/config";
 
 import globals from "globals";
@@ -9,16 +12,16 @@ import vue from "eslint-plugin-vue";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import js from "@eslint/js";
 
-const {
-    FlatCompat,
-} = require("@eslint/eslintrc");
+import { FlatCompat } from "@eslint/eslintrc";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({
     baseDirectory: __dirname,
     recommendedConfig: js.configs.recommended,
     allConfig: js.configs.all
 });
-require("@rushstack/eslint-patch/modern-module-resolution");
 
 const config = defineConfig([{
     languageOptions: {
