@@ -1,48 +1,24 @@
 import { dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { defineConfig, globalIgnores } from 'eslint/config'
-
-import globals from 'globals'
-
 import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
-
-import parser from 'vue-eslint-parser'
-import vue from 'eslint-plugin-vue'
-import typescriptEslint from '@typescript-eslint/eslint-plugin'
-import js from '@eslint/js'
-
 import { FlatCompat } from '@eslint/eslintrc'
+import js from '@eslint/js'
+import typescriptEslint from '@typescript-eslint/eslint-plugin'
+import vue from 'eslint-plugin-vue'
+import { defineConfig, globalIgnores } from 'eslint/config'
+import globals from 'globals'
+import parser from 'vue-eslint-parser'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-
 const compat = new FlatCompat({
+  allConfig: js.configs.all,
   baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all
+  recommendedConfig: js.configs.recommended
 })
-
 const config = defineConfig([
   {
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-        ...globals.node
-      },
-
-      parser: parser,
-      ecmaVersion: 13,
-
-      parserOptions: {
-        parser: {
-          js: 'espree',
-          ts: '@typescript-eslint/parser',
-          '<template>': 'espree'
-        }
-      }
-    },
-
     extends: fixupConfigRules(
       compat.extends(
         'plugin:vue/vue3-essential',
@@ -55,37 +31,42 @@ const config = defineConfig([
       )
     ),
     ignores: ['tests/', 'tests__/'],
-    plugins: {
-      vue: fixupPluginRules(vue),
-      '@typescript-eslint': fixupPluginRules(typescriptEslint)
+    languageOptions: {
+      ecmaVersion: 13,
+      globals: {
+        ...globals.browser,
+        ...globals.node
+      },
+      parser: parser,
+      parserOptions: {
+        parser: {
+          '<template>': 'espree',
+          js: 'espree',
+          ts: '@typescript-eslint/parser'
+        }
+      }
     },
-
+    plugins: {
+      '@typescript-eslint': fixupPluginRules(typescriptEslint),
+      vue: fixupPluginRules(vue)
+    },
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
-
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '_'
-        }
-      ],
-
-      'vue/multi-word-component-names': 'off',
-      'import/no-unresolved': 'error',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '_' }],
       'import/named': 'off',
+      'import/no-unresolved': 'error',
       'import/no-named-as-default': 'off',
-      'import/no-named-as-default-member': 'off'
+      'import/no-named-as-default-member': 'off',
+      'vue/multi-word-component-names': 'off'
     },
-
     settings: {
       'import/resolver': {
-        typescript: true,
-        node: true
+        node: true,
+        typescript: true
       }
     }
   },
-  globalIgnores(['src/components/icons/cryptos/*.vue']),
-  globalIgnores(['**/tests/', '**/__tests__/'])
+  globalIgnores(['**/tests/', '**/__tests__/', 'src/components/icons/cryptos/*.vue'])
 ])
 
 export default config
