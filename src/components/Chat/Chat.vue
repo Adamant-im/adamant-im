@@ -255,7 +255,7 @@
           color="primary"
           :content="numOfNewMessages > 0 ? numOfNewMessages : undefined"
         >
-          <v-btn class="scroll-btn" icon fab size="small" @click="chatRef.scrollToBottom()">
+          <v-btn icon fab size="small" @click="chatRef.scrollToBottom()">
             <v-icon :icon="mdiChevronDown" size="x-large" />
           </v-btn>
         </v-badge>
@@ -930,6 +930,7 @@ const onKeyPress = (e: KeyboardEvent) => {
 
 <style scoped lang="scss">
 @use 'sass:map';
+@use 'sass:color';
 @use '@/assets/styles/settings/_colors.scss';
 
 .chat-menu {
@@ -958,18 +959,11 @@ const onKeyPress = (e: KeyboardEvent) => {
   }
 }
 
-::v-deep(.scroll-btn) {
-  background-color: rgba(map.get(colors.$adm-colors, 'primary2'), 1);
+:deep(.v-badge .v-btn) {
+  z-index: 1;
+  color: map.get(colors.$adm-colors, 'primary');
   border-radius: 50%;
+  background-color: color.adjust(map.get(colors.$adm-colors, 'primary2'), $alpha: -0.7);
   box-shadow: none;
-
-  .v-icon {
-    color: map.get(colors.$adm-colors, 'primary');
-    opacity: 1;
-  }
-
-  &:hover {
-    background-color: rgba(map.get(colors.$adm-colors, 'primary2'), 0.5);
-  }
 }
 </style>
