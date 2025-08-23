@@ -149,11 +149,11 @@ const isADM = computed(() => {
   &__list {
     padding: 8px 0 0;
   }
+}
 
-  &__tile {
-    padding-inline: 16px !important;
-    padding-left: 28px !important;
-  }
+::v-deep(.wallet-card__list .wallet-card__tile) {
+  padding-inline: 16px;
+  padding-left: 28px;
 }
 
 /** Themes **/

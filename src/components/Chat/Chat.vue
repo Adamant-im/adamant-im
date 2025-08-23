@@ -958,13 +958,14 @@ const onKeyPress = (e: KeyboardEvent) => {
   }
 }
 
-.scroll-btn {
-  background-color: rgba(map.get(colors.$adm-colors, 'primary2'), 0.3) !important;
+::v-deep(.scroll-btn) {
+  background-color: rgba(map.get(colors.$adm-colors, 'primary2'), 1);
   border-radius: 50%;
-  box-shadow: none !important;
+  box-shadow: none;
 
   .v-icon {
     color: map.get(colors.$adm-colors, 'primary');
+    opacity: 1;
   }
 
   &:hover {
