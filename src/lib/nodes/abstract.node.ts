@@ -300,9 +300,12 @@ export abstract class Node<C = unknown> {
   updateURL() {
     const baseURL = this.getBaseURL(this)
 
-    this.hostname = new URL(baseURL).hostname
-    this.port = new URL(baseURL).port
-    this.protocol = new URL(baseURL).protocol as HttpProtocol
+    /** New URL constructor requires `baseURL` to be a valid URL, otherwise throws TypeError. */
+    if (baseURL) {
+      this.hostname = new URL(baseURL).hostname
+      this.port = new URL(baseURL).port
+      this.protocol = new URL(baseURL).protocol as HttpProtocol
+    }
     this.wsProtocol = this.protocol === 'https:' ? 'wss:' : 'ws:'
   }
 
