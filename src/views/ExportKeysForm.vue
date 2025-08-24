@@ -235,11 +235,11 @@ export default defineComponent({
 <style lang="scss" scoped>
 .export-keys-form {
   &__keys {
-    margin-top: 12px;
+    margin-top: 24px;
     margin-bottom: 24px;
   }
   &__disclaimer {
-    margin-top: 12px;
+    margin-top: 24px;
     margin-bottom: 24px;
   }
   &__btn-copy {
