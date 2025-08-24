@@ -256,7 +256,7 @@
           :content="numOfNewMessages > 0 ? numOfNewMessages : undefined"
         >
           <v-btn icon fab size="small" @click="chatRef.scrollToBottom()">
-            <v-icon :icon="mdiChevronDown" size="x-large" />
+            <v-icon :icon="mdiChevronDown" size="xx-large" />
           </v-btn>
         </v-badge>
       </template>
