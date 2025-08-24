@@ -162,13 +162,9 @@ onBeforeUnmount(() => {
   }
 }
 
-.v-list {
-  border-radius: 8px;
-}
-
 .v-theme--dark {
   .v-list {
-    background-color: #323232;
+    background-color: map.get(colors.$adm-colors, 'black2');
   }
 }
 </style>

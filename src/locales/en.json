@@ -419,6 +419,6 @@
     "reset_message": "Are you sure you want to reset the wallet list to its default state?",
     "search": "Search",
     "summary_title": "Reset wallet list",
-    "blockchain": "Blockchain"
+    "blockchain": "Mainnet"
   }
 }
