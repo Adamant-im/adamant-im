@@ -28,9 +28,20 @@ const initTransaction = async (api, context, ethAddress, amount, nonce, increase
     data: contract.methods.transfer(ethAddress, amountWei).encodeABI()
   }
 
-  transaction.gasLimit = await api
-    .useClient((client) => client.estimateGas(transaction))
-    .catch(() => BigInt(CryptosInfo[context.state.crypto].defaultGasLimit))
+  const tokenInfo = CryptosInfo[context.state.crypto]
+  const ethInfo = CryptosInfo['ETH']
+
+  const reliabilityGasLimitPercent =
+      tokenInfo.reliabilityGasLimitPercent ?? ethInfo.reliabilityGasLimitPercent
+
+  try {
+    let estimatedGasLimit = await api.useClient((client) => client.estimateGas(transaction))
+
+    const reliableGasLimit = ethUtils.calculateReliableValue(estimatedGasLimit, reliabilityGasLimitPercent)
+    transaction.gasLimit = BigInt(reliableGasLimit.integerValue().toString())
+  } catch {
+    transaction.gasLimit = BigInt(tokenInfo.defaultGasLimit ?? ethInfo.defaultGasLimit)
+  }
 
   return transaction
 }
