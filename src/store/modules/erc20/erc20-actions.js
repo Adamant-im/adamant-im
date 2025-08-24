@@ -28,10 +28,9 @@ const initTransaction = async (api, context, ethAddress, amount, nonce, increase
     data: contract.methods.transfer(ethAddress, amountWei).encodeABI()
   }
 
-  const gasLimit = await api
+  transaction.gasLimit = await api
     .useClient((client) => client.estimateGas(transaction))
     .catch(() => BigInt(CryptosInfo[context.state.crypto].defaultGasLimit))
-  transaction.gasLimit = gasLimit
 
   return transaction
 }
