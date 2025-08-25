@@ -115,7 +115,7 @@ export function normalizeMessage(abstract) {
     transaction.message = abstract.message || ''
     transaction.hash = abstract.id // adm transaction id (hash)
 
-    abstract.amount > 0 ? (transaction.type = 'ADM') : (transaction.type = 'message')
+    transaction.type = abstract.amount > 0 ? 'ADM' : 'message'
   } else if (abstract.message?.files) {
     transaction.recipientPublicKey = abstract.recipientPublicKey
     transaction.senderPublicKey = abstract.senderPublicKey
