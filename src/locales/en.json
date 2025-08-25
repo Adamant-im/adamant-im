@@ -117,6 +117,32 @@
     "offline": "Offline—No connection",
     "online": "Online—Connection restored"
   },
+  "dev_screens": {
+    "title": "Development Tools",
+    "vibrations": "Vibrations",
+    "adamant_wallets": "Adamant-Wallets"
+  },
+  "dev_vibrations": {
+    "custom_pattern": "Custom Pattern",
+    "pattern_placeholder": "Example: 100,200,300",
+    "play": "Play",
+    "presets": "Presets",
+    "very_short": "Very Short",
+    "short": "Short",
+    "medium": "Medium",
+    "long": "Long",
+    "double_very_short": "Double Very Short",
+    "triple_very_short": "Triple Very Short",
+    "double_short": "Double Short"
+  },
+  "dev_wallets": {
+    "configuration": "Configuration",
+    "select_coin": "Select Coin",
+    "select_blockchain": "Select Context",
+    "select_property": "Select Property",
+    "result": "Result",
+    "copy_value": "Copy Value"
+  },
   "error": "Error",
   "errors": {
     "something_went_wrong": "Something went wrong. Developers can check debugger",
@@ -268,7 +294,8 @@
     "use_full_date_tooltip": "Displays dates as 2021-01-17 instead of relative terms like 'Yesterday' or 'Today'",
     "version": "App Version:",
     "vote_for_delegates_button": "Vote for delegates",
-    "wallets_list": "Wallet list"
+    "wallets_list": "Wallet list",
+    "dev_screens": "Dev screens"
   },
   "region": "en-US",
   "rows_per_page": "Rows per page",

@@ -169,6 +169,13 @@
               @click="router.push('/votes')"
             />
 
+            <v-list-item
+              v-if="isDevModeEnabled"
+              :title="t('options.dev_screens')"
+              :append-icon="mdiChevronRight"
+              @click="router.push('/options/dev-screens')"
+            />
+
             <v-divider />
 
             <v-list-item
@@ -180,7 +187,11 @@
         </v-col>
       </v-row>
       <v-row no-gutters>
-        <div :class="`${className}__version_info ml-auto`">
+        <div
+          :class="`${className}__version_info ml-auto`"
+          @click="onVersionClick"
+          data-test-id="version-info"
+        >
           {{ t('options.version') }} {{ appVersion }}
         </div>
       </v-row>
@@ -189,7 +200,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, inject, computed, onBeforeUnmount, onMounted, Ref } from 'vue'
+import { nextTick, inject, computed, onBeforeUnmount, onMounted, Ref, ref } from 'vue'
 import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant } from '@mdi/js'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
@@ -218,6 +229,8 @@ const { hasView } = useSavedScroll()
 
 const appVersion = inject('appVersion')
 const sidebarLayoutRef = inject<Ref>(sidebarLayoutKey)
+
+const tapCount = ref(0)
 
 const isPasswordDialogDisplayed = computed({
   get() {
@@ -320,6 +333,18 @@ const darkTheme = computed({
 
 const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
 
+const isDevModeEnabled = computed({
+  get() {
+    return store.state.options.devModeEnabled
+  },
+  set(value) {
+    store.commit('options/updateOption', {
+      key: 'devModeEnabled',
+      value
+    })
+  }
+})
+
 const onSetPassword = () => {
   store.commit('options/updateOption', {
     key: 'stayLoggedIn',
@@ -372,6 +397,19 @@ const logout = () => {
   }
 }
 
+const onVersionClick = () => {
+  tapCount.value++
+
+  if (tapCount.value >= 10) {
+    isDevModeEnabled.value = true
+
+    store.dispatch('snackbar/show', {
+      message: 'Dev screens enabled',
+      timeout: 3000
+    })
+  }
+}
+
 onMounted(() => {
   nextTick(() => {
     if (sidebarLayoutRef && scrollTopPosition.value) {
@@ -407,6 +445,16 @@ onBeforeUnmount(() => {
     @include mixins.a-text-explanation();
     margin-top: 24px;
     margin-bottom: 16px;
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &:active {
+      opacity: 0.6;
+    }
   }
   &__action {
     display: block;
