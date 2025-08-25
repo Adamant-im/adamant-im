@@ -1,7 +1,7 @@
 import Queue from 'promise-queue'
 import { Base64 } from 'js-base64'
 
-import { Transactions, Delegates, MessageType } from '@/lib/constants'
+import constants, { Transactions, Delegates, MessageType } from '@/lib/constants'
 import utils from '@/lib/adamant'
 import client from '@/lib/nodes/adm'
 import { encryptPassword } from '@/lib/idb/crypto'
@@ -11,8 +11,6 @@ import store from '@/store'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { parseCryptoAddressesKVStxs } from '@/lib/store-crypto-address'
 import { DEFAULT_TIME_DELTA } from '@/lib/nodes/constants.js'
-import constants from '@/lib/constants/index.js'
-import { isAllNodesOfflineError } from '@/lib/nodes/utils/errors.js'
 
 Queue.configure(Promise)
 
