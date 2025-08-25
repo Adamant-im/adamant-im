@@ -22,6 +22,8 @@ export type NormalizedChatMessageTransaction = Pick<
   asset: any // @todo types
   localFiles?: LocalFile[] // in case of attachments
   readonly?: boolean
+  showBubble?: boolean
+  showTime?: boolean
 }
 
 export function normalizeMessage(
