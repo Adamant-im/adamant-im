@@ -251,4 +251,9 @@ export const REACT_EMOJIS = {
   PARTY_POPPER: '🎉'
 } as const
 
+/**
+ * Time offset for grouping messages in the chat
+ **/
+export const CHAT_MESSAGE_BUBBLE_TIME_OFFSET = 30000
+
 export const sidebarLayoutKey = Symbol('sidebarLayout')
