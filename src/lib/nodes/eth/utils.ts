@@ -1,9 +1,8 @@
 import Web3Eth from 'web3-eth'
 import type { TransactionReceipt } from 'web3-types'
 import { CryptosInfo, CryptoSymbol, TransactionStatus } from '@/lib/constants'
-import * as ethUtils from '@/lib/eth-utils'
 import { EthTransaction, Erc20Transaction } from '@/lib/nodes/types/transaction'
-import * as utils from '@/lib/eth-utils'
+import * as ethUtils from '@/lib/eth-utils'
 import Erc20 from '@/store/modules/erc20/erc20.abi.json'
 import { AbiDecoder } from '@/lib/abi/abi-decoder'
 
@@ -27,7 +26,7 @@ export function normalizeEthTransaction(
 ): EthTransaction {
   const gasPrice = 'gasPrice' in transaction ? transaction.gasPrice : '0'
   const gasForFee = receipt?.gasUsed || transaction.gas
-  const fee = utils.calculateFee(gasForFee.toString(), gasPrice.toString())
+  const fee = ethUtils.calculateFee(gasForFee.toString(), gasPrice.toString())
   const amount = 'value' in transaction ? transaction.value : '0'
   const direction = transaction.from.toLowerCase() === address.toLowerCase() ? 'from' : 'to'
   const confirmations =
@@ -46,7 +45,7 @@ export function normalizeEthTransaction(
     direction,
     senderId: transaction.from,
     recipientId: transaction.to!,
-    amount: Number(utils.toEther(amount)),
+    amount: Number(ethUtils.toEther(amount)),
     confirmations
   }
 }
@@ -68,7 +67,7 @@ export function normalizeErc20Transaction(
   const effectiveGasPrice = 'effectiveGasPrice' in transaction ? transaction.effectiveGasPrice : 0
   const gasUsed = receipt && 'gasUsed' in receipt ? receipt.gasUsed : 0
 
-  const fee = utils.calculateFee(gasUsed.toString(), gasPrice.toString())
+  const fee = ethUtils.calculateFee(gasUsed.toString(), gasPrice.toString())
   const direction = transaction.from.toLowerCase() === address.toLowerCase() ? 'from' : 'to'
   const confirmations =
     blockTimestamp && receipt?.blockNumber
