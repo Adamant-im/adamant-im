@@ -50,3 +50,13 @@ export function isPositiveNumber(value) {
     return true
   }
 }
+
+/**
+ * Removes trailing zeros from a number string
+ * @param {string} numStr - Number as string (e.g., "1.50000")
+ * @returns {string} Number without trailing zeros (e.g., "1.5")
+ *
+ */
+export function trimTrailingZeros(numStr) {
+  return numStr.replace(/(\.\d*?[1-9])0+$|\.(0+)$/, '$1')
+}
