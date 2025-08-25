@@ -1,5 +1,5 @@
 import { sendSpecialMessage } from '../adamant-api'
-import { ADAMANT_NOTIFICATION_SERVICE_ADDRESS } from '../constants'
+import { ADAMANT_NOTIFICATION_SERVICE_ADDRESS, MessageType } from '../constants'
 import { BasePushService } from './pushServiceBase'
 import { PushNotifications } from '@capacitor/push-notifications'
 import { LocalNotifications } from '@capacitor/local-notifications'
@@ -57,7 +57,8 @@ export class AndroidPushService extends BasePushService {
     try {
       await sendSpecialMessage(
         ADAMANT_NOTIFICATION_SERVICE_ADDRESS,
-        signalAsset(this.deviceId!, this.token, 'FCM', 'remove')
+        signalAsset(this.deviceId!, this.token, 'FCM', 'remove'),
+        MessageType.SIGNAL_MESSAGE
       )
       this.token = null
       return true
@@ -110,13 +111,15 @@ export class AndroidPushService extends BasePushService {
     if (oldToken && oldToken !== newToken) {
       await sendSpecialMessage(
         ADAMANT_NOTIFICATION_SERVICE_ADDRESS,
-        signalAsset(this.deviceId!, oldToken, 'FCM', 'remove')
+        signalAsset(this.deviceId!, oldToken, 'FCM', 'remove'),
+        MessageType.SIGNAL_MESSAGE
       )
     }
 
     await sendSpecialMessage(
       ADAMANT_NOTIFICATION_SERVICE_ADDRESS,
-      signalAsset(this.deviceId!, newToken, 'FCM', 'add')
+      signalAsset(this.deviceId!, newToken, 'FCM', 'add'),
+      MessageType.SIGNAL_MESSAGE
     )
   }
 

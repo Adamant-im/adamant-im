@@ -107,7 +107,8 @@ export function encodeFile(file: Uint8Array, params: SendMessageParams): Promise
 
 export function sendSpecialMessage(
   to: string,
-  message: SendMessageParams['message']
+  message: SendMessageParams['message'],
+  messageType: number
 ): ReturnType<typeof sendMessage>
 
 export function storeValue(

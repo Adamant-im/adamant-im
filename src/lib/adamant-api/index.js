@@ -237,9 +237,10 @@ export async function encodeFile(file, params) {
  * Sends special message with the specified payload
  * @param {string} to recipient address
  * @param {object} payload message payload
+ * @param {number} messageType message type
  */
-export function sendSpecialMessage(to, payload) {
-  return sendMessage({ to, message: payload, type: MessageType.SIGNAL_MESSAGE })
+export function sendSpecialMessage(to, payload, messageType) {
+  return sendMessage({ to, message: payload, type: messageType })
 }
 
 /**
