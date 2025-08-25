@@ -252,8 +252,8 @@ const className = 'settings-view'
 const { hasView } = useSavedScroll()
 
 const notificationItems = [
-  { title: 'No Notifications', value: notificationType['No Notifications'] },
-  { title: 'Background Fetch', value: notificationType['Background Fetch'] },
+  { title: 'No Notifications', value: notificationType['NoNotifications'] },
+  { title: 'Background Fetch', value: notificationType['BackgroundFetch'] },
   { title: 'Push', value: notificationType['Push'] }
 ]
 
@@ -373,8 +373,8 @@ const handleNotificationTypeChange = async (newVal: number) => {
 
   try {
     const isNotPushNotification =
-      newVal === notificationType['No Notifications'] ||
-      newVal === notificationType['Background Fetch']
+      newVal === notificationType['NoNotifications'] ||
+      newVal === notificationType['BackgroundFetch']
 
     if (newVal === notificationType['Push']) {
       await setPushNotifications(true)

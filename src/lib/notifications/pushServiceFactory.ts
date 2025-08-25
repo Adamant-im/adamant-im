@@ -6,9 +6,8 @@ import { WebPushService } from './pushServiceWeb'
 export function createPushService(): PushService {
   if (Capacitor.getPlatform() === 'android') {
     return new AndroidPushService()
-  } else {
-    return new WebPushService()
   }
+  return new WebPushService()
 }
 
 export const pushService = createPushService()
