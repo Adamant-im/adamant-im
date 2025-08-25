@@ -205,13 +205,12 @@
 
       <template #form>
         <a-chat-form
-          v-if="!isWelcomeChat(partnerId)"
           ref="chatFormRef"
           :show-send-button="true"
           :send-on-enter="sendMessageOnEnter"
           :show-divider="true"
           :label="t('chats.message')"
-          :should-disable-input="shouldDisableInput"
+          :should-disable-input="isWelcomeChat(partnerId) || shouldDisableInput"
           :message-text="
             $route.query.messageText || $store.getters['draftMessage/draftMessage'](partnerId)
           "
@@ -322,7 +321,6 @@ import { useChatStateStore } from '@/stores/modal-state'
 import ChatPlaceholder from '@/components/Chat/ChatPlaceholder.vue'
 import { watchImmediate } from '@vueuse/core'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
-import { isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
