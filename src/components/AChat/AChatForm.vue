@@ -16,7 +16,7 @@
       auto-grow
       rows="1"
       max-rows="10"
-      variant="underlined"
+      variant="plain"
       density="compact"
       base-color="primary"
       color="primary"
@@ -35,7 +35,12 @@
       </template>
       <template v-if="showSendButton" #append-inner>
         <slot name="append" />
-        <v-icon class="a-chat__send-icon" :icon="mdiSend" size="28" />
+        <v-icon
+          :color="isDisabled ? 'grey' : 'white'"
+          :icon="mdiSend"
+          size="28"
+          :disabled="isDisabled"
+        />
       </template>
     </v-textarea>
 
@@ -110,6 +115,11 @@ const isEmojiPickerOpen = computed({
 })
 const placeholder = computed(() => props.label ?? t('chats.type_a_message'))
 const isDesktopDevice = !isMobile()
+
+const isDisabled = computed(() => {
+  return props.validator(message.value) !== false
+})
+
 const listeners = computed(() => {
   return {
     keypress: (e: KeyboardEvent) => {
@@ -351,9 +361,6 @@ defineExpose({
     .v-field__append-inner > .v-icon,
     .v-field__clearable > .v-icon {
       --v-medium-emphasis-opacity: 1;
-    }
-    .v-input__control {
-      margin-bottom: 2px;
     }
     .v-field__input {
       &::placeholder {

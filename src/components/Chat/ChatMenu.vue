@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-menu eager v-model="isChatMenuOpen">
+    <v-menu eager v-model="isChatMenuOpen" :open-on-hover="isDesktop">
       <template #activator="{ props }">
         <v-icon class="chat-menu__icon" v-bind="props" :icon="mdiPlusCircleOutline" size="28" />
       </template>
@@ -65,6 +65,7 @@ import { useChatStateStore } from '@/stores/modal-state'
 import type { FileData } from '@/lib/files'
 import { CoinSymbol } from '@/store/modules/wallets/types'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
+import { useDisplay } from 'vuetify'
 
 const fetchingErrors = {
   liskLegacy: 'Only legacy Lisk address',
@@ -85,7 +86,7 @@ const router = useRouter()
 const store = useStore()
 const { t } = useI18n()
 const chatStateStore = useChatStateStore()
-
+const { mdAndUp } = useDisplay()
 const { setChatMenuOpen } = chatStateStore
 
 const uploadImageRef = useTemplateRef<InstanceType<typeof UploadFile>>('uploadImageRef')
@@ -96,6 +97,8 @@ const dialogTitle = ref('')
 const dialogText = ref('')
 const crypto = ref('')
 const acceptImage = 'image/* , video/*'
+
+const isDesktop = mdAndUp
 
 const isChatMenuOpen = computed({
   get: () => chatStateStore.isChatMenuOpen,
@@ -196,15 +199,46 @@ function fetchCryptoAddress(selectedCrypto: string): Promise<any> {
 .v-theme--light {
   .chat-menu {
     &__icon {
-      color: map.get(settings.$grey, 'darken-1');
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: 0;
+        transition: 0.4s;
+        z-index: -1;
+      }
+
+      &:hover::before {
+        opacity: 0.1;
+      }
     }
   }
 }
 .v-theme--dark {
   .chat-menu {
     &__icon {
-      color: map.get(settings.$shades, 'white');
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: 0;
+        transition: 0.4s;
+        z-index: -1;
+      }
+
+      &:hover::before {
+        opacity: 0.1;
+      }
     }
+
     &__list {
       :deep(.v-list-item-title) {
         color: map.get(settings.$shades, 'white');

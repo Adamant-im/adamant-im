@@ -1,5 +1,6 @@
 <template>
   <v-menu
+    :open-on-hover="isDesktop"
     :model-value="open"
     :eager="true"
     location="top"
@@ -16,8 +17,8 @@
 </template>
 <script>
 import EmojiPicker from '@/components/EmojiPicker.vue'
-
 import { mdiEmoticonOutline } from '@mdi/js'
+import { useDisplay } from 'vuetify'
 
 export default {
   props: {
@@ -28,8 +29,10 @@ export default {
   },
   emits: ['onChange', 'get-emoji-picture'],
   setup() {
+    const { mdAndUp } = useDisplay()
     return {
-      mdiEmoticonOutline
+      mdiEmoticonOutline,
+      isDesktop: mdAndUp
     }
   },
   methods: {
@@ -53,14 +56,44 @@ export default {
 .v-theme--light {
   .chat-emojis {
     &__icon {
-      color: map.get(settings.$grey, 'darken-1');
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: 0;
+        transition: 0.4s;
+        z-index: -1;
+      }
+
+      &:hover::before {
+        opacity: 0.1;
+      }
     }
   }
 }
 .v-theme--dark {
   .chat-emojis {
     &__icon {
-      color: map.get(settings.$shades, 'white');
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: 0;
+        transition: 0.4s;
+        z-index: -1;
+      }
+
+      &:hover::before {
+        opacity: 0.1;
+      }
     }
   }
 }
