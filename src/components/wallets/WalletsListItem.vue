@@ -24,6 +24,8 @@
       <WalletBalance :symbol="localWallet.symbol" class="mr-2"></WalletBalance>
       <v-checkbox
         class="pa-1"
+        :class="classes.checkbox"
+        color="grey darken-1"
         density="comfortable"
         hide-details
         :model-value="store.getters['wallets/getVisibility'](localWallet.symbol)"
@@ -70,7 +72,8 @@ const classes = {
   cryptoSubtitle: `${className}__crypto-subtitle`,
   cryptoSubtitleMuted: `${className}__crypto-subtitle-muted`,
   cryptoSubtitleBold: `${className}__crypto-subtitle-bold`,
-  cryptoTitle: `${className}__crypto-title`
+  cryptoTitle: `${className}__crypto-title`,
+  checkbox: `${className}__checkbox`
 }
 const iconSize = 32
 
@@ -170,6 +173,9 @@ export default defineComponent({
     }
     &__crypto-subtitle-muted {
       color: map.get(colors.$adm-colors, 'muted');
+    }
+    &__crypto-subtitle-bold {
+      color: map.get(colors.$adm-colors, 'regular');
     }
   }
 }
