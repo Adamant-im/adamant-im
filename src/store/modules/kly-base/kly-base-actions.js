@@ -207,7 +207,7 @@ function createActions(options) {
           }
         }
       } catch (err) {
-        throw err
+        console.log(err)
       }
     },
 
@@ -242,7 +242,7 @@ function createActions(options) {
           commit('bottom', true)
         }
       } catch (err) {
-        throw err
+        console.log(err)
       }
     },
 
