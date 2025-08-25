@@ -1,6 +1,5 @@
 {
   "ADM": {
-    "qrPrefix": "adm",
     "name": "ADAMANT Messenger",
     "nameShort": "ADAMANT",
     "website": "https://adamant.im",
@@ -14,6 +13,7 @@
     "decimals": 8,
     "cryptoTransferDecimals": 8,
     "fixedFee": 0.5,
+    "qqPrefix": "adm",
     "status": "active",
     "createCoin": true,
     "defaultVisibility": true,
@@ -401,12 +401,97 @@
     "website": "https://bnbchain.org",
     "description": "Cryptocurrency that powers the BNB Chain ecosystem",
     "explorer": "https://explorer.bnbchain.org",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "BNB",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "github",
@@ -425,15 +510,55 @@
         "url": "https://github.com/bnb-chain/whitepaper"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 1000,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0xB8c77482e45F1F44dE1745F52C74426C631bDD52",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "BTC": {
-    "qrPrefix": "bitcoin",
     "name": "Bitcoin",
     "website": "https://bitcoin.org",
     "description": "Bitcoin is a cryptocurrency and worldwide payment system. It is the first decentralized digital currency, as the system works without a central bank or single administrator.",
@@ -448,6 +573,7 @@
     "cryptoTransferDecimals": 8,
     "minTransferAmount": 0.00000546,
     "defaultFee": 0.00003153,
+    "qqPrefix": "bitcoin",
     "status": "active",
     "createCoin": true,
     "defaultVisibility": true,
@@ -464,6 +590,7 @@
       "oldPendingAttempts": 4
     },
     "txConsistencyMaxTime": 10800000,
+    "increasedGasPricePercent": 30,
     "nodes": {
       "displayName": "btc-node",
       "list": [
@@ -589,12 +716,98 @@
     "name": "Binance USD",
     "website": "https://www.binance.com/en/busd",
     "description": "A regulated, fiat-backed stablecoin pegged to the US dollar",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "BUSD",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -605,23 +818,150 @@
         "url": "https://github.com/paxosglobal/busd-contract"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 1000,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0x4fabb145d64652a948d72533023f6e7a623c7c53",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "BZZ": {
     "name": "Swarm",
     "website": "https://www.ethswarm.org",
     "description": "BZZ is the Swarm Network’s native token. Users of the network’s services (i.e. bandwidth and storage) use it to compensate the providers, or node operators, for those services.",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "BZZ",
     "type": "ERC20",
     "decimals": 16,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 95,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -640,23 +980,150 @@
         "url": "https://www.ethswarm.org/swarm-whitepaper.pdf"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 95,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0x19062190B1925b5b6689D7073fDfC8c2976EF8Cb",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "DAI": {
     "name": "Dai",
     "website": "https://makerdao.com",
     "description": "A decentralized, unbiased, collateral-backed cryptocurrency soft-pegged to the US Dollar",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "DAI",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 80,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -675,15 +1142,55 @@
         "url": "https://makerdao.com/en/whitepaper"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 80,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0x6b175474e89094c44da98b954eedeac495271d0f",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "DASH": {
-    "qrPrefix": "dash",
     "name": "Dash",
     "website": "https://dash.org",
     "description": "Dash (DASH) is digital cash designed to offer financial freedom to everyone. Payments are instant, easy and secure, with near-zero fees.",
@@ -699,6 +1206,7 @@
     "cryptoTransferDecimals": 8,
     "minTransferAmount": 0.00002,
     "fixedFee": 0.0001,
+    "qqPrefix": "dash",
     "status": "active",
     "createCoin": true,
     "defaultVisibility": true,
@@ -781,7 +1289,6 @@
     }
   },
   "DOGE": {
-    "qrPrefix": "doge",
     "name": "Dogecoin",
     "website": "https://dogecoin.com",
     "description": "Dogecoin is an open source peer-to-peer digital currency, favored by Shiba Inus worldwide. Introduced as a joke currency on 6 December 2013, Dogecoin quickly developed its own online community.",
@@ -796,6 +1303,7 @@
     "cryptoTransferDecimals": 8,
     "minTransferAmount": 1,
     "fixedFee": 1,
+    "qqPrefix": "doge",
     "status": "active",
     "createCoin": true,
     "defaultVisibility": true,
@@ -949,12 +1457,98 @@
     "name": "Ethereum Name Service",
     "website": "https://ens.domains",
     "description": "Ethereum Name Service is a distributed, open, and extensible naming system based on the Ethereum blockchain",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "ENS",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -965,15 +1559,55 @@
         "url": "https://github.com/ensdomains"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 1000,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "ETH": {
-    "qrPrefix": "ethereum",
     "name": "Ethereum",
     "website": "https://ethereum.org",
     "description": "Open source platform to write and distribute decentralized applications",
@@ -987,6 +1621,7 @@
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": true,
     "defaultVisibility": true,
     "defaultOrdinalLevel": 20,
@@ -1134,12 +1769,98 @@
     "name": "Floki",
     "website": "https://floki.com",
     "description": "FLOKI is the utility token of the Floki ecosystem",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "FLOKI",
     "type": "ERC20",
     "decimals": 9,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1166,23 +1887,150 @@
         "url": "https://t.me/FlokiInuToken"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 1000,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0xcf0c122c6b73ff809c693db761e7baebe62b6a2e",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "FLUX": {
     "name": "Flux",
     "website": "https://runonflux.io",
     "description": "Flux is the cryptocurrency that powers the Flux ecosystem.",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "FLUX",
     "type": "ERC20",
     "decimals": 8,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 90,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1201,23 +2049,150 @@
         "url": "https://whitepaper.app.runonflux.io"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 90,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0x720CD16b011b987Da3518fbf38c3071d4F0D1495",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "GT": {
     "name": "Gate",
     "website": "https://gatechain.io",
     "description": "Public blockchain which facilitates digital asset transfers",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "GT",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1232,23 +2207,150 @@
         "url": "https://discord.gg/TADecrzfcP"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 1000,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0xe66747a101bff2dba3697199dcce5b743b454759",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "HOT": {
     "name": "Holo",
     "website": "https://holo.host",
     "description": "Holo is a peer-to-peer platform for distributed applications based on a cloud storage infrastructure",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "HOT",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1267,12 +2369,53 @@
         "url": "https://holo.host/whitepapers"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 1000,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0x6c6ee5e31d828de241282b9606c8e98ea48526e2",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "INJ": {
     "name": "Injective",
@@ -1288,9 +2431,88 @@
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 200,
     "consensus": "PoS",
     "blockTimeFixed": 1100,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1305,15 +2527,55 @@
         "url": "https://github.com/InjectiveLabs"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 200,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0xe28b3b32b6c345a34ff64674606124dd5aceca30",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "KLY": {
-    "qrPrefix": "klayr",
     "name": "Klayr",
     "website": "https://klayr.xyz",
     "description": "Blockchain application platform",
@@ -1327,6 +2589,7 @@
     "minBalance": 0.05,
     "cryptoTransferDecimals": 8,
     "defaultFee": 0.00164,
+    "qqPrefix": "klayr",
     "status": "active",
     "createCoin": true,
     "defaultVisibility": false,
@@ -1448,12 +2711,98 @@
     "name": "Chainlink",
     "website": "https://chain.link",
     "description": "Chainlink is a decentralized blockchain oracle network built on Ethereum",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "LINK",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 200,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1472,23 +2821,150 @@
         "url": "https://research.chain.link/whitepaper-v2.pdf"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 200,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0x514910771af9ca656af840dff83e8264ecf986ca",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "MANA": {
     "name": "Decentraland",
     "website": "https://decentraland.org",
     "description": "Decentraland is a decentralized virtual reality world that is powered by the Ethereum blockchain",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "MANA",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1507,12 +2983,53 @@
         "url": "https://decentraland.org/whitepaper.pdf"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 1000,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "MATIC": {
     "name": "Polygon",
@@ -1528,9 +3045,88 @@
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
     "consensus": "PoS",
-    "blockTimeAvg": 2250,
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1549,23 +3145,151 @@
         "url": "https://github.com/maticnetwork/whitepaper"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 1000,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockTimeAvg": 2250,
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "PAXG": {
     "name": "PAX Gold",
     "website": "https://paxos.com/paxgold",
     "description": "PAXG is an ERC-20 stablecoin backed by physical gold reserves, held in custody by the Paxos Trust Company",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "PAXG",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 100,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1580,23 +3304,150 @@
         "url": "https://paxos.com/wp-content/uploads/2019/09/PAX-Gold-Whitepaper.pdf"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 100,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0x45804880de22913dafe09f4980848ece6ecbaf78",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "QNT": {
     "name": "Quant",
     "website": "https://quant.network",
     "description": "An operating system distributed ledger technology— and Overledger Network — for connecting different blockchain networks.",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "QNT",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1615,23 +3466,150 @@
         "url": "http://files.quant.network/files.quant.network/Quant_Overledger_Whitepaper_v0.1.pdf"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 1000,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0x4a220E6096B25EADb88358cb44068A3248254675",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "REN": {
     "name": "Ren",
     "website": "https://renproject.io",
     "description": "Ren is an open and community-driven protocol that enables the movement of value between blockchains",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "REN",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1646,23 +3624,150 @@
         "url": "https://github.com/renproject"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 1000,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0x408e41876cccdc0f92210600ef50372656052a38",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "SKL": {
     "name": "SKALE",
     "website": "https://skale.space",
     "description": "SKALE is a Layer-2 Ethereum sidechain network that creates a high-throughput, low-latency, low-cost environment for decentralized app development",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "SKL",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 85,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1681,23 +3786,150 @@
         "url": "https://skale.space/whitepaper"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 85,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0x00c83aecc790e8a4453e5dd3b0b4b3680501a7a7",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "SNT": {
     "name": "Status",
     "website": "https://status.im",
     "description": "Status is categorized as a mobile and desktop operating system and decentralized browser that incorporates a messaging system",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "SNT",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1716,23 +3948,150 @@
         "url": "https://status.im/whitepaper.pdf"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 1000,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0x744d70fdbe2ba4cf95131626614a1763df805b9e",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "SNX": {
     "name": "Synthetix Network",
     "website": "https://www.synthetix.io",
     "description": "Synthetix is an Ethereum-based protocol that tokenizes underlying assets ranging from commodities to fiat money",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "SNX",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 200,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1747,23 +4106,150 @@
         "url": "https://github.com/Synthetixio/synthetix"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 200,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "STORJ": {
     "name": "Storj",
     "website": "https://www.storj.io",
     "description": "Storj is an open-source cloud storage platform",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "STORJ",
     "type": "ERC20",
     "decimals": 8,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 105,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1782,23 +4268,150 @@
         "url": "https://www.reddit.com/r/storj"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 105,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0xb64ef51c888972c908cfacf59b47c1afbc0ab8ac",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "TUSD": {
     "name": "TrueUSD",
     "website": "https://trueusd.com",
     "description": "TUSD is the first independently verified digital asset redeemable 1-for-1 in US dollars",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "TUSD",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 100,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1813,23 +4426,150 @@
         "url": "https://trueusd.com/pdf/TUSD_WhitePaper.pdf"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 100,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0x0000000000085d4780b73119b644ae5ecd22b376",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "UNI": {
     "name": "Uniswap",
     "website": "https://uniswap.org",
     "description": "Uniswap is a decentralized cryptocurrency exchange that uses a set of smart contracts to execute trades on its exchange",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "UNI",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1848,23 +4588,150 @@
         "url": "https://uniswap.org/whitepaper-v3.pdf"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 1000,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "USDC": {
     "name": "USD Coin",
     "website": "https://www.centre.io/usdc",
     "description": "An open source, smart contract-based stablecoin",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "USDC",
     "type": "ERC20",
     "decimals": 6,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": true,
+    "defaultOrdinalLevel": 40,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1883,23 +4750,150 @@
         "url": "https://f.hubspotusercontent30.net/hubfs/9304636/PDF/centre-whitepaper.pdf"
       }
     ],
-    "defaultVisibility": true,
-    "defaultOrdinalLevel": 40,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "USDP": {
     "name": "Pax Dollar",
     "website": "https://www.paxos.com/usdp",
     "description": "PAX Dollar is a regulated stablecoin collateralized 1:1 by United States Dollars held in US bank",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "USDP",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 100,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1910,46 +4904,300 @@
         "url": "https://github.com/paxosglobal/usdp-contracts"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 100,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0x8e870d67f660d95d5be530380d0ec0bd388289e1",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "USDS": {
     "name": "Stably USD",
     "website": "https://stably.io/usds",
     "description": "One-to-one U.S. Dollar backed, redeemable stablecoin",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "USDS",
     "type": "ERC20",
     "decimals": 6,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
         "url": "https://twitter.com/stably_official"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 1000,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0xa4bdb11dc0a2bec88d24a3aa1e6bb17201112ebe",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "USDT": {
     "name": "Tether",
     "website": "https://tether.to",
     "description": "Stablecoin pegged to the US Dollar",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "USDT",
     "type": "ERC20",
     "decimals": 6,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": true,
+    "defaultOrdinalLevel": 30,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1964,23 +5212,150 @@
         "url": "https://assets.ctfassets.net/vyse88cgwfbl/5UWgHMvz071t2Cq5yTw5vi/c9798ea8db99311bf90ebe0810938b01/TetherWhitePaper.pdf"
       }
     ],
-    "defaultVisibility": true,
-    "defaultOrdinalLevel": 30,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "VERSE": {
     "name": "Verse",
     "website": "https://www.getverse.com",
     "description": "VERSE is the reward and utility token for the Bitcoin.com ecosystem",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "VERSE",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 95,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -1999,23 +5374,150 @@
         "url": "https://www.getverse.com/verse-whitepaper.pdf"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 95,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0x249cA82617eC3DfB2589c4c17ab7EC9765350a18",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "WOO": {
     "name": "WOO Network",
     "website": "https://woo.network",
     "description": "WOO Network is a system of centralized finance and decentralized finance services designed to enable deeper liquidity for various cryptocurrency market participants",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "WOO",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 1000,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -2030,23 +5532,150 @@
         "url": "https://woo.org/Litepaper.pdf"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 1000,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0x4691937a7508860f876c9c0a2a617e7d9e945d4b",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   },
   "XCN": {
     "name": "Onyxcoin",
     "website": "https://onyx.org",
     "description": "Onyx DeFi Liquidity Protocol supported by the Onyx DAO",
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "explorerContract": "https://etherscan.io/token/${ID}",
+    "regexAddress": "^0x[0-9a-fA-F]{40}$",
     "symbol": "XCN",
     "type": "ERC20",
     "decimals": 18,
     "cryptoTransferDecimals": 6,
     "status": "active",
+    "qqPrefix": "ethereum",
     "createCoin": false,
+    "defaultVisibility": false,
+    "defaultOrdinalLevel": 110,
+    "consensus": "PoS",
+    "blockTimeFixed": 12000,
+    "balanceCheckInterval": 25000,
+    "balanceValidInterval": 300000,
+    "txFetchInfo": {
+      "newPendingInterval": 4000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 1200000,
+    "reliabilityGasPricePercent": 15,
+    "reliabilityGasLimitPercent": 10,
+    "increasedGasPricePercent": 30,
+    "defaultGasPriceGwei": 10,
+    "defaultGasLimit": 58000,
+    "warningGasPriceGwei": 25,
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        },
+        {
+          "url": "https://ethnode3.bbry.org",
+          "alt_ip": "http://100.42.184.57:7318"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "ethIndexer": {
+        "displayName": "eth-indexer",
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "https://ethnode2.adamant.im",
+            "alt_ip": "http://95.216.114.252:44099"
+          },
+          {
+            "url": "https://ethnode3.adamant.im",
+            "alt_ip": "http://46.4.37.157:44099"
+          },
+          {
+            "url": "https://ethnode2.bbry.org",
+            "alt_ip": "http://65.108.52.254:41311"
+          },
+          {
+            "url": "https://ethnode3.bbry.org",
+            "alt_ip": "http://100.42.184.57:7318"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    },
     "links": [
       {
         "name": "twitter",
@@ -2069,11 +5698,52 @@
         "url": "https://medium.com/OnyxProtocol"
       }
     ],
-    "defaultVisibility": false,
-    "defaultOrdinalLevel": 110,
+    "tor": {
+      "nodes": {
+        "displayName": "eth-node",
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+            "hasIndex": true
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000,
+          "threshold": 5
+        }
+      },
+      "services": {
+        "ethIndexer": {
+          "displayName": "eth-indexer",
+          "description": {
+            "software": "ETH-transactions-storage",
+            "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+            "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+          },
+          "list": [
+            {
+              "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+            },
+            {
+              "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+            }
+          ],
+          "healthCheck": {
+            "normalUpdateInterval": 330000,
+            "crucialUpdateInterval": 30000,
+            "onScreenUpdateInterval": 10000
+          }
+        }
+      }
+    },
+    "blockchain": "Ethereum",
+    "fees": "ethereum",
     "contractId": "0xa2cd3d43c775978a96bdbf12d733d5a1ed94fb18",
-    "mainCoin": "ETH",
-    "defaultGasLimit": 58000,
-    "fees": "ethereum"
+    "mainCoin": "ETH"
   }
 }
