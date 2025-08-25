@@ -237,6 +237,12 @@ onBeforeUnmount(() => {
     max-width: 75%;
     user-select: none;
 
+    @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
+      margin-top: env(safe-area-inset-top);
+      height: calc(100vh - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top));
+      border-right: none;
+    }
+
     &::after {
       content: '';
       position: absolute;
@@ -245,6 +251,10 @@ onBeforeUnmount(() => {
       width: 10px;
       height: 100%;
       cursor: ew-resize;
+
+      @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
+        content: none;
+      }
     }
 
     @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
@@ -261,6 +271,11 @@ onBeforeUnmount(() => {
   }
 
   &__layout {
+    @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
+      margin-top: env(safe-area-inset-top);
+      height: calc(100vh - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top));
+    }
+
     flex: 1 1 auto;
     overflow-y: auto;
     overflow-x: hidden;

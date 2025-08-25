@@ -91,6 +91,7 @@ onMounted(() => {
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use 'vuetify/settings';
+@use '@/assets/styles/generic/_variables.scss';
 
 /**
  * 1. Navigation Button.
@@ -101,6 +102,10 @@ onMounted(() => {
   &.v-bottom-navigation {
     transform: unset !important;
     overflow: visible;
+
+    @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
+      bottom: calc(0px +  env(safe-area-inset-bottom)) !important;
+    }
   }
   &.v-bottom-navigation .v-btn {
     font-weight: 300;

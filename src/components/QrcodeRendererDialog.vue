@@ -19,6 +19,7 @@ import b64toBlob from 'b64-to-blob'
 import FileSaver from 'file-saver'
 
 import QrcodeRenderer from '@/components/QrcodeRenderer.vue'
+import { joinUrl } from '@/lib/urlFormatter.js'
 
 export default {
   components: {
@@ -54,7 +55,7 @@ export default {
       }
     },
     logoURL() {
-      return this.logo ? '/img/adm-qr-invert.png' : ''
+      return this.logo ? joinUrl(import.meta.env.BASE_URL, '/img/adm-qr-invert.png') : ''
     }
   },
   methods: {
