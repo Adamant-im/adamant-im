@@ -1,10 +1,9 @@
 import config from '@/config'
-import { NodeInfo } from '@/types/wallets'
+import type { NodeInfo } from '@/types/wallets'
 import { KlyIndexerClient } from './KlyIndexerClient'
 
-const endpoints = (config.kly.services.klyService.list as NodeInfo[]).map(
-  (endpoint) => endpoint.url
-)
+const endpoints = config.kly.services.klyService.list as NodeInfo[]
+
 export const klyIndexer = new KlyIndexerClient(endpoints)
 
 export default klyIndexer

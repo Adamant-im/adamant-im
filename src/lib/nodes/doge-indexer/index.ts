@@ -1,8 +1,9 @@
 import config from '@/config'
-import { NodeInfo } from '@/types/wallets'
+import type { NodeInfo } from '@/types/wallets'
 import { DogeIndexerClient } from './DogeIndexerClient'
 
-const endpoints = (config.doge.nodes.list as NodeInfo[]).map((endpoint) => endpoint.url)
+const endpoints = config.doge.nodes.list as NodeInfo[]
+
 export const dogeIndexer = new DogeIndexerClient(endpoints)
 
 export default dogeIndexer
