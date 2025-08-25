@@ -1,0 +1,24 @@
+{
+  "project_info": {
+    "project_number": "987518845753",
+    "firebase_url": "https://adamant-messenger.firebaseio.com",
+    "project_id": "adamant-messenger",
+    "storage_bucket": "adamant-messenger.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:987518845753:android:6585b11ca36bac4c251ee8",
+        "android_client_info": {
+          "package_name": "im.adamant.adamantmessengerpwa"
+        }
+      },
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgtB_hqwL1SS_YMYepRMmXYhmc7154wmU"
+        }
+      ]
+    }
+  ],
+  "configuration_version": "1"
+}

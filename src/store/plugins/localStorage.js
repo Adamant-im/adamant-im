@@ -12,13 +12,12 @@ const vuexPersistence = new VuexPersistence({
         sendMessageOnEnter: state.options.sendMessageOnEnter,
         allowSoundNotifications: state.options.allowSoundNotifications,
         allowTabNotifications: state.options.allowTabNotifications,
-        allowPushNotifications: state.options.allowPushNotifications,
+        allowNotificationType: state.options.allowNotificationType,
         darkTheme: state.options.darkTheme,
         formatMessages: state.options.formatMessages,
         useFullDate: state.options.useFullDate,
         useSocketConnection: state.options.useSocketConnection,
-        suppressWarningOnAddressesNotification:
-          state.options.suppressWarningOnAddressesNotification,
+        suppressWarningOnAddressesNotification: state.options.suppressWarningOnAddressesNotification,
         currentRate: state.options.currentRate
       }
     }

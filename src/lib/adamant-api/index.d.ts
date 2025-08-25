@@ -107,7 +107,8 @@ export function encodeFile(file: Uint8Array, params: SendMessageParams): Promise
 
 export function sendSpecialMessage(
   to: string,
-  message: SendMessageParams['message']
+  message: SendMessageParams['message'],
+  messageType: number
 ): ReturnType<typeof sendMessage>
 
 export function storeValue(
@@ -200,3 +201,5 @@ export function getChatRoomMessages(
   params: GetChatRoomMessagesParams,
   recursive: boolean = false
 ): Promise<Array<ReturnType<typeof decodeChat>>>
+
+export function getMyPrivateKey(): string
