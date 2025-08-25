@@ -21,7 +21,7 @@
         <adm-fill-icon />
       </icon>
       <div v-else :class="`${className}__chat-avatar`">
-        <chat-avatar :size="40" :user-id="contactId" use-public-key />
+        <chat-avatar :size="48" :user-id="contactId" use-public-key />
       </div>
 
       <v-badge
