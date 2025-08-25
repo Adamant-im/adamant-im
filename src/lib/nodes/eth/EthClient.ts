@@ -32,7 +32,7 @@ export class EthClient extends Client<EthNode> {
       const isFinalized = !!transaction.blockNumber
 
       return isFinalized
-    } catch (err) {
+    } catch {
       return false
     }
   }

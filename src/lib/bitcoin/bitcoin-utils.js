@@ -9,7 +9,7 @@ import { BigNumber } from '@/lib/bignumber'
 export function isValidAddress(address) {
   try {
     bitcoin.address.toOutputScript(address)
-  } catch (e) {
+  } catch {
     return false
   }
 
