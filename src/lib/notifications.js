@@ -92,9 +92,7 @@ class PushNotification extends Notification {
   }
 
   notify(messageArrived) {
-    const isBackgroundFetch =
-      this.store.state.options.allowNotificationType === notificationType['Background Fetch']
-    if (!isBackgroundFetch) {
+    if (!this.bgFetchNotificationAllowed) {
       return
     }
     try {
