@@ -82,6 +82,12 @@ const title = computed(() => {
       return (route.params.txId as string) || t('transaction.transactions')
     case 'SendFunds':
       return t('transfer.page_title')
+    case 'DevScreens':
+      return t('dev_screens.title')
+    case 'DevVibrations':
+      return t('dev_screens.vibrations')
+    case 'DevAdamantWallets':
+      return t('dev_screens.adamant_wallets')
 
     default:
       return t('options.page_title')
