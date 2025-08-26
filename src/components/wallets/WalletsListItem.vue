@@ -7,7 +7,8 @@
         }}</v-list-item-title>
         <v-list-item-subtitle>
           <p :class="classes.cryptoSubtitle">
-            {{ localWallet.type }}
+            <span :class="classes.cryptoSubtitleMuted">{{ localWallet.type }}</span>
+            {{ " " }}
             <span :class="classes.cryptoSubtitleBold">{{ localWallet.symbol }}</span>
           </p>
         </v-list-item-subtitle>
@@ -20,9 +21,11 @@
     </template>
 
     <template v-slot:append>
-      <WalletBalance :symbol="localWallet.symbol"></WalletBalance>
+      <WalletBalance :symbol="localWallet.symbol" class="mr-2"></WalletBalance>
       <v-checkbox
         class="pa-1"
+        :class="classes.checkbox"
+        color="grey darken-1"
         density="comfortable"
         hide-details
         :model-value="store.getters['wallets/getVisibility'](localWallet.symbol)"
@@ -67,8 +70,10 @@ const classes = {
   root: className,
   cryptoContent: `${className}__crypto-content`,
   cryptoSubtitle: `${className}__crypto-subtitle`,
+  cryptoSubtitleMuted: `${className}__crypto-subtitle-muted`,
   cryptoSubtitleBold: `${className}__crypto-subtitle-bold`,
-  cryptoTitle: `${className}__crypto-title`
+  cryptoTitle: `${className}__crypto-title`,
+  checkbox: `${className}__checkbox`
 }
 const iconSize = 32
 
@@ -121,11 +126,14 @@ export default defineComponent({
     font-weight: 300;
     line-height: 1;
   }
+  &__crypto-subtitle-muted {
+    color: rgba(map.get(settings.$shades, 'white'), 70%);
+  }
   &__crypto-subtitle-bold {
     font-weight: 600;
   }
   &__crypto-title {
-    line-height: 1;
+    line-height: 1.1;
   }
   &__info {
     :deep(a) {
@@ -162,6 +170,12 @@ export default defineComponent({
         color: map.get(colors.$adm-colors, 'regular') !important;
         caret-color: map.get(colors.$adm-colors, 'regular') !important;
       }
+    }
+    &__crypto-subtitle-muted {
+      color: map.get(colors.$adm-colors, 'muted');
+    }
+    &__crypto-subtitle-bold {
+      color: map.get(colors.$adm-colors, 'regular');
     }
   }
 }
