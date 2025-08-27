@@ -6,6 +6,7 @@
       :messages="messages"
       :show-new-chat-placeholder="showNewChatPlaceholder"
       :partners="partners"
+      :partner-id="partnerId"
       :is-getting-public-key="isGettingPublicKey"
       :user-id="userId"
       :loading="loading && !isGettingPublicKey"
