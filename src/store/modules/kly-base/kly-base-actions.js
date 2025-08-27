@@ -185,6 +185,8 @@ function createActions(options) {
       }
 
       commit('areRecentLoading', true)
+
+      // eslint-disable-next-line no-useless-catch
       try {
         const timestamp = state.maxTimestamp
           ? `${getKlayrTimestamp(state.maxTimestamp)}:`
@@ -207,7 +209,7 @@ function createActions(options) {
           }
         }
       } catch (err) {
-        console.log(err)
+        throw err
       }
     },
 
@@ -220,6 +222,8 @@ function createActions(options) {
       if (state.bottomReached) return
 
       commit('areOlderLoading', true)
+
+      // eslint-disable-next-line no-useless-catch
       try {
         const timestamp =
           state.minTimestamp < Infinity ? `:${getKlayrTimestamp(state.minTimestamp)}` : undefined
@@ -242,7 +246,7 @@ function createActions(options) {
           commit('bottom', true)
         }
       } catch (err) {
-        console.log(err)
+        throw err
       }
     },
 
