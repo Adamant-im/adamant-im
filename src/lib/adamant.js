@@ -1,4 +1,3 @@
-/* eslint-disable no-redeclare */
 'use strict'
 
 import sodium from 'sodium-browserify-tweetnacl'
@@ -95,7 +94,6 @@ adamant.makeKeypair = function (hash) {
     privateKey: keypair.secretKey
   }
 }
-
 
 /**
  * Calculates tx id
@@ -204,7 +202,7 @@ adamant.getBytes = function (transaction) {
 
   if (transaction.recipientId) {
     let recipient = transaction.recipientId.slice(1)
-    // eslint-disable-next-line new-cap
+
     recipient = new BigNumber(recipient).toBuffer({ size: 8 })
 
     for (let i = 0; i < 8; i++) {
