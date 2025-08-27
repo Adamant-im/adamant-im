@@ -36,15 +36,15 @@
       <template v-if="showSendButton" #append-inner>
         <slot name="append" />
         <v-icon
+          class="a-chat__form-send-area"
           :color="isDisabled ? 'grey' : 'white'"
           :icon="mdiSend"
           size="28"
           :disabled="isDisabled"
+          @click="submitMessage"
         />
       </template>
     </v-textarea>
-
-    <div v-if="showSendButton" class="a-chat__form-send-area" @click="submitMessage" />
   </div>
 </template>
 
@@ -342,6 +342,7 @@ defineExpose({
     max-height: 230px;
     overflow-y: auto;
   }
+
   :deep(.v-text-field) {
     align-items: flex-end;
   }
@@ -378,12 +379,9 @@ defineExpose({
 }
 
 .a-chat__form-send-area {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
+  &:hover {
+    color: map.get(colors.$adm-colors, 'primary') !important;
+  }
 }
 
 .v-theme--light {
