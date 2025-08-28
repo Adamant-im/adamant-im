@@ -60,15 +60,11 @@ export abstract class Node<C = unknown> {
   wsPortNeeded = false
   hasSupportedProtocol = true
 
-  // Healthcheck related params
+  /** Healthcheck related params. */
   /**
-   * Indicates whether a node with alternative IP is available
+   * Whether it is the first connection via URL domain or subsequent.
    */
-  altIpAvailable = false
-  /**
-   * Indicates whether a node with main URL is available
-   */
-  availableByDomain = true
+  firstDomainAttempt = true
   /**
    * Indicates whether node is available.
    */
@@ -149,31 +145,29 @@ export abstract class Node<C = unknown> {
     if (this.active && !this.healthcheckInProgress) {
       try {
         this.healthcheckInProgress = true
+
         const health = await this.checkHealth()
 
         this.height = health.height
         this.ping = health.ping
-        this.online = true
-        if (this.preferDomain) {
-          console.info(
-            `Attempt to connect by URL domain ${this.url} performed successfully, using it by default.`
-          )
-          this.availableByDomain = true
-        } else {
-          console.info(
-            `There was a failed attempt to connect by URL domain ${this.url}, using IP ${this.altIp} by default.`
-          )
+
+        if (this.online) {
+          if (this.preferDomain) {
+            console.info(`Connect by domain ${this.url} succeeded.`)
+            this.firstDomainAttempt = false
+          } else {
+            console.info(`Connect by IP ${this.altIp} succeeded.`)
+          }
         }
       } catch {
-        if (this.preferDomain && this.availableByDomain) {
+        if (this.preferDomain && this.firstDomainAttempt) {
           console.info(
-            `There was a failed attempt to connect by URL domain ${this.url}, trying to connect by IP ${this.altIp} in the next attempt.`
+            `Connect by domain ${this.url} failed. Will try to connect by IP ${this.altIp}.`
           )
-          this.availableByDomain = false
           this.preferDomain = false
         } else {
           console.info(
-            `There was failed attempts to connect by URL domain ${this.url} and by IP ${this.altIp}, assume node is offline.`
+            `Connect by domain ${this.url} and by IP ${this.altIp} failed. Node is offline.`
           )
           this.online = false
           this.preferDomain = true
@@ -216,7 +210,7 @@ export abstract class Node<C = unknown> {
     const baseURL = node.preferDomain ? node.url : (node.altIp as string)
     const { altIp, protocol, wsProtocol, url } = node
 
-    console.info({ baseURL, altIp, protocol, wsProtocol, url })
+    console.log({ baseURL, altIp, protocol, wsProtocol, url })
 
     return baseURL
   }
