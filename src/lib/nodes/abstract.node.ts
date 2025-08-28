@@ -144,14 +144,14 @@ export abstract class Node<C = unknown> {
 
     if (this.active && !this.healthcheckInProgress) {
       try {
-        this.healthcheckInProgress = true
-
-        const health = await this.checkHealth()
-
-        this.height = health.height
-        this.ping = health.ping
-
         if (this.online) {
+          this.healthcheckInProgress = true
+
+          const health = await this.checkHealth()
+
+          this.height = health.height
+          this.ping = health.ping
+
           if (this.preferDomain && this.firstDomainAttempt) {
             console.info(`[HealthCheck] Connection via URL ${this.url} succeeded.`)
             this.firstDomainAttempt = false
