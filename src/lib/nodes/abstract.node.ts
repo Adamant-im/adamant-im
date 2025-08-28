@@ -153,14 +153,14 @@ export abstract class Node<C = unknown> {
 
         if (this.online) {
           if (this.preferDomain) {
-            console.info(`[HealthCheck] Connect by domain ${this.url} succeeded.`)
+            console.info(`[HealthCheck] Connection via URL ${this.url} succeeded.`)
             this.firstDomainAttempt = false
           } else {
-            console.info(`[HealthCheck] Connect by IP ${this.altIp} succeeded.`)
+            console.info(`[HealthCheck] Connection via alternative IP ${this.altIp} succeeded.`)
           }
         } else {
           console.info(
-            `[HealthCheck] Node with domain ${this.url} and IP ${this.altIp} is offline.`
+            `[HealthCheck] Node with URL ${this.url} and alternative IP ${this.altIp} is offline.`
           )
         }
       } catch {
@@ -168,21 +168,22 @@ export abstract class Node<C = unknown> {
           if (this.preferDomain && this.firstDomainAttempt) {
             if (this.altIp) {
               console.info(
-                `[HealthCheck] Connect by domain ${this.url} failed. Will try to connect by IP ${this.altIp}.`
+                `[HealthCheck] Connection via URL ${this.url} failed. Will try to connect via alternative IP ${this.altIp}.`
               )
               this.preferDomain = false
             } else {
-              console.info(`[HealthCheck] Connect by domain ${this.url} failed.`)
+              console.info(`[HealthCheck] Connection via URL ${this.url} failed.`)
             }
           } else {
             if (this.altIp) {
               console.info(
-                `[HealthCheck] Connect by domain ${this.url} and by IP ${this.altIp} failed. Node is offline.`
+                `[HealthCheck] Connection via URL ${this.url} and via alternative IP ${this.altIp} failed. Node is offline.`
               )
               this.preferDomain = true
             } else {
-              console.info(`[HealthCheck] Connect by domain ${this.url} failed. Node is offline.`)
+              console.info(`[HealthCheck] Connection via URL ${this.url} failed. Node is offline.`)
             }
+
             this.online = false
           }
         }
