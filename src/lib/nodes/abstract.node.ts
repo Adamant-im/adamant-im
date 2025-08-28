@@ -152,7 +152,7 @@ export abstract class Node<C = unknown> {
         this.ping = health.ping
 
         if (this.online) {
-          if (this.preferDomain) {
+          if (this.preferDomain && this.firstDomainAttempt) {
             console.info(`[HealthCheck] Connection via URL ${this.url} succeeded.`)
             this.firstDomainAttempt = false
           } else {
@@ -174,6 +174,8 @@ export abstract class Node<C = unknown> {
             } else {
               console.info(`[HealthCheck] Connection via URL ${this.url} failed.`)
             }
+
+            this.firstDomainAttempt = false
           } else {
             if (this.altIp) {
               console.info(
