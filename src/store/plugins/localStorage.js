@@ -19,7 +19,8 @@ const vuexPersistence = new VuexPersistence({
         useSocketConnection: state.options.useSocketConnection,
         suppressWarningOnAddressesNotification:
           state.options.suppressWarningOnAddressesNotification,
-        currentRate: state.options.currentRate
+        currentRate: state.options.currentRate,
+        authenticationMethod: state.options.authenticationMethod
       }
     }
   }

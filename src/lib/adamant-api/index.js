@@ -630,30 +630,35 @@ export function loginOrRegister(passphrase) {
 }
 
 /**
- * Login via password.
- * @param {string} password
+ * Universal authentication method for password, biometric, and passkey login.
+ * @param {object} options - { password?, passphrase? }
  * @param {any} store
- * @returns {Promise} Encrypted password
+ * @returns {Promise} Account with passphrase
  */
-export function loginViaPassword(password, store) {
-  return encryptPassword(password)
-    .then((encryptedPassword) => {
-      store.commit('setPassword', encryptedPassword)
+export function loginViaAuthentication(options = {}, store) {
+  const { password, passphrase } = options
 
-      return restoreState(store)
+  let initPromise = Promise.resolve()
+  if (password) {
+    initPromise = encryptPassword(password).then((encrypted) => {
+      store.commit('setPassword', encrypted)
     })
+  }
+
+  return initPromise
+    .then(() => restoreState(store))
     .then(() => {
-      const passphrase = Base64.decode(store.state.passphrase)
+      const finalPassphrase = passphrase || Base64.decode(store.state.passphrase)
 
       try {
-        unlock(passphrase)
+        unlock(finalPassphrase)
       } catch (e) {
         return Promise.reject(e)
       }
 
       return getCurrentAccount().then((account) => ({
         ...account,
-        passphrase
+        passphrase: finalPassphrase
       }))
     })
 }

@@ -82,7 +82,7 @@ const isRecentLoading = computed(() => store.getters[`${cryptoModule.value}/areR
 
 const isOlderLoading = computed(() => store.getters[`${cryptoModule.value}/areOlderLoading`])
 
-const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
+const isUsingSecureLogin = computed(() => store.getters['options/isUsingSecureLogin'])
 const isIDBReady = computed(() => store.state.IDBReady)
 const transactions = computed(() => {
   const transactions: (CoinTransaction & { data?: string })[] =
@@ -227,7 +227,7 @@ const handleLoading = (isConnected: boolean) => {
 }
 
 onMounted(() => {
-  if (!isLoginViaPassword.value || isIDBReady.value) {
+  if (!isUsingSecureLogin.value || isIDBReady.value) {
     getNewTransactions()
   }
 

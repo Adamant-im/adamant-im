@@ -222,7 +222,25 @@
     "remove_password": "Remove password",
     "remove_password_hint": "Or remove your password to log in with a passphrase",
     "user_password_title": "Password",
-    "user_password_unlock": "Unlock"
+    "user_password_unlock": "Unlock",
+    "use_passphrase_hint": "Having trouble?",
+    "use_passphrase": "Use passphrase instead"
+  },
+  "biometric_login": {
+    "authenticating": "Authenticating...",
+    "authentication_failed": "Authentication failed",
+    "touch_sensor": "Touch sensor to sign in",
+    "try_again": "Try Again",
+    "use_passphrase_hint": "Having trouble?",
+    "use_passphrase": "Use passphrase instead"
+  },
+  "passkey_login": {
+    "authenticating": "Authenticating...",
+    "authentication_failed": "Authentication failed",
+    "touch_sensor": "Touch sensor or use security key",
+    "try_again": "Try Again",
+    "use_passphrase_hint": "Having trouble?",
+    "use_passphrase": "Use passphrase instead"
   },
   "nodes": {
     "active": "Active",
@@ -290,6 +308,18 @@
     "send_on_enter_tooltip": "Send messages with Enter key, for new line Ctrl+Enter",
     "stay_logged_in": "Stay logged in",
     "stay_logged_in_tooltip": "Set an app password for quick access. A strong password keeps your messages and passphrase securely encrypted.",
+    "authentication_method": "Choose authentication method",
+    "password_auth": "Password",
+    "biometric_auth": "Biometric (Touch ID/Face ID)",
+    "passkey_auth": "Passkey",
+    "biometric_setup_success": "Biometric authentication configured successfully",
+    "biometric_setup_failed": "Failed to setup biometric authentication",
+    "biometric_not_available": "Biometric authentication is not available in browser",
+    "passkey_setup_success": "Passkey authentication configured successfully",
+    "passkey_setup_failed": "Failed to setup passkey authentication",
+    "passkey_not_available": "Passkey authentication is not supported on this device",
+    "biometric_auth_failed": "Biometric authentication failed",
+    "passkey_auth_failed": "Passkey authentication failed",
     "use_full_date": "Always show full dates",
     "use_full_date_tooltip": "Displays dates as 2021-01-17 instead of relative terms like 'Yesterday' or 'Today'",
     "version": "App Version:",

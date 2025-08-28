@@ -177,8 +177,9 @@ export type CurrentAccountWithPassphrase = CurrentAccount & {
   passphrase: string
 }
 
-export function loginViaPassword(
-  password: string,
+
+export function loginViaAuthentication(
+  options: { password?: string; passphrase?: string },
   store: Store<RootState>
 ): Promise<CurrentAccountWithPassphrase>
 

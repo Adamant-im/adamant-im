@@ -60,6 +60,7 @@ import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useSaveCursor } from '@/hooks/useSaveCursor'
 import { useConsiderOffline } from '@/hooks/useConsiderOffline'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import { passwordAuth } from '@/lib/auth'
 
 const className = 'login-form'
 const classes = {
@@ -106,8 +107,8 @@ const admNodesDisabled = computed(() => admNodes.value.some((node) => node.statu
 const submit = () => {
   showSpinner.value = true
 
-  return store
-    .dispatch('loginViaPassword', password.value)
+  return passwordAuth
+    .authorizeUser(password.value)
     .then(() => {
       emit('login')
     })

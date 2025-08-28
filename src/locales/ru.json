@@ -222,7 +222,25 @@
     "remove_password": "Удалить пароль",
     "remove_password_hint": "Или удалите пароль для входа по пассфразе",
     "user_password_title": "Пароль",
-    "user_password_unlock": "Разблокировать"
+    "user_password_unlock": "Разблокировать",
+    "use_passphrase_hint": "Возникли проблемы?",
+    "use_passphrase": "Использовать пассфразу"
+  },
+  "biometric_login": {
+    "authenticating": "Аутентификация...",
+    "authentication_failed": "Ошибка аутентификации",
+    "touch_sensor": "Коснитесь датчика для входа",
+    "try_again": "Попробовать снова",
+    "use_passphrase_hint": "Возникли проблемы?",
+    "use_passphrase": "Использовать пассфразу"
+  },
+  "passkey_login": {
+    "authenticating": "Аутентификация...",
+    "authentication_failed": "Ошибка аутентификации",
+    "touch_sensor": "Коснитесь датчика или используйте ключ",
+    "try_again": "Попробовать снова",
+    "use_passphrase_hint": "Возникли проблемы?",
+    "use_passphrase": "Использовать пассфразу"
   },
   "nodes": {
     "active": "Активная",
@@ -290,6 +308,18 @@
     "send_on_enter_tooltip": "Отправлять сообщения по клавише Enter, новая строка Ctrl+Enter",
     "stay_logged_in": "Оставаться в приложении",
     "stay_logged_in_tooltip": "Задайте пароль приложения для быстрого доступа. Ваши переписка и пассфраза надежно шифруются при сильном пароле.",
+    "authentication_method": "Выберите способ аутентификации",
+    "password_auth": "Пароль",
+    "biometric_auth": "Биометрия (Touch ID/Face ID)",
+    "passkey_auth": "Passkey",
+    "biometric_setup_success": "Биометрическая аутентификация настроена успешно",
+    "biometric_setup_failed": "Не удалось настроить биометрическую аутентификацию",
+    "biometric_not_available": "Биометрическая аутентификация недоступна в браузере",
+    "passkey_setup_success": "Passkey аутентификация настроена успешно",
+    "passkey_setup_failed": "Не удалось настроить Passkey аутентификацию",
+    "passkey_not_available": "Passkey аутентификация не поддерживается на этом устройстве",
+    "biometric_auth_failed": "Не удалось войти по биометрии",
+    "passkey_auth_failed": "Не удалось войти по Passkey",
     "use_full_date": "Показывать даты полностью",
     "use_full_date_tooltip": "Всегда показывать даты в полном формате, например, 2021-01-17 вместо 'Вчера' и 'Сегодня'",
     "version": "Версия приложения:",

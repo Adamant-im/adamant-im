@@ -2,6 +2,7 @@ import { Cryptos, Rates } from '@/lib/constants'
 
 const state = () => ({
   stayLoggedIn: false, // if true, messages and passphrase will be stored encrypted. If false, localStorage will be cleared after logout
+  authenticationMethod: null,
   sendMessageOnEnter: true,
   allowSoundNotifications: true,
   allowTabNotifications: true,
@@ -29,7 +30,8 @@ const state = () => ({
 })
 
 const getters = {
-  isLoginViaPassword: (state) => state.stayLoggedIn,
+  isUsingSecureLogin: (state) =>
+    state.stayLoggedIn && state.authenticationMethod && state.authenticationMethod !== 'Passphrase',
   scrollTopPosition: (state) => state.scrollTopPosition,
   currentNodesTab: (state) => state.currentNodesTab,
   wasSendingFunds: (state) => state.sendFundsData.wasSendingFunds,

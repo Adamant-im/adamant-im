@@ -116,7 +116,7 @@ function chatThrottle(chatId) {
 }
 
 export default (store) => {
-  if (store.getters['options/isLoginViaPassword']) {
+  if (store.getters['options/isUsingSecureLogin']) {
     if (store.state.password) {
       restoreState(store)
         .then(() => {
@@ -167,7 +167,7 @@ export default (store) => {
 
   store.subscribe((mutation, state) => {
     // start sync if state has been saved to IDB
-    if (state.IDBReady && store.getters['options/isLoginViaPassword']) {
+    if (state.IDBReady && store.getters['options/isUsingSecureLogin']) {
       if (isModuleMutation(mutation.type)) {
         const [moduleName] = mutation.type.split('/')
 
