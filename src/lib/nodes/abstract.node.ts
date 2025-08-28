@@ -157,6 +157,7 @@ export abstract class Node<C = unknown> {
             this.firstDomainAttempt = false
           } else {
             console.info(`[HealthCheck] Connection via alternative IP ${this.altIp} succeeded.`)
+            this.hasSupportedProtocol = true
           }
         } else {
           console.info(
@@ -317,8 +318,6 @@ export abstract class Node<C = unknown> {
       this.port = new URL(baseURL).port
       this.protocol = new URL(baseURL).protocol as HttpProtocol
     }
-
-    this.hasSupportedProtocol = !(this.protocol === 'http:' && appProtocol === 'https:')
     this.wsProtocol = this.protocol === 'https:' ? 'wss:' : 'ws:'
   }
 
