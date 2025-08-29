@@ -1,9 +1,5 @@
-import {
-  createStore
-} from 'vuex'
-import {
-  Base64
-} from 'js-base64'
+import { createStore } from 'vuex'
+import { Base64 } from 'js-base64'
 
 import {
   unlock,
@@ -12,24 +8,12 @@ import {
   sendSpecialMessage,
   getCurrentAccount
 } from '@/lib/adamant-api'
-import {
-  CryptosInfo,
-  Fees,
-  FetchStatus
-} from '@/lib/constants'
-import {
-  encryptPassword
-} from '@/lib/idb/crypto'
-import {
-  flushCryptoAddresses,
-  validateStoredCryptoAddresses
-} from '@/lib/store-crypto-address'
-import {
-  registerCryptoModules
-} from './utils/registerCryptoModules'
-import {
-  registerVuexPlugins
-} from './utils/registerVuexPlugins'
+
+import { CryptosInfo, Fees, FetchStatus } from '@/lib/constants'
+import { encryptPassword } from '@/lib/idb/crypto'
+import { flushCryptoAddresses, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
+import { registerCryptoModules } from './utils/registerCryptoModules'
+import { registerVuexPlugins } from './utils/registerVuexPlugins'
 import sessionStoragePlugin from './plugins/sessionStorage'
 import localStoragePlugin from './plugins/localStorage'
 import indexedDbPlugin from './plugins/indexedDb'
@@ -58,13 +42,8 @@ import identicon from './modules/identicon'
 import notification from './modules/notification'
 import cache from '@/store/cache'
 import rate from './modules/rate'
-import {
-  cryptoTransferAsset,
-  replyWithCryptoTransferAsset
-} from '@/lib/adamant-api/asset'
-import {
-  PendingTxStore
-} from '@/lib/pending-transactions'
+import { cryptoTransferAsset, replyWithCryptoTransferAsset } from '@/lib/adamant-api/asset'
+import { PendingTxStore } from '@/lib/pending-transactions'
 import servicesModule from './modules/services'
 import servicesPlugin from './modules/services/services-plugin'
 
@@ -148,10 +127,7 @@ const store = {
       state.publicKeys = {}
       cache.resetCachedSeed()
     },
-    setPublicKey(state, {
-      adamantAddress,
-      publicKey
-    }) {
+    setPublicKey(state, { adamantAddress, publicKey }) {
       state.publicKeys[adamantAddress] = publicKey
     },
     setIsOnline(state, value) {
@@ -162,10 +138,7 @@ const store = {
     }
   },
   actions: {
-    login({
-      commit,
-      dispatch
-    }, passphrase) {
+    login({ commit, dispatch }, passphrase) {
       // First, clear previous account data, if it exists. Calls resetState(state, getInitialState()) also
       dispatch('reset')
 
@@ -179,10 +152,7 @@ const store = {
         dispatch('afterLogin', passphrase)
       })
     },
-    loginViaAuthentication({
-      commit,
-      dispatch
-    }, options) {
+    loginViaAuthentication({ commit, dispatch }, options) {
       return loginViaAuthentication(options, this).then((account) => {
         commit('setIDBReady', true)
 
@@ -190,9 +160,7 @@ const store = {
         dispatch('afterLogin', account.passphrase)
       })
     },
-    logout({
-      dispatch
-    }) {
+    logout({ dispatch }) {
       dispatch('reset')
       dispatch('wallets/initWalletsSymbols')
       dispatch('draftMessage/resetState', null, {
@@ -200,10 +168,7 @@ const store = {
       })
       PendingTxStore.clear()
     },
-    unlock({
-      state,
-      dispatch
-    }) {
+    unlock({ state, dispatch }) {
       // user updated an app, F5 or something
       const passphrase = Base64.decode(state.passphrase)
 
@@ -222,9 +187,9 @@ const store = {
         comments: payload.comments
       }
 
-      const asset = payload.replyToId ?
-        replyWithCryptoTransferAsset(payload.replyToId, transferPayload) :
-        cryptoTransferAsset(transferPayload)
+      const asset = payload.replyToId
+        ? replyWithCryptoTransferAsset(payload.replyToId, transferPayload)
+        : cryptoTransferAsset(transferPayload)
 
       return sendSpecialMessage(payload.address, asset).then((result) => {
         if (!result.success) {
@@ -233,9 +198,7 @@ const store = {
         return result.success
       })
     },
-    reset({
-      commit
-    }) {
+    reset({ commit }) {
       commit('reset', null, {
         root: true
       })
@@ -244,18 +207,14 @@ const store = {
         value: null
       })
     },
-    setPassword({
-      commit
-    }, password) {
+    setPassword({ commit }, password) {
       return encryptPassword(password).then((encryptedPassword) => {
         commit('setPassword', encryptedPassword)
 
         return encryptedPassword
       })
     },
-    removePassword({
-      commit
-    }) {
+    removePassword({ commit }) {
       commit('resetPassword')
       commit('setIDBReady', false)
       commit('options/updateOption', {
@@ -267,9 +226,7 @@ const store = {
         value: null
       })
     },
-    updateBalance({
-      commit
-    }, payload = {}) {
+    updateBalance({ commit }, payload = {}) {
       if (payload.requestedByUser) {
         commit('setBalanceStatus', FetchStatus.Loading)
       }
@@ -292,22 +249,19 @@ const store = {
 
     startInterval: {
       root: true,
-      handler({
-        dispatch,
-        getters
-      }) {
+      handler({ dispatch, getters }) {
         function repeat() {
           validateStoredCryptoAddresses()
           dispatch('updateBalance')
             .catch((err) => console.error(err))
             .then(
               () =>
-              (interval = setTimeout(
-                repeat,
-                getters.isAccountNew() ?
-                UPDATE_BALANCE_INTERVAL_FOR_NEW_ACCOUNT :
-                UPDATE_BALANCE_INTERVAL
-              ))
+                (interval = setTimeout(
+                  repeat,
+                  getters.isAccountNew()
+                    ? UPDATE_BALANCE_INTERVAL_FOR_NEW_ACCOUNT
+                    : UPDATE_BALANCE_INTERVAL
+                ))
             )
         }
         dispatch('initBalanceUpdate').catch((err) => console.error(err))
@@ -364,8 +318,6 @@ registerVuexPlugins(storeInstance, [
   servicesPlugin
 ])
 
-export {
-  store
-} // for tests
+export { store } // for tests
 
 export default storeInstance
