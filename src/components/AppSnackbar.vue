@@ -64,7 +64,7 @@ const timeout = computed(() =>
 
 .app-snackbar {
   :deep(.v-overlay__content) {
-    bottom: calc(var(--v-layout-bottom, 0px) + env(safe-area-inset-bottom, 0px));
+    bottom: calc(0dvh + var(--v-layout-bottom, 0px) + env(safe-area-inset-bottom, 0px));
   }
 
   :deep(.v-snackbar__wrapper) {
@@ -102,7 +102,7 @@ const timeout = computed(() =>
 
 .v-theme--light.app-snackbar {
   :deep(.v-snackbar__wrapper) {
-    background-color: map.get(settings.$shades, 'white');
+    background-color: map.get(colors.$adm-colors, 'secondary');
     color: map.get(colors.$adm-colors, 'regular');
   }
 }
