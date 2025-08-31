@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { FileAsset } from '@/lib/adamant-api/asset'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { LocalFile, isLocalFile } from '@/lib/files'
+import { PreviewPreferences } from '@/lib/constants'
 
 export const AChatFileLoader = defineComponent(
   (props, { slots }) => {
@@ -33,18 +34,51 @@ export const AChatFileLoader = defineComponent(
       }
     })
 
+    const isAutoDownloadAllowed = (preferenceKey: string) => {
+      return computed(() => {
+        const isContact = store.getters['partners/displayName'](props.partnerId)
+        const preference = store.state.options[preferenceKey]
+
+        return (
+          preference === PreviewPreferences.everybody ||
+          (isContact && preference === PreviewPreferences.contacts)
+        )
+      })
+    }
+
+    const allowAutoDownloadFile = isAutoDownloadAllowed('fullMediaPreference')
+    const allowAutoDownloadPreview = isAutoDownloadAllowed('previewPreference')
+
     const { data, isLoading, error } = useQuery({
       queryKey: ['file', (props.file as FileAsset).id],
       queryFn: async () => {
         const file = props.file as FileAsset
 
-        const fileUrl = await store.dispatch('attachment/getAttachmentUrl', {
-          cid: file.id,
-          publicKey: publicKey.value,
-          nonce: file.nonce
-        })
+        const previewPromise =
+          allowAutoDownloadPreview.value && file.preview?.id
+            ? store.dispatch('attachment/getAttachmentUrl', {
+                cid: file.preview.id,
+                publicKey: publicKey.value,
+                nonce: file.preview.nonce
+              })
+            : Promise.resolve(null)
 
-        return fileUrl
+        const previewUrl = await previewPromise
+
+        let fileUrl: string | null = null
+        if (allowAutoDownloadFile.value) {
+          store
+            .dispatch('attachment/getAttachmentUrl', {
+              cid: file.id,
+              publicKey: publicKey.value,
+              nonce: file.nonce
+            })
+            .then((url) => {
+              fileUrl = url
+            })
+        }
+
+        return { fileUrl, previewUrl }
       },
       enabled: !isLocalFile(props.file),
       retry: false,
@@ -57,7 +91,25 @@ export const AChatFileLoader = defineComponent(
         return store.getters['attachment/getImageUrl'](props.file.file.cid)
       }
 
-      return data.value
+      const localUrl = store.getters['attachment/getImageUrl'](props.file.id)
+      if (localUrl) {
+        return localUrl
+      }
+
+      return data.value?.fileUrl
+    })
+
+    const previewUrl = computed(() => {
+      if (isLocalFile(props.file)) {
+        return store.getters['attachment/getImageUrl'](props.file.file.preview?.cid)
+      }
+
+      const localUrl = store.getters['attachment/getImageUrl'](props.file.preview?.id)
+      if (localUrl) {
+        return localUrl
+      }
+
+      return data.value?.previewUrl
     })
 
     const uploadProgress = computed(() => {
@@ -68,15 +120,35 @@ export const AChatFileLoader = defineComponent(
       return 100
     })
 
+    const downloadFileProgress = computed(() => {
+      if (isLocalFile(props.file)) {
+        return store.getters['attachment/getDownloadProgress'](props.file.file.cid)
+      }
+
+      return store.getters['attachment/getDownloadProgress'](props.file.id)
+    })
+
+    const downloadPreviewProgress = computed(() => {
+      if (isLocalFile(props.file)) {
+        return store.getters['attachment/getDownloadProgress'](props.file.file.preview?.cid)
+      }
+
+      return store.getters['attachment/getDownloadProgress'](props.file.preview?.id)
+    })
+
     return () => (
       <>
         {slots.default?.({
           isLoading: unref(isLoading),
           uploadProgress: unref(uploadProgress),
+          downloadFileProgress: unref(downloadFileProgress),
+          downloadPreviewProgress: unref(downloadPreviewProgress),
           fileUrl: unref(fileUrl),
+          previewUrl: unref(previewUrl),
           error: unref(error),
           width: unref(width),
-          height: unref(height)
+          height: unref(height),
+          allowAutoDownloadPreview: unref(allowAutoDownloadPreview)
         })}
       </>
     )

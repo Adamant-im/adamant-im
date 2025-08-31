@@ -8,43 +8,41 @@
       </template>
     </v-list-item>
 
-    <v-divider />
+    <div v-if="allowCopy">
+      <v-divider />
 
-    <v-list-item @click="emit('click:copy')">
-      <v-list-item-title>{{ t('chats.chat_actions.copy') }}</v-list-item-title>
+      <v-list-item @click="emit('click:copy')">
+        <v-list-item-title>{{ t('chats.chat_actions.copy') }}</v-list-item-title>
 
-      <template #append>
-        <v-icon :icon="mdiContentCopy" />
-      </template>
-    </v-list-item>
+        <template #append>
+          <v-icon :icon="mdiContentCopy" />
+        </template>
+      </v-list-item>
+    </div>
   </v-list>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
-import { mdiContentCopy,  mdiReply } from '@mdi/js'
-
+import { mdiContentCopy, mdiReply } from '@mdi/js'
 
 const className = 'message-actions-list'
 const classes = {
   root: className
 }
 
-export default defineComponent({
-  emits: ['click:reply', 'click:copy'],
-  setup(props, { emit }) {
-    const { t } = useI18n()
+type Props = {
+  allowCopy: boolean
+}
 
-    return {
-      classes,
-      t,
-      emit,
-      mdiContentCopy,
-      mdiReply
-    }
-  }
-})
+defineProps<Props>()
+
+const emit = defineEmits<{
+  (e: 'click:reply'): void
+  (e: 'click:copy'): void
+}>()
+
+const { t } = useI18n()
 </script>
 
 <style lang="scss">

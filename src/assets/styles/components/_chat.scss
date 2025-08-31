@@ -124,6 +124,26 @@ $scroll-bar-width: 4px;
     }
   }
 
+  &__download-attachments-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+
+    &--left {
+      left: -48px;
+    }
+
+    &--right {
+      right: -48px;
+    }
+
+    &__icon {
+      color: map.get(colors.$adm-colors, 'grey');
+    }
+  }
+
   &__message {
     display: flex;
     flex-direction: row;
@@ -132,6 +152,12 @@ $scroll-bar-width: 4px;
     padding-left: 16px;
     padding-right: 16px;
     border-radius: 8px;
+
+    &--with-attachments {
+      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 0;
+      box-shadow: none;
+    }
   }
 
   &__message-actions-icon {
@@ -414,6 +440,19 @@ $scroll-bar-width: 4px;
       &--green {
         background-color: map.get(settings.$green, 'lighten-5');
       }
+
+      &--with-attachments {
+        box-shadow: none;
+      }
+    }
+
+    &__message-container {
+      &--with-attachments {
+        box-shadow:
+          0 1px 10px hsla(0, 0%, 39.2%, 0.06),
+          0 1px 1px hsla(0, 0%, 39.2%, 0.04),
+          0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
+      }
     }
 
     &__sender {
@@ -524,6 +563,19 @@ $scroll-bar-width: 4px;
       }
       &--green {
         background-color: map.get(settings.$grey, 'darken-3');
+      }
+
+      &--with-attachments {
+        box-shadow: none;
+      }
+    }
+
+    &__message-container {
+      &--with-attachments {
+        box-shadow:
+          0 1px 10px hsla(0, 0%, 39.2%, 0.06),
+          0 1px 1px hsla(0, 0%, 39.2%, 0.04),
+          0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
       }
     }
 

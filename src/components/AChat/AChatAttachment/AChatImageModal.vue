@@ -24,7 +24,13 @@
         :continuous="false"
       >
         <template v-for="(file, i) in files" :key="i">
-          <AChatImageModalItem v-if="isTypeImage(file)" :transaction="transaction" :file="file" />
+          <AChatImageModalItem
+            v-if="isTypeImage(file)"
+            :transaction="transaction"
+            :file="file"
+            :is-current-slide="slide === i"
+            @close-modal="closeModal"
+          />
           <AChatModalFile v-else :file="file">
             <v-btn
               class="mt-3"
@@ -54,65 +60,16 @@
 </template>
 
 <script lang="ts">
-import { ref, computed, onMounted, PropType } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { useStore } from 'vuex'
+import { ref, computed, PropType, onMounted, onBeforeUnmount } from 'vue'
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
-import { Capacitor } from '@capacitor/core'
-import { Directory, Filesystem, WriteFileResult } from '@capacitor/filesystem'
-import { FileOpener } from '@capacitor-community/file-opener'
 
 import AChatImageModalItem from './AChatImageModalItem.vue'
 import AChatModalFile from './AChatModalFile.vue'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { FileAsset } from '@/lib/adamant-api/asset'
 import { mdiArrowCollapseDown, mdiChevronLeft, mdiChevronRight, mdiClose } from '@mdi/js'
-
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-async function downloadFileNatively(blobUrl: string, filename: string): Promise<WriteFileResult> {
-  const response = await fetch(blobUrl)
-  const blob = await response.blob()
-
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(blob)
-
-    reader.onloadend = async () => {
-      const base64Data = reader.result?.toString().split(',')[1]
-
-      Filesystem.writeFile({
-        path: filename,
-        data: base64Data!,
-        directory: Directory.Data
-      })
-        .then(resolve)
-        .catch(reject)
-    }
-
-    reader.onerror = reject
-  })
-}
-
-async function downloadFileByUrl(url: string, filename = 'unnamed') {
-  if (Capacitor.isNativePlatform()) {
-    const fileResult = await downloadFileNatively(url, filename)
-    await FileOpener.open({ filePath: fileResult.uri })
-
-    return
-  }
-
-  const anchor = document.createElement('a')
-  anchor.href = url
-  anchor.download = filename
-
-  document.body.appendChild(anchor)
-  anchor.click()
-
-  document.body.removeChild(anchor)
-}
+import { App } from '@capacitor/app'
+import { useDownloadFile } from '@/components/AChat/hooks/useDownloadFile'
 
 const className = 'a-chat-image-modal'
 const classes = {
@@ -155,16 +112,14 @@ export default {
   },
   emits: ['close', 'update:modal'],
   setup(props, { emit }) {
-    const store = useStore()
-    const { t } = useI18n()
-    const slide = ref(0)
+    const slide = ref(props.index)
+    const { downloading, downloadFile } = useDownloadFile(
+      props.transaction,
+      props.files[slide.value]
+    )
 
     const breakpoints = useBreakpoints(breakpointsTailwind)
     const isMobile = breakpoints.smaller('sm')
-
-    onMounted(() => {
-      slide.value = props.index
-    })
 
     const show = computed({
       get() {
@@ -180,6 +135,9 @@ export default {
 
     const closeModal = () => {
       emit('close')
+      if (history.state?.modalOpen) {
+        history.back()
+      }
     }
 
     const prevSlide = () => {
@@ -212,47 +170,34 @@ export default {
       }
     }
 
-    const publicKey = computed(() =>
-      props.transaction.senderId === store.state.address
-        ? props.transaction.recipientPublicKey
-        : props.transaction.senderPublicKey
-    )
-
-    const downloading = ref(false)
-    const downloadFile = async () => {
-      const file = props.files[slide.value]
-      if (!file) {
-        console.warn(
-          `Failed to download the file. Reason: The file with index ${slide.value} does not exist`
-        )
-        return
-      }
-
-      try {
-        downloading.value = true
-        const imageUrl = await store.dispatch('attachment/getAttachmentUrl', {
-          cid: file.id,
-          publicKey: publicKey.value,
-          nonce: file.nonce
-        })
-
-        const fileName = file.name
-          ? `${file.name}${file.extension ? '.' + file.extension : ''}`
-          : undefined
-        await downloadFileByUrl(imageUrl, fileName)
-      } catch {
-        void store.dispatch('snackbar/show', {
-          message: t('chats.file_not_found')
-        })
-      } finally {
-        await delay(200) // show loading spinner at least 200ms for smoother UI
-        downloading.value = false
-      }
-    }
-
     const isTypeImage = (file: FileAsset) => {
-      return file.extension ? ['jpg', 'jpeg', 'png'].includes(file.extension) : false
+      return file.extension ? ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(file.extension) : false
     }
+
+    let backListener: { remove: () => void } | null = null
+
+    const handleBack = () => {
+      if (show.value) {
+        closeModal()
+      }
+    }
+
+    onMounted(async () => {
+      if (show.value) {
+        history.pushState({}, '')
+      }
+
+      window.addEventListener('popstate', handleBack)
+
+      backListener = await App.addListener('backButton', () => {
+        handleBack()
+      })
+    })
+
+    onBeforeUnmount(() => {
+      window.removeEventListener('popstate', handleBack)
+      backListener?.remove()
+    })
 
     return {
       slide,

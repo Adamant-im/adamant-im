@@ -2,7 +2,8 @@
   <div
     :class="{
       [classes.root]: true,
-      [classes.rootTransition]: pullDownReleased
+      [classes.rootTransition]: pullDownReleased,
+      [classes.fullHeight]: fullHeight
     }"
     v-touch="{
       move: onSwiping,
@@ -12,7 +13,7 @@
       top: `${elementTopOffset}px`
     }"
   >
-    <div :class="classes.loaderContainer">
+    <div v-if="!noLoader" :class="classes.loaderContainer">
       <v-progress-circular
         :class="{
           [classes.progressCircular]: true,
@@ -48,13 +49,26 @@ const classes = {
   progressCircular: `${className}__progress-circular`,
   progressCircularActivated: `${className}__progress-circular--activated`,
   actionText: `${className}__action-text`,
-  actionTextActivated: `${className}__action-text--activated`
+  actionTextActivated: `${className}__action-text--activated`,
+  fullHeight: `${className}__full-height`
 }
 
 export default defineComponent({
   props: {
     actionText: {
       type: String,
+      required: false
+    },
+    noLoader: {
+      type: Boolean,
+      required: false
+    },
+    offset: {
+      type: Number,
+      required: false
+    },
+    fullHeight: {
+      type: Boolean,
       required: false
     }
   },
@@ -68,7 +82,7 @@ export default defineComponent({
       pullDownReleased
     } = usePullDown(() => {
       emit('action')
-    })
+    }, props.offset)
 
     return {
       classes,
@@ -90,6 +104,10 @@ export default defineComponent({
 
 .pull-down {
   position: relative;
+
+  &__full-height {
+    height: 100%;
+  }
 
   &--transition {
     transition: all 0.6s;

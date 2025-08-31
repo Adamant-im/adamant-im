@@ -41,6 +41,7 @@
   "dependencies": {
     "@capacitor-community/file-opener": "^7.0.1",
     "@capacitor/android": "^7.3.0",
+    "@capacitor/app": "^7.0.2",
     "@capacitor/core": "^7.3.0",
     "@capacitor/filesystem": "^7.1.1",
     "@emoji-mart/data": "^1.2.1",
@@ -119,7 +120,8 @@
     "web3-eth-contract": "^4.7.2",
     "web3-providers-http": "^4.2.0",
     "web3-utils": "^4.3.3",
-    "web3-validator": "^2.0.6"
+    "web3-validator": "^2.0.6",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",

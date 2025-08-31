@@ -31,7 +31,7 @@ export const emojiWeight = {
       }
 
       return weightMap
-    } catch (err) {
+    } catch {
       // reset store item
       localStorage.setItem(EMOJI_WEIGHT_STORE_KEY, JSON.stringify(DEFAULT_EMOJI_WEIGHT_MAP))
 

@@ -6,7 +6,13 @@
       </div>
 
       <div :class="classes.message">
-        <span v-if="!isCryptoTransfer" v-html="messageLabel"></span>
+        <template v-if="isAttachment">
+          <span v-for="(part, i) in messageLabel" :key="i">
+            <component :is="part" />
+            <span v-if="i < messageLabel.length - 1">&nbsp;</span>
+          </span>
+        </template>
+        <span v-else-if="!isCryptoTransfer" v-html="messageLabel"></span>
         <span v-else>{{ cryptoTransferLabel }}</span>
       </div>
 
@@ -32,6 +38,7 @@ import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { formatChatPreviewMessage } from '@/lib/markdown'
 import { mdiClose } from '@mdi/js'
 import type { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { useFormatMediaMessage } from '@/components/AChat/hooks/useFormatMediaMessage'
 
 const className = 'a-chat-reply-preview'
 const classes = {
@@ -71,7 +78,13 @@ const cryptoTransferLabel = computed(() => {
   return `${direction} ${amount}${message}`
 })
 
+const isAttachment = computed(() => props.message.type === 'attachment')
+
 const messageLabel = computed(() => {
+  if (isAttachment.value) {
+    return useFormatMediaMessage(props.message)
+  }
+
   return store.state.options.formatMessages
     ? formatChatPreviewMessage(props.message.message)
     : props.message.message
@@ -88,7 +101,7 @@ $message-max-lines: 2;
 .a-chat-reply-preview {
   border-left: 3px solid map.get(colors.$adm-colors, 'attention');
   border-radius: 8px;
-  margin: 8px;
+  margin: 8px 0;
 
   &__container {
     padding: 8px 16px;

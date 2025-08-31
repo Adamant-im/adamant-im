@@ -21,10 +21,10 @@
       </span>
 
       <span v-else-if="isAttachment">
-        <span v-if="transaction.asset.files.length > 0">
-          [{{ transaction.asset.files.length }} {{ t('chats.files') }}]:
+        <span v-for="(part, i) in messageLabel" :key="i">
+          <component :is="part" />
+          <span v-if="i < messageLabel.length - 1">&nbsp;</span>
         </span>
-        {{ transaction.message }}
       </span>
 
       <span v-else>
@@ -45,6 +45,7 @@ import { Cryptos } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { formatChatPreviewMessage } from '@/lib/markdown'
 import { ChatMessageTransaction } from '@/lib/schema/client/api'
+import { useFormatMediaMessage } from '@/components/AChat/hooks/useFormatMediaMessage'
 
 const className = 'quoted-message'
 const classes = {
@@ -136,6 +137,10 @@ export default defineComponent({
     })
 
     const messageLabel = computed(() => {
+      if (isAttachment.value) {
+        return useFormatMediaMessage(transaction.value)
+      }
+
       if (transaction.value.i18n) {
         return t(transaction.value.message)
       }

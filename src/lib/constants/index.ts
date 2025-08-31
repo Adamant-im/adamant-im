@@ -61,7 +61,13 @@ export const RatesNames: Record<FiatCurrencySymbol, string> = {
   JPY: 'JPY (¥)' // Japanese Yen
 }
 
-export const UPLOAD_MAX_FILE_COUNT = 5
+export const PreviewPreferences = {
+  nobody: 'options.preview_option_nobody',
+  contacts: 'options.preview_option_contacts',
+  everybody: 'options.preview_option_everybody'
+} as const
+
+export const UPLOAD_MAX_FILE_COUNT = 10
 export const UPLOAD_MAX_FILE_SIZE = 250 * 1024 * 1024 // 250MB
 export const MAX_FILE_EXTENSION_DISPLAY_LENGTH = 4
 

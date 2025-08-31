@@ -62,6 +62,37 @@
         {{ t('options.chats_title') }}
       </h3>
       <v-row align="center" no-gutters>
+        <v-col cols="12" class="mb-8">
+          <v-row align="center" no-gutters>
+            <v-col cols="12">
+              <v-list-subheader :class="`${className}__label ${className}__label--bold`">
+                {{ t('options.autodownload_media') }}
+              </v-list-subheader>
+            </v-col>
+
+            <v-col cols="6">
+              <v-list-subheader :class="`${className}__label`">
+                {{ t('options.preview_label') }}
+              </v-list-subheader>
+            </v-col>
+            <v-col cols="6" class="text-right">
+              <preview-switcher :append-icon="mdiChevronDown" option-key="previewPreference" />
+            </v-col>
+
+            <v-col cols="6">
+              <v-list-subheader :class="`${className}__label`">
+                {{ t('options.full_media_label') }}
+              </v-list-subheader>
+            </v-col>
+            <v-col cols="6" class="text-right">
+              <preview-switcher :append-icon="mdiChevronDown" option-key="fullMediaPreference" />
+            </v-col>
+          </v-row>
+
+          <div class="a-text-explanation-enlarged">
+            {{ t('options.autodownload_media_tooltip') }}
+          </div>
+        </v-col>
         <v-col cols="12">
           <v-checkbox
             v-model="sendMessageOnEnter"
@@ -216,6 +247,7 @@ import NavigationWrapper from '@/components/NavigationWrapper.vue'
 import { useSavedScroll } from '@/hooks/useSavedScroll'
 import { sidebarLayoutKey } from '@/lib/constants'
 import { useChatStateStore } from '@/stores/modal-state'
+import PreviewSwitcher from '@/components/PreviewSwitcher.vue'
 
 const store = useStore()
 const chatStateStore = useChatStateStore()
@@ -474,6 +506,11 @@ onBeforeUnmount(() => {
   &__label,
   &__list__title {
     @include mixins.a-text-regular-enlarged();
+  }
+  &__label {
+    &--bold {
+      @include mixins.a-text-regular-enlarged-bold();
+    }
   }
   :deep(.v-list) {
     background: transparent;

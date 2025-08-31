@@ -15,24 +15,32 @@
 
       <v-list class="chat-menu__list">
         <!-- Attach Image -->
-        <v-list-item @click="uploadImageRef?.$el?.click()">
-          <template #prepend>
-            <icon-box>
-              <v-icon :icon="mdiImage" />
-            </icon-box>
-          </template>
-          <v-list-item-title>{{ t('chats.attach_image') }}</v-list-item-title>
-        </v-list-item>
+        <template v-if="!isDesktopDevice">
+          <v-list-item @click="uploadImageRef?.$el?.click()">
+            <template #prepend>
+              <icon-box>
+                <v-icon :icon="mdiImage" />
+              </icon-box>
+            </template>
+            <v-list-item-title>{{ t('chats.attach_image') }}</v-list-item-title>
+          </v-list-item>
+
+          <v-divider class="a-divider" />
+        </template>
 
         <!-- Attach File -->
         <v-list-item @click="uploadFileRef?.$el?.click()">
           <template #prepend>
             <icon-box>
-              <v-icon :icon="mdiFile" />
+              <v-icon :icon="isDesktopDevice ? mdiPaperclip : mdiFile" />
             </icon-box>
           </template>
-          <v-list-item-title>{{ t('chats.attach_file') }}</v-list-item-title>
+          <v-list-item-title>{{
+            isDesktopDevice ? t('chats.attach') : t('chats.attach_file')
+          }}</v-list-item-title>
         </v-list-item>
+
+        <v-divider class="a-divider" />
 
         <!-- Cryptos -->
         <v-list-item v-for="c in wallets" :key="c" @click="sendFunds(c)">
@@ -60,11 +68,11 @@ import ChatDialog from '@/components/Chat/ChatDialog.vue'
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import IconBox from '@/components/icons/IconBox.vue'
 import UploadFile from '../UploadFile.vue'
-import { mdiFile, mdiImage, mdiPlusCircleOutline } from '@mdi/js'
+import { mdiFile, mdiImage, mdiPlusCircleOutline, mdiPaperclip } from '@mdi/js'
 import { useChatStateStore } from '@/stores/modal-state'
-import type { FileData } from '@/lib/files'
 import { CoinSymbol } from '@/store/modules/wallets/types'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
+import { isMobile } from '@/lib/display-mobile'
 
 const fetchingErrors = {
   liskLegacy: 'Only legacy Lisk address',
@@ -73,13 +81,15 @@ const fetchingErrors = {
 } as const
 
 const emit = defineEmits<{
-  (e: 'files', value: FileData[]): void
+  (e: 'files', value: File[]): void
 }>()
 
 const { partnerId = '', replyToId } = defineProps<{
   partnerId?: string
   replyToId?: string
 }>()
+
+const isDesktopDevice = !isMobile()
 
 const router = useRouter()
 const store = useStore()
@@ -108,8 +118,8 @@ const orderedVisibleWalletSymbols = computed(
 
 const wallets = computed(() => orderedVisibleWalletSymbols.value.map((c: CoinSymbol) => c.symbol))
 
-function handleFileSelected(imageData: FileData) {
-  emit('files', [imageData])
+function handleFileSelected(imageData: File[]) {
+  emit('files', imageData)
 }
 
 function sendFunds(selectedCrypto: string) {

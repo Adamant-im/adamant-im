@@ -1,8 +1,8 @@
 <template>
   <v-row
-    class="a-chat__message-container"
+    class="a-chat__message-container a-chat__message-container--with-attachments"
     :class="{
-      'a-chat__message-container--right': isStringEqualCI(transaction.senderId, userId),
+      'a-chat__message-container--right': isSender,
       'a-chat__message-container--transition': elementLeftOffset === 0,
       'a-chat__message-container--disable-max-width': disableMaxWidth
     }"
@@ -15,8 +15,28 @@
     }"
     v-longpress="onLongPress"
   >
+    <v-btn
+      v-show="attachmentsToDownload.length"
+      class="a-chat__download-attachments-btn"
+      :class="{
+        'a-chat__download-attachments-btn--left': isSender,
+        'a-chat__download-attachments-btn--right': !isSender
+      }"
+      icon
+      variant="text"
+      :size="32"
+      :disabled="areAttachmentsDownloading"
+      @click="downloadAllAttachments"
+    >
+      <v-icon
+        class="a-chat__download-attachments-btn__icon"
+        size="100%"
+        :icon="areAttachmentsDownloading ? mdiClockOutline : mdiArrowDownCircleOutline"
+      />
+    </v-btn>
+
     <div
-      class="a-chat__message"
+      class="a-chat__message a-chat__message--with-attachments"
       :class="{
         'a-chat__message--flashing': flashing,
         'elevation-9': elevation
@@ -80,6 +100,7 @@
         :partnerId="partnerId"
         :images="transaction.localFiles || transaction.asset.files"
         :transaction="transaction"
+        @download-attachment="downloadAttachment"
         @click:image="openModal"
       />
       <InlineLayout
@@ -87,6 +108,7 @@
         :partnerId="partnerId"
         :files="transaction.localFiles || transaction.asset.files"
         :transaction="transaction"
+        @download-attachment="downloadAttachment"
         @click:file="openModal"
       />
 
@@ -115,8 +137,8 @@ import { useFormatMessage } from '../hooks/useFormatMessage'
 import { usePartnerId } from '../hooks/usePartnerId'
 import { useTransactionTime } from '../hooks/useTransactionTime'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
-import { isLocalFile } from '@/lib/files'
-import { downloadFile, isStringEqualCI } from '@/lib/textHelpers'
+import { isLocalFile, LocalFile } from '@/lib/files'
+import { isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon } from '@/lib/constants'
 import QuotedMessage from '../QuotedMessage.vue'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
@@ -125,9 +147,9 @@ import { isWelcomeChat } from '@/lib/chat/meta/utils'
 import ImageLayout from './ImageLayout.vue'
 import InlineLayout from './InlineLayout.vue'
 import AChatImageModal from './AChatImageModal.vue'
+import { mdiClockOutline, mdiArrowDownCircleOutline } from '@mdi/js'
 
 export default defineComponent({
-  methods: { downloadFile },
   components: {
     InlineLayout,
     ImageLayout,
@@ -167,15 +189,79 @@ export default defineComponent({
       type: Boolean
     }
   },
-  emits: ['resend', 'click:quotedMessage', 'swipe:left', 'longpress'],
+  emits: [
+    'resend',
+    'click:quotedMessage',
+    'swipe:left',
+    'longpress',
+    'downloadAttachment',
+    'downloadAllAttachments'
+  ],
   setup(props, { emit }) {
     const { t } = useI18n()
     const store = useStore()
-
-    const userId = computed(() => store.state.address)
     const partnerId = usePartnerId(props.transaction)
+    const formattedMessage = useFormatMessage(props.transaction)
+    const time = useTransactionTime(props.transaction)
+    const { onMove, onSwipeEnd, elementLeftOffset } = useSwipeLeft(() => {
+      emit('swipe:left')
+    })
+
     const currentIndex = ref(0)
     const isModalOpen = ref(false)
+
+    const userId = computed(() => store.state.address)
+    const isSender = computed(() => isStringEqualCI(props.transaction.senderId, userId.value))
+    const showAvatar = computed(() => !isWelcomeChat(partnerId.value))
+    const statusIcon = computed(() => tsIcon(props.transaction.status))
+    const files = computed(
+      () => props.transaction.localFiles || (props.transaction.asset.files as FileAsset[])
+    )
+
+    const isOutgoingMessage = computed(() =>
+      isStringEqualCI(props.transaction.senderId, userId.value)
+    )
+
+    const isImage = (file: FileAsset) => {
+      return ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(file.extension!)
+    }
+
+    const hasImagesOnly = computed(() => {
+      return files.value.every((file) => {
+        if (isLocalFile(file)) {
+          return file.file.isImage
+        }
+
+        return isImage(file)
+      })
+    })
+
+    const attachmentsToDownload = computed(() => {
+      const getImageUrl = store.getters['attachment/getImageUrl']
+
+      return files.value.filter((file): file is FileAsset => {
+        if (isLocalFile(file)) return false
+        if (!isImage(file)) return false
+
+        return !getImageUrl(file.id) || !getImageUrl(file.preview?.id)
+      })
+    })
+
+    const areAttachmentsDownloading = computed(() => {
+      const getDownloadProgress = store.getters['attachment/getDownloadProgress']
+
+      return attachmentsToDownload.value.some((file) => {
+        return getDownloadProgress(file.id) !== 100 || getDownloadProgress(file.preview?.id) !== 100
+      })
+    })
+
+    const downloadAttachment = (attachment: FileAsset | LocalFile) => {
+      emit('downloadAttachment', attachment)
+    }
+
+    const downloadAllAttachments = () => {
+      emit('downloadAllAttachments', attachmentsToDownload.value)
+    }
 
     const openModal = (index: number) => {
       currentIndex.value = index
@@ -185,38 +271,15 @@ export default defineComponent({
     const closeModal = () => {
       isModalOpen.value = false
     }
-    const showAvatar = computed(() => !isWelcomeChat(partnerId.value))
-
-    const statusIcon = computed(() => tsIcon(props.transaction.status))
-    const isOutgoingMessage = computed(() =>
-      isStringEqualCI(props.transaction.senderId, userId.value)
-    )
-    const formattedMessage = useFormatMessage(props.transaction)
-    const time = useTransactionTime(props.transaction)
-
-    const { onMove, onSwipeEnd, elementLeftOffset } = useSwipeLeft(() => {
-      emit('swipe:left')
-    })
 
     const onLongPress = () => {
       emit('longpress')
     }
 
-    const hasImagesOnly = computed(() => {
-      const files = props.transaction.localFiles || (props.transaction.asset.files as FileAsset[])
-
-      return files.every((file) => {
-        if (isLocalFile(file)) {
-          return file.file.isImage
-        }
-
-        return ['jpg', 'jpeg', 'png'].includes(file.extension!)
-      })
-    })
-
     return {
       t,
       userId,
+      isSender,
       statusIcon,
       isOutgoingMessage,
       formattedMessage,
@@ -232,7 +295,13 @@ export default defineComponent({
       isModalOpen,
       openModal,
       closeModal,
-      hasImagesOnly
+      hasImagesOnly,
+      attachmentsToDownload,
+      areAttachmentsDownloading,
+      downloadAttachment,
+      downloadAllAttachments,
+      mdiClockOutline,
+      mdiArrowDownCircleOutline
     }
   }
 })
@@ -243,9 +312,8 @@ export default defineComponent({
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .a-chat__attachments {
-  width: 500px;
+  width: 420px;
   max-width: 100%;
-  margin-top: 4px;
 
   &--inline {
     width: auto;

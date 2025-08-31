@@ -67,7 +67,10 @@
       <!-- Attachment -->
       <template v-else-if="isAttachment">
         <v-list-item-subtitle :class="`${className}__subtitle`">
-          {{ attachmentText }}
+          <span v-for="(part, i) in attachmentText" :key="i">
+            <component :is="part" />
+            <span v-if="i < attachmentText.length - 1">&nbsp;</span>
+          </span>
         </v-list-item-subtitle>
       </template>
       <!-- Reaction -->
@@ -118,6 +121,7 @@ import { useChatName } from '@/components/AChat/hooks/useChatName'
 import { TransactionProvider } from '@/providers/TransactionProvider'
 import { mdiArrowLeftTop, mdiDotsHorizontal } from '@mdi/js'
 import { AdamantChatMeta } from '@/lib/chat/meta/chat-meta'
+import { useFormatMediaMessage } from '@/components/AChat/hooks/useFormatMediaMessage'
 
 const className = 'chat-brief'
 
@@ -158,14 +162,9 @@ const isTransferType = computed(
 )
 const isAttachment = computed(() => props.transaction.type === 'attachment')
 const attachmentText = computed(() => {
-  if (!isAttachment.value) return ''
-  const filesCount = props.transaction.asset.files.length
+  if (!isAttachment.value) return []
 
-  if (props.transaction.message) {
-    return `[${t('chats.file', filesCount)}]: ${props.transaction.message}`
-  }
-
-  return `${t('chats.attached')}: ${t('chats.file', filesCount)}`
+  return useFormatMediaMessage(props.transaction)
 })
 const isReaction = computed(() => props.transaction.type === 'reaction')
 

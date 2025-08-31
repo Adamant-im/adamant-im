@@ -1,7 +1,6 @@
 import Web3Eth from 'web3-eth'
 import type { TransactionReceipt } from 'web3-types'
 import { CryptosInfo, CryptoSymbol, TransactionStatus } from '@/lib/constants'
-import * as ethUtils from '@/lib/eth-utils'
 import { EthTransaction, Erc20Transaction } from '@/lib/nodes/types/transaction'
 import * as utils from '@/lib/eth-utils'
 import Erc20 from '@/store/modules/erc20/erc20.abi.json'
@@ -83,7 +82,7 @@ export function normalizeErc20Transaction(
     decoded.params.forEach((x) => {
       if (x.name === '_to') recipientId = x.value as string
       if (x.name === '_value')
-        amount = ethUtils.toFraction(x.value as string, CryptosInfo[crypto].decimals)
+        amount = utils.toFraction(x.value as string, CryptosInfo[crypto].decimals)
     })
   }
 

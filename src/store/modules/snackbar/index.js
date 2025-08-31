@@ -5,7 +5,8 @@ const initialState = {
   message: '',
   timeout: SNACKBAR_TIMEOUT,
   color: '',
-  variant: ''
+  variant: '',
+  isError: false
 }
 
 const state = () => ({
@@ -13,12 +14,16 @@ const state = () => ({
 })
 
 const mutations = {
-  show(state, { message = '', timeout = SNACKBAR_TIMEOUT, color = '', variant = '' }) {
+  show(
+    state,
+    { message = '', timeout = SNACKBAR_TIMEOUT, color = '', variant = '', isError = false }
+  ) {
     if (message) {
       state.message = message
       state.color = color
       state.timeout = timeout
       state.variant = variant
+      state.isError = isError
 
       state.show = true
     }
@@ -31,6 +36,7 @@ const mutations = {
     state.timeout = initialState.timeout
     state.color = initialState.color
     state.variant = initialState.variant
+    state.isError = initialState.isError
   }
 }
 

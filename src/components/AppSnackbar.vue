@@ -3,7 +3,7 @@
     v-model="show"
     :timeout="timeout"
     :color="color"
-    :class="[className, { outlined: variant === 'outlined' }]"
+    :class="[className, { outlined: variant === 'outlined' || isError }]"
     :variant="variant"
     location="bottom"
     width="100%"
@@ -19,7 +19,11 @@
         fab
         @click="show = false"
       >
-        <v-icon :class="`${className}__icon`" :icon="mdiClose" size="dense" />
+        <v-icon
+          :class="[`${className}__icon`, { [`${className}__icon--error`]: isError }]"
+          :icon="mdiClose"
+          size="dense"
+        />
       </v-btn>
     </div>
   </v-snackbar>
@@ -51,6 +55,7 @@ const show = computed({
 const message = computed(() => store.state.snackbar.message)
 const color = computed(() => store.state.snackbar.color)
 const variant = computed(() => store.state.snackbar.variant)
+const isError = computed(() => store.state.snackbar.isError)
 const timeout = computed(() =>
   message.value === t('connection.offline') ? -1 : store.state.snackbar.timeout
 )
@@ -87,6 +92,12 @@ const timeout = computed(() =>
     min-width: unset;
     padding: 0;
     width: 36px;
+  }
+
+  &__icon {
+    &--error {
+      color: map.get(colors.$adm-colors, 'danger');
+    }
   }
 
   &.outlined {

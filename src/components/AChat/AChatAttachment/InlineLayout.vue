@@ -6,6 +6,7 @@
       :file="file"
       :partnerId="partnerId"
       :transaction="transaction"
+      @download-attachment="downloadAttachment"
       @click="handleClick(file)"
     />
   </div>
@@ -39,15 +40,20 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['click:file'],
+  emits: ['click:file', 'downloadAttachment'],
   setup(props, { emit }) {
     const handleClick = (img: FileAsset | LocalFile) => {
       emit('click:file', props.files.indexOf(img))
     }
 
+    const downloadAttachment = (file: FileAsset | LocalFile) => {
+      emit('downloadAttachment', file)
+    }
+
     return {
       classes,
-      handleClick
+      handleClick,
+      downloadAttachment
     }
   }
 })
@@ -64,17 +70,16 @@ export default defineComponent({
   gap: 8px;
   border-style: solid;
   border-width: 8px;
-  border-radius: 8px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  padding-right: 5px;
 }
 
 .v-theme--dark {
   .a-chat-inline-layout {
     background-color: map.get(colors.$adm-colors, 'black');
     border-color: map.get(colors.$adm-colors, 'black');
-    box-shadow:
-      0 1px 10px hsla(0, 0%, 39.2%, 0.06),
-      0 1px 1px hsla(0, 0%, 39.2%, 0.04),
-      0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
+    box-shadow: none;
   }
 }
 
@@ -82,10 +87,7 @@ export default defineComponent({
   .a-chat-inline-layout {
     background-color: map.get(settings.$shades, 'white');
     border-color: map.get(settings.$shades, 'white');
-    box-shadow:
-      0 1px 10px hsla(0, 0%, 39.2%, 0.06),
-      0 1px 1px hsla(0, 0%, 39.2%, 0.04),
-      0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
+    box-shadow: none;
   }
 }
 </style>

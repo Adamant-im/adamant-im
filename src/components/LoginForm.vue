@@ -63,7 +63,6 @@ import { isAxiosError } from 'axios'
 import { isAllNodesOfflineError, isAllNodesDisabledError } from '@/lib/nodes/utils/errors'
 import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useSaveCursor } from '@/hooks/useSaveCursor'
-import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 
 const className = 'login-form'
 const classes = {

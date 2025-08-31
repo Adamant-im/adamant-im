@@ -911,7 +911,7 @@ const actions = {
    * @returns {Promise}
    */
   async sendAttachment(
-    { commit, rootState, dispatch, rootGetters },
+    { commit, rootState, dispatch },
     { files, message, recipientId, replyToId }
   ) {
     const recipientPublicKey = await getPublicKey(recipientId)
@@ -941,12 +941,6 @@ const actions = {
       partnerId: recipientId,
       asset: newAsset
     })
-
-    const areAdmNodesDisabled = rootGetters['nodes/adm'].every((node) => node.status === 'disabled')
-
-    if (areAdmNodesDisabled) {
-      throw new AllNodesDisabledError('adm')
-    }
 
     cids.forEach(([cid]) => {
       commit('attachment/setUploadProgress', { cid, progress: 0 }, { root: true })
@@ -983,10 +977,6 @@ const actions = {
           status: TS.REJECTED,
           partnerId: recipientId
         })
-
-        for (const [cid] of cids) {
-          commit('attachment/resetUploadProgress', { cid }, { root: true })
-        }
 
         throw uploadData.error
       }
@@ -1161,6 +1151,10 @@ const actions = {
       }
     } catch (err) {
       if (!isAllNodesOfflineError(err)) {
+        if (isAllNodesDisabledError(uploadData.error)) {
+          commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
+        }
+
         dispatch('rejectPendingMessage', {
           messageId,
           recipientId
@@ -1219,6 +1213,15 @@ const actions = {
 
     const setUploadProgress = (cid, progress) => {
       commit('attachment/setUploadProgress', { cid, progress }, { root: true })
+    }
+
+    const areAdmNodesDisabled = rootGetters['nodes/adm'].every((node) => node.status === 'disabled')
+
+    if (areAdmNodesDisabled) {
+      return {
+        newCids: cids,
+        error: new AllNodesDisabledError('adm')
+      }
     }
 
     const fileByCid = files.reduce((acc, file) => {
