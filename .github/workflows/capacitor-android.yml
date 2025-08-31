@@ -65,6 +65,13 @@ jobs:
             --androidreleasetype APK \
             --signing-type apksigner
 
+      - name: Rename APK with version from package.json
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          SRC="android/app/build/outputs/apk/release/app-release-signed.apk"
+          DEST="android/app/build/outputs/apk/release/ADAMANT.Messenger-${VERSION}-signed.apk"
+          mv "$SRC" "$DEST"    
+
       - name: Build and Sign Android App (AAB) 🛠️
         run: |
           npx cap sync
