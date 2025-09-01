@@ -6,7 +6,7 @@ import currency from '@/filters/currencyAmountWithSymbol'
 import { formatMessageBasic } from '@/lib/markdown'
 import { isAdamantChat } from '@/lib/chat/meta/utils'
 import { joinUrl } from '@/lib/urlFormatter.js'
-import { notificationType } from '@/lib/constants'
+import { NotificationType } from '@/lib/constants'
 
 let _this
 
@@ -42,7 +42,7 @@ class Notification {
   }
 
   get bgFetchNotificationAllowed() {
-    return this.store.state.options.allowNotificationType === notificationType['Background Fetch']
+    return this.store.state.options.allowNotificationType === NotificationType['BackgroundFetch']
   }
 
   get soundAllowed() {
@@ -133,7 +133,7 @@ class PushNotification extends Notification {
           })
           this.store.commit('options/updateOption', {
             key: 'allowNotificationType',
-            value: notificationType['No Notifications'] // = 0
+            value: NotificationType['NoNotifications'] // = 0
           })
         }
       )
@@ -145,7 +145,7 @@ class PushNotification extends Notification {
       })
       this.store.commit('options/updateOption', {
         key: 'allowNotificationType',
-        value: notificationType['No Notifications'] // = 0
+        value: NotificationType['NoNotifications'] // = 0
       })
     }
   }

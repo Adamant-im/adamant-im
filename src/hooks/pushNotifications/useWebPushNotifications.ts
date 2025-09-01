@@ -1,4 +1,4 @@
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 export interface WebNotificationSettings {
   type: number
@@ -7,7 +7,7 @@ export interface WebNotificationSettings {
 
 export function useWebPushNotifications() {
   const channel = ref<BroadcastChannel | null>(null)
-  const isSupported = computed(() => typeof BroadcastChannel !== 'undefined')
+  const isSupported = typeof BroadcastChannel !== 'undefined'
 
   /**
    * Closes the broadcast channel in case of error for preventing memory leaks
@@ -28,7 +28,7 @@ export function useWebPushNotifications() {
    * Gets reference to pushService (always WebPushService on web)
    */
   const getPushService = async () => {
-    if (!isSupported.value) return null
+    if (!isSupported) return null
 
     const { pushService } = await import('@/lib/notifications/pushServiceFactory')
     return pushService
@@ -38,7 +38,7 @@ export function useWebPushNotifications() {
    * Creates BroadcastChannel for Service Worker communication
    */
   const setupChannel = () => {
-    if (!isSupported.value) return
+    if (!isSupported) return
 
     try {
       channel.value = new BroadcastChannel('adm_notifications')
@@ -68,7 +68,7 @@ export function useWebPushNotifications() {
    * Sets private key both in Service Worker and PushService
    */
   const setPrivateKey = async (privateKey: string): Promise<boolean> => {
-    if (!isSupported.value) return false
+    if (!isSupported) return false
 
     // Send to Service Worker
     const swResult = sendPrivateKeyToSW(privateKey)
