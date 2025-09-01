@@ -6,6 +6,7 @@
       :messages="messages"
       :show-new-chat-placeholder="showNewChatPlaceholder"
       :partners="partners"
+      :partner-id="partnerId"
       :is-getting-public-key="isGettingPublicKey"
       :user-id="userId"
       :loading="loading && !isGettingPublicKey"
@@ -201,13 +202,12 @@
 
       <template #form>
         <a-chat-form
-          v-if="!isWelcomeChat(partnerId)"
           ref="chatFormRef"
           :show-send-button="true"
           :send-on-enter="sendMessageOnEnter"
           :show-divider="true"
           :label="t('chats.message')"
-          :should-disable-input="shouldDisableInput"
+          :should-disable-input="isWelcomeChat(partnerId) || shouldDisableInput"
           :message-text="
             $route.query.messageText || $store.getters['draftMessage/draftMessage'](partnerId)
           "

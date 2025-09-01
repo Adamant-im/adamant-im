@@ -80,6 +80,11 @@ const goBack = () => {
     return
   }
 
+  if (route.name === 'DevAdamantWallets' || route.name === 'DevVibrations') {
+    router.push('/options/dev-screens')
+    return
+  }
+
   const parentRoute = route.matched.length > 1 ? route.matched.at(-2) : null
 
   if (parentRoute) {
