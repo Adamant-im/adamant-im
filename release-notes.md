@@ -19,3 +19,4 @@ All notable changes in this release are listed below.
 - Transaction fee calculation for ETH & ERC20 fixed [#805](https://github.com/Adamant-im/adamant-im/pull/805) — [@Linhead](https://github.com/Linhead)
 - Layout issue on "Export keys" page fixed [#841](https://github.com/Adamant-im/adamant-im/pull/841) — [@kalpovskii](https://github.com/kalpovskii), [@adamant-al](https://github.com/adamant-al)
 - Add disabled input field in the Welcome to ADAMANT chat, impoved paddings [#842](https://github.com/Adamant-im/adamant-im/pull/842) — [@kalpovskii](https://github.com/kalpovskii)
+- Resolve source code issues with ESLint 9 [#852](https://github.com/Adamant-im/adamant-im/pull/852) — [@graycraft](https://github.com/graycraft)
