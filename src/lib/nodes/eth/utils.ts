@@ -26,7 +26,8 @@ export function normalizeEthTransaction(
   blockTimestamp?: number | bigint
 ): EthTransaction {
   const gasPrice = 'gasPrice' in transaction ? transaction.gasPrice : '0'
-  const fee = utils.calculateFee(transaction.gas, gasPrice.toString())
+  const gasForFee = receipt?.gasUsed || transaction.gas
+  const fee = utils.calculateFee(gasForFee.toString(), gasPrice.toString())
   const amount = 'value' in transaction ? transaction.value : '0'
   const direction = transaction.from.toLowerCase() === address.toLowerCase() ? 'from' : 'to'
   const confirmations =
