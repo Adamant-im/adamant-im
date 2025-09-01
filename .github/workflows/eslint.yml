@@ -13,6 +13,10 @@ on:
       - master
   workflow_dispatch:
 
+# @see https://typicode.github.io/husky/how-to.html#ci-server-and-docker
+env:
+  HUSKY: 0
+
 jobs:
   check:
     name: Check source code with ESLint and fix problems
