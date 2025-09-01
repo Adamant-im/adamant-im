@@ -9,6 +9,7 @@ All notable changes in this release are listed below.
 - Test screen for developers is now available [#815](https://github.com/Adamant-im/adamant-im/pull/815) — [@Linhead](https://github.com/Linhead)
 - Universal macOS build added [#840](https://github.com/Adamant-im/adamant-im/pull/840) — [@S-FrontendDev](https://github.com/S-FrontendDev)
 - Release notes file added [#853](https://github.com/Adamant-im/adamant-im/pull/853) — [@S-FrontendDev](https://github.com/S-FrontendDev)
+- Push notifications added [#802](https://github.com/Adamant-im/adamant-im/pull/802) - [@Linhead](https://github.com/Linhead)
 
 ### Improvements
 - Use secondary URL with alternate IP if a node is unavailable by primary URL [#768](https://github.com/Adamant-im/adamant-im/pull/768) — [@graycraft](https://github.com/graycraft)

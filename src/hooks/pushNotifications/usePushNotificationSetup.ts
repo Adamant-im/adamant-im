@@ -2,7 +2,7 @@ import { ref, computed, watch, onMounted, readonly } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { Capacitor } from '@capacitor/core'
-import { notificationType } from '@/lib/constants'
+import { NotificationType } from '@/lib/constants'
 import { registerServiceWorker } from '@/notifications'
 import { usePrivateKeyManager } from './usePrivateKeyManager'
 import { usePushEventHandlers } from './usePushEventHandlers'
@@ -20,7 +20,7 @@ export function usePushNotificationSetup() {
   const webPush = platform === 'web' ? useWebPushNotifications() : null
 
   const isPushNotification = computed(() => {
-    return store.state.options.allowNotificationType === notificationType['Push']
+    return store.state.options.allowNotificationType === NotificationType['Push']
   })
 
   /**
@@ -126,7 +126,7 @@ export function usePushNotificationSetup() {
           syncNotificationSettings(newType)
 
           // Clear key if push disabled
-          if (oldType === notificationType['Push'] && newType !== notificationType['Push']) {
+          if (oldType === NotificationType['Push'] && newType !== NotificationType['Push']) {
             await clearPrivateKey()
           }
         }

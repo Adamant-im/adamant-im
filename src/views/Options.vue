@@ -232,7 +232,7 @@ import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import { resetPinia } from '@/plugins/pinia'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
 import { useSavedScroll } from '@/hooks/useSavedScroll'
-import { sidebarLayoutKey, notificationType } from '@/lib/constants'
+import { sidebarLayoutKey, NotificationType } from '@/lib/constants'
 import { useChatStateStore } from '@/stores/modal-state'
 import { pushService } from '@/lib/notifications/pushServiceFactory'
 import { usePushNotificationSetup } from '@/hooks/pushNotifications/usePushNotificationSetup'
@@ -252,9 +252,9 @@ const className = 'settings-view'
 const { hasView } = useSavedScroll()
 
 const notificationItems = [
-  { title: 'No Notifications', value: notificationType['NoNotifications'] },
-  { title: 'Background Fetch', value: notificationType['BackgroundFetch'] },
-  { title: 'Push', value: notificationType['Push'] }
+  { title: 'No Notifications', value: NotificationType['NoNotifications'] },
+  { title: 'Background Fetch', value: NotificationType['BackgroundFetch'] },
+  { title: 'Push', value: NotificationType['Push'] }
 ]
 
 const infoText = t('options.notifications_info')
@@ -373,12 +373,12 @@ const handleNotificationTypeChange = async (newVal: number) => {
 
   try {
     const isNotPushNotification =
-      newVal === notificationType['NoNotifications'] ||
-      newVal === notificationType['BackgroundFetch']
+      newVal === NotificationType['NoNotifications'] ||
+      newVal === NotificationType['BackgroundFetch']
 
-    if (newVal === notificationType['Push']) {
+    if (newVal === NotificationType['Push']) {
       await setPushNotifications(true)
-    } else if (isNotPushNotification && oldVal === notificationType['Push']) {
+    } else if (isNotPushNotification && oldVal === NotificationType['Push']) {
       await setPushNotifications(false)
     }
 
