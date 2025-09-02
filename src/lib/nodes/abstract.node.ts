@@ -164,11 +164,11 @@ export abstract class Node<C = unknown> {
             }
           } else {
             if (this.connectionCount === 1 && checkAltIp) {
+              this.connectionCount++
               this.healthcheckInProgress = true
 
               const health = await this.checkHealth()
 
-              this.connectionCount++
               this.hasSupportedProtocol = true
               this.height = health.height
               this.ping = health.ping
@@ -185,9 +185,9 @@ export abstract class Node<C = unknown> {
         }
       } catch {
         if (this.preferDomain) {
-          if (checkAltIp) {
-            this.preferDomain = false
+          this.preferDomain = false
 
+          if (checkAltIp) {
             console.info(
               `[HealthCheck] Connection via URL ${this.url} failed. Will try to connect via alternative IP ${this.altIp}.`
             )
