@@ -47,6 +47,10 @@ export abstract class Node<C = unknown> {
    */
   port: string
   /**
+   * Indicates that a node URL protocol is the same as page URL.
+   */
+  hasSupportedProtocol = true
+  /**
    * Node hostname like bid.adamant.im or 23.226.231.225
    */
   hostname: string
@@ -58,13 +62,12 @@ export abstract class Node<C = unknown> {
    * If Socket port like :36668 needed for connection
    */
   wsPortNeeded = false
-  hasSupportedProtocol = true
 
   /** Healthcheck related params. */
   /**
    * Whether it is the first connection via URL domain or subsequent.
    */
-  firstDomainAttempt = true
+  connectionCount = 0
   /**
    * Indicates whether node is available.
    */
@@ -145,49 +148,61 @@ export abstract class Node<C = unknown> {
     if (this.active && !this.healthcheckInProgress) {
       try {
         if (this.online) {
-          this.healthcheckInProgress = true
+          if (this.preferDomain) {
+            if (this.connectionCount === 0) {
+              this.connectionCount++
+              this.healthcheckInProgress = true
 
-          const health = await this.checkHealth()
+              const health = await this.checkHealth()
 
-          this.height = health.height
-          this.ping = health.ping
+              this.height = health.height
+              this.ping = health.ping
 
-          if (this.preferDomain && this.firstDomainAttempt) {
-            console.info(`[HealthCheck] Connection via URL ${this.url} succeeded.`)
-            this.firstDomainAttempt = false
+              console.info(`[HealthCheck] Connection via URL ${this.url} succeeded.`)
+            }
           } else {
-            console.info(`[HealthCheck] Connection via alternative IP ${this.altIp} succeeded.`)
-            this.hasSupportedProtocol = true
+            if (this.connectionCount === 1 && this.altIp && this.hasSupportedProtocol) {
+              this.healthcheckInProgress = true
+
+              const health = await this.checkHealth()
+
+              this.connectionCount++
+              this.hasSupportedProtocol = true
+              this.height = health.height
+              this.ping = health.ping
+
+              console.info(`[HealthCheck] Connection via alternative IP ${this.altIp} succeeded.`)
+            }
           }
         } else {
-          console.info(
-            `[HealthCheck] Node with URL ${this.url} and alternative IP ${this.altIp} is offline.`
-          )
+          if (this.connectionCount === 2) {
+            console.info(
+              `[HealthCheck] Node with URL ${this.url} and alternative IP ${this.altIp} is offline.`
+            )
+          }
         }
       } catch {
-        if (this.online) {
-          if (this.preferDomain && this.firstDomainAttempt) {
-            if (this.altIp) {
-              console.info(
-                `[HealthCheck] Connection via URL ${this.url} failed. Will try to connect via alternative IP ${this.altIp}.`
-              )
-              this.preferDomain = false
-            } else {
-              console.info(`[HealthCheck] Connection via URL ${this.url} failed.`)
-            }
+        if (this.preferDomain) {
+          if (this.altIp && this.hasSupportedProtocol) {
+            this.preferDomain = false
 
-            this.firstDomainAttempt = false
+            console.info(
+              `[HealthCheck] Connection via URL ${this.url} failed. Will try to connect via alternative IP ${this.altIp}.`
+            )
           } else {
-            if (this.altIp) {
-              console.info(
-                `[HealthCheck] Connection via URL ${this.url} and via alternative IP ${this.altIp} failed. Node is offline.`
-              )
-              this.preferDomain = true
-            } else {
-              console.info(`[HealthCheck] Connection via URL ${this.url} failed. Node is offline.`)
-            }
+            console.info(
+              `[HealthCheck] Connection via URL ${this.url} failed. Alternative IP is not defined or not allowed.`
+            )
+          }
+        } else {
+          this.online = false
 
-            this.online = false
+          if (this.altIp && this.hasSupportedProtocol) {
+            console.info(
+              `[HealthCheck] Connection via URL ${this.url} and via alternative IP ${this.altIp} failed. Node is offline.`
+            )
+          } else {
+            console.info(`[HealthCheck] Connection via URL ${this.url} failed. Node is offline.`)
           }
         }
       } finally {
