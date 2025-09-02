@@ -8,7 +8,7 @@
         <v-list-item-subtitle>
           <p :class="classes.cryptoSubtitle">
             <span :class="classes.cryptoSubtitleMuted">{{ localWallet.type }}</span>
-            {{ " " }}
+            {{ ' ' }}
             <span :class="classes.cryptoSubtitleBold">{{ localWallet.symbol }}</span>
           </p>
         </v-list-item-subtitle>
@@ -55,7 +55,6 @@ import { defineComponent, PropType, toRef } from 'vue'
 import { useStore } from 'vuex'
 import { CryptoSymbol } from '@/lib/constants'
 import { mdiMenu } from '@mdi/js'
-
 
 type Wallet = {
   erc20: boolean

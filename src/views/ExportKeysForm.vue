@@ -112,7 +112,6 @@ import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { mdiContentCopy, mdiDotsVertical, mdiEye, mdiEyeOff } from '@mdi/js'
 
-
 function getBtcKey(crypto, passphrase, asWif) {
   const keyPair = getBtcAccount(crypto, passphrase).keyPair
   const key = asWif ? keyPair.toWIF() : keyPair.privateKey.toString('hex')
@@ -125,7 +124,7 @@ function getBtcKey(crypto, passphrase, asWif) {
 }
 
 function getKlyKey(passphrase) {
-  const crypto = 'KLY';
+  const crypto = 'KLY'
 
   const keyPair = getKlyAccount(crypto, passphrase).keyPair
   const key = keyPair.secretKey.toString('hex')
