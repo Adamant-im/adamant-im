@@ -146,6 +146,8 @@ export abstract class Node<C = unknown> {
     clearInterval(this.timer)
 
     if (this.active && !this.healthcheckInProgress) {
+      const checkAltIp = this.altIp && new URL(this.altIp).protocol === appProtocol
+
       try {
         if (this.online) {
           if (this.preferDomain) {
@@ -161,7 +163,7 @@ export abstract class Node<C = unknown> {
               console.info(`[HealthCheck] Connection via URL ${this.url} succeeded.`)
             }
           } else {
-            if (this.connectionCount === 1 && this.altIp && this.hasSupportedProtocol) {
+            if (this.connectionCount === 1 && checkAltIp) {
               this.healthcheckInProgress = true
 
               const health = await this.checkHealth()
@@ -183,7 +185,7 @@ export abstract class Node<C = unknown> {
         }
       } catch {
         if (this.preferDomain) {
-          if (this.altIp && this.hasSupportedProtocol) {
+          if (checkAltIp) {
             this.preferDomain = false
 
             console.info(
@@ -191,18 +193,20 @@ export abstract class Node<C = unknown> {
             )
           } else {
             console.info(
-              `[HealthCheck] Connection via URL ${this.url} failed. Alternative IP is not defined or not allowed.`
+              `[HealthCheck] Connection via URL ${this.url} failed. Alternative IP is not defined or HTTP is not allowed.`
             )
           }
         } else {
           this.online = false
 
-          if (this.altIp && this.hasSupportedProtocol) {
+          if (checkAltIp) {
             console.info(
               `[HealthCheck] Connection via URL ${this.url} and via alternative IP ${this.altIp} failed. Node is offline.`
             )
           } else {
-            console.info(`[HealthCheck] Connection via URL ${this.url} failed. Node is offline.`)
+            console.info(
+              `[HealthCheck] Connection via URL ${this.url} failed. Alternative IP is not defined or HTTP is not allowed. Node is offline.`
+            )
           }
         }
       } finally {
