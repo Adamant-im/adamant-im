@@ -163,7 +163,7 @@ export abstract class Node<C = unknown> {
               console.info(`[HealthCheck] Connection via URL ${this.url} succeeded.`)
             }
           } else {
-            if (this.connectionCount === 1 && checkAltIp) {
+            if (this.connectionCount === 1 && this.altIp) {
               this.connectionCount++
               this.healthcheckInProgress = true
 
