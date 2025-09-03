@@ -233,18 +233,6 @@ function createActions(options) {
       } catch (error) {
         context.commit('transactions', [{ hash: signedTransaction.txid, status: 'REJECTED' }])
         PendingTxStore.remove(context.state.crypto)
-
-        if (admAddress) {
-          context.commit(
-            'chat/updateMessage',
-            {
-              partnerId: admAddress,
-              id: signedTransaction.txid,
-              status: 'REJECTED'
-            },
-            { root: true }
-          )
-        }
         throw error
       }
     },

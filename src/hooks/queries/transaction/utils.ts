@@ -15,7 +15,12 @@ import {
 export function retryFactory(crypto: CryptoSymbol, transactionId: string) {
   const txFetchInfo = getTxFetchInfo(crypto)
 
-  return (failureCount: number): boolean => {
+  return (failureCount: number, error: any): boolean => {
+    // Don't retry BTC transactions on 404 (dust amount rejections)
+    if (crypto === 'BTC' && error?.response?.status === 404) {
+      return false
+    }
+
     const pendingTransaction = PendingTxStore.get(crypto)
     const isPendingTransaction = pendingTransaction?.id === transactionId
 
