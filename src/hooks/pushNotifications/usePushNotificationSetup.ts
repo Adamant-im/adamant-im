@@ -27,7 +27,7 @@ export function usePushNotificationSetup() {
    * Handles BroadcastChannel messages from Service Worker
    */
   const handleChannelMessage = (event: MessageEvent) => {
-    const data = event.data
+    const { data } = event
 
     if (data?.requestCurrentSettings) {
       sendCurrentSettings()

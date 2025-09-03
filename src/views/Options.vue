@@ -457,6 +457,13 @@ const isDevModeEnabled = computed({
   }
 })
 
+const showSnackbar = (message: string, timeout: number = 5000) => {
+  store.dispatch('snackbar/show', {
+    message,
+    timeout
+  })
+}
+
 const onSetPassword = () => {
   store.commit('options/updateOption', {
     key: 'stayLoggedIn',
@@ -518,13 +525,6 @@ const onVersionClick = () => {
       timeout: 3000
     })
   }
-}
-
-const showSnackbar = (message: string, timeout: number = 5000) => {
-  store.dispatch('snackbar/show', {
-    message,
-    timeout
-  })
 }
 
 onMounted(() => {
