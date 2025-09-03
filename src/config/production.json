@@ -17,24 +17,14 @@
           "url": "https://bid.adamant.im"
         },
         {
-          "url": "https://unusual.adamant.im"
-        },
-        {
           "url": "https://debate.adamant.im",
-          "alt_ip": "http://95.216.161.113:36666"
+          "alt_ip": "http://147.93.10.209:36666"
         },
         {
           "url": "http://78.47.205.206:36666"
         },
         {
-          "url": "http://5.161.53.74:36666"
-        },
-        {
           "url": "http://184.94.215.92:45555"
-        },
-        {
-          "url": "https://node1.adamant.business",
-          "alt_ip": "http://194.233.75.29:45555"
         },
         {
           "url": "https://node2.blockchain2fa.io"
@@ -72,10 +62,6 @@
         {
           "url": "https://sunshine.bbry.org",
           "alt_ip": "http://23.105.226.67:28785"
-        },
-        {
-          "url": "https://unusual.bbry.org",
-          "alt_ip": "http://51.15.238.199:13682"
         },
         {
           "url": "https://clown.bbry.org",
@@ -140,20 +126,12 @@
             "alt_ip": "http://95.216.45.88:44099"
           },
           {
-            "url": "https://ipfs5.adamant.im",
-            "alt_ip": "http://62.72.43.99:44099"
-          },
-          {
             "url": "https://ipfs6.adamant.business",
             "alt_ip": "http://75.119.138.235:44099"
           },
           {
             "url": "https://ipfs4.bbry.org",
             "alt_ip": "http://65.108.52.254:61399"
-          },
-          {
-            "url": "https://ipfs5.bbry.org",
-            "alt_ip": "http://23.105.226.67:41511"
           },
           {
             "url": "https://ipfs6.bbry.org",
@@ -274,20 +252,12 @@
       "displayName": "doge-node",
       "list": [
         {
-          "url": "https://dogenode1.adamant.im",
-          "alt_ip": "http://5.9.99.62:44099"
-        },
-        {
           "url": "https://dogenode2.adamant.im",
           "alt_ip": "http://176.9.32.126:44098"
         },
         {
           "url": "https://dogenode3.adm.im",
           "alt_ip": "http://95.216.45.88:44098"
-        },
-        {
-          "url": "https://dogenode1.bbry.org",
-          "alt_ip": "http://147.93.132.93:14778"
         },
         {
           "url": "https://dogenode2.bbry.org",
@@ -317,10 +287,6 @@
           "docs": "https://github.com/blockstream/esplora/blob/master/API.md"
         },
         "list": [
-          {
-            "url": "https://dogenode1.adamant.im/api",
-            "alt_ip": "http://5.9.99.62:44099/api"
-          },
           {
             "url": "https://dogenode2.adamant.im/api",
             "alt_ip": "http://176.9.32.126:44098/api"

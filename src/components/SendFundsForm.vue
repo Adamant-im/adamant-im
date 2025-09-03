@@ -200,7 +200,7 @@ import { computed, nextTick } from 'vue'
 
 import QrcodeCapture from '@/components/QrcodeCapture.vue'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
-import get from 'lodash/get'
+import { get } from 'lodash-es'
 import { BigNumber } from 'bignumber.js'
 import * as transactions from '@klayr/transactions'
 import { KLY_DECIMALS } from '@/lib/klayr/klayr-constants'

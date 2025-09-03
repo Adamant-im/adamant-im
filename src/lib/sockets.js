@@ -1,5 +1,5 @@
 import { io } from 'socket.io-client'
-import random from 'lodash/random'
+import { random } from 'lodash-es'
 
 /**
  * interface Events {

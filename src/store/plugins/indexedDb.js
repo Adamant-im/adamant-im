@@ -1,5 +1,5 @@
 import throttle from 'throttle-promise'
-import cloneDeep from 'lodash/cloneDeep'
+import { cloneDeep } from 'lodash-es'
 import { Base64 } from 'js-base64'
 
 import { router } from '@/router'
