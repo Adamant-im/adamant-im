@@ -527,13 +527,6 @@ const onVersionClick = () => {
   }
 }
 
-const showSnackbar = (message: string, timeout: number = 5000) => {
-  store.dispatch('snackbar/show', {
-    message,
-    timeout
-  })
-}
-
 onMounted(() => {
   nextTick(() => {
     if (sidebarLayoutRef && scrollTopPosition.value) {
