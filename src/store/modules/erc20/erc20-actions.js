@@ -32,12 +32,15 @@ const initTransaction = async (api, context, ethAddress, amount, nonce, increase
   const ethInfo = CryptosInfo['ETH']
 
   const reliabilityGasLimitPercent =
-      tokenInfo.reliabilityGasLimitPercent ?? ethInfo.reliabilityGasLimitPercent
+    tokenInfo.reliabilityGasLimitPercent ?? ethInfo.reliabilityGasLimitPercent
 
   try {
     let estimatedGasLimit = await api.useClient((client) => client.estimateGas(transaction))
 
-    const reliableGasLimit = ethUtils.calculateReliableValue(estimatedGasLimit, reliabilityGasLimitPercent)
+    const reliableGasLimit = ethUtils.calculateReliableValue(
+      estimatedGasLimit,
+      reliabilityGasLimitPercent
+    )
     transaction.gasLimit = BigInt(reliableGasLimit.integerValue().toString())
   } catch {
     transaction.gasLimit = BigInt(tokenInfo.defaultGasLimit ?? ethInfo.defaultGasLimit)

@@ -21,9 +21,7 @@ export function createVibrationPattern(pattern: number[]): () => void {
   return () => {
     if (!checkVibrateIsSupported()) return
 
-    if (navigator.userAgentData?.mobile) {
-      navigator.vibrate(pattern)
-    }
+    if (navigator.userAgentData?.mobile) navigator.vibrate(pattern)
   }
 }
 

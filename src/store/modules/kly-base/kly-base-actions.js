@@ -185,23 +185,31 @@ function createActions(options) {
       }
 
       commit('areRecentLoading', true)
-      const timestamp = state.maxTimestamp ? `${getKlayrTimestamp(state.maxTimestamp)}:` : undefined
 
-      const transactions = await klyIndexer.getTransactions({
-        address: state.address,
-        // First time we fetch txs — get newest first
-        sort: state.maxTimestamp > 0 ? 'timestamp:asc' : 'timestamp:desc',
-        timestamp,
-        limit: KLY_TXS_PER_PAGE
-      })
-      commit('areRecentLoading', false)
+      // eslint-disable-next-line no-useless-catch
+      try {
+        const timestamp = state.maxTimestamp
+          ? `${getKlayrTimestamp(state.maxTimestamp)}:`
+          : undefined
 
-      if (transactions.length > 0) {
-        commit('transactions', { transactions, updateTimestamps: true })
+        const transactions = await klyIndexer.getTransactions({
+          address: state.address,
+          // First time we fetch txs — get newest first
+          sort: state.maxTimestamp > 0 ? 'timestamp:asc' : 'timestamp:desc',
+          timestamp,
+          limit: KLY_TXS_PER_PAGE
+        })
+        commit('areRecentLoading', false)
 
-        if (timestamp && transactions.length === KLY_TXS_PER_PAGE) {
-          dispatch(`${state.crypto.toLowerCase()}/getNewTransactions`)
+        if (transactions.length > 0) {
+          commit('transactions', { transactions, updateTimestamps: true })
+
+          if (timestamp && transactions.length === KLY_TXS_PER_PAGE) {
+            dispatch(`${state.crypto.toLowerCase()}/getNewTransactions`)
+          }
         }
+      } catch (err) {
+        throw err
       }
     },
 
@@ -214,25 +222,31 @@ function createActions(options) {
       if (state.bottomReached) return
 
       commit('areOlderLoading', true)
-      const timestamp =
-        state.minTimestamp < Infinity ? `:${getKlayrTimestamp(state.minTimestamp)}` : undefined
 
-      const transactions = await klyIndexer.getTransactions({
-        address: state.address,
-        sort: 'timestamp:desc',
-        timestamp,
-        limit: KLY_TXS_PER_PAGE
-      })
-      commit('areOlderLoading', false)
+      // eslint-disable-next-line no-useless-catch
+      try {
+        const timestamp =
+          state.minTimestamp < Infinity ? `:${getKlayrTimestamp(state.minTimestamp)}` : undefined
 
-      if (transactions.length > 0) {
-        commit('transactions', { transactions, updateTimestamps: true })
-      }
+        const transactions = await klyIndexer.getTransactions({
+          address: state.address,
+          sort: 'timestamp:desc',
+          timestamp,
+          limit: KLY_TXS_PER_PAGE
+        })
+        commit('areOlderLoading', false)
 
-      // Successful but empty response means, that the oldest transaction for the current
-      // address has been received already
-      if (transactions.length === 0) {
-        commit('bottom', true)
+        if (transactions.length > 0) {
+          commit('transactions', { transactions, updateTimestamps: true })
+        }
+
+        // Successful but empty response means, that the oldest transaction for the current
+        // address has been received already
+        if (transactions.length === 0) {
+          commit('bottom', true)
+        }
+      } catch (err) {
+        throw err
       }
     },
 
