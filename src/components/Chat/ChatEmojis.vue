@@ -18,7 +18,7 @@
 <script>
 import EmojiPicker from '@/components/EmojiPicker.vue'
 import { mdiEmoticonOutline } from '@mdi/js'
-import { useDisplay } from 'vuetify'
+import { useScreenSize } from '@/hooks/useScreenSize'
 
 export default {
   props: {
@@ -29,10 +29,10 @@ export default {
   },
   emits: ['onChange', 'get-emoji-picture'],
   setup() {
-    const { mdAndUp } = useDisplay()
+    const { isMobileView } = useScreenSize()
     return {
       mdiEmoticonOutline,
-      isDesktop: mdAndUp
+      isDesktop: !isMobileView.value
     }
   },
   methods: {
@@ -52,48 +52,23 @@ export default {
 @use 'sass:map';
 @use 'vuetify/settings';
 
-/** Themes **/
-.v-theme--light {
-  .chat-emojis {
-    &__icon {
-      position: relative;
+.chat-emojis {
+  &__icon {
+    position: relative;
 
-      &::before {
-        content: '';
-        position: absolute;
-        inset: -3px;
-        border-radius: 50%;
-        background: currentColor;
-        opacity: 0;
-        transition: 0.4s;
-        z-index: -1;
-      }
-
-      &:hover::before {
-        opacity: 0.1;
-      }
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0;
+      transition: 0.4s;
+      z-index: -1;
     }
-  }
-}
-.v-theme--dark {
-  .chat-emojis {
-    &__icon {
-      position: relative;
 
-      &::before {
-        content: '';
-        position: absolute;
-        inset: -3px;
-        border-radius: 50%;
-        background: currentColor;
-        opacity: 0;
-        transition: 0.4s;
-        z-index: -1;
-      }
-
-      &:hover::before {
-        opacity: 0.1;
-      }
+    &:hover::before {
+      opacity: 0.1;
     }
   }
 }

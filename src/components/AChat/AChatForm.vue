@@ -37,7 +37,7 @@
         <slot name="append" />
         <v-icon
           class="a-chat__form-send-area"
-          :color="sendButtonColor"
+          :class="{ 'a-chat__form-send-area--disabled': isDisabled }"
           :icon="mdiSend"
           size="28"
           :disabled="isDisabled"
@@ -57,7 +57,7 @@ import { useChatStateStore } from '@/stores/modal-state'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { VTextarea } from 'vuetify/components'
-import { validationErrors } from '@/lib/constants'
+import { VALIDATION_ERRORS } from '@/lib/constants'
 
 type Textarea = VTextarea & {
   calculateInputHeight: () => void
@@ -121,8 +121,8 @@ const isDisabled = computed(() => {
   const error = props.validator(message.value)
 
   if (
-    error === validationErrors.notEnoughFunds ||
-    error === validationErrors.notEnoughFundsNewAccount
+    error === VALIDATION_ERRORS.NotEnoughFunds ||
+    error === VALIDATION_ERRORS.NotEnoughFundsNewAccount
   ) {
     return false
   }
@@ -165,17 +165,6 @@ const listeners = computed(() => {
       }
     }
   }
-})
-
-const sendButtonColor = computed(() => {
-  const error = props.validator(message.value)
-  if (
-    error === validationErrors.notEnoughFunds ||
-    error === validationErrors.notEnoughFundsNewAccount
-  ) {
-    return 'white'
-  }
-  return isDisabled.value ? 'grey' : 'white'
 })
 
 onMounted(() => {
@@ -400,12 +389,30 @@ defineExpose({
 }
 
 .a-chat__form-send-area {
+  color: white;
+
+  &--disabled {
+    color: grey;
+  }
+
   &:hover {
-    color: map.get(colors.$adm-colors, 'primary') !important;
+    color: map.get(colors.$adm-colors, 'primary');
   }
 }
 
 .v-theme--light {
+  .a-chat__form-send-area {
+    color: black;
+
+    &--disabled {
+      color: grey;
+    }
+
+    &:hover {
+      color: map.get(colors.$adm-colors, 'primary');
+    }
+  }
+
   .a-chat__form {
     :deep(.v-textarea) {
       .v-field__input {
