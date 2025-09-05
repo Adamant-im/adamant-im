@@ -251,4 +251,12 @@ export const REACT_EMOJIS = {
   PARTY_POPPER: '🎉'
 } as const
 
+/** Validation errors for the chat message */
+export const validationErrors = {
+  emptyMessage: 'EMPTY_MESSAGE',
+  notEnoughFunds: 'NON_ENOUGH_FUNDS',
+  notEnoughFundsNewAccount: 'NON_ENOUGH_FUNDS_NEW_ACCOUNT',
+  messageTooLong: 'MESSAGE_LENGTH_EXCEED'
+} as const
+
 export const sidebarLayoutKey = Symbol('sidebarLayout')

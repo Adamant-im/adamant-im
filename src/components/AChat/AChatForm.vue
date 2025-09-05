@@ -37,7 +37,7 @@
         <slot name="append" />
         <v-icon
           class="a-chat__form-send-area"
-          :color="isDisabled ? 'grey' : 'white'"
+          :color="sendButtonColor"
           :icon="mdiSend"
           size="28"
           :disabled="isDisabled"
@@ -57,6 +57,7 @@ import { useChatStateStore } from '@/stores/modal-state'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { VTextarea } from 'vuetify/components'
+import { validationErrors } from '@/lib/constants'
 
 type Textarea = VTextarea & {
   calculateInputHeight: () => void
@@ -117,7 +118,16 @@ const placeholder = computed(() => props.label ?? t('chats.type_a_message'))
 const isDesktopDevice = !isMobile()
 
 const isDisabled = computed(() => {
-  return props.validator(message.value) !== false
+  const error = props.validator(message.value)
+
+  if (
+    error === validationErrors.notEnoughFunds ||
+    error === validationErrors.notEnoughFundsNewAccount
+  ) {
+    return false
+  }
+
+  return error !== false
 })
 
 const listeners = computed(() => {
@@ -155,6 +165,17 @@ const listeners = computed(() => {
       }
     }
   }
+})
+
+const sendButtonColor = computed(() => {
+  const error = props.validator(message.value)
+  if (
+    error === validationErrors.notEnoughFunds ||
+    error === validationErrors.notEnoughFundsNewAccount
+  ) {
+    return 'white'
+  }
+  return isDisabled.value ? 'grey' : 'white'
 })
 
 onMounted(() => {
