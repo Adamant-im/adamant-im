@@ -3,8 +3,7 @@
 
 import { describe, it, expect } from 'vitest'
 import Web3Eth from 'web3-eth'
-
-import { toEther, toWei, getAccountFromPassphrase, increaseFee } from '@/lib/eth-utils'
+import { toEther, toWei, getAccountFromPassphrase, calculateFee } from '@/lib/eth-utils'
 
 describe('eth-utils', () => {
   describe('toEther', () => {
@@ -53,17 +52,29 @@ describe('eth-utils', () => {
     })
   })
 
-  describe('increaseFee', () => {
-    it('should multiply `gasLimit` as a number', () => {
-      expect(increaseFee(21000, 2)).toBe(BigInt(42000))
+  describe('calculateFee', () => {
+    it('should calculate basic ETH transfer fee', () => {
+      const gasUsed = 21000
+      const gasPrice = 20000000000
+      expect(calculateFee(gasUsed, gasPrice)).toBe('0.00042')
     })
 
-    it('should multiply `gasLimit` as a bigint', () => {
-      expect(increaseFee(BigInt(21000), 2)).toBe(BigInt(42000))
+    it('should calculate ERC20 transfer fee', () => {
+      const gasUsed = 60000
+      const gasPrice = 25000000000
+      expect(calculateFee(gasUsed, gasPrice)).toBe('0.0015')
     })
 
-    it('should round the result before converting to bigint', () => {
-      expect(increaseFee(BigInt(21001), 1.5)).toBe(BigInt(31502))
+    it('should handle string inputs from API', () => {
+      const gasUsed = '35000'
+      const gasPrice = '15000000000'
+      expect(calculateFee(gasUsed, gasPrice)).toBe('0.000525')
+    })
+
+    it('should return "0" when gasPrice is missing (London hardfork case)', () => {
+      const gasUsed = 21000
+      expect(calculateFee(gasUsed, null)).toBe('0')
+      expect(calculateFee(gasUsed, undefined)).toBe('0')
     })
   })
 })

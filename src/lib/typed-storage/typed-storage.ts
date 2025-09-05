@@ -13,7 +13,7 @@ export class TypedStorage<K extends string, S = unknown> {
 
     try {
       return JSON.parse(rawData) ?? this.defaultValue
-    } catch (err) {
+    } catch {
       this.storage.removeItem(this.storageKey)
 
       return this.defaultValue

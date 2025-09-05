@@ -6,6 +6,7 @@
       :messages="messages"
       :show-new-chat-placeholder="showNewChatPlaceholder"
       :partners="partners"
+      :partner-id="partnerId"
       :is-getting-public-key="isGettingPublicKey"
       :user-id="userId"
       :loading="loading && !isGettingPublicKey"
@@ -113,10 +114,6 @@
           @swipe:left="onSwipeLeft(message)"
           @longpress="onMessageLongPress(message)"
         >
-          <template #avatar v-if="sender">
-            <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
-          </template>
-
           <template #actions v-if="isRealMessage(message)">
             <AChatReactions @click="handleClickReactions(message)" :transaction="message" />
 
@@ -205,13 +202,12 @@
 
       <template #form>
         <a-chat-form
-          v-if="!isWelcomeChat(partnerId)"
           ref="chatFormRef"
           :show-send-button="true"
           :send-on-enter="sendMessageOnEnter"
           :show-divider="true"
           :label="t('chats.message')"
-          :should-disable-input="shouldDisableInput"
+          :should-disable-input="isWelcomeChat(partnerId) || shouldDisableInput"
           :message-text="
             $route.query.messageText || $store.getters['draftMessage/draftMessage'](partnerId)
           "
@@ -259,16 +255,8 @@
           color="primary"
           :content="numOfNewMessages > 0 ? numOfNewMessages : undefined"
         >
-          <v-btn
-            class="ma-0 grey--text"
-            color="grey lighten-3"
-            icon
-            depressed
-            fab
-            size="small"
-            @click="chatRef.scrollToBottom()"
-          >
-            <v-icon :icon="mdiChevronDown" size="x-large" />
+          <v-btn icon fab size="small" @click="chatRef.scrollToBottom()">
+            <v-icon :icon="mdiChevronDown" size="xx-large" />
           </v-btn>
         </v-badge>
       </template>
@@ -322,7 +310,6 @@ import { useChatStateStore } from '@/stores/modal-state'
 import ChatPlaceholder from '@/components/Chat/ChatPlaceholder.vue'
 import { watchImmediate } from '@vueuse/core'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
-import { isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -943,6 +930,7 @@ const onKeyPress = (e: KeyboardEvent) => {
 
 <style scoped lang="scss">
 @use 'sass:map';
+@use 'sass:color';
 @use '@/assets/styles/settings/_colors.scss';
 
 .chat-menu {
@@ -969,5 +957,13 @@ const onKeyPress = (e: KeyboardEvent) => {
   .connection-spinner {
     color: map.get(colors.$adm-colors, 'regular');
   }
+}
+
+:deep(.v-badge .v-btn) {
+  z-index: 1;
+  color: map.get(colors.$adm-colors, 'primary');
+  border-radius: 50%;
+  background-color: color.adjust(map.get(colors.$adm-colors, 'primary2'), $alpha: -0.7);
+  box-shadow: none;
 }
 </style>
