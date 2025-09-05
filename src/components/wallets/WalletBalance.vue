@@ -113,13 +113,13 @@ export default defineComponent({
   justify-content: space-between;
 
   &__status-title {
-    line-height: 1;
+    line-height: 1.1;
   }
 
   &__status-text {
     font-size: 12px;
     font-weight: 300;
-    line-height: 1;
+    line-height: 1.1;
   }
 }
 

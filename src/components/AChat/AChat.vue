@@ -6,7 +6,11 @@
       <v-divider />
 
       <div :class="classes.body" ref="bodyRef">
-        <div v-show="loading" :class="classes.spinnerWrapper" :style="{ top: spinnerTop + 'px' }">
+        <div
+          v-show="loading && !isWelcomeChat(partnerId)"
+          :class="classes.spinnerWrapper"
+          :style="{ top: spinnerTop + 'px' }"
+        >
           <v-progress-circular indeterminate :size="20" :class="classes.spinner" />
         </div>
 
@@ -58,6 +62,7 @@ import { SCROLL_TO_REPLIED_MESSAGE_ANIMATION_DURATION } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { User } from '@/components/AChat/types'
+import { isWelcomeChat } from '@/lib/chat/meta/utils'
 
 const className = 'a-chat'
 const classes = {
@@ -79,6 +84,7 @@ type Props = {
   userId: string
   loading: boolean
   locale: string
+  partnerId: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -86,7 +92,8 @@ const props = withDefaults(defineProps<Props>(), {
   showNewChatPlaceholder: false,
   partners: () => [],
   loading: false,
-  locale: 'en'
+  locale: 'en',
+  partnerId: ''
 })
 
 const emit = defineEmits<{

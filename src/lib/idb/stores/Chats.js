@@ -16,7 +16,7 @@ export default {
           value: decrypt(value)
         }
       })
-    } catch (err) {
+    } catch {
       throw new Error('Invalid password')
     }
   },

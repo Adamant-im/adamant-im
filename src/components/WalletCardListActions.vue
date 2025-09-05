@@ -117,7 +117,7 @@ const getFreeTokens = () => {
     }
   }
   :deep(.v-list-item) {
-    padding: 0 16px;
+    padding: 0 28px;
   }
   :deep(.v-list-item__prepend) {
     > .v-icon {
