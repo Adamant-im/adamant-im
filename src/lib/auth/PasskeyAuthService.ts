@@ -1,5 +1,6 @@
 import { Capacitor } from '@capacitor/core'
 import { AuthenticationResult, AuthenticationService, SetupResult } from './types'
+import store from '@/store'
 
 export class PasskeyAuthService implements AuthenticationService {
   async authorizeUser(): Promise<AuthenticationResult> {
@@ -23,11 +24,14 @@ export class PasskeyAuthService implements AuthenticationService {
       return AuthenticationResult.Success
     } catch (error: unknown) {
       console.error(error)
-      
-      if (error instanceof Error && (error.name === 'NotAllowedError' || error.name === 'AbortError')) {
+
+      if (
+        error instanceof Error &&
+        (error.name === 'NotAllowedError' || error.name === 'AbortError')
+      ) {
         return AuthenticationResult.Cancel
       }
-      
+
       return AuthenticationResult.Failed
     }
   }
@@ -51,8 +55,8 @@ export class PasskeyAuthService implements AuthenticationService {
           },
           user: {
             id: crypto.getRandomValues(new Uint8Array(32)),
-            name: 'ADAMANT User',
-            displayName: 'ADAMANT User'
+            name: `ADM ${store.state.address}`,
+            displayName: `ADM ${store.state.address}`
           },
           pubKeyCredParams: [{ alg: -7, type: 'public-key' }],
           authenticatorSelection: {
@@ -65,11 +69,14 @@ export class PasskeyAuthService implements AuthenticationService {
       return SetupResult.Success
     } catch (error: unknown) {
       console.error(error)
-      
-      if (error instanceof Error && (error.name === 'NotAllowedError' || error.name === 'AbortError')) {
+
+      if (
+        error instanceof Error &&
+        (error.name === 'NotAllowedError' || error.name === 'AbortError')
+      ) {
         return SetupResult.Cancel
       }
-      
+
       return SetupResult.Failed
     }
   }

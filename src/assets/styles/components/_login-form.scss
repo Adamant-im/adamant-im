@@ -1,5 +1,6 @@
 @use 'sass:map';
 @use '../settings/_colors.scss';
+@use '@/assets/styles/generic/_variables.scss';
 
 /**
  * Centering input text and label.
@@ -13,6 +14,9 @@
  * 5. Disable border bottom animation.
  */
 .login-form {
+  @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
+    margin-bottom: 40px;
+  }
   &__button {
     min-width: 126px;
   }

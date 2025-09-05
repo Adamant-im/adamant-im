@@ -37,10 +37,10 @@
       </v-col>
       <div class="text-center mt-11">
         <h3 class="a-text-regular">
-          {{ t('login_via_password.remove_password_hint') }}
+          {{ t('login.use_passphrase_hint') }}
         </h3>
         <v-btn class="a-btn-link mt-2" variant="text" size="small" @click="removePassword">
-          {{ t('login_via_password.remove_password') }}
+          {{ t('login.use_passphrase') }}
         </v-btn>
       </div>
     </v-row>
@@ -150,24 +150,3 @@ const removePassword = () => {
   })
 }
 </script>
-
-<style lang="scss" scoped>
-.login-form {
-  &__textfield {
-    &:deep(.v-field__append-inner) {
-      padding-left: 0;
-      margin-left: -28px; // compensate the append-inner icon
-    }
-
-    &:deep(.v-field__input) {
-      width: 100%;
-      padding-right: 32px;
-      padding-left: 32px;
-    }
-
-    :deep(input) {
-      font-size: 16px !important;
-    }
-  }
-}
-</style>

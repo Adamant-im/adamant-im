@@ -266,6 +266,39 @@ const onScanQrcode = (value: string) => {
       opacity: 0.06;
     }
   }
+
+  // Auth form styles
+  &__form {
+    &-textfield {
+      &:deep(.v-field__append-inner) {
+        padding-left: 0;
+        margin-left: -28px; // compensate the append-inner icon
+      }
+
+      &:deep(.v-field__input) {
+        width: 100%;
+        padding-right: 32px;
+        padding-left: 32px;
+      }
+
+      :deep(input) {
+        font-size: 16px !important;
+      }
+    }
+
+    &-icon {
+      cursor: pointer;
+      transition: opacity 0.2s;
+      
+      &:hover {
+        opacity: 0.8;
+      }
+      
+      &:active {
+        opacity: 0.6;
+      }
+    }
+  }
 }
 
 /** Themes **/
@@ -284,6 +317,10 @@ const onScanQrcode = (value: string) => {
         opacity: 1;
       }
     }
+
+    &__form-textfield {
+      color: map.get(colors.$adm-colors, 'regular');
+    }
   }
 }
 .v-theme--dark {
@@ -295,6 +332,10 @@ const onScanQrcode = (value: string) => {
         color: map.get(colors.$adm-colors, 'secondary');
         opacity: 1;
       }
+    }
+
+    &__form-textfield {
+      color: map.get(settings.$shades, 'white');
     }
   }
 }

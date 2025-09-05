@@ -16,11 +16,13 @@ export class BiometricAuthService implements AuthenticationService {
       return AuthenticationResult.Success
     } catch (error: unknown) {
       console.error(error)
-      
-      if (error instanceof Error && error.message.includes('cancel')) {
+
+      const errorMessage = (error as { code: number; message: string }).message
+
+      if (errorMessage.toLowerCase().includes('cancel')) {
         return AuthenticationResult.Cancel
       }
-      
+
       return AuthenticationResult.Failed
     }
   }
@@ -35,11 +37,11 @@ export class BiometricAuthService implements AuthenticationService {
       return result.isAvailable ? SetupResult.Success : SetupResult.Failed
     } catch (error: unknown) {
       console.error(error)
-      
+
       if (error instanceof Error && error.message.includes('cancel')) {
         return SetupResult.Cancel
       }
-      
+
       return SetupResult.Failed
     }
   }

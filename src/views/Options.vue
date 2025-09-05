@@ -49,23 +49,37 @@
             @click.prevent="onCheckStayLoggedIn"
           />
 
-          <div class="a-text-explanation-enlarged">
-            {{ t('options.stay_logged_in_tooltip') }}
+          <div
+            class="a-text-explanation-enlarged"
+            :class="{ 'auth-method-tooltip': selectedAuthMethodIcon }"
+          >
+            <template v-if="selectedAuthMethodIcon">
+              <v-icon :icon="selectedAuthMethodIcon" size="20" class="auth-method-status-icon" />
+            </template>
+            <template v-else>
+              {{ t('options.stay_logged_in_tooltip') }}
+            </template>
           </div>
 
           <div v-if="stayLoggedIn" class="mt-4">
-            <v-select
-              v-model="selectedAuthenticationMethod"
-              :items="authenticationMethods"
-              :label="t('options.authentication_method')"
+            <v-text-field
+              :model-value="selectedAuthMethodDisplayText"
+              :label="t('options.authentication_method_label')"
+              readonly
               density="comfortable"
               variant="outlined"
               hide-details
-              @update:model-value="onAuthenticationMethodChange"
+              :append-inner-icon="mdiChevronDown"
+              @click="isSignInOptionsDialogDisplayed = true"
+              class="auth-method-selector"
             />
           </div>
 
           <password-set-dialog v-model="isPasswordDialogDisplayed" @password="onSetPassword" />
+          <sign-in-options-dialog
+            v-model="isSignInOptionsDialogDisplayed"
+            @select-auth-method="onAuthenticationMethodChange"
+          />
         </v-col>
       </v-row>
 
@@ -213,7 +227,14 @@
 
 <script setup lang="ts">
 import { nextTick, inject, computed, onBeforeUnmount, onMounted, Ref, ref } from 'vue'
-import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant } from '@mdi/js'
+import {
+  mdiChevronRight,
+  mdiChevronDown,
+  mdiLogoutVariant,
+  mdiFingerprint,
+  mdiKeyVariant,
+  mdiLock
+} from '@mdi/js'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -222,6 +243,7 @@ import { useTheme } from 'vuetify'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import CurrencySwitcher from '@/components/CurrencySwitcher.vue'
 import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
+import SignInOptionsDialog from '@/components/SignInOptionsDialog.vue'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import { resetPinia } from '@/plugins/pinia'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
@@ -246,6 +268,7 @@ const appVersion = inject('appVersion')
 const sidebarLayoutRef = inject<Ref>(sidebarLayoutKey)
 
 const tapCount = ref(0)
+const isSignInOptionsDialogDisplayed = ref(false)
 
 const isPasswordDialogDisplayed = computed({
   get() {
@@ -354,21 +377,6 @@ const darkTheme = computed({
   }
 })
 
-const authenticationMethods = computed(() => [
-  {
-    title: t('options.password_auth'),
-    value: AuthenticationMethod.Password
-  },
-  {
-    title: t('options.biometric_auth'),
-    value: AuthenticationMethod.Biometric
-  },
-  {
-    title: t('options.passkey_auth'),
-    value: AuthenticationMethod.Passkey
-  }
-])
-
 const isDevModeEnabled = computed({
   get() {
     return store.state.options.devModeEnabled
@@ -390,6 +398,27 @@ const selectedAuthenticationMethod = computed({
       key: 'authenticationMethod',
       value
     })
+  }
+})
+
+const selectedAuthMethodDisplayText = computed(() => {
+  if (!selectedAuthenticationMethod.value) {
+    return t('options.authentication_method_placeholder')
+  }
+
+  return t(`login.signin_options.${selectedAuthenticationMethod.value}.title`)
+})
+
+const selectedAuthMethodIcon = computed(() => {
+  switch (selectedAuthenticationMethod.value) {
+    case AuthenticationMethod.Biometric:
+      return mdiFingerprint
+    case AuthenticationMethod.Passkey:
+      return mdiKeyVariant
+    case AuthenticationMethod.Password:
+      return mdiLock
+    default:
+      return null
   }
 })
 
@@ -435,6 +464,7 @@ const setupPasswordAuth = () => {
 
 const onSetPassword = () => {
   selectedAuthenticationMethod.value = AuthenticationMethod.Password
+  showSuccess(t('login.signin_options.notifications.password_enabled'))
 }
 
 const showSuccess = (message: string) => {
@@ -460,21 +490,26 @@ const setupBiometricAuth = async (): Promise<boolean> => {
     }
 
     if (result !== SetupResult.Success) {
-      throw new Error(t('options.biometric_not_available'))
+      throw new Error(t('login.signin_options.not_available'))
     }
 
     const currentPassphrase = store.getters.getPassPhrase
     if (!currentPassphrase) {
-      throw new Error(t('options.biometric_setup_failed'))
+      throw new Error(t('login.signin_options.notifications.biometric_failed'))
     }
 
+    selectedAuthenticationMethod.value = AuthenticationMethod.Biometric
     store.commit('resetPassword')
     await clearDb()
     await saveState(store)
-    showSuccess(t('options.biometric_setup_success'))
+    showSuccess(t('login.signin_options.notifications.biometric_enabled'))
     return true
   } catch (error) {
-    showError(error instanceof Error ? error.message : t('options.biometric_setup_failed'))
+    showError(
+      error instanceof Error
+        ? error.message
+        : t('login.signin_options.notifications.biometric_failed')
+    )
     return false
   }
 }
@@ -488,21 +523,25 @@ const setupPasskeyAuth = async (): Promise<boolean> => {
     }
 
     if (result !== SetupResult.Success) {
-      throw new Error(t('options.passkey_not_available'))
+      throw new Error(t('login.signin_options.not_available'))
     }
 
     const currentPassphrase = store.getters.getPassPhrase
     if (!currentPassphrase) {
-      throw new Error(t('options.passkey_setup_failed'))
+      throw new Error(t('login.signin_options.notifications.passkey_failed'))
     }
-
+    selectedAuthenticationMethod.value = AuthenticationMethod.Passkey
     store.commit('resetPassword')
     await clearDb()
     await saveState(store)
-    showSuccess(t('options.passkey_setup_success'))
+    showSuccess(t('login.signin_options.notifications.passkey_enabled'))
     return true
   } catch (error) {
-    showError(error instanceof Error ? error.message : t('options.passkey_setup_failed'))
+    showError(
+      error instanceof Error
+        ? error.message
+        : t('login.signin_options.notifications.passkey_failed')
+    )
     return false
   }
 }
@@ -642,6 +681,24 @@ onBeforeUnmount(() => {
   }
   :deep(.v-checkbox) {
     margin-left: -8px;
+  }
+
+  .auth-method-selector {
+    :deep(.v-field),
+    :deep(.v-field__input),
+    :deep(.v-field__append-inner),
+    :deep(.v-label) {
+      cursor: pointer;
+    }
+  }
+
+  .auth-method-tooltip {
+    display: flex;
+    align-items: center;
+  }
+
+  .auth-method-status-icon {
+    margin-left: 0;
   }
 }
 

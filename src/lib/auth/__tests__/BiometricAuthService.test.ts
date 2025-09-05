@@ -142,7 +142,7 @@ describe('BiometricAuthService', () => {
 
     it('should return cancel when user cancels biometric setup', async () => {
       // Simulate user cancelling during setup (includes 'cancel' keyword)
-      const cancelError = new Error('User cancelled biometric setup')
+      const cancelError = new Error('cancel')
       mockNativeBiometric.isAvailable.mockRejectedValue(cancelError)
 
       // User starts biometric setup but cancels it
