@@ -67,7 +67,7 @@ export abstract class Node<C = unknown> {
   /**
    * Whether it is the first connection via URL domain or subsequent.
    */
-  connectionCount = 0
+  healthcheckCount = 0
   /**
    * Indicates whether node is available.
    */
@@ -151,8 +151,8 @@ export abstract class Node<C = unknown> {
       try {
         if (this.online) {
           if (this.preferDomain) {
-            if (this.connectionCount === 0) {
-              this.connectionCount++
+            if (this.healthcheckCount === 0) {
+              this.healthcheckCount++
               this.healthcheckInProgress = true
 
               const health = await this.checkHealth()
@@ -163,8 +163,8 @@ export abstract class Node<C = unknown> {
               console.info(`[HealthCheck] Connection via URL ${this.url} succeeded.`)
             }
           } else {
-            if (this.connectionCount === 1 && this.altIp) {
-              this.connectionCount++
+            if (this.healthcheckCount === 1 && this.altIp) {
+              this.healthcheckCount++
               this.healthcheckInProgress = true
 
               const health = await this.checkHealth()
@@ -177,7 +177,7 @@ export abstract class Node<C = unknown> {
             }
           }
         } else {
-          if (this.connectionCount === 2) {
+          if (this.healthcheckCount === 2) {
             console.info(
               `[HealthCheck] Node with URL ${this.url} and alternative IP ${this.altIp} is offline.`
             )
@@ -245,6 +245,7 @@ export abstract class Node<C = unknown> {
    */
   getBaseURL(node: Node): string {
     const baseURL = node.preferDomain ? node.url : (node.altIp as string)
+
     const { altIp, protocol, wsProtocol, url } = node
 
     console.log({ baseURL, altIp, protocol, wsProtocol, url })
@@ -323,7 +324,7 @@ export abstract class Node<C = unknown> {
 
     /** Reset properties for HealthCheck to default if a node enabled again. */
     if (active) {
-      this.connectionCount = 0
+      this.healthcheckCount = 0
       this.online = true
       this.preferDomain = true
     }
