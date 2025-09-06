@@ -39,7 +39,7 @@
           class="a-chat__form-send-area"
           :class="{ 'a-chat__form-send-area--disabled': isDisabled }"
           :icon="mdiSend"
-          size="28"
+          size="22"
           :disabled="isDisabled"
           @click="submitMessage"
         />
@@ -388,7 +388,34 @@ defineExpose({
   width: 100%;
 }
 
+.a-chat__form {
+  :deep(.v-field__append-inner) {
+    display: flex;
+    align-items: center;
+  }
+}
+
 .a-chat__form-send-area {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s;
+    z-index: -1;
+  }
+
+  &:hover::before {
+    opacity: 0.1;
+  }
+
   color: white;
 
   &--disabled {
@@ -406,6 +433,10 @@ defineExpose({
 
     &--disabled {
       color: grey;
+    }
+
+    &::before {
+      background: rgba(0, 0, 0, 1);
     }
 
     &:hover {
@@ -427,6 +458,12 @@ defineExpose({
 }
 
 .v-theme--dark {
+  .a-chat__form-send-area {
+    &::before {
+      background: white;
+    }
+  }
+
   .a-chat__form {
     :deep(.v-textarea) {
       .v-field__input {
