@@ -405,6 +405,7 @@ defineExpose({
     left: 50%;
     width: 34px;
     height: 34px;
+    background: currentColor;
     border-radius: 50%;
     opacity: 0;
     transform: translate(-50%, -50%);
@@ -435,10 +436,6 @@ defineExpose({
       color: grey;
     }
 
-    &::before {
-      background: rgba(0, 0, 0, 1);
-    }
-
     &:hover {
       color: map.get(colors.$adm-colors, 'primary');
     }
@@ -458,12 +455,6 @@ defineExpose({
 }
 
 .v-theme--dark {
-  .a-chat__form-send-area {
-    &::before {
-      background: white;
-    }
-  }
-
   .a-chat__form {
     :deep(.v-textarea) {
       .v-field__input {
