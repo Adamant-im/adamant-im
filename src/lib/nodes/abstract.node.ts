@@ -327,6 +327,7 @@ export abstract class Node<C = unknown> {
     /** Reset properties for HealthCheck to default if a node enabled again. */
     if (active) {
       this.healthcheckCount = 0
+      this.healthcheckInProgress = false
       this.online = true
       this.preferDomain = true
     }
