@@ -321,6 +321,13 @@ export abstract class Node<C = unknown> {
 
     nodesStorage.saveActive(baseURL, active)
 
+    /** Reset properties for HealthCheck to default if a node enabled again. */
+    if (active) {
+      this.connectionCount = 0
+      this.online = true
+      this.preferDomain = true
+    }
+
     return this.getStatus()
   }
 
