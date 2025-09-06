@@ -160,7 +160,9 @@ export abstract class Node<C = unknown> {
               this.height = health.height
               this.ping = health.ping
 
-              console.info(`[HealthCheck] Connection via URL ${this.url} succeeded.`)
+              console.info(
+                `[HealthCheck] Connection via URL ${this.url} succeeded (alternative IP is ${this.altIp ?? 'not defined'}).`
+              )
             }
           } else {
             if (this.healthcheckCount === 1 && this.altIp) {
@@ -173,7 +175,9 @@ export abstract class Node<C = unknown> {
               this.height = health.height
               this.ping = health.ping
 
-              console.info(`[HealthCheck] Connection via alternative IP ${this.altIp} succeeded.`)
+              console.info(
+                `[HealthCheck] Connection via alternative IP ${this.altIp} succeeded (URL is ${this.url}).`
+              )
             }
           }
         } else {
