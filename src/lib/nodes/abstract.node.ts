@@ -182,6 +182,8 @@ export abstract class Node<C = unknown> {
               `[HealthCheck] Node with URL ${this.url} and alternative IP ${this.altIp} is offline.`
             )
           }
+
+          this.healthcheckCount++
         }
       } catch {
         if (this.preferDomain) {
