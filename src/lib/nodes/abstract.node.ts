@@ -328,9 +328,8 @@ export abstract class Node<C = unknown> {
     if (active) {
       this.healthcheckCount = 0
       this.healthcheckInProgress = false
-      this.height = 0
       this.online = true
-      this.outOfSync = true
+      this.outOfSync = false
       this.preferDomain = true
     }
 
