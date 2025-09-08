@@ -33,13 +33,18 @@
           @get-emoji-picture="emojiPicture"
         ></chat-emojis>
       </template>
-      <template v-if="showSendButton" #append-inner>
+      <template #append-inner>
         <slot name="append" />
-        <v-icon class="a-chat__send-icon" :icon="mdiSend" size="28" />
+        <v-icon
+          class="a-chat__send-icon"
+          size="28"
+          :icon="mdiSend"
+          :style="{ opacity: shouldDisableSendButton ? 0.5 : 1 }"
+        />
       </template>
     </v-textarea>
 
-    <div v-if="showSendButton" class="a-chat__form-send-area" @click="submitMessage" />
+    <div v-if="!shouldDisableSendButton" class="a-chat__form-send-area" @click="submitMessage" />
   </div>
 </template>
 
@@ -66,9 +71,9 @@ const { setEmojiPickerOpen } = chatStateStore
 type Props = {
   partnerId?: string
   messageText?: string
-  showSendButton?: boolean
   sendOnEnter?: boolean
   label?: string
+  shouldDisableSendButton?: boolean
   shouldDisableInput?: boolean
   showDivider?: boolean
   validator: (message: string) => string | false
@@ -77,9 +82,9 @@ type Props = {
 const props = withDefaults(defineProps<Props>(), {
   partnerId: '',
   messageText: '',
-  showSendButton: true,
   sendOnEnter: true,
   label: undefined,
+  shouldDisableSendButton: false,
   shouldDisableInput: false,
   showDivider: false
 })
@@ -242,6 +247,10 @@ const onToggleEmojiPicker = (state: boolean) => {
 }
 
 const submitMessage = () => {
+  if (props.shouldDisableSendButton) {
+    return
+  }
+
   const error = props.validator(message.value)
   if (error === false) {
     if (message.value.startsWith('/')) {

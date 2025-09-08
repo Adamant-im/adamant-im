@@ -62,7 +62,7 @@ export function useProcessFile(partnerId: string) {
       // check actual file size after encoding
       if (encodedFile.binary.byteLength >= UPLOAD_MAX_FILE_SIZE) {
         store.dispatch('snackbar/show', {
-          message: t('chats.max_file_size', { count: UPLOAD_MAX_FILE_SIZE }),
+          message: t('chats.max_file_size', { size_mb: UPLOAD_MAX_FILE_SIZE }),
           isError: true
         })
         const idx = attachments.list.findIndex((f) => f.cid === tempCid)

@@ -9,8 +9,8 @@
         <v-btn
           :icon="mdiArrowCollapseDown"
           :class="classes.saveButton"
-          @click="downloadFile"
-          :loading="downloading"
+          :loading="isDownloading"
+          @click="onDownload"
         />
       </v-toolbar>
 
@@ -36,8 +36,8 @@
               class="mt-3"
               color="primary"
               variant="flat"
-              @click="downloadFile"
-              :loading="downloading"
+              :loading="isDownloading"
+              @click="onDownload"
             >
               Download
             </v-btn>
@@ -69,7 +69,7 @@ import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { FileAsset } from '@/lib/adamant-api/asset'
 import { mdiArrowCollapseDown, mdiChevronLeft, mdiChevronRight, mdiClose } from '@mdi/js'
 import { App } from '@capacitor/app'
-import { useDownloadFile } from '@/components/AChat/hooks/useDownloadFile'
+import { useStore } from 'vuex'
 
 const className = 'a-chat-image-modal'
 const classes = {
@@ -110,13 +110,11 @@ export default {
     AChatModalFile,
     AChatImageModalItem
   },
-  emits: ['close', 'update:modal'],
+  emits: ['close', 'update:modal', 'downloadFile'],
   setup(props, { emit }) {
+    const store = useStore()
+
     const slide = ref(props.index)
-    const { downloading, downloadFile } = useDownloadFile(
-      props.transaction,
-      props.files[slide.value]
-    )
 
     const breakpoints = useBreakpoints(breakpointsTailwind)
     const isMobile = breakpoints.smaller('sm')
@@ -131,6 +129,10 @@ export default {
     })
     const showArrows = computed(() => {
       return props.files.length > 1 && !isMobile.value
+    })
+    const isDownloading = computed(() => {
+      const progress = store.getters['attachment/getDownloadProgress'](props.files[slide.value].id)
+      return progress < 100
     })
 
     const closeModal = () => {
@@ -182,6 +184,10 @@ export default {
       }
     }
 
+    const onDownload = () => {
+      emit('downloadFile', props.files[slide.value])
+    }
+
     onMounted(async () => {
       if (show.value) {
         history.pushState({}, '')
@@ -203,6 +209,7 @@ export default {
       slide,
       show,
       showArrows,
+      isDownloading,
       mdiArrowCollapseDown,
       mdiChevronLeft,
       mdiChevronRight,
@@ -212,8 +219,7 @@ export default {
       nextSlide,
       handleKeydown,
       handleClick,
-      downloadFile,
-      downloading,
+      onDownload,
       isTypeImage,
       classes
     }

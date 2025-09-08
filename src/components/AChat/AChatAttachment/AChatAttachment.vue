@@ -11,7 +11,8 @@
       end: onSwipeEnd
     }"
     :style="{
-      left: swipeDisabled ? '0px' : `${elementLeftOffset}px`
+      left: swipeDisabled ? '0px' : `${elementLeftOffset}px`,
+      width: `${singleImageWidth}`
     }"
     v-longpress="onLongPress"
   >
@@ -100,7 +101,8 @@
         :partnerId="partnerId"
         :images="transaction.localFiles || transaction.asset.files"
         :transaction="transaction"
-        @download-attachment="downloadAttachment"
+        :style="{ maxHeight }"
+        @download-image="downloadAttachment"
         @click:image="openModal"
       />
       <InlineLayout
@@ -108,7 +110,7 @@
         :partnerId="partnerId"
         :files="transaction.localFiles || transaction.asset.files"
         :transaction="transaction"
-        @download-attachment="downloadAttachment"
+        @download-image="downloadAttachment"
         @click:file="openModal"
       />
 
@@ -120,6 +122,7 @@
         v-if="isModalOpen"
         @close="closeModal"
         @update:modal="closeModal"
+        @download-file="onDownloadFile"
       />
     </div>
 
@@ -198,6 +201,11 @@ export default defineComponent({
     'downloadAllAttachments'
   ],
   setup(props, { emit }) {
+    const windowHeight = window.innerHeight
+
+    const singleImageHeight = windowHeight / 3
+    const multipleImagesHeight = (windowHeight * 2) / 3
+
     const { t } = useI18n()
     const store = useStore()
     const partnerId = usePartnerId(props.transaction)
@@ -234,6 +242,35 @@ export default defineComponent({
 
         return isImage(file)
       })
+    })
+
+    const maxHeight = computed(() => {
+      if (!hasImagesOnly.value) {
+        return 'auto'
+      }
+
+      if (files.value.length === 1) {
+        return `${singleImageHeight}px`
+      }
+
+      return `${multipleImagesHeight}px`
+    })
+
+    const singleImageWidth = computed(() => {
+      const defaultWidth = 500
+
+      if (hasImagesOnly.value && files.value.length === 1) {
+        const file = files.value[0]
+
+        const width = isLocalFile(file) ? file.file.width : file.resolution?.[0]
+        const height = isLocalFile(file) ? file.file.height : file.resolution?.[1]
+
+        const aspectRatio = width && height ? width / height : 1
+
+        return `${singleImageHeight * aspectRatio}px`
+      }
+
+      return `${defaultWidth}px`
     })
 
     const attachmentsToDownload = computed(() => {
@@ -276,6 +313,20 @@ export default defineComponent({
       emit('longpress')
     }
 
+    const onDownloadFile = (file: FileAsset | LocalFile) => {
+      store
+        .dispatch('attachment/downloadFile', {
+          transaction: props.transaction,
+          file
+        })
+        .catch(() => {
+          void store.dispatch('snackbar/show', {
+            message: t('chats.file_not_found'),
+            isError: true
+          })
+        })
+    }
+
     return {
       t,
       userId,
@@ -296,10 +347,13 @@ export default defineComponent({
       openModal,
       closeModal,
       hasImagesOnly,
+      maxHeight,
+      singleImageWidth,
       attachmentsToDownload,
       areAttachmentsDownloading,
       downloadAttachment,
       downloadAllAttachments,
+      onDownloadFile,
       mdiClockOutline,
       mdiArrowDownCircleOutline
     }
@@ -312,7 +366,7 @@ export default defineComponent({
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .a-chat__attachments {
-  width: 420px;
+  width: 500px;
   max-width: 100%;
 
   &--inline {

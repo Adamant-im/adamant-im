@@ -217,10 +217,10 @@
       <template #form>
         <a-chat-form
           ref="chatFormRef"
-          :show-send-button="true"
           :send-on-enter="sendMessageOnEnter"
           :show-divider="true"
           :label="t('chats.message')"
+          :should-disable-send-button="shouldDisableSendButton"
           :should-disable-input="isWelcomeChat(partnerId) || shouldDisableInput"
           :message-text="
             $route.query.messageText || $store.getters['draftMessage/draftMessage'](partnerId)
@@ -243,10 +243,12 @@
 
           <template #preview-file>
             <FilesPreview
+              ref="filesPreviewContainer"
               v-if="attachments.list.length > 0"
               :files="attachments.list"
               :partner-id="partnerId"
               @remove-item="attachments.remove"
+              @restore-scroll="restoreScroll"
               @cancel="cancelPreviewFile"
             />
           </template>
@@ -364,7 +366,7 @@ const handleAttachments = async (files: File[]) => {
     return
   } else if (maxFileSizeExceeded) {
     store.dispatch('snackbar/show', {
-      message: t('chats.max_file_size', { count: UPLOAD_MAX_FILE_SIZE }),
+      message: t('chats.max_file_size', { size_mb: UPLOAD_MAX_FILE_SIZE }),
       isError: true
     })
     return
@@ -416,6 +418,9 @@ const userMessages = computed(() =>
 )
 const userId = computed(() => store.state.address)
 const isNewChat = computed(() => store.getters['chat/isNewChat'](props.partnerId))
+const shouldDisableSendButton = computed(() => {
+  return attachments.list.some((attachment) => attachments.isLoading(attachment))
+})
 const shouldDisableInput = computed(
   () => isGettingPublicKey.value || isKeyMissing.value || !store.state.publicKeys[props.partnerId]
 )
@@ -730,6 +735,12 @@ const onEmojiSelect = (transactionId: string, emoji: string) => {
 
 const markAsRead = () => {
   store.commit('chat/markAsRead', props.partnerId)
+}
+
+const restoreScroll = (offset: number) => {
+  setTimeout(() => {
+    chatRef.value.scrollByOffset(offset)
+  })
 }
 
 const onScrollTop = async () => {

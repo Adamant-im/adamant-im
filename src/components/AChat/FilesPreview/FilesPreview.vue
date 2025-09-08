@@ -1,5 +1,5 @@
 <template>
-  <div :class="classes.root">
+  <div ref="componentContainer" :class="classes.root">
     <div :class="classes.files" ref="previewsContainer">
       <FilesPreviewItem
         v-for="(file, index) in files"
@@ -24,7 +24,7 @@
 import type { FileData } from '@/lib/files'
 import FilesPreviewItem from './FilesPreviewItem.vue'
 import { mdiClose } from '@mdi/js'
-import { nextTick, useTemplateRef, watch } from 'vue'
+import { nextTick, onBeforeUnmount, useTemplateRef, watch } from 'vue'
 
 const className = 'files-preview'
 const classes = {
@@ -42,16 +42,18 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   (e: 'remove-item', index: number): void
+  (e: 'restore-scroll', offset: number): void
   (e: 'cancel'): void
 }>()
 
 const previewsContainer = useTemplateRef<HTMLDivElement | null>('previewsContainer')
+const componentContainer = useTemplateRef<HTMLDivElement | null>('componentContainer')
 
 watch(
   () => props.files.length,
-  async () => {
-    await nextTick(() => {
-      if (previewsContainer.value) {
+  (newLength, prevLength) => {
+    nextTick(() => {
+      if (previewsContainer.value && newLength > prevLength) {
         previewsContainer.value.scrollTo({
           left: previewsContainer.value.scrollWidth,
           behavior: 'smooth'
@@ -60,6 +62,10 @@ watch(
     })
   }
 )
+
+onBeforeUnmount(() => {
+  emit('restore-scroll', componentContainer.value?.offsetHeight ?? 0)
+})
 </script>
 
 <style lang="scss" scoped>

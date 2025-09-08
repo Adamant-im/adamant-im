@@ -11,7 +11,7 @@
       <AChatImage
         v-for="(img, j) in group"
         @click="handleClick(img)"
-        @download-attachment="downloadAttachment"
+        @download-image="downloadImage"
         :key="j"
         :img="img"
         :transaction="transaction"
@@ -65,22 +65,22 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['click:image', 'downloadAttachment'],
+  emits: ['click:image', 'downloadImage'],
   setup(props, { emit }) {
     const groups = computed(() => groupImages(props.images))
     const handleClick = (img: FileAsset | LocalFile) => {
       emit('click:image', props.images.indexOf(img))
     }
 
-    const downloadAttachment = (img: FileAsset | LocalFile) => {
-      emit('downloadAttachment', img)
+    const downloadImage = (img: FileAsset | LocalFile) => {
+      emit('downloadImage', img)
     }
 
     return {
       classes,
       groups,
       handleClick,
-      downloadAttachment
+      downloadImage
     }
   }
 })

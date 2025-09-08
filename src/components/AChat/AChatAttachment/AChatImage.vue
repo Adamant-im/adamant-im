@@ -4,8 +4,6 @@
       #default="{
         fileUrl,
         previewUrl,
-        width,
-        height,
         error,
         isLoading,
         uploadProgress,
@@ -14,7 +12,15 @@
         allowAutoDownloadPreview
       }"
     >
-      <v-img v-if="error" :aspect-ratio="width / height" cover>
+      <v-img
+        v-if="error && !previewUrl"
+        :aspect-ratio="aspectRatio"
+        :width="iconSize"
+        :height="iconSize"
+        :max-width="iconSize"
+        :max-height="iconSize"
+        cover
+      >
         <div :class="classes.fallback">
           <v-tooltip location="bottom">
             <template #activator="{ props }">
@@ -28,16 +34,25 @@
 
       <v-img
         v-else-if="!previewUrl && !allowAutoDownloadPreview && downloadPreviewProgress === 100"
-        :aspect-ratio="width / height"
+        :aspect-ratio="aspectRatio"
+        :width="iconSize"
+        :height="iconSize"
+        :max-width="iconSize"
+        :max-height="iconSize"
         cover
       >
         <div :class="classes.fallback">
           <v-btn
             :class="[classes.downloadButton, classes.regularButton]"
             icon
-            @click="emit('downloadAttachment', props.img)"
+            :size="iconSize ? 32 : 40"
+            @click="emit('downloadImage', props.img)"
           >
-            <v-icon :class="classes.fallbackIcon" :icon="mdiArrowCollapseDown" />
+            <v-icon
+              :class="classes.fallbackIcon"
+              :icon="mdiArrowCollapseDown"
+              :size="iconSize ? 16 : 24"
+            />
           </v-btn>
         </div>
       </v-img>
@@ -45,7 +60,11 @@
       <v-img
         v-else
         :src="previewUrl"
-        :aspect-ratio="width / height"
+        :aspect-ratio="aspectRatio"
+        :width="iconSize"
+        :height="iconSize"
+        :max-width="iconSize"
+        :max-height="iconSize"
         cover
         @click="!isLoading && emit('click')"
       >
@@ -66,7 +85,7 @@
             v-if="downloadFileProgress === 100"
             :class="[classes.downloadButton, classes.regularButton]"
             icon
-            @click.stop="emit('downloadAttachment', props.img)"
+            @click.stop="emit('downloadImage', props.img)"
           >
             <v-icon :class="classes.fallbackIcon" :icon="mdiArrowCollapseDown" />
           </v-btn>
@@ -88,21 +107,23 @@ import { useI18n } from 'vue-i18n'
 
 import { AChatFileLoader } from './AChatFileLoader'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
-import { LocalFile } from '@/lib/files'
+import { isLocalFile, LocalFile } from '@/lib/files'
 import { FileAsset } from '@/lib/adamant-api/asset'
 import { mdiImageOff, mdiArrowCollapseDown } from '@mdi/js'
+import { computed } from 'vue'
 
 type Props = {
   transaction: NormalizedChatMessageTransaction
   img: FileAsset | LocalFile
   partnerId: string
+  iconSize?: number
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
   (e: 'click'): void
-  (e: 'downloadAttachment', attachment: FileAsset | LocalFile): void
+  (e: 'downloadImage', image: FileAsset | LocalFile): void
 }>()
 
 const className = 'a-chat-image'
@@ -118,6 +139,34 @@ const classes = {
 }
 
 const { t } = useI18n()
+
+const width = computed(() => {
+  if (isLocalFile(props.img)) {
+    return props.img.file.width
+  } else {
+    return props.img.resolution?.[0]
+  }
+})
+
+const height = computed(() => {
+  if (isLocalFile(props.img)) {
+    return props.img.file.height
+  } else {
+    return props.img.resolution?.[1]
+  }
+})
+
+const aspectRatio = computed(() => {
+  if (props.iconSize) {
+    return 1
+  }
+
+  if (width.value && height.value) {
+    return width.value / height.value
+  }
+
+  return 1
+})
 </script>
 
 <style lang="scss" scoped>

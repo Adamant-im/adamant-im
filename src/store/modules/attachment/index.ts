@@ -2,6 +2,10 @@ import { MutationTree, GetterTree, ActionTree } from 'vuex'
 import { RootState } from '@/store/types'
 import { AttachmentsState } from '@/store/modules/attachment/types'
 import { AttachmentApi } from '@/lib/attachment-api'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { FileAsset } from '@/lib/adamant-api/asset'
+import { LocalFile } from '@/lib/files'
+import { downloadFileByUrl, getAttachmentPayload, getFileName } from '@/lib/files/download'
 
 const state = (): AttachmentsState => ({
   attachments: {},
@@ -118,6 +122,33 @@ const actions: ActionTree<AttachmentsState, RootState> = {
   },
   async uploadAttachment(state, { file, publicKey }: { file: Uint8Array; publicKey: string }) {
     return attachmentApi?.uploadFile(file, publicKey)
+  },
+  async downloadFile(
+    { rootState, dispatch },
+    {
+      transaction,
+      file,
+      delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+    }: {
+      transaction: NormalizedChatMessageTransaction
+      file: FileAsset | LocalFile
+      delay?: (ms: number) => Promise<void>
+    }
+  ) {
+    try {
+      const publicKey =
+        transaction.senderId === rootState.address
+          ? transaction.recipientPublicKey
+          : transaction.senderPublicKey
+
+      const payload = getAttachmentPayload(file, publicKey)
+      const imageUrl = await dispatch('getAttachmentUrl', payload)
+
+      const fileName = getFileName(file)
+      await downloadFileByUrl(imageUrl, fileName)
+    } finally {
+      await delay(200) // show loading spinner at least 200ms for smoother UI
+    }
   },
   reset: {
     root: true,

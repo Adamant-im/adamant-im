@@ -972,6 +972,10 @@ const actions = {
           commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
         }
 
+        dispatch('showFileError', {
+          uploadData
+        })
+
         commit('updateMessage', {
           id: messageObject.id,
           status: TS.REJECTED,
@@ -1147,6 +1151,10 @@ const actions = {
       })
 
       if (uploadData.error) {
+        dispatch('showFileError', {
+          uploadData
+        })
+
         throw uploadData.error
       }
     } catch (err) {
@@ -1220,6 +1228,7 @@ const actions = {
     if (areAdmNodesDisabled) {
       return {
         newCids: cids,
+        files: files,
         error: new AllNodesDisabledError('adm')
       }
     }
@@ -1264,6 +1273,7 @@ const actions = {
 
         return {
           newCids: fallback,
+          files: files.slice(uploaded.length),
           error: errorToThrow
         }
       } finally {
@@ -1272,6 +1282,35 @@ const actions = {
     }
 
     return { newCids: uploaded }
+  },
+
+  showFileError({ dispatch }, { uploadData }) {
+    if (uploadData.files?.length > 1) {
+      dispatch(
+        'snackbar/show',
+        {
+          message: i18n.global.t('chats.files_upload_error', {
+            reason: uploadData.error.message ?? uploadData.error
+          }),
+          isError: true,
+          timeout: 3000
+        },
+        { root: true }
+      )
+    } else {
+      dispatch(
+        'snackbar/show',
+        {
+          message: i18n.global.t('chats.file_upload_error', {
+            name: uploadData.files[0].name,
+            reason: uploadData.error.message ?? uploadData.error
+          }),
+          isError: true,
+          timeout: 3000
+        },
+        { root: true }
+      )
+    }
   },
 
   registerPendingMessage({ commit }, { messageId, recipientId, transactionId }) {

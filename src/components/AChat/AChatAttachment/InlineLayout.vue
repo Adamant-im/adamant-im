@@ -6,7 +6,7 @@
       :file="file"
       :partnerId="partnerId"
       :transaction="transaction"
-      @download-attachment="downloadAttachment"
+      @download-image="downloadImage"
       @click="handleClick(file)"
     />
   </div>
@@ -40,20 +40,20 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['click:file', 'downloadAttachment'],
+  emits: ['click:file', 'downloadImage'],
   setup(props, { emit }) {
     const handleClick = (img: FileAsset | LocalFile) => {
       emit('click:file', props.files.indexOf(img))
     }
 
-    const downloadAttachment = (file: FileAsset | LocalFile) => {
-      emit('downloadAttachment', file)
+    const downloadImage = (img: FileAsset | LocalFile) => {
+      emit('downloadImage', img)
     }
 
     return {
       classes,
       handleClick,
-      downloadAttachment
+      downloadImage
     }
   }
 })

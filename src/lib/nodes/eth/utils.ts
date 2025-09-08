@@ -82,7 +82,7 @@ export function normalizeErc20Transaction(
     decoded.params.forEach((x) => {
       if (x.name === '_to') recipientId = x.value as string
       if (x.name === '_value')
-        amount = utils.toFraction(x.value as string, CryptosInfo[crypto].decimals)
+        amount = ethUtils.toFraction(x.value as string, CryptosInfo[crypto].decimals)
     })
   }
 
