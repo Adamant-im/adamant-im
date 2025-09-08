@@ -3,6 +3,7 @@
     :class="{
       [classes.root]: true,
       [classes.positionAbsolute]: position === 'absolute',
+      [classes.positionLeft]: position === 'left',
       'elevation-9': elevation
     }"
   >
@@ -20,7 +21,8 @@ import { useIsMobile } from '@/hooks/useIsMobile'
 const className = 'emoji-picker'
 const classes = {
   root: className,
-  positionAbsolute: `${className}--position-absolute`
+  positionAbsolute: `${className}--position-absolute`,
+  positionLeft: `${className}--position-left`
 }
 
 export default defineComponent({
@@ -29,7 +31,7 @@ export default defineComponent({
       type: Boolean
     },
     position: {
-      type: String as PropType<'absolute'>
+      type: String as PropType<'absolute' | 'left'>
     }
   },
   emits: ['emoji:select'],
@@ -79,6 +81,12 @@ export default defineComponent({
   &--position-absolute {
     // Fix for Chrome on iOS. Don't touch it
     position: absolute;
+    bottom: 0;
+  }
+
+  &--position-left {
+    position: absolute;
+    right: 0;
     bottom: 0;
   }
 

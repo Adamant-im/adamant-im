@@ -7,12 +7,7 @@
     @click:copy="copyMessageToClipboard"
   >
     <template #top>
-      <EmojiPicker
-        v-if="showEmojiPicker"
-        @emoji:select="onEmojiSelect"
-        elevation
-        position="absolute"
-      />
+      <EmojiPicker v-if="showEmojiPicker" @emoji:select="onEmojiSelect" elevation position="left" />
 
       <AChatReactionSelect
         v-else
