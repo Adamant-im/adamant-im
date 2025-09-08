@@ -1,23 +1,21 @@
 <template>
-  <div :class="[classes.root, { [classes.erc20]: isERC20 }]">
-    <crypto-icon :class="classes.cryptoIcon" :crypto="wallet.cryptoCurrency" size="medium" />
+  <crypto-icon :class="classes.cryptoIcon" :crypto="wallet.cryptoCurrency" size="medium" />
+
+  <div>
+    <div v-if="isBalanceValid && !isRefreshing">{{ formattedBalance }}</div>
+    <div v-else :class="classes.balanceLoading">
+      <v-icon :icon="mdiDotsHorizontal" size="18" />
+    </div>
 
     <div>
-      <div v-if="isBalanceValid && !isRefreshing">{{ formattedBalance }}</div>
-      <div v-else :class="classes.balanceLoading">
-        <v-icon :icon="mdiDotsHorizontal" size="18" />
-      </div>
+      {{ wallet.cryptoCurrency }}
+      <span v-if="wallet.erc20" style="font-size: 10px">
+        <sub>ERC20</sub>
+      </span>
+    </div>
 
-      <div>
-        {{ wallet.cryptoCurrency }}
-        <span v-if="wallet.erc20" style="font-size: 10px">
-          <sub>ERC20</sub>
-        </span>
-      </div>
-
-      <div v-if="isRateLoaded" :class="['a-text-explanation', classes.rates]">
-        {{ wallet.rate }} {{ fiatCurrency }}
-      </div>
+    <div v-if="isRateLoaded" :class="['a-text-explanation', classes.rates]">
+      {{ wallet.rate }} {{ fiatCurrency }}
     </div>
   </div>
 </template>
@@ -37,8 +35,7 @@ const classes = {
   cryptoIcon: `${className}__crypto-icon`,
   balanceLoading: `${className}__balance-loading`,
   balanceError: `${className}__balance-error`,
-  rates: `${className}__rates`,
-  erc20: `${className}__erc20`
+  rates: `${className}__rates`
 }
 
 export type Wallet = {
@@ -69,8 +66,6 @@ const isRateLoaded = computed(() => store.state.rate.isLoaded && props.wallet.ra
 
 const formattedBalance = computed(() => numberFormat(props.wallet.balance, 4))
 
-const isERC20 = computed(() => props.wallet.erc20)
-
 watch(currentBalance, (newBalance, oldBalance) => {
   if (oldBalance < newBalance) {
     vibrate.doubleVeryShort()
@@ -84,13 +79,6 @@ watch(currentBalance, (newBalance, oldBalance) => {
 @use 'vuetify/settings';
 
 .wallet-tab {
-  padding: 0 12px;
-
-  &__erc20 {
-    padding-left: 0;
-    padding-right: 0;
-  }
-
   &__crypto-icon {
     margin-bottom: 3px;
   }

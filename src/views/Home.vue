@@ -266,9 +266,9 @@ watch(currentWallet, (value) => {
     :deep(.v-tab) {
       font-weight: 300;
       font-size: 16px;
-      padding: 6px 0px;
       letter-spacing: normal;
-      min-width: 74px;
+      min-width: 60px;
+      padding: 6px 0px;
       display: flex;
       align-items: flex-start;
     }
@@ -305,6 +305,10 @@ watch(currentWallet, (value) => {
     }
     :deep(.v-tabs .v-btn--stacked .v-btn__content) {
       line-height: normal;
+    }
+    :deep(.v-slide-group__content) {
+      display: flex;
+      gap: 12px;
     }
   }
   &__tabs {
