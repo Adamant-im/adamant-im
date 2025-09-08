@@ -267,7 +267,7 @@ watch(currentWallet, (value) => {
       font-weight: 300;
       font-size: 16px;
       letter-spacing: normal;
-      min-width: 60px;
+      min-width: 74px;
       padding: 6px 0px;
       display: flex;
       align-items: flex-start;
