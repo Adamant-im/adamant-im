@@ -13,10 +13,11 @@ All notable changes in this release are listed below.
 - APK name changed in GitHub workflow [#839](https://github.com/Adamant-im/adamant-im/pull/839) — [@S-FrontendDev](https://github.com/S-FrontendDev)
 - Wallets UI updated for better usability [#846](https://github.com/Adamant-im/adamant-im/pull/846) — [@Linhead](https://github.com/Linhead), [@adamant-al](https://github.com/adamant-al)
 - ESLint updated to improve code quality [#849](https://github.com/Adamant-im/adamant-im/pull/849) — [@graycraft](https://github.com/graycraft)
-- Different small UI style updates [#848](https://github.com/Adamant-im/adamant-im/pull/848) — [@kalpovskii](https://github.com/kalpovskii), [@adamant-al](https://github.com/adamant-al)
+- Different small UI style updates [#848](https://github.com/Adamant-im/adamant-im/pull/848), [#860](https://github.com/Adamant-im/adamant-im/pull/860) — [@kalpovskii](https://github.com/kalpovskii), [@adamant-al](https://github.com/adamant-al)
 
 ### Bug Fixes
 - Transaction fee calculation for ETH & ERC20 fixed [#805](https://github.com/Adamant-im/adamant-im/pull/805) — [@Linhead](https://github.com/Linhead)
 - Layout issue on "Export keys" page fixed [#841](https://github.com/Adamant-im/adamant-im/pull/841) — [@kalpovskii](https://github.com/kalpovskii), [@adamant-al](https://github.com/adamant-al)
 - Add disabled input field in the Welcome to ADAMANT chat, impoved paddings [#842](https://github.com/Adamant-im/adamant-im/pull/842) — [@kalpovskii](https://github.com/kalpovskii)
 - Resolve source code issues with ESLint 9 [#852](https://github.com/Adamant-im/adamant-im/pull/852) — [@graycraft](https://github.com/graycraft)
+- Snackbars are not visible when keyboard is opened [#843](https://github.com/Adamant-im/adamant-im/pull/843) — [@S-FrontendDev](https://github.com/S-FrontendDev), [@kalpovskii](https://github.com/kalpovskii)
