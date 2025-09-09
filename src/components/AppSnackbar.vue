@@ -4,7 +4,7 @@
     :timeout="timeout"
     :color="color"
     :class="[
-      className,
+      'app-snackbar',
       { outlined: variant === 'outlined', 'app-snackbar--keyboard-visible': isKeyboardVisible }
     ]"
     :variant="variant"
@@ -16,7 +16,7 @@
       '--bottom-offset': bottomOffset
     }"
   >
-    <div :class="`${className}__container`">
+    <div class="app-snackbar__container">
       {{ message }}
       <v-btn
         v-if="timeout === 0 || timeout > 2000 || timeout === -1"
@@ -25,7 +25,7 @@
         fab
         @click="show = false"
       >
-        <v-icon :class="`${className}__icon`" :icon="mdiClose" size="dense" />
+        <v-icon class="app-snackbar__icon" :icon="mdiClose" size="dense" />
       </v-btn>
     </div>
   </v-snackbar>
@@ -36,8 +36,6 @@ import { mdiClose } from '@mdi/js'
 import { useI18n } from 'vue-i18n'
 import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
-
-const className = 'app-snackbar'
 
 const { t } = useI18n()
 const store = useStore()
