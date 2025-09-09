@@ -3,12 +3,18 @@
     v-model="show"
     :timeout="timeout"
     :color="color"
-    :class="[className, { outlined: variant === 'outlined' }]"
+    :class="[
+      className,
+      { outlined: variant === 'outlined', 'app-snackbar--keyboard-visible': isKeyboardVisible }
+    ]"
     :variant="variant"
     location="bottom"
     width="100%"
     :multi-line="message.length > 50"
     @click:outside="show = false"
+    :style="{
+      '--bottom-offset': bottomOffset
+    }"
   >
     <div :class="`${className}__container`">
       {{ message }}
@@ -28,7 +34,7 @@
 <script lang="ts" setup>
 import { mdiClose } from '@mdi/js'
 import { useI18n } from 'vue-i18n'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 
 const className = 'app-snackbar'
@@ -54,6 +60,25 @@ const variant = computed(() => store.state.snackbar.variant)
 const timeout = computed(() =>
   message.value === t('connection.offline') ? -1 : store.state.snackbar.timeout
 )
+
+const isKeyboardVisible = ref(false)
+
+const bottomOffset = ref('')
+
+const adjustBottom = () => {
+  if (!window.visualViewport) {
+    return
+  }
+
+  const viewportHeight = window.visualViewport.height
+  const fullHeight = window.innerHeight
+
+  bottomOffset.value = viewportHeight + 'px'
+
+  isKeyboardVisible.value = fullHeight - viewportHeight > 100
+}
+
+window.visualViewport?.addEventListener('resize', adjustBottom)
 </script>
 
 <style lang="scss" scoped>
@@ -62,9 +87,14 @@ const timeout = computed(() =>
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
 
+:global(.v-overlay-container:has(.app-snackbar--keyboard-visible)) {
+  contain: unset;
+}
 .app-snackbar {
-  :deep(.v-overlay__content) {
-    bottom: calc(0dvh + var(--v-layout-bottom, 0px) + env(safe-area-inset-bottom, 0px));
+  &--keyboard-visible {
+    :deep(.v-overlay__content) {
+      bottom: var(--bottom-offset);
+    }
   }
 
   :deep(.v-snackbar__wrapper) {
