@@ -1,3 +1,4 @@
+import type { NodeOfflineError } from '@/lib/nodes/utils/errors.ts'
 import type { NodeInfo } from '@/types/wallets/index.ts'
 import { getHealthCheckInterval } from './utils/getHealthcheckConfig'
 import { TNodeLabel } from './constants'
@@ -146,74 +147,75 @@ export abstract class Node<C = unknown> {
     clearInterval(this.timer)
 
     if (this.active && !this.healthcheckInProgress) {
-      const checkAltIp = this.altIp && new URL(this.altIp).protocol === appProtocol
-
       try {
+        this.healthcheckInProgress = true
+
         if (this.online) {
+          const { height, ping } = await this.checkHealth()
+
+          this.height = height
+          this.ping = ping
+
           if (this.preferDomain) {
             if (this.healthcheckCount === 0) {
-              this.healthcheckCount++
-              this.healthcheckInProgress = true
-
-              const health = await this.checkHealth()
-
-              this.height = health.height
-              this.ping = health.ping
-
               console.info(
                 `[HealthCheck] Connection via URL ${this.url} succeeded (alternative IP is ${this.altIp ?? 'not defined'}).`
               )
             }
           } else {
             if (this.healthcheckCount === 1 && this.altIp) {
-              this.healthcheckCount++
-              this.healthcheckInProgress = true
-
-              const health = await this.checkHealth()
-
               this.hasSupportedProtocol = true
-              this.height = health.height
-              this.ping = health.ping
 
               console.info(
                 `[HealthCheck] Connection via alternative IP ${this.altIp} succeeded (URL is ${this.url}).`
               )
             }
           }
+
+          console.info(
+            `[HealthCheck] Node with URL ${this.url} ${this.altIp ? `(${this.altIp}) ` : ''}is online. Status updated: height ${height}, ping ${ping}, count ${this.healthcheckCount}.`
+          )
         } else {
           if (this.healthcheckCount === 2) {
             console.info(
-              `[HealthCheck] Node with URL ${this.url} and alternative IP ${this.altIp} is offline.`
+              `[HealthCheck] Node with URL ${this.url} ${this.altIp ? `(${this.altIp}) ` : ''}is offline.`
             )
           }
-
-          this.healthcheckCount++
         }
-      } catch {
+
+        this.healthcheckCount++
+      } catch (error) {
+        const checkAltIp = this.altIp && new URL(this.altIp).protocol === appProtocol
+        const { code } = error as NodeOfflineError
+
         if (this.preferDomain) {
           this.preferDomain = false
 
-          if (checkAltIp) {
-            console.info(
-              `[HealthCheck] Connection via URL ${this.url} failed. Will try to connect via alternative IP ${this.altIp}.`
-            )
+          if (this.healthcheckCount === 0) {
+            if (checkAltIp) {
+              console.info(
+                `[HealthCheck] Connection via URL ${this.url} failed${code ? ` (${code})` : ''}. Will try to connect via alternative IP ${this.altIp}.`
+              )
+            } else {
+              this.online = false
+
+              console.info(
+                `[HealthCheck] Connection via URL ${this.url} failed${code ? ` (${code})` : ''}. Alternative IP is not defined or HTTP is not allowed. Node is offline.`
+              )
+            }
           } else {
+            this.online = false
+
             console.info(
-              `[HealthCheck] Connection via URL ${this.url} failed. Alternative IP is not defined or HTTP is not allowed.`
+              `[HealthCheck] Connection via URL ${this.url} ${this.altIp ? `(${this.altIp}) ` : ''}failed. Node is offline.`
             )
           }
         } else {
           this.online = false
 
-          if (checkAltIp) {
-            console.info(
-              `[HealthCheck] Connection via URL ${this.url} and via alternative IP ${this.altIp} failed. Node is offline.`
-            )
-          } else {
-            console.info(
-              `[HealthCheck] Connection via URL ${this.url} failed. Alternative IP is not defined or HTTP is not allowed. Node is offline.`
-            )
-          }
+          console.info(
+            `[HealthCheck] Connection via URL ${this.url}${this.altIp ? ` and via alternative IP ${this.altIp}` : ''} failed${code ? ` (${code})` : ''}. Node is offline.`
+          )
         }
       } finally {
         this.updateURL()
