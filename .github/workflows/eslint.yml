@@ -1,0 +1,35 @@
+name: ESLint
+
+on:
+  pull_request:
+    types:
+      - opened
+      - ready_for_review
+      - reopened
+      - synchronize
+  push:
+    branches:
+      - dev
+      - master
+  workflow_dispatch:
+
+# @see https://typicode.github.io/husky/how-to.html#ci-server-and-docker
+env:
+  HUSKY: 0
+
+jobs:
+  check:
+    name: Check source code with ESLint and fix problems
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository 🛎️
+        uses: actions/checkout@v4
+      - name: Setup Node.js 🍀
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Install dependencies 📦
+        run: npm ci
+      - name: Run ESLint 🛠️
+        run: |
+          npm run lint

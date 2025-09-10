@@ -14,6 +14,7 @@ All notable changes in this release are listed below.
 - Wallets UI updated for better usability [#846](https://github.com/Adamant-im/adamant-im/pull/846) — [@Linhead](https://github.com/Linhead), [@adamant-al](https://github.com/adamant-al)
 - ESLint updated to improve code quality [#849](https://github.com/Adamant-im/adamant-im/pull/849) — [@graycraft](https://github.com/graycraft)
 - Different small UI style updates [#848](https://github.com/Adamant-im/adamant-im/pull/848) — [@kalpovskii](https://github.com/kalpovskii), [@adamant-al](https://github.com/adamant-al)
+- GitHub Actions workflow and Husky postinstall git hook for ESLint [#858](https://github.com/Adamant-im/adamant-im/pull/858) — [@graycraft](https://github.com/graycraft)
 
 ### Bug Fixes
 - Transaction fee calculation for ETH & ERC20 fixed [#805](https://github.com/Adamant-im/adamant-im/pull/805) — [@Linhead](https://github.com/Linhead)
