@@ -15,7 +15,7 @@
 
       <v-list class="chat-menu__list">
         <!-- Attach Image -->
-        <template v-if="!isDesktopDevice">
+        <template v-if="isAndroidDevice">
           <v-list-item @click="uploadImageRef?.$el?.click()">
             <template #prepend>
               <icon-box>
@@ -32,11 +32,11 @@
         <v-list-item @click="uploadFileRef?.$el?.click()">
           <template #prepend>
             <icon-box>
-              <v-icon :icon="isDesktopDevice ? mdiPaperclip : mdiFile" />
+              <v-icon :icon="mdiPaperclip" />
             </icon-box>
           </template>
           <v-list-item-title>{{
-            isDesktopDevice ? t('chats.attach') : t('chats.attach_file')
+            isAndroidDevice ? t('chats.attach_file') : t('chats.attach')
           }}</v-list-item-title>
         </v-list-item>
 
@@ -68,7 +68,7 @@ import ChatDialog from '@/components/Chat/ChatDialog.vue'
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import IconBox from '@/components/icons/IconBox.vue'
 import UploadFile from '../UploadFile.vue'
-import { mdiFile, mdiImage, mdiPlusCircleOutline, mdiPaperclip } from '@mdi/js'
+import { mdiImage, mdiPlusCircleOutline, mdiPaperclip } from '@mdi/js'
 import { useChatStateStore } from '@/stores/modal-state'
 import { CoinSymbol } from '@/store/modules/wallets/types'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
@@ -117,6 +117,11 @@ const orderedVisibleWalletSymbols = computed(
 )
 
 const wallets = computed(() => orderedVisibleWalletSymbols.value.map((c: CoinSymbol) => c.symbol))
+
+const isIosDevice = computed(
+  () => /iPad|iPhone|iPod/.test(navigator.userAgent) && !('MSStream' in window)
+)
+const isAndroidDevice = computed(() => !isDesktopDevice && !isIosDevice.value)
 
 function handleFileSelected(imageData: File[]) {
   emit('files', imageData)

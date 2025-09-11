@@ -1,13 +1,13 @@
 <template>
-  <pull-down @action="$emit('closeModal')" :offset="PULLDOWN_OFFSET" no-loader full-height>
-    <v-carousel-item
-      :class="classes.root"
-      :max-width="normalizedWidth"
-      :max-height="normalizedHeight"
-    >
+  <v-carousel-item
+    :class="classes.root"
+    :max-width="normalizedWidth"
+    :max-height="normalizedHeight"
+  >
+    <pull-down @action="$emit('closeModal')" :offset="PULLDOWN_OFFSET" no-loader full-height>
       <v-img :src="imageUrl" contain />
-    </v-carousel-item>
-  </pull-down>
+    </pull-down>
+  </v-carousel-item>
 </template>
 
 <script lang="ts">
