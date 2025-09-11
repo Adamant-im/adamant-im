@@ -27,7 +27,14 @@ export function useDashTransactionQuery(
         return pendingTransaction
       }
     },
-    retry: retryFactory(Cryptos.DASH, unref(transactionId)),
+    retry: (failureCount: number): boolean => {
+      // Don't retry dust amount DASH transactions
+      const dustedIds = store.state.dash.dustedTransactionsIds || []
+      if (dustedIds.length > 0 && dustedIds.includes(unref(transactionId))) {
+        return false
+      }
+      return retryFactory(Cryptos.DASH, unref(transactionId))(failureCount)
+    },
     retryDelay: retryDelayFactory(Cryptos.DASH, unref(transactionId)),
     refetchInterval: ({ state }) => refetchIntervalFactory(Cryptos.DASH, state.status, state.data),
     refetchOnWindowFocus: false,

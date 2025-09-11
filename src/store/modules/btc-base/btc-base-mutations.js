@@ -44,6 +44,10 @@ export default (initialState) => ({
     })
   },
 
+  dustedTransactionsIds(state, dustedTransactionId) {
+    state.dustedTransactionsIds.push(dustedTransactionId)
+  },
+
   areOlderLoading(state, areLoading) {
     state.areOlderLoading = areLoading
   },

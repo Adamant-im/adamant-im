@@ -9,5 +9,6 @@ export default () => ({
   areTransactionsLoading: false,
   areRecentLoading: false,
   areOlderLoading: false,
-  bottomReached: false
+  bottomReached: false,
+  dustedTransactionsIds: []
 })

@@ -27,7 +27,14 @@ export function useBtcTransactionQuery(
         return pendingTransaction
       }
     },
-    retry: retryFactory(Cryptos.BTC, unref(transactionId)),
+    retry: (failureCount: number): boolean => {
+      // Don't retry dust amount BTC transactions
+      const dustedIds = store.state.btc.dustedTransactionsIds || []
+      if (dustedIds.length > 0 && dustedIds.includes(unref(transactionId))) {
+        return false
+      }
+      return retryFactory(Cryptos.BTC, unref(transactionId))(failureCount)
+    },
     retryDelay: retryDelayFactory(Cryptos.BTC, unref(transactionId)),
     refetchInterval: ({ state }) => refetchIntervalFactory(Cryptos.BTC, state.status, state.data),
     refetchOnWindowFocus: false,
