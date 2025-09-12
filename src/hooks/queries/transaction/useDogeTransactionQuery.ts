@@ -30,7 +30,7 @@ export function useDogeTransactionQuery(
     retry: (failureCount: number): boolean => {
       // Don't retry dust amount DOGE transactions
       const dustedIds = store.state.doge.dustedTransactionsIds || []
-      if (dustedIds.length > 0 && dustedIds.includes(unref(transactionId))) {
+      if (dustedIds.includes(unref(transactionId))) {
         return false
       }
       return retryFactory(Cryptos.DOGE, unref(transactionId))(failureCount)

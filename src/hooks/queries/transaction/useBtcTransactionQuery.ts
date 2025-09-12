@@ -30,7 +30,7 @@ export function useBtcTransactionQuery(
     retry: (failureCount: number): boolean => {
       // Don't retry dust amount BTC transactions
       const dustedIds = store.state.btc.dustedTransactionsIds || []
-      if (dustedIds.length > 0 && dustedIds.includes(unref(transactionId))) {
+      if (dustedIds.includes(unref(transactionId))) {
         return false
       }
       return retryFactory(Cryptos.BTC, unref(transactionId))(failureCount)

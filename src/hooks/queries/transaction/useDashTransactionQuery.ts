@@ -30,7 +30,7 @@ export function useDashTransactionQuery(
     retry: (failureCount: number): boolean => {
       // Don't retry dust amount DASH transactions
       const dustedIds = store.state.dash.dustedTransactionsIds || []
-      if (dustedIds.length > 0 && dustedIds.includes(unref(transactionId))) {
+      if (dustedIds.includes(unref(transactionId))) {
         return false
       }
       return retryFactory(Cryptos.DASH, unref(transactionId))(failureCount)
