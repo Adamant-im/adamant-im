@@ -44,7 +44,7 @@ export default (initialState) => ({
     })
   },
 
-  dustedTransactionsIds(state, dustedTransactionId) {
+  addDustedTransactionsId(state, dustedTransactionId) {
     state.dustedTransactionsIds.push(dustedTransactionId)
   },
 
