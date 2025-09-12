@@ -231,7 +231,10 @@ function createActions(options) {
 
         return hash
       } catch (error) {
-        if (error.response && error.response.data) {
+if (error.response?.data?.includes?.('dust') ||
+  error.response?.data?.error?.message?.includes?.('dust')) {
+  context.commit('dustedTransactionsIds', signedTransaction.txid);
+}
           if (
             ((crypto === 'BTC' || crypto === 'DOGE') && error.response.data.includes('dust')) ||
             (crypto === 'DASH' && error.response.data.error.message.includes('dust'))
