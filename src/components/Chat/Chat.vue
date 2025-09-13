@@ -3,6 +3,7 @@
     <free-tokens-dialog v-model="isShowFreeTokensDialog" />
     <a-chat
       ref="chatRef"
+      :key="dateRefreshKey"
       :messages="groupedMessages"
       :show-new-chat-placeholder="showNewChatPlaceholder"
       :partners="partners"
@@ -339,6 +340,9 @@ const showSpinner = useChatsSpinner()
 
 const isMenuOpen = ref(false)
 
+// Key for forcing date refresh when app becomes visible after being in background
+const dateRefreshKey = ref(0)
+
 const attachments = useAttachments(props.partnerId)()
 const handleAttachments = (files: FileData[]) => {
   const maxFileSizeExceeded = files.some(({ file }) => file.size >= UPLOAD_MAX_FILE_SIZE)
@@ -561,7 +565,16 @@ onMounted(async () => {
     isScrolledToBottom.value = chatRef.value.isScrolledToBottom()
   })
   visibilityId.value = Visibility.change((event, state) => {
-    if (state === 'visible' && isScrolledToBottom.value) markAsRead()
+    if (state === 'visible') {
+      // Force refresh dates when returning to visible state
+      dateRefreshKey.value = Date.now()
+
+      nextTick(() => {
+        chatRef.value?.maintainScrollPosition()
+      })
+
+      if (isScrolledToBottom.value) markAsRead()
+    }
   })
 
   const draftMessage = store.getters['draftMessage/draftReplyTold'](props.partnerId)
