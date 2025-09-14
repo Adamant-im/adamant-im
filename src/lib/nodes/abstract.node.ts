@@ -129,6 +129,10 @@ export abstract class Node<C = unknown> {
     this.hostname = new URL(url).hostname
     this.minNodeVersion = minNodeVersion
     this.version = version
+    /**
+     * Can not be sure, whether HTTP nodes are allowed or not in HTTPS environment, until an actual request is fulfilled.
+     * Therefore, only assume HTTP is not allowed in HTTPS environment in advance here.
+     */
     this.hasSupportedProtocol = !(this.protocol === 'http:' && appProtocol === 'https:')
     this.active = nodesStorage.isActive(url)
 
@@ -143,6 +147,8 @@ export abstract class Node<C = unknown> {
     clearInterval(this.timer)
 
     if (this.active && !this.healthcheckInProgress) {
+      const protocol = new URL(this.url).protocol
+
       try {
         this.healthcheckInProgress = true
 
@@ -151,6 +157,11 @@ export abstract class Node<C = unknown> {
         console.info(
           `[HealthCheck] Connection via ${this.getBaseURL(this)} succeeded (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}).`
         )
+
+        /**
+         * HTTP request might be fulfilled in HTTPS environment if a user allowed insecure content for the site in own Site settings (desktop browsers).
+         */
+        if (protocol === 'http:') this.hasSupportedProtocol = true
 
         this.height = height
         this.online = true
@@ -167,19 +178,17 @@ export abstract class Node<C = unknown> {
         )
 
         if (this.preferDomain) {
-          const checkAltIp = this.altIp && new URL(this.altIp).protocol === appProtocol
-
-          if (!checkAltIp) {
-            this.online = false
+          if (!this.altIp) {
+            if (protocol === 'https:') this.online = false
 
             console.info(
-              `[HealthCheck] ${this.altIp ? 'HTTP is not allowed' : 'Alternative IP is not defined'} for ${this.getBaseURL(this)}. Node is offline.`
+              `[HealthCheck] Alternative IP is not defined for ${this.getBaseURL(this)}. Node is offline.`
             )
           }
 
           this.preferDomain = false
         } else {
-          this.online = false
+          if (protocol === 'https:') this.online = false
 
           console.info(
             `[HealthCheck] Node is not reachable by URL ${this.url}${this.altIp ? ' and by alternative IP ' + this.altIp : ''}. Node is offline.`
