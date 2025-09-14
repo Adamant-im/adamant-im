@@ -135,7 +135,7 @@ $scroll-bar-width: 4px;
     display: flex;
     flex-direction: row;
     padding: 8px 16px;
-    border-radius: 24px;
+    border-radius: 16px;
     position: relative;
 
     &::after {
@@ -148,23 +148,21 @@ $scroll-bar-width: 4px;
     }
   }
 
-    /* хвостик слева (входящие) */
-&__message-container:not(&__message-container--right) .a-chat__message::after {
-  left: -6px;
-  border-right-color: white; // фон входящего сообщения в светлой теме
-  border-left: 0;
-  border-bottom: 0;
-    transform: rotate(-15deg); // поворот против часовой
-}
+  &__message-container:not(&__message-container--right):not(&__message-container--grouped-left) .a-chat__message::after {
+    left: -6px;
+    border-right-color: white;
+    border-left: 0;
+    border-bottom: 0;
+    transform: rotate(-15deg);
+  }
 
-/* исходящие (справа) */
-&__message-container--right .a-chat__message::after {
-  right: -6px;
-  border-left-color: white; // фон исходящего сообщения в светлой теме
-  border-right: 0;
-  border-bottom: 0;
+  &__message-container--right:not(&__message-container--grouped) .a-chat__message::after {
+    right: -6px;
+    border-left-color: white;
+    border-right: 0;
+    border-bottom: 0;
     transform: rotate(15deg);
-}
+  }
 
   &__message-actions-icon {
     visibility: hidden;
@@ -565,11 +563,11 @@ $scroll-bar-width: 4px;
       }
     }
 
-    &__message-container--right .a-chat__message::after {
+    &__message-container--right:not(&__message-container--grouped) .a-chat__message::after {
       border-left-color: map.get(colors.$adm-colors, 'black3');
     }
 
-    &__message-container:not(&__message-container--right) .a-chat__message::after {
+    &__message-container:not(&__message-container--right):not(&__message-container--grouped-left) .a-chat__message::after {
       border-right-color: map.get(colors.$adm-colors, 'black3');
     }
 
