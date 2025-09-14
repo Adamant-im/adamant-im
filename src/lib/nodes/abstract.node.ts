@@ -66,10 +66,6 @@ export abstract class Node<C = unknown> {
 
   /** Healthcheck related params. */
   /**
-   * Whether it is the first connection via URL domain or subsequent.
-   */
-  healthcheckCount = 0
-  /**
    * Indicates whether node is available.
    */
   online = true
@@ -150,71 +146,43 @@ export abstract class Node<C = unknown> {
       try {
         this.healthcheckInProgress = true
 
-        if (this.online) {
-          const { height, ping } = await this.checkHealth()
+        const { height, ping } = await this.checkHealth()
 
-          this.height = height
-          this.ping = ping
+        console.info(
+          `[HealthCheck] Connection via ${this.getBaseURL(this)} succeeded (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}).`
+        )
 
-          if (this.preferDomain) {
-            if (this.healthcheckCount === 0) {
-              console.info(
-                `[HealthCheck] Connection via URL ${this.url} succeeded (alternative IP is ${this.altIp ?? 'not defined'}).`
-              )
-            }
-          } else {
-            if (this.healthcheckCount === 1 && this.altIp) {
-              this.hasSupportedProtocol = true
+        this.height = height
+        this.online = true
+        this.ping = ping
 
-              console.info(
-                `[HealthCheck] Connection via alternative IP ${this.altIp} succeeded (URL is ${this.url}).`
-              )
-            }
-          }
-
-          console.info(
-            `[HealthCheck] Node with URL ${this.url} ${this.altIp ? `(${this.altIp}) ` : ''}is online. Status updated: height ${height}, ping ${ping}, count ${this.healthcheckCount}.`
-          )
-        } else {
-          if (this.healthcheckCount === 2) {
-            console.info(
-              `[HealthCheck] Node with URL ${this.url} ${this.altIp ? `(${this.altIp}) ` : ''}is offline.`
-            )
-          }
-        }
-
-        this.healthcheckCount++
+        console.info(
+          `[HealthCheck] Node status updated for ${this.getBaseURL(this)}. Height: ${height}. Ping: ${ping}. Node is online.`
+        )
       } catch (error) {
-        const checkAltIp = this.altIp && new URL(this.altIp).protocol === appProtocol
-        const { code } = error as NodeOfflineError
+        const code = (error as NodeOfflineError).code ?? 'unknown'
+
+        console.info(
+          `[HealthCheck] Connection via ${this.getBaseURL(this)} failed (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}). ${code ? `Error code: ${code}` : ''}.`
+        )
 
         if (this.preferDomain) {
-          this.preferDomain = false
+          const checkAltIp = this.altIp && new URL(this.altIp).protocol === appProtocol
 
-          if (this.healthcheckCount === 0) {
-            if (checkAltIp) {
-              console.info(
-                `[HealthCheck] Connection via URL ${this.url} failed${code ? ` (${code})` : ''}. Will try to connect via alternative IP ${this.altIp}.`
-              )
-            } else {
-              this.online = false
-
-              console.info(
-                `[HealthCheck] Connection via URL ${this.url} failed${code ? ` (${code})` : ''}. Alternative IP is not defined or HTTP is not allowed. Node is offline.`
-              )
-            }
-          } else {
+          if (!checkAltIp) {
             this.online = false
 
             console.info(
-              `[HealthCheck] Connection via URL ${this.url} ${this.altIp ? `(${this.altIp}) ` : ''}failed. Node is offline.`
+              `[HealthCheck] ${this.altIp ? 'HTTP is not allowed' : 'Alternative IP is not defined'} for ${this.getBaseURL(this)}. Node is offline.`
             )
           }
+
+          this.preferDomain = false
         } else {
           this.online = false
 
           console.info(
-            `[HealthCheck] Connection via URL ${this.url}${this.altIp ? ` and via alternative IP ${this.altIp}` : ''} failed${code ? ` (${code})` : ''}. Node is offline.`
+            `[HealthCheck] Node is not reachable by URL ${this.url}${this.altIp ? ' and by alternative IP ' + this.altIp : ''}. Node is offline.`
           )
         }
       } finally {
@@ -252,7 +220,7 @@ export abstract class Node<C = unknown> {
    * @returns { string } Base URL.
    */
   getBaseURL(node: Node): string {
-    const baseURL = node.preferDomain ? node.url : (node.altIp as string)
+    const baseURL = node.preferDomain ? node.url : (node.altIp ?? node.url)
 
     return baseURL
   }
@@ -320,18 +288,15 @@ export abstract class Node<C = unknown> {
    * Enables/disables a node.
    */
   toggleNode(active: boolean) {
-    const baseURL = this.getBaseURL(this)
-
     this.active = active
 
     /** Reset properties for HealthCheck to default if a node enabled again. */
     if (active) {
-      this.healthcheckCount = 0
       this.online = true
       this.preferDomain = true
     }
 
-    nodesStorage.saveActive(baseURL, active)
+    nodesStorage.saveActive(this.url, active)
 
     return this.getStatus()
   }
