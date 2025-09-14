@@ -129,11 +129,7 @@ export abstract class Node<C = unknown> {
     this.hostname = new URL(url).hostname
     this.minNodeVersion = minNodeVersion
     this.version = version
-    /**
-     * Can not be sure, whether HTTP nodes are allowed or not in HTTPS environment, until an actual request is fulfilled.
-     * Therefore, only assume HTTP is not allowed in HTTPS environment in advance here.
-     */
-    this.hasSupportedProtocol = !(this.protocol === 'http:' && appProtocol === 'https:')
+    this.hasSupportedProtocol = !this.isHttpBlocked(this.protocol)
     this.active = nodesStorage.isActive(url)
 
     this.client = this.buildClient()
@@ -179,7 +175,7 @@ export abstract class Node<C = unknown> {
 
         if (this.preferDomain) {
           if (!this.altIp) {
-            if (protocol === 'https:') this.online = false
+            if (protocol === 'https:' || this.isHttpBlocked(protocol)) this.online = false
 
             console.info(
               `[HealthCheck] Alternative IP is not defined for ${this.getBaseURL(this)}. Node is offline.`
@@ -188,7 +184,7 @@ export abstract class Node<C = unknown> {
 
           this.preferDomain = false
         } else {
-          if (protocol === 'https:') this.online = false
+          if (protocol === 'https:' || this.isHttpBlocked(protocol)) this.online = false
 
           console.info(
             `[HealthCheck] Node is not reachable by URL ${this.url}${this.altIp ? ' and by alternative IP ' + this.altIp : ''}. Node is offline.`
@@ -288,6 +284,18 @@ export abstract class Node<C = unknown> {
     }
 
     return this.version >= this.minNodeVersion
+  }
+
+  /**
+   * Can not be sure, whether HTTP nodes are allowed or blocked in HTTPS environment, until an actual request is fulfilled.
+   * Therefore, only assume HTTP is not allowed in HTTPS environment in advance here.
+   * @param { "http:" | "https:" } protocol Data transfer protocol.
+   * @returns { boolean } Whether a HTTP node is allowed or not.
+   */
+  isHttpBlocked(protocol: string): boolean {
+    const blocked = protocol === 'http:' && appProtocol === 'https:'
+
+    return blocked
   }
 
   protected abstract checkHealth(): Promise<HealthcheckResult>
