@@ -214,6 +214,14 @@ function fetchCryptoAddress(selectedCrypto: string): Promise<any> {
   }
 }
 
+.v-theme--light {
+  .chat-menu {
+    &__icon {
+      color: map.get(settings.$grey, 'darken-1');
+    }
+  }
+}
+
 .v-theme--dark {
   .chat-menu {
     &__list {

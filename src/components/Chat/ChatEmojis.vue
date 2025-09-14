@@ -72,4 +72,12 @@ export default {
     }
   }
 }
+
+.v-theme--light {
+  .chat-emojis {
+    &__icon {
+      color: map.get(settings.$grey, 'darken-1');
+    }
+  }
+}
 </style>
