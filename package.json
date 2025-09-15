@@ -36,7 +36,7 @@
     "bump-patch": "npm version patch",
     "bump-minor": "npm version minor",
     "bump-major": "npm version major",
-    "postinstall": "electron-builder install-app-deps && npm run schema:generate"
+    "postinstall": "npm exec husky && electron-builder install-app-deps && npm run schema:generate"
   },
   "dependencies": {
     "@capacitor-community/file-opener": "^7.0.1",

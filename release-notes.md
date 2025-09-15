@@ -10,11 +10,12 @@ All notable changes in this release are listed below.
 - Release notes file added [#853](https://github.com/Adamant-im/adamant-im/pull/853) — [@S-FrontendDev](https://github.com/S-FrontendDev)
 
 ### Improvements
+- Use secondary URL with alternate IP if a node is unavailable by primary URL [#768](https://github.com/Adamant-im/adamant-im/pull/768) — [@graycraft](https://github.com/graycraft)
 - APK name changed in GitHub workflow [#839](https://github.com/Adamant-im/adamant-im/pull/839) — [@S-FrontendDev](https://github.com/S-FrontendDev)
 - Wallets UI updated for better usability [#846](https://github.com/Adamant-im/adamant-im/pull/846) — [@Linhead](https://github.com/Linhead), [@adamant-al](https://github.com/adamant-al)
 - ESLint updated to improve code quality [#849](https://github.com/Adamant-im/adamant-im/pull/849) — [@graycraft](https://github.com/graycraft)
 - Different small UI style updates [#848](https://github.com/Adamant-im/adamant-im/pull/848) — [@kalpovskii](https://github.com/kalpovskii), [@adamant-al](https://github.com/adamant-al)
-- Use secondary URL with alternate IP if a node is unavailable by primary URL [#768](https://github.com/Adamant-im/adamant-im/pull/768) — [@graycraft](https://github.com/graycraft)
+- GitHub Actions workflow and Husky postinstall git hook for ESLint [#858](https://github.com/Adamant-im/adamant-im/pull/858) — [@graycraft](https://github.com/graycraft)
 
 ### Bug Fixes
 - Transaction fee calculation for ETH & ERC20 fixed [#805](https://github.com/Adamant-im/adamant-im/pull/805) — [@Linhead](https://github.com/Linhead)
