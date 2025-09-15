@@ -3,14 +3,20 @@
     v-model="show"
     :timeout="timeout"
     :color="color"
-    :class="[className, { outlined: variant === 'outlined' }]"
+    :class="[
+      'app-snackbar',
+      { outlined: variant === 'outlined', 'app-snackbar--keyboard-visible': isKeyboardVisible }
+    ]"
     :variant="variant"
     location="bottom"
     width="100%"
     :multi-line="message.length > 50"
     @click:outside="show = false"
+    :style="{
+      '--bottom-offset': bottomOffset
+    }"
   >
-    <div :class="`${className}__container`">
+    <div class="app-snackbar__container">
       {{ message }}
       <v-btn
         v-if="timeout === 0 || timeout > 2000 || timeout === -1"
@@ -19,7 +25,7 @@
         fab
         @click="show = false"
       >
-        <v-icon :class="`${className}__icon`" :icon="mdiClose" size="dense" />
+        <v-icon class="app-snackbar__icon" :icon="mdiClose" size="dense" />
       </v-btn>
     </div>
   </v-snackbar>
@@ -28,10 +34,8 @@
 <script lang="ts" setup>
 import { mdiClose } from '@mdi/js'
 import { useI18n } from 'vue-i18n'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
-
-const className = 'app-snackbar'
 
 const { t } = useI18n()
 const store = useStore()
@@ -54,6 +58,25 @@ const variant = computed(() => store.state.snackbar.variant)
 const timeout = computed(() =>
   message.value === t('connection.offline') ? -1 : store.state.snackbar.timeout
 )
+
+const isKeyboardVisible = ref(false)
+
+const bottomOffset = ref('')
+
+const adjustBottom = () => {
+  if (!window.visualViewport) {
+    return
+  }
+
+  const viewportHeight = window.visualViewport.height
+  const fullHeight = window.innerHeight
+
+  bottomOffset.value = viewportHeight + 'px'
+
+  isKeyboardVisible.value = fullHeight - viewportHeight > 100
+}
+
+window.visualViewport?.addEventListener('resize', adjustBottom)
 </script>
 
 <style lang="scss" scoped>
@@ -62,7 +85,16 @@ const timeout = computed(() =>
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
 
+:global(.v-overlay-container:has(.app-snackbar--keyboard-visible)) {
+  contain: unset;
+}
 .app-snackbar {
+  &--keyboard-visible {
+    :deep(.v-overlay__content) {
+      bottom: var(--bottom-offset);
+    }
+  }
+
   :deep(.v-snackbar__wrapper) {
     @include mixins.a-text-regular-enlarged();
 
@@ -98,7 +130,7 @@ const timeout = computed(() =>
 
 .v-theme--light.app-snackbar {
   :deep(.v-snackbar__wrapper) {
-    background-color: map.get(settings.$shades, 'white');
+    background-color: map.get(colors.$adm-colors, 'secondary');
     color: map.get(colors.$adm-colors, 'regular');
   }
 }
