@@ -85,7 +85,7 @@ const isOlderLoading = computed(() => store.getters[`${cryptoModule.value}/areOl
 const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
 const isIDBReady = computed(() => store.state.IDBReady)
 const transactions = computed(() => {
-  const transactions: (CoinTransaction & { data?: string })[] =
+  const transactions: (CoinTransaction & { data?: string; isDust: boolean })[] =
     store.getters[`${cryptoModule.value}/sortedTransactions`]
 
   const address = store.state[props.crypto.toLowerCase()].address
@@ -93,7 +93,8 @@ const transactions = computed(() => {
     // Filter invalid "fake" transactions (from chat rich message)
     return (
       Object.prototype.hasOwnProperty.call(tx, 'amount') &&
-      (isStringEqualCI(tx.recipientId, address) || isStringEqualCI(tx.senderId, address))
+      (isStringEqualCI(tx.recipientId, address) || isStringEqualCI(tx.senderId, address)) &&
+      !tx.isDust
     )
   })
 })

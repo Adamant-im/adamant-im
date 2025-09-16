@@ -10,6 +10,7 @@ import {
 } from '@/lib/pending-transactions'
 import { storeCryptoAddress, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import shouldUpdate from '@/store/utils/coinUpdatesGuard'
+import { useFinalTransactions } from '@/stores/final-transactions'
 
 const DEFAULT_CUSTOM_ACTIONS = () => ({})
 let interval
@@ -223,7 +224,16 @@ function createActions(options) {
 
         return hash
       } catch (error) {
-        context.commit('transactions', [{ hash: signedTransaction.txid, status: 'REJECTED' }])
+        const transactionData = { hash: signedTransaction.txid, status: 'REJECTED' }
+        if (
+          error.response?.data?.includes?.('dust') ||
+          error.response?.data?.error?.message?.includes?.('dust')
+        ) {
+          transactionData.isDust = true
+        }
+        context.commit('transactions', [transactionData])
+        const { addTransaction } = useFinalTransactions()
+        addTransaction(signedTransaction.txid, 'REJECTED')
         PendingTxStore.remove(context.state.crypto)
         throw error
       }
