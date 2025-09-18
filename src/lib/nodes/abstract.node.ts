@@ -189,6 +189,8 @@ export abstract class Node<C = unknown> {
           console.info(
             `[HealthCheck] Node is not reachable by URL ${this.url}${this.altIp ? ' and by alternative IP ' + this.altIp : ''}. Node is offline.`,
           )
+
+          if (this.altIp) this.preferDomain = true
         }
       } finally {
         this.updateURL()
