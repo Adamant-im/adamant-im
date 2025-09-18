@@ -115,7 +115,7 @@ export abstract class Node<C = unknown> {
     kind: NodeKind,
     label: TNodeLabel,
     version = '',
-    minNodeVersion = ''
+    minNodeVersion = '',
   ) {
     const { alt_ip, url } = endpoint
 
@@ -151,7 +151,7 @@ export abstract class Node<C = unknown> {
         const { height, ping } = await this.checkHealth()
 
         console.info(
-          `[HealthCheck] Connection via ${this.getBaseURL(this)} succeeded (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}).`
+          `[HealthCheck] Connection via ${this.getBaseURL(this)} succeeded (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}).`,
         )
 
         /**
@@ -164,13 +164,13 @@ export abstract class Node<C = unknown> {
         this.ping = ping
 
         console.info(
-          `[HealthCheck] Node status updated for ${this.getBaseURL(this)}. Height: ${height}. Ping: ${ping}. Node is online.`
+          `[HealthCheck] Node status updated for ${this.getBaseURL(this)}. Height: ${height}. Ping: ${ping}. Node is online.`,
         )
       } catch (error) {
         const code = (error as NodeOfflineError).code ?? 'unknown'
 
         console.info(
-          `[HealthCheck] Connection via ${this.getBaseURL(this)} failed (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}). ${code ? `Error code: ${code}` : ''}.`
+          `[HealthCheck] Connection via ${this.getBaseURL(this)} failed (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}). ${code ? `Error code: ${code}` : ''}.`,
         )
 
         if (this.preferDomain) {
@@ -178,7 +178,7 @@ export abstract class Node<C = unknown> {
             if (protocol === 'https:' || this.isHttpAllowed(protocol)) this.online = false
 
             console.info(
-              `[HealthCheck] Alternative IP is not defined for ${this.getBaseURL(this)}. Node is offline.`
+              `[HealthCheck] Alternative IP is not defined for ${this.getBaseURL(this)}. Node is offline.`,
             )
           }
 
@@ -187,7 +187,7 @@ export abstract class Node<C = unknown> {
           if (protocol === 'https:' || this.isHttpAllowed(protocol)) this.online = false
 
           console.info(
-            `[HealthCheck] Node is not reachable by URL ${this.url}${this.altIp ? ' and by alternative IP ' + this.altIp : ''}. Node is offline.`
+            `[HealthCheck] Node is not reachable by URL ${this.url}${this.altIp ? ' and by alternative IP ' + this.altIp : ''}. Node is offline.`,
           )
         }
       } finally {
@@ -200,7 +200,7 @@ export abstract class Node<C = unknown> {
 
     this.timer = setTimeout(
       () => this.startHealthcheck(),
-      getHealthCheckInterval(this.label, this.online ? this.healthCheckInterval : 'crucial')
+      getHealthCheckInterval(this.label, this.online ? this.healthCheckInterval : 'crucial'),
     )
 
     return this
@@ -253,7 +253,7 @@ export abstract class Node<C = unknown> {
       status: this.getNodeStatus(),
       type: this.type,
       label: this.label,
-      formattedHeight: this.formatHeight(this.height)
+      formattedHeight: this.formatHeight(this.height),
     }
   }
 
