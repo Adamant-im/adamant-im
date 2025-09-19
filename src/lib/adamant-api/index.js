@@ -19,6 +19,93 @@ Queue.configure(Promise)
 /** Promises queue to execute them sequentially */
 const queue = new Queue(1, Infinity)
 
+/**
+ * Encrypts text using Web Crypto API for secure storage
+ * @param {string} text Text to encrypt
+ * @returns {Promise<string>} Base64 encoded encrypted data with salt and IV
+ */
+async function encryptForStorage(text) {
+  const encoder = new TextEncoder()
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(`adamant_${window.location.hostname}_v1`),
+    { name: 'PBKDF2' },
+    false,
+    ['deriveKey']
+  )
+
+  const salt = crypto.getRandomValues(new Uint8Array(16))
+  const derivedKey = await crypto.subtle.deriveKey(
+    {
+      name: 'PBKDF2',
+      salt,
+      iterations: 10000,
+      hash: 'SHA-256'
+    },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt']
+  )
+
+  const iv = crypto.getRandomValues(new Uint8Array(12))
+  const encrypted = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    derivedKey,
+    encoder.encode(text)
+  )
+
+  // Combine salt + iv + encrypted data
+  const combined = new Uint8Array(16 + 12 + encrypted.byteLength)
+  combined.set(salt, 0)
+  combined.set(iv, 16)
+  combined.set(new Uint8Array(encrypted), 28)
+
+  return Base64.fromUint8Array(combined)
+}
+
+/**
+ * Decrypts text from storage using Web Crypto API
+ * @param {string} encryptedText Base64 encoded encrypted data
+ * @returns {Promise<string>} Decrypted text
+ */
+async function decryptFromStorage(encryptedText) {
+  const data = Base64.toUint8Array(encryptedText)
+  const salt = data.slice(0, 16)
+  const iv = data.slice(16, 28)
+  const encrypted = data.slice(28)
+
+  const encoder = new TextEncoder()
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(`adamant_${window.location.hostname}_v1`),
+    { name: 'PBKDF2' },
+    false,
+    ['deriveKey']
+  )
+
+  const derivedKey = await crypto.subtle.deriveKey(
+    {
+      name: 'PBKDF2',
+      salt,
+      iterations: 10000,
+      hash: 'SHA-256'
+    },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['decrypt']
+  )
+
+  const decrypted = await crypto.subtle.decrypt(
+    { name: 'AES-GCM', iv },
+    derivedKey,
+    encrypted
+  )
+
+  return new TextDecoder().decode(decrypted)
+}
+
 /** @type {{privateKey: Buffer, publicKey: Buffer}} */
 let myKeypair = {}
 let myAddress = null
@@ -808,7 +895,8 @@ export async function saveSecurePassphrase(passphrase) {
   if (Capacitor.isNativePlatform()) {
     await SecureStoragePlugin.set({ key: 'adamant_passphrase', value: passphrase })
   } else {
-    localStorage.setItem('adamant_passphrase', Base64.encode(passphrase))
+    const encrypted = await encryptForStorage(passphrase)
+    localStorage.setItem('adamant_passphrase', encrypted)
   }
 }
 
@@ -821,10 +909,10 @@ export async function getSecurePassphrase() {
     const result = await SecureStoragePlugin.get({ key: 'adamant_passphrase' })
     return result.value
   } else {
-    const encoded = localStorage.getItem('adamant_passphrase')
-    if (!encoded) {
+    const encrypted = localStorage.getItem('adamant_passphrase')
+    if (!encrypted) {
       throw new Error('No passphrase found in secure storage')
     }
-    return Base64.decode(encoded)
+    return await decryptFromStorage(encrypted)
   }
 }
