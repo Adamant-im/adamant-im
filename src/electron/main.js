@@ -66,7 +66,12 @@ function createWindow() {
     height: 800,
     minWidth: 380,
     minHeight: 624,
-    icon: path.join(__dirname, '/icon.png')
+    icon: path.join(__dirname, '/icon.png'),
+    webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: false,
+      webSecurity: true
+    }
   })
 
   // You can use `process.env.VITE_DEV_SERVER_URL` when the vite command is called `serve`

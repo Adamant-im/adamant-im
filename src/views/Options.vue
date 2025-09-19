@@ -253,6 +253,7 @@ import { useChatStateStore } from '@/stores/modal-state'
 import { biometricAuth, passkeyAuth } from '@/lib/auth'
 import { AuthenticationMethod, SetupResult } from '@/lib/auth/types'
 import { saveState } from '@/lib/idb/state'
+import { saveSecurePassphrase } from '@/lib/adamant-api'
 
 const store = useStore()
 const chatStateStore = useChatStateStore()
@@ -497,7 +498,7 @@ const setupBiometricAuth = async (): Promise<boolean> => {
     if (!currentPassphrase) {
       throw new Error(t('login.signin_options.notifications.biometric_failed'))
     }
-
+    await saveSecurePassphrase(currentPassphrase)
     selectedAuthenticationMethod.value = AuthenticationMethod.Biometric
     store.commit('resetPassword')
     await clearDb()
@@ -531,6 +532,7 @@ const setupPasskeyAuth = async (): Promise<boolean> => {
       throw new Error(t('login.signin_options.notifications.passkey_failed'))
     }
     selectedAuthenticationMethod.value = AuthenticationMethod.Passkey
+    await saveSecurePassphrase(currentPassphrase)
     store.commit('resetPassword')
     await clearDb()
     await saveState(store)

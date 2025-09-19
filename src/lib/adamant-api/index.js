@@ -1,5 +1,7 @@
 import Queue from 'promise-queue'
 import { Base64 } from 'js-base64'
+import { Capacitor } from '@capacitor/core'
+import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin'
 
 import constants, { Transactions, Delegates, MessageType } from '@/lib/constants'
 import utils from '@/lib/adamant'
@@ -630,35 +632,30 @@ export function loginOrRegister(passphrase) {
 }
 
 /**
- * Universal authentication method for password, biometric, and passkey login.
- * @param {object} options - { password?, passphrase? }
+ * Login via password.
+ * @param {string} password
  * @param {any} store
- * @returns {Promise} Account with passphrase
+ * @returns {Promise} Encrypted password
  */
-export function loginViaAuthentication(options = {}, store) {
-  const { password, passphrase } = options
+export function loginViaPassword(password, store) {
+  return encryptPassword(password)
+    .then((encryptedPassword) => {
+      store.commit('setPassword', encryptedPassword)
 
-  let initPromise = Promise.resolve()
-  if (password) {
-    initPromise = encryptPassword(password).then((encrypted) => {
-      store.commit('setPassword', encrypted)
+      return restoreState(store)
     })
-  }
-
-  return initPromise
-    .then(() => restoreState(store))
     .then(() => {
-      const finalPassphrase = passphrase || Base64.decode(store.state.passphrase)
+      const passphrase = Base64.decode(store.state.passphrase)
 
       try {
-        unlock(finalPassphrase)
+        unlock(passphrase)
       } catch (e) {
         return Promise.reject(e)
       }
 
       return getCurrentAccount().then((account) => ({
         ...account,
-        passphrase: finalPassphrase
+        passphrase
       }))
     })
 }
@@ -800,4 +797,34 @@ export async function getChatRoomMessages(address1, address2, paramsArg, recursi
   }
 
   return loadMessages(lastOffset)
+}
+
+/**
+ * Saves passphrase to secure storage
+ * @param {string} passphrase User passphrase to save
+ * @returns {Promise<void>}
+ */
+export async function saveSecurePassphrase(passphrase) {
+  if (Capacitor.isNativePlatform()) {
+    await SecureStoragePlugin.set({ key: 'adamant_passphrase', value: passphrase })
+  } else {
+    localStorage.setItem('adamant_passphrase', Base64.encode(passphrase))
+  }
+}
+
+/**
+ * Retrieves passphrase from secure storage
+ * @returns {Promise<string>} User passphrase
+ */
+export async function getSecurePassphrase() {
+  if (Capacitor.isNativePlatform()) {
+    const result = await SecureStoragePlugin.get({ key: 'adamant_passphrase' })
+    return result.value
+  } else {
+    const encoded = localStorage.getItem('adamant_passphrase')
+    if (!encoded) {
+      throw new Error('No passphrase found in secure storage')
+    }
+    return Base64.decode(encoded)
+  }
 }

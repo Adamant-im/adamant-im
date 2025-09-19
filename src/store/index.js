@@ -4,9 +4,10 @@ import { Base64 } from 'js-base64'
 import {
   unlock,
   loginOrRegister,
-  loginViaAuthentication,
+  loginViaPassword,
   sendSpecialMessage,
-  getCurrentAccount
+  getCurrentAccount,
+  getSecurePassphrase
 } from '@/lib/adamant-api'
 
 import { CryptosInfo, Fees, FetchStatus } from '@/lib/constants'
@@ -46,6 +47,7 @@ import { cryptoTransferAsset, replyWithCryptoTransferAsset } from '@/lib/adamant
 import { PendingTxStore } from '@/lib/pending-transactions'
 import servicesModule from './modules/services'
 import servicesPlugin from './modules/services/services-plugin'
+import { restoreState } from '@/lib/idb/state'
 
 export let interval
 
@@ -152,12 +154,22 @@ const store = {
         dispatch('afterLogin', passphrase)
       })
     },
-    loginViaAuthentication({ commit, dispatch }, options) {
-      return loginViaAuthentication(options, this).then((account) => {
+    loginViaPassword({ commit, dispatch }, password) {
+      return loginViaPassword(password, this).then((account) => {
         commit('setIDBReady', true)
 
         // retrieve wallet data
         dispatch('afterLogin', account.passphrase)
+      })
+    },
+    async loginViaBiometricOrPaskkeyAction({ commit, dispatch }) {
+      const passphrase = await getSecurePassphrase()
+
+      await restoreState(this)
+
+      return loginOrRegister(passphrase).then(() => {
+        commit('setIDBReady', true)
+        dispatch('afterLogin', passphrase)
       })
     },
     logout({ dispatch }) {

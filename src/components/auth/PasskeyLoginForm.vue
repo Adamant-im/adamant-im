@@ -77,7 +77,7 @@ const authenticate = async () => {
       return
     }
 
-    await store.dispatch('loginViaAuthentication')
+    await store.dispatch('loginViaBiometricOrPaskkeyAction')
 
     emit('login')
   } catch (error) {

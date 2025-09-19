@@ -177,9 +177,8 @@ export type CurrentAccountWithPassphrase = CurrentAccount & {
   passphrase: string
 }
 
-
-export function loginViaAuthentication(
-  options: { password?: string; passphrase?: string },
+export function loginViaPassword(
+  password: string,
   store: Store<RootState>
 ): Promise<CurrentAccountWithPassphrase>
 
@@ -201,3 +200,7 @@ export function getChatRoomMessages(
   params: GetChatRoomMessagesParams,
   recursive: boolean = false
 ): Promise<Array<ReturnType<typeof decodeChat>>>
+
+export function saveSecurePassphrase(passphrase: string): Promise<void>
+
+export function getSecurePassphrase(): Promise<string>

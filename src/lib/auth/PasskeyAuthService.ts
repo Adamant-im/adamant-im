@@ -13,10 +13,11 @@ export class PasskeyAuthService implements AuthenticationService {
     }
 
     try {
+      const rpId = window.location.hostname || 'localhost'
       await navigator.credentials.get({
         publicKey: {
           challenge: crypto.getRandomValues(new Uint8Array(32)),
-          rpId: window.location.hostname,
+          rpId,
           userVerification: 'preferred',
           timeout: 30000
         }
@@ -46,17 +47,18 @@ export class PasskeyAuthService implements AuthenticationService {
     }
 
     try {
+      const rpId = window.location.hostname || 'localhost'
       await navigator.credentials.create({
         publicKey: {
           challenge: crypto.getRandomValues(new Uint8Array(32)),
           rp: {
             name: 'ADAMANT Messenger',
-            id: window.location.hostname
+            id: rpId
           },
           user: {
             id: crypto.getRandomValues(new Uint8Array(32)),
-            name: `ADM ${store.state.address}`,
-            displayName: `ADM ${store.state.address}`
+            name: `ADM ${store.state.address || 'User'}`,
+            displayName: `ADM ${store.state.address || 'User'}`
           },
           pubKeyCredParams: [{ alg: -7, type: 'public-key' }],
           authenticatorSelection: {

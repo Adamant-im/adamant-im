@@ -12,6 +12,7 @@ dependencies {
     implementation project(':capacitor-community-file-opener')
     implementation project(':capacitor-filesystem')
     implementation project(':capgo-capacitor-native-biometric')
+    implementation project(':capacitor-secure-storage-plugin')
 
 }
 

@@ -7,7 +7,7 @@ import store from '@/store'
  */
 export class PasswordAuthService implements AuthenticationService {
   async authorizeUser(password: string): Promise<AuthenticationResult> {
-    await store.dispatch('loginViaAuthentication', { password })
+    await store.dispatch('loginViaPassword', password)
     return AuthenticationResult.Success
   }
 }
