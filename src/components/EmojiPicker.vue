@@ -77,6 +77,7 @@ export default defineComponent({
 
 .emoji-picker {
   border-radius: 8px;
+  transition: opacity 0.2s ease-out;
 
   &--position-absolute {
     // Fix for Chrome on iOS. Don't touch it
@@ -85,7 +86,6 @@ export default defineComponent({
   }
 
   &--position-left {
-    position: absolute;
     right: 0;
     bottom: 0;
   }
