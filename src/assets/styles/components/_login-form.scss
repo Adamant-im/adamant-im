@@ -14,9 +14,6 @@
  * 5. Disable border bottom animation.
  */
 .login-form {
-  @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
-    margin-bottom: 40px;
-  }
   &__button {
     min-width: 126px;
   }

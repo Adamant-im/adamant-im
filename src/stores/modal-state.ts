@@ -6,6 +6,7 @@ export const useChatStateStore = defineStore('chatState', () => {
   const isShowPartnerInfoDialog = ref(false)
   const isShowFreeTokensDialog = ref(false)
   const isShowSetPasswordDialog = ref(false)
+  const isShowSignInOptionsDialog = ref(false)
   const isChatMenuOpen = ref(false)
   const isEmojiPickerOpen = ref(false)
   const actionsDropdownMessageId = ref<number | string>(-1)
@@ -26,6 +27,10 @@ export const useChatStateStore = defineStore('chatState', () => {
     isShowSetPasswordDialog.value = value
   }
 
+  const setShowSignInOptionsDialog = (value: boolean) => {
+    isShowSignInOptionsDialog.value = value
+  }
+
   const setChatMenuOpen = (value: boolean) => {
     isChatMenuOpen.value = value
   }
@@ -43,6 +48,7 @@ export const useChatStateStore = defineStore('chatState', () => {
     setShowPartnerInfoDialog(false)
     setShowFreeTokensDialog(false)
     setShowSetPasswordDialog(false)
+    setShowSignInOptionsDialog(false)
     setChatMenuOpen(false)
     setEmojiPickerOpen(false)
     setActionsDropdownMessageId(-1)
@@ -54,6 +60,7 @@ export const useChatStateStore = defineStore('chatState', () => {
     isShowPartnerInfoDialog,
     isShowFreeTokensDialog,
     isShowSetPasswordDialog,
+    isShowSignInOptionsDialog,
     isChatMenuOpen,
     isEmojiPickerOpen,
 
@@ -62,6 +69,7 @@ export const useChatStateStore = defineStore('chatState', () => {
     setShowPartnerInfoDialog,
     setShowFreeTokensDialog,
     setShowSetPasswordDialog,
+    setShowSignInOptionsDialog,
     setChatMenuOpen,
     setEmojiPickerOpen,
     $reset

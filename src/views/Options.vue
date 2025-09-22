@@ -55,25 +55,13 @@
           >
             <template v-if="selectedAuthMethodIcon">
               <v-icon :icon="selectedAuthMethodIcon" size="20" class="auth-method-status-icon" />
+              {{ selectedAuthMethodText }}
             </template>
             <template v-else>
               {{ t('options.stay_logged_in_tooltip') }}
             </template>
           </div>
 
-          <div v-if="stayLoggedIn" class="mt-4">
-            <v-text-field
-              :model-value="selectedAuthMethodDisplayText"
-              :label="t('options.authentication_method_label')"
-              readonly
-              density="comfortable"
-              variant="outlined"
-              hide-details
-              :append-inner-icon="mdiChevronDown"
-              @click="isSignInOptionsDialogDisplayed = true"
-              class="auth-method-selector"
-            />
-          </div>
 
           <password-set-dialog v-model="isPasswordDialogDisplayed" @password="onSetPassword" />
           <sign-in-options-dialog
@@ -244,7 +232,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import CurrencySwitcher from '@/components/CurrencySwitcher.vue'
 import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
 import SignInOptionsDialog from '@/components/SignInOptionsDialog.vue'
-import { clearDb, db as isIDBSupported } from '@/lib/idb'
+import { clearDb } from '@/lib/idb'
 import { resetPinia } from '@/plugins/pinia'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
 import { useSavedScroll } from '@/hooks/useSavedScroll'
@@ -270,7 +258,14 @@ const appVersion = inject('appVersion')
 const sidebarLayoutRef = inject<Ref>(sidebarLayoutKey)
 
 const tapCount = ref(0)
-const isSignInOptionsDialogDisplayed = ref(false)
+const isSignInOptionsDialogDisplayed = computed({
+  get() {
+    return chatStateStore.isShowSignInOptionsDialog
+  },
+  set(value) {
+    chatStateStore.setShowSignInOptionsDialog(value)
+  }
+})
 
 const isPasswordDialogDisplayed = computed({
   get() {
@@ -403,13 +398,6 @@ const selectedAuthenticationMethod = computed({
   }
 })
 
-const selectedAuthMethodDisplayText = computed(() => {
-  if (!selectedAuthenticationMethod.value) {
-    return t('options.authentication_method_placeholder')
-  }
-
-  return t(`login.signin_options.${selectedAuthenticationMethod.value}.title`)
-})
 
 const selectedAuthMethodIcon = computed(() => {
   switch (selectedAuthenticationMethod.value) {
@@ -424,24 +412,24 @@ const selectedAuthMethodIcon = computed(() => {
   }
 })
 
+const selectedAuthMethodText = computed(() => {
+  switch (selectedAuthenticationMethod.value) {
+    case AuthenticationMethod.Biometric:
+      return t('login.signin_options.notifications.biometric_enabled')
+    case AuthenticationMethod.Passkey:
+      return t('login.signin_options.notifications.passkey_enabled')
+    case AuthenticationMethod.Password:
+      return t('login.signin_options.notifications.password_enabled')
+    default:
+      return null
+  }
+})
+
 const onCheckStayLoggedIn = () => {
   if (!stayLoggedIn.value) {
-    isIDBSupported
-      .then(() => {
-        store.commit('options/updateOption', {
-          key: 'stayLoggedIn',
-          value: true
-        })
-      })
-      .catch(() => {
-        store.dispatch('snackbar/show', {
-          message: t('options.idb_not_supported'),
-          timeout: 5000
-        })
-      })
+    isSignInOptionsDialogDisplayed.value = true
   } else {
     clearDb().then(async () => {
-      // Clear all authentication methods when disabling stay logged in
       await clearAllAuthenticationMethods()
       store.commit('options/updateOption', {
         key: 'stayLoggedIn',
@@ -466,6 +454,10 @@ const setupPasswordAuth = () => {
 
 const onSetPassword = () => {
   selectedAuthenticationMethod.value = AuthenticationMethod.Password
+  store.commit('options/updateOption', {
+    key: 'stayLoggedIn',
+    value: true
+  })
   showSuccess(t('login.signin_options.notifications.password_enabled'))
 }
 
@@ -554,12 +546,31 @@ const setupPasskeyAuth = async (): Promise<boolean> => {
 }
 
 const clearAllAuthenticationMethods = async () => {
+  const currentMethod = selectedAuthenticationMethod.value
+
   store.commit('resetPassword')
 
   store.commit('options/updateOption', {
     key: 'authenticationMethod',
     value: null
   })
+
+  if (currentMethod) {
+    let message = ''
+    switch (currentMethod) {
+      case AuthenticationMethod.Biometric:
+        message = t('login.signin_options.notifications.biometric_disabled')
+        break
+      case AuthenticationMethod.Passkey:
+        message = t('login.signin_options.notifications.passkey_disabled')
+        break
+      case AuthenticationMethod.Password:
+        message = t('login.signin_options.notifications.password_disabled')
+        break
+    }
+
+    showSuccess(message)
+  }
 }
 
 const onAuthenticationMethodChange = async (method: AuthenticationMethod) => {
@@ -580,7 +591,12 @@ const onAuthenticationMethodChange = async (method: AuthenticationMethod) => {
     success = await setupPasskeyAuth()
   }
 
-  if (!success) {
+  if (success) {
+    store.commit('options/updateOption', {
+      key: 'stayLoggedIn',
+      value: true
+    })
+  } else {
     selectedAuthenticationMethod.value = null
   }
 }
@@ -690,14 +706,6 @@ onBeforeUnmount(() => {
     margin-left: -8px;
   }
 
-  .auth-method-selector {
-    :deep(.v-field),
-    :deep(.v-field__input),
-    :deep(.v-field__append-inner),
-    :deep(.v-label) {
-      cursor: pointer;
-    }
-  }
 
   .auth-method-tooltip {
     display: flex;
@@ -706,6 +714,7 @@ onBeforeUnmount(() => {
 
   .auth-method-status-icon {
     margin-left: 0;
+    margin-right: 8px;
   }
 }
 

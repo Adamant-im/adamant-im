@@ -192,10 +192,8 @@
     "brand_title": "ADAMANT",
     "copy_button_tooltip": "Copy",
     "create_address_label": "Or create new anonymous address:",
-    "device_unsupported": "Your device is not supported",
     "invalid_passphrase": "Invalid passphrase",
     "invalid_qr_code": "QR code does not contain passphrase or is unrecognizable",
-    "language_label": "Language",
     "login_button": "Login",
     "login_by_qr_code_tooltip": "Login with passphrase using QR code",
     "new_button": "Create new",
@@ -208,9 +206,7 @@
     "subheader": "Decentralized messenger",
     "show_passphrase_tooltip": "Show passphrase",
     "hide_passphrase_tooltip": "Hide passphrase",
-    "authenticating": "Authenticating...",
     "authentication_failed": "Authentication failed",
-    "try_again": "Try Again",
     "use_passphrase_hint": "Having trouble?",
     "use_passphrase": "Sign in with passphrase",
     "signin_options": {
@@ -228,7 +224,7 @@
       },
       "password": {
         "title": "Password",
-        "secure_login": "Secure login with your password"
+        "secure_login": "Strong password keeps your data securely encrypted"
       },
       "notifications": {
         "biometric_enabled": "Biometric sign-in enabled",

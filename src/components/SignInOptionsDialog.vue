@@ -9,44 +9,22 @@
 
       <v-card-text class="pa-0">
         <v-list>
-          <v-list-item
-            avatar
-            :disabled="!biometricOption.available"
-            @click="selectAuthMethod(AuthenticationMethod.Biometric)"
-          >
-            <template #prepend>
-              <v-icon :icon="mdiFingerprint" />
-            </template>
+          <template v-for="option in authOptions" :key="option.method">
+            <v-list-item
+              avatar
+              :disabled="!option.available"
+              @click="selectAuthMethod(option.method)"
+            >
+              <template #prepend>
+                <v-icon :icon="option.icon" />
+              </template>
 
-            <v-list-item-title>{{ t('login.signin_options.biometric.title') }}</v-list-item-title>
-            <v-list-item-subtitle>{{ biometricOption.subtitle }}</v-list-item-subtitle>
-          </v-list-item>
-
-          <v-list-item
-            avatar
-            :disabled="!passkeyOption.available"
-            @click="selectAuthMethod(AuthenticationMethod.Passkey)"
-          >
-            <template #prepend>
-              <v-icon :icon="mdiKeyVariant" />
-            </template>
-
-            <v-list-item-title>{{ t('login.signin_options.passkey.title') }}</v-list-item-title>
-            <v-list-item-subtitle>{{ passkeyOption.subtitle }}</v-list-item-subtitle>
-          </v-list-item>
-
-          <v-list-item
-            avatar
-            :disabled="!passwordOption.available"
-            @click="selectAuthMethod(AuthenticationMethod.Password)"
-          >
-            <template #prepend>
-              <v-icon :icon="mdiLock" />
-            </template>
-
-            <v-list-item-title>{{ t('login.signin_options.password.title') }}</v-list-item-title>
-            <v-list-item-subtitle>{{ passwordOption.subtitle }}</v-list-item-subtitle>
-          </v-list-item>
+              <v-list-item-title>{{ option.title }}</v-list-item-title>
+              <v-list-item-subtitle class="a-text-explanation-enlarged">{{
+                option.subtitle
+              }}</v-list-item-subtitle>
+            </v-list-item>
+          </template>
         </v-list>
       </v-card-text>
     </v-card>
@@ -135,6 +113,30 @@ const passwordOption = computed(() => {
       : t('login.signin_options.not_available')
   }
 })
+
+const authOptions = computed(() => [
+  {
+    method: AuthenticationMethod.Biometric,
+    icon: mdiFingerprint,
+    title: t('login.signin_options.biometric.title'),
+    available: biometricOption.value.available,
+    subtitle: biometricOption.value.subtitle
+  },
+  {
+    method: AuthenticationMethod.Passkey,
+    icon: mdiKeyVariant,
+    title: t('login.signin_options.passkey.title'),
+    available: passkeyOption.value.available,
+    subtitle: passkeyOption.value.subtitle
+  },
+  {
+    method: AuthenticationMethod.Password,
+    icon: mdiLock,
+    title: t('login.signin_options.password.title'),
+    available: passwordOption.value.available,
+    subtitle: passwordOption.value.subtitle
+  }
+])
 
 onMounted(async () => {
   try {

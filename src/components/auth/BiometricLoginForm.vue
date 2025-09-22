@@ -1,14 +1,19 @@
 <template>
-  <v-form @submit.prevent="authenticate">
+  <v-form @submit.prevent="authenticate" class="biometric-login-form">
     <v-row no-gutters>
-      <div class="text-center" style="width: 100%; padding: 32px 32px 16px">
-        <v-icon :icon="mdiFingerprint" size="48" :color="iconColor" @click="authenticate" />
+      <div class="biometric-login-form__icon-container">
+        <v-icon
+          :icon="mdiFingerprint"
+          size="48"
+          :class="['biometric-login-form__icon', isAuthenticating && 'biometric-login-form__icon--disabled']"
+          @click="!isAuthenticating && authenticate()"
+        />
       </div>
     </v-row>
 
     <v-row align="center" justify="center" class="mt-2" no-gutters>
       <v-col cols="12">
-        <v-btn class="a-btn-primary" @click="authenticate" :disabled="isAuthenticating">
+        <v-btn class="login-form__button a-btn-primary" @click="authenticate" :disabled="isAuthenticating">
           <v-progress-circular
             v-show="isAuthenticating"
             indeterminate
@@ -50,12 +55,6 @@ const emit = defineEmits<{
 const isAuthenticating = ref(false)
 const hasError = ref(false)
 
-const iconColor = computed(() => {
-  if (isAuthenticating.value) return 'primary'
-  if (hasError.value) return 'error'
-  return 'primary'
-})
-
 const handleAuthError = (errorMessage: string) => {
   hasError.value = true
   emit('error', errorMessage)
@@ -96,3 +95,58 @@ onMounted(() => {
   authenticate()
 })
 </script>
+
+<style lang="scss" scoped>
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
+
+.biometric-login-form {
+  &__icon-container {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 56px;
+    padding: 0 32px;
+  }
+
+  &__icon {
+    transition: 0.2s linear;
+    cursor: pointer;
+
+    &--disabled {
+      cursor: not-allowed;
+      pointer-events: none;
+      opacity: 0.3 !important;
+    }
+  }
+}
+
+.v-theme--light {
+  .biometric-login-form {
+    &__icon {
+      color: map.get(colors.$adm-colors, 'black2');
+      opacity: 0.62;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.v-theme--dark {
+  .biometric-login-form {
+    &__icon {
+      color: map.get(colors.$adm-colors, 'grey-transparent');
+
+      &:hover {
+        color: map.get(colors.$adm-colors, 'secondary');
+        opacity: 1;
+      }
+    }
+  }
+}
+</style>

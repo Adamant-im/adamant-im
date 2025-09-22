@@ -150,3 +150,20 @@ const removePassword = () => {
   })
 }
 </script>
+
+<style lang="scss" scoped>
+.login-form {
+  &__textfield {
+    &:deep(.v-field__append-inner) {
+      padding-left: 0;
+      margin-left: -28px; // compensate the append-inner icon
+    }
+
+    &:deep(.v-field__input) {
+      width: 100%;
+      padding-right: 32px;
+      padding-left: 32px;
+    }
+  }
+}
+</style>
