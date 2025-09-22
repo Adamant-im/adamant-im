@@ -201,6 +201,12 @@ export function getChatRoomMessages(
   recursive: boolean = false
 ): Promise<Array<ReturnType<typeof decodeChat>>>
 
-export function saveSecurePassphrase(passphrase: string): Promise<void>
+export function saveSecureData(
+  passphrase: string,
+  encryptionKey: Uint8Array
+): Promise<void>
 
-export function getSecurePassphrase(): Promise<string>
+export function getSecureData(): Promise<{
+  passphrase: string
+  encryptionKey: Uint8Array
+}>

@@ -7,11 +7,11 @@ import {
   loginViaPassword,
   sendSpecialMessage,
   getCurrentAccount,
-  getSecurePassphrase
+  getSecureData
 } from '@/lib/adamant-api'
 
 import { CryptosInfo, Fees, FetchStatus } from '@/lib/constants'
-import { encryptPassword } from '@/lib/idb/crypto'
+import { encryptPassword, setGlobalEncryptionKey } from '@/lib/idb/crypto'
 import { flushCryptoAddresses, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import { registerCryptoModules } from './utils/registerCryptoModules'
 import { registerVuexPlugins } from './utils/registerVuexPlugins'
@@ -155,6 +155,7 @@ const store = {
       })
     },
     loginViaPassword({ commit, dispatch }, password) {
+      setGlobalEncryptionKey(null)
       return loginViaPassword(password, this).then((account) => {
         commit('setIDBReady', true)
 
@@ -163,8 +164,9 @@ const store = {
       })
     },
     async loginViaBiometricOrPaskkeyAction({ commit, dispatch }) {
-      const passphrase = await getSecurePassphrase()
+      const { passphrase, encryptionKey } = await getSecureData()
 
+      setGlobalEncryptionKey(encryptionKey)
       await restoreState(this)
 
       return loginOrRegister(passphrase).then(() => {
@@ -211,6 +213,7 @@ const store = {
       })
     },
     reset({ commit }) {
+      setGlobalEncryptionKey(null)
       commit('reset', null, {
         root: true
       })

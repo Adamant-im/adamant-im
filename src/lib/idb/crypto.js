@@ -10,14 +10,22 @@ import { Buffer } from 'buffer'
 
 const NONCE = Buffer.allocUnsafe(24)
 
+// Global encryption key for biometric/passkey authentication
+let globalEncryptionKey = null
+
+export function setGlobalEncryptionKey(encryptionKey) {
+  globalEncryptionKey = encryptionKey
+}
+
 /**
  * @param {string|number|Object} data
  * @returns {Buffer}
  */
 export function encrypt(data) {
   const stringified = JSON.stringify(data)
-  const secretKey = ed2curve.convertSecretKey(store.state.password)
-
+  const secretKey = globalEncryptionKey
+    ? ed2curve.convertSecretKey(globalEncryptionKey)
+    : ed2curve.convertSecretKey(store.state.password)
   return nacl.secretbox(Buffer.from(stringified), NONCE, secretKey)
 }
 
@@ -26,9 +34,10 @@ export function encrypt(data) {
  * @returns {string|number|Object}
  */
 export function decrypt(encryptedData) {
-  const secretKey = ed2curve.convertSecretKey(store.state.password)
+  const secretKey = globalEncryptionKey
+    ? ed2curve.convertSecretKey(globalEncryptionKey)
+    : ed2curve.convertSecretKey(store.state.password)
   const decoded = decode(nacl.secretbox.open(encryptedData, NONCE, secretKey))
-
   return JSON.parse(decoded)
 }
 

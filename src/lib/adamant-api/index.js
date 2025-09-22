@@ -13,6 +13,7 @@ import store from '@/store'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { parseCryptoAddressesKVStxs } from '@/lib/store-crypto-address'
 import { DEFAULT_TIME_DELTA } from '@/lib/nodes/constants.js'
+import { hexToBytes, bytesToHex } from '@/lib/hex'
 
 Queue.configure(Promise)
 
@@ -97,12 +98,7 @@ async function decryptFromStorage(encryptedText) {
     ['decrypt']
   )
 
-  const decrypted = await crypto.subtle.decrypt(
-    { name: 'AES-GCM', iv },
-    derivedKey,
-    encrypted
-  )
-
+  const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, derivedKey, encrypted)
   return new TextDecoder().decode(decrypted)
 }
 
@@ -889,14 +885,16 @@ export async function getChatRoomMessages(address1, address2, paramsArg, recursi
 /**
  * Saves passphrase to secure storage
  * @param {string} passphrase User passphrase to save
+ * @param {Uint8Array<ArrayBuffer>|null|null} customKey
  * @returns {Promise<void>}
  */
-export async function saveSecurePassphrase(passphrase) {
+export async function saveSecureData(passphrase, encryptionKey) {
+  const data = { passphrase, encryptionKey: bytesToHex(encryptionKey) }
   if (Capacitor.isNativePlatform()) {
-    await SecureStoragePlugin.set({ key: 'adamant_passphrase', value: passphrase })
+    await SecureStoragePlugin.set({ key: 'adamant_auth_data', value: JSON.stringify(data) })
   } else {
-    const encrypted = await encryptForStorage(passphrase)
-    localStorage.setItem('adamant_passphrase', encrypted)
+    const encrypted = await encryptForStorage(JSON.stringify(data))
+    localStorage.setItem('adamant_auth_data', encrypted)
   }
 }
 
@@ -904,15 +902,18 @@ export async function saveSecurePassphrase(passphrase) {
  * Retrieves passphrase from secure storage
  * @returns {Promise<string>} User passphrase
  */
-export async function getSecurePassphrase() {
+export async function getSecureData() {
+  let data
   if (Capacitor.isNativePlatform()) {
-    const result = await SecureStoragePlugin.get({ key: 'adamant_passphrase' })
-    return result.value
+    const result = await SecureStoragePlugin.get({ key: 'adamant_auth_data' })
+    data = JSON.parse(result.value)
   } else {
-    const encrypted = localStorage.getItem('adamant_passphrase')
-    if (!encrypted) {
-      throw new Error('No passphrase found in secure storage')
-    }
-    return await decryptFromStorage(encrypted)
+    const encrypted = localStorage.getItem('adamant_auth_data')
+    const decrypted = await decryptFromStorage(encrypted)
+    data = JSON.parse(decrypted)
+  }
+  return {
+    passphrase: data.passphrase,
+    encryptionKey: hexToBytes(data.encryptionKey)
   }
 }

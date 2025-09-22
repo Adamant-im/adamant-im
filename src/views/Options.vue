@@ -253,7 +253,8 @@ import { useChatStateStore } from '@/stores/modal-state'
 import { biometricAuth, passkeyAuth } from '@/lib/auth'
 import { AuthenticationMethod, SetupResult } from '@/lib/auth/types'
 import { saveState } from '@/lib/idb/state'
-import { saveSecurePassphrase } from '@/lib/adamant-api'
+import { saveSecureData } from '@/lib/adamant-api'
+import { setGlobalEncryptionKey } from '@/lib/idb/crypto'
 
 const store = useStore()
 const chatStateStore = useChatStateStore()
@@ -498,10 +499,12 @@ const setupBiometricAuth = async (): Promise<boolean> => {
     if (!currentPassphrase) {
       throw new Error(t('login.signin_options.notifications.biometric_failed'))
     }
-    await saveSecurePassphrase(currentPassphrase)
+    const encryptionKey = crypto.getRandomValues(new Uint8Array(32))
+    await saveSecureData(currentPassphrase, encryptionKey)
     selectedAuthenticationMethod.value = AuthenticationMethod.Biometric
     store.commit('resetPassword')
     await clearDb()
+    setGlobalEncryptionKey(encryptionKey)
     await saveState(store)
     showSuccess(t('login.signin_options.notifications.biometric_enabled'))
     return true
@@ -532,9 +535,11 @@ const setupPasskeyAuth = async (): Promise<boolean> => {
       throw new Error(t('login.signin_options.notifications.passkey_failed'))
     }
     selectedAuthenticationMethod.value = AuthenticationMethod.Passkey
-    await saveSecurePassphrase(currentPassphrase)
+    const encryptionKey = crypto.getRandomValues(new Uint8Array(32))
+    await saveSecureData(currentPassphrase, encryptionKey)
     store.commit('resetPassword')
     await clearDb()
+    setGlobalEncryptionKey(encryptionKey)
     await saveState(store)
     showSuccess(t('login.signin_options.notifications.passkey_enabled'))
     return true
