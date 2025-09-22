@@ -78,7 +78,7 @@ export default {
       (txs) => {
         if (txs.length > 0) {
           const addresses = parseCryptoAddressesKVStxs(txs, crypto)
-          if (addresses && !addresses.onlyLegacyLiskAddress) {
+          if (addresses) {
             // Some address(es) is stored
             context.commit('address', { ...payload, crypto, address: addresses.mainAddress })
             if (addresses.addressesCount > 1) {

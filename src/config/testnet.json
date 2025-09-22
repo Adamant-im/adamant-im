@@ -313,54 +313,5 @@
         "threshold": 5
       }
     }
-  },
-  "kly": {
-    "explorer": "https://explorer.klayr.xyz",
-    "explorerTx": "https://explorer.klayr.xyz/transaction/${ID}",
-    "explorerAddress": "https://explorer.klayr.xyz/account/${ID}",
-    "services": {
-      "klyService": {
-        "displayName": "kly-indexer",
-        "description": {
-          "software": "klayr-service",
-          "github": "https://github.com/KlayrHQ/klayr-service",
-          "docs": "https://klayr.xyz/documentation/klayr-service"
-        },
-        "list": [
-          {
-            "url": "https://klyservice2.adamant.im",
-            "alt_ip": "http://109.176.199.130:44098"
-          },
-          {
-            "url": "https://klyservice3.adm.im",
-            "alt_ip": "http://37.27.205.78:44098"
-          }
-        ],
-        "healthCheck": {
-          "normalUpdateInterval": 330000,
-          "crucialUpdateInterval": 30000,
-          "onScreenUpdateInterval": 10000
-        }
-      }
-    },
-    "nodes": {
-      "displayName": "kly-node",
-      "list": [
-        {
-          "url": "https://klynode2.adamant.im",
-          "alt_ip": "http://109.176.199.130:44099"
-        },
-        {
-          "url": "https://klynode3.adm.im",
-          "alt_ip": "http://37.27.205.78:44099"
-        }
-      ],
-      "healthCheck": {
-        "normalUpdateInterval": 270000,
-        "crucialUpdateInterval": 30000,
-        "onScreenUpdateInterval": 10000,
-        "threshold": 5
-      }
-    }
   }
 }

@@ -1,6 +1,6 @@
 import * as admApi from './adamant-api'
 import store from '@/store'
-import { Cryptos, isErc20, RE_KLY_ADDRESS_LEGACY } from './constants'
+import { Cryptos, isErc20 } from './constants'
 import { vueBus } from '@/lib/vueBus'
 import { uniqueCaseInsensitiveArray, isStringEqualCI } from '@/lib/textHelpers'
 
@@ -37,21 +37,12 @@ export function flushCryptoAddresses() {
  * Parses KVS transactions for crypto addresses
  * @returns object for stored addresses
  */
-export function parseCryptoAddressesKVStxs(txs, crypto) {
+export function parseCryptoAddressesKVStxs(txs) {
   if (!txs || !txs.length || !txs[0].asset || !txs[0].asset.state || !txs[0].asset) return null
   const addresses = {}
   // validateInfo.storedAddresses = [...new Set(txs.map(tx => tx.asset.state.value))]
   addresses.storedAddresses = uniqueCaseInsensitiveArray(txs.map((tx) => tx.asset.state.value))
-  // Lisk has updated their address format, and both may be stored
-  // Remove legacy addresses
-  if (crypto === Cryptos.KLY) {
-    addresses.storedAddresses = addresses.storedAddresses.filter(
-      (address) => !RE_KLY_ADDRESS_LEGACY.test(address)
-    )
-    if (addresses.storedAddresses.length === 0) {
-      addresses.onlyLegacyLiskAddress = true
-    }
-  }
+
   addresses.addressesCount = addresses.storedAddresses.length
   addresses.mainAddress = addresses.storedAddresses[0]
   return addresses

@@ -5,7 +5,6 @@ import { useDogeTransactionQuery } from './useDogeTransactionQuery'
 import { useDashTransactionQuery } from './useDashTransactionQuery'
 import { useEthTransactionQuery } from './useEthTransactionQuery'
 import { useErc20TransactionQuery } from './useErc20TransactionQuery'
-import { useKlyTransactionQuery } from './useKlyTransactionQuery'
 import { useAdmTransactionQuery } from './useAdmTransactionQuery'
 import { UseTransactionQueryParams } from './types'
 
@@ -14,8 +13,7 @@ const query = {
   BTC: useBtcTransactionQuery,
   DOGE: useDogeTransactionQuery,
   DASH: useDashTransactionQuery,
-  ETH: useEthTransactionQuery,
-  KLY: useKlyTransactionQuery
+  ETH: useEthTransactionQuery
 } as const
 
 export function useTransactionQuery(
@@ -33,7 +31,6 @@ export function useTransactionQuery(
     case 'DOGE':
     case 'DASH':
     case 'ETH':
-    case 'KLY':
       return query[crypto](transactionId, params)
     default:
       throw new Error(`Unsupported crypto: ${crypto}`)

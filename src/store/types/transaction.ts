@@ -16,8 +16,4 @@ export type StoreTransaction = {
    * ETH specific
    */
   gasPrice?: number | string
-  /**
-   * KLY specific
-   */
-  data?: string
 }

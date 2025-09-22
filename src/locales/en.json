@@ -377,7 +377,6 @@
     "decode_from_camera": "Scan QR code with camera",
     "decode_from_image": "Read QR code from image",
     "error_dust_amount": "Dust amount—Send more tokens",
-    "recipient_minimum_balance": "Recipient must have at least 0.05 KLY—Send more tokens",
     "error_all_nodes_offline": "All {crypto} nodes offline",
     "error_precision": "Too many decimals—Reduce precision",
     "error_field_is_required": "Field is required",

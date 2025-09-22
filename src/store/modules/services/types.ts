@@ -5,16 +5,10 @@ export type ServicesState = {
   [NODE_LABELS.BtcIndexer]: Record<string, { active: boolean }>
   [NODE_LABELS.DogeIndexer]: Record<string, { active: boolean }>
   [NODE_LABELS.EthIndexer]: Record<string, { active: boolean }>
-  [NODE_LABELS.KlyIndexer]: Record<string, { active: boolean }>
   useFastestService: boolean
 }
 
-export type AvailableService =
-  | 'rates-info'
-  | 'btc-indexer'
-  | 'doge-indexer'
-  | 'eth-indexer'
-  | 'kly-indexer'
+export type AvailableService = 'rates-info' | 'btc-indexer' | 'doge-indexer' | 'eth-indexer'
 
 export type StatusPayload = {
   serviceType: AvailableService
@@ -22,4 +16,4 @@ export type StatusPayload = {
 }
 export type TogglePayload = { type: AvailableService; url: string; active: boolean }
 export type ToggleAllPayload = { active: boolean }
-export type Node = { label: string, url: string }
+export type Node = { label: string; url: string }

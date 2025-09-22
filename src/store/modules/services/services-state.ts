@@ -6,6 +6,5 @@ export const state: ServicesState = {
   [NODE_LABELS.BtcIndexer]: {},
   [NODE_LABELS.DogeIndexer]: {},
   [NODE_LABELS.EthIndexer]: {},
-  [NODE_LABELS.KlyIndexer]: {},
   useFastestService: true
 }

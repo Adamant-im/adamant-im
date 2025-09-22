@@ -44,10 +44,6 @@
     "@capacitor/core": "^7.3.0",
     "@capacitor/filesystem": "^7.1.1",
     "@emoji-mart/data": "^1.2.1",
-    "@klayr/codec": "^0.5.1",
-    "@klayr/cryptography": "^4.1.1",
-    "@klayr/transactions": "^6.1.1",
-    "@klayr/validator": "^0.9.1",
     "@mdi/js": "^7.4.47",
     "@stablelib/utf8": "^2.0.1",
     "@tanstack/vue-query": "^5.66.0",
@@ -222,7 +218,6 @@
     "cryptocurrency",
     "doge",
     "dash",
-    "klayr",
     "erc20",
     "business",
     "2fa"
