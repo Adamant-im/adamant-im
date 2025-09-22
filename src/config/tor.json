@@ -245,50 +245,5 @@
         }
       }
     }
-  },
-  "kly": {
-    "explorer": "https://explorer.klayr.xyz",
-    "explorerTx": "https://explorer.klayr.xyz/transaction/${ID}",
-    "explorerAddress": "https://explorer.klayr.xyz/account/${ID}",
-    "nodes": {
-      "displayName": "kly-node",
-      "list": [
-        {
-          "url": "http://5fr7uybpxecid5gikrm65hstsfhve2772keyqdvxirsiywlyo6zap6yd.onion"
-        },
-        {
-          "url": "http://5rmyjfvazkg5gcyo3gwvdinykvycsleeebumdm6zlj6dhf6gshpelfid.onion"
-        }
-      ],
-      "healthCheck": {
-        "normalUpdateInterval": 270000,
-        "crucialUpdateInterval": 30000,
-        "onScreenUpdateInterval": 10000,
-        "threshold": 5
-      }
-    },
-    "services": {
-      "klyService": {
-        "displayName": "kly-indexer",
-        "description": {
-          "software": "klayr-service",
-          "github": "https://github.com/KlayrHQ/klayr-service",
-          "docs": "https://klayr.xyz/documentation/klayr-service"
-        },
-        "list": [
-          {
-            "url": "http://3om4mobnbppxuexwufprp4cle4fivstooqqap6yoll5qk3kikesmqgad.onion"
-          },
-          {
-            "url": "http://xif2b7cchtn27aq2qypjc6p3phamrt4fdc3gbl5e6kk2fw3ypovre5id.onion"
-          }
-        ],
-        "healthCheck": {
-          "normalUpdateInterval": 330000,
-          "crucialUpdateInterval": 30000,
-          "onScreenUpdateInterval": 10000
-        }
-      }
-    }
   }
 }
