@@ -1,10 +1,9 @@
-import { vi, describe, it, expect, beforeEach } from 'vitest'
-import { BiometricAuthService } from '../BiometricAuthService'
-import { AuthenticationResult, SetupResult } from '../types'
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { Capacitor } from '@capacitor/core'
 import { NativeBiometric } from '@capgo/capacitor-native-biometric'
+import { BiometricAuthService } from '../BiometricAuthService'
+import { AuthenticationResult, SetupResult } from '../types'
 
-// Replace imports with mocks to control their behavior in tests
 vi.mock('@capacitor/core', () => ({
   Capacitor: {
     isNativePlatform: vi.fn()
@@ -18,137 +17,104 @@ vi.mock('@capgo/capacitor-native-biometric', () => ({
   }
 }))
 
-// Get mocked instances for type safety
-const mockCapacitor = vi.mocked(Capacitor)
-const mockNativeBiometric = vi.mocked(NativeBiometric)
-
 describe('BiometricAuthService', () => {
-  let biometricAuth: BiometricAuthService
+  let service: BiometricAuthService
+  const mockCapacitor = vi.mocked(Capacitor)
+  const mockNativeBiometric = vi.mocked(NativeBiometric)
 
   beforeEach(() => {
-    // Create new service instance before each test for isolation
-    biometricAuth = new BiometricAuthService()
-    // Clear all mocks so tests don't affect each other
+    service = new BiometricAuthService()
     vi.clearAllMocks()
+    vi.spyOn(console, 'error').mockImplementation(() => {})
   })
 
-  describe('User tries to authenticate with biometrics on mobile device', () => {
-    beforeEach(() => {
-      // Simulate that we're on mobile platform (Android/iOS)
-      mockCapacitor.isNativePlatform.mockReturnValue(true)
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  describe('authorizeUser', () => {
+    it('should return Failed when not on native platform', async () => {
+      mockCapacitor.isNativePlatform.mockReturnValue(false)
+
+      const result = await service.authorizeUser()
+
+      expect(result).toBe(AuthenticationResult.Failed)
     })
 
-    it('should successfully authenticate when user provides valid biometric', async () => {
-      // Simulate successful biometric verification (fingerprint/Face ID)
+    it('should return Success when biometric verification succeeds', async () => {
+      mockCapacitor.isNativePlatform.mockReturnValue(true)
       mockNativeBiometric.verifyIdentity.mockResolvedValue(undefined)
 
-      // User clicks "Login with biometric" button
-      const result = await biometricAuth.authorizeUser()
+      const result = await service.authorizeUser()
 
-      // Check that verifyIdentity was called with correct parameters
+      expect(result).toBe(AuthenticationResult.Success)
       expect(mockNativeBiometric.verifyIdentity).toHaveBeenCalledWith({
         reason: 'Login to ADAMANT Messenger',
         title: 'Biometric Authentication'
       })
-      // Expect successful authentication
-      expect(result).toBe(AuthenticationResult.Success)
     })
 
-    it('should return cancel when user cancels biometric prompt', async () => {
-      // Simulate user clicking "Cancel" in biometric dialog (must include 'cancel' in message)
-      const cancelError = new Error('User cancelled biometric authentication')
+    it('should return Cancel when user cancels authentication', async () => {
+      mockCapacitor.isNativePlatform.mockReturnValue(true)
+      const cancelError = { code: 10, message: 'User canceled authentication' }
       mockNativeBiometric.verifyIdentity.mockRejectedValue(cancelError)
 
-      // User starts authentication but cancels it
-      const result = await biometricAuth.authorizeUser()
+      const result = await service.authorizeUser()
 
-      // Expect "cancel" result, not error
       expect(result).toBe(AuthenticationResult.Cancel)
     })
 
-    it('should return failed when biometric authentication fails', async () => {
-      // Simulate unsuccessful biometric recognition (error WITHOUT 'cancel' keyword)
-      const authError = new Error('Biometric authentication failed')
+    it('should return Failed when biometric verification fails', async () => {
+      mockCapacitor.isNativePlatform.mockReturnValue(true)
+      const authError = { code: 11, message: 'Authentication failed' }
       mockNativeBiometric.verifyIdentity.mockRejectedValue(authError)
 
-      // User tries to login but biometric is not recognized
-      const result = await biometricAuth.authorizeUser()
+      const result = await service.authorizeUser()
 
-      // Expect failed authentication
-      expect(result).toBe(AuthenticationResult.Failed)
-    })
-
-    it('should return failed when error does not contain cancel keyword', async () => {
-      // Simulate error that does not contain 'cancel' (should be Failed, not Cancel)
-      const nonCancelError = new Error('Biometric sensor unavailable')
-      mockNativeBiometric.verifyIdentity.mockRejectedValue(nonCancelError)
-
-      // User tries to authenticate but gets non-cancel error
-      const result = await biometricAuth.authorizeUser()
-
-      // Should return Failed (not Cancel) because error doesn't contain 'cancel'
       expect(result).toBe(AuthenticationResult.Failed)
     })
   })
 
-  describe('User tries to authenticate with biometrics in web browser', () => {
-    beforeEach(() => {
-      // Simulate that we're in web browser, not native app
+  describe('setupBiometric', () => {
+    it('should return Failed when not on native platform', async () => {
       mockCapacitor.isNativePlatform.mockReturnValue(false)
-    })
 
-    it('should return failed as biometrics not available in browser', async () => {
-      // Biometrics are not available in browser
-      const result = await biometricAuth.authorizeUser()
+      const result = await service.setupBiometric()
 
-      // Expect authentication to fail
-      expect(result).toBe(AuthenticationResult.Failed)
-    })
-  })
-
-  describe('User wants to setup biometric authentication', () => {
-    beforeEach(() => {
-      // Setup is only possible on mobile devices
-      mockCapacitor.isNativePlatform.mockReturnValue(true)
-    })
-
-    it('should successfully setup when device supports biometrics', async () => {
-      // Device supports biometrics (has fingerprint sensor/Face ID)
-      mockNativeBiometric.isAvailable.mockResolvedValue({
-        isAvailable: true,
-        biometryType: 1
-      })
-
-      // User tries to enable biometric authentication
-      const result = await biometricAuth.setupBiometric()
-
-      // Setup should succeed
-      expect(result).toBe(SetupResult.Success)
-    })
-
-    it('should fail setup when device does not support biometrics', async () => {
-      // Device doesn't support biometrics (old device without sensors)
-      mockNativeBiometric.isAvailable.mockResolvedValue({
-        isAvailable: false,
-        biometryType: 0
-      })
-
-      // User tries to enable biometrics on unsupported device
-      const result = await biometricAuth.setupBiometric()
-
-      // Setup should fail
       expect(result).toBe(SetupResult.Failed)
     })
 
-    it('should return cancel when user cancels biometric setup', async () => {
-      // Simulate user cancelling during setup (includes 'cancel' keyword)
-      const cancelError = new Error('cancel')
+    it('should return Success when biometric is available', async () => {
+      mockCapacitor.isNativePlatform.mockReturnValue(true)
+      mockNativeBiometric.isAvailable.mockResolvedValue({
+        isAvailable: true,
+        biometryType: 'touchId' as any
+      })
+
+      const result = await service.setupBiometric()
+
+      expect(result).toBe(SetupResult.Success)
+    })
+
+    it('should return Failed when biometric is not available', async () => {
+      mockCapacitor.isNativePlatform.mockReturnValue(true)
+      mockNativeBiometric.isAvailable.mockResolvedValue({
+        isAvailable: false,
+        biometryType: 'none' as any
+      })
+
+      const result = await service.setupBiometric()
+
+      expect(result).toBe(SetupResult.Failed)
+    })
+
+    it('should return Cancel when setup is cancelled', async () => {
+      mockCapacitor.isNativePlatform.mockReturnValue(true)
+      const cancelError = new Error('User cancelled setup')
       mockNativeBiometric.isAvailable.mockRejectedValue(cancelError)
 
-      // User starts biometric setup but cancels it
-      const result = await biometricAuth.setupBiometric()
+      const result = await service.setupBiometric()
 
-      // Should return Cancel for setup cancellation
       expect(result).toBe(SetupResult.Cancel)
     })
   })

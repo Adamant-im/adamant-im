@@ -1,44 +1,52 @@
-import { vi, describe, it, expect, beforeEach } from 'vitest'
-// Import testing functions from vitest library
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { PasswordAuthService } from '../PasswordAuthService'
-// Import the class we want to test
 import { AuthenticationResult } from '../types'
-// Import authentication result types
-import store from '@/store'
-// Import store to access mock
 
-// Replace real store import with our mock
 vi.mock('@/store', () => ({
   default: {
-    dispatch: vi.fn() // Mock dispatch function for sending actions
+    dispatch: vi.fn()
   }
 }))
 
-// Get mocked store for type safety
-const mockStore = vi.mocked(store)
-
 describe('PasswordAuthService', () => {
-  let passwordAuth: PasswordAuthService
-  // Declare variable for the service instance we're testing
+  let service: PasswordAuthService
+  let mockStore: any
 
-  beforeEach(() => {
-    // This function runs before each test for isolation
-    passwordAuth = new PasswordAuthService()
-    // Create new service instance
+  beforeEach(async () => {
+    const store = await import('@/store')
+    mockStore = store.default
+    service = new PasswordAuthService()
     vi.clearAllMocks()
-    // Reset all mocks to initial state
   })
 
-  describe('User authentication with password', () => {
-    it('should successfully authenticate when user enters password', async () => {
-      // Mock successful authentication
-      mockStore.dispatch.mockResolvedValue(undefined)
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
 
-      // User enters password and clicks "Unlock"
-      const result = await passwordAuth.authorizeUser('user-password')
+  describe('authorizeUser', () => {
+    it('should return Success when login via password succeeds', async () => {
+      mockStore.dispatch.mockResolvedValue({ passphrase: 'test-passphrase' })
 
-      // Authentication should succeed
+      const result = await service.authorizeUser('correct-password')
+
       expect(result).toBe(AuthenticationResult.Success)
+      expect(mockStore.dispatch).toHaveBeenCalledWith('loginViaPassword', 'correct-password')
+    })
+
+    it('should throw error when login via password fails', async () => {
+      const loginError = new Error('Incorrect password')
+      mockStore.dispatch.mockRejectedValue(loginError)
+
+      await expect(service.authorizeUser('wrong-password')).rejects.toThrow('Incorrect password')
+      expect(mockStore.dispatch).toHaveBeenCalledWith('loginViaPassword', 'wrong-password')
+    })
+
+    it('should throw error when empty password provided', async () => {
+      const emptyPasswordError = new Error('Password cannot be empty')
+      mockStore.dispatch.mockRejectedValue(emptyPasswordError)
+
+      await expect(service.authorizeUser('')).rejects.toThrow('Password cannot be empty')
+      expect(mockStore.dispatch).toHaveBeenCalledWith('loginViaPassword', '')
     })
   })
 })

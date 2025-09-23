@@ -5,7 +5,10 @@
         <v-icon
           :icon="mdiFingerprint"
           size="48"
-          :class="['biometric-login-form__icon', isAuthenticating && 'biometric-login-form__icon--disabled']"
+          :class="[
+            'biometric-login-form__icon',
+            isAuthenticating && 'biometric-login-form__icon--disabled'
+          ]"
           @click="!isAuthenticating && authenticate()"
         />
       </div>
@@ -13,7 +16,11 @@
 
     <v-row align="center" justify="center" class="mt-2" no-gutters>
       <v-col cols="12">
-        <v-btn class="login-form__button a-btn-primary" @click="authenticate" :disabled="isAuthenticating">
+        <v-btn
+          class="login-form__button a-btn-primary"
+          @click="authenticate"
+          :disabled="isAuthenticating"
+        >
           <v-progress-circular
             v-show="isAuthenticating"
             indeterminate
@@ -37,7 +44,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { mdiFingerprint } from '@mdi/js'
 import { biometricAuth } from '@/lib/auth'
