@@ -1,5 +1,9 @@
 <template>
-  <AChatFileLoader :partner-id="props.partnerId" :file="props.img" :transaction="props.transaction">
+  <a-chat-file-loader
+    :partner-id="props.partnerId"
+    :file="props.img"
+    :transaction="props.transaction"
+  >
     <template
       #default="{
         fileUrl,
@@ -99,18 +103,18 @@
         </template>
       </v-img>
     </template>
-  </AChatFileLoader>
+  </a-chat-file-loader>
 </template>
 
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 
-import { AChatFileLoader } from './AChatFileLoader'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { isLocalFile, LocalFile } from '@/lib/files'
 import { FileAsset } from '@/lib/adamant-api/asset'
 import { mdiImageOff, mdiArrowCollapseDown } from '@mdi/js'
 import { computed } from 'vue'
+import AChatFileLoader from '@/components/AChat/AChatAttachment/AChatFileLoader.vue'
 
 type Props = {
   transaction: NormalizedChatMessageTransaction
@@ -143,24 +147,20 @@ const { t } = useI18n()
 const width = computed(() => {
   if (isLocalFile(props.img)) {
     return props.img.file.width
-  } else {
-    return props.img.resolution?.[0]
   }
+
+  return props.img.resolution?.[0]
 })
 
 const height = computed(() => {
   if (isLocalFile(props.img)) {
     return props.img.file.height
-  } else {
-    return props.img.resolution?.[1]
   }
+
+  return props.img.resolution?.[1]
 })
 
 const aspectRatio = computed(() => {
-  if (props.iconSize) {
-    return 1
-  }
-
   if (width.value && height.value) {
     return width.value / height.value
   }

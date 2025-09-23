@@ -22,7 +22,7 @@
           :transaction="actionMessage"
         >
           <a-chat-message
-            v-if="actionMessage.type === 'message'"
+            v-if="actionMessage.type === TT.MESSAGE"
             :transaction="actionMessage"
             :data-id="'action-message'"
             html
@@ -103,7 +103,7 @@
 
       <template #message="{ message, sender }">
         <a-chat-message
-          v-if="message.type === 'message'"
+          v-if="message.type === TT.MESSAGE"
           :transaction="message"
           :html="true"
           :flashing="flashingMessageId === message.id"
@@ -133,23 +133,13 @@
         </a-chat-message>
 
         <a-chat-attachment
-          v-if="message.type === 'attachment'"
+          v-if="message.type === TT.ATTACHMENT"
           :transaction="message"
           :html="true"
           :flashing="flashingMessageId === message.id"
           :data-id="message.id"
           :partner-id="partnerId"
-          @resend="
-            resendAttachment(
-              partnerId,
-              message.id,
-              message.localFiles?.map((localFile) => localFile.file),
-              message.localFiles?.map((localFile) => [
-                localFile.file.cid,
-                localFile.file.preview?.cid
-              ])
-            )
-          "
+          @resend="resendAttachment(partnerId, message.id, message.localFiles)"
           @click:quoted-message="onQuotedMessageClick"
           @swipe:left="onSwipeLeft(message)"
           @longpress="onMessageLongPress(message)"
@@ -284,7 +274,7 @@
 
 <script lang="ts" setup>
 import AChatReactions from '@/components/AChat/AChatReactions/AChatReactions.vue'
-import { FileData } from '@/lib/files'
+import { LocalFile } from '@/lib/files'
 import { emojiWeight } from '@/lib/chat/emoji-weight/emojiWeight'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { vibrate } from '@/lib/vibrate'
@@ -293,7 +283,13 @@ import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, wat
 import Visibility from 'visibilityjs'
 import copyToClipboard from 'copy-to-clipboard'
 
-import { Cryptos, Fees, UPLOAD_MAX_FILE_COUNT, UPLOAD_MAX_FILE_SIZE } from '@/lib/constants'
+import {
+  Cryptos,
+  Fees,
+  UPLOAD_MAX_FILE_COUNT,
+  UPLOAD_MAX_FILE_SIZE,
+  TransactionTypes as TT
+} from '@/lib/constants'
 import EmojiPicker from '@/components/EmojiPicker.vue'
 
 import { mdiChevronDown } from '@mdi/js'
@@ -698,12 +694,10 @@ const resendMessage = (recipientId: string, messageId: string) => {
   })
 }
 
-const resendAttachment = (
-  recipientId: string,
-  messageId: string,
-  files?: FileData[],
-  cids?: [string, string | undefined][]
-) => {
+const resendAttachment = (recipientId: string, messageId: string, localFiles?: LocalFile[]) => {
+  const files = localFiles?.map((localFile) => localFile.file)
+  const cids = localFiles?.map((localFile) => [localFile.file.cid, localFile.file.preview?.cid])
+
   return store.dispatch('chat/resendAttachment', { recipientId, messageId, files, cids })
 }
 
@@ -909,7 +903,7 @@ const openTransaction = (transaction: NormalizedChatMessageTransaction) => {
 }
 
 const isTransaction = (type: string) => {
-  return type in Cryptos || type === 'UNKNOWN_CRYPTO'
+  return type in Cryptos || type === TT.UNKNOWN_CRYPTO
 }
 
 const fetchChatMessages = async () => {

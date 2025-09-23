@@ -21,10 +21,7 @@
       </span>
 
       <span v-else-if="isAttachment">
-        <span v-for="(part, i) in messageLabel" :key="i">
-          <component :is="part" />
-          <span v-if="i < messageLabel.length - 1">&nbsp;</span>
-        </span>
+        <a-chat-attachment-label :transaction="transaction" />
       </span>
 
       <span v-else>
@@ -41,11 +38,11 @@ import { useStore } from 'vuex'
 
 import { getTransaction, decodeChat } from '@/lib/adamant-api'
 import { NormalizedChatMessageTransaction, normalizeMessage } from '@/lib/chat/helpers'
-import { Cryptos } from '@/lib/constants'
+import { Cryptos, TransactionTypes as TT } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { formatChatPreviewMessage } from '@/lib/markdown'
 import { ChatMessageTransaction } from '@/lib/schema/client/api'
-import { useFormatMediaMessage } from '@/components/AChat/hooks/useFormatMediaMessage'
+import AChatQuotedAttachmentLabel from '@/components/AChat/AChatQuotedAttachmentLabel.vue'
 
 const className = 'quoted-message'
 const classes = {
@@ -98,6 +95,7 @@ async function fetchTransaction(transactionId: string, address: string) {
 }
 
 export default defineComponent({
+  components: { AChatAttachmentLabel: AChatQuotedAttachmentLabel },
   props: {
     /**
      * Quoted message ID (see AIP-16: `replyto_id`)
@@ -123,7 +121,7 @@ export default defineComponent({
       const validCryptos = Object.keys(Cryptos)
       return transaction.value ? validCryptos.includes(transaction.value.type) : false
     })
-    const isAttachment = computed(() => transaction.value?.type === 'attachment')
+    const isAttachment = computed(() => transaction.value?.type === TT.ATTACHMENT)
 
     const cryptoTransferLabel = computed(() => {
       const direction =
@@ -137,10 +135,6 @@ export default defineComponent({
     })
 
     const messageLabel = computed(() => {
-      if (isAttachment.value) {
-        return useFormatMediaMessage(transaction.value)
-      }
-
       if (transaction.value.i18n) {
         return t(transaction.value.message)
       }

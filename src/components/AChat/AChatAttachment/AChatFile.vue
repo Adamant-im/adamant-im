@@ -172,17 +172,17 @@ const onClick = () => {
 }
 
 const onDownload = () => {
-  store
-    .dispatch('attachment/downloadFile', {
+  try {
+    store.dispatch('attachment/downloadFile', {
       transaction: props.transaction,
       file: props.file
     })
-    .catch(() => {
-      void store.dispatch('snackbar/show', {
-        message: t('chats.file_not_found'),
-        isError: true
-      })
+  } catch {
+    store.dispatch('snackbar/show', {
+      message: t('chats.file_not_found'),
+      isError: true
     })
+  }
 
   if (showMenu.value) {
     showMenu.value = false

@@ -7,10 +7,7 @@
 
       <div :class="classes.message">
         <template v-if="isAttachment">
-          <span v-for="(part, i) in messageLabel" :key="i">
-            <component :is="part" />
-            <span v-if="i < messageLabel.length - 1">&nbsp;</span>
-          </span>
+          <a-chat-quoted-attachment-label :transaction="message" />
         </template>
         <span v-else-if="!isCryptoTransfer" v-html="messageLabel"></span>
         <span v-else>{{ cryptoTransferLabel }}</span>
@@ -33,12 +30,12 @@ import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
-import { Cryptos } from '@/lib/constants'
+import { Cryptos, TransactionTypes as TT } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { formatChatPreviewMessage } from '@/lib/markdown'
 import { mdiClose } from '@mdi/js'
 import type { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
-import { useFormatMediaMessage } from '@/components/AChat/hooks/useFormatMediaMessage'
+import AChatQuotedAttachmentLabel from '@/components/AChat/AChatQuotedAttachmentLabel.vue'
 
 const className = 'a-chat-reply-preview'
 const classes = {
@@ -78,13 +75,9 @@ const cryptoTransferLabel = computed(() => {
   return `${direction} ${amount}${message}`
 })
 
-const isAttachment = computed(() => props.message.type === 'attachment')
+const isAttachment = computed(() => props.message.type === TT.ATTACHMENT)
 
 const messageLabel = computed(() => {
-  if (isAttachment.value) {
-    return useFormatMediaMessage(props.message)
-  }
-
   return store.state.options.formatMessages
     ? formatChatPreviewMessage(props.message.message)
     : props.message.message

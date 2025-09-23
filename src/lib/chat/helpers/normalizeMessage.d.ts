@@ -1,13 +1,13 @@
 import { LocalFile } from '@/lib/files'
 import { DecodedChatMessageTransaction } from '@/lib/adamant-api'
-import { TransactionStatusType } from '@/lib/constants'
+import { TransactionType, TransactionStatusType } from '@/lib/constants'
 import { ChatMessageTransaction } from '@/lib/schema/client'
 
 export type NormalizedChatMessageTransaction = Pick<
   DecodedChatMessageTransaction,
   'id' | 'senderId' | 'recipientId' | 'confirmations' | 'height'
 > & {
-  type: string // @todo use string literal
+  type: TransactionType
   timestamp: number
   admTimestamp: number
   status: TransactionStatusType

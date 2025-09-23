@@ -10,7 +10,13 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 import { useTransactionStatusQuery } from '@/hooks/queries/transaction'
-import { Cryptos, CryptoSymbol, TransactionStatus, tsIcon } from '@/lib/constants'
+import {
+  Cryptos,
+  CryptoSymbol,
+  TransactionStatus,
+  tsIcon,
+  TransactionTypes as TT
+} from '@/lib/constants'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 
 export default defineComponent({
@@ -25,7 +31,7 @@ export default defineComponent({
   },
   setup(props) {
     const transactionId = computed(() =>
-      props.transaction.type === 'ADM' ? props.transaction.id : props.transaction.hash
+      props.transaction.type === TT.ADM ? props.transaction.id : props.transaction.hash
     )
     const crypto = computed(() => props.transaction.type)
 
@@ -47,11 +53,11 @@ export default defineComponent({
     )
 
     const transactionStatus = computed(() => {
-      if (props.transaction.type === 'UNKNOWN_CRYPTO') {
+      if (props.transaction.type === TT.UNKNOWN_CRYPTO) {
         return TransactionStatus.UNKNOWN
       }
 
-      if (props.transaction.type === 'ADM') {
+      if (props.transaction.type === TT.ADM) {
         return props.transaction.status === TransactionStatus.CONFIRMED
           ? TransactionStatus.CONFIRMED
           : status.value

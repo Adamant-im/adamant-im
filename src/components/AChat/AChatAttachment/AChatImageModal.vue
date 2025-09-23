@@ -70,6 +70,7 @@ import { FileAsset } from '@/lib/adamant-api/asset'
 import { mdiArrowCollapseDown, mdiChevronLeft, mdiChevronRight, mdiClose } from '@mdi/js'
 import { App } from '@capacitor/app'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 
 const className = 'a-chat-image-modal'
 const classes = {
@@ -114,7 +115,8 @@ export default {
   setup(props, { emit }) {
     const store = useStore()
 
-    const slide = ref(props.index)
+    const currentSlide = ref(props.index)
+    const router = useRouter()
 
     const breakpoints = useBreakpoints(breakpointsTailwind)
     const isMobile = breakpoints.smaller('sm')
@@ -131,25 +133,27 @@ export default {
       return props.files.length > 1 && !isMobile.value
     })
     const isDownloading = computed(() => {
-      const progress = store.getters['attachment/getDownloadProgress'](props.files[slide.value].id)
+      const progress = store.getters['attachment/getDownloadProgress'](
+        props.files[currentSlide.value].id
+      )
       return progress < 100
     })
 
     const closeModal = () => {
       emit('close')
       if (history.state?.modalOpen) {
-        history.back()
+        router.back()
       }
     }
 
     const prevSlide = () => {
-      if (slide.value > 0) {
-        slide.value = slide.value - 1
+      if (currentSlide.value > 0) {
+        currentSlide.value = currentSlide.value - 1
       }
     }
     const nextSlide = () => {
-      if (slide.value < props.files.length - 1) {
-        slide.value = slide.value + 1
+      if (currentSlide.value < props.files.length - 1) {
+        currentSlide.value = currentSlide.value + 1
       }
     }
 
@@ -185,7 +189,7 @@ export default {
     }
 
     const onDownload = () => {
-      emit('downloadFile', props.files[slide.value])
+      emit('downloadFile', props.files[currentSlide.value])
     }
 
     onMounted(async () => {
@@ -206,7 +210,7 @@ export default {
     })
 
     return {
-      slide,
+      slide: currentSlide,
       show,
       showArrows,
       isDownloading,

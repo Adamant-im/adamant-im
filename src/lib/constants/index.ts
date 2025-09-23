@@ -4,6 +4,8 @@ import {
   Cryptos,
   CryptosInfo,
   CryptosOrder,
+  TransactionTypes,
+  TransactionType,
   CryptoSymbol
 } from './cryptos'
 
@@ -122,7 +124,16 @@ export const RE_KLY_ADDRESS_LEGACY = /^[0-9]{2,21}L$/
  * when each specific transaction is created
  */
 
-export { AllCryptos, AllCryptosOrder, Cryptos, CryptosInfo, CryptosOrder, type CryptoSymbol }
+export {
+  AllCryptos,
+  AllCryptosOrder,
+  Cryptos,
+  CryptosInfo,
+  CryptosOrder,
+  TransactionTypes,
+  type TransactionType,
+  type CryptoSymbol
+}
 
 export default {
   EPOCH,

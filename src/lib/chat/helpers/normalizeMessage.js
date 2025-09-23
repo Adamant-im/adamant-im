@@ -1,6 +1,6 @@
 import { getRealTimestamp } from './utils/getRealTimestamp'
 import { isNumeric } from '@/lib/numericHelpers'
-import { TransactionStatus as TS, Transactions } from '@/lib/constants'
+import { TransactionStatus as TS, TransactionTypes as TT, Transactions } from '@/lib/constants'
 import { KnownCryptos, UnsupportedCryptos } from './constants'
 import { validateFileTransaction } from '@/utils/validators/fileTransactionValidator.js'
 import { ValidationStatus } from '@/utils/validators/types/fileTransaction.js'
@@ -39,7 +39,7 @@ export function normalizeMessage(abstract) {
   ) {
     transaction.asset = abstract.message
     transaction.hash = abstract.id
-    transaction.type = 'reaction'
+    transaction.type = TT.REACTION
   } else if (abstract.message && abstract.message.replyto_id && abstract.message.reply_message) {
     // AIP-16: Reply message
     if (typeof abstract.message.reply_message === 'string') {
@@ -49,9 +49,9 @@ export function normalizeMessage(abstract) {
       transaction.hash = abstract.id
 
       if (abstract.amount > 0) {
-        transaction.type = 'ADM'
+        transaction.type = TT.ADM
       } else {
-        transaction.type = 'message'
+        transaction.type = TT.MESSAGE
       }
     } else if (abstract.message.reply_message.type) {
       // reply with a crypto transfer
@@ -69,7 +69,7 @@ export function normalizeMessage(abstract) {
       if (knownCrypto) {
         transaction.type = knownCrypto
       } else {
-        transaction.type = notSupportedYetCrypto || 'UNKNOWN_CRYPTO'
+        transaction.type = notSupportedYetCrypto || TT.UNKNOWN_CRYPTO
         transaction.status = TS.UNKNOWN
       }
     } else if (abstract.message.reply_message.files) {
@@ -83,19 +83,19 @@ export function normalizeMessage(abstract) {
         transaction.senderPublicKey = abstract.senderPublicKey
         transaction.message = validation.parsed.comment || ''
         transaction.hash = abstract.id
-        transaction.type = 'attachment'
+        transaction.type = TT.ATTACHMENT
       } else {
         transaction.message = 'chats.unsupported_transaction_type'
         transaction.i18n = true
         transaction.hash = abstract.id
-        transaction.type = 'message'
+        transaction.type = TT.MESSAGE
       }
     } else {
       // Unsupported transaction type. May require updating the PWA version.
       transaction.message = 'chats.unsupported_transaction_type'
       transaction.i18n = true
       transaction.hash = abstract.id // adm transaction id (hash)
-      transaction.type = 'message'
+      transaction.type = TT.MESSAGE
     }
 
     transaction.isReply = true
@@ -113,7 +113,7 @@ export function normalizeMessage(abstract) {
     if (knownCrypto) {
       transaction.type = knownCrypto
     } else {
-      transaction.type = notSupportedYetCrypto || 'UNKNOWN_CRYPTO'
+      transaction.type = notSupportedYetCrypto || TT.UNKNOWN_CRYPTO
       transaction.status = TS.UNKNOWN
     }
   } else if (
@@ -125,7 +125,7 @@ export function normalizeMessage(abstract) {
     transaction.message = abstract.message || ''
     transaction.hash = abstract.id // adm transaction id (hash)
 
-    transaction.type = abstract.amount > 0 ? 'ADM' : 'message'
+    transaction.type = abstract.amount > 0 ? TT.ADM : TT.MESSAGE
   } else if (abstract.message?.files) {
     const validation = validateFileTransaction(abstract)
     if (validation.status === ValidationStatus.SUPPORTED) {
@@ -134,19 +134,19 @@ export function normalizeMessage(abstract) {
       transaction.asset = validation.parsed
       transaction.hash = abstract.id
       transaction.message = validation.parsed.comment || ''
-      transaction.type = 'attachment'
+      transaction.type = TT.ATTACHMENT
     } else {
       transaction.message = 'chats.unsupported_transaction_type'
       transaction.i18n = true
       transaction.hash = abstract.id
-      transaction.type = 'message'
+      transaction.type = TT.MESSAGE
     }
   } else {
     // Unsupported transaction type. May require updating the PWA version.
     transaction.message = 'chats.unsupported_transaction_type'
     transaction.i18n = true
     transaction.hash = abstract.id // adm transaction id (hash)
-    transaction.type = 'message'
+    transaction.type = TT.MESSAGE
   }
 
   return transaction

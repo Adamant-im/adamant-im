@@ -6,6 +6,7 @@ import currency from '@/filters/currencyAmountWithSymbol'
 import { formatMessageBasic } from '@/lib/markdown'
 import { isAdamantChat } from '@/lib/chat/meta/utils'
 import { joinUrl } from '@/lib/urlFormatter.js'
+import { TransactionTypes as TT } from '@/lib/constants/index.js'
 
 let _this
 
@@ -22,7 +23,7 @@ class Notification {
     const transaction = this.store.getters['chat/lastUnreadMessage']
 
     // don't show remove reaction
-    if (transaction.type === 'reaction' && !transaction.asset.react_message) {
+    if (transaction.type === TT.REACTION && !transaction.asset.react_message) {
       return null
     }
 
@@ -69,10 +70,10 @@ class PushNotification extends Notification {
 
   get messageBody() {
     let message
-    if (this.lastUnread.type === 'reaction') {
+    if (this.lastUnread.type === TT.REACTION) {
       const emoji = this.lastUnread.asset.react_message
       message = `${this.i18n.t('chats.partner_reacted')} ${emoji}`
-    } else if (this.lastUnread.type !== 'message') {
+    } else if (this.lastUnread.type !== TT.MESSAGE) {
       message = `${this.i18n.t('chats.received_label')} ${currency(
         this.lastUnread.amount,
         this.lastUnread.type
@@ -103,7 +104,7 @@ class PushNotification extends Notification {
                 const notification = new Notify(this.i18n.t('app_title'), {
                   body: this.messageBody,
                   closeOnClick: true,
-                  icon: joinUrl(import.meta.env.BASE_URL,'/img/icons/android-chrome-192x192.png'),
+                  icon: joinUrl(import.meta.env.BASE_URL, '/img/icons/android-chrome-192x192.png'),
                   notifyClick: () => {
                     if (_this.$route.name !== 'Chat') {
                       this.router.push({

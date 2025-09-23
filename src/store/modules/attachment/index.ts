@@ -6,6 +6,7 @@ import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { FileAsset } from '@/lib/adamant-api/asset'
 import { LocalFile } from '@/lib/files'
 import { downloadFileByUrl, getAttachmentPayload, getFileName } from '@/lib/files/download'
+import { getPublicKeyByTransaction } from '@/lib/adamant-api'
 
 const state = (): AttachmentsState => ({
   attachments: {},
@@ -93,38 +94,38 @@ const actions: ActionTree<AttachmentsState, RootState> = {
   ) {
     if (state.attachments[cid]) {
       return state.attachments[cid]
-    } else {
-      try {
-        const onDownloadProgress = (progress: number) => {
-          commit('setDownloadProgress', {
-            cid,
-            progress
-          })
-        }
+    }
 
-        const fileData = await attachmentApi?.getFile(cid, nonce, publicKey, onDownloadProgress)
-
-        commit('resetDownloadProgress', { cid })
-
-        if (!fileData) {
-          throw new Error('Failed to fetch image')
-        }
-
-        const blob = new Blob([fileData], { type: 'application/octet-stream' })
-        const url = URL.createObjectURL(blob)
-        commit('setAttachment', { cid, url })
-        return url
-      } catch (error) {
-        console.error('Error fetching image:', error)
-        throw error
+    try {
+      const onDownloadProgress = (progress: number) => {
+        commit('setDownloadProgress', {
+          cid,
+          progress
+        })
       }
+
+      const fileData = await attachmentApi?.getFile(cid, nonce, publicKey, onDownloadProgress)
+
+      commit('resetDownloadProgress', { cid })
+
+      if (!fileData) {
+        throw new Error('Failed to fetch image')
+      }
+
+      const blob = new Blob([fileData], { type: 'application/octet-stream' })
+      const url = URL.createObjectURL(blob)
+      commit('setAttachment', { cid, url })
+      return url
+    } catch (error) {
+      console.error('Error fetching image:', error)
+      throw error
     }
   },
   async uploadAttachment(state, { file, publicKey }: { file: Uint8Array; publicKey: string }) {
     return attachmentApi?.uploadFile(file, publicKey)
   },
   async downloadFile(
-    { rootState, dispatch },
+    { dispatch },
     {
       transaction,
       file,
@@ -136,10 +137,7 @@ const actions: ActionTree<AttachmentsState, RootState> = {
     }
   ) {
     try {
-      const publicKey =
-        transaction.senderId === rootState.address
-          ? transaction.recipientPublicKey
-          : transaction.senderPublicKey
+      const publicKey = getPublicKeyByTransaction(transaction)
 
       const payload = getAttachmentPayload(file, publicKey)
       const imageUrl = await dispatch('getAttachmentUrl', payload)

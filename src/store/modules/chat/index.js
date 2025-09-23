@@ -19,6 +19,7 @@ import {
   Cryptos,
   CryptosInfo,
   TransactionStatus as TS,
+  TransactionTypes as TT,
   MessageType
 } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
@@ -104,7 +105,7 @@ const getters = {
     const messages = getters.messages(partnerId)
 
     return messages.filter(
-      (message) => message.type === 'reaction' && message.asset.reactto_id === transactionId
+      (message) => message.type === TT.REACTION && message.asset.reactto_id === transactionId
     )
   },
 
@@ -154,7 +155,7 @@ const getters = {
    * @returns {number}
    */
   indexOfMessage: (state, getters) => (partnerId, messageId) => {
-    const messages = getters.messages(partnerId).filter((message) => message.type !== 'reaction')
+    const messages = getters.messages(partnerId).filter((message) => message.type !== TT.REACTION)
     const message = messages.find((message) => message.id === messageId)
 
     if (!message) {
@@ -456,8 +457,8 @@ const mutations = {
     // Shouldn't duplicate third-party crypto transactions
     if (
       message.type &&
-      message.type !== 'message' &&
-      message.type !== 'reaction' &&
+      message.type !== TT.MESSAGE &&
+      message.type !== TT.REACTION &&
       message.type !== Cryptos.ADM
     ) {
       const localTransaction = chat.messages.find(

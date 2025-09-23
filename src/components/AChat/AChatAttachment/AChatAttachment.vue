@@ -284,11 +284,13 @@ export default defineComponent({
       })
     })
 
-    const areAttachmentsDownloading = computed(() => {
-      const getDownloadProgress = store.getters['attachment/getDownloadProgress']
+    const isDownloaded = (id?: string) => {
+      return store.getters['attachment/getDownloadProgress'](id) === 100
+    }
 
+    const areAttachmentsDownloading = computed(() => {
       return attachmentsToDownload.value.some((file) => {
-        return getDownloadProgress(file.id) !== 100 || getDownloadProgress(file.preview?.id) !== 100
+        return !isDownloaded(file.id) || !isDownloaded(file.preview?.id)
       })
     })
 
@@ -314,17 +316,17 @@ export default defineComponent({
     }
 
     const onDownloadFile = (file: FileAsset | LocalFile) => {
-      store
-        .dispatch('attachment/downloadFile', {
+      try {
+        store.dispatch('attachment/downloadFile', {
           transaction: props.transaction,
           file
         })
-        .catch(() => {
-          void store.dispatch('snackbar/show', {
-            message: t('chats.file_not_found'),
-            isError: true
-          })
+      } catch {
+        store.dispatch('snackbar/show', {
+          message: t('chats.file_not_found'),
+          isError: true
         })
+      }
     }
 
     return {

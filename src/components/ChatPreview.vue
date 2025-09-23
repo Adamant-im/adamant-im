@@ -67,10 +67,7 @@
       <!-- Attachment -->
       <template v-else-if="isAttachment">
         <v-list-item-subtitle :class="`${className}__subtitle`">
-          <span v-for="(part, i) in attachmentText" :key="i">
-            <component :is="part" />
-            <span v-if="i < attachmentText.length - 1">&nbsp;</span>
-          </span>
+          <a-chat-quoted-attachment-label :transaction="transaction" />
         </v-list-item-subtitle>
       </template>
       <!-- Reaction -->
@@ -116,12 +113,12 @@ import { formatChatPreviewMessage } from '@/lib/markdown'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import { tsIcon, TransactionStatus as TS } from '@/lib/constants'
+import { tsIcon, TransactionStatus as TS, TransactionTypes as TT } from '@/lib/constants'
 import { useChatName } from '@/components/AChat/hooks/useChatName'
 import { TransactionProvider } from '@/providers/TransactionProvider'
 import { mdiArrowLeftTop, mdiDotsHorizontal } from '@mdi/js'
 import { AdamantChatMeta } from '@/lib/chat/meta/chat-meta'
-import { useFormatMediaMessage } from '@/components/AChat/hooks/useFormatMediaMessage'
+import AChatQuotedAttachmentLabel from '@/components/AChat/AChatQuotedAttachmentLabel.vue'
 
 const className = 'chat-brief'
 
@@ -156,17 +153,12 @@ const chatName = useChatName(contactId, true)
 
 const isTransferType = computed(
   () =>
-    props.transaction.type !== 'message' &&
-    props.transaction.type !== 'reaction' &&
-    props.transaction.type !== 'attachment'
+    props.transaction.type !== TT.MESSAGE &&
+    props.transaction.type !== TT.REACTION &&
+    props.transaction.type !== TT.ATTACHMENT
 )
-const isAttachment = computed(() => props.transaction.type === 'attachment')
-const attachmentText = computed(() => {
-  if (!isAttachment.value) return []
-
-  return useFormatMediaMessage(props.transaction)
-})
-const isReaction = computed(() => props.transaction.type === 'reaction')
+const isAttachment = computed(() => props.transaction.type === TT.ATTACHMENT)
+const isReaction = computed(() => props.transaction.type === TT.REACTION)
 
 const reactedText = computed(() => {
   const reaction = props.transaction.asset.react_message

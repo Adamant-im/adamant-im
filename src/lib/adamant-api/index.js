@@ -138,6 +138,17 @@ export function getPublicKey(address = '') {
 }
 
 /**
+ * Retrieves user public key by transaction
+ * @param {NormalizedChatMessageTransaction} transaction transaction
+ * @returns {string}
+ */
+export function getPublicKeyByTransaction(transaction) {
+  return transaction.senderId === store.state.address
+    ? transaction.recipientPublicKey
+    : transaction.senderPublicKey
+}
+
+/**
  * Retrieves user public key by his address from cached ones
  * @param {string} address ADM address
  * @returns {Promise<string>}
