@@ -340,8 +340,8 @@ const showSpinner = useChatsSpinner()
 
 const isMenuOpen = ref(false)
 
-// Key for forcing date refresh when app becomes visible after being in background
 const dateRefreshKey = ref(0)
+const lastVisibleDate = ref(new Date().toDateString())
 
 const attachments = useAttachments(props.partnerId)()
 const handleAttachments = (files: FileData[]) => {
@@ -566,8 +566,12 @@ onMounted(async () => {
   })
   visibilityId.value = Visibility.change((event, state) => {
     if (state === 'visible') {
-      // Force refresh dates when returning to visible state
-      dateRefreshKey.value = Date.now()
+      const currentDate = new Date().toDateString()
+
+      if (currentDate !== lastVisibleDate.value) {
+        dateRefreshKey.value = Date.now()
+        lastVisibleDate.value = currentDate
+      }
 
       nextTick(() => {
         chatRef.value?.maintainScrollPosition()
