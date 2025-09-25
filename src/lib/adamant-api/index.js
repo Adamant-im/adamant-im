@@ -244,7 +244,8 @@ export async function encodeFile(file, params) {
  * @param {object} payload message payload
  * @param {number} messageType message type
  */
-export function sendSpecialMessage(to, payload, messageType) {
+export async function sendSpecialMessage(to, payload, messageType) {
+  await getPublicKey(to)
   return sendMessage({ to, message: payload, type: messageType })
 }
 
