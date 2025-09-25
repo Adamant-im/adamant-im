@@ -28,6 +28,7 @@ firebase.initializeApp(firebaseConfig)
 const messaging = firebase.messaging()
 
 let privateKey = ''
+let currentUserAddress = ''
 let notificationSettings = {
   type: 2, // Default: PUSH
   initialized: false
@@ -107,6 +108,10 @@ channel.onmessage = (event) => {
     privateKey = ''
   }
 
+  if (data?.currentUserAddress) {
+    currentUserAddress = data.currentUserAddress
+  }
+
   if (data?.notificationType !== undefined) {
     notificationSettings.type = data.notificationType
     notificationSettings.initialized = true
@@ -169,6 +174,7 @@ messaging.onBackgroundMessage(async (payload) => {
   }
 
   const senderId = transaction.senderId
+  const recipientId = transaction.recipientId
   const transactionId = transaction.id
   const senderName = payload.notification?.title || transaction.senderId.substring(0, 12)
   let messageText = `New message from ${senderName} (open app to decrypt)`
@@ -185,7 +191,7 @@ messaging.onBackgroundMessage(async (payload) => {
     tag: `adamant-push-${senderId}`,
     badge: '/img/icons/android-chrome-192x192.png',
     renotify: true,
-    data: { senderId, transactionId, type: 'push' }
+    data: { senderId, recipientId, transactionId, type: 'push' }
   }
 
   ourNotificationInProgress = true
@@ -207,6 +213,11 @@ self.addEventListener('notificationclick', (event) => {
   event.waitUntil(
     (async () => {
       try {
+        // Block click if notification is not for current user
+        if (data?.recipientId && currentUserAddress && data.recipientId !== currentUserAddress) {
+          return
+        }
+
         const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
 
         // Focus on the excisting window

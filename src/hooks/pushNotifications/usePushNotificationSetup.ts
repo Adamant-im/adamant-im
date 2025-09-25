@@ -40,10 +40,12 @@ export function usePushNotificationSetup() {
   const sendCurrentSettings = async () => {
     const currentNotificationType = store.state.options.allowNotificationType
     const privateKey = store.state.passphrase ? await getPrivateKey() : undefined
+    const currentUserAddress = store.state.address
 
     const settings = {
       type: currentNotificationType,
-      privateKey: privateKey || undefined
+      privateKey: privateKey || undefined,
+      currentUserAddress
     }
 
     if (webPush) {
