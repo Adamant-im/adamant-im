@@ -3,6 +3,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 export interface WebNotificationSettings {
   type: number
   privateKey?: string
+  currentUserAddress?: string
 }
 
 export function useWebPushNotifications() {
@@ -114,7 +115,8 @@ export function useWebPushNotifications() {
 
     try {
       channel.value.postMessage({
-        notificationType: settings.type
+        notificationType: settings.type,
+        currentUserAddress: settings.currentUserAddress
       })
 
       if (settings.privateKey) {

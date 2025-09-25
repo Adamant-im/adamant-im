@@ -63,7 +63,11 @@ export function usePrivateKeyManager() {
    */
   const syncNotificationSettings = (type: number) => {
     if (webPush) {
-      webPush.syncNotificationSettings({ type })
+      const currentUserAddress = store.state.address
+      webPush.syncNotificationSettings({
+        type,
+        currentUserAddress
+      })
     }
     // Android settings are managed through pushService directly
   }
