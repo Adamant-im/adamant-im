@@ -87,12 +87,13 @@ async function isAppVisible() {
 
 // Block firebase service notifications
 const originalShowNotification = self.registration.showNotification.bind(self.registration)
-let ourNotificationInProgress = false
 
 self.registration.showNotification = function (title, options) {
-  if (ourNotificationInProgress) {
+  // Allow only our notifications with specific markers
+  if (options?.data?.type === 'push' && title === 'ADAMANT Messenger') {
     return originalShowNotification(title, options)
   }
+
   return Promise.resolve() // return promise as original functions returns promise
 }
 
@@ -194,13 +195,10 @@ messaging.onBackgroundMessage(async (payload) => {
     data: { senderId, recipientId, transactionId, type: 'push' }
   }
 
-  ourNotificationInProgress = true
   try {
     await self.registration.showNotification('ADAMANT Messenger', notificationOptions)
   } catch (error) {
     console.error('Failed to show notification:', error)
-  } finally {
-    ourNotificationInProgress = false
   }
 })
 
