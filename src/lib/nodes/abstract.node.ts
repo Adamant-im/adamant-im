@@ -105,6 +105,7 @@ export abstract class Node<C = unknown> {
   onStatusChangeCallback?: (nodeStatus: ReturnType<typeof this.getStatus>) => void
 
   timer?: NodeJS.Timeout
+  healthcheckCount = 0
   healthCheckInterval: HealthcheckInterval = 'normal'
   client: C
   healthcheckInProgress = false
@@ -150,15 +151,17 @@ export abstract class Node<C = unknown> {
 
         const { height, ping } = await this.checkHealth()
 
-        console.info(
-          `[HealthCheck] Connection via ${this.getBaseURL(this)} succeeded (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}).`,
-        )
+        if (!this.healthcheckCount)
+          console.info(
+            `[HealthCheck] Connection via ${this.getBaseURL(this)} succeeded (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}).`,
+          )
 
         /**
          * HTTP request might be fulfilled in HTTPS environment if a user allowed insecure content for the site in own Site settings (desktop browsers).
          */
         if (protocol === 'http:') this.hasSupportedProtocol = true
 
+        this.healthcheckCount++
         this.height = height
         this.online = true
         this.ping = ping
@@ -192,6 +195,8 @@ export abstract class Node<C = unknown> {
 
           if (this.altIp) this.preferDomain = true
         }
+
+        this.healthcheckCount = 0
       } finally {
         this.updateURL()
         this.healthcheckInProgress = false
