@@ -151,10 +151,11 @@ export abstract class Node<C = unknown> {
 
         const { height, ping } = await this.checkHealth()
 
-        if (!this.healthcheckCount)
+        if (!this.healthcheckCount) {
           console.info(
             `[HealthCheck] Connection via ${this.getBaseURL(this)} succeeded (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}).`,
           )
+        }
 
         /**
          * HTTP request might be fulfilled in HTTPS environment if a user allowed insecure content for the site in own Site settings (desktop browsers).
@@ -167,7 +168,7 @@ export abstract class Node<C = unknown> {
         this.ping = ping
 
         console.info(
-          `[HealthCheck] Node status updated for ${this.getBaseURL(this)}. Height: ${height}. Ping: ${ping}. Node is online.`,
+          `[HealthCheck] Node status updated for ${this.getBaseURL(this)}. Height: ${height}. Ping: ${ping}. Count: ${this.healthcheckCount}. Node is online.`,
         )
       } catch (error) {
         const code = (error as NodeOfflineError).code ?? 'unknown'
@@ -184,8 +185,7 @@ export abstract class Node<C = unknown> {
               `[HealthCheck] Alternative IP is not defined for ${this.getBaseURL(this)}. Node is offline.`,
             )
           }
-
-          this.preferDomain = false
+          if (!this.healthcheckCount) this.preferDomain = false
         } else {
           if (protocol === 'https:' || this.isHttpAllowed(protocol)) this.online = false
 
@@ -193,10 +193,10 @@ export abstract class Node<C = unknown> {
             `[HealthCheck] Node is not reachable by URL ${this.url}${this.altIp ? ' and by alternative IP ' + this.altIp : ''}. Node is offline.`,
           )
 
-          if (this.altIp) this.preferDomain = true
+          if (this.healthcheckCount < 2) {
+            if (this.altIp) this.preferDomain = true
+          }
         }
-
-        this.healthcheckCount = 0
       } finally {
         this.updateURL()
         this.healthcheckInProgress = false
@@ -316,6 +316,7 @@ export abstract class Node<C = unknown> {
 
     /** Reset properties for HealthCheck to default if a node enabled again. */
     if (active) {
+      this.healthcheckCount = 0
       this.online = true
       this.preferDomain = true
     }
