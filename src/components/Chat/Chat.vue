@@ -974,7 +974,7 @@ const onKeyPress = (e: KeyboardEvent) => {
 @use '@/assets/styles/settings/_colors.scss';
 
 .chat-menu {
-  margin-right: 8px;
+  margin-right: 12px;
 }
 .chat {
   height: calc(100vh - var(--v-layout-bottom));

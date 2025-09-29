@@ -253,9 +253,14 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
   }
 
   &__icon {
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     margin-right: 16px;
+
+    :deep(.svg-icon) {
+      width: 100%;
+      height: 100%;
+    }
   }
 
   &__heading {
