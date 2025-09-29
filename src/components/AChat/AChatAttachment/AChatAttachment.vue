@@ -4,7 +4,11 @@
     :class="{
       'a-chat__message-container--right': isStringEqualCI(transaction.senderId, userId),
       'a-chat__message-container--transition': elementLeftOffset === 0,
-      'a-chat__message-container--disable-max-width': disableMaxWidth
+      'a-chat__message-container--disable-max-width': disableMaxWidth,
+      'a-chat__message-container--grouped':
+        !transaction.showBubble && isStringEqualCI(transaction.senderId, userId),
+      'a-chat__message-container--grouped-left':
+        !transaction.showBubble && !isStringEqualCI(transaction.senderId, userId)
     }"
     v-touch="{
       move: onMove,
