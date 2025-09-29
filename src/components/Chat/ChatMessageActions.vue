@@ -7,23 +7,21 @@
     @click:copy="copyMessageToClipboard"
   >
     <template #top>
-      <Transition name="emoji-picker" mode="out-in">
-        <EmojiPicker
-          v-if="showEmojiPicker"
-          @emoji:select="onEmojiSelect"
-          elevation
-          position="left"
-          key="emoji-picker"
-        />
-        <AChatReactionSelect
-          v-else
-          :transaction="transaction"
-          @reaction:add="sendReaction"
-          @reaction:remove="removeReaction"
-          @click:emoji-picker="$emit('update:showEmojiPicker', true)"
-          key="reaction-select"
-        />
-      </Transition>
+      <EmojiPicker
+        v-if="showEmojiPicker"
+        @emoji:select="onEmojiSelect"
+        elevation
+        position="left"
+        key="emoji-picker"
+      />
+      <AChatReactionSelect
+        v-else
+        :transaction="transaction"
+        @reaction:add="sendReaction"
+        @reaction:remove="removeReaction"
+        @click:emoji-picker="$emit('update:showEmojiPicker', true)"
+        key="reaction-select"
+      />
     </template>
 
     <template #bottom>

@@ -77,7 +77,6 @@ export default defineComponent({
 
 .emoji-picker {
   border-radius: 8px;
-  transition: opacity 0.2s ease-out;
 
   &--position-absolute {
     // Fix for Chrome on iOS. Don't touch it
