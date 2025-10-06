@@ -124,7 +124,7 @@ const resizeHandler = () => {
     Math.ceil(messagesRef.value.scrollTop)
   const scrolledToBottom = nonVisibleClientHeight === 0
 
-  if (!scrolledToBottom) {
+  if (!scrolledToBottom && clientHeightDelta > 0) {
     messagesRef.value.scrollTop += clientHeightDelta
   }
 
