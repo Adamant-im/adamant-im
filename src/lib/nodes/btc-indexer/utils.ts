@@ -12,6 +12,7 @@ export function normalizeTransaction(
   const recipients = tx.vout.map((vout) => vout.scriptpubkey_address)
 
   const direction = senders.includes(ownerAddress) ? 'from' : 'to'
+  const isSelfTransfer = senders.includes(ownerAddress) && recipients.includes(ownerAddress)
 
   if (direction === 'from') {
     // Disregard our address for an outgoing transaction unless it's the only address (i.e. we're sending to ourselves)
@@ -31,9 +32,10 @@ export function normalizeTransaction(
   // Calculate amount from outputs:
   // * for the outgoing transactions take outputs that DO NOT target us
   // * for the incoming transactions take outputs that DO target us
+  // * for self-transfers take outputs that DO target us
   const amount = tx.vout.reduce(
     (sum, t) =>
-      (direction === 'to') === (t.scriptpubkey_address === ownerAddress)
+      (isSelfTransfer || direction === 'to') === (t.scriptpubkey_address === ownerAddress)
         ? sum + Number(t.value)
         : sum,
     0
