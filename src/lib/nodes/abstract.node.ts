@@ -185,7 +185,11 @@ export abstract class Node<C = unknown> {
               `[HealthCheck] Alternative IP is not defined for ${this.getBaseURL(this)}. Node is offline.`,
             )
           }
-          if (!this.healthcheckCount) this.preferDomain = false
+          if (this.healthcheckCount < 1) {
+            this.preferDomain = false
+          } else {
+            this.online = false
+          }
         } else {
           if (protocol === 'https:' || this.isHttpAllowed(protocol)) this.online = false
 
