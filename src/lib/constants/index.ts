@@ -251,6 +251,11 @@ export const REACT_EMOJIS = {
   PARTY_POPPER: '🎉'
 } as const
 
+/**
+ * Time offset for grouping messages in the chat
+ **/
+export const CHAT_MESSAGE_BUBBLE_TIME_OFFSET = 30000
+
 /** Validation errors for the chat message */
 export const VALIDATION_ERRORS = {
   EmptyMessage: 'EMPTY_MESSAGE',

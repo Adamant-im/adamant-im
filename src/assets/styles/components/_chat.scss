@@ -110,6 +110,14 @@ $scroll-bar-width: 4px;
       margin-top: unset; // resets margins of `.v-row + .v-row`
     }
 
+    &--grouped {
+      margin-bottom: 4px;
+    }
+
+    &--grouped-left {
+      margin-bottom: 4px;
+    }
+
     &--right {
       float: right;
     }
@@ -126,11 +134,34 @@ $scroll-bar-width: 4px;
   &__message {
     display: flex;
     flex-direction: row;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    padding-left: 16px;
-    padding-right: 16px;
-    border-radius: 8px;
+    padding: 8px 16px;
+    border-radius: 16px;
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      width: 0;
+      height: 0;
+      border: 22px solid transparent;
+    }
+  }
+
+  &__message-container:not(&__message-container--right):not(&__message-container--grouped-left) .a-chat__message::after {
+    left: -6px;
+    border-right-color: white;
+    border-left: 0;
+    border-bottom: 0;
+    transform: rotate(-15deg);
+  }
+
+  &__message-container--right:not(&__message-container--grouped) .a-chat__message::after {
+    right: -6px;
+    border-left-color: white;
+    border-right: 0;
+    border-bottom: 0;
+    transform: rotate(15deg);
   }
 
   &__message-actions-icon {
@@ -530,6 +561,14 @@ $scroll-bar-width: 4px;
       &--green {
         background-color: map.get(settings.$grey, 'darken-3');
       }
+    }
+
+    &__message-container--right:not(&__message-container--grouped) .a-chat__message::after {
+      border-left-color: map.get(colors.$adm-colors, 'black3');
+    }
+
+    &__message-container:not(&__message-container--right):not(&__message-container--grouped-left) .a-chat__message::after {
+      border-right-color: map.get(colors.$adm-colors, 'black3');
     }
 
     &__message-actions-icon {
