@@ -82,6 +82,7 @@ import { mdiArrowCollapseDown, mdiArrowUpRight } from '@mdi/js'
 import { VList } from 'vuetify/components'
 import AChatImage from '@/components/AChat/AChatAttachment/AChatImage.vue'
 import { useI18n } from 'vue-i18n'
+import { isFileImage } from '@/lib/files/helpers/isFileImage'
 
 const className = 'a-chat-file'
 const classes = {
@@ -116,13 +117,7 @@ const { t } = useI18n()
 
 const showMenu = ref(false)
 
-const isImage = computed(() => {
-  if (isLocalFile(props.file)) {
-    return props.file.file.isImage
-  }
-
-  return ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(props.file.extension!)
-})
+const isImage = computed(() => isFileImage(props.file))
 
 const fileName = computed(() =>
   isLocalFile(props.file) ? props.file.file.name : props.file.name || 'UNNAMED'

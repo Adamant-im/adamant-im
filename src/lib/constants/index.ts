@@ -282,3 +282,6 @@ export const VALIDATION_ERRORS = {
 } as const
 
 export const sidebarLayoutKey = Symbol('sidebarLayout')
+
+/** Allowed extensions for images */
+export const ALLOWED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif']

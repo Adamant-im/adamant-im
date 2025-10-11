@@ -71,6 +71,7 @@ import { mdiArrowCollapseDown, mdiChevronLeft, mdiChevronRight, mdiClose } from 
 import { App } from '@capacitor/app'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import { isFileImage } from '@/lib/files/helpers/isFileImage'
 
 const className = 'a-chat-image-modal'
 const classes = {
@@ -177,7 +178,7 @@ export default {
     }
 
     const isTypeImage = (file: FileAsset) => {
-      return file.extension ? ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(file.extension) : false
+      return isFileImage(file)
     }
 
     let backListener: { remove: () => void } | null = null

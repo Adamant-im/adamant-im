@@ -155,6 +155,7 @@ import ImageLayout from './ImageLayout.vue'
 import InlineLayout from './InlineLayout.vue'
 import AChatImageModal from './AChatImageModal.vue'
 import { mdiClockOutline, mdiArrowDownCircleOutline } from '@mdi/js'
+import { isFileImage } from '@/lib/files/helpers/isFileImage'
 
 export default defineComponent({
   components: {
@@ -235,7 +236,7 @@ export default defineComponent({
     )
 
     const isImage = (file: FileAsset) => {
-      return ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(file.extension!)
+      return isFileImage(file)
     }
 
     const hasImagesOnly = computed(() => {
