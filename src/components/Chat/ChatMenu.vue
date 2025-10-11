@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-menu eager v-model="isChatMenuOpen">
+    <v-menu eager v-model="isChatMenuOpen" :open-on-hover="isDesktop">
       <template #activator="{ props }">
         <v-icon class="chat-menu__icon" v-bind="props" :icon="mdiPlusCircleOutline" size="28" />
       </template>
@@ -72,7 +72,7 @@ import { mdiImage, mdiPlusCircleOutline, mdiPaperclip } from '@mdi/js'
 import { useChatStateStore } from '@/stores/modal-state'
 import { CoinSymbol } from '@/store/modules/wallets/types'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
-import { isMobile } from '@/lib/display-mobile'
+import { useScreenSize } from '@/hooks/useScreenSize'
 
 const fetchingErrors = {
   liskLegacy: 'Only legacy Lisk address',
@@ -89,13 +89,11 @@ const { partnerId = '', replyToId } = defineProps<{
   replyToId?: string
 }>()
 
-const isDesktopDevice = !isMobile()
-
 const router = useRouter()
 const store = useStore()
 const { t } = useI18n()
 const chatStateStore = useChatStateStore()
-
+const { isMobileView } = useScreenSize()
 const { setChatMenuOpen } = chatStateStore
 
 const uploadImageRef = useTemplateRef<InstanceType<typeof UploadFile>>('uploadImageRef')
@@ -106,6 +104,8 @@ const dialogTitle = ref('')
 const dialogText = ref('')
 const crypto = ref('')
 const acceptImage = 'image/* , video/*'
+
+const isDesktop = !isMobileView.value
 
 const isChatMenuOpen = computed({
   get: () => chatStateStore.isChatMenuOpen,
@@ -121,7 +121,7 @@ const wallets = computed(() => orderedVisibleWalletSymbols.value.map((c: CoinSym
 const isIosDevice = computed(
   () => /iPad|iPhone|iPod/.test(navigator.userAgent) && !('MSStream' in window)
 )
-const isAndroidDevice = computed(() => !isDesktopDevice && !isIosDevice.value)
+const isAndroidDevice = computed(() => !isDesktop && !isIosDevice.value)
 
 function handleFileSelected(imageData: File[]) {
   emit('files', imageData)
@@ -197,6 +197,25 @@ function fetchCryptoAddress(selectedCrypto: string): Promise<any> {
 @use 'vuetify/settings';
 
 .chat-menu {
+  &__icon {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0;
+      transition: 0.4s;
+      z-index: -1;
+    }
+
+    &:hover::before {
+      opacity: 0.1;
+    }
+  }
+
   &__list {
     min-width: 200px;
     max-height: 100vh;
@@ -207,7 +226,6 @@ function fetchCryptoAddress(selectedCrypto: string): Promise<any> {
   }
 }
 
-/** Themes **/
 .v-theme--light {
   .chat-menu {
     &__icon {
@@ -215,11 +233,9 @@ function fetchCryptoAddress(selectedCrypto: string): Promise<any> {
     }
   }
 }
+
 .v-theme--dark {
   .chat-menu {
-    &__icon {
-      color: map.get(settings.$shades, 'white');
-    }
     &__list {
       :deep(.v-list-item-title) {
         color: map.get(settings.$shades, 'white');

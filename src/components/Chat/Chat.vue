@@ -3,7 +3,7 @@
     <free-tokens-dialog v-model="isShowFreeTokensDialog" />
     <a-chat
       ref="chatRef"
-      :messages="messages"
+      :messages="groupedMessages"
       :show-new-chat-placeholder="showNewChatPlaceholder"
       :partners="partners"
       :partner-id="partnerId"
@@ -288,6 +288,7 @@ import {
   Fees,
   UPLOAD_MAX_FILE_COUNT,
   UPLOAD_MAX_FILE_SIZE,
+  CHAT_MESSAGE_BUBBLE_TIME_OFFSET,
   TransactionTypes as TT
 } from '@/lib/constants'
 import EmojiPicker from '@/components/EmojiPicker.vue'
@@ -420,6 +421,40 @@ const shouldDisableSendButton = computed(() => {
 const shouldDisableInput = computed(
   () => isGettingPublicKey.value || isKeyMissing.value || !store.state.publicKeys[props.partnerId]
 )
+const groupedMessages = computed(() => {
+  if (!messages.value.length) return []
+
+  const result: NormalizedChatMessageTransaction[] = []
+  let group: NormalizedChatMessageTransaction[] = []
+
+  messages.value.forEach((msg: NormalizedChatMessageTransaction, index: number) => {
+    const prevMsg = messages.value[index - 1]
+    const nextMsg = messages.value[index + 1]
+
+    const isSameGroupAsPrev =
+      prevMsg &&
+      msg.senderId === prevMsg.senderId &&
+      msg.timestamp - prevMsg.timestamp < CHAT_MESSAGE_BUBBLE_TIME_OFFSET
+    const isSameGroupAsNext =
+      nextMsg &&
+      msg.senderId === nextMsg.senderId &&
+      nextMsg.timestamp - msg.timestamp < CHAT_MESSAGE_BUBBLE_TIME_OFFSET
+
+    msg.showTime = !isSameGroupAsPrev
+
+    msg.showBubble = false
+
+    group.push(msg)
+
+    if (!isSameGroupAsNext) {
+      group[group.length - 1].showBubble = true
+      result.push(...group)
+      group = []
+    }
+  })
+
+  return result
+})
 
 const getPartnerName = (address: string) => {
   const name: string = store.getters['partners/displayName'](address) || ''
@@ -996,7 +1031,7 @@ const onKeyPress = (e: KeyboardEvent) => {
 @use '@/assets/styles/settings/_colors.scss';
 
 .chat-menu {
-  margin-right: 8px;
+  margin-right: 12px;
 }
 .chat {
   height: calc(100vh - var(--v-layout-bottom));
