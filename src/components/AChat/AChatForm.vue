@@ -40,7 +40,7 @@
           :class="{ 'a-chat__form-send-area--disabled': isDisabled }"
           :icon="mdiSend"
           size="22"
-          :disabled="isDisabled || shouldDisableSendButton"
+          :disabled="isDisabled"
           @click="submitMessage"
         />
       </template>
@@ -127,7 +127,7 @@ const isDisabled = computed(() => {
     return false
   }
 
-  return error !== false
+  return error !== false || props.shouldDisableSendButton
 })
 
 const listeners = computed(() => {
