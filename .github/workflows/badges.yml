@@ -1,0 +1,42 @@
+name: Update Commits Badge
+
+on:
+  push:
+  schedule:
+    - cron: "0 2 * * *"  # every day at 2:00 UTC
+  workflow_dispatch:      # manual run
+
+jobs:
+  update-badge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # to have all branches and commits
+
+      - name: Count commits in last 30 days
+        run: |
+          COUNT=$(git rev-list --all --since="30 days ago" --count)
+          echo "COMMITS=$COUNT" >> $GITHUB_ENV
+
+      - name: Generate JSON for Shields.io
+        run: |
+          mkdir -p .badges
+          COLOR="red"
+          if [ $COMMITS -gt 12 ]; then COLOR="brightgreen"; fi
+          cat > .badges/commits.json <<EOF
+          {
+            "schemaVersion": 1,
+            "label": "commits/30d",
+            "message": "$COMMITS",
+            "color": "$COLOR"
+          }
+          EOF
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .badges
+          destination_dir: .
