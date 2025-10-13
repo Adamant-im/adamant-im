@@ -12,7 +12,9 @@ export function normalizeTransaction(tx: Transaction, ownerAddress: string): Dog
   const recipients = tx.vout.flatMap((vout) => vout.scriptPubKey.addresses).filter(onlyUnique)
 
   const direction = senders.includes(ownerAddress) ? 'from' : 'to'
-  const isSelfTransfer = senders.includes(ownerAddress) && recipients.includes(ownerAddress)
+  const isSelfTransfer =
+    senders.every((addr) => addr === ownerAddress) &&
+    recipients.every((addr) => addr === ownerAddress)
 
   if (direction === 'from') {
     // Disregard our address for an outgoing transaction unless it's the only address (i.e. we're sending to ourselves)
@@ -32,14 +34,16 @@ export function normalizeTransaction(tx: Transaction, ownerAddress: string): Dog
   // Calculate amount from outputs:
   // * for the outgoing transactions take outputs that DO NOT target us
   // * for the incoming transactions take outputs that DO target us
-  // * for self-transfers take outputs that DO target us
-  const amount = tx.vout.reduce(
-    (sum, t) =>
-      (isSelfTransfer || direction === 'to') === t.scriptPubKey.addresses.includes(ownerAddress)
-        ? sum + Number(t.value)
-        : sum,
-    0
-  )
+  // * for self-transfers (all inputs and outputs are the same address) take the first output
+  const amount = isSelfTransfer
+    ? Number(tx.vout[0].value)
+    : tx.vout.reduce(
+        (sum, t) =>
+          (direction === 'to') === t.scriptPubKey.addresses.includes(ownerAddress)
+            ? sum + Number(t.value)
+            : sum,
+        0
+      )
 
   const confirmations = tx.confirmations
   const timestamp = tx.time * 1000
