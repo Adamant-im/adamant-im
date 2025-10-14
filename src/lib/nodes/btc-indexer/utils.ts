@@ -8,8 +8,8 @@ export function normalizeTransaction(
   ownerAddress: string,
   currentHeight?: number
 ): BtcTransaction {
-  const senders = tx.vin.map((vin) => vin.prevout.scriptpubkey_address)
-  const recipients = tx.vout.map((vout) => vout.scriptpubkey_address)
+  const senders = [...new Set(tx.vin.map((vin) => vin.prevout.scriptpubkey_address))]
+  const recipients = [...new Set(tx.vout.map((vout) => vout.scriptpubkey_address))]
 
   const direction = senders.includes(ownerAddress) ? 'from' : 'to'
   const isSelfTransfer =

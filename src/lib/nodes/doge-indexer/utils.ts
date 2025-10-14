@@ -8,7 +8,7 @@ function onlyUnique<V>(value: V, index: number, array: V[]) {
 }
 
 export function normalizeTransaction(tx: Transaction, ownerAddress: string): DogeTransaction {
-  const senders = tx.vin.map((vin) => vin.addr)
+  const senders = [...new Set(tx.vin.map((vin) => vin.addr))]
   const recipients = tx.vout.flatMap((vout) => vout.scriptPubKey.addresses).filter(onlyUnique)
 
   const direction = senders.includes(ownerAddress) ? 'from' : 'to'

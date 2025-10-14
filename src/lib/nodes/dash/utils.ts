@@ -6,7 +6,7 @@ function onlyUnique<V>(value: V, index: number, array: V[]) {
 }
 
 export function normalizeTransaction(tx: Transaction, ownerAddress: string): DashTransaction {
-  const senders = tx.vin.map((vin) => vin.address)
+  const senders = [...new Set(tx.vin.map((vin) => vin.address))]
   const recipients = tx.vout.flatMap((vout) => vout.scriptPubKey.addresses).filter(onlyUnique)
 
   const direction = senders.includes(ownerAddress) ? 'from' : 'to'
