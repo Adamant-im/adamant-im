@@ -199,12 +199,12 @@ messaging.onBackgroundMessage(async (payload) => {
   const senderId = transaction.senderId
   const recipientId = transaction.recipientId
   const transactionId = transaction.id
-  const senderName = payload.notification?.title || transaction.senderId.substring(0, 12)
+  const senderName = payload.notification?.title || transaction.senderId
   let messageText = `New message from ${senderName} (open app to decrypt)`
 
   const decryptedMessage = decryptMessage(transaction, privateKey)
   if (decryptedMessage) {
-    const partnerTitle = payload.notification?.title || senderId.substring(0, 12)
+    const partnerTitle = payload.notification?.title || senderId
     messageText = `${partnerTitle}: ${decryptedMessage}`
   }
 
