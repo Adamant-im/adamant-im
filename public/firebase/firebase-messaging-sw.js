@@ -234,7 +234,7 @@ self.addEventListener('notificationclick', (event) => {
     (async () => {
       try {
         // Block click if notification is not for current user
-        if (data?.recipientId && currentUserAddress && data.recipientId !== currentUserAddress) {
+        if (data?.recipientId !== currentUserAddress && currentUserAddress) {
           return
         }
 
