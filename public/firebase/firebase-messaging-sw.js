@@ -240,7 +240,7 @@ self.addEventListener('notificationclick', (event) => {
 
         const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
 
-        // Focus on the excisting window
+        // Set focus to the existing window
         const existingClient = clients.find((client) => client.url.includes(self.location.origin))
         if (existingClient) {
           await existingClient.focus()
