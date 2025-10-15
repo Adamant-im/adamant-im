@@ -35,6 +35,9 @@ let notificationSettings = {
 }
 const channel = new BroadcastChannel('adm_notifications')
 
+// Resolvers for settings initialization promises
+let settingsInitializedResolvers = []
+
 // Utillites for decoding
 function hexToBytes(hex) {
   const bytes = []
@@ -116,6 +119,10 @@ channel.onmessage = (event) => {
   if (data?.notificationType !== undefined) {
     notificationSettings.type = data.notificationType
     notificationSettings.initialized = true
+
+    // Resolve all waiting promises
+    settingsInitializedResolvers.forEach((resolve) => resolve())
+    settingsInitializedResolvers = []
   }
 }
 
@@ -144,12 +151,27 @@ function isEventProcessed(eventId) {
   return false
 }
 
+function waitForSettingsEvent() {
+  return new Promise((resolve) => {
+    settingsInitializedResolvers.push(resolve)
+
+    // Timeout fallback
+    setTimeout(() => {
+      const index = settingsInitializedResolvers.indexOf(resolve)
+      if (index !== -1) {
+        settingsInitializedResolvers.splice(index, 1)
+        resolve()
+      }
+    }, 3000)
+  })
+}
+
 async function ensureSettingsInitialized() {
   if (notificationSettings.initialized) {
     return
   }
 
-  await new Promise((resolve) => setTimeout(resolve, 2000))
+  await waitForSettingsEvent()
 
   if (!notificationSettings.initialized) {
     notificationSettings.initialized = true
