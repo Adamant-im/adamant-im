@@ -8,36 +8,36 @@ export function usePushEventHandlers() {
   const router = useRouter()
 
   /**
-   * Handles opening chat from notification click
+   * Opens chat with optional scroll to message
+   */
+  const openChatWithScroll = (partnerId: string, transactionId?: string) => {
+    router.push({
+      name: 'Chat',
+      params: { partnerId },
+      query: transactionId ? { scrollToMessage: transactionId } : { scrollToBottom: 'true' }
+    })
+  }
+
+  /**
+   * Handles opening chat from notification click (Android Capacitor)
    */
   const handleOpenChat = (event: Event) => {
     const detail = (event as CustomEvent).detail
     if (detail?.partnerId) {
-      router.push({
-        name: 'Chat',
-        params: { partnerId: detail.partnerId }
-      })
+      openChatWithScroll(detail.partnerId, detail.transactionId)
     }
   }
 
   /**
-   * Handles messages from Service Worker
+   * Handles messages from Service Worker (Web PWA)
    */
   const handleServiceWorkerMessage = (event: MessageEvent) => {
     if (!event.data) return
 
-    const { action, partnerId } = event.data
+    const { action, partnerId, transactionId } = event.data
 
     if (action === 'OPEN_CHAT' && partnerId) {
-      const currentRoute = router.currentRoute.value
-
-      if (currentRoute.name !== 'Chat' || currentRoute.params.partnerId !== partnerId) {
-        router.push({
-          name: 'Chat',
-          params: { partnerId }
-        })
-      }
-
+      openChatWithScroll(partnerId, transactionId)
       window.focus()
     }
   }
@@ -60,11 +60,4 @@ export function usePushEventHandlers() {
 
   onMounted(setupEventListeners)
   onBeforeUnmount(removeEventListeners)
-
-  return {
-    handleOpenChat,
-    handleServiceWorkerMessage,
-    setupEventListeners,
-    removeEventListeners
-  }
 }

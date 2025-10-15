@@ -256,9 +256,8 @@ self.addEventListener('notificationclick', (event) => {
           return
         }
 
-        // Open a new window
-        const url = data?.senderId ? `/chats/${data.senderId}` : '/'
-        await self.clients.openWindow(url)
+        // Open a new window (always root as user will need to login)
+        await self.clients.openWindow('/')
       } catch (error) {
         console.error('Click handler error:', error)
       }
