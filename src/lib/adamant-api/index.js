@@ -245,7 +245,17 @@ export async function encodeFile(file, params) {
  * @param {number} messageType message type
  */
 export async function sendSpecialMessage(to, payload, messageType) {
-  await getPublicKey(to)
+  // Cache ANS public key to avoid redundant API calls
+  if (to === ADAMANT_NOTIFICATION_SERVICE_ADDRESS) {
+    store.commit('setPublicKey', {
+      adamantAddress: to,
+      publicKey: ADAMANT_NOTIFICATION_SERVICE_PUBLIC_KEY
+    })
+  } else {
+    // For other addresses, fetch public key from API
+    await getPublicKey(to)
+  }
+
   return sendMessage({ to, message: payload, type: messageType })
 }
 
