@@ -251,11 +251,19 @@ const className = 'settings-view'
 
 const { hasView } = useSavedScroll()
 
-const notificationItems = [
-  { title: 'No Notifications', value: NotificationType['NoNotifications'] },
-  { title: 'Background Fetch', value: NotificationType['BackgroundFetch'] },
-  { title: 'Push', value: NotificationType['Push'] }
-]
+const notificationItems = computed(() => {
+  const isAndroid = Capacitor.getPlatform() === 'android'
+
+  return [
+    { title: 'No Notifications', value: NotificationType['NoNotifications'], disabled: false },
+    {
+      title: 'Background Fetch',
+      value: NotificationType['BackgroundFetch'],
+      disabled: isAndroid
+    },
+    { title: 'Push', value: NotificationType['Push'], disabled: false }
+  ]
+})
 
 const infoText = t('options.notifications_info')
 
