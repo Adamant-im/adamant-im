@@ -260,6 +260,8 @@ export const VALIDATION_ERRORS = {
 export const sidebarLayoutKey = Symbol('sidebarLayout')
 
 export const ADAMANT_NOTIFICATION_SERVICE_ADDRESS = 'U922832474468487910'
+export const ADAMANT_NOTIFICATION_SERVICE_PUBLIC_KEY =
+  'e62976484f30862e26765ad98a5835fbccc43a50de59c56bd2e0b4989ee2e0af'
 export const VAPID_KEY =
   'BOUaH-qBAFhcEzR3sETwqJDDP-WjWShYr3NAXFQwHTXT0ZIQirLuTTgL7U20kAzsFD5FE4nvTWbF1iSiAMGnyiY'
 export const NotificationType = {

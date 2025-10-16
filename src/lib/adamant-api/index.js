@@ -1,7 +1,13 @@
 import Queue from 'promise-queue'
 import { Base64 } from 'js-base64'
 
-import constants, { Transactions, Delegates, MessageType } from '@/lib/constants'
+import constants, {
+  Transactions,
+  Delegates,
+  MessageType,
+  ADAMANT_NOTIFICATION_SERVICE_ADDRESS,
+  ADAMANT_NOTIFICATION_SERVICE_PUBLIC_KEY
+} from '@/lib/constants'
 import utils from '@/lib/adamant'
 import client from '@/lib/nodes/adm'
 import { encryptPassword } from '@/lib/idb/crypto'
@@ -239,7 +245,17 @@ export async function encodeFile(file, params) {
  * @param {number} messageType message type
  */
 export async function sendSpecialMessage(to, payload, messageType) {
-  await getPublicKey(to)
+  // Cache ANS public key to avoid redundant API calls
+  if (to === ADAMANT_NOTIFICATION_SERVICE_ADDRESS) {
+    store.commit('setPublicKey', {
+      adamantAddress: to,
+      publicKey: ADAMANT_NOTIFICATION_SERVICE_PUBLIC_KEY
+    })
+  } else {
+    // For other addresses, fetch public key from API
+    await getPublicKey(to)
+  }
+
   return sendMessage({ to, message: payload, type: messageType })
 }
 
