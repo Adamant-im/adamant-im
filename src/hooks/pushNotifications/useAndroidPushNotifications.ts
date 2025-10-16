@@ -30,10 +30,18 @@ export function useAndroidPushNotifications() {
   }
 
   /**
-   * Clears private key - proxy to pushService.setPrivateKey('')
+   * Clears private key - proxy to pushService.clearPrivateKey()
    */
   const clearPrivateKey = async (): Promise<boolean> => {
-    return setPrivateKey('')
+    if (!isSupported.value) return false
+
+    const service = await getPushService()
+    if (service) {
+      service.clearPrivateKey()
+      return true
+    }
+
+    return false
   }
 
   return {
