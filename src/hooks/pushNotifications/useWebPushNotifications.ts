@@ -96,7 +96,7 @@ export function useWebPushNotifications() {
       // Clear from PushService
       const service = await getPushService()
       if (service) {
-        service.setPrivateKey('')
+        service.clearPrivateKey()
       }
 
       return true

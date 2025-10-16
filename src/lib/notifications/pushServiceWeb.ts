@@ -57,7 +57,11 @@ export class WebPushService extends BasePushService {
     if (this.deviceId) {
       try {
         const signalData = signalAsset(this.deviceId, this.token, 'FCM', 'add')
-        await sendSpecialMessage(ADAMANT_NOTIFICATION_SERVICE_ADDRESS, signalData, MessageType.SIGNAL_MESSAGE)
+        await sendSpecialMessage(
+          ADAMANT_NOTIFICATION_SERVICE_ADDRESS,
+          signalData,
+          MessageType.SIGNAL_MESSAGE
+        )
       } catch (error) {
         console.error('Failed to register device with notification service:', error)
         throw error
@@ -92,6 +96,10 @@ export class WebPushService extends BasePushService {
 
   setPrivateKey(privateKey: string): void {
     this.privateKey = privateKey
+  }
+
+  clearPrivateKey(): void {
+    this.privateKey = null
   }
 
   isInitialized(): boolean {

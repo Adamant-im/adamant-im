@@ -12,6 +12,7 @@ export interface PushService {
 
   // Private key management
   setPrivateKey(privateKey: string): void
+  clearPrivateKey(): void
 
   // State getters
   isInitialized(): boolean
@@ -26,6 +27,7 @@ export abstract class BasePushService implements PushService {
   abstract registerDevice(): Promise<void>
   abstract unregisterDevice(): Promise<boolean>
   abstract setPrivateKey(privateKey: string): void
+  abstract clearPrivateKey(): void
 
   async initialize(): Promise<boolean> {
     if (this.initialized) {
