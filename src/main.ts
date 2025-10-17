@@ -36,14 +36,18 @@ registerGlobalComponents(app)
 
 app.mount('#app')
 
+export let firebaseSwRegistrationPromise: Promise<ServiceWorkerRegistration | null> | null = null
+
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker
+  firebaseSwRegistrationPromise = navigator.serviceWorker
     .register('/firebase/firebase-messaging-sw.js', { scope: '/firebase/' })
     .then((reg) => {
       console.log('[firebase SW] registered', reg.scope)
+      return reg
     })
     .catch((err) => {
       console.error('[firebase SW] registration failed', err)
+      return null
     })
 }
 

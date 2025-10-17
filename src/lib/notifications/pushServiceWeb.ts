@@ -1,10 +1,10 @@
-import { revokeToken } from '@/notifications'
 import { BasePushService } from './pushServiceBase'
 import { sendSpecialMessage } from '../adamant-api'
 import { ADAMANT_NOTIFICATION_SERVICE_ADDRESS, VAPID_KEY, MessageType } from '../constants'
 import { signalAsset } from '../adamant-api/asset'
 import { fcm } from '@/firebase'
-import { getToken } from 'firebase/messaging'
+import { getToken, deleteToken } from 'firebase/messaging'
+import { firebaseSwRegistrationPromise } from '@/main'
 
 export class WebPushService extends BasePushService {
   private token: string | null = null
@@ -35,10 +35,14 @@ export class WebPushService extends BasePushService {
     }
 
     try {
-      const swRegistration = await navigator.serviceWorker.getRegistration('/firebase/')
+      if (!firebaseSwRegistrationPromise) {
+        throw new Error('Service Workers not supported')
+      }
+
+      const swRegistration = await firebaseSwRegistrationPromise
 
       if (!swRegistration) {
-        throw new Error('Firebase Service Worker not registered')
+        throw new Error('Firebase Service Worker registration failed')
       }
 
       this.token = await getToken(fcm, {
@@ -79,7 +83,7 @@ export class WebPushService extends BasePushService {
         MessageType.SIGNAL_MESSAGE
       )
 
-      const revoked = await revokeToken()
+      const revoked = await this.revokeToken()
       if (!revoked) {
         throw new Error('Failed to revoke FCM token')
       }
@@ -90,6 +94,17 @@ export class WebPushService extends BasePushService {
       return true
     } catch (error) {
       console.error('Failed to unregister device:', error)
+      return false
+    }
+  }
+
+  private async revokeToken(): Promise<boolean> {
+    if (!fcm) return false
+
+    try {
+      await deleteToken(fcm)
+      return true
+    } catch {
       return false
     }
   }
