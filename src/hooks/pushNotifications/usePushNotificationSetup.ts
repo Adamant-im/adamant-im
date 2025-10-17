@@ -150,8 +150,12 @@ export function usePushNotificationSetup() {
   const initialize = () => {
     if (webPush) {
       webPush.setMessageHandler(handleChannelMessage)
-      // Send initial settings with delay for SW initialization
-      setTimeout(sendCurrentSettings, 1000)
+      // Send settings when Service Worker is ready
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready
+          .then(() => sendCurrentSettings())
+          .catch((err) => console.warn('[Push] Failed to send initial settings:', err))
+      }
     }
     setupWatchers()
   }
