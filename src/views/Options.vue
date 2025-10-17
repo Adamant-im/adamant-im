@@ -147,7 +147,11 @@
                 variant="underlined"
                 :loading="isNotificationRegistering"
                 :disabled="isNotificationRegistering"
-              />
+              >
+                <template v-slot:item="{ props: itemProps, item }">
+                  <v-list-item v-bind="itemProps" :disabled="item.raw.disabled"></v-list-item>
+                </template>
+              </v-select>
             </v-col>
           </v-row>
           <div class="a-text-explanation-enlarged">
@@ -251,9 +255,9 @@ const className = 'settings-view'
 
 const { hasView } = useSavedScroll()
 
-const notificationItems = computed(() => {
-  const isAndroid = Capacitor.getPlatform() === 'android'
+const isAndroid = Capacitor.getPlatform() === 'android'
 
+const notificationItems = computed(() => {
   return [
     { title: 'No Notifications', value: NotificationType['NoNotifications'], disabled: false },
     {
@@ -395,7 +399,7 @@ const handleNotificationTypeChange = async (newVal: number) => {
       value: newVal
     })
 
-    if (Capacitor.getPlatform() === 'android') {
+    if (isAndroid) {
       try {
         await Preferences.set({
           key: 'allowNotificationType',
