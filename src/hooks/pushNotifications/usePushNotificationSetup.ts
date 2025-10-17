@@ -3,7 +3,6 @@ import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { Capacitor } from '@capacitor/core'
 import { NotificationType } from '@/lib/constants'
-import { registerServiceWorker } from '@/notifications'
 import { usePrivateKeyManager } from './usePrivateKeyManager'
 import { usePushEventHandlers } from './usePushEventHandlers'
 import { useWebPushNotifications } from './useWebPushNotifications'
@@ -101,7 +100,6 @@ export function usePushNotificationSetup() {
     } else {
       const { pushService } = await import('@/lib/notifications/pushServiceFactory')
       pushService.setPrivateKey(privateKey)
-      await registerServiceWorker()
       await sendPrivateKey()
     }
   }
