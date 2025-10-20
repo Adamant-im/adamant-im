@@ -42,6 +42,8 @@ export class AllNodesOfflineError extends Error {
     super(`${label}: All nodes are offline`)
 
     this.nodeLabel = label
+    // Override stack to show only the message without stack trace in console
+    this.stack = this.message
   }
 }
 
@@ -57,6 +59,8 @@ export class AllNodesDisabledError extends Error {
     super(`${label}: All nodes are disabled`)
 
     this.nodeLabel = label
+    // Override stack to show only the message without stack trace in console
+    this.stack = this.message
   }
 }
 
@@ -66,6 +70,6 @@ export function isAllNodesDisabledError(error: Error): error is AllNodesDisabled
 
 export class NoInternetConnectionError extends Error {
   constructor() {
-    super();
+    super()
   }
 }
