@@ -1,11 +1,40 @@
-name: Draft Release
+name: Custom Release Draft
 
 on:
+  workflow_call:
+    inputs:
+      target_branch:
+        required: false
+        type: string
+        default: master
   push:
     branches:
-      - develop
-      - feat/release-drafter
+      - master
 
 jobs:
-  call-release:
-    uses: Adamant-im/.github/.github/workflows/custom-release-draft.yml@master
+  release-draft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install @octokit/rest
+
+      - name: Download release-notes.js
+        run: |
+          set -e
+          mkdir -p .github/scripts
+          echo "Downloading release-notes.js from master..."
+          curl -fsSL "https://raw.githubusercontent.com/Adamant-im/.github/master/.github/scripts/release-notes.js" -o .github/scripts/release-notes.js
+
+      - name: Run release notes script
+        run: node .github/scripts/release-notes.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
