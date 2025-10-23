@@ -579,7 +579,10 @@ const handleEmptyChat = async () => {
     store.commit('chat/addNewChat', { partnerId: props.partnerId })
   }
 
-  if (isNewChat.value || !store.state.publicKeys[props.partnerId]) {
+  if (
+    isNewChat.value ||
+    (!store.state.publicKeys[props.partnerId] && !isAdamantChat(props.partnerId))
+  ) {
     const partnerName = store.getters['chat/getPartnerName'](props.partnerId)
 
     await createChat(props.partnerId, partnerName)
