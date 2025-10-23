@@ -581,7 +581,7 @@ const handleEmptyChat = async () => {
 
   if (
     isNewChat.value ||
-    (!store.state.publicKeys[props.partnerId] && !isAdamantChat(props.partnerId))
+    (!store.state.publicKeys[props.partnerId] && !isWelcomeChat(props.partnerId))
   ) {
     const partnerName = store.getters['chat/getPartnerName'](props.partnerId)
 
