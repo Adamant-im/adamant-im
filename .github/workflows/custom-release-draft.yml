@@ -11,6 +11,7 @@ on:
     branches:
       - master
       - feat/release-drafter
+  workflow_dispatch:
 
 jobs:
   release-draft:
