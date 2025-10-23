@@ -1,0 +1,11 @@
+name: Draft Release
+
+on:
+  push:
+    branches:
+      - develop
+      - feat/release-drafter
+
+jobs:
+  call-release:
+    uses: Adamant-im/.github/.github/workflows/custom-release-draft.yml@master
