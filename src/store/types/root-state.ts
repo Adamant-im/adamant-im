@@ -20,6 +20,7 @@ export interface RootState {
   btc: any
   partners: any
   delegates: any
+  devTools: any
   nodes: any
   snackbar: any
   language: any
