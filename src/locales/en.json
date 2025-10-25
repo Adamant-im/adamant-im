@@ -120,7 +120,8 @@
   "dev_screens": {
     "title": "Development Tools",
     "vibrations": "Vibrations",
-    "adamant_wallets": "Adamant-Wallets"
+    "adamant_wallets": "Adamant-Wallets",
+    "logging": "Verbose logging in Console"
   },
   "dev_vibrations": {
     "custom_pattern": "Custom Pattern",

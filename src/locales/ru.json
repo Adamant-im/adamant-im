@@ -120,7 +120,8 @@
   "dev_screens": {
     "title": "Инструменты разработчика",
     "vibrations": "Вибрации",
-    "adamant_wallets": "Adamant-Wallets"
+    "adamant_wallets": "Adamant-Wallets",
+    "logging": "Детализация ведения журнала в консоли"
   },
   "dev_vibrations": {
     "custom_pattern": "Произвольный паттерн",
