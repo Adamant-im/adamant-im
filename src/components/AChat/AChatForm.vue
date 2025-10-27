@@ -16,7 +16,7 @@
       auto-grow
       rows="1"
       max-rows="10"
-      variant="underlined"
+      variant="plain"
       density="compact"
       base-color="primary"
       color="primary"
@@ -35,11 +35,16 @@
       </template>
       <template v-if="showSendButton" #append-inner>
         <slot name="append" />
-        <v-icon class="a-chat__send-icon" :icon="mdiSend" size="28" />
+        <v-icon
+          class="a-chat__form-send-area"
+          :class="{ 'a-chat__form-send-area--disabled': isDisabled }"
+          :icon="mdiSend"
+          size="22"
+          :disabled="isDisabled"
+          @click="submitMessage"
+        />
       </template>
     </v-textarea>
-
-    <div v-if="showSendButton" class="a-chat__form-send-area" @click="submitMessage" />
   </div>
 </template>
 
@@ -52,6 +57,7 @@ import { useChatStateStore } from '@/stores/modal-state'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { VTextarea } from 'vuetify/components'
+import { VALIDATION_ERRORS } from '@/lib/constants'
 
 type Textarea = VTextarea & {
   calculateInputHeight: () => void
@@ -110,6 +116,20 @@ const isEmojiPickerOpen = computed({
 })
 const placeholder = computed(() => props.label ?? t('chats.type_a_message'))
 const isDesktopDevice = !isMobile()
+
+const isDisabled = computed(() => {
+  const error = props.validator(message.value)
+
+  if (
+    error === VALIDATION_ERRORS.NotEnoughFunds ||
+    error === VALIDATION_ERRORS.NotEnoughFundsNewAccount
+  ) {
+    return false
+  }
+
+  return error !== false
+})
+
 const listeners = computed(() => {
   return {
     keypress: (e: KeyboardEvent) => {
@@ -332,6 +352,7 @@ defineExpose({
     max-height: 230px;
     overflow-y: auto;
   }
+
   :deep(.v-text-field) {
     align-items: flex-end;
   }
@@ -352,9 +373,6 @@ defineExpose({
     .v-field__clearable > .v-icon {
       --v-medium-emphasis-opacity: 1;
     }
-    .v-input__control {
-      margin-bottom: 2px;
-    }
     .v-field__input {
       &::placeholder {
         --v-disabled-opacity: 1;
@@ -370,16 +388,59 @@ defineExpose({
   width: 100%;
 }
 
+.a-chat__form {
+  :deep(.v-field__append-inner) {
+    display: flex;
+    align-items: center;
+  }
+}
+
 .a-chat__form-send-area {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 34px;
+    height: 34px;
+    background: currentColor;
+    border-radius: 50%;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s;
+    z-index: -1;
+  }
+
+  &:hover::before {
+    opacity: 0.1;
+  }
+
+  color: white;
+
+  &--disabled {
+    color: grey;
+  }
+
+  &:hover {
+    color: map.get(colors.$adm-colors, 'primary');
+  }
 }
 
 .v-theme--light {
+  .a-chat__form-send-area {
+    color: black;
+
+    &--disabled {
+      color: grey;
+    }
+
+    &:hover {
+      color: map.get(colors.$adm-colors, 'primary');
+    }
+  }
+
   .a-chat__form {
     :deep(.v-textarea) {
       .v-field__input {

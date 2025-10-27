@@ -6,6 +6,7 @@ const vuexPersistence = new VuexPersistence({
   reducer: (state) => {
     return {
       // modules
+      devTools: state.devTools,
       language: state.language,
       options: {
         stayLoggedIn: state.options.stayLoggedIn,

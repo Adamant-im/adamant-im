@@ -4,7 +4,11 @@
     :class="{
       'a-chat__message-container--right': isStringEqualCI(transaction.senderId, userId),
       'a-chat__message-container--transition': elementLeftOffset === 0,
-      'a-chat__message-container--disable-max-width': disableMaxWidth
+      'a-chat__message-container--disable-max-width': disableMaxWidth,
+      'a-chat__message-container--grouped':
+        !transaction.showBubble && isStringEqualCI(transaction.senderId, userId),
+      'a-chat__message-container--grouped-left':
+        !transaction.showBubble && !isStringEqualCI(transaction.senderId, userId)
     }"
     v-touch="{
       move: onMove,
@@ -24,7 +28,7 @@
       :data-id="dataId"
     >
       <div class="a-chat__message-card">
-        <div class="a-chat__message-card-header mt-1">
+        <div v-if="transaction.showTime" class="a-chat__message-card-header mt-1">
           <div v-if="transaction.status === 'CONFIRMED'" class="a-chat__blockchain-status">
             &#x26AD;
           </div>
