@@ -1,5 +1,6 @@
 import type { NodeOfflineError } from '@/lib/nodes/utils/errors.ts'
 import type { NodeInfo } from '@/types/wallets/index.ts'
+import { useStore } from 'vuex'
 import { getHealthCheckInterval } from './utils/getHealthcheckConfig'
 import { TNodeLabel } from './constants'
 import { HealthcheckInterval, HealthcheckResult, NodeKind, NodeStatus, NodeType } from './types'
@@ -98,6 +99,8 @@ export abstract class Node<C = unknown> {
    */
   socketSupport = false
 
+  logVerbosity = ''
+
   type: NodeType
   kind: NodeKind
   label: TNodeLabel
@@ -116,7 +119,7 @@ export abstract class Node<C = unknown> {
     kind: NodeKind,
     label: TNodeLabel,
     version = '',
-    minNodeVersion = '',
+    minNodeVersion = ''
   ) {
     const { alt_ip, url } = endpoint
 
@@ -129,6 +132,7 @@ export abstract class Node<C = unknown> {
     this.port = new URL(url).port
     this.hostname = new URL(url).hostname
     this.minNodeVersion = minNodeVersion
+    this.logVerbosity = ''
     this.version = version
     this.hasSupportedProtocol = this.isHttpAllowed(this.protocol)
     this.active = nodesStorage.isActive(url)
@@ -145,15 +149,21 @@ export abstract class Node<C = unknown> {
 
     if (this.active && !this.healthcheckInProgress) {
       const protocol = new URL(this.url).protocol
+      const store = useStore()
+      const levelCurrent = store?.state.devTools.levelCurrent
+
+      if (levelCurrent) {
+        this.logVerbosity = levelCurrent
+      }
 
       try {
         this.healthcheckInProgress = true
 
         const { height, ping } = await this.checkHealth()
 
-        if (!this.healthcheckCount) {
+        if (!this.healthcheckCount && this.logVerbosity === 'Info') {
           console.info(
-            `[HealthCheck] Connection via ${this.getBaseURL(this)} succeeded (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}).`,
+            `[HealthCheck] | ${this.logVerbosity} | Connection via ${this.getBaseURL(this)} succeeded (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}).`
           )
         }
 
@@ -167,23 +177,27 @@ export abstract class Node<C = unknown> {
         this.online = true
         this.ping = ping
 
-        console.info(
-          `[HealthCheck] Node status updated for ${this.getBaseURL(this)}. Height: ${height}. Ping: ${ping}. Count: ${this.healthcheckCount}. Node is online.`,
-        )
+        if (this.logVerbosity === 'Debug') {
+          console.info(
+            `[HealthCheck] | ${this.logVerbosity} | Node status updated for ${this.getBaseURL(this)}. Height: ${height}. Ping: ${ping}. Count: ${this.healthcheckCount}. Node is online.`
+          )
+        }
       } catch (error) {
         const code = (error as NodeOfflineError).code ?? 'unknown'
 
-        console.info(
-          `[HealthCheck] Connection via ${this.getBaseURL(this)} failed (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}). ${code ? `Error code: ${code}` : ''}.`,
-        )
-
+        if (this.logVerbosity === 'Info') {
+          console.info(
+            `[HealthCheck] | ${this.logVerbosity} | Connection via ${this.getBaseURL(this)} failed (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}). ${code ? `Error code: ${code}` : ''}.`
+          )
+        }
         if (this.preferDomain) {
           if (!this.altIp) {
             if (protocol === 'https:' || this.isHttpAllowed(protocol)) this.online = false
-
-            console.info(
-              `[HealthCheck] Alternative IP is not defined for ${this.getBaseURL(this)}. Node is offline.`,
-            )
+            if (this.logVerbosity === 'Info') {
+              console.info(
+                `[HealthCheck] | ${this.logVerbosity} | Alternative IP is not defined for ${this.getBaseURL(this)}. Node is offline.`
+              )
+            }
           }
           if (this.healthcheckCount < 1) {
             this.preferDomain = false
@@ -192,11 +206,11 @@ export abstract class Node<C = unknown> {
           }
         } else {
           if (protocol === 'https:' || this.isHttpAllowed(protocol)) this.online = false
-
-          console.info(
-            `[HealthCheck] Node is not reachable by URL ${this.url}${this.altIp ? ' and by alternative IP ' + this.altIp : ''}. Node is offline.`,
-          )
-
+          if (this.logVerbosity === 'Info') {
+            console.info(
+              `[HealthCheck] | ${this.logVerbosity} | Node is not reachable by URL ${this.url}${this.altIp ? ' and by alternative IP ' + this.altIp : ''}. Node is offline.`
+            )
+          }
           if (this.healthcheckCount < 2) {
             if (this.altIp) this.preferDomain = true
           }
@@ -211,7 +225,7 @@ export abstract class Node<C = unknown> {
 
     this.timer = setTimeout(
       () => this.startHealthcheck(),
-      getHealthCheckInterval(this.label, this.online ? this.healthCheckInterval : 'crucial'),
+      getHealthCheckInterval(this.label, this.online ? this.healthCheckInterval : 'crucial')
     )
 
     return this
@@ -264,7 +278,7 @@ export abstract class Node<C = unknown> {
       status: this.getNodeStatus(),
       type: this.type,
       label: this.label,
-      formattedHeight: this.formatHeight(this.height),
+      formattedHeight: this.formatHeight(this.height)
     }
   }
 
