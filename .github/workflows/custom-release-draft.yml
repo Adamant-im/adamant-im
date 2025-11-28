@@ -30,13 +30,10 @@ jobs:
 
       - name: Download release-notes.js
         run: |
-          set -e
           mkdir -p .github/scripts
-          echo "Trying to download release-notes.js from feat/release-drafter..."
-          if ! curl -fsSL "https://raw.githubusercontent.com/Adamant-im/.github/feat/release-drafter/.github/scripts/release-notes.js" -o .github/scripts/release-notes.js; then
-            echo "feat/release-drafter not found, downloading from master..."
-            curl -fsSL "https://raw.githubusercontent.com/Adamant-im/.github/master/.github/scripts/release-notes.js" -o .github/scripts/release-notes.js
-          fi
+          curl -fsSL \
+            "https://raw.githubusercontent.com/Adamant-im/.github/main/.github/scripts/release-notes.js" \
+            -o .github/scripts/release-notes.js
 
       - name: Run release notes script
         run: node .github/scripts/release-notes.js
