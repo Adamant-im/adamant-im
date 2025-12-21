@@ -39,6 +39,7 @@
         <template v-for="(transaction, index) in lastMessages" :key="transaction.contactId">
           <chat-preview
             v-if="displayChat(transaction.contactId)"
+            :key="dateRefreshKey"
             :ref="transaction.contactId"
             :is-loading-separator="index === separatorIndex"
             :is-loading-separator-active="loading && areAdmNodesOnline"
@@ -89,6 +90,7 @@ import { useChatsSpinner } from '@/hooks/useChatsSpinner'
 import { computedEager } from '@vueuse/core'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
+import Visibility from 'visibilityjs'
 
 const scrollOffset = 64
 
@@ -124,6 +126,10 @@ const savedRoute = ref(null)
 const loading = ref(false)
 const loadingSeparator = ref<InstanceType<typeof ChatPreview>[]>([])
 const allowRetry = ref(false)
+
+const dateRefreshKey = ref(0)
+const lastVisibleDate = ref(new Date().toDateString())
+const visibilityId = ref<number | boolean | null>(null)
 
 const noMoreChats = computedEager(() => store.getters['chat/chatListOffset'] === -1)
 const chatPagePartnerId = computed(() => {
@@ -163,10 +169,12 @@ onDeactivated(() => {
 onMounted(() => {
   setShowChatStartDialog(props.showNewContact)
   attachScrollListener()
+  checkDate()
 })
 
 onBeforeUnmount(() => {
   destroyScrollListener()
+  Visibility.unbind(Number(visibilityId.value))
 })
 
 watch(chatPagePartnerId, (value) => {
@@ -285,6 +293,19 @@ const displayChat = (partnerId: string) => {
 const markAllAsRead = () => {
   store.commit('chat/markAllAsRead')
 }
+
+const checkDate = () => {
+  visibilityId.value = Visibility.change((event, state) => {
+    if (state === 'visible') {
+      const currentDate = new Date().toDateString()
+
+      if (currentDate !== lastVisibleDate.value) {
+        dateRefreshKey.value = Date.now()
+        lastVisibleDate.value = currentDate
+      }
+    }
+  })
+}
 </script>
 
 <style lang="scss" scoped>
@@ -334,7 +355,10 @@ const markAllAsRead = () => {
   &__messages {
     &.chats-view__messages--chat {
       @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
-        max-height: calc(100vh - 56px - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top));
+        max-height: calc(
+          100vh -
+            56px - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top)
+        );
       }
 
       max-height: calc(100vh - 56px - var(--v-layout-bottom));

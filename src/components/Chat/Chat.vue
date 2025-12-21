@@ -3,6 +3,7 @@
     <free-tokens-dialog v-model="isShowFreeTokensDialog" />
     <a-chat
       ref="chatRef"
+      :key="dateRefreshKey"
       :messages="groupedMessages"
       :show-new-chat-placeholder="showNewChatPlaceholder"
       :partners="partners"
@@ -339,6 +340,9 @@ const showSpinner = useChatsSpinner()
 
 const isMenuOpen = ref(false)
 
+const dateRefreshKey = ref(0)
+const lastVisibleDate = ref(new Date().toDateString())
+
 const attachments = useAttachments(props.partnerId)()
 const handleAttachments = (files: FileData[]) => {
   const maxFileSizeExceeded = files.some(({ file }) => file.size >= UPLOAD_MAX_FILE_SIZE)
@@ -561,7 +565,20 @@ onMounted(async () => {
     isScrolledToBottom.value = chatRef.value.isScrolledToBottom()
   })
   visibilityId.value = Visibility.change((event, state) => {
-    if (state === 'visible' && isScrolledToBottom.value) markAsRead()
+    if (state === 'visible') {
+      const currentDate = new Date().toDateString()
+
+      if (currentDate !== lastVisibleDate.value) {
+        dateRefreshKey.value = Date.now()
+        lastVisibleDate.value = currentDate
+      }
+
+      nextTick(() => {
+        chatRef.value?.maintainScrollPosition()
+      })
+
+      if (isScrolledToBottom.value) markAsRead()
+    }
   })
 
   const draftMessage = store.getters['draftMessage/draftReplyTold'](props.partnerId)
