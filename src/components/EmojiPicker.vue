@@ -10,10 +10,10 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { useTheme } from '@/hooks/useTheme'
+import { ref, onMounted, PropType } from 'vue'
 import axios from 'axios'
-import { defineComponent, onMounted, PropType, ref } from 'vue'
 import { Picker } from 'emoji-mart'
 import { useIsMobile } from '@/hooks/useIsMobile'
 
@@ -23,48 +23,41 @@ const classes = {
   positionAbsolute: `${className}--position-absolute`
 }
 
-export default defineComponent({
-  props: {
-    elevation: {
-      type: Boolean
-    },
-    position: {
-      type: String as PropType<'absolute'>
-    }
+defineProps({
+  elevation: {
+    type: Boolean
   },
-  emits: ['emoji:select'],
-  setup(props, { emit }) {
-    const isMobile = useIsMobile()
-    const { isDarkTheme } = useTheme()
-    const container = ref<HTMLElement>()
-    const picker = ref<Picker>()
+  position: {
+    type: String as PropType<'absolute'>
+  }
+})
 
-    onMounted(async () => {
-      const { data } = await axios.get(`${import.meta.env.BASE_URL}emojis/data.json`)
+const emit = defineEmits<{
+  (e: 'emoji:select', native: string): void
+}>()
 
-      picker.value = new Picker({
-        data,
-        autoFocus: !isMobile.value, // disable autofocus on mobile devices
-        dynamicWidth: true,
-        navPosition: 'none',
-        previewPosition: 'none',
-        theme: isDarkTheme.value ? 'dark' : 'light',
-        onEmojiSelect: ({ native }: { native: string }) => {
-          emit('emoji:select', native)
-        }
-      })
+const isMobile = useIsMobile()
+const { isDarkTheme } = useTheme()
+const container = ref<HTMLElement>()
+const picker = ref<Picker>()
 
-      if (container.value && picker.value) {
-        container.value.appendChild(picker.value as unknown as Node)
-      } else {
-        console.warn('Element not found')
-      }
-    })
+onMounted(async () => {
+  const { data } = await axios.get(`${import.meta.env.BASE_URL}emojis/data.json`)
 
-    return {
-      container,
-      classes
+  picker.value = new Picker({
+    data,
+    autoFocus: !isMobile.value, // disable autofocus on mobile devices
+    dynamicWidth: true,
+    navPosition: 'none',
+    previewPosition: 'none',
+    theme: isDarkTheme.value ? 'dark' : 'light',
+    onEmojiSelect: ({ native }: { native: string }) => {
+      emit('emoji:select', native)
     }
+  })
+
+  if (container.value && picker.value) {
+    container.value.appendChild(picker.value as unknown as Node)
   }
 })
 </script>
