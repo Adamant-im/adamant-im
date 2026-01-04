@@ -3,7 +3,7 @@ import { watch } from 'vue'
 import ipfs from '@/lib/nodes/ipfs'
 import { useMutation } from '@tanstack/vue-query'
 
-type ParsedFile = { file: File; binary: Buffer | Uint8Array }
+type ParsedFile = { file: File; binary: Uint8Array<ArrayBuffer> }
 
 export async function readFile(file: File): Promise<ArrayBuffer> {
   return new Promise((resolve, reject) => {
