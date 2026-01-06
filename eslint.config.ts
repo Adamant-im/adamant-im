@@ -9,6 +9,7 @@ import vue from 'eslint-plugin-vue'
 import { defineConfig, globalIgnores } from 'eslint/config'
 import globals from 'globals'
 import parser from 'vue-eslint-parser'
+import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -25,7 +26,6 @@ const config = defineConfig([
         'eslint:recommended',
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
-        '@vue/eslint-config-prettier/skip-formatting',
         'plugin:import/recommended',
         'plugin:import/typescript'
       )
@@ -57,7 +57,8 @@ const config = defineConfig([
       'import/no-unresolved': 'error',
       'import/no-named-as-default': 'off',
       'import/no-named-as-default-member': 'off',
-      'vue/multi-word-component-names': 'off'
+      'vue/multi-word-component-names': 'off',
+      'prettier/prettier': 'warn'
     },
     settings: {
       'import/resolver': {
@@ -66,6 +67,7 @@ const config = defineConfig([
       }
     }
   },
+  skipFormatting,
   globalIgnores(['**/tests/', '**/__tests__/', 'src/components/icons/cryptos/*.vue'])
 ])
 
