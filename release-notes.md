@@ -5,6 +5,7 @@ All notable changes in this release are listed below.
 ## [Unreleased]
 
 ### New Features
+
 - Test screen for developers is now available [#815](https://github.com/Adamant-im/adamant-im/pull/815) — [@Linhead](https://github.com/Linhead)
 - Universal macOS build added [#840](https://github.com/Adamant-im/adamant-im/pull/840) — [@S-FrontendDev](https://github.com/S-FrontendDev)
 - Release notes file added [#853](https://github.com/Adamant-im/adamant-im/pull/853) — [@S-FrontendDev](https://github.com/S-FrontendDev)
@@ -20,7 +21,9 @@ All notable changes in this release are listed below.
 - Updated wallets generating script [#864](https://github.com/Adamant-im/adamant-im/pull/864) — [@Linhead](https://github.com/Linhead)
 
 ### Bug Fixes
+
 - Transaction fee calculation for ETH & ERC20 fixed [#805](https://github.com/Adamant-im/adamant-im/pull/805) — [@Linhead](https://github.com/Linhead)
 - Layout issue on "Export keys" page fixed [#841](https://github.com/Adamant-im/adamant-im/pull/841) — [@kalpovskii](https://github.com/kalpovskii), [@adamant-al](https://github.com/adamant-al)
 - Add disabled input field in the Welcome to ADAMANT chat, impoved paddings [#842](https://github.com/Adamant-im/adamant-im/pull/842) — [@kalpovskii](https://github.com/kalpovskii)
 - Resolve source code issues with ESLint 9 [#852](https://github.com/Adamant-im/adamant-im/pull/852) — [@graycraft](https://github.com/graycraft)
+- Fix dates in chats not refreshing when day changes while app is in background [#863](https://github.com/Adamant-im/adamant-im/pull/863) — [@Linhead](https://github.com/Linhead)
