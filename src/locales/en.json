@@ -225,6 +225,19 @@
     "user_password_unlock": "Unlock"
   },
   "nodes": {
+    "popup": {
+      "http_restriction_title": "HTTP nodes are restricted in browser",
+      "http_restriction_intro": "Browsers block requests from secure (HTTPS) apps and pages to insecure (HTTP) endpoints for security reasons.",
+      "http_vs_https_title": "🔒 HTTP vs HTTPS",
+      "http_vs_https_http": "HTTP does not encrypt traffic, so observers may see which endpoints the app uses.",
+      "http_vs_https_https": "HTTPS encrypts the connection, hiding everything except the node address.",
+      "adamant_encryption_title": "💡 ADAMANT always encrypts all messages",
+      "adamant_encryption_text": "ADAMANT always encrypts all messages on the blockchain, regardless of whether the connection is HTTP or HTTPS. That’s why ADAMANT nodes can safely be used even via HTTP. Desktop and mobile apps can work with both HTTP and HTTPS nodes. This restriction applies only in Web browsers.",
+      "how_to_allow_title": "To allow HTTP nodes, you can:",
+      "how_to_allow_browser": "Allow insecure content in your browser settings, or",
+      "how_to_allow_http_app": "Open the HTTP version of the app",
+      "close": "Close"
+    },
     "active": "Active",
     "fastest_title": "Use the fastest available node",
     "fastest_tooltip": "Automatically selects the node with the lowest latency",

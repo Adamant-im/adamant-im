@@ -25,15 +25,67 @@
     <v-icon v-if="nodeStatusDetail.icon" :icon="nodeStatusDetail.icon" :size="12" />
     {{ nodeStatusDetail.text }}
   </span>
+  <span v-else-if="!node.hasSupportedProtocol" :class="classes.statusText">
+    <v-icon
+      :icon="mdiHelpCircleOutline"
+      size="small"
+      class="ml-1 cursor-pointer"
+      @click="showHttpInfo = true"
+    />
+  </span>
+  <v-dialog v-model="showHttpInfo" max-width="500px">
+    <v-card>
+      <v-card-title class="text-h6">
+        {{ t('nodes.popup.http_restriction_title') }}
+      </v-card-title>
+
+      <v-card-text class="text-body-2">
+        <p class="mb-4">
+          {{ t('nodes.popup.http_restriction_intro') }}
+        </p>
+
+        <h3 class="font-weight-bold mb-2">
+          {{ t('nodes.popup.http_vs_https_title') }}
+        </h3>
+        <p class="mb-4">
+          {{ t('nodes.popup.http_vs_https_http') }}<br />
+          {{ t('nodes.popup.http_vs_https_https') }}
+        </p>
+
+        <h3 class="font-weight-bold mb-2">
+          {{ t('nodes.popup.adamant_encryption_title') }}
+        </h3>
+        <p class="mb-4">
+          {{ t('nodes.popup.adamant_encryption_text') }}
+        </p>
+
+        <h3 class="font-weight-bold mb-2">
+          {{ t('nodes.popup.how_to_allow_title') }}
+        </h3>
+        <ul class="ml-4">
+          <li>{{ t('nodes.popup.how_to_allow_browser') }}</li>
+          <li>{{ t('nodes.popup.how_to_allow_http_app') }}</li>
+        </ul>
+      </v-card-text>
+
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" @click="showHttpInfo = false">
+          {{ t('nodes.popup.close') }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, toRefs } from 'vue'
+import { defineComponent, PropType, toRefs, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { useNodeStatus } from '@/components/nodes/hooks'
-import { mdiCheckboxBlankCircle } from '@mdi/js'
+import { mdiCheckboxBlankCircle, mdiHelpCircleOutline } from '@mdi/js'
 
+const showHttpInfo = ref(false)
 
 const className = 'node-status'
 const classes = {
@@ -65,8 +117,10 @@ export default defineComponent({
       nodeStatusTitle,
       nodeStatusDetail,
       nodeStatusColor,
+      showHttpInfo,
       classes,
-      mdiCheckboxBlankCircle
+      mdiCheckboxBlankCircle,
+      mdiHelpCircleOutline
     }
   }
 })
