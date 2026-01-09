@@ -24,14 +24,15 @@
   <span v-if="nodeStatusDetail && node.status !== 'sync'" :class="classes.statusText">
     <v-icon v-if="nodeStatusDetail.icon" :icon="nodeStatusDetail.icon" :size="12" />
     {{ nodeStatusDetail.text }}
-  </span>
-  <span v-else-if="!node.hasSupportedProtocol" :class="classes.statusText">
-    <v-icon
-      :icon="mdiHelpCircleOutline"
-      size="small"
-      class="ml-1 cursor-pointer"
-      @click="showHttpInfo = true"
-    />
+
+    <template v-if="!node.hasSupportedProtocol">
+      <v-icon
+        :icon="mdiHelpCircleOutline"
+        size="small"
+        class="ml-1 cursor-pointer"
+        @click="showHttpInfo = true"
+      />
+    </template>
   </span>
   <v-dialog v-model="showHttpInfo" max-width="500px">
     <v-card>
