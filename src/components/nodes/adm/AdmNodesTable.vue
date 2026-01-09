@@ -3,13 +3,64 @@
     <NodesTableHead v-model="isAllNodesChecked" :indeterminate="isPartiallyChecked" />
 
     <tbody>
-      <AdmNodesTableItem v-for="node in admNodes" :key="node.url" blockchain="adm" :node="node" />
+      <AdmNodesTableItem
+        v-for="node in admNodes"
+        :key="node.url"
+        blockchain="adm"
+        :node="node"
+        @show-http-info="showHttpInfo = true"
+      />
     </tbody>
   </NodesTableContainer>
+
+  <v-dialog v-model="showHttpInfo" max-width="500px">
+    <v-card>
+      <v-card-title class="text-h6">
+        {{ t('nodes.popup.http_restriction_title') }}
+      </v-card-title>
+
+      <v-card-text class="text-body-2">
+        <p class="mb-4">
+          {{ t('nodes.popup.http_restriction_intro') }}
+        </p>
+
+        <h3 class="font-weight-bold mb-2">
+          {{ t('nodes.popup.http_vs_https_title') }}
+        </h3>
+        <p class="mb-4">
+          {{ t('nodes.popup.http_vs_https_http') }}<br />
+          {{ t('nodes.popup.http_vs_https_https') }}
+        </p>
+
+        <h3 class="font-weight-bold mb-2">
+          {{ t('nodes.popup.adamant_encryption_title') }}
+        </h3>
+        <p class="mb-4">
+          {{ t('nodes.popup.adamant_encryption_text') }}
+        </p>
+
+        <h3 class="font-weight-bold mb-2">
+          {{ t('nodes.popup.how_to_allow_title') }}
+        </h3>
+        <ul class="ml-4">
+          <li>{{ t('nodes.popup.how_to_allow_browser') }}</li>
+          <li>{{ t('nodes.popup.how_to_allow_http_app') }}</li>
+        </ul>
+      </v-card-text>
+
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" @click="showHttpInfo = false">
+          {{ t('nodes.popup.close') }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import NodesTableContainer from '@/components/nodes/components/NodesTableContainer.vue'
 import NodesTableHead from '@/components/nodes/components/NodesTableHead.vue'
@@ -35,10 +86,12 @@ export default defineComponent({
 
       return [...arr].sort(sortNodesFn)
     })
+    const { t } = useI18n()
+    const showHttpInfo = ref(false)
 
     const isAllNodesChecked = computed({
       get() {
-        return admNodes.value.every(node => node.active)
+        return admNodes.value.every((node) => node.active)
       },
       set(value) {
         store.dispatch('nodes/toggleAll', { nodesType: 'adm', active: value })
@@ -46,13 +99,17 @@ export default defineComponent({
     })
 
     const isPartiallyChecked = computed(() => {
-      return admNodes.value.some(node => node.active) && admNodes.value.some(node => !node.active)
+      return (
+        admNodes.value.some((node) => node.active) && admNodes.value.some((node) => !node.active)
+      )
     })
 
     return {
       admNodes,
       classes,
       isAllNodesChecked,
+      showHttpInfo,
+      t,
       isPartiallyChecked
     }
   }

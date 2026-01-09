@@ -10,7 +10,7 @@
     </NodeColumn>
 
     <NodeColumn :class="classes.columnStatus">
-      <NodeStatus :node="node" />
+      <NodeStatus :node="node" @show-http-info="$emit('showHttpInfo')" />
     </NodeColumn>
 
     <NodeColumn>
@@ -40,6 +40,7 @@ const classes = {
 }
 
 export default {
+  emits: ['showHttpInfo'],
   components: {
     NodeStatusCheckbox,
     NodeColumn,
@@ -119,7 +120,7 @@ export default {
 <style lang="scss">
 .amd-nodes-table-item {
   line-height: 14px;
-  
+
   &__column--status {
     max-width: 84px;
   }
