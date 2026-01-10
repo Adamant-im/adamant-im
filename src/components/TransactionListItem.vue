@@ -3,7 +3,7 @@
     <v-list-item avatar :class="`${className}__tile`" @click="onClickTransaction">
       <template #prepend>
         <v-icon
-          :class="`${className}__prepend-icon`"
+          :class="`${className}__prepend-icon ${className}__prepend-icon ${directionClass}`"
           :icon="isStringEqualCI(senderId, userId) ? mdiAirplaneTakeoff : mdiAirplaneLanding"
           size="small"
         />
@@ -310,8 +310,15 @@ export default {
 /** Themes **/
 .v-theme--light.v-list {
   .transaction-item {
-    &__amount {
+    &__amount,
+    &__prependIcon {
       color: map.get(colors.$adm-colors, 'regular');
+      &--is-incoming {
+        color: map.get(colors.$adm-colors, 'good');
+      }
+      &--is-outgoing {
+        color: map.get(colors.$adm-colors, 'danger');
+      }
     }
     &__rates {
       color: map.get(colors.$adm-colors, 'muted');
@@ -329,8 +336,9 @@ export default {
 }
 .v-theme--dark.v-list {
   .transaction-item {
-    &__amount {
-      color: map.get(colors.$adm-colors, 'regular');
+    &__amount,
+    &__prependIcon {
+      color: map.get(colors.$adm-colors, 'grey-transparent');
       &--is-incoming {
         color: map.get(colors.$adm-colors, 'good');
       }

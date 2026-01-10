@@ -8,10 +8,13 @@ export function normalizeTransaction(
   ownerAddress: string,
   currentHeight?: number
 ): BtcTransaction {
-  const senders = tx.vin.map((vin) => vin.prevout.scriptpubkey_address)
-  const recipients = tx.vout.map((vout) => vout.scriptpubkey_address)
+  const senders = [...new Set(tx.vin.map((vin) => vin.prevout.scriptpubkey_address))]
+  const recipients = [...new Set(tx.vout.map((vout) => vout.scriptpubkey_address))]
 
   const direction = senders.includes(ownerAddress) ? 'from' : 'to'
+  const isSelfTransfer =
+    senders.every((addr) => addr === ownerAddress) &&
+    recipients.every((addr) => addr === ownerAddress)
 
   if (direction === 'from') {
     // Disregard our address for an outgoing transaction unless it's the only address (i.e. we're sending to ourselves)
@@ -31,13 +34,16 @@ export function normalizeTransaction(
   // Calculate amount from outputs:
   // * for the outgoing transactions take outputs that DO NOT target us
   // * for the incoming transactions take outputs that DO target us
-  const amount = tx.vout.reduce(
-    (sum, t) =>
-      (direction === 'to') === (t.scriptpubkey_address === ownerAddress)
-        ? sum + Number(t.value)
-        : sum,
-    0
-  )
+  // * for self-transfers (all inputs and outputs are the same address) take the first output
+  const amount = isSelfTransfer
+    ? Number(tx.vout[0].value)
+    : tx.vout.reduce(
+        (sum, t) =>
+          (direction === 'to') === (t.scriptpubkey_address === ownerAddress)
+            ? sum + Number(t.value)
+            : sum,
+        0
+      )
 
   const confirmations = currentHeight
     ? currentHeight - tx.status.block_height + 1
