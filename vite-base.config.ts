@@ -59,7 +59,8 @@ export default defineConfig({
     extensions: ['.tsx', '.ts', '.js', '.json', '.vue']
   },
   server: {
-    port: 8080
+    port: process.env.HTTPS ? 5173 : 8080,
+    https: process.env.HTTPS
   },
   // Some old libs like `promise-queue` and `readable-stream` still uses Webpack.
   define: {
