@@ -16,6 +16,7 @@ import axios from 'axios'
 import { defineComponent, onMounted, PropType, ref } from 'vue'
 import { Picker } from 'emoji-mart'
 import { useIsMobile } from '@/hooks/useIsMobile'
+import { logger } from '@/utils/devTools/logger'
 
 const className = 'emoji-picker'
 const classes = {
@@ -57,7 +58,7 @@ export default defineComponent({
       if (container.value && picker.value) {
         container.value.appendChild(picker.value as unknown as Node)
       } else {
-        console.warn('Element not found')
+        logger.log('EmojiPicker', 'warn', 'Element not found')
       }
     })
 

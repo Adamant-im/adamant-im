@@ -140,7 +140,7 @@
           :flashing="flashingMessageId === message.id"
           :data-id="message.id"
           :partner-id="partnerId"
-          @resend="() => console.debug('Not implemented')"
+          @resend="() => logger.log('Chat', 'debug', 'Not implemented')"
           @click:quoted-message="onQuotedMessageClick"
           @swipe:left="onSwipeLeft(message)"
           @longpress="onMessageLongPress(message)"
@@ -276,6 +276,7 @@ import { useAttachments } from '@/stores/attachments'
 import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Visibility from 'visibilityjs'
 import copyToClipboard from 'copy-to-clipboard'
+import { logger } from '@/utils/devTools/logger'
 
 import {
   Cryptos,
@@ -793,7 +794,9 @@ const onQuotedMessageClick = async (transactionId: string) => {
   // if after fetching chat history the message still cannot be found
   // then do nothing
   if (transactionIndex === -1) {
-    console.warn(
+    logger.log(
+      'Chat',
+      'warn',
       'onQuotedMessageClick: Transaction not found in the chat history',
       `tx.id="${transactionId}"`
     )

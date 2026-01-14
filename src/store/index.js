@@ -25,7 +25,6 @@ import botCommandsModule from './modules/bot-commands'
 import bitcoinModule from './modules/btc'
 import dashModule from './modules/dash'
 import delegatesModule from './modules/delegates'
-import devTools from './modules/dev-tools'
 import dogeModule from './modules/doge'
 import klyModule from './modules/kly'
 import nodesModule from './modules/nodes'
@@ -264,7 +263,6 @@ const store = {
   modules: {
     adm: admModule, // ADM transfers
     attachment: attachmentModule, // Files and photos attachments
-    devTools,
     doge: dogeModule,
     kly: klyModule,
     dash: dashModule,

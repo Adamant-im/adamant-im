@@ -9,6 +9,7 @@ import { UTXO } from './types/api/common/unspent'
 import { GetAddressParams } from './types/api/get-address/get-address-params'
 import { GetAddressResult } from './types/api/get-address/get-address-result'
 import { GetUnspentsParams } from './types/api/get-unspents/get-unspents-params'
+import { logger } from '@/utils/devTools/logger'
 
 /**
  * Provides methods for calling the ADAMANT API.
@@ -48,7 +49,7 @@ export class BtcIndexerClient extends Client<BtcIndexer> {
     const transaction = await this.request<Transaction>('GET', `/tx/${transactionId}`)
 
     const height = await this.getHeight().catch((err) => {
-      console.warn('BtcClient: Failed to get current height:', err)
+      logger.log('BtcIndexerClient', 'warn', 'BtcClient: Failed to get current height:', err)
       return undefined
     })
 

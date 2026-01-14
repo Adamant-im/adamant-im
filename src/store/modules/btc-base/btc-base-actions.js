@@ -10,6 +10,7 @@ import {
 } from '@/lib/pending-transactions'
 import { storeCryptoAddress, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import shouldUpdate from '@/store/utils/coinUpdatesGuard'
+import { logger } from '@/utils/devTools/logger'
 
 const DEFAULT_CUSTOM_ACTIONS = () => ({})
 let interval
@@ -101,7 +102,7 @@ function createActions(options) {
           commit('setBalanceActualUntil', Date.now() + validInterval)
         } catch (err) {
           commit('setBalanceStatus', FetchStatus.Error)
-          console.warn(err)
+          logger.log('btc-base-actions', 'warn', err)
         }
       }
     },
@@ -152,7 +153,7 @@ function createActions(options) {
         })
         .catch((err) => {
           context.commit('setBalanceStatus', FetchStatus.Error)
-          console.warn(err)
+          logger.log('btc-base-actions', 'warn', err)
         })
     },
 
@@ -214,7 +215,9 @@ function createActions(options) {
       // 7. Send signed transaction to the blockchain
       try {
         const hash = await api.sendTransaction(signedTransaction.hex)
-        console.log(
+        logger.log(
+          'btc-base-actions',
+          'info',
           `${crypto} transaction has been sent: localHash: ${signedTransaction.txid}, responseHash: ${hash}`
         )
 

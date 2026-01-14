@@ -75,6 +75,7 @@ import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog.vue'
 import partnerName from '@/mixins/partnerName'
 import { mdiDotsVertical } from '@mdi/js'
+import { logger } from '@/utils/devTools/logger'
 
 export default {
   components: {
@@ -172,7 +173,7 @@ export default {
       this.$store.dispatch('snackbar/show', {
         message: this.$t('transfer.invalid_qr_code')
       })
-      console.warn(error)
+      logger.log('ChatStartDialog', 'warn', error)
     },
 
     /**

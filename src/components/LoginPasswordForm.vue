@@ -53,6 +53,7 @@ import { computed, ref, useTemplateRef } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
+import { logger } from '@/utils/devTools/logger'
 
 import { clearDb } from '@/lib/idb'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
@@ -136,7 +137,7 @@ const submit = () => {
       } else {
         emit('error', t('errors.something_went_wrong'))
       }
-      console.log(err)
+      logger.log('LoginPassswordForm', 'info', err)
     })
     .finally(() => {
       showSpinner.value = false
