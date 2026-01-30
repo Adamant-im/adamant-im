@@ -122,7 +122,7 @@ const coinNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/coins'
 const allCoinNodesDisabled = computed(() =>
   coinNodes.value.every((node) => node.status === 'disabled')
 )
-const wallets = computed(() => {
+const wallets = computed<Wallet[]>(() => {
   const state = store.state
   return orderedVisibleWalletSymbols.value.map((crypto: CoinSymbol) => {
     const key = crypto.symbol.toLowerCase()
@@ -205,15 +205,17 @@ const handleBalanceClick = (crypto: string) => {
 }
 
 const onWheel = (e: WheelEvent) => {
-  const currentWallet = wallets.value.find(
-    (wallet: Wallet) => wallet.cryptoCurrency === currentWallet.value
-  )
-  const currentWalletIndex = wallets.value.indexOf(currentWallet)
+  const activeWallet = wallets.value.find((w) => w.cryptoCurrency === currentWallet.value)
 
-  const nextWalletIndex = e.deltaY < 0 ? currentWalletIndex + 1 : currentWalletIndex - 1
-  const nextWallet = wallets.value[nextWalletIndex]
+  if (!activeWallet) return
 
-  if (nextWallet) currentWallet.value = nextWallet.cryptoCurrency
+  const currentIndex = wallets.value.indexOf(activeWallet)
+  const nextIndex = e.deltaY < 0 ? currentIndex + 1 : currentIndex - 1
+  const nextWallet = wallets.value[nextIndex]
+
+  if (nextWallet) {
+    currentWallet.value = nextWallet.cryptoCurrency
+  }
 }
 
 const currentWallet = computed({
