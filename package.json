@@ -36,7 +36,7 @@
     "bump-patch": "npm version patch",
     "bump-minor": "npm version minor",
     "bump-major": "npm version major",
-    "postinstall": "npm exec husky && electron-builder install-app-deps && npm run schema:generate"
+    "postinstall": "npm exec husky && npm run schema:generate"
   },
   "dependencies": {
     "@capacitor-community/file-opener": "^7.0.1",
@@ -179,10 +179,7 @@
     "vite-plugin-pwa": "^1.2.0",
     "vite-plugin-wasm": "^3.5.0",
     "vitest": "^4.0.17",
-    "vue-cli-plugin-i18n": "^2.3.2",
-    "vue-cli-plugin-vuetify": "~2.5.8",
     "vue-eslint-parser": "^10.2.0",
-    "vue-template-compiler": "^2.7.16",
     "vue-tsc": "^3.2.4",
     "web3-types": "^1.10.0"
   },
@@ -225,5 +222,11 @@
     "erc20",
     "business",
     "2fa"
-  ]
+  ],
+  "overrides": {
+    "elliptic": "^6.6.1",
+    "valibot": "^0.36.0",
+    "validator": "^13.12.0",
+    "tar": "^7.4.3"
+  }
 }
