@@ -129,7 +129,7 @@ onBeforeUnmount(() => {
 
 .v-theme--light.app-snackbar {
   :deep(.v-snackbar__wrapper) {
-    background-color: map.get(colors.$adm-colors, 'secondary');
+    background-color: map.get(colors.$adm-colors, 'secondary2');
     color: map.get(colors.$adm-colors, 'regular');
   }
 }
