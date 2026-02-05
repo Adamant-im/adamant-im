@@ -11,7 +11,7 @@
       :user-id="userId"
       :loading="loading && !isGettingPublicKey"
       :locale="$i18n.locale"
-      :class="{ 'no-scroll': actionsDropdownMessageId != -1 }"
+      :no-scroll="actionsDropdownMessageId != -1"
       @scroll:top="onScrollTop"
       @scroll:bottom="onScrollBottom"
       @scroll="onScroll"
@@ -966,11 +966,5 @@ const onKeyPress = (e: KeyboardEvent) => {
   border-radius: 50%;
   background-color: color.adjust(map.get(colors.$adm-colors, 'primary2'), $alpha: -0.7);
   box-shadow: none;
-}
-
-:deep(.no-scroll) {
-  .a-chat__body-messages {
-    overflow: hidden;
-  }
 }
 </style>

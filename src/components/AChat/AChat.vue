@@ -1,5 +1,5 @@
 <template>
-  <div :class="classes.root">
+  <div :class="[classes.root, { [classes.noScroll]: props.noScroll }]">
     <div :class="classes.content">
       <slot name="header" />
 
@@ -73,7 +73,8 @@ const classes = {
   fab: `${className}__fab`,
   overlay: `${className}__overlay`,
   spinner: `${className}__spinner`,
-  spinnerWrapper: `${className}__spinner-wrapper`
+  spinnerWrapper: `${className}__spinner-wrapper`,
+  noScroll: `${className}--no-scroll`
 }
 
 type Props = {
@@ -85,6 +86,7 @@ type Props = {
   loading: boolean
   locale: string
   partnerId: string
+  noScroll?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -302,6 +304,10 @@ const spinnerTop = computed(() => {
     justify-content: center;
     pointer-events: none;
     z-index: 100;
+  }
+
+  &--no-scroll &__body-messages {
+    overflow: hidden;
   }
 }
 
