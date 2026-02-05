@@ -3,7 +3,8 @@
     <free-tokens-dialog v-model="isShowFreeTokensDialog" />
     <a-chat
       ref="chatRef"
-      :messages="messages"
+      :key="dateRefreshKey"
+      :messages="groupedMessages"
       :show-new-chat-placeholder="showNewChatPlaceholder"
       :partners="partners"
       :partner-id="partnerId"
@@ -277,7 +278,13 @@ import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, wat
 import Visibility from 'visibilityjs'
 import copyToClipboard from 'copy-to-clipboard'
 
-import { Cryptos, Fees, UPLOAD_MAX_FILE_COUNT, UPLOAD_MAX_FILE_SIZE } from '@/lib/constants'
+import {
+  Cryptos,
+  Fees,
+  UPLOAD_MAX_FILE_COUNT,
+  UPLOAD_MAX_FILE_SIZE,
+  CHAT_MESSAGE_BUBBLE_TIME_OFFSET
+} from '@/lib/constants'
 import EmojiPicker from '@/components/EmojiPicker.vue'
 
 import { mdiChevronDown } from '@mdi/js'
@@ -333,6 +340,9 @@ const { t } = useI18n()
 const showSpinner = useChatsSpinner()
 
 const isMenuOpen = ref(false)
+
+const dateRefreshKey = ref(0)
+const lastVisibleDate = ref(new Date().toDateString())
 
 const attachments = useAttachments(props.partnerId)()
 const handleAttachments = (files: FileData[]) => {
@@ -396,6 +406,40 @@ const isNewChat = computed(() => store.getters['chat/isNewChat'](props.partnerId
 const shouldDisableInput = computed(
   () => isGettingPublicKey.value || isKeyMissing.value || !store.state.publicKeys[props.partnerId]
 )
+const groupedMessages = computed(() => {
+  if (!messages.value.length) return []
+
+  const result: NormalizedChatMessageTransaction[] = []
+  let group: NormalizedChatMessageTransaction[] = []
+
+  messages.value.forEach((msg: NormalizedChatMessageTransaction, index: number) => {
+    const prevMsg = messages.value[index - 1]
+    const nextMsg = messages.value[index + 1]
+
+    const isSameGroupAsPrev =
+      prevMsg &&
+      msg.senderId === prevMsg.senderId &&
+      msg.timestamp - prevMsg.timestamp < CHAT_MESSAGE_BUBBLE_TIME_OFFSET
+    const isSameGroupAsNext =
+      nextMsg &&
+      msg.senderId === nextMsg.senderId &&
+      nextMsg.timestamp - msg.timestamp < CHAT_MESSAGE_BUBBLE_TIME_OFFSET
+
+    msg.showTime = !isSameGroupAsPrev
+
+    msg.showBubble = false
+
+    group.push(msg)
+
+    if (!isSameGroupAsNext) {
+      group[group.length - 1].showBubble = true
+      result.push(...group)
+      group = []
+    }
+  })
+
+  return result
+})
 
 const getPartnerName = (address: string) => {
   const name: string = store.getters['partners/displayName'](address) || ''
@@ -438,6 +482,7 @@ const showNewChatPlaceholder = ref(false)
 
 const chatFormRef = ref<any>(null) // @todo type
 const chatRef = ref<any>(null) // @todo type
+const fetchMessagesTimeoutId = ref<ReturnType<typeof setTimeout> | null>(null)
 
 // Scroll to the bottom every time window focused by desktop notification
 watch(
@@ -519,10 +564,24 @@ onMounted(async () => {
 
   scrollBehavior()
   nextTick(() => {
+    if (!chatRef.value) return
     isScrolledToBottom.value = chatRef.value.isScrolledToBottom()
   })
   visibilityId.value = Visibility.change((event, state) => {
-    if (state === 'visible' && isScrolledToBottom.value) markAsRead()
+    if (state === 'visible') {
+      const currentDate = new Date().toDateString()
+
+      if (currentDate !== lastVisibleDate.value) {
+        dateRefreshKey.value = Date.now()
+        lastVisibleDate.value = currentDate
+      }
+
+      nextTick(() => {
+        chatRef.value?.maintainScrollPosition()
+      })
+
+      if (isScrolledToBottom.value) markAsRead()
+    }
   })
 
   const draftMessage = store.getters['draftMessage/draftReplyTold'](props.partnerId)
@@ -533,6 +592,9 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeyPress)
   Visibility.unbind(Number(visibilityId.value))
+  if (fetchMessagesTimeoutId.value) {
+    clearTimeout(fetchMessagesTimeoutId.value)
+  }
 })
 
 const handleEmptyChat = async () => {
@@ -540,7 +602,10 @@ const handleEmptyChat = async () => {
     store.commit('chat/addNewChat', { partnerId: props.partnerId })
   }
 
-  if (isNewChat.value) {
+  if (
+    isNewChat.value ||
+    (!store.state.publicKeys[props.partnerId] && !isWelcomeChat(props.partnerId))
+  ) {
     const partnerName = store.getters['chat/getPartnerName'](props.partnerId)
 
     await createChat(props.partnerId, partnerName)
@@ -741,7 +806,9 @@ const onQuotedMessageClick = async (transactionId: string) => {
     return
   }
 
-  await chatRef.value.scrollToMessageEasy(transactionIndex)
+  if (chatRef.value) {
+    await chatRef.value.scrollToMessageEasy(transactionIndex)
+  }
   highlightMessage(transactionId)
 }
 
@@ -865,9 +932,10 @@ const fetchChatMessages = async () => {
       if (areAdmNodesOnline.value) {
         // give health check time to be finished and then retry in case of miscoordination of nodes statuses
         // (when areAdmNodesOnline says there are some nodes online, but the request fails with allNodesOffline error)
-        return setTimeout(async () => {
+        fetchMessagesTimeoutId.value = setTimeout(async () => {
           await fetchChatMessages()
         }, 5000)
+        return
       }
 
       return (allowFetchingMessages.value = true)
@@ -877,14 +945,14 @@ const fetchChatMessages = async () => {
     if (isWelcomeChat(props.partnerId)) {
       loading.value = false
     }
-    chatRef.value.maintainScrollPosition()
+    chatRef.value?.maintainScrollPosition()
   }
 }
 const fetchUntilFindTransaction = (transactionId: string) => {
   const fetchMessages = async () => {
     await store.dispatch('chat/getChatRoomMessages', { contactId: props.partnerId })
 
-    chatRef.value.maintainScrollPosition()
+    chatRef.value?.maintainScrollPosition()
 
     const transactionFound = store.getters['chat/partnerMessageById'](
       props.partnerId,
@@ -911,6 +979,9 @@ const fetchUntilFindTransaction = (transactionId: string) => {
 
 const scrollBehavior = () => {
   nextTick(() => {
+    if (!chatRef.value) {
+      return
+    }
     if (numOfNewMessages.value > 0) {
       chatRef.value.scrollToMessage(numOfNewMessages.value - 1)
     } else if (scrollPosition.value !== false) {
@@ -935,7 +1006,7 @@ const onKeyPress = (e: KeyboardEvent) => {
 @use '@/assets/styles/settings/_colors.scss';
 
 .chat-menu {
-  margin-right: 8px;
+  margin-right: 12px;
 }
 .chat {
   height: calc(100vh - var(--v-layout-bottom));
