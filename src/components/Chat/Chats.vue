@@ -354,15 +354,15 @@ const checkDate = () => {
   }
   &__messages {
     &.chats-view__messages--chat {
+      max-height: calc(100vh - 56px - var(--v-layout-bottom));
+      overflow-y: auto;
+
       @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
         max-height: calc(
           100vh -
             56px - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top)
         );
       }
-
-      max-height: calc(100vh - 56px - var(--v-layout-bottom));
-      overflow-y: auto;
     }
   }
 
