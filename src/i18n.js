@@ -50,5 +50,6 @@ export const i18n = createI18n({
   },
   silentTranslationWarn: true,
   globalInjection: true,
-  allowComposition: true
+  allowComposition: true,
+  legacy: false
 })
