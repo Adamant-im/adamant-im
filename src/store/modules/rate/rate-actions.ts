@@ -32,7 +32,13 @@ export const actions: ActionTree<RateState, RootState> = {
     handler({ dispatch }) {
       function repeat() {
         dispatch('getAllRates')
-          .catch((err) => console.error(err))
+          .catch((err) => {
+            if (err.name === 'AllNodesOfflineError') {
+              console.warn(`[Rates] Service temporarily unavailable: ${err.message}`)
+            } else {
+              console.error(err)
+            }
+          })
           .then(() => {
             interval = setTimeout(repeat, UPDATE_RATES_INTERVAL)
           })

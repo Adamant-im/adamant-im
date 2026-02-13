@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url'
 import { deferScripsPlugin } from './vite-config/plugins/deferScriptsPlugin'
 import { preloadCSSPlugin } from './vite-config/plugins/preloadCSSPlugin'
 import { excludeBip39Wordlists } from './vite-config/rollup/excludeBip39Wordlists'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 const env = loadEnv('production', process.cwd())
 const basePublicPath = env.VITE_PUBLIC_PATH || '/'
@@ -29,7 +30,14 @@ export default defineConfig({
       Buffer: ['buffer', 'Buffer']
     }),
     deferScripsPlugin(),
-    preloadCSSPlugin()
+    preloadCSSPlugin(),
+    nodePolyfills({
+      include: ['util', 'process', 'buffer', 'events', 'stream'],
+      globals: {
+        Buffer: true,
+        process: true
+      }
+    })
   ],
   css: {
     postcss: {

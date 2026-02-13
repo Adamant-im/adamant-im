@@ -38,7 +38,8 @@ export class AdmNode extends Node<AxiosInstance> {
 
   protected buildClient(): AxiosInstance {
     return axios.create({
-      baseURL: this.url
+      baseURL: this.url,
+      timeout: 10000
     })
   }
 

@@ -119,7 +119,7 @@ export abstract class Node<C = unknown> {
     this.client = this.buildClient()
 
     if (this.active) {
-      void this.fetchNodeVersion()
+      void this.fetchNodeVersion().catch(() => {})
     }
   }
 
@@ -151,7 +151,7 @@ export abstract class Node<C = unknown> {
 
   updateHealthCheckInterval(interval: HealthcheckInterval) {
     this.healthCheckInterval = interval
-    this.startHealthcheck().catch(console.error)
+    this.startHealthcheck().catch(() => {})
   }
 
   private fireStatusChange() {

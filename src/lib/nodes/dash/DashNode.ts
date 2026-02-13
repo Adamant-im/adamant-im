@@ -32,12 +32,16 @@ export class DashNode extends Node<AxiosInstance> {
   }
 
   protected async fetchNodeVersion(): Promise<void> {
-    const { buildversion } = await this.invoke<NetworkInfo>({
-      method: 'getnetworkinfo'
-    })
+    try {
+      const { buildversion } = await this.invoke<NetworkInfo>({
+        method: 'getnetworkinfo'
+      })
 
-    if (buildversion) {
-      this.version = buildversion.replace('v', '')
+      if (buildversion) {
+        this.version = buildversion.replace('v', '')
+      }
+    } catch (e) {
+      console.warn(e)
     }
   }
 

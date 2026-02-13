@@ -1,5 +1,7 @@
 <template>
   <v-form ref="form" :class="classes.root" @submit.prevent="submit">
+    <!-- Hidden input with username to prevent Chorme warning in console -->
+    <input type="text" name="username" autocomplete="username" style="display: none" />
     <v-row no-gutters>
       <slot>
         <!--     Todo: check src/components/PasswordSetDialog.vue component and consider the possibility to move common code to new component  -->

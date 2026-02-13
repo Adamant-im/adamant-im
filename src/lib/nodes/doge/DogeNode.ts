@@ -35,13 +35,17 @@ export class DogeNode extends Node<AxiosInstance> {
   }
 
   protected async fetchNodeVersion(): Promise<void> {
-    const { version } = await this.invoke<NetworkInfo>({
-      method: 'getnetworkinfo',
-      params: []
-    })
+    try {
+      const { version } = await this.invoke<NetworkInfo>({
+        method: 'getnetworkinfo',
+        params: []
+      })
 
-    if (version) {
-      this.version = formatDogeVersion(version)
+      if (version) {
+        this.version = formatDogeVersion(version)
+      }
+    } catch (e) {
+      console.warn(e)
     }
   }
 

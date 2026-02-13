@@ -12,7 +12,8 @@ export class RateInfoService extends Node<AxiosInstance> {
   }
   protected buildClient(): AxiosInstance {
     return axios.create({
-      baseURL: this.url
+      baseURL: this.url,
+      timeout: 10000
     })
   }
 
@@ -41,9 +42,10 @@ export class RateInfoService extends Node<AxiosInstance> {
 
   formatHeight(height: number): string {
     return super.formatHeight(
-      Number(Math.ceil(height / 1000)
-        .toString()
-        .substring(2)
+      Number(
+        Math.ceil(height / 1000)
+          .toString()
+          .substring(2)
       )
     )
   }

@@ -30,9 +30,13 @@ export class EthNode extends Node<Web3Eth> {
   }
 
   protected async fetchNodeVersion(): Promise<void> {
-    const { clientName, simplifiedVersion } = formatEthVersion(await this.client.getNodeInfo())
-    this.version = simplifiedVersion
-    this.clientName = clientName
+    try {
+      const { clientName, simplifiedVersion } = formatEthVersion(await this.client.getNodeInfo())
+      this.version = simplifiedVersion
+      this.clientName = clientName
+    } catch (e) {
+      console.warn(e)
+    }
   }
 
   displayVersion(): string {

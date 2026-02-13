@@ -50,7 +50,7 @@ const show = computed({
 })
 const message = computed(() => store.state.snackbar.message)
 const color = computed(() => store.state.snackbar.color)
-const variant = computed(() => store.state.snackbar.variant)
+const variant = computed(() => store.state.snackbar.variant || 'flat')
 const timeout = computed(() =>
   message.value === t('connection.offline') ? -1 : store.state.snackbar.timeout
 )

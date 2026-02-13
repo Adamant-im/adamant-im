@@ -13,7 +13,7 @@ export class KlyIndexer extends Node<AxiosInstance> {
   }
 
   protected buildClient(): AxiosInstance {
-    return axios.create({ baseURL: `${this.url}/api/v3` })
+    return axios.create({ baseURL: `${this.url}/api/v3`, timeout: 10000 })
   }
 
   /**

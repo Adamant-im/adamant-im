@@ -13,11 +13,13 @@ export class RateInfoClient extends Client<RateInfoService> {
   }
 
   async getAllRates(): Promise<RateInfoResponse> {
+    await this.ready
     const node = this.getNode()
     return await node.getAllRates()
   }
 
   async getHistory(timestamp: number) {
+    await this.ready
     const node = this.getNode()
     return await node.getHistory({ timestamp })
   }

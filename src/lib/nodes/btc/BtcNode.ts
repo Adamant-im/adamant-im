@@ -34,12 +34,16 @@ export class BtcNode extends Node<AxiosInstance> {
   }
 
   protected async fetchNodeVersion(): Promise<void> {
-    const { version } = await this.invoke<NetworkInfo>({
-      method: 'getnetworkinfo'
-    })
+    try {
+      const { version } = await this.invoke<NetworkInfo>({
+        method: 'getnetworkinfo'
+      })
 
-    if (version) {
-      this.version = formatBtcVersion(version)
+      if (version) {
+        this.version = formatBtcVersion(version)
+      }
+    } catch (e) {
+      console.warn(e)
     }
   }
 

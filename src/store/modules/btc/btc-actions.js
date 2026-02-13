@@ -16,9 +16,8 @@ const customActions = (getApi) => ({
         context.commit('status', { balance })
         context.commit('setBalanceStatus', FetchStatus.Success)
       })
-      .catch((err) => {
+      .catch(() => {
         context.commit('setBalanceStatus', FetchStatus.Error)
-        console.warn(err)
       })
 
     // The unspent transactions are needed to estimate the fee
