@@ -31,7 +31,7 @@
 <script lang="ts" setup>
 import { mdiClose } from '@mdi/js'
 import { useI18n } from 'vue-i18n'
-import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
+import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex'
 
 const className = 'app-snackbar'
@@ -70,6 +70,12 @@ const adjustBottom = () => {
 
   keyboardHeight.value = height > 100 ? height : 0
 }
+
+watch(show, (newValue) => {
+  if (newValue) {
+    setTimeout(adjustBottom, 100)
+  }
+})
 
 onMounted(() => {
   window.visualViewport?.addEventListener('resize', adjustBottom)
