@@ -3,6 +3,7 @@ import { fileURLToPath, URL } from 'node:url'
 import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import path from 'node:path'
 import { readFile } from 'node:fs'
+import { logger } from '@/utils/devTools/logger'
 
 const SCHEME = 'app'
 const __filename = fileURLToPath(import.meta.url)
@@ -155,8 +156,8 @@ app.on('ready', async () => {
   if (import.meta.env.DEV) {
     // Install Vue Devtools
     installExtension(REDUX_DEVTOOLS, { loadExtensionOptions: { allowFileAccess: true } })
-      .then((name) => console.log(`Electron extensions: added ${name}`))
-      .catch((err) => console.log('Electron extensions: an error occurred: ', err))
+      .then((name) => logger.log('main', 'info', `Electron extensions: added ${name}`))
+      .catch((err) => logger.log('main', 'info', 'Electron extensions: an error occurred: ', err))
   }
   createWindow()
 })

@@ -3,6 +3,7 @@ import baseActions from '../kly-base/kly-base-actions'
 import { kly } from '../../../lib/nodes/kly'
 import shouldUpdate from '../../utils/coinUpdatesGuard'
 import { validateStoredCryptoAddresses } from '@/lib/store-crypto-address.js'
+import { logger } from '@/utils/devTools/logger'
 
 let interval
 
@@ -28,7 +29,7 @@ const customActions = (getAccount) => ({
         commit('setBalanceActualUntil', Date.now() + CryptosInfo.KLY.balanceValidInterval)
       } catch (err) {
         commit('setBalanceStatus', FetchStatus.Error)
-        console.warn(err)
+        logger.log('kly-actions', 'warn', err)
       }
     }
   },
@@ -80,7 +81,7 @@ const customActions = (getAccount) => ({
     } catch (err) {
       commit('setBalanceStatus', FetchStatus.Error)
 
-      console.warn(err)
+      logger.log('kly-actions', 'warn', err)
     }
 
     // Last block height
@@ -93,7 +94,7 @@ const customActions = (getAccount) => ({
 
       commit('height', height)
     } catch (err) {
-      console.warn(err)
+      logger.log('kly-actions', 'warn', err)
     }
   },
 

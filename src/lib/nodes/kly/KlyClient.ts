@@ -5,6 +5,7 @@ import type { NodeInfo } from '@/types/wallets'
 import { RpcMethod, RpcResults } from './types/api'
 import { KlyNode } from './KlyNode'
 import { Client } from '../abstract.client'
+import { logger } from '@/utils/devTools/logger'
 
 export class KlyClient extends Client<KlyNode> {
   constructor(endpoints: NodeInfo[] = [], minNodeVersion = '0.0.0') {
@@ -57,7 +58,13 @@ export class KlyClient extends Client<KlyNode> {
         throw new Error(result.errorMessage)
       }
 
-      console.debug(`txpool_dryRunTransaction: Dry run transaction`, transaction, result)
+      logger.log(
+        'KlyClient',
+        'debug',
+        `txpool_dryRunTransaction: Dry run transaction`,
+        transaction,
+        result
+      )
 
       return 'debug_tx_id' // transactionId
     }

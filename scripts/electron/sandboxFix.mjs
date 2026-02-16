@@ -3,9 +3,10 @@
 import fs from 'fs/promises'
 import path from 'path'
 import chalk from 'chalk'
+import { logger } from '@/utils/devTools/logger'
 
 const log = (message, dotFormatting = chalk.blue) => {
-  console.log(`  ${dotFormatting('•')} ${message}`)
+  logger.log('sandboxFix', 'info', `  ${dotFormatting('•')} ${message}`)
 }
 
 const afterPackHook = async (params) => {

@@ -118,6 +118,7 @@ import FileIcon from '@/components/icons/common/File.vue'
 import LoginPasswordForm from '@/components/LoginPasswordForm.vue'
 import Logo from '@/components/icons/common/Logo.vue'
 import { navigateByURI } from '@/router/navigationGuard'
+import { logger } from '@/utils/devTools/logger'
 
 const store = useStore()
 const route = useRoute()
@@ -141,7 +142,7 @@ const onDetectQrcodeError = (err: unknown) => {
   store.dispatch('snackbar/show', {
     message: t('login.invalid_qr_code')
   })
-  console.warn(err)
+  logger.log('Login', 'warn', err)
 }
 
 const onLogin = () => {

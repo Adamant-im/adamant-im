@@ -3,6 +3,7 @@ import { $ } from 'execa'
 import { copyFile, readdir, readFile, writeFile, mkdir, rm } from 'fs/promises'
 import { resolve, join } from 'path'
 import _ from 'lodash'
+import { logger } from '@/utils/devTools/logger'
 
 const CRYPTOS_DATA_FILE_PATH = resolve('src/lib/constants/cryptos/data.json')
 const CRYPTOS_ICONS_DIR_PATH = resolve('src/components/icons/cryptos')
@@ -22,7 +23,7 @@ async function run(branch = 'master') {
   await $`git submodule update`
   await $`git submodule foreach git pull origin ${branch}`
 
-  console.log('Updating coins data from `adamant-wallets`. Using branch:', branch)
+  logger.log('wallets', 'info', 'Updating coins data from `adamant-wallets`. Using branch:', branch)
 
   const { coins, config, coinDirNames, coinSymbols } = await initCoins()
   await applyBlockchains(coins, coinSymbols)
@@ -36,7 +37,7 @@ async function run(branch = 'master') {
   await updateTestnetConfig(config)
   await updateTorConfig(config)
 
-  console.log('Coins updated successfully')
+  logger.log('wallets', 'info', 'Coins updated successfully')
 }
 
 async function initCoins() {
