@@ -1,6 +1,5 @@
 import { app, BrowserWindow, Menu, nativeTheme, protocol } from 'electron'
 import { fileURLToPath, URL } from 'node:url'
-import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import path from 'node:path'
 import { readFile } from 'node:fs'
 
@@ -152,12 +151,6 @@ app.on('activate', () => {
 // This method will be called when Electron has finished initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
-  if (import.meta.env.DEV) {
-    // Install Vue Devtools
-    installExtension(REDUX_DEVTOOLS, { loadExtensionOptions: { allowFileAccess: true } })
-      .then((name) => console.log(`Electron extensions: added ${name}`))
-      .catch((err) => console.log('Electron extensions: an error occurred: ', err))
-  }
   createWindow()
 })
 

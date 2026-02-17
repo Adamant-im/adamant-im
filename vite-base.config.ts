@@ -12,6 +12,7 @@ import { deferScripsPlugin } from './vite-config/plugins/deferScriptsPlugin'
 import { preloadCSSPlugin } from './vite-config/plugins/preloadCSSPlugin'
 import { excludeBip39Wordlists } from './vite-config/rollup/excludeBip39Wordlists'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import VueDevTools from 'vite-plugin-vue-devtools'
 
 const env = loadEnv('production', process.cwd())
 const basePublicPath = env.VITE_PUBLIC_PATH || '/'
@@ -23,6 +24,7 @@ export default defineConfig({
   base: basePublicPath,
   plugins: [
     wasm(),
+    VueDevTools(),
     vue(),
     vueJsx(),
     commonjs(),
