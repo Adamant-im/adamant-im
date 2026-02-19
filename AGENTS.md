@@ -40,6 +40,9 @@ Use these sources when implementing or reviewing changes:
 
 - This repository: `README.md`, current code, and passing tests
 - ADAMANT Node guidelines baseline: https://github.com/Adamant-im/adamant/blob/dev/AGENTS.md
+- Org-wide issue/label governance: https://github.com/Adamant-im/.github
+- Recommended issue title prefixes: https://github.com/orgs/Adamant-im/discussions/5
+- Recommended labels for issues/discussions: https://github.com/orgs/Adamant-im/discussions/1
 - ADAMANT docs: https://docs.adamant.im
 - Node/API schema: https://schema.adamant.im and https://github.com/Adamant-im/adamant-schema
 - AIPs: https://aips.adamant.im and https://github.com/Adamant-im/AIPs
@@ -49,6 +52,119 @@ If sources disagree:
 
 1. Treat current repository behavior and passing tests as implementation truth
 2. Do not silently ignore mismatches; document them and propose synchronized fixes
+
+## Issue, Label, and PR Conventions
+
+Follow the organization-wide conventions:
+
+- Governance repository: https://github.com/Adamant-im/.github
+- Prefix guidance: https://github.com/orgs/Adamant-im/discussions/5
+- Label guidance: https://github.com/orgs/Adamant-im/discussions/1
+
+### Issue workflow
+
+1. Search existing issues first to avoid duplicates
+2. Use org issue forms (Bug / Feature request / Task) from org defaults
+3. Use a concise prefixed title
+4. Apply labels from org label catalog (`labels.json`)
+5. Link related issues and PRs explicitly
+
+### Title prefixes
+
+Use one or two prefixes maximum.
+
+Common prefixes:
+
+- `[Bug]` bugs, crashes, unexpected behavior
+- `[Feat]` new functionality
+- `[Enhancement]` improvements of existing features
+- `[Refactor]` refactoring without intended behavior changes
+- `[Docs]` documentation updates
+- `[Test]` test additions or improvements
+- `[Chore]` routine maintenance (dependencies, CI/CD, tooling)
+
+Project-specific prefixes:
+
+- `[Task]` general task (including non-coding tasks)
+- `[Composite]` multi-part task with sub-tasks
+- `[UX/UI]` interface and user experience changes
+
+Idea-level prefixes (usually better in Discussions than Issues):
+
+- `[Proposal]`, `[Idea]`, `[Discussion]`
+
+### Label policy
+
+- `labels.json` in `Adamant-im/.github` is the source of truth for label names, casing, descriptions, and colors
+- Keep label casing aligned with org rules:
+  - default GitHub labels are lowercase (`bug`, `enhancement`, `documentation`, etc.)
+  - custom labels are Capitalized (`Security`, `Privacy`, `UX/UI`, `Task`, `Composite task`, etc.)
+- For most issues, apply a small but informative set:
+  - one type/status label (`bug`, `enhancement`, `Task`, `Composite task`)
+  - one or more domain labels (`Web`, `Vue`, `TypeScript`, `Messaging`, `Security`, `Privacy`, `IPFS`, `Nodes`, `Electron`, `Capacitor`, etc.)
+  - optional priority label (`High priority`) when needed
+- Do not use legacy status labels for workflow tracking (`s/ ...`); project/Kanban state is managed in GitHub Projects
+
+### PR conventions
+
+- Use org PR template sections (`Description`, `Related issue`, `How to test`, `Checklist`, etc.)
+- Reference issues with closing keywords where appropriate (`Closes #<id>`)
+- Keep PR title consistent with issue prefix taxonomy
+- Include testing/verification steps and mention risk areas (security, privacy, protocol, storage)
+
+## Architecture and Key Modules
+
+High-level architecture:
+
+1. UI layer built with Vue 3 and Vuetify renders views/components and triggers actions
+2. State layer is primarily Vuex (`src/store/*`) with additional Pinia and Vue Query usage
+3. Domain layer in `src/lib/*` handles cryptography, transactions, files, nodes, and persistence
+4. Network layer in `src/lib/nodes/*` provides multi-node clients with health checks and failover
+5. Platform layer builds the same app for Web/Tor, Electron, and Capacitor Android
+
+Runtime flow and ownership:
+
+- Bootstrap and plugin wiring: `src/main.ts`
+- App shell, connection hooks, notifications: `src/App.vue`
+- Route tree and auth middleware: `src/router/index.js`, `src/middlewares/*`
+- Main auth/account lifecycle: `src/store/index.js`, `src/lib/adamant-api/index.js`
+- i18n boot and pluralization rules: `src/i18n.js`, `src/locales/*`
+
+Messaging and transaction pipeline:
+
+- Core ADAMANT crypto and transaction bytes/signatures: `src/lib/adamant.js`
+- API-level account unlock, signing, send/decode chat: `src/lib/adamant-api/index.js`
+- Chat domain state and polling/retry behavior: `src/store/modules/chat/index.js`
+- Socket-based realtime updates: `src/lib/sockets.js`, `src/store/plugins/socketsPlugin.js`
+- Pending tx safety gates for nonce/confirmation handling: `src/lib/pending-transactions/*`
+
+Node and service architecture:
+
+- Abstract node/client contracts and node selection strategy: `src/lib/nodes/abstract.node.ts`, `src/lib/nodes/abstract.client.ts`
+- Concrete node clients for ADM/BTC/DASH/DOGE/ETH/KLY/IPFS: `src/lib/nodes/*`
+- Out-of-sync filtering and active/fastest node selection: `src/lib/nodes/utils/*`, `src/lib/nodes/storage.ts`
+- Vuex integration for node status and user toggles: `src/store/modules/nodes/*`
+- Global healthcheck interval management: `src/lib/nodes/nodes-manager.ts`
+
+Persistence and local security:
+
+- IndexedDB encryption and restore flows: `src/lib/idb/crypto.js`, `src/lib/idb/state.js`, `src/store/plugins/indexedDb.js`
+- Session/local persistence plugins: `src/store/plugins/sessionStorage.js`, `src/store/plugins/localStorage.js`
+- Sensitive state handling (passphrase/password/public keys) centralized in root Vuex store: `src/store/index.js`
+
+Attachments and IPFS:
+
+- Attachment encode/decode API: `src/lib/attachment-api/index.ts`
+- File validation/format/crop/upload helpers: `src/lib/files/*`
+- CID utilities and IPFS upload path: `src/lib/files/ipfs.ts`, `src/lib/files/upload.ts`, `src/lib/nodes/ipfs/*`
+
+Build and platform targets:
+
+- Base Vite config and browser polyfills: `vite-base.config.ts`
+- PWA web/tor builds: `vite-pwa.config.ts`, `src/config/production.json`, `src/config/tor.json`
+- Testnet build mode: `src/config/testnet.json`
+- Electron packaging: `electron-vite.config.ts`, `src/electron/main.js`
+- Android pipeline: `vite-android.config.ts`, `capacitor.config.ts`, `scripts/capacitor/build-android.mjs`
 
 ## System Map (What You Are Editing)
 
