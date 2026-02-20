@@ -33,6 +33,7 @@ import {
 } from '@/lib/nodes/utils/errors'
 import adamant from '@/lib/adamant'
 import { useConsiderOffline } from '@/hooks/useConsiderOffline.js'
+import { logger } from '@/utils/devTools/logger'
 
 export let interval
 /**
@@ -1416,7 +1417,7 @@ const actions = {
           .catch((err) => {
             // Skip stale async completion after stop/logout.
             if (currentSessionId !== pollingSessionId) return
-            console.error(err)
+            logger.log('chat', 'warn', err)
           })
           .then(() => {
             // Do not schedule next timeout for stale session.
