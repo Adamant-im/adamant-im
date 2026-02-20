@@ -1,95 +1,107 @@
-import { describe, expect, it } from 'vitest'
-
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { EthNode } from '../../eth/EthNode.ts'
+import { nodesStorage } from '../../storage.ts'
 
-const nodeByDomain = new EthNode({
-    alt_ip: 'http://95.216.114.252:44099',
-    url: 'https://ethnode2.adamant.im'
-  }),
-  nodeByIP = new EthNode({
-    alt_ip: 'http://95.216.114.252:44099',
-    url: 'https://aaa.adamant.im'
-  }),
-  nodeOffline = new EthNode({
-    alt_ip: 'http://111.111.111.111:44099',
-    url: 'https://aaa.adamant.im'
-  })
+const ALT_IP = 'http://95.216.114.252:44099'
+const DOMAIN_URL = 'https://ethnode2.adamant.im'
 
-describe('client', () => {
-  describe('by domain', () => {
-    it('get block number', async () => {
-      expect(await nodeByDomain.client().getBlockNumber()).toBeTypeOf('bigint')
-    })
-  })
-  describe('by IP', () => {
-    it('get block number', async () => {
-      try {
-        await nodeByIP.client().getBlockNumber()
-      } catch (error) {
-        expect(error).toEqual({
-          message:
-            'request to https://aaa.adamant.im/ failed, reason: getaddrinfo ENOTFOUND aaa.adamant.im',
-          type: 'system',
-          errno: 'ENOTFOUND',
-          code: 'ENOTFOUND'
-        })
-      }
-    })
-  })
-  describe('offline', () => {
-    it('get block number', async () => {
-      try {
-        await nodeOffline.client().getBlockNumber()
-      } catch (error) {
-        expect(error).toEqual({
-          message:
-            'request to https://aaa.adamant.im/ failed, reason: getaddrinfo ENOTFOUND aaa.adamant.im',
-          type: 'system',
-          errno: 'ENOTFOUND',
-          code: 'ENOTFOUND'
-        })
-      }
-    })
-  })
+const createNode = (endpoint = { alt_ip: ALT_IP, url: DOMAIN_URL }) => {
+  vi.spyOn(nodesStorage, 'isActive').mockReturnValue(false)
+
+  const node = new EthNode(endpoint)
+  node.active = true
+
+  return node
+}
+
+const stopHealthcheckTimer = (node) => {
+  if (node.timer) {
+    clearTimeout(node.timer)
+  }
+}
+
+afterEach(() => {
+  vi.restoreAllMocks()
 })
-describe('node', () => {
-  describe('by domain', () => {
-    it('start healthcheck', async () => {
-      const node = await nodeByDomain.startHealthcheck()
 
-      expect(node.altIp).toBe('http://95.216.114.252:44099')
-      expect(node.altIpAvailable).toBe(false)
-      expect(node.availableByDomain).toBe(true)
-      expect(node.hostname).toBe('ethnode2.adamant.im')
-      expect(node.online).toBe(true)
-      expect(node.preferDomain).toBe(true)
-      expect(node.url).toBe('https://ethnode2.adamant.im')
-    })
+describe('EthNode healthcheck routing', () => {
+  it('keeps DOMAIN mode after first successful domain healthcheck', async () => {
+    const node = createNode()
+    node.checkHealth = vi.fn().mockResolvedValue({ height: 1, ping: 10 })
+
+    await node.startHealthcheck()
+    stopHealthcheckTimer(node)
+
+    expect(node.checkHealth).toHaveBeenCalledTimes(1)
+    expect(node.preferDomain).toBe(true)
+    expect(node.online).toBe(true)
+    expect(node.healthcheckCount).toBe(1)
+
+    node.checkHealth = vi.fn().mockRejectedValue(new Error('Domain is temporarily offline'))
+
+    await node.startHealthcheck()
+    stopHealthcheckTimer(node)
+
+    expect(node.checkHealth).toHaveBeenCalledTimes(1)
+    expect(node.preferDomain).toBe(true)
+    expect(node.online).toBe(false)
   })
-  describe('by IP', () => {
-    it('start healthcheck', async () => {
-      const node = await nodeByIP.startHealthcheck()
 
-      expect(node.altIp).toBe('http://95.216.114.252:44099')
-      expect(node.altIpAvailable).toBe(false)
-      expect(node.availableByDomain).toBe(false)
-      expect(node.hostname).toBe('aaa.adamant.im')
-      expect(node.online).toBe(true)
-      expect(node.preferDomain).toBe(false)
-      expect(node.url).toBe('https://aaa.adamant.im')
+  it('falls back to IP in the same cycle and locks IP mode when IP succeeds first', async () => {
+    const node = createNode({
+      alt_ip: ALT_IP,
+      url: 'https://unreachable.adamant.im'
     })
+    const attempts = []
+
+    node.checkHealth = vi.fn(async function checkHealthMock() {
+      attempts.push(this.getBaseURL(this))
+
+      if (this.preferDomain) {
+        throw new Error('Domain is unavailable')
+      }
+
+      return { height: 2, ping: 20 }
+    })
+
+    await node.startHealthcheck()
+    stopHealthcheckTimer(node)
+
+    expect(attempts).toEqual(['https://unreachable.adamant.im', ALT_IP])
+    expect(node.preferDomain).toBe(false)
+    expect(node.online).toBe(true)
+    expect(node.healthcheckCount).toBe(1)
+    expect(node.protocol).toBe('http:')
   })
-  describe('offline', () => {
-    it('start healthcheck', async () => {
-      const node = await nodeOffline.startHealthcheck()
 
-      expect(node.altIp).toBe('http://111.111.111.111:44099')
-      expect(node.altIpAvailable).toBe(false)
-      expect(node.availableByDomain).toBe(false)
-      expect(node.hostname).toBe('aaa.adamant.im')
-      expect(node.online).toBe(true)
-      expect(node.preferDomain).toBe(false)
-      expect(node.url).toBe('https://aaa.adamant.im')
+  it('retries DOMAIN -> IP on each cycle until a connection type is determined', async () => {
+    const node = createNode({
+      alt_ip: ALT_IP,
+      url: 'https://unreachable.adamant.im'
     })
+    const attempts = []
+
+    node.checkHealth = vi.fn(async function checkHealthMock() {
+      attempts.push(this.getBaseURL(this))
+      throw new Error('Node is unavailable')
+    })
+
+    await node.startHealthcheck()
+    stopHealthcheckTimer(node)
+
+    expect(attempts).toEqual(['https://unreachable.adamant.im', ALT_IP])
+    expect(node.healthcheckCount).toBe(0)
+    expect(node.preferDomain).toBe(true)
+    expect(node.online).toBe(false)
+
+    await node.startHealthcheck()
+    stopHealthcheckTimer(node)
+
+    expect(attempts).toEqual([
+      'https://unreachable.adamant.im',
+      ALT_IP,
+      'https://unreachable.adamant.im',
+      ALT_IP
+    ])
   })
 })
