@@ -183,7 +183,7 @@ export default function createActions(config) {
       if (!transaction) return
 
       void api
-        .useClient((client) => client.getBlock(payload.blockNumber))
+        .useClient((client) => client().getBlock(payload.blockNumber))
         .then((block) => {
           // Converting from BigInt into Number must be safe
           const timestamp = BigNumber(block.timestamp.toString()).multipliedBy(1000).toNumber()
@@ -286,7 +286,7 @@ export default function createActions(config) {
             ...(data && { data })
           }
 
-          const gasLimit = await api.useClient((client) => client.estimateGas(transaction))
+          const gasLimit = await api.useClient((client) => client().estimateGas(transaction))
           return Number(gasLimit)
         } catch (error) {
           logger.log('eth-base-actions', 'warn', `${state.crypto} EstimateGas failed:`, error)

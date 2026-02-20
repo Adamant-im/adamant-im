@@ -95,7 +95,7 @@ export abstract class Client<N extends Node> {
    * Invokes a client method.
    *
    * eth
-   *   .useClient((client) => client.getTransactionCount(this.$store.state.eth.address))
+   *   .useClient((client) => client().getTransactionCount(this.$store.state.eth.address))
    *   .then(res => console.log("res", res))
    *   .catch(err => console.log("err", err))
    *
