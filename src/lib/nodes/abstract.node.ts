@@ -23,8 +23,12 @@ function isValidHttpUrl(url: string): boolean {
  * Protocol on host where app is running, f. e., http: or https:
  */
 const appProtocol = location.protocol
-const HEALTHCHECK_REQUEST_TIMEOUT_MS = 10_000
-const HEALTHCHECK_STALE_TIMEOUT_MS = HEALTHCHECK_REQUEST_TIMEOUT_MS * 2
+const DEFAULT_HEALTHCHECK_REQUEST_TIMEOUT_MS = 10_000
+
+type HealthcheckTimeouts = {
+  requestTimeoutMs: number
+  staleTimeoutMs: number
+}
 
 export abstract class Node<C = unknown> {
   /**
@@ -125,6 +129,8 @@ export abstract class Node<C = unknown> {
   client: C
   healthcheckInProgress = false
   healthcheckStartedAt = 0
+  healthcheckRequestTimeoutMs = DEFAULT_HEALTHCHECK_REQUEST_TIMEOUT_MS
+  healthcheckStaleTimeoutMs = DEFAULT_HEALTHCHECK_REQUEST_TIMEOUT_MS * 2
 
   constructor(
     endpoint: NodeInfo,
@@ -156,6 +162,9 @@ export abstract class Node<C = unknown> {
     this.version = version
     this.hasSupportedProtocol = this.isHttpAllowed(this.protocol)
     this.active = nodesStorage.isActive(url)
+    const { requestTimeoutMs, staleTimeoutMs } = this.resolveHealthcheckTimeouts()
+    this.healthcheckRequestTimeoutMs = requestTimeoutMs
+    this.healthcheckStaleTimeoutMs = staleTimeoutMs
 
     this.client = this.buildClient()
 
@@ -170,7 +179,7 @@ export abstract class Node<C = unknown> {
     const hasStaleHealthcheck =
       this.healthcheckInProgress &&
       this.healthcheckStartedAt > 0 &&
-      Date.now() - this.healthcheckStartedAt > HEALTHCHECK_STALE_TIMEOUT_MS
+      Date.now() - this.healthcheckStartedAt > this.healthcheckStaleTimeoutMs
 
     if (hasStaleHealthcheck) {
       logger.log(
@@ -488,13 +497,47 @@ export abstract class Node<C = unknown> {
       new Promise((_, reject) => {
         timeoutId = setTimeout(() => {
           reject(new NodeOfflineError())
-        }, HEALTHCHECK_REQUEST_TIMEOUT_MS)
+        }, this.healthcheckRequestTimeoutMs)
       })
     ]).finally(() => {
       if (timeoutId) {
         clearTimeout(timeoutId)
       }
     })
+  }
+
+  private resolveHealthcheckTimeouts(): HealthcheckTimeouts {
+    const healthcheckConfig = getNodeHealthcheckConfig(this.label) as {
+      onScreenUpdateInterval?: number
+      requestTimeoutMs?: number
+      staleTimeoutMs?: number
+    }
+    /**
+     * Request timeout is configurable per node/service:
+     * 1) explicit `healthCheck.requestTimeoutMs` from config
+     * 2) fallback to `healthCheck.onScreenUpdateInterval` (adamant-wallets baseline)
+     * 3) final fallback `10_000 ms`.
+     */
+    const requestTimeoutMs = this.normalizeTimeout(
+      healthcheckConfig.requestTimeoutMs ?? healthcheckConfig.onScreenUpdateInterval
+    )
+    /**
+     * Stale timeout protects from "stuck in progress" health checks (e.g., after sleep/resume).
+     * If a health check exceeds this value, the next cycle force-resets the lock.
+     */
+    const staleTimeoutMs = this.normalizeTimeout(
+      healthcheckConfig.staleTimeoutMs,
+      requestTimeoutMs * 2
+    )
+
+    return {
+      requestTimeoutMs,
+      staleTimeoutMs
+    }
+  }
+
+  private normalizeTimeout(value?: number, fallback = DEFAULT_HEALTHCHECK_REQUEST_TIMEOUT_MS) {
+    return Number.isFinite(value) && value && value > 0 ? Number(value) : fallback
   }
 }
 
