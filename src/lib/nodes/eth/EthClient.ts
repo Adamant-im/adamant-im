@@ -7,7 +7,6 @@ import { bytesToHex } from '@/lib/hex'
 import type { NodeInfo } from '@/types/wallets'
 import { EthNode } from './EthNode'
 import { Client } from '../abstract.client'
-import { Node } from '../abstract.node'
 import { normalizeEthTransaction, normalizeErc20Transaction } from './utils'
 
 /**
@@ -42,9 +41,9 @@ export class EthClient extends Client<EthNode> {
   // Use with caution:
   // This method can throw an error if there are no online nodes.
   // Better use "useClient()" method.
-  getClient(): Node['client'] {
+  getClient(): Web3Eth {
     // Ethereum nodes return a new client every time depending on `preferDomain` property.
-    return this.getNode().client()
+    return this.getNodeClient()
   }
 
   /**

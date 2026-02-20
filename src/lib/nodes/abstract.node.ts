@@ -145,7 +145,8 @@ export abstract class Node<C = unknown> {
     clearInterval(this.timer)
 
     if (this.active && !this.healthcheckInProgress) {
-      const protocol = new URL(this.url).protocol
+      const baseURL = this.getBaseURL(this)
+      const protocol = new URL(baseURL || this.url).protocol as HttpProtocol
 
       try {
         this.healthcheckInProgress = true
