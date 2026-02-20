@@ -401,9 +401,12 @@ export abstract class Node<C = unknown> {
 
     /** New URL constructor requires `baseURL` to be a valid URL, otherwise throws TypeError. */
     if (baseURL) {
-      this.hostname = new URL(baseURL).hostname
-      this.port = new URL(baseURL).port
-      this.protocol = new URL(baseURL).protocol as HttpProtocol
+      // Keep status fields in sync with the currently selected endpoint (domain or alt IP).
+      const parsedBaseURL = new URL(baseURL)
+
+      this.hostname = parsedBaseURL.hostname
+      this.port = parsedBaseURL.port
+      this.protocol = parsedBaseURL.protocol as HttpProtocol
     }
     this.wsProtocol = this.protocol === 'https:' ? 'wss:' : 'ws:'
   }
