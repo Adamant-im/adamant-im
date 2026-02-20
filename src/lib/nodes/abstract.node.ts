@@ -1,6 +1,6 @@
 import type { NodeOfflineError } from '@/lib/nodes/utils/errors.ts'
 import type { NodeInfo } from '@/types/wallets/index.ts'
-import { getHealthCheckInterval } from './utils/getHealthcheckConfig'
+import { getNodeHealthcheckConfig } from './utils/getHealthcheckConfig'
 import { TNodeLabel } from './constants'
 import { HealthcheckInterval, HealthcheckResult, NodeKind, NodeStatus, NodeType } from './types'
 import { nodesStorage } from './storage'
@@ -252,7 +252,7 @@ export abstract class Node<C = unknown> {
 
     this.timer = setTimeout(
       () => this.startHealthcheck(),
-      getHealthCheckInterval(this.label, this.online ? this.healthCheckInterval : 'crucial')
+      this.getHealthCheckInterval(this.online ? this.healthCheckInterval : 'crucial')
     )
 
     return this
@@ -399,6 +399,23 @@ export abstract class Node<C = unknown> {
   // Therefore, it is overridden only in the case when a separate request is needed to obtain the version.
   protected fetchNodeVersion() {
     return Promise.resolve()
+  }
+
+  private getHealthCheckInterval(interval: HealthcheckInterval) {
+    const healthcheckConfig = getNodeHealthcheckConfig(this.label)
+
+    switch (interval) {
+      case 'normal':
+        return healthcheckConfig.normalUpdateInterval
+      case 'crucial':
+        return healthcheckConfig.crucialUpdateInterval
+      case 'onScreen':
+        return healthcheckConfig.onScreenUpdateInterval
+      default:
+        throw new Error(
+          `getHealthCheckInterval: Interval ${interval} is not defined in the Node's config`
+        )
+    }
   }
 }
 
