@@ -3,11 +3,12 @@ import { fileURLToPath, URL } from 'node:url'
 import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import path from 'node:path'
 import { readFile } from 'node:fs'
-import { logger } from '@/utils/devTools/logger'
 
 const SCHEME = 'app'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+// Electron main process runs in Node.js context, so browser logger dependencies are not used here.
+const logInfo = (...args) => console.info('[electron-main]', ...args)
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected
@@ -156,8 +157,8 @@ app.on('ready', async () => {
   if (import.meta.env.DEV) {
     // Install Vue Devtools
     installExtension(REDUX_DEVTOOLS, { loadExtensionOptions: { allowFileAccess: true } })
-      .then((name) => logger.log('main', 'info', `Electron extensions: added ${name}`))
-      .catch((err) => logger.log('main', 'info', 'Electron extensions: an error occurred: ', err))
+      .then((name) => logInfo(`Electron extensions: added ${name}`))
+      .catch((err) => logInfo('Electron extensions: an error occurred:', err))
   }
   createWindow()
 })
