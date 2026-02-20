@@ -9,6 +9,16 @@ import { logger } from '@/utils/devTools/logger'
 type HttpProtocol = 'http:' | 'https:'
 type WsProtocol = 'ws:' | 'wss:'
 
+function isValidHttpUrl(url: string): boolean {
+  try {
+    const protocol = new URL(url).protocol
+
+    return protocol === 'http:' || protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
 /**
  * Protocol on host where app is running, f. e., http: or https:
  */
@@ -121,7 +131,15 @@ export abstract class Node<C = unknown> {
   ) {
     const { alt_ip, url } = endpoint
 
-    this.altIp = alt_ip
+    if (!isValidHttpUrl(url)) {
+      throw new TypeError(`Invalid node URL: ${url}`)
+    }
+
+    if (alt_ip && !isValidHttpUrl(alt_ip)) {
+      logger.log('HealthCheck', 'warn', `Invalid alt_ip "${alt_ip}" for node ${url}. Ignoring it.`)
+    }
+
+    this.altIp = alt_ip && isValidHttpUrl(alt_ip) ? alt_ip : undefined
     this.url = url
     this.type = type
     this.label = label
@@ -195,8 +213,11 @@ export abstract class Node<C = unknown> {
             )
           }
           if (this.healthcheckCount < 1 && this.altIp) {
+            // Connection type is not determined yet, so fallback to alt IP is still allowed.
             this.preferDomain = false
           } else {
+            // Connection type is already determined for the current session.
+            // Do not switch between domain/IP here: keep selected type and mark node temporarily offline.
             this.online = false
           }
         } else {
