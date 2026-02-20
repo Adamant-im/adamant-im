@@ -29,7 +29,7 @@
       <v-icon
         :icon="mdiHelpCircleOutline"
         size="small"
-        class="ml-1 cursor-pointer mb-1"
+        class="ml-0 cursor-pointer mb-1"
         @click="$emit('showHttpInfo')"
       />
     </template>
