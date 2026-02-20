@@ -73,6 +73,7 @@ export class AdmNode extends Node<AxiosInstance> {
         // According to https://github.com/axios/axios#handling-errors this means, that request was sent,
         // but server could not respond.
         if (!error.response && error.request) {
+          this.online = false
           throw new NodeOfflineError()
         }
         throw error
