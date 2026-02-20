@@ -43,17 +43,17 @@
       <v-icon :icon="nodeStatusDetail.icon" :size="12" />
       <span>&nbsp;{{ nodeStatusDetail.text }}</span>
     </span>
-    <template v-else>
+    <span v-else-if="!node.hasSupportedProtocol" :class="classes.statusTextValueNoWrap">
       {{ nodeStatusDetail.text }}
-    </template>
-
-    <template v-if="!node.hasSupportedProtocol">
       <v-icon
         :icon="mdiHelpCircleOutline"
         size="small"
-        class="ml-0 cursor-pointer mb-1"
+        class="ml-1 cursor-pointer mb-0"
         @click="$emit('showHttpInfo')"
       />
+    </span>
+    <template v-else>
+      {{ nodeStatusDetail.text }}
     </template>
   </span>
 </template>
