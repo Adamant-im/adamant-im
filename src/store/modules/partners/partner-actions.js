@@ -163,7 +163,7 @@ export default {
         }
       })
       .catch((err) => {
-        logger.log('partners-actions', 'warn', 'Failed to save contact list', err)
+        logger.log('partner-actions', 'warn', 'Failed to save contact list', err)
         // Re-mark state as dirty to save on the next tick
         context.state.lastChange = lastChange
       })
