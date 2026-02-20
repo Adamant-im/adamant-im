@@ -74,6 +74,20 @@ describe('useNodeStatus helpers', () => {
     })
   })
 
+  it('shows API-version reason when node API is outdated', () => {
+    const node = createNode({
+      online: true,
+      hasSupportedProtocol: true,
+      hasMinNodeVersion: false,
+      status: 'unsupported_version'
+    })
+
+    expect(getNodeStatusTitle(node, t as any)).toBe('Unsupported')
+    expect(getNodeStatusDetail(node, t as any)).toEqual({
+      text: 'Outdated API version'
+    })
+  })
+
   it('keeps offline color for unavailable nodes', () => {
     const node = createNode({ status: 'offline' })
 
