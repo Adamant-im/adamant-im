@@ -137,7 +137,7 @@ const submit = () => {
       } else {
         emit('error', t('errors.something_went_wrong'))
       }
-      logger.log('LoginPassswordForm', 'info', err)
+      logger.log('LoginPasswordForm', 'info', err)
     })
     .finally(() => {
       showSpinner.value = false
