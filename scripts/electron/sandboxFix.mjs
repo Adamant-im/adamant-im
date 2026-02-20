@@ -3,10 +3,11 @@
 import fs from 'fs/promises'
 import path from 'path'
 import chalk from 'chalk'
-import { logger } from '@/utils/devTools/logger'
 
 const log = (message, dotFormatting = chalk.blue) => {
-  logger.log('sandboxFix', 'info', `  ${dotFormatting('•')} ${message}`)
+  // This hook runs in Node build-time context where app logger dependencies
+  // (Pinia/localStorage/browser runtime) are unavailable.
+  console.info(`[sandboxFix]   ${dotFormatting('•')} ${message}`)
 }
 
 const afterPackHook = async (params) => {
