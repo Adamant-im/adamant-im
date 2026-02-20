@@ -12,7 +12,7 @@
           {{ t('nodes.popup.http_restriction_intro') }}
         </p>
 
-        <h3 class="font-weight-bold mb-2">
+        <h3 class="a-text-regular-enlarged-bold mb-2">
           {{ t('nodes.popup.http_vs_https_title') }}
         </h3>
         <p class="mb-4">
@@ -20,14 +20,14 @@
           {{ t('nodes.popup.http_vs_https_https') }}
         </p>
 
-        <h3 class="font-weight-bold mb-2">
+        <h3 class="a-text-regular-enlarged-bold mb-2">
           {{ t('nodes.popup.adamant_encryption_title') }}
         </h3>
         <p class="mb-4">
           {{ t('nodes.popup.adamant_encryption_text') }}
         </p>
 
-        <h3 class="font-weight-bold mb-2">
+        <h3 class="a-text-regular-enlarged-bold mb-2">
           {{ t('nodes.popup.how_to_allow_title') }}
         </h3>
         <ul class="ml-4">
