@@ -13,7 +13,7 @@ export function resetPinia() {
       const storeDefinition = defineStore(storeName, state)
       const store = storeDefinition(activePinia)
       store.$reset()
-      logger.log('pina', 'info', `The "${storeName}" store has been reset`)
+      logger.log('pinia', 'info', `The "${storeName}" store has been reset`)
     })
   }
 }
