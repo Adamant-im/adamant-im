@@ -1,4 +1,5 @@
 import { NodeOfflineError } from '@/lib/nodes/utils/errors'
+import { getConnectionAwareTimeout } from '@/lib/network/connection'
 import type { NodeInfo } from '@/types/wallets/index.ts'
 import { getNodeHealthcheckConfig } from './utils/getHealthcheckConfig'
 import { TNodeLabel } from './constants'
@@ -23,6 +24,7 @@ function isValidHttpUrl(url: string): boolean {
  * Protocol on host where app is running, f. e., http: or https:
  */
 const appProtocol = location.protocol
+
 const DEFAULT_HEALTHCHECK_REQUEST_TIMEOUT_MS = 10_000
 
 type HealthcheckTimeouts = {
@@ -179,7 +181,8 @@ export abstract class Node<C = unknown> {
     const hasStaleHealthcheck =
       this.healthcheckInProgress &&
       this.healthcheckStartedAt > 0 &&
-      Date.now() - this.healthcheckStartedAt > this.healthcheckStaleTimeoutMs
+      Date.now() - this.healthcheckStartedAt >
+        this.getEffectiveTimeout(this.healthcheckStaleTimeoutMs)
 
     if (hasStaleHealthcheck) {
       logger.log(
@@ -497,7 +500,7 @@ export abstract class Node<C = unknown> {
       new Promise((_, reject) => {
         timeoutId = setTimeout(() => {
           reject(new NodeOfflineError())
-        }, this.healthcheckRequestTimeoutMs)
+        }, this.getEffectiveTimeout(this.healthcheckRequestTimeoutMs))
       })
     ]).finally(() => {
       if (timeoutId) {
@@ -538,6 +541,11 @@ export abstract class Node<C = unknown> {
 
   private normalizeTimeout(value?: number, fallback = DEFAULT_HEALTHCHECK_REQUEST_TIMEOUT_MS) {
     return Number.isFinite(value) && value && value > 0 ? Number(value) : fallback
+  }
+
+  private getEffectiveTimeout(baseTimeoutMs: number) {
+    // Increase final runtime timeout on potentially slow links (3G/data-saver/high RTT/low downlink).
+    return getConnectionAwareTimeout(baseTimeoutMs)
   }
 }
 

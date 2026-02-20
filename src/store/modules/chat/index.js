@@ -33,6 +33,7 @@ import {
 } from '@/lib/nodes/utils/errors'
 import adamant from '@/lib/adamant'
 import { useConsiderOffline } from '@/hooks/useConsiderOffline.js'
+import { getConnectionAwareTimeout } from '@/lib/network/connection'
 import { logger } from '@/utils/devTools/logger'
 
 export let interval
@@ -105,6 +106,15 @@ const getters = {
    */
   chatsPollingTimeout: (state, getters, rootState) => {
     return rootState.options.useSocketConnection ? SOCKET_ENABLED_TIMEOUT : SOCKET_DISABLED_TIMEOUT
+  },
+
+  /**
+   * Returns chat actuality timeout used to hide outdated-state spinner.
+   * On potentially slow connection we increase the tolerance by x1.5.
+   * @returns {number}
+   */
+  chatsActualityTimeout: (state, getters) => {
+    return getConnectionAwareTimeout(getters.chatsPollingTimeout)
   },
 
   reactions: (state, getters) => (transactionId, partnerId) => {
@@ -740,7 +750,7 @@ const actions = {
 
     return getChats(state.lastMessageHeight).then((result) => {
       const { messages, lastMessageHeight, nodeTimestamp } = result
-      const chatsActualInterval = getters.chatsPollingTimeout
+      const chatsActualInterval = getters.chatsActualityTimeout
 
       dispatch('pushMessages', messages)
 
