@@ -20,9 +20,12 @@ export const useLoggerStore = defineStore(
     }
   },
   {
-    persist: {
-      storage: localStorage,
-      pick: ['levelCurrent']
-    }
+    persist:
+      typeof window !== 'undefined'
+        ? {
+            storage: window.localStorage,
+            pick: ['levelCurrent']
+          }
+        : false
   }
 )
