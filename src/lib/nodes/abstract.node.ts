@@ -1,6 +1,5 @@
 import type { NodeOfflineError } from '@/lib/nodes/utils/errors.ts'
 import type { NodeInfo } from '@/types/wallets/index.ts'
-import { useStore } from 'vuex'
 import { getHealthCheckInterval } from './utils/getHealthcheckConfig'
 import { TNodeLabel } from './constants'
 import { HealthcheckInterval, HealthcheckResult, NodeKind, NodeStatus, NodeType } from './types'
@@ -100,8 +99,6 @@ export abstract class Node<C = unknown> {
    */
   socketSupport = false
 
-  logVerbosity = ''
-
   type: NodeType
   kind: NodeKind
   label: TNodeLabel
@@ -133,7 +130,6 @@ export abstract class Node<C = unknown> {
     this.port = new URL(url).port
     this.hostname = new URL(url).hostname
     this.minNodeVersion = minNodeVersion
-    this.logVerbosity = ''
     this.version = version
     this.hasSupportedProtocol = this.isHttpAllowed(this.protocol)
     this.active = nodesStorage.isActive(url)
@@ -150,19 +146,13 @@ export abstract class Node<C = unknown> {
 
     if (this.active && !this.healthcheckInProgress) {
       const protocol = new URL(this.url).protocol
-      const store = useStore()
-      const levelCurrent = store?.state.devTools.levelCurrent
-
-      if (levelCurrent) {
-        this.logVerbosity = levelCurrent
-      }
 
       try {
         this.healthcheckInProgress = true
 
         const { height, ping } = await this.checkHealth()
 
-        if (!this.healthcheckCount && this.logVerbosity === 'Info') {
+        if (!this.healthcheckCount) {
           logger.log(
             'HealthCheck',
             'info',
@@ -180,33 +170,27 @@ export abstract class Node<C = unknown> {
         this.online = true
         this.ping = ping
 
-        if (this.logVerbosity === 'Debug') {
-          logger.log(
-            'HealthCheck',
-            'debug',
-            `Node status updated for ${this.getBaseURL(this)}. Height: ${height}. Ping: ${ping}. Count: ${this.healthcheckCount}. Node is online.`
-          )
-        }
+        logger.log(
+          'HealthCheck',
+          'debug',
+          `Node status updated for ${this.getBaseURL(this)}. Height: ${height}. Ping: ${ping}. Count: ${this.healthcheckCount}. Node is online.`
+        )
       } catch (error) {
         const code = (error as NodeOfflineError).code ?? 'unknown'
 
-        if (this.logVerbosity === 'Info') {
-          logger.log(
-            'HealthCheck',
-            'info',
-            `Connection via ${this.getBaseURL(this)} failed (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}). ${code ? `Error code: ${code}` : ''}.`
-          )
-        }
+        logger.log(
+          'HealthCheck',
+          'info',
+          `Connection via ${this.getBaseURL(this)} failed (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}). ${code ? `Error code: ${code}` : ''}.`
+        )
         if (this.preferDomain) {
           if (!this.altIp) {
             if (protocol === 'https:' || this.isHttpAllowed(protocol)) this.online = false
-            if (this.logVerbosity === 'Info') {
-              logger.log(
-                'HealthCheck',
-                'info',
-                `Alternative IP is not defined for ${this.getBaseURL(this)}. Node is offline.`
-              )
-            }
+            logger.log(
+              'HealthCheck',
+              'info',
+              `Alternative IP is not defined for ${this.getBaseURL(this)}. Node is offline.`
+            )
           }
           if (this.healthcheckCount < 1) {
             this.preferDomain = false
@@ -215,13 +199,11 @@ export abstract class Node<C = unknown> {
           }
         } else {
           if (protocol === 'https:' || this.isHttpAllowed(protocol)) this.online = false
-          if (this.logVerbosity === 'Info') {
-            logger.log(
-              'HealthCheck',
-              'info',
-              `Node is not reachable by URL ${this.url}${this.altIp ? ' and by alternative IP ' + this.altIp : ''}. Node is offline.`
-            )
-          }
+          logger.log(
+            'HealthCheck',
+            'info',
+            `Node is not reachable by URL ${this.url}${this.altIp ? ' and by alternative IP ' + this.altIp : ''}. Node is offline.`
+          )
           if (this.healthcheckCount < 2) {
             if (this.altIp) this.preferDomain = true
           }
