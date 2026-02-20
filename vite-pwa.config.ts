@@ -5,6 +5,8 @@ import basicSsl from '@vitejs/plugin-basic-ssl'
 import viteBaseConfig from './vite-base.config'
 import { manifest } from './vite-config/manifest'
 
+const useHttps = process.env.HTTPS === 'true'
+
 export default mergeConfig(
   viteBaseConfig,
   defineConfig({
@@ -23,7 +25,7 @@ export default mergeConfig(
           maximumFileSizeToCacheInBytes: 5000000 // 5 MiB
         }
       }),
-      basicSsl()
+      ...(useHttps ? [basicSsl()] : [])
     ]
   })
 )
