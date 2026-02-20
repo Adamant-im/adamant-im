@@ -7,6 +7,7 @@ const t = (key: string) => {
     'nodes.offline': 'Offline',
     'nodes.unsupported': 'Unsupported',
     'nodes.inactive': 'Inactive',
+    'nodes.updating': 'Updating',
     'nodes.unsupported_reason_protocol': 'HTTP not supported',
     'nodes.unsupported_reason_api_version': 'Outdated API version'
   }
@@ -35,6 +36,7 @@ const createNode = (overrides: Partial<NodeStatusResult> = {}): NodeStatusResult
     socketSupport: false,
     height: 0,
     status: 'offline',
+    isUpdating: false,
     type: 'adm',
     label: 'ADAMANT Node',
     formattedHeight: '0',
@@ -42,6 +44,18 @@ const createNode = (overrides: Partial<NodeStatusResult> = {}): NodeStatusResult
   }) as NodeStatusResult
 
 describe('useNodeStatus helpers', () => {
+  it('shows Updating title for nodes pending first healthcheck', () => {
+    const node = createNode({
+      active: true,
+      isUpdating: true,
+      status: 'sync'
+    })
+
+    expect(getNodeStatusTitle(node, t as any)).toBe('Updating')
+    expect(getNodeStatusDetail(node, t as any)).toBeNull()
+    expect(getNodeStatusColor(node)).toBe('grey')
+  })
+
   it('shows Offline title for unavailable-by-timeout nodes', () => {
     const node = createNode({
       online: false,

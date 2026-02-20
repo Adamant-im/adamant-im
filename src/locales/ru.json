@@ -245,6 +245,7 @@
     "label": "Тип",
     "host": "Хост",
     "inactive": "Неактивная",
+    "updating": "Обновляется",
     "sync": "Синхронизируется",
     "ms": "мс",
     "nodeLabelDescription": "Поддержите децентрализацию и повысьте уровень приватности: <a target=\"_blank\" href=\"https://news.adamant.im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">Установите свою ноду ADM</a>. Чтобы добавить узлы в список, <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">разверните свое веб-приложение</a> (ограничение CSP).",

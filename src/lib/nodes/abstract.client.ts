@@ -60,10 +60,11 @@ export abstract class Client<N extends Node> {
 
   protected async watchNodeStatusChange() {
     for (const node of this.nodes) {
-      node.onStatusChange((nodeStatus) => {
+      node.onStatusChange(() => {
+        this.syncInitialHealthcheckStatus()
         this.updateSyncStatuses()
 
-        this.statusUpdateCallback?.(nodeStatus)
+        this.statusUpdateCallback?.(node.getStatus())
 
         if (this.isActiveNode(node)) {
           // Resolve when at least one node is ready to accept requests
@@ -112,6 +113,9 @@ export abstract class Client<N extends Node> {
    * @returns {Array<{ url: string, online: boolean, ping: number }>}
    */
   getNodes() {
+    this.syncInitialHealthcheckStatus()
+    this.updateSyncStatuses()
+
     return this.nodes.map((node) => node.getStatus())
   }
 
@@ -195,14 +199,29 @@ export abstract class Client<N extends Node> {
    * all the others are not.
    */
   protected updateSyncStatuses() {
-    const nodes = this.nodes.filter((x) => x.online && x.active)
+    const nodes = this.nodes.filter((x) => x.online && x.active && x.healthcheckAttemptCount > 0)
 
     const nodesInSync = filterSyncedNodes(nodes, this.label)
 
     // Finally, all the nodes from the winner list are considered to be in sync, all the
     // others are not
-    for (const node of nodes) {
+    for (const node of this.nodes) {
+      if (!nodes.includes(node)) {
+        node.outOfSync = false
+        continue
+      }
+
       node.outOfSync = !nodesInSync.nodes.includes(node)
+    }
+  }
+
+  private syncInitialHealthcheckStatus() {
+    const initialHealthcheckInProgress = this.nodes.some(
+      (node) => node.active && node.healthcheckAttemptCount < 1
+    )
+
+    for (const node of this.nodes) {
+      node.initialHealthcheckInProgress = initialHealthcheckInProgress
     }
   }
 

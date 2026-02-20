@@ -15,9 +15,17 @@ type NodeStatusDetail = {
   icon?: string
 }
 
+export function isNodeStatusUpdating(node: NodeStatusResult) {
+  return node.active && node.isUpdating
+}
+
 export function getNodeStatusTitle(node: NodeStatusResult, t: VueI18nTranslation) {
   if (!node.active) {
     return t('nodes.inactive')
+  }
+
+  if (isNodeStatusUpdating(node)) {
+    return t('nodes.updating')
   }
 
   if (!node.hasSupportedProtocol) {
@@ -25,7 +33,7 @@ export function getNodeStatusTitle(node: NodeStatusResult, t: VueI18nTranslation
   }
 
   const i18n: Record<NodeStatus, string> = {
-    online: node.ping + ' ',
+    online: node.ping + '\u00A0',
     offline: 'nodes.offline',
     disabled: 'nodes.inactive',
     sync: 'nodes.sync',
@@ -45,6 +53,10 @@ export function getNodeStatusDetail(
   t: VueI18nTranslation
 ): NodeStatusDetail | null {
   if (!node.active) {
+    return null
+  }
+
+  if (isNodeStatusUpdating(node)) {
     return null
   }
 
@@ -75,6 +87,10 @@ export function getNodeStatusDetail(
 }
 
 export function getNodeStatusColor(node: NodeStatusResult) {
+  if (isNodeStatusUpdating(node)) {
+    return 'grey'
+  }
+
   const statusColorMap: Record<NodeStatus, StatusColor> = {
     online: 'green',
     unsupported_version: 'red',
@@ -90,6 +106,7 @@ type UseNodeStatusResult = {
   nodeStatusTitle: Ref<string>
   nodeStatusDetail: Ref<NodeStatusDetail | null>
   nodeStatusColor: Ref<StatusColor>
+  nodeStatusUpdating: Ref<boolean>
 }
 
 export function useNodeStatus(node: Ref<NodeStatusResult>): UseNodeStatusResult {
@@ -98,10 +115,12 @@ export function useNodeStatus(node: Ref<NodeStatusResult>): UseNodeStatusResult 
   const nodeStatusTitle = computed(() => getNodeStatusTitle(node.value, t))
   const nodeStatusDetail = computed(() => getNodeStatusDetail(node.value, t))
   const nodeStatusColor = computed(() => getNodeStatusColor(node.value))
+  const nodeStatusUpdating = computed(() => isNodeStatusUpdating(node.value))
 
   return {
     nodeStatusTitle,
     nodeStatusDetail,
-    nodeStatusColor
+    nodeStatusColor,
+    nodeStatusUpdating
   }
 }
