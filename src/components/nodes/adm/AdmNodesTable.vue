@@ -13,13 +13,15 @@
     </tbody>
   </NodesTableContainer>
 
-  <v-dialog v-model="showHttpInfo" max-width="500px">
+  <v-dialog v-model="showHttpInfo" width="500">
     <v-card>
-      <v-card-title class="text-h6">
+      <v-card-title class="a-text-header">
         {{ t('nodes.popup.http_restriction_title') }}
       </v-card-title>
 
-      <v-card-text class="text-body-2">
+      <v-divider class="a-divider" />
+
+      <v-card-text class="pa-4 a-text-regular-enlarged">
         <p class="mb-4">
           {{ t('nodes.popup.http_restriction_intro') }}
         </p>
@@ -48,9 +50,9 @@
         </ul>
       </v-card-text>
 
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" @click="showHttpInfo = false">
+      <v-card-actions class="pa-3">
+        <v-spacer />
+        <v-btn variant="text" class="a-btn-regular" @click="showHttpInfo = false">
           {{ t('nodes.popup.close') }}
         </v-btn>
       </v-card-actions>
