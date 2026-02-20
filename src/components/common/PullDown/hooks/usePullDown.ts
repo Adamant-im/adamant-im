@@ -6,7 +6,7 @@ import { VuetifyTouchEvent } from '@/types/vuetify'
  * Triggers `onAction` event when the `offsetY`
  * reaches `PULL_ACTIVATION_OFFSET` value
  */
-const PULL_ACTIVATION_OFFSET = 128 // px
+const PULL_ACTIVATION_OFFSET_DEFAULT = 128 // px
 
 /**
  * Must swipe at least specified value to activate the swipe.
@@ -30,13 +30,14 @@ interface UsePullDownResult {
   pullDownReleased: Ref<boolean>
 }
 
-export function usePullDown(onAction: () => void): UsePullDownResult {
+export function usePullDown(onAction: () => void, offset?: number): UsePullDownResult {
   const elementTopOffset = ref(0)
   const swipeActivated = ref(false)
   const pullActionActivated = ref(false)
+  const activationOffset = offset ?? PULL_ACTIVATION_OFFSET_DEFAULT
 
   const progressPercentage = computed(() => {
-    return Math.min((elementTopOffset.value * 100) / PULL_ACTIVATION_OFFSET, 100)
+    return Math.min((elementTopOffset.value * 100) / activationOffset, 100)
   })
   const pullDownActivated = computed(() => progressPercentage.value === 100)
   const pullDownReleased = computed(() => elementTopOffset.value === 0)
@@ -51,7 +52,7 @@ export function usePullDown(onAction: () => void): UsePullDownResult {
 
     elementTopOffset.value = Math.max(0, elementOffset) / SWIPE_SLOWDOWN_RATIO
 
-    if (elementTopOffset.value > PULL_ACTIVATION_OFFSET) {
+    if (elementTopOffset.value > activationOffset) {
       pullActionActivated.value = true
     }
   }

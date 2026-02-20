@@ -33,7 +33,7 @@
           @get-emoji-picture="emojiPicture"
         ></chat-emojis>
       </template>
-      <template v-if="showSendButton" #append-inner>
+      <template #append-inner>
         <slot name="append" />
         <v-icon
           class="a-chat__form-send-area"
@@ -72,9 +72,9 @@ const { setEmojiPickerOpen } = chatStateStore
 type Props = {
   partnerId?: string
   messageText?: string
-  showSendButton?: boolean
   sendOnEnter?: boolean
   label?: string
+  shouldDisableSendButton?: boolean
   shouldDisableInput?: boolean
   showDivider?: boolean
   validator: (message: string) => string | false
@@ -83,9 +83,9 @@ type Props = {
 const props = withDefaults(defineProps<Props>(), {
   partnerId: '',
   messageText: '',
-  showSendButton: true,
   sendOnEnter: true,
   label: undefined,
+  shouldDisableSendButton: false,
   shouldDisableInput: false,
   showDivider: false
 })
@@ -127,7 +127,7 @@ const isDisabled = computed(() => {
     return false
   }
 
-  return error !== false
+  return error !== false || props.shouldDisableSendButton
 })
 
 const listeners = computed(() => {
@@ -262,6 +262,10 @@ const onToggleEmojiPicker = (state: boolean) => {
 }
 
 const submitMessage = () => {
+  if (props.shouldDisableSendButton) {
+    return
+  }
+
   const error = props.validator(message.value)
   if (error === false) {
     if (message.value.startsWith('/')) {

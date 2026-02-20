@@ -4,6 +4,8 @@ import {
   Cryptos,
   CryptosInfo,
   CryptosOrder,
+  TransactionTypes,
+  TransactionType,
   CryptoSymbol
 } from './cryptos'
 
@@ -61,7 +63,13 @@ export const RatesNames: Record<FiatCurrencySymbol, string> = {
   JPY: 'JPY (¥)' // Japanese Yen
 }
 
-export const UPLOAD_MAX_FILE_COUNT = 5
+export const PreviewPreferences = {
+  nobody: 'options.preview_option_nobody',
+  contacts: 'options.preview_option_contacts',
+  everybody: 'options.preview_option_everybody'
+} as const
+
+export const UPLOAD_MAX_FILE_COUNT = 10
 export const UPLOAD_MAX_FILE_SIZE = 250 * 1024 * 1024 // 250MB
 export const MAX_FILE_EXTENSION_DISPLAY_LENGTH = 4
 
@@ -116,7 +124,16 @@ export const RE_KLY_ADDRESS_LEGACY = /^[0-9]{2,21}L$/
  * when each specific transaction is created
  */
 
-export { AllCryptos, AllCryptosOrder, Cryptos, CryptosInfo, CryptosOrder, type CryptoSymbol }
+export {
+  AllCryptos,
+  AllCryptosOrder,
+  Cryptos,
+  CryptosInfo,
+  CryptosOrder,
+  TransactionTypes,
+  type TransactionType,
+  type CryptoSymbol
+}
 
 export default {
   EPOCH,
@@ -265,3 +282,6 @@ export const VALIDATION_ERRORS = {
 } as const
 
 export const sidebarLayoutKey = Symbol('sidebarLayout')
+
+/** Allowed extensions for images */
+export const ALLOWED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif']

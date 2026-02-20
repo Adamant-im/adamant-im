@@ -24,6 +24,7 @@ export type RequestConfig<P extends Payload> = {
   method?: string
   payload?: P
   onUploadProgress?: (progress: AxiosProgressEvent) => void
+  onDownloadProgress?: (progress: AxiosProgressEvent) => void
   responseType?: ResponseType
   signal?: AbortSignal
 }
@@ -51,7 +52,15 @@ export class IpfsNode extends Node<AxiosInstance> {
    * accepts `ApiNode` as a first argument and returns an object.
    */
   request<P extends Payload = Payload, R = any>(cfg: RequestConfig<P>): Promise<R> {
-    const { url, headers, method = 'get', payload, signal, onUploadProgress } = cfg
+    const {
+      url,
+      headers,
+      method = 'get',
+      payload,
+      signal,
+      onUploadProgress,
+      onDownloadProgress
+    } = cfg
 
     const config: AxiosRequestConfig = {
       url,
@@ -62,7 +71,8 @@ export class IpfsNode extends Node<AxiosInstance> {
         typeof payload === 'function' ? payload(this) : payload,
       responseType: cfg.responseType,
       signal,
-      onUploadProgress
+      onUploadProgress,
+      onDownloadProgress
     }
 
     return this.client.request(config).then(

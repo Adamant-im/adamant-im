@@ -81,6 +81,7 @@ export function getCurrentAccount(): Promise<CurrentAccount>
 export function isReady(): boolean
 
 export function getPublicKey(address: string): Promise<string>
+export function getPublicKeyByTransaction(transaction: NormalizedChatMessageTransaction): string
 
 export type SendMessageParams = {
   to: string // address

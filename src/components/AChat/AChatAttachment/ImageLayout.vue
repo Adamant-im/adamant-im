@@ -11,6 +11,7 @@
       <AChatImage
         v-for="(img, j) in group"
         @click="handleClick(img)"
+        @download-image="downloadImage"
         :key="j"
         :img="img"
         :transaction="transaction"
@@ -64,17 +65,22 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['click:image'],
+  emits: ['click:image', 'downloadImage'],
   setup(props, { emit }) {
     const groups = computed(() => groupImages(props.images))
     const handleClick = (img: FileAsset | LocalFile) => {
       emit('click:image', props.images.indexOf(img))
     }
 
+    const downloadImage = (img: FileAsset | LocalFile) => {
+      emit('downloadImage', img)
+    }
+
     return {
       classes,
       groups,
-      handleClick
+      handleClick,
+      downloadImage
     }
   }
 })
@@ -91,7 +97,8 @@ $gap-size: 4px;
 .a-chat-image-layout {
   max-width: 100%;
   width: 100%;
-  border-radius: 8px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
   overflow: hidden;
   border-width: $gap-size;
   border-style: solid;
@@ -111,10 +118,7 @@ $gap-size: 4px;
   .a-chat-image-layout {
     background-color: map.get(colors.$adm-colors, 'black');
     border-color: map.get(colors.$adm-colors, 'black');
-    box-shadow:
-      0 1px 10px hsla(0, 0%, 39.2%, 0.06),
-      0 1px 1px hsla(0, 0%, 39.2%, 0.04),
-      0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
+    box-shadow: none;
   }
 }
 
@@ -122,10 +126,7 @@ $gap-size: 4px;
   .a-chat-image-layout {
     background-color: map.get(settings.$shades, 'white');
     border-color: map.get(settings.$shades, 'white');
-    box-shadow:
-      0 1px 10px hsla(0, 0%, 39.2%, 0.06),
-      0 1px 1px hsla(0, 0%, 39.2%, 0.04),
-      0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
+    box-shadow: none;
   }
 }
 </style>

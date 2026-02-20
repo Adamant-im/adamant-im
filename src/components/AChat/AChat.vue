@@ -176,6 +176,19 @@ const scrollTo = (position: number) => {
   }
 }
 
+const scrollByOffset = (offset: number) => {
+  const formPadding = 8
+  const entireOffset = offset + formPadding
+
+  if (messagesRef.value) {
+    const scrollBottom =
+      messagesRef.value.scrollHeight -
+      (messagesRef.value.scrollTop + messagesRef.value.clientHeight)
+
+    messagesRef.value.scrollTop += scrollBottom > entireOffset ? 0 : entireOffset
+  }
+}
+
 const scrollToMessage = (index: number) => {
   if (!messagesRef.value) return
 
@@ -265,7 +278,8 @@ defineExpose({
   scrollToMessageEasy,
   maintainScrollPosition,
   scrollToMessage,
-  scrollTo
+  scrollTo,
+  scrollByOffset
 })
 
 const spinnerTop = computed(() => {

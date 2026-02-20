@@ -23,7 +23,7 @@
           :transaction="actionMessage"
         >
           <a-chat-message
-            v-if="actionMessage.type === 'message'"
+            v-if="actionMessage.type === TT.MESSAGE"
             :transaction="actionMessage"
             :data-id="'action-message'"
             html
@@ -104,7 +104,7 @@
 
       <template #message="{ message, sender }">
         <a-chat-message
-          v-if="message.type === 'message'"
+          v-if="message.type === TT.MESSAGE"
           :transaction="message"
           :html="true"
           :flashing="flashingMessageId === message.id"
@@ -134,16 +134,18 @@
         </a-chat-message>
 
         <a-chat-attachment
-          v-if="message.type === 'attachment'"
+          v-if="message.type === TT.ATTACHMENT"
           :transaction="message"
           :html="true"
           :flashing="flashingMessageId === message.id"
           :data-id="message.id"
           :partner-id="partnerId"
-          @resend="() => console.debug('Not implemented')"
+          @resend="resendAttachment(partnerId, message.id, message.localFiles)"
           @click:quoted-message="onQuotedMessageClick"
           @swipe:left="onSwipeLeft(message)"
           @longpress="onMessageLongPress(message)"
+          @download-attachment="onDownloadAttachment"
+          @download-all-attachments="onDownloadAllAttachments"
         >
           <template #avatar v-if="sender">
             <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
@@ -156,6 +158,7 @@
               :transaction="message"
               :open="actionsDropdownMessageId === message.id"
               :show-emoji-picker="showEmojiPicker"
+              :allow-copy="!!message.message"
               @open:change="toggleActionsDropdown"
               @click:reply="openReplyPreview"
               @click:copy="copyMessageToClipboard"
@@ -189,6 +192,7 @@
               :transaction="message"
               :open="actionsDropdownMessageId === message.id"
               :show-emoji-picker="showEmojiPicker"
+              :allow-copy="!!message.message"
               @open:change="toggleActionsDropdown"
               @click:reply="openReplyPreview"
               @click:copy="copyMessageToClipboard"
@@ -204,10 +208,10 @@
       <template #form>
         <a-chat-form
           ref="chatFormRef"
-          :show-send-button="true"
           :send-on-enter="sendMessageOnEnter"
           :show-divider="true"
           :label="t('chats.message')"
+          :should-disable-send-button="shouldDisableSendButton"
           :should-disable-input="isWelcomeChat(partnerId) || shouldDisableInput"
           :message-text="
             $route.query.messageText || $store.getters['draftMessage/draftMessage'](partnerId)
@@ -230,9 +234,12 @@
 
           <template #preview-file>
             <FilesPreview
+              ref="filesPreviewContainer"
               v-if="attachments.list.length > 0"
               :files="attachments.list"
+              :partner-id="partnerId"
               @remove-item="attachments.remove"
+              @restore-scroll="restoreScroll"
               @cancel="cancelPreviewFile"
             />
           </template>
@@ -268,7 +275,7 @@
 
 <script lang="ts" setup>
 import AChatReactions from '@/components/AChat/AChatReactions/AChatReactions.vue'
-import { FileData } from '@/lib/files'
+import { LocalFile } from '@/lib/files'
 import { emojiWeight } from '@/lib/chat/emoji-weight/emojiWeight'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { vibrate } from '@/lib/vibrate'
@@ -282,7 +289,8 @@ import {
   Fees,
   UPLOAD_MAX_FILE_COUNT,
   UPLOAD_MAX_FILE_SIZE,
-  CHAT_MESSAGE_BUBBLE_TIME_OFFSET
+  CHAT_MESSAGE_BUBBLE_TIME_OFFSET,
+  TransactionTypes as TT
 } from '@/lib/constants'
 import EmojiPicker from '@/components/EmojiPicker.vue'
 
@@ -317,6 +325,8 @@ import { useChatStateStore } from '@/stores/modal-state'
 import ChatPlaceholder from '@/components/Chat/ChatPlaceholder.vue'
 import { watchImmediate } from '@vueuse/core'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import { FileAsset } from '@/lib/adamant-api/asset'
+import { useProcessFile } from '@/hooks/useProcessFile'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -337,6 +347,7 @@ const router = useRouter()
 const store = useStore()
 const { t } = useI18n()
 const showSpinner = useChatsSpinner()
+const { processFile } = useProcessFile(props.partnerId)
 
 const isMenuOpen = ref(false)
 
@@ -344,20 +355,26 @@ const dateRefreshKey = ref(0)
 const lastVisibleDate = ref(new Date().toDateString())
 
 const attachments = useAttachments(props.partnerId)()
-const handleAttachments = (files: FileData[]) => {
-  const maxFileSizeExceeded = files.some(({ file }) => file.size >= UPLOAD_MAX_FILE_SIZE)
+const handleAttachments = async (files: File[]) => {
+  const maxFileSizeExceeded = files.some((file) => file.size >= UPLOAD_MAX_FILE_SIZE)
   const maxFileCountExceeded = attachments.list.length + files.length > UPLOAD_MAX_FILE_COUNT
-
-  attachments.add(files)
 
   if (maxFileCountExceeded) {
     store.dispatch('snackbar/show', {
-      message: t('chats.max_files', { count: UPLOAD_MAX_FILE_COUNT })
+      message: t('chats.max_files', { count: UPLOAD_MAX_FILE_COUNT }),
+      isError: true
     })
+    return
   } else if (maxFileSizeExceeded) {
     store.dispatch('snackbar/show', {
-      message: t('chats.max_file_size', { count: UPLOAD_MAX_FILE_SIZE })
+      message: t('chats.max_file_size', { size_mb: UPLOAD_MAX_FILE_SIZE }),
+      isError: true
     })
+    return
+  }
+
+  for (const file of files) {
+    await processFile(file)
   }
 
   chatFormRef.value.focus()
@@ -402,6 +419,9 @@ const userMessages = computed(() =>
 )
 const userId = computed(() => store.state.address)
 const isNewChat = computed(() => store.getters['chat/isNewChat'](props.partnerId))
+const shouldDisableSendButton = computed(() => {
+  return attachments.list.some((attachment) => attachments.isLoading(attachment))
+})
 const shouldDisableInput = computed(
   () => isGettingPublicKey.value || isKeyMissing.value || !store.state.publicKeys[props.partnerId]
 )
@@ -734,6 +754,13 @@ const resendMessage = (recipientId: string, messageId: string) => {
   })
 }
 
+const resendAttachment = (recipientId: string, messageId: string, localFiles?: LocalFile[]) => {
+  const files = localFiles?.map((localFile) => localFile.file)
+  const cids = localFiles?.map((localFile) => [localFile.file.cid, localFile.file.preview?.cid])
+
+  return store.dispatch('chat/resendAttachment', { recipientId, messageId, files, cids })
+}
+
 const sendReaction = (reactToId: string, emoji: string) => {
   closeActionsMenu()
   closeActionsDropdown()
@@ -762,6 +789,12 @@ const onEmojiSelect = (transactionId: string, emoji: string) => {
 
 const markAsRead = () => {
   store.commit('chat/markAsRead', props.partnerId)
+}
+
+const restoreScroll = (offset: number) => {
+  setTimeout(() => {
+    chatRef.value.scrollByOffset(offset)
+  })
 }
 
 const onScrollTop = async () => {
@@ -816,6 +849,30 @@ const onMessageLongPress = (transaction: NormalizedChatMessageTransaction) => {
 
   openActionsMenu(transaction)
   vibrate.veryShort()
+}
+
+const onDownloadAttachment = (attachment: FileAsset) => {
+  const publicKey = store.state.publicKeys[props.partnerId]
+
+  if (attachment.preview?.id) {
+    store.dispatch('attachment/getAttachmentUrl', {
+      cid: attachment.preview.id,
+      publicKey: publicKey,
+      nonce: attachment.preview.nonce
+    })
+  }
+
+  store.dispatch('attachment/getAttachmentUrl', {
+    cid: attachment.id,
+    publicKey: publicKey,
+    nonce: attachment.nonce
+  })
+}
+
+const onDownloadAllAttachments = (attachmentsToDownload: FileAsset[]) => {
+  attachmentsToDownload.forEach((attachment) => {
+    onDownloadAttachment(attachment)
+  })
 }
 
 const onSwipeLeft = (message: NormalizedChatMessageTransaction) => {
@@ -908,7 +965,7 @@ const openTransaction = (transaction: NormalizedChatMessageTransaction) => {
 }
 
 const isTransaction = (type: string) => {
-  return type in Cryptos || type === 'UNKNOWN_CRYPTO'
+  return type in Cryptos || type === TT.UNKNOWN_CRYPTO
 }
 
 const fetchChatMessages = async () => {

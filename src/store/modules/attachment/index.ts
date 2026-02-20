@@ -2,10 +2,16 @@ import { MutationTree, GetterTree, ActionTree } from 'vuex'
 import { RootState } from '@/store/types'
 import { AttachmentsState } from '@/store/modules/attachment/types'
 import { AttachmentApi } from '@/lib/attachment-api'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { FileAsset } from '@/lib/adamant-api/asset'
+import { LocalFile } from '@/lib/files'
+import { downloadFileByUrl, getAttachmentPayload, getFileName } from '@/lib/files/download'
+import { getPublicKeyByTransaction } from '@/lib/adamant-api'
 
 const state = (): AttachmentsState => ({
   attachments: {},
-  uploadProgress: {}
+  uploadProgress: {},
+  downloadProgress: {}
 })
 
 const mutations: MutationTree<AttachmentsState> = {
@@ -21,6 +27,14 @@ const mutations: MutationTree<AttachmentsState> = {
     delete state.uploadProgress[cid]
   },
 
+  setDownloadProgress(state, { cid, progress }: { cid: string; progress: number }) {
+    state.downloadProgress[cid] = progress
+  },
+
+  resetDownloadProgress(state, { cid }: { cid: string }) {
+    delete state.downloadProgress[cid]
+  },
+
   reset(state) {
     state.attachments = {}
   }
@@ -33,8 +47,18 @@ const getters: GetterTree<AttachmentsState, RootState> = {
   getUploadProgress: (state) => (cid: string) => {
     return state.uploadProgress[cid] ?? 100
   },
+  getDownloadProgress: (state) => (cid: string) => {
+    return state.downloadProgress[cid] ?? 100
+  },
   isUploadInProgress(state) {
     for (const progress of Object.values(state.uploadProgress)) {
+      if (progress < 100) return true
+    }
+
+    return false
+  },
+  isDownloadInProgress(state) {
+    for (const progress of Object.values(state.downloadProgress)) {
       if (progress < 100) return true
     }
 
@@ -58,29 +82,71 @@ const actions: ActionTree<AttachmentsState, RootState> = {
   },
   async getAttachmentUrl(
     { state, commit },
-    { cid, publicKey, nonce }: { cid: string; publicKey: string; nonce: string }
+    {
+      cid,
+      publicKey,
+      nonce
+    }: {
+      cid: string
+      publicKey: string
+      nonce: string
+    }
   ) {
     if (state.attachments[cid]) {
       return state.attachments[cid]
-    } else {
-      try {
-        const fileData = await attachmentApi?.getFile(cid, nonce, publicKey)
-        if (!fileData) {
-          throw new Error('Failed to fetch image')
-        }
+    }
 
-        const blob = new Blob([fileData], { type: 'application/octet-stream' })
-        const url = URL.createObjectURL(blob)
-        commit('setAttachment', { cid, url })
-        return url
-      } catch (error) {
-        console.error('Error fetching image:', error)
-        throw error
+    try {
+      const onDownloadProgress = (progress: number) => {
+        commit('setDownloadProgress', {
+          cid,
+          progress
+        })
       }
+
+      const fileData = await attachmentApi?.getFile(cid, nonce, publicKey, onDownloadProgress)
+
+      commit('resetDownloadProgress', { cid })
+
+      if (!fileData) {
+        throw new Error('Failed to fetch image')
+      }
+
+      const blob = new Blob([fileData], { type: 'application/octet-stream' })
+      const url = URL.createObjectURL(blob)
+      commit('setAttachment', { cid, url })
+      return url
+    } catch (error) {
+      console.error('Error fetching image:', error)
+      throw error
     }
   },
   async uploadAttachment(state, { file, publicKey }: { file: Uint8Array; publicKey: string }) {
     return attachmentApi?.uploadFile(file, publicKey)
+  },
+  async downloadFile(
+    { dispatch },
+    {
+      transaction,
+      file,
+      delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+    }: {
+      transaction: NormalizedChatMessageTransaction
+      file: FileAsset | LocalFile
+      delay?: (ms: number) => Promise<void>
+    }
+  ) {
+    try {
+      const publicKey = getPublicKeyByTransaction(transaction)
+
+      const payload = getAttachmentPayload(file, publicKey)
+      const imageUrl = await dispatch('getAttachmentUrl', payload)
+
+      const fileName = getFileName(file)
+      await downloadFileByUrl(imageUrl, fileName)
+    } finally {
+      await delay(200) // show loading spinner at least 200ms for smoother UI
+    }
   },
   reset: {
     root: true,

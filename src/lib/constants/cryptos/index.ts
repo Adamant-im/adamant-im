@@ -55,3 +55,13 @@ export const CryptosOrder = Object.values(Cryptos)
     return a.defaultOrdinalLevel - b.defaultOrdinalLevel
   })
   .map((crypto) => crypto.symbol)
+
+export const TransactionTypes = {
+  REACTION: 'reaction',
+  MESSAGE: 'message',
+  ATTACHMENT: 'attachment',
+  UNKNOWN_CRYPTO: 'UNKNOWN_CRYPTO',
+  ...AllCryptos
+} as const
+
+export type TransactionType = (typeof TransactionTypes)[keyof typeof TransactionTypes]

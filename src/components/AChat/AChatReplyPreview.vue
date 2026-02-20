@@ -6,7 +6,10 @@
       </div>
 
       <div :class="classes.message">
-        <span v-if="!isCryptoTransfer" v-html="messageLabel"></span>
+        <template v-if="isAttachment">
+          <a-chat-quoted-attachment-label :transaction="message" />
+        </template>
+        <span v-else-if="!isCryptoTransfer" v-html="messageLabel"></span>
         <span v-else>{{ cryptoTransferLabel }}</span>
       </div>
 
@@ -27,11 +30,12 @@ import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
-import { Cryptos } from '@/lib/constants'
+import { Cryptos, TransactionTypes as TT } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { formatChatPreviewMessage } from '@/lib/markdown'
 import { mdiClose } from '@mdi/js'
 import type { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import AChatQuotedAttachmentLabel from '@/components/AChat/AChatQuotedAttachmentLabel.vue'
 
 const className = 'a-chat-reply-preview'
 const classes = {
@@ -71,6 +75,8 @@ const cryptoTransferLabel = computed(() => {
   return `${direction} ${amount}${message}`
 })
 
+const isAttachment = computed(() => props.message.type === TT.ATTACHMENT)
+
 const messageLabel = computed(() => {
   return store.state.options.formatMessages
     ? formatChatPreviewMessage(props.message.message)
@@ -88,7 +94,7 @@ $message-max-lines: 2;
 .a-chat-reply-preview {
   border-left: 3px solid map.get(colors.$adm-colors, 'attention');
   border-radius: 8px;
-  margin: 8px;
+  margin: 8px 0;
 
   &__container {
     padding: 8px 16px;

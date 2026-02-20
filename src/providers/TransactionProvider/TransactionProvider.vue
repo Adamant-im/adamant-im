@@ -19,7 +19,7 @@
 import { computed, defineComponent, PropType } from 'vue'
 import TransactionStatusProvider from './TransactionStatusProvider.vue'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
-import { TransactionStatus } from '@/lib/constants'
+import { TransactionStatus, TransactionTypes as TT } from '@/lib/constants'
 
 export default defineComponent({
   components: {
@@ -32,7 +32,7 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const isUnknownCrypto = computed(() => props.transaction.type === 'UNKNOWN_CRYPTO')
+    const isUnknownCrypto = computed(() => props.transaction.type === TT.UNKNOWN_CRYPTO)
 
     return {
       TransactionStatus,

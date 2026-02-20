@@ -1,65 +1,66 @@
 <template>
   <div :class="classes.root">
-    <AChatFileLoader v-if="isImage" :transaction="transaction" :partnerId="partnerId" :file="file">
-      <template #default="{ fileUrl, error, isLoading, uploadProgress }">
-        <div v-if="error" :style="{ width: `${iconSize}px`, height: `${iconSize}px` }">
-          <div :class="classes.error">
-            <v-tooltip location="bottom">
-              <template #activator="{ props }">
-                <v-icon v-bind="props" :class="classes.errorIcon" :icon="mdiImageOff" />
-              </template>
-
-              <span>{{ t('chats.file_loading_error') }}</span>
-            </v-tooltip>
-          </div>
-        </div>
-
-        <v-img
-          v-else
-          :src="fileUrl"
-          :width="iconSize"
-          :height="iconSize"
-          :max-width="iconSize"
-          :max-height="iconSize"
-          cover
-          @click="!isLoading && $emit('click')"
-        >
-          <v-fade-transition>
-            <div
-              v-show="uploadProgress < 100"
-              :class="[classes.placeholder, classes.placeholderTransparent]"
-            >
-              <v-progress-circular color="grey-lighten-4" :model-value="uploadProgress" />
-            </div>
-          </v-fade-transition>
-
-          <template #placeholder>
-            <div :class="classes.placeholder">
-              <v-progress-circular color="grey-lighten-4" indeterminate />
-            </div>
-          </template>
-        </v-img>
-      </template>
-    </AChatFileLoader>
+    <AChatImage
+      v-if="isImage"
+      :transaction="transaction"
+      :img="file"
+      :partner-id="partnerId"
+      :icon-size="iconSize"
+      @download-image="onDownloadImage"
+      @click="onClick"
+    />
 
     <div v-else :class="classes.fileIcon">
       <v-fade-transition>
         <div
-          v-show="uploadProgress < 100"
+          v-show="uploadProgress < 100 || isDownloading"
           :class="[classes.placeholder, classes.placeholderTransparent, classes.uploadFileProgress]"
-          style=""
         >
-          <v-progress-circular color="grey-lighten-4" :model-value="uploadProgress" />
+          <v-progress-circular
+            v-if="uploadProgress < 100"
+            color="grey-lighten-4"
+            :model-value="uploadProgress"
+          />
+          <v-progress-circular v-else-if="isDownloading" color="grey-lighten-4" indeterminate />
         </div>
       </v-fade-transition>
 
-      <IconFile
-        :class="classes.icon"
-        :text="fileExtensionDisplay"
-        :height="iconSize"
-        :width="iconSize"
-        @click="$emit('click')"
-      />
+      <v-menu
+        v-model:active="showMenu"
+        activator="parent"
+        origin="auto"
+        transition="scale-transition"
+        :open-on-hover="!isDownloading"
+      >
+        <template #default>
+          <v-list density="comfortable" variant="text" class="pa-0">
+            <v-list-item @click="onClick">
+              <v-list-item-title>Open</v-list-item-title>
+              <template #append>
+                <v-icon :icon="mdiArrowUpRight" :size="20" />
+              </template>
+            </v-list-item>
+            <v-divider />
+            <v-list-item @click="onDownload">
+              <v-list-item-title>Download</v-list-item-title>
+              <template #append>
+                <v-icon :icon="mdiArrowCollapseDown" :size="20" />
+              </template>
+            </v-list-item>
+          </v-list>
+        </template>
+
+        <template #activator="{ props }">
+          <IconFile
+            v-bind="props"
+            :class="classes.icon"
+            :text="fileExtensionDisplay"
+            :height="iconSize"
+            :width="iconSize"
+            @click="onClick"
+          />
+        </template>
+      </v-menu>
     </div>
 
     <div :class="classes.fileInfo">
@@ -70,16 +71,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { computed, ref } from 'vue'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { LocalFile, isLocalFile, formatBytes, extractFileExtension } from '@/lib/files'
 import { FileAsset } from '@/lib/adamant-api/asset'
 import { MAX_FILE_EXTENSION_DISPLAY_LENGTH } from '@/lib/constants'
 import IconFile from '@/components/icons/common/IconFile.vue'
 import { useStore } from 'vuex'
-import { AChatFileLoader } from './AChatFileLoader'
-import { mdiImageOff } from '@mdi/js'
+import { mdiArrowCollapseDown, mdiArrowUpRight } from '@mdi/js'
+import { VList } from 'vuetify/components'
+import AChatImage from '@/components/AChat/AChatAttachment/AChatImage.vue'
+import { useI18n } from 'vue-i18n'
+import { isFileImage } from '@/lib/files/helpers/isFileImage'
 
 const className = 'a-chat-file'
 const classes = {
@@ -93,8 +96,7 @@ const classes = {
   fileInfo: `${className}__file-info`,
   name: `${className}__name`,
   size: `${className}__size`,
-  error: `${className}__error`,
-  errorIcon: `${className}__error-icon`
+  preview: `${className}__preview`
 }
 
 const iconSize = 64
@@ -105,20 +107,17 @@ const props = defineProps<{
   partnerId: string
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'click'): void
+  (e: 'downloadImage', image: FileAsset | LocalFile): void
 }>()
 
-const { t } = useI18n()
 const store = useStore()
+const { t } = useI18n()
 
-const isImage = computed(() => {
-  if (isLocalFile(props.file)) {
-    return props.file.file.isImage
-  }
+const showMenu = ref(false)
 
-  return ['jpg', 'jpeg', 'png'].includes(props.file.extension!)
-})
+const isImage = computed(() => isFileImage(props.file))
 
 const fileName = computed(() =>
   isLocalFile(props.file) ? props.file.file.name : props.file.name || 'UNNAMED'
@@ -151,6 +150,43 @@ const uploadProgress = computed(() => {
 
   return 100
 })
+
+const isDownloading = computed(() => {
+  const progress = store.getters['attachment/getDownloadProgress'](
+    isLocalFile(props.file) ? props.file.file.cid : props.file.id
+  )
+
+  return progress < 100
+})
+
+const onClick = () => {
+  emit('click')
+  if (showMenu.value) {
+    showMenu.value = false
+  }
+}
+
+const onDownload = () => {
+  try {
+    store.dispatch('attachment/downloadFile', {
+      transaction: props.transaction,
+      file: props.file
+    })
+  } catch {
+    store.dispatch('snackbar/show', {
+      message: t('chats.file_not_found'),
+      isError: true
+    })
+  }
+
+  if (showMenu.value) {
+    showMenu.value = false
+  }
+}
+
+const onDownloadImage = (img: FileAsset | LocalFile) => {
+  emit('downloadImage', img)
+}
 </script>
 
 <style lang="scss" scoped>
@@ -161,8 +197,7 @@ const uploadProgress = computed(() => {
 
 .a-chat-file {
   display: flex;
-  margin-left: auto;
-  width: 160px;
+  overflow: hidden;
 
   &__placeholder {
     display: flex;
@@ -171,10 +206,17 @@ const uploadProgress = computed(() => {
     height: 100%;
   }
 
+  &__preview {
+    ::v-deep(.v-img__img) {
+      padding: 5px;
+    }
+  }
+
   &__file-icon {
     position: relative;
     width: 64px;
     height: 64px;
+    cursor: pointer;
   }
 
   &__upload-file-progress {
@@ -187,6 +229,7 @@ const uploadProgress = computed(() => {
   }
 
   &__icon {
+    padding: 5px;
     flex-shrink: 0;
   }
 
@@ -207,7 +250,7 @@ const uploadProgress = computed(() => {
     font-size: 14px;
   }
 
-  &__error {
+  &__fallback {
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -215,10 +258,23 @@ const uploadProgress = computed(() => {
     height: 100%;
     font-weight: 400;
   }
+
+  &__download-button {
+    &:hover > .v-btn__overlay {
+      opacity: 0.2;
+      transition: all 0.2s ease;
+    }
+  }
 }
 
 .v-theme--dark {
   .a-chat-file {
+    &__file {
+      &:hover {
+        background-color: white;
+      }
+    }
+
     &__placeholder {
       background-color: map.get(colors.$adm-colors, 'muted');
 
@@ -233,14 +289,6 @@ const uploadProgress = computed(() => {
 
     &__size {
       color: map.get(colors.$adm-colors, 'grey');
-    }
-
-    &__error {
-      background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
-    }
-
-    &__error-icon {
-      color: map.get(settings.$shades, 'white');
     }
   }
 }
@@ -261,14 +309,6 @@ const uploadProgress = computed(() => {
 
     &__size {
       color: map.get(colors.$adm-colors, 'muted');
-    }
-
-    &__error {
-      background-color: map.get(colors.$adm-colors, 'secondary2');
-    }
-
-    &__error-icon {
-      color: map.get(settings.$grey, 'darken-1');
     }
   }
 }

@@ -26,6 +26,7 @@
     <template #bottom>
       <AChatMessageActionsList
         v-if="!showEmojiPicker"
+        :allow-copy="allowCopy"
         @click:reply="openReplyPreview"
         @click:copy="copyMessageToClipboard"
       />
@@ -42,11 +43,16 @@ import {
   AChatMessageActionsDropdown
 } from '@/components/AChat'
 
-const props = defineProps<{
+type Props = {
   transaction: NormalizedChatMessageTransaction
   open: boolean
   showEmojiPicker: boolean
-}>()
+  allowCopy?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  allowCopy: true
+})
 
 const emit = defineEmits<{
   (e: 'open:change', open: boolean, transaction: NormalizedChatMessageTransaction): void

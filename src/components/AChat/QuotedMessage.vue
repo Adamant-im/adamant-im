@@ -21,10 +21,7 @@
       </span>
 
       <span v-else-if="isAttachment">
-        <span v-if="transaction.asset.files.length > 0">
-          [{{ transaction.asset.files.length }} {{ t('chats.files') }}]:
-        </span>
-        {{ transaction.message }}
+        <a-chat-attachment-label :transaction="transaction" />
       </span>
 
       <span v-else>
@@ -41,10 +38,11 @@ import { useStore } from 'vuex'
 
 import { getTransaction, decodeChat } from '@/lib/adamant-api'
 import { NormalizedChatMessageTransaction, normalizeMessage } from '@/lib/chat/helpers'
-import { Cryptos } from '@/lib/constants'
+import { Cryptos, TransactionTypes as TT } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { formatChatPreviewMessage } from '@/lib/markdown'
 import { ChatMessageTransaction } from '@/lib/schema/client/api'
+import AChatQuotedAttachmentLabel from '@/components/AChat/AChatQuotedAttachmentLabel.vue'
 
 const className = 'quoted-message'
 const classes = {
@@ -97,6 +95,7 @@ async function fetchTransaction(transactionId: string, address: string) {
 }
 
 export default defineComponent({
+  components: { AChatAttachmentLabel: AChatQuotedAttachmentLabel },
   props: {
     /**
      * Quoted message ID (see AIP-16: `replyto_id`)
@@ -122,7 +121,7 @@ export default defineComponent({
       const validCryptos = Object.keys(Cryptos)
       return transaction.value ? validCryptos.includes(transaction.value.type) : false
     })
-    const isAttachment = computed(() => transaction.value?.type === 'attachment')
+    const isAttachment = computed(() => transaction.value?.type === TT.ATTACHMENT)
 
     const cryptoTransferLabel = computed(() => {
       const direction =

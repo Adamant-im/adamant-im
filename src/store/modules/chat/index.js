@@ -19,6 +19,7 @@ import {
   Cryptos,
   CryptosInfo,
   TransactionStatus as TS,
+  TransactionTypes as TT,
   MessageType
 } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
@@ -104,7 +105,7 @@ const getters = {
     const messages = getters.messages(partnerId)
 
     return messages.filter(
-      (message) => message.type === 'reaction' && message.asset.reactto_id === transactionId
+      (message) => message.type === TT.REACTION && message.asset.reactto_id === transactionId
     )
   },
 
@@ -154,7 +155,7 @@ const getters = {
    * @returns {number}
    */
   indexOfMessage: (state, getters) => (partnerId, messageId) => {
-    const messages = getters.messages(partnerId).filter((message) => message.type !== 'reaction')
+    const messages = getters.messages(partnerId).filter((message) => message.type !== TT.REACTION)
     const message = messages.find((message) => message.id === messageId)
 
     if (!message) {
@@ -456,8 +457,8 @@ const mutations = {
     // Shouldn't duplicate third-party crypto transactions
     if (
       message.type &&
-      message.type !== 'message' &&
-      message.type !== 'reaction' &&
+      message.type !== TT.MESSAGE &&
+      message.type !== TT.REACTION &&
       message.type !== Cryptos.ADM
     ) {
       const localTransaction = chat.messages.find(
@@ -911,7 +912,7 @@ const actions = {
    * @returns {Promise}
    */
   async sendAttachment(
-    { commit, rootState, dispatch, rootGetters },
+    { commit, rootState, dispatch },
     { files, message, recipientId, replyToId }
   ) {
     const recipientPublicKey = await getPublicKey(recipientId)
@@ -941,12 +942,6 @@ const actions = {
       partnerId: recipientId,
       asset: newAsset
     })
-
-    const areAdmNodesDisabled = rootGetters['nodes/adm'].every((node) => node.status === 'disabled')
-
-    if (areAdmNodesDisabled) {
-      throw new AllNodesDisabledError('adm')
-    }
 
     cids.forEach(([cid]) => {
       commit('attachment/setUploadProgress', { cid, progress: 0 }, { root: true })
@@ -978,15 +973,15 @@ const actions = {
           commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
         }
 
+        dispatch('showFileError', {
+          uploadData
+        })
+
         commit('updateMessage', {
           id: messageObject.id,
           status: TS.REJECTED,
           partnerId: recipientId
         })
-
-        for (const [cid] of cids) {
-          commit('attachment/resetUploadProgress', { cid }, { root: true })
-        }
 
         throw uploadData.error
       }
@@ -1157,10 +1152,18 @@ const actions = {
       })
 
       if (uploadData.error) {
+        dispatch('showFileError', {
+          uploadData
+        })
+
         throw uploadData.error
       }
     } catch (err) {
       if (!isAllNodesOfflineError(err)) {
+        if (isAllNodesDisabledError(uploadData.error)) {
+          commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
+        }
+
         dispatch('rejectPendingMessage', {
           messageId,
           recipientId
@@ -1221,6 +1224,16 @@ const actions = {
       commit('attachment/setUploadProgress', { cid, progress }, { root: true })
     }
 
+    const areAdmNodesDisabled = rootGetters['nodes/adm'].every((node) => node.status === 'disabled')
+
+    if (areAdmNodesDisabled) {
+      return {
+        newCids: cids,
+        files: files,
+        error: new AllNodesDisabledError('adm')
+      }
+    }
+
     const fileByCid = files.reduce((acc, file) => {
       acc[file.cid] = file
       return acc
@@ -1261,6 +1274,7 @@ const actions = {
 
         return {
           newCids: fallback,
+          files: files.slice(uploaded.length),
           error: errorToThrow
         }
       } finally {
@@ -1269,6 +1283,35 @@ const actions = {
     }
 
     return { newCids: uploaded }
+  },
+
+  showFileError({ dispatch }, { uploadData }) {
+    if (uploadData.files?.length > 1) {
+      dispatch(
+        'snackbar/show',
+        {
+          message: i18n.global.t('chats.files_upload_error', {
+            reason: uploadData.error.message ?? uploadData.error
+          }),
+          isError: true,
+          timeout: 3000
+        },
+        { root: true }
+      )
+    } else {
+      dispatch(
+        'snackbar/show',
+        {
+          message: i18n.global.t('chats.file_upload_error', {
+            name: uploadData.files[0].name,
+            reason: uploadData.error.message ?? uploadData.error
+          }),
+          isError: true,
+          timeout: 3000
+        },
+        { root: true }
+      )
+    }
   },
 
   registerPendingMessage({ commit }, { messageId, recipientId, transactionId }) {

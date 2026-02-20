@@ -10,8 +10,17 @@ export class AttachmentApi {
     this.myKeypair = utils.makeKeypair(hash) as { publicKey: Buffer; privateKey: Buffer }
   }
 
-  async getFile(cid: string, nonce: string, publicKey: string) {
-    const file = await ipfs.downloadFile(cid)
+  async getFile(
+    cid: string,
+    nonce: string,
+    publicKey: string,
+    onDownloadProgress?: (progress: number) => void
+  ) {
+    const file = await ipfs.downloadFile(cid, (progress) => {
+      const percentCompleted = Math.round((progress.loaded * 100) / (progress.total || 0))
+
+      onDownloadProgress?.(percentCompleted)
+    })
     return utils.decodeBinary(new Uint8Array(file), publicKey, this.myKeypair.privateKey, nonce)
   }
 

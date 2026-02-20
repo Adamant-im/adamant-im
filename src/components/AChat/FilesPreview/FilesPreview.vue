@@ -1,16 +1,17 @@
 <template>
-  <div :class="classes.root">
-    <div :class="classes.files">
+  <div ref="componentContainer" :class="classes.root">
+    <div :class="classes.files" ref="previewsContainer">
       <FilesPreviewItem
         v-for="(file, index) in files"
         :key="index"
         :file="file"
-        @remove="$emit('remove-item', index)"
+        :partner-id="partnerId"
+        @remove="emit('remove-item', index)"
       />
     </div>
 
     <v-btn
-      @click="$emit('cancel')"
+      @click="emit('cancel')"
       :class="classes.closeButton"
       :icon="mdiClose"
       size="24"
@@ -19,13 +20,11 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue'
-
+<script lang="ts" setup>
 import type { FileData } from '@/lib/files'
 import FilesPreviewItem from './FilesPreviewItem.vue'
 import { mdiClose } from '@mdi/js'
-
+import { nextTick, onBeforeUnmount, useTemplateRef, watch } from 'vue'
 
 const className = 'files-preview'
 const classes = {
@@ -34,23 +33,38 @@ const classes = {
   closeButton: `${className}__close-button`
 }
 
-export default defineComponent({
-  components: {
-    FilesPreviewItem
-  },
-  emits: ['cancel', 'remove-item'],
-  props: {
-    files: {
-      type: Array as PropType<Array<FileData>>,
-      required: true
-    }
-  },
-  setup() {
-    return {
-      classes,
-      mdiClose
-    }
+type Props = {
+  files: FileData[]
+  partnerId: string
+}
+
+const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  (e: 'remove-item', index: number): void
+  (e: 'restore-scroll', offset: number): void
+  (e: 'cancel'): void
+}>()
+
+const previewsContainer = useTemplateRef<HTMLDivElement | null>('previewsContainer')
+const componentContainer = useTemplateRef<HTMLDivElement | null>('componentContainer')
+
+watch(
+  () => props.files.length,
+  (newLength, prevLength) => {
+    nextTick(() => {
+      if (previewsContainer.value && newLength > prevLength) {
+        previewsContainer.value.scrollTo({
+          left: previewsContainer.value.scrollWidth,
+          behavior: 'smooth'
+        })
+      }
+    })
   }
+)
+
+onBeforeUnmount(() => {
+  emit('restore-scroll', componentContainer.value?.offsetHeight ?? 0)
 })
 </script>
 
@@ -64,6 +78,8 @@ export default defineComponent({
   margin-bottom: 8px;
   padding: 8px 16px;
   position: relative;
+  border: 3px solid rgba(map.get(colors.$adm-colors, 'grey'), 0.5);
+  border-bottom: none;
 
   &__files {
     display: flex;
@@ -83,17 +99,13 @@ export default defineComponent({
 
 .v-theme--light {
   .files-preview {
-    background-color: map.get(colors.$adm-colors, 'secondary');
     color: map.get(colors.$adm-colors, 'regular');
-    border-left: 3px solid map.get(colors.$adm-colors, 'attention');
   }
 }
 
 .v-theme--dark {
   .files-preview {
-    background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent2');
     color: #fff;
-    border-left: 3px solid map.get(colors.$adm-colors, 'attention');
   }
 }
 </style>
