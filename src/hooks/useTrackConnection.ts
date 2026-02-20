@@ -1,11 +1,13 @@
-import { watch } from 'vue'
+import { onBeforeUnmount, watch } from 'vue'
 import { i18n } from '@/i18n'
 import { useConsiderOffline } from '@/hooks/useConsiderOffline'
 import { useStore } from 'vuex'
+import { startConnectionQualityMonitoring } from '@/lib/network/connection'
 
 export function useTrackConnection() {
   const store = useStore()
   const { consideredOffline } = useConsiderOffline()
+  const stopConnectionQualityMonitoring = startConnectionQualityMonitoring()
 
   let firstCallSkipped = false
 
@@ -21,5 +23,9 @@ export function useTrackConnection() {
       message: i18n.global.t(`connection.${type}`),
       timeout: 3000
     })
+  })
+
+  onBeforeUnmount(() => {
+    stopConnectionQualityMonitoring()
   })
 }

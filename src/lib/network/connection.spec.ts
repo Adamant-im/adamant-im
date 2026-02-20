@@ -1,5 +1,27 @@
-import { describe, expect, it } from 'vitest'
-import { getConnectionAwareTimeout, isPotentiallySlowConnection } from './connection'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import {
+  __resetConnectionQualityStateForTests,
+  getConnectionAwareTimeout,
+  isPotentiallySlowConnection,
+  startConnectionQualityMonitoring
+} from './connection'
+import { logger } from '@/utils/devTools/logger'
+
+const navigatorConnectionDescriptor = Object.getOwnPropertyDescriptor(
+  globalThis.navigator,
+  'connection'
+)
+
+afterEach(() => {
+  vi.restoreAllMocks()
+  __resetConnectionQualityStateForTests()
+
+  if (navigatorConnectionDescriptor) {
+    Object.defineProperty(globalThis.navigator, 'connection', navigatorConnectionDescriptor)
+  } else {
+    Reflect.deleteProperty(globalThis.navigator, 'connection')
+  }
+})
 
 describe('network connection helpers', () => {
   it('returns false when Network Information API is unavailable', () => {
@@ -15,7 +37,8 @@ describe('network connection helpers', () => {
   it('detects potentially slow connections by performance hints', () => {
     expect(isPotentiallySlowConnection({ saveData: true })).toBe(true)
     expect(isPotentiallySlowConnection({ rtt: 350 })).toBe(true)
-    expect(isPotentiallySlowConnection({ downlink: 1.5 })).toBe(true)
+    expect(isPotentiallySlowConnection({ downlink: 1 })).toBe(true)
+    expect(isPotentiallySlowConnection({ downlink: 0 })).toBe(false)
   })
 
   it('does not classify fast connections as slow', () => {
@@ -29,5 +52,90 @@ describe('network connection helpers', () => {
 
   it('keeps timeout unchanged on regular links', () => {
     expect(getConnectionAwareTimeout(10_000, { effectiveType: '4g' })).toBe(10_000)
+  })
+
+  it('logs with public level when runtime connection changes to slow and back', () => {
+    const loggerSpy = vi.spyOn(logger, 'log').mockImplementation(() => {})
+
+    Object.defineProperty(globalThis.navigator, 'connection', {
+      configurable: true,
+      value: {
+        effectiveType: '4g',
+        rtt: 100,
+        downlink: 10
+      }
+    })
+    getConnectionAwareTimeout(10_000)
+
+    Object.defineProperty(globalThis.navigator, 'connection', {
+      configurable: true,
+      value: {
+        effectiveType: '3g'
+      }
+    })
+    getConnectionAwareTimeout(10_000)
+
+    Object.defineProperty(globalThis.navigator, 'connection', {
+      configurable: true,
+      value: {
+        effectiveType: '4g',
+        rtt: 100,
+        downlink: 10
+      }
+    })
+    getConnectionAwareTimeout(10_000)
+
+    expect(loggerSpy).toHaveBeenNthCalledWith(
+      1,
+      'network/connection',
+      'public',
+      'Potentially slow connection detected. Increasing network timeouts by x1.5.'
+    )
+    expect(loggerSpy).toHaveBeenNthCalledWith(
+      2,
+      'network/connection',
+      'public',
+      'Connection quality restored. Returning network timeouts to defaults.'
+    )
+    expect(loggerSpy).toHaveBeenCalledTimes(2)
+  })
+
+  it('logs when first runtime check starts in slow mode', () => {
+    const loggerSpy = vi.spyOn(logger, 'log').mockImplementation(() => {})
+
+    Object.defineProperty(globalThis.navigator, 'connection', {
+      configurable: true,
+      value: {
+        effectiveType: '3g'
+      }
+    })
+
+    getConnectionAwareTimeout(10_000)
+
+    expect(loggerSpy).toHaveBeenCalledWith(
+      'network/connection',
+      'public',
+      'Potentially slow connection detected. Increasing network timeouts by x1.5.'
+    )
+  })
+
+  it('starts connection monitoring and subscribes to connection change events', () => {
+    const addEventListener = vi.fn()
+    const removeEventListener = vi.fn()
+
+    Object.defineProperty(globalThis.navigator, 'connection', {
+      configurable: true,
+      value: {
+        effectiveType: '4g',
+        addEventListener,
+        removeEventListener
+      }
+    })
+
+    const stopMonitoring = startConnectionQualityMonitoring()
+    expect(addEventListener).toHaveBeenCalledWith('change', expect.any(Function))
+
+    stopMonitoring()
+    expect(removeEventListener).toHaveBeenCalledWith('change', expect.any(Function))
   })
 })
