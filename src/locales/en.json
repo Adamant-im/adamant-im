@@ -227,15 +227,15 @@
   },
   "nodes": {
     "popup": {
-      "http_restriction_title": "HTTP nodes are restricted in browser",
-      "http_restriction_intro": "Browsers block requests from secure (HTTPS) apps and pages to insecure (HTTP) endpoints for security reasons.",
+      "http_restriction_title": "HTTP nodes are blocked in browser",
+      "http_restriction_intro": "For security, browsers block requests from HTTPS pages to HTTP endpoints.",
       "http_vs_https_title": "🔒 HTTP vs HTTPS",
-      "http_vs_https_http": "HTTP does not encrypt traffic, so observers may see which endpoints the app uses.",
-      "http_vs_https_https": "HTTPS encrypts the connection, hiding everything except the node address.",
-      "adamant_encryption_title": "💡 ADAMANT always encrypts all messages",
-      "adamant_encryption_text": "ADAMANT always encrypts all messages on the blockchain, regardless of whether the connection is HTTP or HTTPS. That’s why ADAMANT nodes can safely be used even via HTTP. Desktop and mobile apps can work with both HTTP and HTTPS nodes. This restriction applies only in Web browsers.",
-      "how_to_allow_title": "To allow HTTP nodes, you can:",
-      "how_to_allow_browser": "Allow insecure content in your browser settings, or",
+      "http_vs_https_http": "HTTP is unencrypted, so observers may see which node the app uses.",
+      "http_vs_https_https": "HTTPS encrypts traffic, hiding everything except the node address.",
+      "adamant_encryption_title": "💡 ADAMANT encrypts all messages",
+      "adamant_encryption_text": "ADAMANT encrypts blockchain messages over both HTTP and HTTPS. So ADAMANT nodes are safe to use via HTTP. This browser restriction applies only to the Web app. Desktop and mobile apps support both protocols.",
+      "how_to_allow_title": "To use HTTP nodes:",
+      "how_to_allow_browser": "Allow insecure content for this site in browser settings, or",
       "how_to_allow_http_app": "Open the HTTP version of the app",
       "close": "Close"
     },
