@@ -26,6 +26,15 @@ function normalizeConnectionType(effectiveType?: string) {
   return effectiveType?.toLowerCase() || ''
 }
 
+function hasReliableNetworkInformation(connection: NavigatorConnection) {
+  const hasEffectiveType = normalizeConnectionType(connection.effectiveType).length > 0
+  const hasMeasuredRtt = Number.isFinite(connection.rtt) && Number(connection.rtt) > 0
+  const hasMeasuredDownlink =
+    Number.isFinite(connection.downlink) && Number(connection.downlink) > 0
+
+  return hasEffectiveType || hasMeasuredRtt || hasMeasuredDownlink || !!connection.saveData
+}
+
 function isDevConnectionProbeEnabled() {
   return (
     import.meta.env.DEV &&
@@ -88,15 +97,6 @@ function scheduleDevConnectionProbe() {
 function logConnectionTransition(isSlowConnection: boolean) {
   if (lastKnownSlowConnectionState === null) {
     lastKnownSlowConnectionState = isSlowConnection
-
-    if (isSlowConnection) {
-      logger.log(
-        'network/connection',
-        'public',
-        'Potentially slow connection detected. Increasing network timeouts by x1.5.'
-      )
-    }
-
     return
   }
 
@@ -160,6 +160,11 @@ export function isPotentiallySlowConnection(connection?: NavigatorConnection | n
   const isSlowConnection = isSlowNetworkType || isDataSaverEnabled || hasHighRtt || hasLowDownlink
 
   if (isRuntimeConnectionCheck) {
+    if (hasReliableNetworkInformation(currentConnection)) {
+      logConnectionTransition(isSlowConnection)
+      return isSlowConnection
+    }
+
     scheduleDevConnectionProbe()
     const isSlowByProbe = lastDevProbeSlowState === true
     logConnectionTransition(isSlowConnection || isSlowByProbe)

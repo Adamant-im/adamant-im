@@ -306,6 +306,9 @@ export abstract class Node<C = unknown> {
       this.fireStatusChange()
     }
 
+    // Keep healthcheck loop active regardless of tab visibility.
+    // In background tabs browsers may throttle timers; resume hooks trigger
+    // an immediate refresh when app becomes active again.
     this.timer = setTimeout(
       () => this.startHealthcheck(),
       this.getHealthCheckInterval(this.online ? this.healthCheckInterval : 'crucial')

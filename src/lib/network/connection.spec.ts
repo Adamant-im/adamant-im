@@ -100,7 +100,7 @@ describe('network connection helpers', () => {
     expect(loggerSpy).toHaveBeenCalledTimes(2)
   })
 
-  it('logs when first runtime check starts in slow mode', () => {
+  it('does not log on first runtime check even if connection is slow', () => {
     const loggerSpy = vi.spyOn(logger, 'log').mockImplementation(() => {})
 
     Object.defineProperty(globalThis.navigator, 'connection', {
@@ -112,11 +112,7 @@ describe('network connection helpers', () => {
 
     getConnectionAwareTimeout(10_000)
 
-    expect(loggerSpy).toHaveBeenCalledWith(
-      'network/connection',
-      'public',
-      'Potentially slow connection detected. Increasing network timeouts by x1.5.'
-    )
+    expect(loggerSpy).not.toHaveBeenCalled()
   })
 
   it('starts connection monitoring and subscribes to connection change events', () => {
@@ -137,5 +133,56 @@ describe('network connection helpers', () => {
 
     stopMonitoring()
     expect(removeEventListener).toHaveBeenCalledWith('change', expect.any(Function))
+  })
+
+  it('uses reliable Network Information API values without probe fallback', () => {
+    const loggerSpy = vi.spyOn(logger, 'log').mockImplementation(() => {})
+
+    Object.defineProperty(globalThis.navigator, 'connection', {
+      configurable: true,
+      value: {
+        effectiveType: '4g',
+        rtt: 0,
+        downlink: 0,
+        saveData: false
+      }
+    })
+    getConnectionAwareTimeout(10_000)
+
+    Object.defineProperty(globalThis.navigator, 'connection', {
+      configurable: true,
+      value: {
+        effectiveType: '2g',
+        rtt: 2150,
+        downlink: 0.4,
+        saveData: false
+      }
+    })
+    getConnectionAwareTimeout(10_000)
+
+    Object.defineProperty(globalThis.navigator, 'connection', {
+      configurable: true,
+      value: {
+        effectiveType: '4g',
+        rtt: 0,
+        downlink: 0,
+        saveData: false
+      }
+    })
+    getConnectionAwareTimeout(10_000)
+
+    expect(loggerSpy).toHaveBeenNthCalledWith(
+      1,
+      'network/connection',
+      'public',
+      'Potentially slow connection detected. Increasing network timeouts by x1.5.'
+    )
+    expect(loggerSpy).toHaveBeenNthCalledWith(
+      2,
+      'network/connection',
+      'public',
+      'Connection quality restored. Returning network timeouts to defaults.'
+    )
+    expect(loggerSpy).toHaveBeenCalledTimes(2)
   })
 })
