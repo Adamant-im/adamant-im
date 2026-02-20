@@ -9,6 +9,7 @@
   "scripts": {
     "serve": "vite preview --config vite-pwa.config.ts",
     "dev": "vite --config vite-pwa.config.ts",
+    "dev-https": "cross-env HTTPS=true vite --config vite-pwa.config.ts",
     "dev:localnet": "vite --host 0.0.0.0 --config vite-pwa.config.ts",
     "dev:testnet": "vite --config vite-pwa.config.ts --mode testnet",
     "dev:tor": "vite --config vite-pwa.config.ts --mode tor",
@@ -145,6 +146,7 @@
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.24.0",
     "@typescript-eslint/parser": "^8.24.0",
+    "@vitejs/plugin-basic-ssl": "^2.1.4",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vitejs/plugin-vue-jsx": "^4.1.1",
     "@vue/eslint-config-prettier": "^9.0.0",

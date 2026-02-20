@@ -8,16 +8,25 @@
     />
 
     <tbody>
-      <IpfsNodesTableItem v-for="node in ipfsNodes" :key="node.url" blockchain="adm" :node="node" />
+      <IpfsNodesTableItem
+        v-for="node in ipfsNodes"
+        :key="node.url"
+        blockchain="adm"
+        :node="node"
+        @show-http-info="showHttpInfo = true"
+      />
     </tbody>
   </NodesTableContainer>
+
+  <HttpProtocolInfoDialog v-model="showHttpInfo" />
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 import { useStore } from 'vuex'
 import NodesTableContainer from '@/components/nodes/components/NodesTableContainer.vue'
 import NodesTableHead from '@/components/nodes/components/NodesTableHead.vue'
+import HttpProtocolInfoDialog from '@/components/nodes/components/HttpProtocolInfoDialog.vue'
 import IpfsNodesTableItem from './IpfsNodesTableItem.vue'
 import { type NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { sortNodesFn } from '@/components/nodes/utils/sortNodesFn'
@@ -31,10 +40,12 @@ export default defineComponent({
   components: {
     NodesTableContainer,
     NodesTableHead,
+    HttpProtocolInfoDialog,
     IpfsNodesTableItem
   },
   setup() {
     const store = useStore()
+    const showHttpInfo = ref(false)
     const ipfsNodes = computed(() => {
       const arr = store.getters['nodes/ipfs']
 
@@ -64,7 +75,8 @@ export default defineComponent({
       ipfsNodes,
       classes,
       isAllNodesChecked,
-      isPartiallyChecked
+      isPartiallyChecked,
+      showHttpInfo
     }
   }
 })
