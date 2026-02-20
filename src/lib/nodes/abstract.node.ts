@@ -222,7 +222,7 @@ export abstract class Node<C = unknown> {
             this.online = false
           }
         } else {
-          if (protocol === 'https:' || this.isHttpAllowed(protocol)) this.online = false
+          this.online = false
           logger.log(
             'HealthCheck',
             'info',

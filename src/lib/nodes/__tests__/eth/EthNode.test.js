@@ -105,6 +105,23 @@ describe('EthNode healthcheck routing', () => {
     ])
   })
 
+  it('marks node offline when both domain and HTTP fallback fail in HTTPS context', async () => {
+    const node = createNode({
+      alt_ip: ALT_IP,
+      url: 'https://unreachable.adamant.im'
+    })
+
+    node.isHttpAllowed = vi.fn().mockReturnValue(false)
+    node.checkHealth = vi.fn().mockRejectedValue(new Error('Node is unavailable'))
+
+    await node.startHealthcheck()
+    stopHealthcheckTimer(node)
+
+    expect(node.online).toBe(false)
+    expect(node.healthcheckAttemptCount).toBe(1)
+    expect(node.healthcheckCount).toBe(0)
+  })
+
   it('resets node state to initial updating and starts healthcheck when re-enabled', () => {
     const node = createNode()
     node.outOfSync = true
