@@ -33,7 +33,7 @@ export function getNodeStatusTitle(node: NodeStatusResult, t: VueI18nTranslation
   }
 
   const i18n: Record<NodeStatus, string> = {
-    online: node.ping + ' ',
+    online: node.ping + '\u00A0',
     offline: 'nodes.offline',
     disabled: 'nodes.inactive',
     sync: 'nodes.sync',

@@ -39,8 +39,13 @@
     v-if="nodeStatusDetail && node.status !== 'sync' && !nodeStatusUpdating"
     :class="classes.statusText"
   >
-    <v-icon v-if="nodeStatusDetail.icon" :icon="nodeStatusDetail.icon" :size="12" />
-    {{ nodeStatusDetail.text }}
+    <span v-if="nodeStatusDetail.icon" :class="classes.statusTextValueNoWrap">
+      <v-icon :icon="nodeStatusDetail.icon" :size="12" />
+      <span>&nbsp;{{ nodeStatusDetail.text }}</span>
+    </span>
+    <template v-else>
+      {{ nodeStatusDetail.text }}
+    </template>
 
     <template v-if="!node.hasSupportedProtocol">
       <v-icon
@@ -67,6 +72,7 @@ const classes = {
   statusTitleText: `${className}__status-title-text`,
   statusTitleTextMuted: `${className}__status-title-text--muted`,
   statusText: `${className}__status-text`,
+  statusTextValueNoWrap: `${className}__status-text-value--nowrap`,
   spinner: `${className}__spinner`,
   icon: `${className}__icon`,
   iconGreen: `${className}__icon--green`,
@@ -123,8 +129,15 @@ export default defineComponent({
   }
 
   &__status-text {
+    display: block;
+    margin-top: 2px;
     font-size: 12px;
     font-weight: 300;
+  }
+  &__status-text-value--nowrap {
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
   }
 
   &__icon {
