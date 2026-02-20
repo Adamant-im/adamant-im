@@ -22,9 +22,7 @@ export class EthIndexerClient extends Client<EthIndexer> {
     params?: Endpoints[E]['params'],
     axiosRequestConfig?: AxiosRequestConfig
   ): Promise<Endpoints[E]['result']> {
-    const node = this.getNode()
-
-    return node.request(endpoint, params, axiosRequestConfig)
+    return this.requestWithRetry((node) => node.request(endpoint, params, axiosRequestConfig))
   }
 
   /**

@@ -36,7 +36,9 @@ export class BtcIndexerClient extends Client<BtcIndexer> {
     params?: Params,
     requestConfig?: AxiosRequestConfig
   ): Promise<Response> {
-    return this.getNode().request<Response, Params>(method, path, params, requestConfig)
+    return this.requestWithRetry((node) =>
+      node.request<Response, Params>(method, path, params, requestConfig)
+    )
   }
 
   /**

@@ -1,4 +1,5 @@
-import type { NodeOfflineError } from '@/lib/nodes/utils/errors.ts'
+import { NodeOfflineError } from '@/lib/nodes/utils/errors'
+import { getConnectionAwareTimeout } from '@/lib/network/connection'
 import type { NodeInfo } from '@/types/wallets/index.ts'
 import { getNodeHealthcheckConfig } from './utils/getHealthcheckConfig'
 import { TNodeLabel } from './constants'
@@ -23,6 +24,13 @@ function isValidHttpUrl(url: string): boolean {
  * Protocol on host where app is running, f. e., http: or https:
  */
 const appProtocol = location.protocol
+
+const DEFAULT_HEALTHCHECK_REQUEST_TIMEOUT_MS = 10_000
+
+type HealthcheckTimeouts = {
+  requestTimeoutMs: number
+  staleTimeoutMs: number
+}
 
 export abstract class Node<C = unknown> {
   /**
@@ -122,6 +130,9 @@ export abstract class Node<C = unknown> {
   healthCheckInterval: HealthcheckInterval = 'normal'
   client: C
   healthcheckInProgress = false
+  healthcheckStartedAt = 0
+  healthcheckRequestTimeoutMs = DEFAULT_HEALTHCHECK_REQUEST_TIMEOUT_MS
+  healthcheckStaleTimeoutMs = DEFAULT_HEALTHCHECK_REQUEST_TIMEOUT_MS * 2
 
   constructor(
     endpoint: NodeInfo,
@@ -153,6 +164,9 @@ export abstract class Node<C = unknown> {
     this.version = version
     this.hasSupportedProtocol = this.isHttpAllowed(this.protocol)
     this.active = nodesStorage.isActive(url)
+    const { requestTimeoutMs, staleTimeoutMs } = this.resolveHealthcheckTimeouts()
+    this.healthcheckRequestTimeoutMs = requestTimeoutMs
+    this.healthcheckStaleTimeoutMs = staleTimeoutMs
 
     this.client = this.buildClient()
 
@@ -162,7 +176,23 @@ export abstract class Node<C = unknown> {
   }
 
   async startHealthcheck() {
-    clearInterval(this.timer)
+    clearTimeout(this.timer)
+
+    const hasStaleHealthcheck =
+      this.healthcheckInProgress &&
+      this.healthcheckStartedAt > 0 &&
+      Date.now() - this.healthcheckStartedAt >
+        this.getEffectiveTimeout(this.healthcheckStaleTimeoutMs)
+
+    if (hasStaleHealthcheck) {
+      logger.log(
+        'HealthCheck',
+        'warn',
+        `Health-check got stuck for ${this.getBaseURL(this)}. Restarting a new cycle.`
+      )
+      this.healthcheckInProgress = false
+      this.healthcheckStartedAt = 0
+    }
 
     if (this.active && !this.healthcheckInProgress) {
       const getCurrentProtocol = (): HttpProtocol => {
@@ -241,11 +271,12 @@ export abstract class Node<C = unknown> {
 
       try {
         this.healthcheckInProgress = true
+        this.healthcheckStartedAt = Date.now()
         // Protocol of the most recent check attempt (domain first, alt IP fallback if needed).
         let protocol = getCurrentProtocol()
 
         try {
-          setOnlineStatus(await this.checkHealth(), protocol)
+          setOnlineStatus(await this.checkHealthWithTimeout(), protocol)
         } catch (error) {
           logConnectionFailed((error as NodeOfflineError).code ?? 'unknown')
 
@@ -256,7 +287,7 @@ export abstract class Node<C = unknown> {
             protocol = getCurrentProtocol()
 
             try {
-              setOnlineStatus(await this.checkHealth(), protocol)
+              setOnlineStatus(await this.checkHealthWithTimeout(), protocol)
             } catch (fallbackError) {
               logConnectionFailed((fallbackError as NodeOfflineError).code ?? 'unknown')
               handleFailedCheck(protocol)
@@ -269,11 +300,15 @@ export abstract class Node<C = unknown> {
         this.updateURL()
         this.healthcheckAttemptCount++
         this.healthcheckInProgress = false
+        this.healthcheckStartedAt = 0
       }
 
       this.fireStatusChange()
     }
 
+    // Keep healthcheck loop active regardless of tab visibility.
+    // In background tabs browsers may throttle timers; resume hooks trigger
+    // an immediate refresh when app becomes active again.
     this.timer = setTimeout(
       () => this.startHealthcheck(),
       this.getHealthCheckInterval(this.online ? this.healthCheckInterval : 'crucial')
@@ -458,6 +493,62 @@ export abstract class Node<C = unknown> {
           `getHealthCheckInterval: Interval ${interval} is not defined in the Node's config`
         )
     }
+  }
+
+  private checkHealthWithTimeout() {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined
+
+    return Promise.race<HealthcheckResult>([
+      this.checkHealth(),
+      new Promise((_, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new NodeOfflineError())
+        }, this.getEffectiveTimeout(this.healthcheckRequestTimeoutMs))
+      })
+    ]).finally(() => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    })
+  }
+
+  private resolveHealthcheckTimeouts(): HealthcheckTimeouts {
+    const healthcheckConfig = getNodeHealthcheckConfig(this.label) as {
+      onScreenUpdateInterval?: number
+      requestTimeoutMs?: number
+      staleTimeoutMs?: number
+    }
+    /**
+     * Request timeout is configurable per node/service:
+     * 1) explicit `healthCheck.requestTimeoutMs` from config
+     * 2) fallback to `healthCheck.onScreenUpdateInterval` (adamant-wallets baseline)
+     * 3) final fallback `10_000 ms`.
+     */
+    const requestTimeoutMs = this.normalizeTimeout(
+      healthcheckConfig.requestTimeoutMs ?? healthcheckConfig.onScreenUpdateInterval
+    )
+    /**
+     * Stale timeout protects from "stuck in progress" health checks (e.g., after sleep/resume).
+     * If a health check exceeds this value, the next cycle force-resets the lock.
+     */
+    const staleTimeoutMs = this.normalizeTimeout(
+      healthcheckConfig.staleTimeoutMs,
+      requestTimeoutMs * 2
+    )
+
+    return {
+      requestTimeoutMs,
+      staleTimeoutMs
+    }
+  }
+
+  private normalizeTimeout(value?: number, fallback = DEFAULT_HEALTHCHECK_REQUEST_TIMEOUT_MS) {
+    return Number.isFinite(value) && value && value > 0 ? Number(value) : fallback
+  }
+
+  private getEffectiveTimeout(baseTimeoutMs: number) {
+    // Increase final runtime timeout on potentially slow links (3G/data-saver/high RTT/low downlink).
+    return getConnectionAwareTimeout(baseTimeoutMs)
   }
 }
 

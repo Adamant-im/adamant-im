@@ -21,6 +21,6 @@ export class DogeClient extends Client<DogeNode> {
     params?: Params,
     requestConfig?: AxiosRequestConfig
   ) {
-    return this.getNode().invoke<Response, Params>(params, requestConfig)
+    return this.requestWithRetry((node) => node.invoke<Response, Params>(params, requestConfig))
   }
 }

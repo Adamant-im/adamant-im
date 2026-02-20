@@ -1,4 +1,3 @@
-import { isNodeOfflineError, AllNodesOfflineError } from '@/lib/nodes/utils/errors'
 import { AxiosProgressEvent } from 'axios'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import type { NodeInfo } from '@/types/wallets'
@@ -70,22 +69,6 @@ export class IpfsClient extends Client<IpfsNode> {
    * @param {RequestConfig} config request config
    */
   async request<P extends Payload = Payload, R = any>(config: RequestConfig<P>): Promise<R> {
-    const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
-    if (!node) {
-      // All nodes seem to be offline: let's refresh the statuses
-      this.checkHealth()
-      // But there's nothing we can do right now
-      return Promise.reject(new AllNodesOfflineError('ipfs'))
-    }
-
-    return node.request(config).catch((error) => {
-      if (isNodeOfflineError(error)) {
-        // Initiate nodes status check
-        this.checkHealth()
-        // If the selected node is not available, repeat the request with another one.
-        return this.request(config)
-      }
-      throw error
-    })
+    return this.requestWithRetry((node) => node.request(config))
   }
 }

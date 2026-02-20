@@ -21,6 +21,7 @@ const stopHealthcheckTimer = (node) => {
 }
 
 afterEach(() => {
+  vi.useRealTimers()
   vi.restoreAllMocks()
 })
 
@@ -143,5 +144,26 @@ describe('EthNode healthcheck routing', () => {
     expect(status.outOfSync).toBe(false)
     expect(status.ping).toBe(Infinity)
     expect(status.height).toBe(0)
+  })
+
+  it('treats hanging health-check requests as offline and unlocks next cycles', async () => {
+    vi.useFakeTimers()
+
+    const node = createNode()
+    node.checkHealth = vi.fn().mockImplementation(
+      () =>
+        new Promise(() => {
+          // Simulate a request hanging forever
+        })
+    )
+
+    const healthcheckPromise = node.startHealthcheck()
+    await vi.advanceTimersByTimeAsync(20_000)
+    await healthcheckPromise
+    stopHealthcheckTimer(node)
+
+    expect(node.online).toBe(false)
+    expect(node.healthcheckInProgress).toBe(false)
+    expect(node.healthcheckAttemptCount).toBe(1)
   })
 })
