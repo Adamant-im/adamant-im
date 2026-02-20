@@ -145,14 +145,12 @@ export abstract class Node<C = unknown> {
     clearInterval(this.timer)
 
     if (this.active && !this.healthcheckInProgress) {
-      const baseURL = this.getBaseURL(this)
-      const protocol = new URL(baseURL || this.url).protocol as HttpProtocol
+      const getCurrentProtocol = (): HttpProtocol => {
+        const baseURL = this.getBaseURL(this)
+        return new URL(baseURL || this.url).protocol as HttpProtocol
+      }
 
-      try {
-        this.healthcheckInProgress = true
-
-        const { height, ping } = await this.checkHealth()
-
+      const setOnlineStatus = ({ height, ping }: HealthcheckResult, protocol: HttpProtocol) => {
         if (!this.healthcheckCount) {
           logger.log(
             'HealthCheck',
@@ -176,14 +174,17 @@ export abstract class Node<C = unknown> {
           'debug',
           `Node status updated for ${this.getBaseURL(this)}. Height: ${height}. Ping: ${ping}. Count: ${this.healthcheckCount}. Node is online.`
         )
-      } catch (error) {
-        const code = (error as NodeOfflineError).code ?? 'unknown'
+      }
 
+      const logConnectionFailed = (code: string) => {
         logger.log(
           'HealthCheck',
           'info',
           `Connection via ${this.getBaseURL(this)} failed (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}). ${code ? `Error code: ${code}` : ''}.`
         )
+      }
+
+      const handleFailedCheck = (protocol: HttpProtocol) => {
         if (this.preferDomain) {
           if (!this.altIp) {
             if (protocol === 'https:' || this.isHttpAllowed(protocol)) this.online = false
@@ -193,7 +194,7 @@ export abstract class Node<C = unknown> {
               `Alternative IP is not defined for ${this.getBaseURL(this)}. Node is offline.`
             )
           }
-          if (this.healthcheckCount < 1) {
+          if (this.healthcheckCount < 1 && this.altIp) {
             this.preferDomain = false
           } else {
             this.online = false
@@ -205,8 +206,40 @@ export abstract class Node<C = unknown> {
             'info',
             `Node is not reachable by URL ${this.url}${this.altIp ? ' and by alternative IP ' + this.altIp : ''}. Node is offline.`
           )
-          if (this.healthcheckCount < 2) {
-            if (this.altIp) this.preferDomain = true
+          if (this.healthcheckCount < 1) {
+            if (this.altIp) {
+              // Connection type is not determined yet (both domain and alt IP failed).
+              // Restart from domain on the next cycle to keep trying domain -> IP
+              // until one of them succeeds.
+              this.preferDomain = true
+            }
+          }
+        }
+      }
+
+      try {
+        this.healthcheckInProgress = true
+        let protocol = getCurrentProtocol()
+
+        try {
+          setOnlineStatus(await this.checkHealth(), protocol)
+        } catch (error) {
+          logConnectionFailed((error as NodeOfflineError).code ?? 'unknown')
+
+          const shouldTryAltIpNow = this.preferDomain && this.altIp && this.healthcheckCount < 1
+
+          if (shouldTryAltIpNow) {
+            this.preferDomain = false
+            protocol = getCurrentProtocol()
+
+            try {
+              setOnlineStatus(await this.checkHealth(), protocol)
+            } catch (fallbackError) {
+              logConnectionFailed((fallbackError as NodeOfflineError).code ?? 'unknown')
+              handleFailedCheck(protocol)
+            }
+          } else {
+            handleFailedCheck(protocol)
           }
         }
       } finally {
