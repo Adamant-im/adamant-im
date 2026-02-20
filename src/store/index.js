@@ -6,10 +6,12 @@ import {
   loginOrRegister,
   loginViaPassword,
   sendSpecialMessage,
-  getCurrentAccount
+  getCurrentAccount,
+  getSecureData
 } from '@/lib/adamant-api'
+
 import { CryptosInfo, Fees, FetchStatus } from '@/lib/constants'
-import { encryptPassword } from '@/lib/idb/crypto'
+import { encryptPassword, setGlobalEncryptionKey } from '@/lib/idb/crypto'
 import { flushCryptoAddresses, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import { registerCryptoModules } from './utils/registerCryptoModules'
 import { registerVuexPlugins } from './utils/registerVuexPlugins'
@@ -45,6 +47,7 @@ import { cryptoTransferAsset, replyWithCryptoTransferAsset } from '@/lib/adamant
 import { PendingTxStore } from '@/lib/pending-transactions'
 import servicesModule from './modules/services'
 import servicesPlugin from './modules/services/services-plugin'
+import { restoreState } from '@/lib/idb/state'
 
 export let interval
 
@@ -152,6 +155,7 @@ const store = {
       })
     },
     loginViaPassword({ commit, dispatch }, password) {
+      setGlobalEncryptionKey(null)
       return loginViaPassword(password, this).then((account) => {
         commit('setIDBReady', true)
 
@@ -159,10 +163,23 @@ const store = {
         dispatch('afterLogin', account.passphrase)
       })
     },
+    async loginViaBiometricOrPaskkeyAction({ commit, dispatch }) {
+      const { passphrase, encryptionKey } = await getSecureData()
+
+      setGlobalEncryptionKey(encryptionKey)
+      await restoreState(this)
+
+      return loginOrRegister(passphrase).then(() => {
+        commit('setIDBReady', true)
+        dispatch('afterLogin', passphrase)
+      })
+    },
     logout({ dispatch }) {
       dispatch('reset')
       dispatch('wallets/initWalletsSymbols')
-      dispatch('draftMessage/resetState', null, { root: true })
+      dispatch('draftMessage/resetState', null, {
+        root: true
+      })
       PendingTxStore.clear()
     },
     unlock({ state, dispatch }) {
@@ -171,8 +188,8 @@ const store = {
 
       unlock(passphrase)
 
-      // retrieve wallet data only if loginViaPassword, otherwise coin modules will be loaded twice
-      if (state.password) {
+      // retrieve wallet data only if stay logged in is enabled, otherwise coin modules will be loaded twice
+      if (state.options.stayLoggedIn) {
         dispatch('afterLogin', passphrase)
       }
     },
@@ -196,7 +213,14 @@ const store = {
       })
     },
     reset({ commit }) {
-      commit('reset', null, { root: true })
+      setGlobalEncryptionKey(null)
+      commit('reset', null, {
+        root: true
+      })
+      commit('options/updateOption', {
+        key: 'authenticationMethod',
+        value: null
+      })
     },
     setPassword({ commit }, password) {
       return encryptPassword(password).then((encryptedPassword) => {
@@ -208,7 +232,14 @@ const store = {
     removePassword({ commit }) {
       commit('resetPassword')
       commit('setIDBReady', false)
-      commit('options/updateOption', { key: 'stayLoggedIn', value: false })
+      commit('options/updateOption', {
+        key: 'stayLoggedIn',
+        value: false
+      })
+      commit('options/updateOption', {
+        key: 'authenticationMethod',
+        value: null
+      })
     },
     updateBalance({ commit }, payload = {}) {
       if (payload.requestedByUser) {

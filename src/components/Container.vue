@@ -52,6 +52,7 @@ export default defineComponent({
   }
 
   @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+    margin-bottom: 40px;
     &--padding {
       padding: 0 16px 0 24px;
     }

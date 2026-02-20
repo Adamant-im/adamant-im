@@ -49,11 +49,25 @@
             @click.prevent="onCheckStayLoggedIn"
           />
 
-          <div class="a-text-explanation-enlarged">
-            {{ t('options.stay_logged_in_tooltip') }}
+          <div
+            class="a-text-explanation-enlarged"
+            :class="{ 'auth-method-tooltip': selectedAuthMethodIcon }"
+          >
+            <template v-if="selectedAuthMethodIcon">
+              <v-icon :icon="selectedAuthMethodIcon" size="20" class="auth-method-status-icon" />
+              {{ selectedAuthMethodText }}
+            </template>
+            <template v-else>
+              {{ t('options.stay_logged_in_tooltip') }}
+            </template>
           </div>
 
+
           <password-set-dialog v-model="isPasswordDialogDisplayed" @password="onSetPassword" />
+          <sign-in-options-dialog
+            v-model="isSignInOptionsDialogDisplayed"
+            @select-auth-method="onAuthenticationMethodChange"
+          />
         </v-col>
       </v-row>
 
@@ -201,7 +215,14 @@
 
 <script setup lang="ts">
 import { nextTick, inject, computed, onBeforeUnmount, onMounted, Ref, ref } from 'vue'
-import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant } from '@mdi/js'
+import {
+  mdiChevronRight,
+  mdiChevronDown,
+  mdiLogoutVariant,
+  mdiFingerprint,
+  mdiKeyVariant,
+  mdiLock
+} from '@mdi/js'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -210,12 +231,18 @@ import { useTheme } from 'vuetify'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import CurrencySwitcher from '@/components/CurrencySwitcher.vue'
 import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
-import { clearDb, db as isIDBSupported } from '@/lib/idb'
+import SignInOptionsDialog from '@/components/SignInOptionsDialog.vue'
+import { clearDb } from '@/lib/idb'
 import { resetPinia } from '@/plugins/pinia'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
 import { useSavedScroll } from '@/hooks/useSavedScroll'
 import { sidebarLayoutKey } from '@/lib/constants'
 import { useChatStateStore } from '@/stores/modal-state'
+import { biometricAuth, passkeyAuth } from '@/lib/auth'
+import { AuthenticationMethod, SetupResult } from '@/lib/auth/types'
+import { saveState } from '@/lib/idb/state'
+import { saveSecureData } from '@/lib/adamant-api'
+import { setGlobalEncryptionKey } from '@/lib/idb/crypto'
 
 const store = useStore()
 const chatStateStore = useChatStateStore()
@@ -231,6 +258,14 @@ const appVersion = inject('appVersion')
 const sidebarLayoutRef = inject<Ref>(sidebarLayoutKey)
 
 const tapCount = ref(0)
+const isSignInOptionsDialogDisplayed = computed({
+  get() {
+    return chatStateStore.isShowSignInOptionsDialog
+  },
+  set(value) {
+    chatStateStore.setShowSignInOptionsDialog(value)
+  }
+})
 
 const isPasswordDialogDisplayed = computed({
   get() {
@@ -241,8 +276,16 @@ const isPasswordDialogDisplayed = computed({
   }
 })
 
-const stayLoggedIn = computed(() => {
-  return store.state.options.stayLoggedIn
+const stayLoggedIn = computed({
+  get() {
+    return store.state.options.stayLoggedIn
+  },
+  set(value) {
+    store.commit('options/updateOption', {
+      key: 'stayLoggedIn',
+      value
+    })
+  }
 })
 
 const scrollTopPosition = computed({
@@ -331,8 +374,6 @@ const darkTheme = computed({
   }
 })
 
-const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
-
 const isDevModeEnabled = computed({
   get() {
     return store.state.options.devModeEnabled
@@ -345,33 +386,55 @@ const isDevModeEnabled = computed({
   }
 })
 
-const onSetPassword = () => {
-  store.commit('options/updateOption', {
-    key: 'stayLoggedIn',
-    value: true
-  })
-}
+const selectedAuthenticationMethod = computed({
+  get() {
+    return store.state.options.authenticationMethod || null
+  },
+  set(value) {
+    store.commit('options/updateOption', {
+      key: 'authenticationMethod',
+      value
+    })
+  }
+})
+
+
+const selectedAuthMethodIcon = computed(() => {
+  switch (selectedAuthenticationMethod.value) {
+    case AuthenticationMethod.Biometric:
+      return mdiFingerprint
+    case AuthenticationMethod.Passkey:
+      return mdiKeyVariant
+    case AuthenticationMethod.Password:
+      return mdiLock
+    default:
+      return null
+  }
+})
+
+const selectedAuthMethodText = computed(() => {
+  switch (selectedAuthenticationMethod.value) {
+    case AuthenticationMethod.Biometric:
+      return t('login.signin_options.notifications.biometric_enabled')
+    case AuthenticationMethod.Passkey:
+      return t('login.signin_options.notifications.passkey_enabled')
+    case AuthenticationMethod.Password:
+      return t('login.signin_options.notifications.password_enabled')
+    default:
+      return null
+  }
+})
 
 const onCheckStayLoggedIn = () => {
   if (!stayLoggedIn.value) {
-    isIDBSupported
-      .then(() => {
-        isPasswordDialogDisplayed.value = true
-      })
-      .catch(() => {
-        store.dispatch('snackbar/show', {
-          message: t('options.idb_not_supported'),
-          timeout: 5000
-        })
-      })
+    isSignInOptionsDialogDisplayed.value = true
   } else {
-    clearDb().then(() => {
+    clearDb().then(async () => {
+      await clearAllAuthenticationMethods()
       store.commit('options/updateOption', {
         key: 'stayLoggedIn',
         value: false
       })
-
-      store.commit('resetPassword')
     })
   }
 }
@@ -380,20 +443,161 @@ const logout = () => {
   resetPinia()
   store.dispatch('stopInterval')
   store.dispatch('logout')
+  router.push('/')
+}
 
-  if (isLoginViaPassword.value) {
-    return clearDb()
-      .catch((err) => {
-        console.error(err)
-      })
-      .finally(() => {
-        // turn off `loginViaPassword` option
-        store.commit('options/updateOption', { key: 'stayLoggedIn', value: false })
+const setupPasswordAuth = () => {
+  store.commit('resetPassword')
+  selectedAuthenticationMethod.value = null
+  isPasswordDialogDisplayed.value = true
+}
 
-        router.push('/')
-      })
+const onSetPassword = () => {
+  selectedAuthenticationMethod.value = AuthenticationMethod.Password
+  store.commit('options/updateOption', {
+    key: 'stayLoggedIn',
+    value: true
+  })
+  showSuccess(t('login.signin_options.notifications.password_enabled'))
+}
+
+const showSuccess = (message: string) => {
+  store.dispatch('snackbar/show', {
+    message,
+    timeout: 3000
+  })
+}
+
+const showError = (message: string) => {
+  store.dispatch('snackbar/show', {
+    message,
+    timeout: 5000
+  })
+}
+
+const setupBiometricAuth = async (): Promise<boolean> => {
+  try {
+    const result = await biometricAuth.setupBiometric()
+
+    if (result === SetupResult.Cancel) {
+      return false
+    }
+
+    if (result !== SetupResult.Success) {
+      throw new Error(t('login.signin_options.not_available'))
+    }
+
+    const currentPassphrase = store.getters.getPassPhrase
+    if (!currentPassphrase) {
+      throw new Error(t('login.signin_options.notifications.biometric_failed'))
+    }
+    const encryptionKey = crypto.getRandomValues(new Uint8Array(32))
+    await saveSecureData(currentPassphrase, encryptionKey)
+    selectedAuthenticationMethod.value = AuthenticationMethod.Biometric
+    store.commit('resetPassword')
+    await clearDb()
+    setGlobalEncryptionKey(encryptionKey)
+    await saveState(store)
+    showSuccess(t('login.signin_options.notifications.biometric_enabled'))
+    return true
+  } catch (error) {
+    showError(
+      error instanceof Error
+        ? error.message
+        : t('login.signin_options.notifications.biometric_failed')
+    )
+    return false
+  }
+}
+
+const setupPasskeyAuth = async (): Promise<boolean> => {
+  try {
+    const result = await passkeyAuth.setupPasskey()
+
+    if (result === SetupResult.Cancel) {
+      return false
+    }
+
+    if (result !== SetupResult.Success) {
+      throw new Error(t('login.signin_options.not_available'))
+    }
+
+    const currentPassphrase = store.getters.getPassPhrase
+    if (!currentPassphrase) {
+      throw new Error(t('login.signin_options.notifications.passkey_failed'))
+    }
+    selectedAuthenticationMethod.value = AuthenticationMethod.Passkey
+    const encryptionKey = crypto.getRandomValues(new Uint8Array(32))
+    await saveSecureData(currentPassphrase, encryptionKey)
+    store.commit('resetPassword')
+    await clearDb()
+    setGlobalEncryptionKey(encryptionKey)
+    await saveState(store)
+    showSuccess(t('login.signin_options.notifications.passkey_enabled'))
+    return true
+  } catch (error) {
+    showError(
+      error instanceof Error
+        ? error.message
+        : t('login.signin_options.notifications.passkey_failed')
+    )
+    return false
+  }
+}
+
+const clearAllAuthenticationMethods = async () => {
+  const currentMethod = selectedAuthenticationMethod.value
+
+  store.commit('resetPassword')
+
+  store.commit('options/updateOption', {
+    key: 'authenticationMethod',
+    value: null
+  })
+
+  if (currentMethod) {
+    let message = ''
+    switch (currentMethod) {
+      case AuthenticationMethod.Biometric:
+        message = t('login.signin_options.notifications.biometric_disabled')
+        break
+      case AuthenticationMethod.Passkey:
+        message = t('login.signin_options.notifications.passkey_disabled')
+        break
+      case AuthenticationMethod.Password:
+        message = t('login.signin_options.notifications.password_disabled')
+        break
+    }
+
+    showSuccess(message)
+  }
+}
+
+const onAuthenticationMethodChange = async (method: AuthenticationMethod) => {
+  store.commit('resetPassword')
+
+  if (method === AuthenticationMethod.Password) {
+    setupPasswordAuth()
+    return
+  }
+
+  let success = false
+
+  if (method === AuthenticationMethod.Biometric) {
+    success = await setupBiometricAuth()
+  }
+
+  if (method === AuthenticationMethod.Passkey) {
+    success = await setupPasskeyAuth()
+  }
+
+  if (success) {
+    store.commit('options/updateOption', {
+      key: 'stayLoggedIn',
+      value: true
+    })
   } else {
-    return Promise.resolve(router.push('/'))
+    selectedAuthenticationMethod.value = null
   }
 }
 
@@ -411,6 +615,13 @@ const onVersionClick = () => {
 }
 
 onMounted(() => {
+  if (stayLoggedIn.value && !selectedAuthenticationMethod.value) {
+    // Auto-disable stay logged in if no authentication method selected
+    store.commit('options/updateOption', {
+      key: 'stayLoggedIn',
+      value: false
+    })
+  }
   nextTick(() => {
     if (sidebarLayoutRef && scrollTopPosition.value) {
       sidebarLayoutRef.value.scrollTo({
@@ -493,6 +704,17 @@ onBeforeUnmount(() => {
   }
   :deep(.v-checkbox) {
     margin-left: -8px;
+  }
+
+
+  .auth-method-tooltip {
+    display: flex;
+    align-items: center;
+  }
+
+  .auth-method-status-icon {
+    margin-left: 0;
+    margin-right: 8px;
   }
 }
 

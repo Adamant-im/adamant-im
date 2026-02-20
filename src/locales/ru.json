@@ -192,10 +192,8 @@
     "brand_title": "АДАМАНТ",
     "copy_button_tooltip": "Скопировать",
     "create_address_label": "Или создайте новый анонимный адрес:",
-    "device_unsupported": "Ваше устройство не поддерживается",
     "invalid_passphrase": "Неверная пассфраза",
     "invalid_qr_code": "QR-код не содержит парольной фразы или не удается ее распознать",
-    "language_label": "Язык",
     "login_button": "Войти",
     "login_by_qr_code_tooltip": "Войти по пассфразе из файла с QR-кодом",
     "new_button": "Создать новый",
@@ -207,20 +205,47 @@
     "scan_qr_code_button_tooltip": "Сканировать камерой QR-код с парольной фразой",
     "subheader": "Децентрализованный мессенджер",
     "show_passphrase_tooltip": "Показать пассфразу",
-    "hide_passphrase_tooltip": "Скрыть пассфразу"
+    "hide_passphrase_tooltip": "Скрыть пассфразу",
+    "authentication_failed": "Ошибка аутентификации",
+    "use_passphrase_hint": "Возникли проблемы?",
+    "use_passphrase": "Войти по пассфразе",
+    "signin_options": {
+      "title": "Способы входа",
+      "not_available": "Недоступно на этом устройстве",
+      "biometric": {
+        "title": "Биометрия",
+        "device_touchid_faceid": "Встроенный Touch ID или Face ID",
+        "only_native": "Только в нативном приложении"
+      },
+      "passkey": {
+        "title": "Ключи Passkeys",
+        "secure_login": "Безопасный вход с помощью ключа устройства",
+        "only_web": "Только в веб-приложении"
+      },
+      "password": {
+        "title": "Пароль",
+        "secure_login": "Ваши данные надежно шифруются при сильном пароле"
+      },
+      "notifications": {
+        "biometric_enabled": "Вход по биометрии включен",
+        "passkey_enabled": "Вход с помощью Passkeys включен",
+        "password_enabled": "Вход по паролю включен",
+        "biometric_disabled": "Вход по биометрии отключен",
+        "passkey_disabled": "Вход с помощью Passkeys отключен",
+        "password_disabled": "Вход по паролю отключен",
+        "biometric_failed": "Не удалось включить вход по биометрии",
+        "passkey_failed": "Не удалось включить вход через Passkeys",
+        "password_failed": "Не удалось включить вход по паролю"
+      }
+    }
   },
   "login_via_password": {
     "article": "блоге АДАМАНТа",
     "article_hint": "О пользовательском пароле читайте в ",
-    "encrypting_data_title": "Шифрование данных…",
     "enter_password": "Пароль",
     "incorrect_password": "Неверный пароль",
-    "login_via_password": "Войти с помощью пароля",
     "popup_confirm_text": "Установить",
-    "popup_hint": "Рекомендуется 8+ символов…",
     "popup_title": "Задайте пароль",
-    "remove_password": "Удалить пароль",
-    "remove_password_hint": "Или удалите пароль для входа по пассфразе",
     "user_password_title": "Пароль",
     "user_password_unlock": "Разблокировать"
   },
@@ -289,9 +314,11 @@
     "send_on_enter": "Отправлять клавишей Enter",
     "send_on_enter_tooltip": "Отправлять сообщения по клавише Enter, новая строка Ctrl+Enter",
     "stay_logged_in": "Оставаться в приложении",
-    "stay_logged_in_tooltip": "Задайте пароль приложения для быстрого доступа. Ваши переписка и пассфраза надежно шифруются при сильном пароле.",
+    "stay_logged_in_tooltip": "Используйте биометрию, passkeys или пароль для быстрого входа. Ваши сообщения и пассфраза надежно зашифрованы.",
     "use_full_date": "Показывать даты полностью",
     "use_full_date_tooltip": "Всегда показывать даты в полном формате, например, 2021-01-17 вместо 'Вчера' и 'Сегодня'",
+    "authentication_method_label": "Способ аутентификации",
+    "authentication_method_placeholder": "Выберите способ аутентификации",
     "version": "Версия приложения:",
     "vote_for_delegates_button": "Голосовать за делегатов",
     "wallets_list": "Список кошельков",

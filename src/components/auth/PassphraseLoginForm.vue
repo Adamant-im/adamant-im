@@ -2,7 +2,6 @@
   <v-form ref="form" :class="classes.root" @submit.prevent="submit">
     <v-row no-gutters>
       <slot>
-        <!--     Todo: check src/components/PasswordSetDialog.vue component and consider the possibility to move common code to new component  -->
         <v-text-field
           ref="passphraseInput"
           v-model="passphrase"
@@ -151,10 +150,6 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
-@use 'sass:map';
-@use '@/assets/styles/settings/_colors.scss';
-@use 'vuetify/settings';
-
 .login-form {
   &__textfield {
     &:deep(.v-field__append-inner) {
@@ -166,22 +161,6 @@ defineExpose({
       width: 100%;
       padding-right: 32px;
       padding-left: 32px;
-    }
-  }
-}
-
-/** Themes **/
-.v-theme--light {
-  .login-form {
-    &__textfield {
-      color: map.get(colors.$adm-colors, 'regular');
-    }
-  }
-}
-.v-theme--dark {
-  .login-form {
-    &__textfield {
-      color: map.get(settings.$shades, 'white');
     }
   }
 }

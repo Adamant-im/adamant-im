@@ -32,7 +32,11 @@
           </h2>
         </v-sheet>
 
-        <v-sheet v-if="!isLoginViaPassword" class="text-center mt-4" color="transparent">
+        <v-sheet
+          v-if="primaryMethod === AuthenticationMethod.Passphrase"
+          class="text-center mt-4"
+          color="transparent"
+        >
           <v-row justify="center" no-gutters>
             <v-col sm="8" md="8" lg="8">
               <login-form
@@ -76,16 +80,48 @@
           </v-row>
         </v-sheet>
 
-        <v-row v-if="!isLoginViaPassword" justify="center" class="mt-8">
+        <v-row
+          v-if="primaryMethod === AuthenticationMethod.Passphrase"
+          justify="center"
+          class="mt-8"
+        >
           <v-col sm="8" md="8" lg="8">
             <passphrase-generator @copy="onCopyPassphrase" />
           </v-col>
         </v-row>
 
-        <v-sheet v-if="isLoginViaPassword" class="text-center mt-6" color="transparent">
+        <v-sheet
+          v-if="primaryMethod === AuthenticationMethod.Password"
+          class="text-center mt-6"
+          color="transparent"
+        >
           <v-row no-gutters justify="center">
             <v-col sm="8" md="8" lg="8">
-              <login-password-form v-model="password" @login="onLogin" @error="onLoginError" />
+              <PasswordLoginForm v-model="password" @login="onLogin" @error="onLoginError" />
+            </v-col>
+          </v-row>
+        </v-sheet>
+
+        <v-sheet
+          v-if="primaryMethod === AuthenticationMethod.Biometric"
+          class="text-center mt-6"
+          color="transparent"
+        >
+          <v-row no-gutters justify="center">
+            <v-col sm="8" md="8" lg="8">
+              <biometric-login-form @login="onLogin" @error="onLoginError" />
+            </v-col>
+          </v-row>
+        </v-sheet>
+
+        <v-sheet
+          v-if="primaryMethod === AuthenticationMethod.Passkey"
+          class="text-center mt-6"
+          color="transparent"
+        >
+          <v-row no-gutters justify="center">
+            <v-col sm="8" md="8" lg="8">
+              <passkey-login-form @login="onLogin" @error="onLoginError" />
             </v-col>
           </v-row>
         </v-sheet>
@@ -110,14 +146,17 @@ import { useRoute } from 'vue-router'
 import QrcodeCapture from '@/components/QrcodeCapture.vue'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import PassphraseGenerator from '@/components/PassphraseGenerator.vue'
-import LoginForm from '@/components/LoginForm.vue'
+import LoginForm from '@/components/auth/PassphraseLoginForm.vue'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
 import Icon from '@/components/icons/BaseIcon.vue'
 import QrCodeScanIcon from '@/components/icons/common/QrCodeScan.vue'
 import FileIcon from '@/components/icons/common/File.vue'
-import LoginPasswordForm from '@/components/LoginPasswordForm.vue'
+import PasswordLoginForm from '@/components/auth/PasswordLoginForm.vue'
+import BiometricLoginForm from '@/components/auth/BiometricLoginForm.vue'
+import PasskeyLoginForm from '@/components/auth/PasskeyLoginForm.vue'
 import Logo from '@/components/icons/common/Logo.vue'
 import { navigateByURI } from '@/router/navigationGuard'
+import { AuthenticationMethod } from '@/lib/auth'
 
 const store = useStore()
 const route = useRoute()
@@ -129,7 +168,17 @@ const password = ref('')
 const showQrcodeScanner = ref(false)
 const loginForm = useTemplateRef<InstanceType<typeof LoginForm> | null>('loginForm')
 
-const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
+const stayLoggedIn = computed(() => store.state.options.stayLoggedIn)
+const authenticationMethod = computed(() => store.state.options.authenticationMethod)
+
+const primaryMethod = computed(() => {
+  if (!stayLoggedIn.value || !authenticationMethod.value) {
+    return AuthenticationMethod.Passphrase
+  }
+
+  return authenticationMethod.value
+})
+
 const layout = computed(() => route.meta.layout || 'default')
 
 const onDetectQrcode = (passphrase: string) => {
@@ -217,6 +266,39 @@ const onScanQrcode = (value: string) => {
       opacity: 0.06;
     }
   }
+
+  // Auth form styles
+  &__form {
+    &-textfield {
+      &:deep(.v-field__append-inner) {
+        padding-left: 0;
+        margin-left: -28px; // compensate the append-inner icon
+      }
+
+      &:deep(.v-field__input) {
+        width: 100%;
+        padding-right: 32px;
+        padding-left: 32px;
+      }
+
+      :deep(input) {
+        font-size: 16px !important;
+      }
+    }
+
+    &-icon {
+      cursor: pointer;
+      transition: opacity 0.2s;
+      
+      &:hover {
+        opacity: 0.8;
+      }
+      
+      &:active {
+        opacity: 0.6;
+      }
+    }
+  }
 }
 
 /** Themes **/
@@ -235,6 +317,10 @@ const onScanQrcode = (value: string) => {
         opacity: 1;
       }
     }
+
+    &__form-textfield {
+      color: map.get(colors.$adm-colors, 'regular');
+    }
   }
 }
 .v-theme--dark {
@@ -246,6 +332,10 @@ const onScanQrcode = (value: string) => {
         color: map.get(colors.$adm-colors, 'secondary');
         opacity: 1;
       }
+    }
+
+    &__form-textfield {
+      color: map.get(settings.$shades, 'white');
     }
   }
 }

@@ -155,6 +155,7 @@ const {
   isShowPartnerInfoDialog,
   isShowFreeTokensDialog,
   isShowSetPasswordDialog,
+  isShowSignInOptionsDialog,
   isChatMenuOpen,
   isEmojiPickerOpen
 } = storeToRefs(chatStateStore)
@@ -172,6 +173,7 @@ const canPressEscape = computed(() => {
     !isShowChatStartDialog.value &&
     !isShowFreeTokensDialog.value &&
     !isShowSetPasswordDialog.value &&
+    !isShowSignInOptionsDialog.value &&
     !isSnackbarShowing.value &&
     !isShowPartnerInfoDialog.value &&
     !isChatMenuOpen.value &&

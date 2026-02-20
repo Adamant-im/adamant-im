@@ -37,10 +37,10 @@
       </v-col>
       <div class="text-center mt-11">
         <h3 class="a-text-regular">
-          {{ t('login_via_password.remove_password_hint') }}
+          {{ t('login.use_passphrase_hint') }}
         </h3>
         <v-btn class="a-btn-link mt-2" variant="text" size="small" @click="removePassword">
-          {{ t('login_via_password.remove_password') }}
+          {{ t('login.use_passphrase') }}
         </v-btn>
       </div>
     </v-row>
@@ -60,6 +60,7 @@ import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useSaveCursor } from '@/hooks/useSaveCursor'
 import { useConsiderOffline } from '@/hooks/useConsiderOffline'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import { passwordAuth } from '@/lib/auth'
 
 const className = 'login-form'
 const classes = {
@@ -106,8 +107,8 @@ const admNodesDisabled = computed(() => admNodes.value.some((node) => node.statu
 const submit = () => {
   showSpinner.value = true
 
-  return store
-    .dispatch('loginViaPassword', password.value)
+  return passwordAuth
+    .authorizeUser(password.value)
     .then(() => {
       emit('login')
     })
@@ -162,10 +163,6 @@ const removePassword = () => {
       width: 100%;
       padding-right: 32px;
       padding-left: 32px;
-    }
-
-    :deep(input) {
-      font-size: 16px !important;
     }
   }
 }

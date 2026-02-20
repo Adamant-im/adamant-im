@@ -1,5 +1,7 @@
 import Queue from 'promise-queue'
 import { Base64 } from 'js-base64'
+import { Capacitor } from '@capacitor/core'
+import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin'
 
 import constants, { Transactions, Delegates, MessageType } from '@/lib/constants'
 import utils from '@/lib/adamant'
@@ -11,11 +13,94 @@ import store from '@/store'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { parseCryptoAddressesKVStxs } from '@/lib/store-crypto-address'
 import { DEFAULT_TIME_DELTA } from '@/lib/nodes/constants.js'
+import { hexToBytes, bytesToHex } from '@/lib/hex'
 
 Queue.configure(Promise)
 
 /** Promises queue to execute them sequentially */
 const queue = new Queue(1, Infinity)
+
+/**
+ * Encrypts text using Web Crypto API for secure storage
+ * @param {string} text Text to encrypt
+ * @returns {Promise<string>} Base64 encoded encrypted data with salt and IV
+ */
+async function encryptForStorage(text) {
+  const encoder = new TextEncoder()
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(`adamant_${window.location.hostname}_v1`),
+    { name: 'PBKDF2' },
+    false,
+    ['deriveKey']
+  )
+
+  const salt = crypto.getRandomValues(new Uint8Array(16))
+  const derivedKey = await crypto.subtle.deriveKey(
+    {
+      name: 'PBKDF2',
+      salt,
+      iterations: 10000,
+      hash: 'SHA-256'
+    },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt']
+  )
+
+  const iv = crypto.getRandomValues(new Uint8Array(12))
+  const encrypted = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    derivedKey,
+    encoder.encode(text)
+  )
+
+  // Combine salt + iv + encrypted data
+  const combined = new Uint8Array(16 + 12 + encrypted.byteLength)
+  combined.set(salt, 0)
+  combined.set(iv, 16)
+  combined.set(new Uint8Array(encrypted), 28)
+
+  return Base64.fromUint8Array(combined)
+}
+
+/**
+ * Decrypts text from storage using Web Crypto API
+ * @param {string} encryptedText Base64 encoded encrypted data
+ * @returns {Promise<string>} Decrypted text
+ */
+async function decryptFromStorage(encryptedText) {
+  const data = Base64.toUint8Array(encryptedText)
+  const salt = data.slice(0, 16)
+  const iv = data.slice(16, 28)
+  const encrypted = data.slice(28)
+
+  const encoder = new TextEncoder()
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(`adamant_${window.location.hostname}_v1`),
+    { name: 'PBKDF2' },
+    false,
+    ['deriveKey']
+  )
+
+  const derivedKey = await crypto.subtle.deriveKey(
+    {
+      name: 'PBKDF2',
+      salt,
+      iterations: 10000,
+      hash: 'SHA-256'
+    },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['decrypt']
+  )
+
+  const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, derivedKey, encrypted)
+  return new TextDecoder().decode(decrypted)
+}
 
 /** @type {{privateKey: Buffer, publicKey: Buffer}} */
 let myKeypair = {}
@@ -795,4 +880,40 @@ export async function getChatRoomMessages(address1, address2, paramsArg, recursi
   }
 
   return loadMessages(lastOffset)
+}
+
+/**
+ * Saves passphrase to secure storage
+ * @param {string} passphrase User passphrase to save
+ * @param {Uint8Array<ArrayBuffer>|null|null} customKey
+ * @returns {Promise<void>}
+ */
+export async function saveSecureData(passphrase, encryptionKey) {
+  const data = { passphrase, encryptionKey: bytesToHex(encryptionKey) }
+  if (Capacitor.isNativePlatform()) {
+    await SecureStoragePlugin.set({ key: 'adamant_auth_data', value: JSON.stringify(data) })
+  } else {
+    const encrypted = await encryptForStorage(JSON.stringify(data))
+    localStorage.setItem('adamant_auth_data', encrypted)
+  }
+}
+
+/**
+ * Retrieves passphrase from secure storage
+ * @returns {Promise<string>} User passphrase
+ */
+export async function getSecureData() {
+  let data
+  if (Capacitor.isNativePlatform()) {
+    const result = await SecureStoragePlugin.get({ key: 'adamant_auth_data' })
+    data = JSON.parse(result.value)
+  } else {
+    const encrypted = localStorage.getItem('adamant_auth_data')
+    const decrypted = await decryptFromStorage(encrypted)
+    data = JSON.parse(decrypted)
+  }
+  return {
+    passphrase: data.passphrase,
+    encryptionKey: hexToBytes(data.encryptionKey)
+  }
 }
