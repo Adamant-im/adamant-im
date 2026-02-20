@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isAdamantChat } from '@/lib/isAdamantChat'
+import { isAdamantChat } from '@/lib/chat/meta/utils'
 
 describe('isAdamantChat', () => {
   it('should return `true` when it is Bounty Wallet', () => {

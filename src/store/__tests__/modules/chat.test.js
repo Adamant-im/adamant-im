@@ -1,25 +1,26 @@
 import { vi, describe, it, beforeEach, expect } from 'vitest'
+
+// 1. Сначала мокаем всё, что вызывает побочные эффекты
+vi.mock('@/lib/idb/state', () => ({
+  restoreState: vi.fn(() => Promise.resolve()),
+  saveState: vi.fn(() => Promise.resolve())
+}))
+
+vi.mock('@/lib/idb/crypto', () => ({
+  encryptPassword: vi.fn(),
+  decryptPassword: vi.fn()
+}))
+
+// Мокаем файлы, которые лезут в конфиг нод
+vi.mock('@/lib/nodes/ipfs/index', () => ({ ipfs: {} }))
+vi.mock('@/lib/adamant-api/index', () => ({ adm: {} }))
+
 import chatModule from '@/store/modules/chat'
 import sinon from 'sinon'
 
 import { TransactionStatus as TS } from '@/lib/constants'
 
 const { getters, mutations, actions } = chatModule
-
-vi.mock('@/store', () => {
-  return {
-    default: {},
-    store: {}
-  }
-})
-
-vi.mock('@/lib/idb/crypto', () => ({
-  encryptPassword: () => {}
-}))
-
-vi.mock('@/lib/idb/state', () => ({
-  restoreState: () => {}
-}))
 
 describe('Store: chat.js', () => {
   let state = null

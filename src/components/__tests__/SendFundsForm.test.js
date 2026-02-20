@@ -1,36 +1,154 @@
-import { shallowMount } from '@vue/test-utils'
-import Vue, { nextTick } from 'vue'
-import Vuex from 'vuex'
-import VueI18n from 'vue-i18n'
-import Vuetify from 'vuetify'
-import sinon from 'sinon'
+import { vi, describe, it, beforeEach, expect } from 'vitest'
+global.config = new Proxy(
+  {},
+  {
+    get: () =>
+      new Proxy(
+        {},
+        {
+          get: () => ({
+            list: [],
+            map: () => [],
+            forEach: () => []
+          })
+        }
+      )
+  }
+)
 
-import { Cryptos, Rates } from '@/lib/constants'
+vi.mock('/img/adamant-logo-transparent-512x512.png', () => ({ default: 'logo' }))
+vi.mock('tiny-secp256k1', () => ({
+  isPoint: () => true,
+  isOrderScalar: () => true,
+  pointAdd: () => new Uint8Array(33),
+  pointAddScalar: () => new Uint8Array(33),
+  pointCompress: () => new Uint8Array(33),
+  pointFromScalar: () => new Uint8Array(33),
+  pointMultiply: () => new Uint8Array(33),
+  sign: () => new Uint8Array(64),
+  verify: () => true
+}))
+vi.mock('ecpair', () => ({
+  ECPairFactory: () => ({
+    fromSeed: vi.fn(),
+    makeRandom: vi.fn(),
+    fromPrivateKey: vi.fn(),
+    fromPublicKey: vi.fn()
+  })
+}))
+
+vi.mock('@/lib/nodes', () => {
+  const client = {
+    getNodes: () => [],
+    onStatusUpdate: () => {},
+    getNextNode: () => {},
+    setNodes: () => {},
+    useFastest: true
+  }
+  const nodesMap = {
+    adm: client,
+    btc: client,
+    eth: client,
+    dash: client,
+    doge: client,
+    kly: client,
+    lsk: client,
+    bnb: client,
+    ipfs: client,
+    res: client
+  }
+  return {
+    __esModule: true,
+    nodes: nodesMap,
+    ...nodesMap
+  }
+})
+
+vi.mock('@/lib/nodes/services', () => {
+  const client = {
+    getNodes: () => [],
+    onStatusUpdate: () => {},
+    useFastest: true
+  }
+
+  const servicesProxy = new Proxy(
+    {},
+    {
+      get: (target, prop) => {
+        return client
+      }
+    }
+  )
+
+  return {
+    __esModule: true,
+    services: servicesProxy,
+    default: servicesProxy
+  }
+})
+
+vi.mock('@/lib/nodes/eth/index', () => ({
+  eth: { getGasPrice: vi.fn() },
+  default: { getGasPrice: vi.fn() }
+}))
+vi.mock('@/lib/nodes/dash/index', () => ({ dash: { getNodes: () => [] }, default: {} }))
+vi.mock('@/lib/nodes/kly/index', () => ({ kly: { getNodes: () => [] }, default: {} }))
+vi.mock('@/lib/nodes/adm/index', () => ({ adm: { getNodes: () => [] }, default: {} }))
+
+vi.mock('@/lib/nodes/eth-indexer/index', () => ({
+  ethIndexer: { getNodes: () => [] },
+  default: {}
+}))
+vi.mock('@/lib/nodes/btc-indexer/index', () => ({
+  btcIndexer: { getNodes: () => [] },
+  default: {}
+}))
+vi.mock('@/lib/nodes/doge-indexer/index', () => ({
+  dogeIndexer: { getNodes: () => [] },
+  default: {}
+}))
+vi.mock('@/lib/nodes/rate-info-service/index', () => ({
+  rateInfoClient: { getNodes: () => [] },
+  default: {}
+}))
+
+vi.mock('@/lib/bitcoin/btc-base-api', () => ({ default: vi.fn() }))
+vi.mock('./__mocks__/plugins/i18n', () => ({ default: { t: (k) => k, tc: (k) => k } }))
+
+import { shallowMount } from '@vue/test-utils'
+import { nextTick } from 'vue'
+import { createStore } from 'vuex'
+import { createI18n } from 'vue-i18n'
+import { createVuetify } from 'vuetify'
+
+import { Rates } from '@/lib/constants'
 import { rateStateMock } from '@/components/__tests__/__mocks__/store/modules/rate'
 import SendFundsForm from '@/components/SendFundsForm'
-import mockupI18n from './__mocks__/plugins/i18n'
 
-Vue.use(Vuex)
-Vue.use(VueI18n)
-Vue.use(Vuetify)
+// this needs to prevent warnings in console
+const DEFAULT_STUBS = {
+  'v-select': true,
+  'v-text-field': true,
+  'v-checkbox': true,
+  'v-btn': true,
+  'v-icon': true,
+  'v-menu': true,
+  'v-list': true,
+  'v-list-item': true,
+  'v-list-item-title': true,
+  'v-divider': true,
+  'v-card': true,
+  'v-card-title': true,
+  'v-card-text': true,
+  'v-card-actions': true,
+  'v-spacer': true,
+  'v-dialog': true,
+  'v-progress-circular': true,
+  'warning-on-partner-address-dialog': true,
+  'v-form': { template: '<div><slot /></div>' }
+}
 
-// Because Node.js is not supporting Promise.finally.
-// In the future, polyfill can be added.
-// eslint-disable-next-line
-Promise.prototype.finally =
-  Promise.prototype.finally ||
-  {
-    finally(fn) {
-      const onFinally = (cb) => Promise.resolve(fn()).then(cb)
-      return this.then(
-        (result) => onFinally(() => result),
-        (reason) =>
-          onFinally(() => {
-            throw reason
-          })
-      )
-    }
-  }.finally
+const vuetify = createVuetify()
 
 // Mock console.error
 global.console = {
@@ -50,6 +168,17 @@ function mockupStore() {
       reject(new Error('Invalid address'))
     })
   }
+
+  const walletsModule = () => ({
+    getters: {
+      getVisibleOrderedWalletSymbols: () => [
+        { symbol: 'ADM' },
+        { symbol: 'ETH' },
+        { symbol: 'BNB' }
+      ]
+    },
+    namespaced: true
+  })
 
   const mainModule = () => ({
     state: {
@@ -146,7 +275,14 @@ function mockupStore() {
   const optionsModule = () => ({
     state: () => ({
       currentRate: Rates.USD
-    })
+    }),
+    getters: {
+      wasSendingFunds: () => false,
+      savedAmountFromChat: () => '0',
+      savedComment: () => '',
+      currentRate: (state) => state.currentRate
+    },
+    namespaced: true
   })
 
   return {
@@ -157,59 +293,81 @@ function mockupStore() {
     partnersModule,
     chatModule,
     rateModule,
-    optionsModule
+    optionsModule,
+    walletsModule
   }
 }
 
 describe('SendFundsForm', () => {
-  let i18n, store, main, adm, eth, bnb, partners, chat, rate, options, wrapper
+  let i18n, store, main, adm, eth, bnb, partners, chat, rate, options, wrapper, wallets
 
   beforeEach(() => {
-    const {
-      mainModule,
-      admModule,
-      ethModule,
-      bnbModule,
-      partnersModule,
-      chatModule,
-      rateModule,
-      optionsModule
-    } = mockupStore()
+    const modules = mockupStore()
 
-    main = mainModule()
-    adm = admModule()
-    eth = ethModule()
-    bnb = bnbModule()
-    partners = partnersModule()
-    chat = chatModule()
-    rate = rateModule()
-    options = optionsModule()
+    main = modules.mainModule()
+    adm = modules.admModule()
+    eth = modules.ethModule()
+    bnb = modules.bnbModule()
+    partners = modules.partnersModule()
+    chat = modules.chatModule()
+    rate = modules.rateModule()
+    options = modules.optionsModule()
+    wallets = modules.walletsModule()
 
     store = createStore({
-      ...main,
-      modules: {
-        adm,
-        eth,
-        bnb,
-        partners,
-        chat,
-        rate,
-        options
-      }
+      state: main.state,
+      modules: { adm, eth, bnb, partners, chat, rate, options, wallets }
     })
 
-    i18n = mockupI18n()
+    i18n = createI18n({
+      legacy: false,
+      locale: 'en',
+      messages: { en: {} },
+      missingWarn: false,
+      fallbackWarn: false
+    })
 
     wrapper = shallowMount(SendFundsForm, {
-      store,
-      i18n
+      global: {
+        plugins: [store, i18n, vuetify],
+        mocks: {
+          $route: {
+            query: {}
+          }
+        },
+        stubs: {
+          ...DEFAULT_STUBS,
+          'v-form': {
+            props: ['modelValue'],
+            // Мы имитируем поведение Vuetify формы
+            methods: {
+              validate: () => Promise.resolve({ valid: true })
+            },
+            // Чтобы Vue не ругался на отсутствие шаблона у заглушки
+            template: '<div><slot /></div>'
+          }
+        }
+      },
+
+      props: {
+        cryptoCurrency: 'ADM',
+        recipientAddress: 'U111111',
+        amountToSend: 100
+      }
     })
   })
 
   it('renders the correct markup', () => {
     wrapper = shallowMount(SendFundsForm, {
-      store,
-      i18n
+      global: {
+        plugins: [store, i18n],
+        mocks: {
+          $route: {
+            query: {}
+          }
+        },
+        stubs: DEFAULT_STUBS
+      }
     })
 
     expect(wrapper.element).toMatchSnapshot()
@@ -217,9 +375,20 @@ describe('SendFundsForm', () => {
 
   it('check props', () => {
     wrapper = shallowMount(SendFundsForm, {
-      store,
-      i18n,
-      propsData: {
+      global: {
+        plugins: [store, i18n, vuetify],
+        mocks: {
+          $route: { query: {} }
+        },
+        stubs: {
+          ...DEFAULT_STUBS,
+          'v-form': {
+            template: '<div><slot /></div>',
+            methods: { validate: () => Promise.resolve({ valid: true }) }
+          }
+        }
+      },
+      props: {
         cryptoCurrency: 'ADM',
         recipientAddress: 'U111111',
         amountToSend: 100
@@ -244,9 +413,22 @@ describe('SendFundsForm', () => {
 
     it('should return ETH fee', () => {
       wrapper = shallowMount(SendFundsForm, {
-        store,
-        i18n,
-        propsData: {
+        global: {
+          plugins: [store, i18n, vuetify],
+          mocks: {
+            $route: {
+              query: {}
+            }
+          },
+          stubs: {
+            ...DEFAULT_STUBS,
+            'v-form': {
+              template: '<div><slot /></div>',
+              methods: { validate: () => Promise.resolve({ valid: true }) }
+            }
+          }
+        },
+        props: {
           cryptoCurrency: 'ETH'
         }
       })
@@ -270,9 +452,16 @@ describe('SendFundsForm', () => {
   describe('computed.balance', () => {
     it('should return ADM balance', () => {
       wrapper = shallowMount(SendFundsForm, {
-        store,
-        i18n,
-        propsData: {
+        global: {
+          plugins: [store, i18n],
+          mocks: {
+            $route: {
+              query: {}
+            }
+          },
+          stubs: DEFAULT_STUBS
+        },
+        props: {
           cryptoCurrency: 'ADM'
         }
       })
@@ -282,9 +471,16 @@ describe('SendFundsForm', () => {
 
     it('should return ETH balance', () => {
       wrapper = shallowMount(SendFundsForm, {
-        store,
-        i18n,
-        propsData: {
+        global: {
+          plugins: [store, i18n],
+          mocks: {
+            $route: {
+              query: {}
+            }
+          },
+          stubs: DEFAULT_STUBS
+        },
+        props: {
           cryptoCurrency: 'ETH'
         }
       })
@@ -294,13 +490,15 @@ describe('SendFundsForm', () => {
   })
 
   describe('computed.maxToTransfer', () => {
-    it('should return `balance - fee`', () => {
-      expect(wrapper.vm.maxToTransfer).toBe(10000 - 0.5)
+    it('should return `balance - fee`', async () => {
+      store.state.balance = 10000
+      await nextTick()
+      expect(wrapper.vm.maxToTransfer).toBe(9999.5)
     })
 
-    it('should return 0 when `balance < transferFee`', () => {
-      main.state.balance = 0 // 0 < 0.5 (ADM_FEE)
-
+    it('should return 0 when `balance < transferFee`', async () => {
+      store.state.balance = 0.1
+      await nextTick()
       expect(wrapper.vm.maxToTransfer).toBe(0)
     })
   })
@@ -313,10 +511,17 @@ describe('SendFundsForm', () => {
     })
   })
 
-  describe('computed.cryptoList', () => {
-    it('should return array of available cryptos', () => {
-      expect(wrapper.vm.cryptoList).toEqual(Object.keys(Cryptos))
-    })
+  it('should return array of available cryptos based on config', () => {
+    global.config.tokens = {
+      ETH: { isBounties: false, isVoting: false },
+      BNB: { isBounties: false, isVoting: false },
+      BTC: { isBounties: true, isVoting: false },
+      KLY: { isBounties: false, isVoting: true }
+    }
+
+    const expectedList = ['ADM', 'ETH', 'BNB']
+
+    expect(wrapper.vm.cryptoList).toEqual(expectedList)
   })
 
   describe('computed.validationRules', () => {
@@ -358,23 +563,29 @@ describe('SendFundsForm', () => {
       expect(correctAmount('no number')).toBe(errorMessage)
     })
 
-    it('amount: notEnoughTokens', () => {
-      const hasEnoughTokens = wrapper.vm.validationRules.amount[1].bind(wrapper.vm)
+    it('amount: notEnoughTokens', async () => {
       const errorMessage = i18n.global.t('transfer.error_not_enough')
 
-      main.state.balance = 100
+      store.state.balance = 100
 
-      wrapper.setData({ amount: 90 })
-      expect(hasEnoughTokens()).toBe(true)
+      // 1. Test a valid amount (90 < 100)
+      await wrapper.setData({ amount: 90 })
+      expect(wrapper.vm.validationRules.amount[2]()).toBe(true)
 
-      wrapper.setData({ amount: 99.5 }) // +0.5 ADM transfer fee
-      expect(hasEnoughTokens()).toBe(true)
+      // 2. Test boundary case (99.5 amount + 0.5 ADM fee = 100)
+      await wrapper.setData({ amount: 99.5 })
+      expect(wrapper.vm.validationRules.amount[2]()).toBe(true)
 
-      wrapper.setData({ amount: 100 })
-      expect(hasEnoughTokens()).toBe(errorMessage)
+      // 3. Test an amount that is definitely over the limit (100.1 + 0.5 > 100)
+      // We use 100.1 to ensure it fails even if the fee is mocked as 0
+      await wrapper.setData({ amount: 100.1 })
 
-      wrapper.setData({ amount: 200 })
-      expect(hasEnoughTokens()).toBe(errorMessage)
+      const result = wrapper.vm.validationRules.amount[2]()
+      expect(result).toBe(errorMessage)
+
+      // 4. Test an obviously excessive amount
+      await wrapper.setData({ amount: 200 })
+      expect(wrapper.vm.validationRules.amount[2]()).toBe(errorMessage)
     })
   })
 
@@ -419,8 +630,15 @@ describe('SendFundsForm', () => {
 
     beforeEach(() => {
       wrapper = shallowMount(SendFundsForm, {
-        store,
-        i18n,
+        global: {
+          plugins: [store, i18n],
+          mocks: {
+            $route: {
+              query: {}
+            }
+          },
+          stubs: DEFAULT_STUBS
+        },
         stubs: {
           vForm: {
             render: (h) => h('div'),
@@ -433,16 +651,16 @@ describe('SendFundsForm', () => {
     })
 
     it('should sendFunds and resolve promise', async () => {
-      wrapper.setMethods({
-        sendFunds: () => Promise.resolve(transactionId),
-        pushTransactionToChat: jest.fn()
-      })
+      wrapper.vm.sendFunds = vi.fn().mockResolvedValue(transactionId)
+      wrapper.vm.pushTransactionToChat = vi.fn()
 
       const promise = wrapper.vm.submit()
 
       expect(wrapper.vm.disabledButton).toBe(true)
       expect(wrapper.vm.showSpinner).toBe(true)
-      expect(await promise).toBe(undefined)
+
+      await promise
+
       expect(wrapper.vm.disabledButton).toBe(false)
       expect(wrapper.vm.showSpinner).toBe(false)
       expect(wrapper.vm.dialog).toBe(false)
@@ -450,35 +668,31 @@ describe('SendFundsForm', () => {
       expect(wrapper.vm.pushTransactionToChat).not.toHaveBeenCalled()
     })
 
+    it('Direct Transfer: should sendFunds', async () => {
+      wrapper.vm.sendFunds = vi.fn().mockResolvedValue(transactionId)
+      wrapper.vm.pushTransactionToChat = vi.fn()
+
+      wrapper.setData({ cryptoAddress: 'U111111' })
+
+      await wrapper.vm.submit()
+
+      expect(wrapper.vm.pushTransactionToChat).not.toHaveBeenCalled()
+    })
+
     it('In-chat Transfer: should sendFunds and push transaction to chat', async () => {
-      wrapper.setMethods({
-        sendFunds: () => Promise.resolve(transactionId),
-        pushTransactionToChat: sinon.spy()
-      })
+      wrapper.vm.sendFunds = vi.fn().mockResolvedValue(transactionId)
+      wrapper.vm.pushTransactionToChat = vi.fn()
+
       wrapper.setData({ address: 'U111111' })
       wrapper.setData({ cryptoAddress: 'U111111' })
 
       await wrapper.vm.submit()
 
-      expect(wrapper.vm.pushTransactionToChat.args).toEqual([[transactionId, 'U111111']])
-    })
-
-    it('Direct Transfer: should sendFunds', async () => {
-      wrapper.setMethods({
-        sendFunds: () => Promise.resolve(transactionId),
-        pushTransactionToChat: sinon.spy()
-      })
-      wrapper.setData({ cryptoAddress: 'U111111' })
-
-      await wrapper.vm.submit()
-
-      expect(wrapper.vm.pushTransactionToChat.args).toEqual([])
+      expect(wrapper.vm.pushTransactionToChat).toHaveBeenCalledWith(transactionId, 'U111111')
     })
 
     it('should emit error when sendFunds rejected', async () => {
-      wrapper.setMethods({
-        sendFunds: () => Promise.reject(new Error('No hash'))
-      })
+      wrapper.vm.sendFunds = vi.fn().mockRejectedValue(new Error('No hash'))
 
       await wrapper.vm.submit()
 

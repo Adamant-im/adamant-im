@@ -257,7 +257,8 @@ defineExpose({
   scrollToMessageEasy,
   maintainScrollPosition,
   scrollToMessage,
-  scrollTo
+  scrollTo,
+  messagesRef
 })
 
 const spinnerTop = computed(() => {

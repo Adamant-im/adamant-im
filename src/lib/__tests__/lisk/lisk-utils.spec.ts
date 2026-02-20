@@ -3,9 +3,28 @@
 
 import { KLY_MIN_FEE_PER_BYTE } from '@/lib/klayr'
 import { convertBeddowsTokly } from '@klayr/transactions'
-import { describe, it, expect } from 'vitest'
+import { vi, describe, it, expect } from 'vitest'
 import { Cryptos } from '@/lib/constants'
 import { estimateFee, getAccount } from '@/lib/klayr/klayr-utils'
+
+vi.mock('@klayr/validator', () => ({
+  validator: {
+    validate: vi.fn().mockReturnValue(true)
+  }
+}))
+
+vi.mock('@klayr/transactions', async () => {
+  const actual = await vi.importActual('@klayr/transactions')
+  return {
+    ...actual,
+    validateTransaction: vi.fn().mockReturnValue(true),
+    signTransaction: vi.fn().mockImplementation((tx) => ({
+      ...tx,
+      id: Buffer.alloc(32),
+      signatures: [Buffer.alloc(64)]
+    }))
+  }
+})
 
 const passphrase = 'joy mouse injury soft decade bid rough about alarm wreck season sting'
 

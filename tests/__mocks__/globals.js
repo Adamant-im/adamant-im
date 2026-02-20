@@ -1,8 +1,39 @@
-require('./indexedDB')
+import { vi } from 'vitest'
+import './indexedDB'
 
-// This is a workaround to fix the tests that have the `vueBus` as an import.
-// The functionality of `vueBus` should be rethinked or removed in the future.
-//
-// $on, $off and $once instance methods will be removed in Vue 3
-// @see https://v3-migration.vuejs.org/breaking-changes/events-api.html
-jest.mock('@/main', () => {})
+vi.mock('@/main', () => ({
+  default: { $on: vi.fn(), $off: vi.fn(), $emit: vi.fn() }
+}))
+
+// Universal crator of empty objects
+const createRecursiveProxy = () => {
+  const proxy = new Proxy(() => {}, {
+    get: (target, prop) => {
+      if (['map', 'forEach', 'filter', 'reduce', 'includes'].includes(prop)) {
+        return () => []
+      }
+      if (prop === 'length') return 0
+      return proxy
+    },
+    apply: () => proxy
+  })
+  return proxy
+}
+
+globalThis.config = createRecursiveProxy()
+
+vi.mock('@/lib/nodes', () => ({
+  adm: {},
+  btc: {},
+  eth: {},
+  kly: {},
+  lsk: {},
+  doge: {},
+  dash: {},
+  bnb: {},
+  ipfs: {}
+}))
+
+vi.mock('@/lib/nodes/ipfs/index', () => ({ ipfs: {} }))
+vi.mock('@/lib/nodes/adm/index', () => ({ adm: {} }))
+vi.mock('@/lib/nodes/kly-indexer/index', () => ({ klyIndexer: {} }))

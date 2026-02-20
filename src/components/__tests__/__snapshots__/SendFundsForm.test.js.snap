@@ -1,0 +1,126 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SendFundsForm > renders the correct markup 1`] = `
+<div
+  class="send-funds-form"
+  data-v-7dc72237=""
+>
+  <warning-on-partner-address-dialog-stub
+    data-v-7dc72237=""
+    info="[object Object]"
+    modelvalue="false"
+  />
+  <div
+    data-v-7dc72237=""
+    modelvalue="true"
+  >
+    
+    <v-select-stub
+      class="a-input"
+      data-v-7dc72237=""
+      disabled="false"
+      items="ADM,ETH,BNB"
+      menu-icon="M7,10L12,15L17,10H7Z"
+      modelvalue="ADM"
+      variant="underlined"
+    />
+    <v-text-field-stub
+      class="a-input"
+      color="primary"
+      data-v-7dc72237=""
+      disabled="false"
+      modelmodifiers="[object Object]"
+      modelvalue=""
+      type="text"
+      variant="underlined"
+    />
+    <v-text-field-stub
+      class="a-input send-funds-form__amount-input"
+      color="primary"
+      data-v-7dc72237=""
+      max="9999.5"
+      min="1e-8"
+      modelvalue=""
+      step="1e-8"
+      type="number"
+      variant="underlined"
+    />
+    <div
+      class="fake-input"
+      data-v-7dc72237=""
+    >
+      <div
+        class="fake-input__label"
+        data-v-7dc72237=""
+      >
+        transfer.commission_label
+      </div>
+      <div
+        class="fake-input__box"
+        data-v-7dc72237=""
+      >
+        <span
+          class="fake-input__value"
+          data-v-7dc72237=""
+        >
+          0.5 ADM
+        </span>
+        <span
+          class="fake-input__value fake-input__value--rate a-text-regular"
+          data-v-7dc72237=""
+        >
+           ~0.00 USD
+        </span>
+      </div>
+    </div>
+    <div
+      class="fake-input"
+      data-v-7dc72237=""
+    >
+      <div
+        class="fake-input__label"
+        data-v-7dc72237=""
+      >
+        transfer.final_amount_label
+      </div>
+      <div
+        class="fake-input__box"
+        data-v-7dc72237=""
+      >
+        <span
+          class="fake-input__value"
+          data-v-7dc72237=""
+        >
+          0.5 ADM
+        </span>
+        <span
+          class="fake-input__value fake-input__value--rate a-text-regular"
+          data-v-7dc72237=""
+        >
+           ~0.00 USD
+        </span>
+      </div>
+    </div>
+    <!--v-if-->
+    <!--v-if-->
+    <!--v-if-->
+    <!--v-if-->
+    <div
+      class="text-center"
+      data-v-7dc72237=""
+    >
+      <v-btn-stub
+        class="send-funds-form__button a-btn-primary"
+        data-v-7dc72237=""
+      />
+    </div>
+    
+  </div>
+  <v-dialog-stub
+    data-v-7dc72237=""
+    modelvalue="false"
+    width="500"
+  />
+  <!--v-if-->
+</div>
+`;
