@@ -66,10 +66,10 @@ const levelCurrent = computed({
 })
 
 const loggerExamples = [
-  { level: 'debug', text: 'This is the verbose logger example.' },
-  { level: 'info', text: 'This is the verbose logger example.' },
-  { level: 'warn', text: 'This is the verbose logger example.' },
-  { level: 'public', text: 'This is the verbose logger example.' }
+  { level: 'debug', text: 'Debug message: detailed diagnostics for development.' },
+  { level: 'info', text: 'Info message: general application event details.' },
+  { level: 'warn', text: 'Warning message: potentially harmful situation detected.' },
+  { level: 'public', text: 'Public message: always visible regardless of log level.' }
 ]
 const onSelectLevel = (level: LogLevel) => {
   levelCurrent.value = level
