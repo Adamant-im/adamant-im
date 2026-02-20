@@ -28,6 +28,6 @@ export class BtcClient extends Client<BtcNode> {
     params: Request,
     requestConfig?: AxiosRequestConfig
   ) {
-    return this.getNode().invoke<Result, Request>(params, requestConfig)
+    return this.requestWithRetry((node) => node.invoke<Result, Request>(params, requestConfig))
   }
 }

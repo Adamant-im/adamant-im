@@ -30,7 +30,9 @@ export class DogeIndexerClient extends Client<DogeIndexer> {
     params?: Params,
     requestConfig?: AxiosRequestConfig
   ): Promise<Response> {
-    return this.getNode().request<Response, Params>(method, path, params, requestConfig)
+    return this.requestWithRetry((node) =>
+      node.request<Response, Params>(method, path, params, requestConfig)
+    )
   }
 
   async getTransaction(transactionId: string, address: string) {

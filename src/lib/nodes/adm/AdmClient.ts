@@ -1,4 +1,3 @@
-import { isNodeOfflineError } from '@/lib/nodes/utils/errors'
 import {
   CreateNewChatMessageResponseDto,
   GetHeightResponseDto,
@@ -48,19 +47,7 @@ export class AdmClient extends Client<AdmNode> {
    * @param {RequestConfig} config request config
    */
   async request<P extends Payload = Payload, R = any>(config: RequestConfig<P>): Promise<R> {
-    await this.ready
-
-    return this.getNode()
-      .request(config)
-      .catch((error) => {
-        if (isNodeOfflineError(error)) {
-          // Initiate nodes status check
-          this.checkHealth()
-          // If the selected node is not available, repeat the request with another one.
-          return this.request(config)
-        }
-        throw error
-      })
+    return this.requestWithRetry((node) => node.request(config))
   }
 
   async getHeight() {

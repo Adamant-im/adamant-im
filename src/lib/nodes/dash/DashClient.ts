@@ -25,7 +25,7 @@ export class DashClient extends Client<DashNode> {
     params: Request,
     requestConfig?: AxiosRequestConfig
   ) {
-    return this.getNode().invoke<Result, Request>(params, requestConfig)
+    return this.requestWithRetry((node) => node.invoke<Result, Request>(params, requestConfig))
   }
 
   /**
@@ -35,7 +35,7 @@ export class DashClient extends Client<DashNode> {
     params: Request[],
     requestConfig?: AxiosRequestConfig
   ) {
-    return this.getNode().invokeMany<Result, Request>(params, requestConfig)
+    return this.requestWithRetry((node) => node.invokeMany<Result, Request>(params, requestConfig))
   }
 
   async getTransaction(transactionId: string, address: string) {

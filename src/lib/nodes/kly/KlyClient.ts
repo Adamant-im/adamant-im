@@ -20,7 +20,7 @@ export class KlyClient extends Client<KlyNode> {
     method: M,
     params?: RpcResults[M]['params']
   ): Promise<RpcResults[M]['result']> {
-    return this.getNode().invoke(method, params)
+    return this.requestWithRetry((node) => node.invoke(method, params))
   }
 
   /**

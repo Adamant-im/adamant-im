@@ -23,7 +23,7 @@ export class KlyIndexerClient extends Client<KlyIndexer> {
     params?: Endpoints[E]['params'],
     axiosRequestConfig?: AxiosRequestConfig
   ): Promise<Endpoints[E]['result']> {
-    return this.getNode().request(endpoint, params, axiosRequestConfig)
+    return this.requestWithRetry((node) => node.request(endpoint, params, axiosRequestConfig))
   }
 
   /**

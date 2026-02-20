@@ -1,4 +1,4 @@
-import type { NodeOfflineError } from '@/lib/nodes/utils/errors.ts'
+import { NodeOfflineError } from '@/lib/nodes/utils/errors'
 import type { NodeInfo } from '@/types/wallets/index.ts'
 import { getNodeHealthcheckConfig } from './utils/getHealthcheckConfig'
 import { TNodeLabel } from './constants'
@@ -23,6 +23,8 @@ function isValidHttpUrl(url: string): boolean {
  * Protocol on host where app is running, f. e., http: or https:
  */
 const appProtocol = location.protocol
+const HEALTHCHECK_REQUEST_TIMEOUT_MS = 10_000
+const HEALTHCHECK_STALE_TIMEOUT_MS = HEALTHCHECK_REQUEST_TIMEOUT_MS * 2
 
 export abstract class Node<C = unknown> {
   /**
@@ -122,6 +124,7 @@ export abstract class Node<C = unknown> {
   healthCheckInterval: HealthcheckInterval = 'normal'
   client: C
   healthcheckInProgress = false
+  healthcheckStartedAt = 0
 
   constructor(
     endpoint: NodeInfo,
@@ -162,7 +165,22 @@ export abstract class Node<C = unknown> {
   }
 
   async startHealthcheck() {
-    clearInterval(this.timer)
+    clearTimeout(this.timer)
+
+    const hasStaleHealthcheck =
+      this.healthcheckInProgress &&
+      this.healthcheckStartedAt > 0 &&
+      Date.now() - this.healthcheckStartedAt > HEALTHCHECK_STALE_TIMEOUT_MS
+
+    if (hasStaleHealthcheck) {
+      logger.log(
+        'HealthCheck',
+        'warn',
+        `Health-check got stuck for ${this.getBaseURL(this)}. Restarting a new cycle.`
+      )
+      this.healthcheckInProgress = false
+      this.healthcheckStartedAt = 0
+    }
 
     if (this.active && !this.healthcheckInProgress) {
       const getCurrentProtocol = (): HttpProtocol => {
@@ -241,11 +259,12 @@ export abstract class Node<C = unknown> {
 
       try {
         this.healthcheckInProgress = true
+        this.healthcheckStartedAt = Date.now()
         // Protocol of the most recent check attempt (domain first, alt IP fallback if needed).
         let protocol = getCurrentProtocol()
 
         try {
-          setOnlineStatus(await this.checkHealth(), protocol)
+          setOnlineStatus(await this.checkHealthWithTimeout(), protocol)
         } catch (error) {
           logConnectionFailed((error as NodeOfflineError).code ?? 'unknown')
 
@@ -256,7 +275,7 @@ export abstract class Node<C = unknown> {
             protocol = getCurrentProtocol()
 
             try {
-              setOnlineStatus(await this.checkHealth(), protocol)
+              setOnlineStatus(await this.checkHealthWithTimeout(), protocol)
             } catch (fallbackError) {
               logConnectionFailed((fallbackError as NodeOfflineError).code ?? 'unknown')
               handleFailedCheck(protocol)
@@ -269,6 +288,7 @@ export abstract class Node<C = unknown> {
         this.updateURL()
         this.healthcheckAttemptCount++
         this.healthcheckInProgress = false
+        this.healthcheckStartedAt = 0
       }
 
       this.fireStatusChange()
@@ -458,6 +478,23 @@ export abstract class Node<C = unknown> {
           `getHealthCheckInterval: Interval ${interval} is not defined in the Node's config`
         )
     }
+  }
+
+  private checkHealthWithTimeout() {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined
+
+    return Promise.race<HealthcheckResult>([
+      this.checkHealth(),
+      new Promise((_, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new NodeOfflineError())
+        }, HEALTHCHECK_REQUEST_TIMEOUT_MS)
+      })
+    ]).finally(() => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    })
   }
 }
 
