@@ -11,6 +11,7 @@ import {
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 import { kly } from '../../../lib/nodes/kly'
 import klyIndexer from '../../../lib/nodes/kly-indexer'
+import { logger } from '@/utils/devTools/logger'
 
 const DEFAULT_CUSTOM_ACTIONS = () => ({})
 
@@ -148,7 +149,7 @@ function createActions(options) {
       try {
         const hash = await kly.sendTransaction(signedTransaction.hex, dryRun)
 
-        console.log(`${crypto} transaction has been sent: ${hash}`)
+        logger.log('kly-base-actions.js', 'info', `${crypto} transaction has been sent: ${hash}`)
 
         context.commit('transactions', [
           {

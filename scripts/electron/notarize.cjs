@@ -1,4 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
+import { logger } from '@/utils/devTools/logger'
+
 const { notarize } = require('@electron/notarize')
 
 exports.default = async function notarizing(context) {
@@ -9,13 +11,13 @@ exports.default = async function notarizing(context) {
   }
 
   if (process.env.APPLE_NOTARIZE !== 'true') {
-    console.log('APPLE_NOTARIZE=false | Skipping the notarization"')
+    logger.log('notarizing', 'info', 'APPLE_NOTARIZE=false | Skipping the notarization"')
     return
   }
 
   const appName = context.packager.appInfo.productFilename
 
-  console.log(`Preparing the app ${appName} for notarization`)
+  logger.log("notarizing", 'info', `Preparing the app ${appName} for notarization`)
 
   return notarize({
     appPath: `${appOutDir}/${appName}.app`,

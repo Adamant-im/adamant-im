@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { Plugin } from 'vite'
+import { logger } from '../../src/utils/devTools/logger'
 
 /**
  * Exclude screenshots from Electron bundle
@@ -13,7 +14,7 @@ export function excludeScreenshotsPlugin(): Plugin {
       const screenshotsDir = path.resolve(outDir, 'screenshots')
 
       fs.rm(screenshotsDir, { recursive: true }, () =>
-        console.log(`Deleted screenshots from ${screenshotsDir}`)
+        logger.log('excludeScreenshotsPlugin', 'info', `Deleted screenshots from ${screenshotsDir}`)
       )
     }
   }

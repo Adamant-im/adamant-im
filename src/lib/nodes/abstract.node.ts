@@ -5,6 +5,7 @@ import { getHealthCheckInterval } from './utils/getHealthcheckConfig'
 import { TNodeLabel } from './constants'
 import { HealthcheckInterval, HealthcheckResult, NodeKind, NodeStatus, NodeType } from './types'
 import { nodesStorage } from './storage'
+import { logger } from '@/utils/devTools/logger'
 
 type HttpProtocol = 'http:' | 'https:'
 type WsProtocol = 'ws:' | 'wss:'
@@ -162,8 +163,10 @@ export abstract class Node<C = unknown> {
         const { height, ping } = await this.checkHealth()
 
         if (!this.healthcheckCount && this.logVerbosity === 'Info') {
-          console.info(
-            `[HealthCheck] | ${this.logVerbosity} | Connection via ${this.getBaseURL(this)} succeeded (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}).`
+          logger.log(
+            'HealthCheck',
+            'info',
+            `Connection via ${this.getBaseURL(this)} succeeded (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}).`
           )
         }
 
@@ -178,24 +181,30 @@ export abstract class Node<C = unknown> {
         this.ping = ping
 
         if (this.logVerbosity === 'Debug') {
-          console.info(
-            `[HealthCheck] | ${this.logVerbosity} | Node status updated for ${this.getBaseURL(this)}. Height: ${height}. Ping: ${ping}. Count: ${this.healthcheckCount}. Node is online.`
+          logger.log(
+            'HealthCheck',
+            'debug',
+            `Node status updated for ${this.getBaseURL(this)}. Height: ${height}. Ping: ${ping}. Count: ${this.healthcheckCount}. Node is online.`
           )
         }
       } catch (error) {
         const code = (error as NodeOfflineError).code ?? 'unknown'
 
         if (this.logVerbosity === 'Info') {
-          console.info(
-            `[HealthCheck] | ${this.logVerbosity} | Connection via ${this.getBaseURL(this)} failed (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}). ${code ? `Error code: ${code}` : ''}.`
+          logger.log(
+            'HealthCheck',
+            'info',
+            `Connection via ${this.getBaseURL(this)} failed (URL: ${this.url}${this.altIp ? ', IP: ' + this.altIp : ''}). ${code ? `Error code: ${code}` : ''}.`
           )
         }
         if (this.preferDomain) {
           if (!this.altIp) {
             if (protocol === 'https:' || this.isHttpAllowed(protocol)) this.online = false
             if (this.logVerbosity === 'Info') {
-              console.info(
-                `[HealthCheck] | ${this.logVerbosity} | Alternative IP is not defined for ${this.getBaseURL(this)}. Node is offline.`
+              logger.log(
+                'HealthCheck',
+                'info',
+                `Alternative IP is not defined for ${this.getBaseURL(this)}. Node is offline.`
               )
             }
           }
@@ -207,8 +216,10 @@ export abstract class Node<C = unknown> {
         } else {
           if (protocol === 'https:' || this.isHttpAllowed(protocol)) this.online = false
           if (this.logVerbosity === 'Info') {
-            console.info(
-              `[HealthCheck] | ${this.logVerbosity} | Node is not reachable by URL ${this.url}${this.altIp ? ' and by alternative IP ' + this.altIp : ''}. Node is offline.`
+            logger.log(
+              'HealthCheck',
+              'info',
+              `Node is not reachable by URL ${this.url}${this.altIp ? ' and by alternative IP ' + this.altIp : ''}. Node is offline.`
             )
           }
           if (this.healthcheckCount < 2) {

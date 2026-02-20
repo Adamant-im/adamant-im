@@ -1,5 +1,6 @@
 import * as constants from '../../../lib/constants'
 import * as admApi from '../../../lib/adamant-api'
+import { logger } from '@/utils/devTools/logger'
 
 function _getDelegates(
   context,
@@ -66,7 +67,7 @@ export default {
 
       const delegatesCountResponse = await admApi.getDelegatesCount()
       if (!delegatesCountResponse.success) {
-        console.warn(delegatesCountResponse)
+        logger.log('actions', 'warn', delegatesCountResponse)
         return
       }
 
@@ -83,7 +84,7 @@ export default {
         )
       }
     } catch (err) {
-      console.warn(err)
+      logger.log('actions', 'warn', err)
     }
   },
   voteForDelegates(context, payload) {

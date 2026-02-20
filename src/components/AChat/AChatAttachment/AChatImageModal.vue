@@ -67,6 +67,7 @@ import AChatModalFile from './AChatModalFile.vue'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { FileAsset } from '@/lib/adamant-api/asset'
 import { mdiArrowCollapseDown, mdiChevronLeft, mdiChevronRight, mdiClose } from '@mdi/js'
+import { logger } from '@/utils/devTools/logger'
 
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -222,7 +223,9 @@ export default {
     const downloadFile = async () => {
       const file = props.files[slide.value]
       if (!file) {
-        console.warn(
+        logger.log(
+          'AChatImageModal',
+          'warn',
           `Failed to download the file. Reason: The file with index ${slide.value} does not exist`
         )
         return

@@ -111,6 +111,7 @@ import { ref, defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { mdiContentCopy, mdiDotsVertical, mdiEye, mdiEyeOff } from '@mdi/js'
+import { logger } from '@/utils/devTools/logger'
 
 function getBtcKey(crypto, passphrase, asWif) {
   const keyPair = getBtcAccount(crypto, passphrase).keyPair
@@ -158,7 +159,7 @@ export default defineComponent({
       store.dispatch('snackbar/show', {
         message: t('transfer.invalid_qr_code')
       })
-      console.warn(error)
+      logger.log('ExportKeysForm', 'warn', error)
     }
     const onScanQrcode = (pass) => {
       passphrase.value = pass
