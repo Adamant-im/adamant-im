@@ -15,7 +15,15 @@ type NodeStatusDetail = {
   icon?: string
 }
 
-function getNodeStatusTitle(node: NodeStatusResult, t: VueI18nTranslation) {
+export function getNodeStatusTitle(node: NodeStatusResult, t: VueI18nTranslation) {
+  if (!node.active) {
+    return t('nodes.inactive')
+  }
+
+  if (!node.hasSupportedProtocol) {
+    return t('nodes.unsupported')
+  }
+
   const i18n: Record<NodeStatus, string> = {
     online: node.ping + ' ',
     offline: 'nodes.offline',
@@ -23,6 +31,7 @@ function getNodeStatusTitle(node: NodeStatusResult, t: VueI18nTranslation) {
     sync: 'nodes.sync',
     unsupported_version: 'nodes.unsupported'
   }
+
   if (node.status === 'online') {
     return i18n[node.status]
   } else {
@@ -31,11 +40,11 @@ function getNodeStatusTitle(node: NodeStatusResult, t: VueI18nTranslation) {
   }
 }
 
-function getNodeStatusDetail(
+export function getNodeStatusDetail(
   node: NodeStatusResult,
   t: VueI18nTranslation
 ): NodeStatusDetail | null {
-  if (!node.active || !node.online) {
+  if (!node.active) {
     return null
   }
 
@@ -43,11 +52,19 @@ function getNodeStatusDetail(
     return {
       text: t('nodes.unsupported_reason_protocol')
     }
-  } else if (!node.hasMinNodeVersion) {
+  }
+
+  if (!node.online) {
+    return null
+  }
+
+  if (!node.hasMinNodeVersion) {
     return {
       text: t('nodes.unsupported_reason_api_version')
     }
-  } else if (node.online) {
+  }
+
+  if (node.online) {
     return {
       text: node.formattedHeight,
       icon: mdiCubeOutline
@@ -57,7 +74,7 @@ function getNodeStatusDetail(
   return null
 }
 
-function getNodeStatusColor(node: NodeStatusResult) {
+export function getNodeStatusColor(node: NodeStatusResult) {
   const statusColorMap: Record<NodeStatus, StatusColor> = {
     online: 'green',
     unsupported_version: 'red',

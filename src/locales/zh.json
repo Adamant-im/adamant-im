@@ -180,7 +180,7 @@
     "sync": "同步",
     "ms": "ms",
     "nodeLabelDescription": "支持去中心化并提高隐私级别--<a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">运行您自己的ADAMANT节点</a>。若要将节点添加到列表中，您需要<a target=\"_blank\"href=\"https://github.com/Adamant-im/adamant-im/\">在单独的域上部署web应用程序</a>。此限制指的是内容安全策略（CSP）。",
-    "offline": "脱机",
+    "offline": "离线",
     "coin": "硬币",
     "ping": "嗨",
     "service": "服务",
@@ -191,9 +191,9 @@
       "service_nodes": "服务节点",
       "ipfs_nodes": "IPFS节点"
     },
-    "unsupported": "不受欢迎",
-    "unsupported_reason_protocol": "不允许HTTP",
-    "unsupported_reason_api_version": "API版本过期",
+    "unsupported": "不支持",
+    "unsupported_reason_protocol": "不支持 HTTP",
+    "unsupported_reason_api_version": "API 版本过旧",
     "use_socket_connection": "使用套接字连接",
     "use_socket_connection_tooltip": "WebSockets允许像P2P信使一样立即获取新消息"
   },

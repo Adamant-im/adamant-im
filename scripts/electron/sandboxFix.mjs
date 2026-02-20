@@ -5,7 +5,9 @@ import path from 'path'
 import chalk from 'chalk'
 
 const log = (message, dotFormatting = chalk.blue) => {
-  console.log(`  ${dotFormatting('•')} ${message}`)
+  // This hook runs in Node build-time context where app logger dependencies
+  // (Pinia/localStorage/browser runtime) are unavailable.
+  console.info(`[sandboxFix]   ${dotFormatting('•')} ${message}`)
 }
 
 const afterPackHook = async (params) => {

@@ -11,7 +11,7 @@ All notable changes in this release are listed below.
 - Release notes file added [#853](https://github.com/Adamant-im/adamant-im/pull/853) — [@S-FrontendDev](https://github.com/S-FrontendDev)
 
 ### Improvements
-
+- Use secondary URL with alternate IP if a node is unavailable by primary URL [#768](https://github.com/Adamant-im/adamant-im/pull/768) — [@graycraft](https://github.com/graycraft)
 - APK name changed in GitHub workflow [#839](https://github.com/Adamant-im/adamant-im/pull/839) — [@S-FrontendDev](https://github.com/S-FrontendDev)
 - Wallets UI updated for better usability [#846](https://github.com/Adamant-im/adamant-im/pull/846) — [@Linhead](https://github.com/Linhead), [@adamant-al](https://github.com/adamant-al)
 - ESLint updated to improve code quality [#849](https://github.com/Adamant-im/adamant-im/pull/849) — [@graycraft](https://github.com/graycraft)

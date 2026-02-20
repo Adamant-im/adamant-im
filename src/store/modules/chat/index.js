@@ -33,8 +33,15 @@ import {
 } from '@/lib/nodes/utils/errors'
 import adamant from '@/lib/adamant'
 import { useConsiderOffline } from '@/hooks/useConsiderOffline.js'
+import { logger } from '@/utils/devTools/logger'
 
 export let interval
+/**
+ * Monotonic token for chat polling lifecycle.
+ * Allows us to invalidate in-flight polling chain (Promise -> then -> setTimeout)
+ * when user logs out or polling restarts.
+ */
+let pollingSessionId = 0
 
 const SOCKET_ENABLED_TIMEOUT = 10000
 const SOCKET_DISABLED_TIMEOUT = 3000
@@ -1398,10 +1405,23 @@ const actions = {
   startInterval: {
     root: true,
     handler({ dispatch, getters }) {
+      // Start a new polling session and cancel the previously scheduled tick.
+      const currentSessionId = ++pollingSessionId
+      clearTimeout(interval)
+
       function repeat() {
+        // Polling has been stopped/restarted, ignore stale loop.
+        if (currentSessionId !== pollingSessionId) return
+
         dispatch('getNewMessages')
-          .catch((err) => console.error(err))
+          .catch((err) => {
+            // Skip stale async completion after stop/logout.
+            if (currentSessionId !== pollingSessionId) return
+            logger.log('chat', 'warn', err)
+          })
           .then(() => {
+            // Do not schedule next timeout for stale session.
+            if (currentSessionId !== pollingSessionId) return
             const timeout = getters.chatsPollingTimeout
             interval = setTimeout(repeat, timeout)
           })
@@ -1414,6 +1434,8 @@ const actions = {
   stopInterval: {
     root: true,
     handler() {
+      // Invalidate current session so in-flight promise chain cannot re-schedule polling.
+      pollingSessionId++
       clearTimeout(interval)
     }
   },

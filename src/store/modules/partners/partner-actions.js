@@ -2,6 +2,7 @@ import * as admApi from '../../../lib/adamant-api'
 import { isErc20, Cryptos } from '../../../lib/constants'
 import { parseCryptoAddressesKVStxs } from '../../../lib/store-crypto-address'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors.js'
+import { logger } from '@/utils/devTools/logger'
 
 const CONTACT_LIST_KEY = 'contact_list'
 const UPDATE_TIMEOUT = 3 * 60 * 1000 // 3 min
@@ -133,7 +134,7 @@ export default {
     return admApi
       .getStored(CONTACT_LIST_KEY)
       .then((cl) => context.commit('contactList', cl))
-      .catch((err) => console.warn('Failed to fetch contact list', err))
+      .catch((err) => logger.log('partner-actions', 'warn', 'Failed to fetch contact list', err))
   },
 
   /**
@@ -158,11 +159,11 @@ export default {
       .storeValue(CONTACT_LIST_KEY, contacts, true)
       .then((response) => {
         if (!response.success) {
-          console.warn('Contacts list save was rejected')
+          logger.log('partner-actions', 'warn', 'Contacts list save was rejected')
         }
       })
       .catch((err) => {
-        console.warn('Failed to save contact list', err)
+        logger.log('partner-actions', 'warn', 'Failed to save contact list', err)
         // Re-mark state as dirty to save on the next tick
         context.state.lastChange = lastChange
       })

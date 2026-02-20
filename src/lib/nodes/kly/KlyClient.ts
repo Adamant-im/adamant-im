@@ -1,12 +1,14 @@
 import { convertBeddowsTokly } from '@klayr/transactions'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import { KLY_TOKEN_ID } from '@/lib/klayr'
+import type { NodeInfo } from '@/types/wallets'
 import { RpcMethod, RpcResults } from './types/api'
 import { KlyNode } from './KlyNode'
 import { Client } from '../abstract.client'
+import { logger } from '@/utils/devTools/logger'
 
 export class KlyClient extends Client<KlyNode> {
-  constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
+  constructor(endpoints: NodeInfo[] = [], minNodeVersion = '0.0.0') {
     super('kly', 'node', NODE_LABELS.KlyNode)
     this.nodes = endpoints.map((endpoint) => new KlyNode(endpoint))
     this.minNodeVersion = minNodeVersion
@@ -56,7 +58,13 @@ export class KlyClient extends Client<KlyNode> {
         throw new Error(result.errorMessage)
       }
 
-      console.debug(`txpool_dryRunTransaction: Dry run transaction`, transaction, result)
+      logger.log(
+        'KlyClient',
+        'debug',
+        `txpool_dryRunTransaction: Dry run transaction`,
+        transaction,
+        result
+      )
 
       return 'debug_tx_id' // transactionId
     }

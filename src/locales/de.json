@@ -132,7 +132,10 @@
       "coin_nodes": "Munt Knooppunten",
       "service_nodes": "Service Knooppunten",
       "ipfs_nodes": "IPFS-Knoten"
-    }
+    },
+    "unsupported": "Nicht unterstützt",
+    "unsupported_reason_protocol": "HTTP wird nicht unterstützt",
+    "unsupported_reason_api_version": "Veraltete API-Version"
   },
   "notifications": {
     "message": {

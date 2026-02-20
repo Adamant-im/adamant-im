@@ -120,7 +120,8 @@
   "dev_screens": {
     "title": "Инструменты разработчика",
     "vibrations": "Вибрации",
-    "adamant_wallets": "Adamant-Wallets"
+    "adamant_wallets": "Adamant-Wallets",
+    "logging": "Детализация ведения журнала в консоли"
   },
   "dev_vibrations": {
     "custom_pattern": "Произвольный паттерн",
@@ -225,6 +226,19 @@
     "user_password_unlock": "Разблокировать"
   },
   "nodes": {
+    "popup": {
+      "http_restriction_title": "HTTP-ноды ограничены в браузере",
+      "http_restriction_intro": "Из соображений безопасности браузеры блокируют запросы с HTTPS-страниц к HTTP-адресам.",
+      "http_vs_https_title": "🔒 HTTP и HTTPS",
+      "http_vs_https_http": "HTTP не шифрует трафик, поэтому наблюдатели могут видеть, к какой ноде идет запрос.",
+      "http_vs_https_https": "HTTPS шифрует соединение: виден только адрес ноды.",
+      "adamant_encryption_title": "💡 ADAMANT шифрует все сообщения",
+      "adamant_encryption_text": "ADAMANT шифрует сообщения в блокчейне и при HTTP, и при HTTPS. Поэтому ноды ADAMANT безопасны даже по HTTP. Ограничение действует только в веб-версии; десктоп- и мобильное приложение поддерживают оба протокола.",
+      "how_to_allow_title": "Чтобы использовать HTTP-ноды:",
+      "how_to_allow_browser": "Разрешите небезопасный контент для этого сайта в настройках браузера, или",
+      "how_to_allow_http_app": "Откройте HTTP-версию приложения",
+      "close": "Закрыть"
+    },
     "active": "Активная",
     "fastest_title": "Подключаться к самому быстрому узлу",
     "fastest_tooltip": "Автоматически выбирает узлы с наименьшим пингом",
@@ -234,7 +248,7 @@
     "sync": "Синхронизируется",
     "ms": "мс",
     "nodeLabelDescription": "Поддержите децентрализацию и повысьте уровень приватности: <a target=\"_blank\" href=\"https://news.adamant.im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">Установите свою ноду ADM</a>. Чтобы добавить узлы в список, <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">разверните свое веб-приложение</a> (ограничение CSP).",
-    "offline": "Недоступна",
+    "offline": "Не в сети",
     "coin": "Coin",
     "ping": "Пинг",
     "service": "Сервис",

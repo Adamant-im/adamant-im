@@ -45,6 +45,7 @@ import { Cryptos } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { formatChatPreviewMessage } from '@/lib/markdown'
 import { ChatMessageTransaction } from '@/lib/schema/client/api'
+import { logger } from '@/utils/devTools/logger'
 
 const className = 'quoted-message'
 const classes = {
@@ -157,7 +158,7 @@ export default defineComponent({
             errorCode.value = err.errorCode
           }
 
-          console.warn(err)
+          logger.log('QuotedMessage', 'warn', err)
         } finally {
           loading.value = false
         }

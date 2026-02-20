@@ -2,6 +2,7 @@ import { FetchStatus } from '@/lib/constants'
 import baseActions from '../btc-base/btc-base-actions'
 import BtcApi from '../../../lib/bitcoin/bitcoin-api'
 import { btcIndexer } from '../../../lib/nodes'
+import { logger } from '@/utils/devTools/logger'
 
 const TX_CHUNK_SIZE = 25
 
@@ -18,20 +19,20 @@ const customActions = (getApi) => ({
       })
       .catch((err) => {
         context.commit('setBalanceStatus', FetchStatus.Error)
-        console.warn(err)
+        logger.log('btc-actions', 'warn', err)
       })
 
     // The unspent transactions are needed to estimate the fee
     btcIndexer
       .getUnspents(context.state.address)
       .then((utxo) => context.commit('utxo', utxo))
-      .catch((err) => console.warn(err))
+      .catch((err) => logger.log('btc-actions', 'warn', err))
 
     // The estimated fee rate is also needed
     btcIndexer
       .getFeeRate()
       .then((rate) => context.commit('feeRate', rate['2']))
-      .catch((err) => console.warn(err))
+      .catch((err) => logger.log('btc-actions', 'warn', err))
 
     // Last block height
     context.dispatch('updateHeight')
@@ -44,7 +45,7 @@ const customActions = (getApi) => ({
     btcIndexer
       .getHeight()
       .then((height) => commit('height', height))
-      .catch((err) => console.warn(err))
+      .catch((err) => logger.log('btc-actions', 'warn', err))
   }
 })
 

@@ -1,5 +1,6 @@
 import type { AxiosRequestConfig } from 'axios'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import type { NodeInfo } from '@/types/wallets'
 import { Client } from '../abstract.client'
 import { BtcIndexer } from './BtcIndexer'
 import { MULTIPLIER, normalizeTransaction } from './utils'
@@ -8,6 +9,7 @@ import { UTXO } from './types/api/common/unspent'
 import { GetAddressParams } from './types/api/get-address/get-address-params'
 import { GetAddressResult } from './types/api/get-address/get-address-result'
 import { GetUnspentsParams } from './types/api/get-unspents/get-unspents-params'
+import { logger } from '@/utils/devTools/logger'
 
 /**
  * Provides methods for calling the ADAMANT API.
@@ -17,7 +19,7 @@ import { GetUnspentsParams } from './types/api/get-unspents/get-unspents-params'
  * is not available at the moment.
  */
 export class BtcIndexerClient extends Client<BtcIndexer> {
-  constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
+  constructor(endpoints: NodeInfo[] = [], minNodeVersion = '0.0.0') {
     super('btc', 'service', NODE_LABELS.BtcIndexer)
     this.nodes = endpoints.map((endpoint) => new BtcIndexer(endpoint))
     this.minNodeVersion = minNodeVersion
@@ -47,7 +49,7 @@ export class BtcIndexerClient extends Client<BtcIndexer> {
     const transaction = await this.request<Transaction>('GET', `/tx/${transactionId}`)
 
     const height = await this.getHeight().catch((err) => {
-      console.warn('BtcClient: Failed to get current height:', err)
+      logger.log('BtcIndexerClient', 'warn', 'BtcClient: Failed to get current height:', err)
       return undefined
     })
 

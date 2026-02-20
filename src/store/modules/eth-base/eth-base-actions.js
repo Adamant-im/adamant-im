@@ -14,6 +14,7 @@ import api from '@/lib/nodes/eth'
 import EthContract from 'web3-eth-contract'
 import { isErc20 } from '@/lib/constants'
 import Erc20 from '../erc20/erc20.abi.json'
+import { logger } from '@/utils/devTools/logger'
 
 /** Interval between attempts to fetch the registered tx details */
 const CHUNK_SIZE = 25
@@ -143,7 +144,9 @@ export default function createActions(config) {
         )
 
         if (sentTransactionHash !== signedTransaction.transactionHash) {
-          console.warn(
+          logger.log(
+            'eth-base-actions',
+            'warn',
             `Something wrong with sent ETH tx, computed hash and sent tx differs: ${signedTransaction.transactionHash} and ${sentTransactionHash}`
           )
         }
@@ -180,7 +183,7 @@ export default function createActions(config) {
       if (!transaction) return
 
       void api
-        .useClient((client) => client.getBlock(payload.blockNumber))
+        .useClient((client) => client().getBlock(payload.blockNumber))
         .then((block) => {
           // Converting from BigInt into Number must be safe
           const timestamp = BigNumber(block.timestamp.toString()).multipliedBy(1000).toNumber()
@@ -283,10 +286,10 @@ export default function createActions(config) {
             ...(data && { data })
           }
 
-          const gasLimit = await api.useClient((client) => client.estimateGas(transaction))
+          const gasLimit = await api.useClient((client) => client().estimateGas(transaction))
           return Number(gasLimit)
         } catch (error) {
-          console.warn(`${state.crypto} EstimateGas failed:`, error)
+          logger.log('eth-base-actions', 'warn', `${state.crypto} EstimateGas failed:`, error)
           return null
         }
       }

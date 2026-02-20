@@ -63,6 +63,7 @@ import { isAxiosError } from 'axios'
 import { isAllNodesOfflineError, isAllNodesDisabledError } from '@/lib/nodes/utils/errors'
 import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useSaveCursor } from '@/hooks/useSaveCursor'
+import { logger } from '@/utils/devTools/logger'
 
 const className = 'login-form'
 const classes = {
@@ -130,7 +131,7 @@ const login = () => {
       } else {
         emit('error', t('errors.something_went_wrong'))
       }
-      console.log(err)
+      logger.log('LoginForm', 'info', err)
     })
     .finally(() => {
       antiFreeze()

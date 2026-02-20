@@ -91,18 +91,11 @@ export abstract class Client<N extends Node> {
     }
   }
 
-  // Use with caution:
-  // This method can throw an error if there are no online nodes.
-  // Better use "useClient()" method.
-  getClient(): N['client'] {
-    return this.getNode().client
-  }
-
   /**
    * Invokes a client method.
    *
    * eth
-   *   .useClient((client) => client.getTransactionCount(this.$store.state.eth.address))
+   *   .useClient((client) => client().getTransactionCount(this.$store.state.eth.address))
    *   .then(res => console.log("res", res))
    *   .catch(err => console.log("err", err))
    *

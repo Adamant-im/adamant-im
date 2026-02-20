@@ -24,6 +24,15 @@
   <span v-if="nodeStatusDetail && node.status !== 'sync'" :class="classes.statusText">
     <v-icon v-if="nodeStatusDetail.icon" :icon="nodeStatusDetail.icon" :size="12" />
     {{ nodeStatusDetail.text }}
+
+    <template v-if="!node.hasSupportedProtocol">
+      <v-icon
+        :icon="mdiHelpCircleOutline"
+        size="small"
+        class="ml-0 cursor-pointer mb-1"
+        @click="$emit('showHttpInfo')"
+      />
+    </template>
   </span>
 </template>
 
@@ -32,8 +41,7 @@ import { defineComponent, PropType, toRefs } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { useNodeStatus } from '@/components/nodes/hooks'
-import { mdiCheckboxBlankCircle } from '@mdi/js'
-
+import { mdiCheckboxBlankCircle, mdiHelpCircleOutline } from '@mdi/js'
 
 const className = 'node-status'
 const classes = {
@@ -48,6 +56,7 @@ const classes = {
 }
 
 export default defineComponent({
+  emits: ['showHttpInfo'],
   props: {
     node: {
       type: Object as PropType<NodeStatusResult>,
@@ -66,7 +75,8 @@ export default defineComponent({
       nodeStatusDetail,
       nodeStatusColor,
       classes,
-      mdiCheckboxBlankCircle
+      mdiCheckboxBlankCircle,
+      mdiHelpCircleOutline
     }
   }
 })
