@@ -31,13 +31,18 @@ export class KlyNode extends Node<AxiosInstance> {
     const baseURL = this.getBaseURL(this)
 
     return this.client
-      .post<JSONRPCResponse<RpcResults[M]['result']>>('/rpc', {
-        baseURL,
-        jsonrpc: '2.0',
-        id: uuid(),
-        method,
-        params
-      })
+      .post<JSONRPCResponse<RpcResults[M]['result']>>(
+        '/rpc',
+        {
+          jsonrpc: '2.0',
+          id: uuid(),
+          method,
+          params
+        },
+        {
+          baseURL
+        }
+      )
       .then((res) => {
         const { error, result } = res.data
 
