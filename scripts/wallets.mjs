@@ -3,12 +3,14 @@ import { $ } from 'execa'
 import { copyFile, readdir, readFile, writeFile, mkdir, rm } from 'fs/promises'
 import { resolve, join } from 'path'
 import _ from 'lodash'
-import { logger } from '@/utils/devTools/logger'
 
 const CRYPTOS_DATA_FILE_PATH = resolve('src/lib/constants/cryptos/data.json')
 const CRYPTOS_ICONS_DIR_PATH = resolve('src/components/icons/cryptos')
 const GENERAL_ASSETS_PATH = resolve('adamant-wallets/assets/general')
 const BRANCH = process.argv[2]
+
+// This script runs in plain Node.js context, so app logger aliases/stores are not available here.
+const logInfo = (...args) => console.info('[wallets]', ...args)
 
 void run(BRANCH)
 
@@ -23,7 +25,7 @@ async function run(branch = 'master') {
   await $`git submodule update`
   await $`git submodule foreach git pull origin ${branch}`
 
-  logger.log('wallets', 'info', 'Updating coins data from `adamant-wallets`. Using branch:', branch)
+  logInfo('Updating coins data from `adamant-wallets`. Using branch:', branch)
 
   const { coins, config, coinDirNames, coinSymbols } = await initCoins()
   await applyBlockchains(coins, coinSymbols)
@@ -37,7 +39,7 @@ async function run(branch = 'master') {
   await updateTestnetConfig(config)
   await updateTorConfig(config)
 
-  logger.log('wallets', 'info', 'Coins updated successfully')
+  logInfo('Coins updated successfully')
 }
 
 async function initCoins() {
