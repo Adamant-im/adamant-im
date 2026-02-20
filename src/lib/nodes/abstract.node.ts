@@ -345,9 +345,9 @@ export abstract class Node<C = unknown> {
    * @returns { boolean } Whether a HTTP node is allowed or not.
    */
   isHttpAllowed(protocol: string): boolean {
-    const blocked = !(protocol === 'http:' && appProtocol === 'https:')
+    const allowed = !(protocol === 'http:' && appProtocol === 'https:')
 
-    return blocked
+    return allowed
   }
 
   protected abstract checkHealth(): Promise<HealthcheckResult>
