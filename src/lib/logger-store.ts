@@ -6,17 +6,26 @@ export type LogLevel = 'debug' | 'info' | 'warn' | 'public'
 export const useLoggerStore = defineStore(
   'logger',
   () => {
-    const levelAll = ref<LogLevel[]>(['debug', 'info', 'warn', 'public'])
-    const levelCurrent = ref<LogLevel>('public')
+    const defaultLevelAll: LogLevel[] = ['debug', 'info', 'warn', 'public']
+    const defaultLevelCurrent: LogLevel = 'public'
+
+    const levelAll = ref<LogLevel[]>([...defaultLevelAll])
+    const levelCurrent = ref<LogLevel>(defaultLevelCurrent)
 
     const setLevel = (level: LogLevel) => {
       levelCurrent.value = level
     }
 
+    const $reset = () => {
+      levelAll.value = [...defaultLevelAll]
+      levelCurrent.value = defaultLevelCurrent
+    }
+
     return {
       levelAll,
       levelCurrent,
-      setLevel
+      setLevel,
+      $reset
     }
   },
   {

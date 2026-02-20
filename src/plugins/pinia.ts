@@ -12,8 +12,12 @@ export function resetPinia() {
     Object.entries(activePinia.state.value).forEach(([storeName, state]) => {
       const storeDefinition = defineStore(storeName, state)
       const store = storeDefinition(activePinia)
-      store.$reset()
-      logger.log('pinia', 'info', `The "${storeName}" store has been reset`)
+      if (typeof store.$reset === 'function') {
+        store.$reset()
+        logger.log('pinia', 'info', `The "${storeName}" store has been reset`)
+      } else {
+        logger.log('pinia', 'warn', `The "${storeName}" store does not implement "$reset".`)
+      }
     })
   }
 }
