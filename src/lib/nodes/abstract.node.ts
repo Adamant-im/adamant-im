@@ -117,6 +117,8 @@ export abstract class Node<C = unknown> {
 
   timer?: NodeJS.Timeout
   healthcheckCount = 0
+  healthcheckAttemptCount = 0
+  initialHealthcheckInProgress = true
   healthCheckInterval: HealthcheckInterval = 'normal'
   client: C
   healthcheckInProgress = false
@@ -265,6 +267,7 @@ export abstract class Node<C = unknown> {
         }
       } finally {
         this.updateURL()
+        this.healthcheckAttemptCount++
         this.healthcheckInProgress = false
       }
 
@@ -304,6 +307,10 @@ export abstract class Node<C = unknown> {
   }
 
   getStatus() {
+    const status = this.getNodeStatus()
+    const isInitialStatus = this.healthcheckAttemptCount < 1
+    const isUnavailableStatus = status === 'offline'
+
     return {
       alt_ip: this.altIp,
       url: this.url,
@@ -323,7 +330,11 @@ export abstract class Node<C = unknown> {
       hasSupportedProtocol: this.hasSupportedProtocol,
       socketSupport: this.socketSupport,
       height: this.height,
-      status: this.getNodeStatus(),
+      status,
+      isUpdating:
+        this.active &&
+        isInitialStatus &&
+        (this.initialHealthcheckInProgress || isUnavailableStatus),
       type: this.type,
       label: this.label,
       formattedHeight: this.formatHeight(this.height)
@@ -383,6 +394,8 @@ export abstract class Node<C = unknown> {
     /** Reset properties for HealthCheck to default if a node enabled again. */
     if (active) {
       this.healthcheckCount = 0
+      this.healthcheckAttemptCount = 0
+      this.initialHealthcheckInProgress = true
       this.online = true
       this.preferDomain = true
     }

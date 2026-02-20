@@ -245,6 +245,7 @@
     "label": "Type",
     "host": "Host",
     "inactive": "Inactive",
+    "updating": "Updating",
     "sync": "Syncing",
     "ms": "ms",
     "nodeLabelDescription": "Help strengthen the network: <a target=\"_blank\" href=\"https://news.adamant.im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">Run your own ADM node</a>. Note: To list a node, <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">deploy your own app</a> (CSP requirement).",

@@ -1,13 +1,27 @@
 <template>
   <div :class="classes.statusTitle">
-    <span>
+    <span
+      :class="{
+        [classes.statusTitleText]: true,
+        [classes.statusTitleTextMuted]: nodeStatusUpdating
+      }"
+    >
       {{ nodeStatusTitle
-      }}<span v-if="node.status === 'online'" :class="classes.textMs">{{
+      }}<span v-if="node.status === 'online' && !nodeStatusUpdating" :class="classes.textMs">{{
         t('nodes.ms')
       }}</span></span
     >
 
+    <v-progress-circular
+      v-if="nodeStatusUpdating"
+      :class="classes.spinner"
+      indeterminate
+      size="12"
+      width="2"
+    />
+
     <v-icon
+      v-else
       :class="{
         [classes.icon]: true,
         [classes.iconGreen]: nodeStatusColor === 'green',
@@ -21,7 +35,10 @@
     />
   </div>
 
-  <span v-if="nodeStatusDetail && node.status !== 'sync'" :class="classes.statusText">
+  <span
+    v-if="nodeStatusDetail && node.status !== 'sync' && !nodeStatusUpdating"
+    :class="classes.statusText"
+  >
     <v-icon v-if="nodeStatusDetail.icon" :icon="nodeStatusDetail.icon" :size="12" />
     {{ nodeStatusDetail.text }}
 
@@ -47,7 +64,10 @@ const className = 'node-status'
 const classes = {
   textMs: `${className}__text-ms`,
   statusTitle: `${className}__status-title`,
+  statusTitleText: `${className}__status-title-text`,
+  statusTitleTextMuted: `${className}__status-title-text--muted`,
   statusText: `${className}__status-text`,
+  spinner: `${className}__spinner`,
   icon: `${className}__icon`,
   iconGreen: `${className}__icon--green`,
   iconRed: `${className}__icon--red`,
@@ -67,13 +87,15 @@ export default defineComponent({
     const { t } = useI18n()
     const { node } = toRefs(props)
 
-    const { nodeStatusTitle, nodeStatusDetail, nodeStatusColor } = useNodeStatus(node)
+    const { nodeStatusTitle, nodeStatusDetail, nodeStatusColor, nodeStatusUpdating } =
+      useNodeStatus(node)
 
     return {
       t,
       nodeStatusTitle,
       nodeStatusDetail,
       nodeStatusColor,
+      nodeStatusUpdating,
       classes,
       mdiCheckboxBlankCircle,
       mdiHelpCircleOutline
@@ -93,6 +115,11 @@ export default defineComponent({
     width: 76px;
     max-width: 80px;
     display: flex;
+    align-items: center;
+  }
+
+  &__status-title-text {
+    line-height: 1;
   }
 
   &__status-text {
@@ -102,6 +129,17 @@ export default defineComponent({
 
   &__icon {
     margin-inline-start: 4px;
+  }
+  &__spinner {
+    margin-inline-start: 4px;
+
+    :deep(svg) {
+      animation-duration: 2.2s !important;
+    }
+
+    :deep(.v-progress-circular__overlay) {
+      animation-duration: 2.2s !important;
+    }
   }
   &__text-ms {
     @include mixins.a-text-explanation-small();
@@ -114,6 +152,12 @@ export default defineComponent({
       color: map.get(colors.$adm-colors, 'regular');
     }
     &__text-ms {
+      color: map.get(colors.$adm-colors, 'muted');
+    }
+    &__status-title-text--muted {
+      color: map.get(colors.$adm-colors, 'muted');
+    }
+    &__spinner {
       color: map.get(colors.$adm-colors, 'muted');
     }
 
@@ -141,6 +185,12 @@ export default defineComponent({
       opacity: 0.7;
     }
     &__text-ms {
+      color: map.get(colors.$adm-colors, 'grey-transparent');
+    }
+    &__status-title-text--muted {
+      color: map.get(colors.$adm-colors, 'grey-transparent');
+    }
+    &__spinner {
       color: map.get(colors.$adm-colors, 'grey-transparent');
     }
     &__icon {
