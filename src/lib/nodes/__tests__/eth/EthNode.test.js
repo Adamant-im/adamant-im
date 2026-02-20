@@ -104,4 +104,27 @@ describe('EthNode healthcheck routing', () => {
       ALT_IP
     ])
   })
+
+  it('resets node state to initial updating and starts healthcheck when re-enabled', () => {
+    const node = createNode()
+    node.outOfSync = true
+    node.online = true
+    node.height = 123
+
+    const startHealthcheckSpy = vi.spyOn(node, 'startHealthcheck').mockResolvedValue(node)
+    const fetchNodeVersionSpy = vi.spyOn(node, 'fetchNodeVersion').mockResolvedValue()
+
+    node.toggleNode(false)
+    const status = node.toggleNode(true)
+    stopHealthcheckTimer(node)
+
+    expect(startHealthcheckSpy).toHaveBeenCalledTimes(1)
+    expect(fetchNodeVersionSpy).toHaveBeenCalledTimes(1)
+    expect(status.active).toBe(true)
+    expect(status.status).toBe('offline')
+    expect(status.isUpdating).toBe(true)
+    expect(status.outOfSync).toBe(false)
+    expect(status.ping).toBe(Infinity)
+    expect(status.height).toBe(0)
+  })
 })

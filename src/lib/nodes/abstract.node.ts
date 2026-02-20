@@ -396,8 +396,13 @@ export abstract class Node<C = unknown> {
       this.healthcheckCount = 0
       this.healthcheckAttemptCount = 0
       this.initialHealthcheckInProgress = true
-      this.online = true
+      this.online = false
+      this.outOfSync = false
+      this.height = 0
+      this.ping = Infinity
       this.preferDomain = true
+      void this.startHealthcheck()
+      void this.fetchNodeVersion()
     }
 
     nodesStorage.saveActive(this.url, active)
