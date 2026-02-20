@@ -211,8 +211,7 @@ export abstract class Node<C = unknown> {
               'info',
               `Alternative IP is not defined for ${this.getBaseURL(this)}. Node is offline.`
             )
-          }
-          if (this.healthcheckCount < 1 && this.altIp) {
+          } else if (this.healthcheckCount < 1) {
             // Connection type is not determined yet, so fallback to alt IP is still allowed.
             this.preferDomain = false
           } else {
@@ -240,6 +239,7 @@ export abstract class Node<C = unknown> {
 
       try {
         this.healthcheckInProgress = true
+        // Protocol of the most recent check attempt (domain first, alt IP fallback if needed).
         let protocol = getCurrentProtocol()
 
         try {
