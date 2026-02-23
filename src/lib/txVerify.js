@@ -18,7 +18,7 @@ export function formatSendTxError(error) {
       formattedError.errorCode = errorData.error.code
       formattedError.errorMessage += ` ${codeString}${messageString}`
     } else if (errorData.errors && errorData.errors[0]) {
-      // Klayr/Lisk-style APIs return validation errors as an array
+      // Some APIs may return validation errors as an array
       formattedError.errorMessage += errorData.errors[0].message
     } else {
       // Unknown response format
