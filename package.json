@@ -8,6 +8,7 @@
   "private": true,
   "scripts": {
     "serve": "vite preview --config vite-pwa.config.ts",
+    "serve:testnet": "vite preview --config vite-pwa.config.ts --mode testnet",
     "dev": "vite --config vite-pwa.config.ts",
     "dev-https": "cross-env HTTPS=true vite --config vite-pwa.config.ts",
     "dev:localnet": "vite --host 0.0.0.0 --config vite-pwa.config.ts",

@@ -50,10 +50,22 @@ npm run https
 npm run build
 ```
 
+### Compiles and minifies for testnet build
+
+```
+npm run build:testnet
+```
+
 ### Preview production build locally
 
 ```
 npm run serve
+```
+
+### Build and preview testnet build locally
+
+```
+npm run serve:testnet
 ```
 
 ### Lints and fixes files
