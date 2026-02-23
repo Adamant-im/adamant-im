@@ -11,7 +11,7 @@
       :is-getting-public-key="isGettingPublicKey"
       :user-id="userId"
       :loading="loading && !isGettingPublicKey"
-      :locale="$i18n.locale"
+      :locale="currentLocale"
       @scroll:top="onScrollTop"
       @scroll:bottom="onScrollBottom"
       @scroll="onScroll"
@@ -209,9 +209,7 @@
           :show-divider="true"
           :label="t('chats.message')"
           :should-disable-input="isWelcomeChat(partnerId) || shouldDisableInput"
-          :message-text="
-            $route.query.messageText || $store.getters['draftMessage/draftMessage'](partnerId)
-          "
+          :message-text="messageText"
           @message="onMessage"
           @error="onMessageError"
           @esc="replyMessageId = -1"
@@ -310,7 +308,7 @@ import { isMobile } from '@/lib/display-mobile'
 import { isAdamantChat, isWelcomeChat, isWelcomeMessage } from '@/lib/chat/meta/utils'
 import AChatAttachment from '@/components/AChat/AChatAttachment/AChatAttachment.vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useChatsSpinner } from '@/hooks/useChatsSpinner'
 import ProgressIndicator from '@/components/ProgressIndicator.vue'
@@ -334,10 +332,20 @@ const props = defineProps({
 })
 const emit = defineEmits(['click:chat-avatar'])
 
+const route = useRoute()
 const router = useRouter()
 const store = useStore()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const showSpinner = useChatsSpinner()
+const currentLocale = computed(() => String(locale.value))
+
+const messageText = computed(() => {
+  const queryMessageText = route.query.messageText
+  const routeMessageText = Array.isArray(queryMessageText) ? queryMessageText[0] : queryMessageText
+  const draftMessage = store.getters['draftMessage/draftMessage'](props.partnerId)
+
+  return routeMessageText ?? draftMessage ?? ''
+})
 
 const isMenuOpen = ref(false)
 
