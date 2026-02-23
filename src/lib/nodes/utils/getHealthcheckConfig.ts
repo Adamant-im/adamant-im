@@ -21,10 +21,6 @@ export function getNodeHealthcheckConfig(nodeLabel: TNodeLabel): NodeHealthcheck
       return config.dash.nodes.healthCheck
     case 'ipfs-node':
       return config.adm.services.ipfsNode.healthCheck
-    case 'kly-node':
-      return config.kly.nodes.healthCheck
-    case 'kly-indexer':
-      return config.kly.services.klyService.healthCheck
     case 'rates-info':
       return config.adm.services.infoService.healthCheck
     default:

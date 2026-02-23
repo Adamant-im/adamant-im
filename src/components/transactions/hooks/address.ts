@@ -91,7 +91,7 @@ export function useBtcAddressPretty(
  * - Me (U123456)
  * - John (U123456)
  *
- * @param transaction ETH, ERC20, KLY transaction
+ * @param transaction ETH, ERC20 transaction
  * @param cryptoAddress Owner crypto address
  * @param admAddress Either sender or recipient ADM address
  * @param type

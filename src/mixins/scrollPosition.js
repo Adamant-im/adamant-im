@@ -1,4 +1,4 @@
-import throttle from 'lodash/throttle'
+import throttle from 'lodash-es/throttle'
 
 const updateRouteScrollPosition = throttle(function () {
   if (Object.prototype.hasOwnProperty.call(this.$route.meta, 'scrollPosition')) {

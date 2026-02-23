@@ -121,16 +121,6 @@
         color="primary"
       />
 
-      <v-text-field
-        v-if="isTextDataAllowed"
-        v-model="textData"
-        class="a-input"
-        :label="textDataLabel"
-        variant="underlined"
-        counter
-        maxlength="64"
-        color="primary"
-      />
       <v-checkbox
         v-if="allowIncreaseFee"
         v-model="increaseFee"
@@ -188,22 +178,18 @@
 
 <script>
 import { adm } from '@/lib/nodes'
-import klyIndexer from '@/lib/nodes/kly-indexer'
 import {
   AllNodesDisabledError,
   AllNodesOfflineError,
   NoInternetConnectionError
 } from '@/lib/nodes/utils/errors'
 import { PendingTransactionError } from '@/lib/pending-transactions'
-import axios from 'axios'
 import { computed, nextTick } from 'vue'
 
 import QrcodeCapture from '@/components/QrcodeCapture.vue'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
-import get from 'lodash/get'
+import get from 'lodash-es/get'
 import { BigNumber } from 'bignumber.js'
-import * as transactions from '@klayr/transactions'
-import { KLY_DECIMALS } from '@/lib/klayr/klayr-constants'
 import { logger } from '@/utils/devTools/logger'
 
 import {
@@ -212,10 +198,9 @@ import {
   isErc20,
   isFeeEstimate,
   isEthBased,
-  getMinAmount,
   isSelfTxAllowed,
+  getMinAmount,
   CryptosInfo,
-  isTextDataAllowed,
   MessageType,
   Fees,
   Symbols
@@ -233,8 +218,6 @@ import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressD
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { formatSendTxError } from '@/lib/txVerify'
 import { AllCryptos } from '@/lib/constants/cryptos'
-
-import { MAX_UINT64 } from '@klayr/validator'
 
 import { mdiDotsVertical, mdiMenuDown } from '@mdi/js'
 import { useStore } from 'vuex'
@@ -337,11 +320,9 @@ export default {
     increaseFee: false,
     showWarningOnPartnerAddressDialog: false,
     warningOnPartnerInfo: {},
-    klayrOptionalMessage: '',
     estimatedGasLimit: null,
 
     // Account exists check
-    // Currently works only with KLY
     account: {
       isNew: false,
       abortController: new AbortController(),
@@ -354,14 +335,6 @@ export default {
   }),
   computed: {
     className: () => 'send-funds-form',
-
-    /**
-     * Some cryptos allows to save public data with a Tx
-     * @returns {boolean}
-     */
-    isTextDataAllowed() {
-      return isTextDataAllowed(this.currency) && !this.addressReadonly
-    },
 
     /**
      * Label for a textData input
@@ -562,15 +535,7 @@ export default {
           () =>
             isErc20(this.currency)
               ? this.ethBalance >= this.transferFee || this.$t('transfer.error_not_enough_eth_fee')
-              : true,
-          (v) => {
-            const isKlyTransfer = this.currency === Cryptos.KLY
-            if (!isKlyTransfer) return true
-            const isKlyTransferAllowed =
-              this.transferFee &&
-              transactions.convertklyToBeddows(v.toFixed(KLY_DECIMALS)) < MAX_UINT64
-            return isKlyTransferAllowed || this.$t('transfer.error_incorrect_amount')
-          }
+              : true
         ]
       }
     },
@@ -679,31 +644,6 @@ export default {
 
       // Create a new AbortController for the current request
       this.account.abortController = new AbortController()
-
-      switch (this.currency) {
-        case Cryptos.KLY:
-          this.account.loading = true
-          klyIndexer
-            .checkAccountExists(cryptoAddress, {
-              signal: this.account.abortController.signal
-            })
-            .then((exists) => {
-              this.account.isNew = !exists
-            })
-            .catch((err) => {
-              if (axios.isCancel(err)) {
-                // Request canceled
-                return
-              }
-
-              throw err
-            })
-            .finally(() => {
-              this.account.loading = false
-            })
-
-          break
-      }
     },
     confirm() {
       const abstract = validateForm.call(this)
@@ -774,7 +714,7 @@ export default {
      */
     onScanQrcode(uri) {
       const recipient = parseURI(uri)
-      const { params, address, crypto } = recipient
+      const { params, address } = recipient
       const isValidAddress = validateAddress(this.currency, address)
       if (isValidAddress) {
         this.cryptoAddress = address
@@ -783,9 +723,6 @@ export default {
           if (Number(amount) <= this.maxToTransfer) {
             this.amountString = amount
           }
-        }
-        if (crypto === Cryptos.KLY) {
-          this.textData = params.reference ? params.reference : ''
         }
       } else {
         this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: this.currency }))
@@ -822,8 +759,6 @@ export default {
           let message = formattedError.errorMessage
           if (/dust/i.test(message) || get(error, 'response.data.error.code') === -26) {
             message = this.$t('transfer.error_dust_amount')
-          } else if (/minimum remaining balance requirement/i.test(message)) {
-            message = this.$t('transfer.recipient_minimum_balance')
           } else if (/Invalid JSON RPC Response/i.test(message)) {
             message = this.$t('transfer.error_unknown')
           } else if (error instanceof AllNodesOfflineError) {

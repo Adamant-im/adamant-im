@@ -144,7 +144,7 @@ Messaging and transaction pipeline:
 Node and service architecture:
 
 - Abstract node/client contracts and node selection strategy: `src/lib/nodes/abstract.node.ts`, `src/lib/nodes/abstract.client.ts`
-- Concrete node clients for ADM/BTC/DASH/DOGE/ETH/KLY/IPFS: `src/lib/nodes/*`
+- Concrete node clients for ADM/BTC/DASH/DOGE/ETH/IPFS: `src/lib/nodes/*`
 - Out-of-sync filtering and active/fastest node selection: `src/lib/nodes/utils/*`, `src/lib/nodes/storage.ts`
 - Vuex integration for node status and user toggles: `src/store/modules/nodes/*`
 - Global healthcheck interval management: `src/lib/nodes/nodes-manager.ts`

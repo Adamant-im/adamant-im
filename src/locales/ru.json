@@ -392,7 +392,6 @@
     "decode_from_camera": "Отсканировать QR-код камерой",
     "decode_from_image": "Прочитать QR-код с изображения",
     "error_dust_amount": "Мелочь — Отправьте больше токенов",
-    "recipient_minimum_balance": "На кошельке получателя должно быть больше 0.05 KLY — Отправьте больше токенов",
     "error_all_nodes_offline": "Все {crypto}-ноды недоступны",
     "error_precision": "Слишком много цифр после запятой",
     "error_field_is_required": "Поле не заполнено",

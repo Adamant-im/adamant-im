@@ -17,10 +17,7 @@ export default {
   ipfs(state) {
     return Object.values(state.ipfs)
   },
-  kly(state) {
-    return Object.values(state.kly)
-  },
   coins(state, getters) {
-    return [...getters.eth, ...getters.btc, ...getters.doge, ...getters.dash, ...getters.kly]
+    return [...getters.eth, ...getters.btc, ...getters.doge, ...getters.dash]
   }
 }

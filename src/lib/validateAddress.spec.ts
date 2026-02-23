@@ -14,12 +14,6 @@ describe('validateAddress', () => {
     expect(validateAddress(Cryptos.ADM, '6g5FsXmXJozxfZo7vJrC5eF5zLhW1vmF')).toBe(false)
   })
 
-  it('validates KLY address with try-catch', () => {
-    expect(validateAddress(Cryptos.KLY, 'klyr9pzfwknqg6hz3mb8kkhfvesqagd3nt7nqj78p')).toBe(true)
-
-    expect(validateAddress(Cryptos.KLY, 'invalid_kly_address')).toBe(false)
-  })
-
   it('validates BTC address', () => {
     expect(validateAddress(Cryptos.BTC, 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq')).toBe(true) // SegWit address - P2WPKH
     expect(validateAddress(Cryptos.BTC, '3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy')).toBe(true) // Script address - P2SH

@@ -6,7 +6,7 @@ type TxFinalizeChecker = (hash: string) => Promise<boolean>
 /**
  * Asserts that there is no pending transaction for the given crypto
  *
- * @param crypto e.g. 'ETH' | 'KLY'
+ * @param crypto e.g. 'ETH' | 'BTC'
  * @param nonce Current nonce
  */
 export function assertNoPendingTransaction(crypto: string, nonce: string | number | bigint) {
@@ -28,7 +28,7 @@ export function assertNoPendingTransaction(crypto: string, nonce: string | numbe
  * Invalidates previous pending transaction.
  * If transaction is finalized then it will be removed from the store.
  *
- * @param crypto  e.g. 'ETH' | 'KLY'
+ * @param crypto  e.g. 'ETH' | 'BTC'
  * @param checkTransactionFinalized Must return `true` if transaction was written to blockchain.
  */
 export async function invalidatePendingTransaction(

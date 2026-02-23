@@ -6,13 +6,13 @@ import {
 import type { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import type { CoinTransaction } from '@/lib/nodes/types/transaction'
 
-const SENDER_CRYPTO_ADDRESS = 'klycufr5yusb5uphgbg8accfkka7tpe3x9zv872tq'
-const RECIPIENT_CRYPTO_ADDRESS = 'klyfan97j6phfdc3odtoorfabxdqtdymah55wnkk9'
+const SENDER_CRYPTO_ADDRESS = '0x1111111111111111111111111111111111111111'
+const RECIPIENT_CRYPTO_ADDRESS = '0x2222222222222222222222222222222222222222'
 
 const createCoinTransaction = (params: Partial<CoinTransaction> = {}): CoinTransaction => ({
-  id: params.id ?? '8f0a862a170e517070656945a90986c293304f85e15a70c843a6549619deefd6',
-  hash: params.hash ?? '8f0a862a170e517070656945a90986c293304f85e15a70c843a6549619deefd6',
-  fee: params.fee ?? 0.00165,
+  id: params.id ?? '0x8f0a862a170e517070656945a90986c293304f85e15a70c843a6549619deefd6',
+  hash: params.hash ?? '0x8f0a862a170e517070656945a90986c293304f85e15a70c843a6549619deefd6',
+  fee: params.fee ?? 0.00042,
   status: params.status ?? 'CONFIRMED',
   timestamp: params.timestamp ?? 1719667495000,
   direction: params.direction ?? 'to',
@@ -33,21 +33,21 @@ const createAdmTransaction = (
   status: params.status ?? 'PENDING',
   i18n: params.i18n ?? false,
   amount: params.amount ?? 1,
-  message: params.message ?? 'Send KLY with comment',
+  message: params.message ?? 'Send ETH with comment',
   height: params.height ?? 41168104,
   asset: params.asset ?? {
-    type: 'kly_transaction',
+    type: 'eth_transaction',
     amount: '1',
-    hash: '8f0a862a170e517070656945a90986c293304f85e15a70c843a6549619deefd6',
-    comments: 'Send KLY with comment'
+    hash: '0x8f0a862a170e517070656945a90986c293304f85e15a70c843a6549619deefd6',
+    comments: 'Send ETH with comment'
   },
-  hash: params.hash ?? '8f0a862a170e517070656945a90986c293304f85e15a70c843a6549619deefd6',
-  type: params.type ?? 'KLY'
+  hash: params.hash ?? '0x8f0a862a170e517070656945a90986c293304f85e15a70c843a6549619deefd6',
+  type: params.type ?? 'ETH'
 })
 
 describe('getInconsistentStatus', () => {
   describe('NO_SENDER_CRYPTO_ADDRESS', () => {
-    test('should pass the validation when the sender has a crypto address', () => {
+    test('should pass validation when sender crypto address exists', () => {
       const coinTransaction = createCoinTransaction()
       const admTransaction = createAdmTransaction()
 
@@ -59,7 +59,7 @@ describe('getInconsistentStatus', () => {
       ).toBe('')
     })
 
-    test('should return NO_SENDER_CRYPTO_ADDRESS when the cannot retrieve the crypto address from KVS', () => {
+    test('should return NO_SENDER_CRYPTO_ADDRESS when sender address is absent', () => {
       const coinTransaction = createCoinTransaction()
       const admTransaction = createAdmTransaction()
 
@@ -73,7 +73,7 @@ describe('getInconsistentStatus', () => {
   })
 
   describe('NO_RECIPIENT_CRYPTO_ADDRESS', () => {
-    test('should pass the validation when the recipient has a crypto address', () => {
+    test('should pass validation when recipient crypto address exists', () => {
       const coinTransaction = createCoinTransaction()
       const admTransaction = createAdmTransaction()
 
@@ -85,7 +85,7 @@ describe('getInconsistentStatus', () => {
       ).toBe('')
     })
 
-    test('should return NO_RECIPIENT_CRYPTO_ADDRESS when the cannot retrieve the crypto address from KVS', () => {
+    test('should return NO_RECIPIENT_CRYPTO_ADDRESS when recipient address is absent', () => {
       const coinTransaction = createCoinTransaction()
       const admTransaction = createAdmTransaction()
 
@@ -99,9 +99,9 @@ describe('getInconsistentStatus', () => {
   })
 
   describe('SENDER_CRYPTO_ADDRESS_MISMATCH', () => {
-    test('should return SENDER_CRYPTO_ADDRESS_MISMATCH when the sender crypto addresses do not match', () => {
+    test('should return SENDER_CRYPTO_ADDRESS_MISMATCH when sender addresses differ', () => {
       const coinTransaction = createCoinTransaction({
-        senderId: 'different_sender_crypto_address'
+        senderId: '0x3333333333333333333333333333333333333333'
       })
       const admTransaction = createAdmTransaction()
 
@@ -115,9 +115,9 @@ describe('getInconsistentStatus', () => {
   })
 
   describe('RECIPIENT_CRYPTO_ADDRESS_MISMATCH', () => {
-    test('should return RECIPIENT_CRYPTO_ADDRESS_MISMATCH when the recipient crypto addresses do not match', () => {
+    test('should return RECIPIENT_CRYPTO_ADDRESS_MISMATCH when recipient addresses differ', () => {
       const coinTransaction = createCoinTransaction({
-        recipientId: 'different_recipient_crypto_address'
+        recipientId: '0x4444444444444444444444444444444444444444'
       })
       const admTransaction = createAdmTransaction()
 
@@ -130,10 +130,10 @@ describe('getInconsistentStatus', () => {
     })
   })
 
-  describe('WORNG_TX_HASH', () => {
-    test('should pass the validation when the transaction hashes are the same', () => {
-      const coinTransaction = createCoinTransaction({ hash: 'af08' })
-      const admTransaction = createAdmTransaction({ hash: 'af08' })
+  describe('WRONG_TX_HASH', () => {
+    test('should pass validation when hashes are equal', () => {
+      const coinTransaction = createCoinTransaction({ hash: '0xaf08' })
+      const admTransaction = createAdmTransaction({ hash: '0xaf08' })
 
       expect(
         getInconsistentStatus(coinTransaction, admTransaction, {
@@ -143,11 +143,9 @@ describe('getInconsistentStatus', () => {
       ).toBe('')
     })
 
-    test('should return WRONG_TX_HASH when the transaction hashes do not match', () => {
-      const coinTransaction = createCoinTransaction({})
-      const admTransaction = createAdmTransaction({
-        hash: 'different_hash'
-      })
+    test('should return WRONG_TX_HASH when hashes differ', () => {
+      const coinTransaction = createCoinTransaction()
+      const admTransaction = createAdmTransaction({ hash: '0xdifferent_hash' })
 
       expect(
         getInconsistentStatus(coinTransaction, admTransaction, {
@@ -159,7 +157,7 @@ describe('getInconsistentStatus', () => {
   })
 
   describe('WRONG_AMOUNT', () => {
-    test('should pass the validation when amount is the same', () => {
+    test('should pass validation when amounts match', () => {
       const coinTransaction = createCoinTransaction({ amount: 1 })
       const admTransaction = createAdmTransaction({ amount: 1 })
 
@@ -171,7 +169,7 @@ describe('getInconsistentStatus', () => {
       ).toBe('')
     })
 
-    test('should return WRONG_AMOUNT when the amounts are different', () => {
+    test('should return WRONG_AMOUNT when amounts differ', () => {
       const coinTransaction = createCoinTransaction({ amount: 1 })
       const admTransaction = createAdmTransaction({ amount: 2 })
 
@@ -185,7 +183,7 @@ describe('getInconsistentStatus', () => {
   })
 
   describe('WRONG_TIMESTAMP', () => {
-    test('should pass the validation when the timestamps are the same', () => {
+    test('should pass validation when timestamps are equal', () => {
       const coinTransaction = createCoinTransaction({ timestamp: 1719667495000 })
       const admTransaction = createAdmTransaction({ timestamp: 1719667495000 })
 
@@ -197,9 +195,9 @@ describe('getInconsistentStatus', () => {
       ).toBe('')
     })
 
-    test('should pass the validation when the timestamps are near equal', () => {
+    test('should pass validation when timestamps are within ETH tolerance', () => {
       const coinTransaction = createCoinTransaction({ timestamp: 1719667495000 })
-      const admTransaction = createAdmTransaction({ timestamp: 1719667495000 - 59000 }) // for KLY the acceptable difference is 60000 ms
+      const admTransaction = createAdmTransaction({ timestamp: 1719667495000 - 1199999 }) // ETH tolerance is 1200000 ms
 
       expect(
         getInconsistentStatus(coinTransaction, admTransaction, {
@@ -209,11 +207,11 @@ describe('getInconsistentStatus', () => {
       ).toBe('')
     })
 
-    test('should return WRONG_TIMESTAMP when the timestamps are different', () => {
+    test('should return WRONG_TIMESTAMP when timestamps are outside ETH tolerance', () => {
       expect(
         getInconsistentStatus(
           createCoinTransaction({ timestamp: 1719667495000 }),
-          createAdmTransaction({ timestamp: 1719667495000 - 60001 }), // for KLY the acceptable difference is 60000 ms
+          createAdmTransaction({ timestamp: 1719667495000 - 1200001 }), // ETH tolerance is 1200000 ms
           {
             senderCryptoAddress: SENDER_CRYPTO_ADDRESS,
             recipientCryptoAddress: RECIPIENT_CRYPTO_ADDRESS

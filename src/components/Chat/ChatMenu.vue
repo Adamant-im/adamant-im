@@ -68,7 +68,6 @@ import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/uti
 import { useScreenSize } from '@/hooks/useScreenSize'
 
 const fetchingErrors = {
-  liskLegacy: 'Only legacy Lisk address',
   noAddress: 'No crypto wallet address',
   connection: 'Connection error'
 } as const
@@ -133,11 +132,6 @@ function sendFunds(selectedCrypto: string) {
     .catch((e: Error) => {
       crypto.value = selectedCrypto
 
-      if (e.message.includes(fetchingErrors.liskLegacy)) {
-        dialogTitle.value = t('transfer.legacy_address_title', { crypto: selectedCrypto })
-        dialogText.value = t('transfer.legacy_address_text', { crypto: selectedCrypto })
-      }
-
       if (e.message.includes(fetchingErrors.noAddress)) {
         dialogTitle.value = t('transfer.no_address_title', { crypto: selectedCrypto })
         dialogText.value = t('transfer.no_address_text', { crypto: selectedCrypto })
@@ -171,8 +165,6 @@ function fetchCryptoAddress(selectedCrypto: string): Promise<any> {
     .then((address: any) => {
       if (!address) {
         throw new Error(fetchingErrors.noAddress)
-      } else if (address.onlyLegacyLiskAddress) {
-        throw new Error(fetchingErrors.liskLegacy)
       }
 
       return address

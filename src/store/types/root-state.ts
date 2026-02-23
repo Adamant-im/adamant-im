@@ -15,7 +15,6 @@ export interface RootState {
   bnb: any
   adm: any
   doge: any
-  kly: any
   dash: any
   btc: any
   partners: any
