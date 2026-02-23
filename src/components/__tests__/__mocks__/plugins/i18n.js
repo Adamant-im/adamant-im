@@ -10,8 +10,11 @@ export default function mockupI18n() {
   return createI18n({
     locale: 'en',
     fallbackLocale: 'en',
-    // fallbackRoot: true,
-    silentTranslationWarn: true, // @todo Replace with fallbackRoot: true after updating vue-i18n
+    silentTranslationWarn: true,
+    legacy: false,
+    globalInjection: true,
+    allowComposition: true,
+    warnHtmlMessage: false,
     messages: {
       en,
       ru

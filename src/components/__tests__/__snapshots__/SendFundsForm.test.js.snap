@@ -104,7 +104,6 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
     <!--v-if-->
     <!--v-if-->
     <!--v-if-->
-    <!--v-if-->
     <div
       class="text-center"
       data-v-7dc72237=""
