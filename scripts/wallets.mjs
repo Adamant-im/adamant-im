@@ -20,14 +20,14 @@ void run(BRANCH)
 
 /**
  *
- * @param {string} branch The branch to pull from. E.g.: dev, master
+ * @param {string} branch The branch to sync from. E.g.: dev, master
  * @return {Promise<void>}
  */
-async function run(branch = 'master') {
+async function run(branch = 'dev') {
   // update adamant-wallets repo
-  await $`git submodule init`
-  await $`git submodule update`
-  await $`git submodule foreach git pull origin ${branch}`
+  await $`git submodule update --init`
+  await $`git -C adamant-wallets fetch origin ${branch}`
+  await $`git -C adamant-wallets checkout --detach origin/${branch}`
 
   logInfo('Updating coins data from `adamant-wallets`. Using branch:', branch)
 

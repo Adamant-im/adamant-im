@@ -45,15 +45,7 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  ref,
-  onMounted,
-  onBeforeUnmount,
-  computed,
-  withDefaults,
-  defineProps,
-  defineEmits
-} from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import throttle from 'lodash-es/throttle'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import Styler from 'stylefire'
