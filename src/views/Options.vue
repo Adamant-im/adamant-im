@@ -216,6 +216,7 @@ import NavigationWrapper from '@/components/NavigationWrapper.vue'
 import { useSavedScroll } from '@/hooks/useSavedScroll'
 import { sidebarLayoutKey } from '@/lib/constants'
 import { useChatStateStore } from '@/stores/modal-state'
+import { logger } from '@/utils/devTools/logger'
 
 const store = useStore()
 const chatStateStore = useChatStateStore()
@@ -384,7 +385,7 @@ const logout = () => {
   if (isLoginViaPassword.value) {
     return clearDb()
       .catch((err) => {
-        console.error(err)
+        logger.log('options', 'warn', err)
       })
       .finally(() => {
         // turn off `loginViaPassword` option

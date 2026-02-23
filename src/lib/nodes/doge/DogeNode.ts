@@ -7,6 +7,7 @@ import type { NodeInfo } from '@/types/wallets'
 import { RpcRequest, RpcResponse } from './types/api/common'
 import { NetworkInfo } from './types/api/network-info'
 import { BlockchainInfo } from './types/api/blockchain-info'
+import { logger } from '@/utils/devTools/logger'
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
@@ -46,7 +47,7 @@ export class DogeNode extends Node<AxiosInstance> {
         this.version = formatDogeVersion(version)
       }
     } catch (e) {
-      console.warn(e)
+      logger.log('doge-node', 'warn', e)
     }
   }
 

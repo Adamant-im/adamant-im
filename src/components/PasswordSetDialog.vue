@@ -76,6 +76,7 @@ import { useI18n } from 'vue-i18n'
 
 import { UserPasswordArticleLink } from '@/lib/constants'
 import { saveState } from '@/lib/idb/state'
+import { logger } from '@/utils/devTools/logger'
 
 const props = defineProps<{
   modelValue: boolean
@@ -128,7 +129,7 @@ const submit = () => {
     })
     .then(() => saveState(store))
     .catch((err) => {
-      console.error(err)
+      logger.log('password-set-dialog', 'warn', err)
     })
     .finally(() => {
       disabledButton.value = false

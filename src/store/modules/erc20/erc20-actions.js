@@ -94,7 +94,7 @@ const createSpecificActions = (api) => ({
       function repeat() {
         validateStoredCryptoAddresses()
         dispatch('updateBalance')
-          .catch((err) => console.error(err))
+          .catch((err) => logger.log('erc20-actions', 'warn', err))
           .then(() => {
             interval = setTimeout(() => {
               repeat()

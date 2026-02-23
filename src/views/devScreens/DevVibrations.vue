@@ -86,6 +86,7 @@ import { mdiPlay } from '@mdi/js'
 import { useI18n } from 'vue-i18n'
 
 import { vibrate } from '@/lib/vibrate'
+import { logger } from '@/utils/devTools/logger'
 
 const { t } = useI18n()
 
@@ -107,7 +108,7 @@ const playCustomPattern = () => {
     const pattern = customPattern.value.split(',').map((i) => Number(i.trim()))
     navigator.vibrate(pattern)
   } catch (error) {
-    console.error('Invalid vibration pattern:', error)
+    logger.log('dev-vibrations', 'warn', 'Invalid vibration pattern:', error)
   }
 }
 

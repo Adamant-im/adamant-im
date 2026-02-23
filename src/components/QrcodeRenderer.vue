@@ -7,6 +7,7 @@
 
 <script>
 import InlineSpinner from '@/components/InlineSpinner.vue'
+import { logger } from '@/utils/devTools/logger'
 import QRCode from 'qrcode'
 
 export default {
@@ -54,13 +55,13 @@ export default {
                 this.dataUrl = canvas.toDataURL()
               }
             })
-            .catch((error) => console.error(error))
+            .catch((error) => logger.log('qrcode-renderer', 'warn', error))
         } else {
           QRCode.toDataURL(this.text, this.opts)
             .then((dataUrl) => {
               this.dataUrl = dataUrl
             })
-            .catch((error) => console.error(error))
+            .catch((error) => logger.log('qrcode-renderer', 'warn', error))
         }
       }
     }

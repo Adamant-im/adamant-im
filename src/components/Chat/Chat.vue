@@ -722,7 +722,7 @@ const sendMessage = (message: string) => {
       replyToId
     })
     .catch((err) => {
-      console.error(err.message)
+      logger.log('chat', 'warn', err.message)
     })
 }
 
@@ -731,7 +731,7 @@ const resendMessage = (recipientId: string, messageId: string) => {
     store.dispatch('snackbar/show', {
       message: err.message
     })
-    console.error(err.message)
+    logger.log('chat', 'warn', err.message)
   })
 }
 

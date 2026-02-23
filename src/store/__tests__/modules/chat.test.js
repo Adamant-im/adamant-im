@@ -1,6 +1,6 @@
 import { vi, describe, it, beforeEach, afterEach, expect } from 'vitest'
 
-// 1. Сначала мокаем всё, что вызывает побочные эффекты
+// 1. Mock everything that can trigger side effects first
 vi.mock('@/lib/idb/state', () => ({
   restoreState: vi.fn(() => Promise.resolve()),
   saveState: vi.fn(() => Promise.resolve())
@@ -11,7 +11,7 @@ vi.mock('@/lib/idb/crypto', () => ({
   decryptPassword: vi.fn()
 }))
 
-// Мокаем файлы, которые лезут в конфиг нод
+// Mock modules that access nodes config
 vi.mock('@/lib/nodes/ipfs/index', () => ({ ipfs: {} }))
 vi.mock('@/lib/adamant-api', () => ({
   adm: {},

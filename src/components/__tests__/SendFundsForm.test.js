@@ -51,7 +51,6 @@ vi.mock('@/lib/nodes', () => {
     eth: client,
     dash: client,
     doge: client,
-    kly: client,
     lsk: client,
     bnb: client,
     ipfs: client,
@@ -92,7 +91,6 @@ vi.mock('@/lib/nodes/eth/index', () => ({
   default: { getGasPrice: vi.fn() }
 }))
 vi.mock('@/lib/nodes/dash/index', () => ({ dash: { getNodes: () => [] }, default: {} }))
-vi.mock('@/lib/nodes/kly/index', () => ({ kly: { getNodes: () => [] }, default: {} }))
 vi.mock('@/lib/nodes/adm/index', () => ({ adm: { getNodes: () => [] }, default: {} }))
 
 vi.mock('@/lib/nodes/eth-indexer/index', () => ({
@@ -339,11 +337,11 @@ describe('SendFundsForm', () => {
           ...DEFAULT_STUBS,
           'v-form': {
             props: ['modelValue'],
-            // Мы имитируем поведение Vuetify формы
+            // We emulate Vuetify form behavior
             methods: {
               validate: () => Promise.resolve({ valid: true })
             },
-            // Чтобы Vue не ругался на отсутствие шаблона у заглушки
+            // Prevent Vue warnings about a stub without a template
             template: '<div><slot /></div>'
           }
         }
@@ -515,8 +513,7 @@ describe('SendFundsForm', () => {
     global.config.tokens = {
       ETH: { isBounties: false, isVoting: false },
       BNB: { isBounties: false, isVoting: false },
-      BTC: { isBounties: true, isVoting: false },
-      KLY: { isBounties: false, isVoting: true }
+      BTC: { isBounties: true, isVoting: false }
     }
 
     const expectedList = ['ADM', 'ETH', 'BNB']

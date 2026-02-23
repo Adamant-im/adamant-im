@@ -99,8 +99,8 @@ export abstract class Client<N extends Node> {
    *
    * eth
    *   .useClient((client) => client().getTransactionCount(this.$store.state.eth.address))
-   *   .then(res => console.log("res", res))
-   *   .catch(err => console.log("err", err))
+   *   .then(res => logger.log("eth-client", "debug", "res", res))
+   *   .catch(err => logger.log("eth-client", "warn", "err", err))
    *
    * @param cb
    */

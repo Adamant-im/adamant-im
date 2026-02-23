@@ -5,7 +5,7 @@ vi.mock('@/main', () => ({
   default: { $on: vi.fn(), $off: vi.fn(), $emit: vi.fn() }
 }))
 
-// Universal crator of empty objects
+// Universal creator of empty objects
 const createRecursiveProxy = () => {
   const proxy = new Proxy(() => {}, {
     get: (target, prop) => {
@@ -26,7 +26,6 @@ vi.mock('@/lib/nodes', () => ({
   adm: {},
   btc: {},
   eth: {},
-  kly: {},
   lsk: {},
   doge: {},
   dash: {},
@@ -36,4 +35,3 @@ vi.mock('@/lib/nodes', () => ({
 
 vi.mock('@/lib/nodes/ipfs/index', () => ({ ipfs: {} }))
 vi.mock('@/lib/nodes/adm/index', () => ({ adm: {} }))
-vi.mock('@/lib/nodes/kly-indexer/index', () => ({ klyIndexer: {} }))

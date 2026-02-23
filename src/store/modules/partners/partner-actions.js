@@ -106,7 +106,9 @@ export default {
         }
       },
       (error) => {
-        console.error(
+        logger.log(
+          'partner-actions',
+          'warn',
           `Failed to fetch ${crypto} address from KVS. Nothing saved in state.list[payload.partner]`,
           payload,
           error

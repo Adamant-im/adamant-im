@@ -105,6 +105,7 @@ import type { IScannerControls } from '@zxing/browser'
 
 import { Scanner } from '@/lib/zxing'
 import { mdiCamera } from '@mdi/js'
+import { logger } from '@/utils/devTools/logger'
 
 const className = 'qrcode-scanner-dialog'
 const classes = {
@@ -173,7 +174,7 @@ export default defineComponent({
       store.dispatch('snackbar/show', {
         message: t('scan.something_wrong')
       })
-      console.error(error)
+      logger.log('qrcode-scanner-dialog', 'warn', error)
     }
 
     watch(cameras, (cameras) => {

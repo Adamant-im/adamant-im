@@ -2,6 +2,7 @@ import { ActionTree } from 'vuex'
 import { RootState } from '@/store/types'
 import rateInfoClient from '@/lib/nodes/rate-info-service'
 import { RateState } from '@/store/modules/rate/types'
+import { logger } from '@/utils/devTools/logger'
 
 export let interval: NodeJS.Timeout
 
@@ -34,9 +35,13 @@ export const actions: ActionTree<RateState, RootState> = {
         dispatch('getAllRates')
           .catch((err) => {
             if (err.name === 'AllNodesOfflineError') {
-              console.warn(`[Rates] Service temporarily unavailable: ${err.message}`)
+              logger.log(
+                'rate-actions',
+                'warn',
+                `[Rates] Service temporarily unavailable: ${err.message}`
+              )
             } else {
-              console.error(err)
+              logger.log('rate-actions', 'warn', err)
             }
           })
           .then(() => {

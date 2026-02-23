@@ -15,11 +15,10 @@ const createRecursiveProxy = () => {
 
 global.config = createRecursiveProxy()
 
-// 2. Явные моки для всех файлов нод (чтобы их внутренний код со строкой 5 вообще не запускался)
+// 2. Explicit mocks for all node files to avoid running their internal side effects
 vi.mock('@/lib/nodes/eth/index', () => ({ eth: {}, default: { eth: {} } }))
 vi.mock('@/lib/nodes/btc/index', () => ({ btc: {}, default: { btc: {} } }))
 vi.mock('@/lib/nodes/dash/index', () => ({ dash: {}, default: { dash: {} } }))
-vi.mock('@/lib/nodes/kly/index', () => ({ kly: {}, default: { kly: {} } }))
 vi.mock('@/lib/nodes/lsk/index', () => ({ lsk: {}, default: { lsk: {} } }))
 vi.mock('@/lib/nodes/doge/index', () => ({ doge: {}, default: { doge: {} } }))
 vi.mock('@/lib/nodes/bnb/index', () => ({ bnb: {}, default: { bnb: {} } }))
@@ -27,16 +26,15 @@ vi.mock('@/lib/nodes/eth-indexer/index', () => ({ ethIndexer: {}, default: { eth
 vi.mock('@/lib/nodes/eth-indexer/index', () => ({ ethIndexer: {}, default: {} }))
 vi.mock('@/lib/nodes/btc-indexer/index', () => ({ btcIndexer: {}, default: {} }))
 vi.mock('@/lib/nodes/doge-indexer/index', () => ({ dogeIndexer: {}, default: {} }))
-vi.mock('@/lib/nodes/kly-indexer/index', () => ({ klyIndexer: {}, default: {} }))
 
-// МОК ДЛЯ ADM RATE SERVICE (решает текущую ошибку)
+// Mock for ADM rate service (fixes the current test error)
 vi.mock('@/lib/nodes/rate-info-service/index', () => ({
   rateInfoService: {},
   rateInfoClient: {},
   default: {}
 }))
 
-// 3. Общий мок модуля nodes
+// 3. Shared mock for the nodes module
 vi.mock('@/lib/nodes', () => {
   const createNodeMock = () => ({
     getNodes: () => [],
@@ -49,7 +47,6 @@ vi.mock('@/lib/nodes', () => {
     adm: createNodeMock(),
     btc: createNodeMock(),
     eth: createNodeMock(),
-    kly: createNodeMock(),
     lsk: createNodeMock(),
     doge: createNodeMock(),
     dash: createNodeMock(),
@@ -64,7 +61,7 @@ vi.mock('@/lib/nodes', () => {
   }
 })
 
-// 4. Остальные системные моки
+// 4. Remaining system mocks
 vi.mock('@/lib/bitcoin/btc-base-api', () => ({ default: vi.fn(), getUnique: (v) => v }))
 vi.mock('@/lib/idb/state', () => ({
   modules: [],
@@ -82,8 +79,8 @@ vi.mock('@/lib/nodes/services', () => {
     useFastest: true
   })
 
-  // Используем Proxy, чтобы любой запрашиваемый сервис (RatesInfo и т.д.)
-  // имел методы getNodes и onStatusUpdate
+  // Use Proxy so any requested service (RatesInfo, etc.)
+  // has getNodes and onStatusUpdate methods
   const servicesProxy = new Proxy(
     {},
     {
@@ -176,7 +173,7 @@ describe('store', () => {
   it('should update state when login success', async () => {
     const { address, balance, passphrase } = fakeData
 
-    // Вместо __Rewire__ настраиваем поведение мока прямо здесь
+    // Configure mock behavior directly here instead of using __Rewire__
     vi.mocked(loginOrRegister).mockResolvedValue({
       address,
       balance
@@ -185,10 +182,10 @@ describe('store', () => {
     const commit = vi.fn()
     const dispatch = vi.fn()
 
-    // Вызываем экшн
+    // Execute action
     await actions.login({ commit, dispatch }, passphrase)
 
-    // Проверки (assertions) остаются те же
+    // Assertions remain the same
     expect(commit).toHaveBeenCalledWith('setAddress', address)
     expect(commit).toHaveBeenCalledWith('setBalance', balance)
     expect(commit).toHaveBeenCalledWith('setPassphrase', passphrase)

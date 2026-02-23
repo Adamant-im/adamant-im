@@ -121,7 +121,7 @@ function createActions(options) {
         function repeat() {
           validateStoredCryptoAddresses()
           dispatch('updateBalance')
-            .catch((err) => console.error(err))
+            .catch((err) => logger.log('btc-base-actions', 'warn', err))
             .then(() => {
               interval = setTimeout(() => {
                 repeat()
