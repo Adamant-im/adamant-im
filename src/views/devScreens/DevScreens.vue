@@ -18,19 +18,66 @@
           @click="router.push({ name: 'DevAdamantWallets' })"
         />
       </v-list>
+      <v-list-item>
+        <v-row no-gutters>
+          <v-col class="mt-3">
+            <span class="dev-list">
+              {{ t('dev_screens.logging') }}
+            </span>
+          </v-col>
+          <v-col cols="6" class="text-right mt-1">
+            <v-menu offset-y>
+              <template #activator="{ props }">
+                <v-btn class="ma-0 btn" variant="text" v-bind="props">
+                  {{ levelCurrent }}
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item :key="level" @click="onSelectLevel(level)" v-for="level in levelAll">
+                  <v-list-item-title>{{ level }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-col>
+        </v-row>
+      </v-list-item>
     </v-col>
   </v-row>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { mdiChevronRight } from '@mdi/js'
-import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
+import { LogLevel, useLoggerStore } from '@/lib/logger-store'
+import { logger } from '@/utils/devTools/logger'
 
 const router = useRouter()
+const loggerStore = useLoggerStore()
+const levelAll = computed(() => loggerStore.levelAll)
 const { t } = useI18n()
 
 const className = 'dev-screens-view'
+
+const levelCurrent = computed({
+  get: () => loggerStore.levelCurrent,
+  set: (value) => loggerStore.setLevel(value)
+})
+
+const loggerExamples = [
+  { level: 'debug', text: 'Debug message: detailed diagnostics for development.' },
+  { level: 'info', text: 'Info message: general application event details.' },
+  { level: 'warn', text: 'Warning message: potentially harmful situation detected.' },
+  { level: 'public', text: 'Public message: always visible regardless of log level.' }
+]
+const onSelectLevel = (level: LogLevel) => {
+  levelCurrent.value = level
+
+  loggerExamples.forEach((example) => {
+    logger.log('Dev screen', example.level, example.text)
+  })
+}
 </script>
 
 <style lang="scss" scoped>

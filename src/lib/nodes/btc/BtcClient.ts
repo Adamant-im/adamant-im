@@ -1,5 +1,6 @@
 import type { AxiosRequestConfig } from 'axios'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import type { NodeInfo } from '@/types/wallets'
 import { BtcNode } from './BtcNode'
 import { Client } from '../abstract.client'
 import { RpcRequest } from './types/api/common'
@@ -12,7 +13,7 @@ import { RpcRequest } from './types/api/common'
  * is not available at the moment.
  */
 export class BtcClient extends Client<BtcNode> {
-  constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
+  constructor(endpoints: NodeInfo[] = [], minNodeVersion = '0.0.0') {
     super('btc', 'node', NODE_LABELS.BtcNode)
     this.nodes = endpoints.map((endpoint) => new BtcNode(endpoint))
     this.minNodeVersion = minNodeVersion
@@ -27,6 +28,6 @@ export class BtcClient extends Client<BtcNode> {
     params: Request,
     requestConfig?: AxiosRequestConfig
   ) {
-    return this.getNode().invoke<Result, Request>(params, requestConfig)
+    return this.requestWithRetry((node) => node.invoke<Result, Request>(params, requestConfig))
   }
 }

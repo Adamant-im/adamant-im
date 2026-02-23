@@ -45,8 +45,16 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
-import throttle from 'lodash/throttle'
+import {
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  computed,
+  withDefaults,
+  defineProps,
+  defineEmits
+} from 'vue'
+import throttle from 'lodash-es/throttle'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import Styler from 'stylefire'
 import { animate } from 'popmotion'
@@ -257,8 +265,7 @@ defineExpose({
   scrollToMessageEasy,
   maintainScrollPosition,
   scrollToMessage,
-  scrollTo,
-  messagesRef
+  scrollTo
 })
 
 const spinnerTop = computed(() => {

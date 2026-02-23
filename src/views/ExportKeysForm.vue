@@ -103,7 +103,6 @@ import { validateMnemonic } from 'bip39'
 import copyToClipboard from 'copy-to-clipboard'
 import { getAccountFromPassphrase as getEthAccount } from '@/lib/eth-utils'
 import { getAccount as getBtcAccount } from '@/lib/bitcoin/btc-base-api'
-import { getAccount as getKlyAccount } from '@/lib/klayr/klayr-utils'
 import { Cryptos, CryptosInfo } from '@/lib/constants'
 import QrcodeCapture from '@/components/QrcodeCapture.vue'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
@@ -111,23 +110,11 @@ import { ref, defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { mdiContentCopy, mdiDotsVertical, mdiEye, mdiEyeOff } from '@mdi/js'
+import { logger } from '@/utils/devTools/logger'
 
 function getBtcKey(crypto, passphrase, asWif) {
   const keyPair = getBtcAccount(crypto, passphrase).keyPair
   const key = asWif ? keyPair.toWIF() : keyPair.privateKey.toString('hex')
-
-  return {
-    crypto: crypto,
-    cryptoName: CryptosInfo[crypto].name,
-    key
-  }
-}
-
-function getKlyKey(passphrase) {
-  const crypto = 'KLY'
-
-  const keyPair = getKlyAccount(crypto, passphrase).keyPair
-  const key = keyPair.secretKey.toString('hex')
 
   return {
     crypto: crypto,
@@ -158,7 +145,7 @@ export default defineComponent({
       store.dispatch('snackbar/show', {
         message: t('transfer.invalid_qr_code')
       })
-      console.warn(error)
+      logger.log('ExportKeysForm', 'warn', error)
     }
     const onScanQrcode = (pass) => {
       passphrase.value = pass
@@ -187,9 +174,7 @@ export default defineComponent({
         const dash = getBtcKey(Cryptos.DASH, passphrase.value, true)
         const doge = getBtcKey(Cryptos.DOGE, passphrase.value, true)
 
-        const kly = getKlyKey(passphrase.value)
-
-        keys.value = [bitcoin, eth, doge, dash, kly]
+        keys.value = [bitcoin, eth, doge, dash]
       }, 0)
     }
     const copyKey = (key) => {

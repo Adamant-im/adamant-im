@@ -1,13 +1,27 @@
 <template>
   <div :class="classes.statusTitle">
-    <span>
+    <span
+      :class="{
+        [classes.statusTitleText]: true,
+        [classes.statusTitleTextMuted]: nodeStatusUpdating
+      }"
+    >
       {{ nodeStatusTitle
-      }}<span v-if="node.status === 'online'" :class="classes.textMs">{{
+      }}<span v-if="node.status === 'online' && !nodeStatusUpdating" :class="classes.textMs">{{
         t('nodes.ms')
       }}</span></span
     >
 
+    <v-progress-circular
+      v-if="nodeStatusUpdating"
+      :class="classes.spinner"
+      indeterminate
+      size="12"
+      width="2"
+    />
+
     <v-icon
+      v-else
       :class="{
         [classes.icon]: true,
         [classes.iconGreen]: nodeStatusColor === 'green',
@@ -21,9 +35,26 @@
     />
   </div>
 
-  <span v-if="nodeStatusDetail && node.status !== 'sync'" :class="classes.statusText">
-    <v-icon v-if="nodeStatusDetail.icon" :icon="nodeStatusDetail.icon" :size="12" />
-    {{ nodeStatusDetail.text }}
+  <span
+    v-if="nodeStatusDetail && node.status !== 'sync' && !nodeStatusUpdating"
+    :class="classes.statusText"
+  >
+    <span v-if="nodeStatusDetail.icon" :class="classes.statusTextValueNoWrap">
+      <v-icon :icon="nodeStatusDetail.icon" :size="12" />
+      <span>&nbsp;{{ nodeStatusDetail.text }}</span>
+    </span>
+    <span v-else-if="!node.hasSupportedProtocol" :class="classes.statusTextValueNoWrap">
+      {{ nodeStatusDetail.text }}
+      <v-icon
+        :icon="mdiHelpCircleOutline"
+        size="small"
+        class="ml-1 cursor-pointer mb-0"
+        @click="$emit('showHttpInfo')"
+      />
+    </span>
+    <template v-else>
+      {{ nodeStatusDetail.text }}
+    </template>
   </span>
 </template>
 
@@ -32,14 +63,17 @@ import { defineComponent, PropType, toRefs } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { useNodeStatus } from '@/components/nodes/hooks'
-import { mdiCheckboxBlankCircle } from '@mdi/js'
-
+import { mdiCheckboxBlankCircle, mdiHelpCircleOutline } from '@mdi/js'
 
 const className = 'node-status'
 const classes = {
   textMs: `${className}__text-ms`,
   statusTitle: `${className}__status-title`,
+  statusTitleText: `${className}__status-title-text`,
+  statusTitleTextMuted: `${className}__status-title-text--muted`,
   statusText: `${className}__status-text`,
+  statusTextValueNoWrap: `${className}__status-text-value--nowrap`,
+  spinner: `${className}__spinner`,
   icon: `${className}__icon`,
   iconGreen: `${className}__icon--green`,
   iconRed: `${className}__icon--red`,
@@ -48,6 +82,7 @@ const classes = {
 }
 
 export default defineComponent({
+  emits: ['showHttpInfo'],
   props: {
     node: {
       type: Object as PropType<NodeStatusResult>,
@@ -58,15 +93,18 @@ export default defineComponent({
     const { t } = useI18n()
     const { node } = toRefs(props)
 
-    const { nodeStatusTitle, nodeStatusDetail, nodeStatusColor } = useNodeStatus(node)
+    const { nodeStatusTitle, nodeStatusDetail, nodeStatusColor, nodeStatusUpdating } =
+      useNodeStatus(node)
 
     return {
       t,
       nodeStatusTitle,
       nodeStatusDetail,
       nodeStatusColor,
+      nodeStatusUpdating,
       classes,
-      mdiCheckboxBlankCircle
+      mdiCheckboxBlankCircle,
+      mdiHelpCircleOutline
     }
   }
 })
@@ -83,15 +121,38 @@ export default defineComponent({
     width: 76px;
     max-width: 80px;
     display: flex;
+    align-items: center;
+  }
+
+  &__status-title-text {
+    line-height: 1;
   }
 
   &__status-text {
+    display: block;
+    margin-top: 2px;
     font-size: 12px;
     font-weight: 300;
+  }
+  &__status-text-value--nowrap {
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
   }
 
   &__icon {
     margin-inline-start: 4px;
+  }
+  &__spinner {
+    margin-inline-start: 4px;
+
+    :deep(svg) {
+      animation-duration: 2.2s !important;
+    }
+
+    :deep(.v-progress-circular__overlay) {
+      animation-duration: 2.2s !important;
+    }
   }
   &__text-ms {
     @include mixins.a-text-explanation-small();
@@ -104,6 +165,12 @@ export default defineComponent({
       color: map.get(colors.$adm-colors, 'regular');
     }
     &__text-ms {
+      color: map.get(colors.$adm-colors, 'muted');
+    }
+    &__status-title-text--muted {
+      color: map.get(colors.$adm-colors, 'muted');
+    }
+    &__spinner {
       color: map.get(colors.$adm-colors, 'muted');
     }
 
@@ -131,6 +198,12 @@ export default defineComponent({
       opacity: 0.7;
     }
     &__text-ms {
+      color: map.get(colors.$adm-colors, 'grey-transparent');
+    }
+    &__status-title-text--muted {
+      color: map.get(colors.$adm-colors, 'grey-transparent');
+    }
+    &__spinner {
       color: map.get(colors.$adm-colors, 'grey-transparent');
     }
     &__icon {

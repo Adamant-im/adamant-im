@@ -1,5 +1,6 @@
 import { AxiosRequestConfig } from 'axios'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import type { NodeInfo } from '@/types/wallets'
 import { DashNode } from './DashNode'
 import { Client } from '../abstract.client'
 import { normalizeTransaction } from './utils'
@@ -9,7 +10,7 @@ import { Balance } from './types/api/balance'
 import { Transaction } from './types/api/transaction'
 
 export class DashClient extends Client<DashNode> {
-  constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
+  constructor(endpoints: NodeInfo[] = [], minNodeVersion = '0.0.0') {
     super('dash', 'node', NODE_LABELS.DashNode)
     this.nodes = endpoints.map((endpoint) => new DashNode(endpoint))
     this.minNodeVersion = minNodeVersion
@@ -24,7 +25,7 @@ export class DashClient extends Client<DashNode> {
     params: Request,
     requestConfig?: AxiosRequestConfig
   ) {
-    return this.getNode().invoke<Result, Request>(params, requestConfig)
+    return this.requestWithRetry((node) => node.invoke<Result, Request>(params, requestConfig))
   }
 
   /**
@@ -34,7 +35,7 @@ export class DashClient extends Client<DashNode> {
     params: Request[],
     requestConfig?: AxiosRequestConfig
   ) {
-    return this.getNode().invokeMany<Result, Request>(params, requestConfig)
+    return this.requestWithRetry((node) => node.invokeMany<Result, Request>(params, requestConfig))
   }
 
   async getTransaction(transactionId: string, address: string) {

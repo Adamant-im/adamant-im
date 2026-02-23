@@ -1,11 +1,14 @@
 import { app, BrowserWindow, Menu, nativeTheme, protocol } from 'electron'
 import { fileURLToPath, URL } from 'node:url'
+import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import path from 'node:path'
 import { readFile } from 'node:fs'
 
 const SCHEME = 'app'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+// Electron main process runs in Node.js context, so browser logger dependencies are not used here.
+const logInfo = (...args) => console.info('[electron-main]', ...args)
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected
@@ -151,6 +154,12 @@ app.on('activate', () => {
 // This method will be called when Electron has finished initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
+  if (import.meta.env.DEV) {
+    // Install Vue Devtools
+    installExtension(REDUX_DEVTOOLS, { loadExtensionOptions: { allowFileAccess: true } })
+      .then((name) => logInfo(`Electron extensions: added ${name}`))
+      .catch((err) => logInfo('Electron extensions: an error occurred:', err))
+  }
   createWindow()
 })
 

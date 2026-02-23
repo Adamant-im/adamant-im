@@ -2,12 +2,19 @@ import { $ } from 'execa'
 
 import { copyFile, readdir, readFile, writeFile, mkdir, rm } from 'fs/promises'
 import { resolve, join } from 'path'
-import _ from 'lodash'
+import capitalize from 'lodash-es/capitalize.js'
+import isArray from 'lodash-es/isArray.js'
+import mapValues from 'lodash-es/mapValues.js'
+import mergeWith from 'lodash-es/mergeWith.js'
+import omit from 'lodash-es/omit.js'
 
 const CRYPTOS_DATA_FILE_PATH = resolve('src/lib/constants/cryptos/data.json')
 const CRYPTOS_ICONS_DIR_PATH = resolve('src/components/icons/cryptos')
 const GENERAL_ASSETS_PATH = resolve('adamant-wallets/assets/general')
 const BRANCH = process.argv[2]
+
+// This script runs in plain Node.js context, so app logger aliases/stores are not available here.
+const logInfo = (...args) => console.info('[wallets]', ...args)
 
 void run(BRANCH)
 
@@ -22,7 +29,7 @@ async function run(branch = 'master') {
   await $`git submodule update`
   await $`git submodule foreach git pull origin ${branch}`
 
-  console.log('Updating coins data from `adamant-wallets`. Using branch:', branch)
+  logInfo('Updating coins data from `adamant-wallets`. Using branch:', branch)
 
   const { coins, config, coinDirNames, coinSymbols } = await initCoins()
   await applyBlockchains(coins, coinSymbols)
@@ -36,7 +43,7 @@ async function run(branch = 'master') {
   await updateTestnetConfig(config)
   await updateTorConfig(config)
 
-  console.log('Coins updated successfully')
+  logInfo('Coins updated successfully')
 }
 
 async function initCoins() {
@@ -66,7 +73,9 @@ async function initCoins() {
   })
 
   // Sort by key (coin symbol)
-  const sortedCoins = _.chain(coins).toPairs().sortBy(0).fromPairs().value()
+  const sortedCoins = Object.fromEntries(
+    Object.entries(coins).sort(([first], [second]) => first.localeCompare(second))
+  )
 
   return {
     coins: sortedCoins,
@@ -103,7 +112,7 @@ async function applyBlockchains(coins, coinSymbols) {
       const result = {
         ...mainCoinInfo,
         ...tokenData,
-        ..._.omit(info, ['mainCoin']),
+        ...omit(info, ['mainCoin']),
         ...coin
       }
 
@@ -124,7 +133,7 @@ async function copyIcons(coins, coinDirNames) {
   await mkdir(CRYPTOS_ICONS_DIR_PATH)
 
   for (const [name, coin] of Object.entries(coins)) {
-    const iconComponentName = `${_.capitalize(coin.symbol)}Icon.vue`
+    const iconComponentName = `${capitalize(coin.symbol)}Icon.vue`
 
     const iconPathDestination = join(CRYPTOS_ICONS_DIR_PATH, iconComponentName)
     await copyFile(
@@ -144,7 +153,7 @@ function updateDevelopmentConfig(configs) {
 }
 
 function updateTestnetConfig(configs) {
-  const testnetConfigs = _.mapValues(configs, (config) => {
+  const testnetConfigs = mapValues(configs, (config) => {
     if (config.testnet) config.nodes.list = config.testnet.nodes.list
 
     return config
@@ -154,11 +163,11 @@ function updateTestnetConfig(configs) {
 }
 
 function updateTorConfig(configs) {
-  const torConfigs = _.mapValues(configs, (config) => {
-    const torConfig = _.mergeWith(config, config.tor, (value, srcValue) => {
+  const torConfigs = mapValues(configs, (config) => {
+    const torConfig = mergeWith(config, config.tor, (value, srcValue) => {
       // customizer overrides `nodes`, `services` and `links`
       // instead of merging them
-      if (_.isArray(srcValue)) {
+      if (isArray(srcValue)) {
         return srcValue
       }
     })

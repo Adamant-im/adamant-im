@@ -1252,6 +1252,44 @@ describe('Store: chat.js', () => {
       })
     })
 
+    describe('actions.startInterval/stopInterval', () => {
+      it('should not schedule next polling after stopInterval when request is in-flight', async () => {
+        vi.useFakeTimers()
+
+        let resolveRequest
+        const request = new Promise((resolve) => {
+          resolveRequest = resolve
+        })
+
+        const dispatch = vi.fn((action) => {
+          if (action === 'getNewMessages') {
+            return request
+          }
+
+          return Promise.resolve()
+        })
+        const getters = {
+          chatsPollingTimeout: 1000
+        }
+
+        actions.startInterval.handler({ dispatch, getters })
+
+        expect(dispatch).toHaveBeenCalledTimes(1)
+        expect(dispatch).toHaveBeenCalledWith('getNewMessages')
+
+        actions.stopInterval.handler()
+        resolveRequest()
+
+        await Promise.resolve()
+        await Promise.resolve()
+        vi.runOnlyPendingTimers()
+
+        expect(dispatch).toHaveBeenCalledTimes(1)
+
+        vi.useRealTimers()
+      })
+    })
+
     /**
      * actions.createChat
      */

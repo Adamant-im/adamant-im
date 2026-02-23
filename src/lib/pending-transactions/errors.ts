@@ -2,7 +2,7 @@ import { PendingTransaction } from './types'
 
 export class PendingTransactionError extends Error {
   pendingTransaction: PendingTransaction
-  crypto: string // e.g. 'ETH' | 'KLY'
+  crypto: string // e.g. 'ETH'
 
   constructor(pendingTransaction: PendingTransaction, crypto: string) {
     super(

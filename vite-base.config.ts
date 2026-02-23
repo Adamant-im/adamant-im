@@ -47,6 +47,7 @@ export default defineConfig({
     },
     preprocessorOptions: {
       scss: {
+        api: 'legacy',
         includePaths: ['./src']
       }
     }
@@ -69,7 +70,8 @@ export default defineConfig({
     extensions: ['.tsx', '.ts', '.js', '.json', '.vue']
   },
   server: {
-    port: 8080
+    port: process.env.HTTPS === 'true' ? 5173 : 8080,
+    https: process.env.HTTPS === 'true' ? {} : undefined
   },
   // Some old libs like `promise-queue` and `readable-stream` still uses Webpack.
   define: {

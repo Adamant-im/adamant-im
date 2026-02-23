@@ -8,8 +8,6 @@ export type TNodeLabel =
   | 'doge-indexer'
   | 'dash-node'
   | 'ipfs-node'
-  | 'kly-node'
-  | 'kly-indexer'
   | 'rates-info'
 
 type KebabToCamelCase<S extends string> = S extends `${infer T}-${infer U}`
@@ -38,8 +36,6 @@ export const NODE_LABELS: NodeLabels = {
   DogeIndexer: 'doge-indexer',
   DashNode: 'dash-node',
   IpfsNode: 'ipfs-node',
-  KlyNode: 'kly-node',
-  KlyIndexer: 'kly-indexer',
   RatesInfo: 'rates-info'
 }
 

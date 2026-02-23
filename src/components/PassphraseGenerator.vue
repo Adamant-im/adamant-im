@@ -98,6 +98,7 @@ import SaveIcon from '@/components/icons/common/Save.vue'
 import QrCodeIcon from '@/components/icons/common/QrCode.vue'
 import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { VTextarea } from 'vuetify/components'
+import { logger } from '@/utils/devTools/logger'
 
 const { t } = useI18n()
 
@@ -165,7 +166,7 @@ const generatePassphrase = () => {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' })
     } else {
-      console.warn('[PassphraseGenerator] `element` is undefined')
+      logger.log('PassphraseGenerator', 'warn', '[PassphraseGenerator] `element` is undefined')
     }
   }, 0)
 }

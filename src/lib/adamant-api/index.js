@@ -11,6 +11,7 @@ import store from '@/store'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { parseCryptoAddressesKVStxs } from '@/lib/store-crypto-address'
 import { DEFAULT_TIME_DELTA } from '@/lib/nodes/constants.js'
+import { logger } from '@/utils/devTools/logger'
 
 Queue.configure(Promise)
 
@@ -272,7 +273,7 @@ function tryDecodeStoredValue(value) {
     try {
       return utils.decodeValue(json.message, myKeypair.privateKey, json.nonce)
     } catch (e) {
-      console.warn('Failed to parse encoded value', e)
+      logger.log('index.js', 'warn', 'Failed to parse encoded value', e)
       throw e
     }
   }
@@ -408,7 +409,7 @@ export function storeCryptoAddress(crypto, address) {
       }
       // It may be empty array: no addresses stored yet for this crypto
       if (stored) {
-        stored = parseCryptoAddressesKVStxs(stored, crypto)
+        stored = parseCryptoAddressesKVStxs(stored)
       }
       return stored && stored.mainAddress
         ? true
@@ -420,7 +421,7 @@ export function storeCryptoAddress(crypto, address) {
         return success
       },
       (error) => {
-        console.warn(`Failed to store crypto address for ${key}.`, error)
+        logger.log('index.js', 'warn', `Failed to store crypto address for ${key}.`, error)
         delete pendingAddresses[crypto]
         return false
       }
@@ -512,12 +513,16 @@ export function getChats(from = 0, offset = 0, orderBy = 'desc') {
         .then((key) => {
           if (key) return decodeChat(transaction, key)
 
-          console.warn(
+          logger.log(
+            'index.js',
+            'warn',
             `Cannot decode tx ${transaction.id}: no public key for account ${transaction.recipientId}`
           )
           return null
         })
-        .catch((err) => console.warn('Failed to parse chat message', { transaction, err }))
+        .catch((err) =>
+          logger.log('index.js', 'warn', 'Failed to parse chat message', { transaction, err })
+        )
     })
 
     return Promise.all(promises).then((decoded) => ({
@@ -543,7 +548,12 @@ export function decodeChat(transaction, key) {
   if (!key) {
     transaction.message = 'chats.unable_to_retrieve_no_public_key'
     transaction.i18n = true
-    console.warn("Error while retrieving a message (no partner's public key) for Tx", transaction)
+    logger.log(
+      'index.js',
+      'warn',
+      "Error while retrieving a message (no partner's public key) for Tx",
+      transaction
+    )
 
     return transaction
   }
@@ -703,7 +713,7 @@ export async function getChatRooms(address, params) {
 
       return [decodeChat(chat.lastTransaction, partner.publicKey)]
     } catch (err) {
-      console.warn('Failed to parse chat message', { chat, err })
+      logger.log('index.js', 'warn', 'Failed to parse chat message', { chat, err })
       return []
     }
   })
@@ -767,7 +777,7 @@ export async function getChatRoomMessages(address1, address2, paramsArg, recursi
 
         return [decodeChat(message, publicKey)]
       } catch (err) {
-        console.warn('Failed to parse chat message', { message, err })
+        logger.log('index.js', 'warn', 'Failed to parse chat message', { message, err })
         return []
       }
     })

@@ -26,7 +26,6 @@ import bitcoinModule from './modules/btc'
 import dashModule from './modules/dash'
 import delegatesModule from './modules/delegates'
 import dogeModule from './modules/doge'
-import klyModule from './modules/kly'
 import nodesModule from './modules/nodes'
 import walletsModule from './modules/wallets'
 import nodesPlugin from './modules/nodes/nodes-plugin'
@@ -264,7 +263,6 @@ const store = {
     adm: admModule, // ADM transfers
     attachment: attachmentModule, // Files and photos attachments
     doge: dogeModule,
-    kly: klyModule,
     dash: dashModule,
     btc: bitcoinModule,
     partners: partnersModule, // Partners: display names, crypto addresses and so on

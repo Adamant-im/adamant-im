@@ -94,22 +94,15 @@ export const WelcomeMessage = {
 }
 
 export const BTC_BASED = Object.freeze([Cryptos.DOGE, Cryptos.DASH, Cryptos.BTC])
-export const KLY_BASED = Object.freeze([Cryptos.KLY])
 export const INSTANT_SEND = Object.freeze([Cryptos.DASH])
-export const ALLOW_TEXT_DATA = Object.freeze([Cryptos.KLY]) // Some blockchains allow storing a text message within a Tx
 
 export const isErc20 = (crypto: CryptoSymbol) => CryptosInfo[crypto]?.type === 'ERC20'
 export const isEthBased = (crypto: CryptoSymbol) => isErc20(crypto) || crypto === Cryptos.ETH
 export const isFeeEstimate = (crypto: CryptoSymbol) => isEthBased(crypto)
 export const isBtcBased = (crypto: CryptoSymbol) => BTC_BASED.includes(crypto)
-export const isKlyBased = (crypto: CryptoSymbol) => KLY_BASED.includes(crypto)
-export const isSelfTxAllowed = (crypto: CryptoSymbol) =>
-  KLY_BASED.includes(crypto) || crypto === Cryptos.ADM
+export const isSelfTxAllowed = (crypto: CryptoSymbol) => crypto === Cryptos.ADM
+
 export const isInstantSendPossible = (crypto: CryptoSymbol) => INSTANT_SEND.includes(crypto)
-export const isTextDataAllowed = (crypto: CryptoSymbol) => ALLOW_TEXT_DATA.includes(crypto)
-
-export const RE_KLY_ADDRESS_LEGACY = /^[0-9]{2,21}L$/
-
 /**
  * These gas limit values are used only for estimate fees for ETH & ERC-20 transfers in the Send tokens form,
  * Actual gas limit values are calculated with estimateGas(transactionObject)

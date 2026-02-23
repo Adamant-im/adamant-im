@@ -120,7 +120,8 @@
   "dev_screens": {
     "title": "Development Tools",
     "vibrations": "Vibrations",
-    "adamant_wallets": "Adamant-Wallets"
+    "adamant_wallets": "Adamant-Wallets",
+    "logging": "Verbose logging in Console"
   },
   "dev_vibrations": {
     "custom_pattern": "Custom Pattern",
@@ -225,12 +226,26 @@
     "user_password_unlock": "Unlock"
   },
   "nodes": {
+    "popup": {
+      "http_restriction_title": "HTTP nodes are blocked in browser",
+      "http_restriction_intro": "For security, browsers block requests from HTTPS pages to HTTP endpoints.",
+      "http_vs_https_title": "🔒 HTTP vs HTTPS",
+      "http_vs_https_http": "HTTP is unencrypted, so observers may see which node the app uses.",
+      "http_vs_https_https": "HTTPS encrypts traffic, hiding everything except the node address.",
+      "adamant_encryption_title": "💡 ADAMANT encrypts all messages",
+      "adamant_encryption_text": "ADAMANT encrypts blockchain messages over both HTTP and HTTPS. So ADAMANT nodes are safe to use via HTTP. This browser restriction applies only to the Web app. Desktop and mobile apps support both protocols.",
+      "how_to_allow_title": "To use HTTP nodes:",
+      "how_to_allow_browser": "Allow insecure content for this site in browser settings, or",
+      "how_to_allow_http_app": "Open the HTTP version of the app",
+      "close": "Close"
+    },
     "active": "Active",
     "fastest_title": "Use the fastest available node",
     "fastest_tooltip": "Automatically selects the node with the lowest latency",
     "label": "Type",
     "host": "Host",
     "inactive": "Inactive",
+    "updating": "Updating",
     "sync": "Syncing",
     "ms": "ms",
     "nodeLabelDescription": "Help strengthen the network: <a target=\"_blank\" href=\"https://news.adamant.im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">Run your own ADM node</a>. Note: To list a node, <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">deploy your own app</a> (CSP requirement).",
@@ -377,7 +392,6 @@
     "decode_from_camera": "Scan QR code with camera",
     "decode_from_image": "Read QR code from image",
     "error_dust_amount": "Dust amount—Send more tokens",
-    "recipient_minimum_balance": "Recipient must have at least 0.05 KLY—Send more tokens",
     "error_all_nodes_offline": "All {crypto} nodes offline",
     "error_precision": "Too many decimals—Reduce precision",
     "error_field_is_required": "Field is required",

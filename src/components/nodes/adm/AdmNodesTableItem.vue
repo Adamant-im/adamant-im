@@ -10,7 +10,7 @@
     </NodeColumn>
 
     <NodeColumn :class="classes.columnStatus">
-      <NodeStatus :node="node" />
+      <NodeStatus :node="node" @show-http-info="$emit('showHttpInfo')" />
     </NodeColumn>
 
     <NodeColumn>
@@ -40,6 +40,7 @@ const classes = {
 }
 
 export default {
+  emits: ['showHttpInfo'],
   components: {
     NodeStatusCheckbox,
     NodeColumn,
@@ -59,10 +60,12 @@ export default {
 
     const url = computed(() => props.node.url)
     const active = computed(() => props.node.active)
-    const socketSupport = computed(() => props.node.socketSupport)
     const isUnsupported = computed(() => props.node.status === 'unsupported_version')
+    const isOffline = computed(() => props.node.status === 'offline')
     const type = computed(() => props.node.type)
-    const showSocketColumn = computed(() => active.value && !isUnsupported.value)
+    const showSocketColumn = computed(
+      () => active.value && !isUnsupported.value && !isOffline.value
+    )
 
     const toggleActiveStatus = () => {
       store.dispatch('nodes/toggle', {
@@ -106,8 +109,6 @@ export default {
       classes,
       url,
       active,
-      socketSupport,
-      isUnsupported,
       showSocketColumn,
       toggleActiveStatus,
       computedResult
@@ -119,7 +120,7 @@ export default {
 <style lang="scss">
 .amd-nodes-table-item {
   line-height: 14px;
-  
+
   &__column--status {
     max-width: 84px;
   }

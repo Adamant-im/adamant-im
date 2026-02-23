@@ -1,11 +1,12 @@
 import { Directive } from 'vue'
+import { logger } from '@/utils/devTools/logger'
 
 export const LONG_PRESS_TIMEOUT = 500
 
 export const longPressDirective: Directive = {
   created: (el: HTMLElement, { value }) => {
     if (typeof value !== 'function') {
-      console.warn(`Expect a function, got ${value}`)
+      logger.log('longPress', 'warn', `Expect a function, got ${value}`)
       return
     }
 

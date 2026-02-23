@@ -140,7 +140,7 @@
           :flashing="flashingMessageId === message.id"
           :data-id="message.id"
           :partner-id="partnerId"
-          @resend="() => console.debug('Not implemented')"
+          @resend="() => logger.log('Chat', 'debug', 'Not implemented')"
           @click:quoted-message="onQuotedMessageClick"
           @swipe:left="onSwipeLeft(message)"
           @longpress="onMessageLongPress(message)"
@@ -276,6 +276,7 @@ import { useAttachments } from '@/stores/attachments'
 import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Visibility from 'visibilityjs'
 import copyToClipboard from 'copy-to-clipboard'
+import { logger } from '@/utils/devTools/logger'
 
 import {
   Cryptos,
@@ -481,6 +482,7 @@ const showNewChatPlaceholder = ref(false)
 
 const chatFormRef = ref<any>(null) // @todo type
 const chatRef = ref<any>(null) // @todo type
+const fetchMessagesTimeoutId = ref<ReturnType<typeof setTimeout> | null>(null)
 
 // Scroll to the bottom every time window focused by desktop notification
 watch(
@@ -562,6 +564,7 @@ onMounted(async () => {
 
   scrollBehavior()
   nextTick(() => {
+    if (!chatRef.value) return
     isScrolledToBottom.value = chatRef.value.isScrolledToBottom()
   })
   visibilityId.value = Visibility.change((event, state) => {
@@ -589,6 +592,9 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeyPress)
   Visibility.unbind(Number(visibilityId.value))
+  if (fetchMessagesTimeoutId.value) {
+    clearTimeout(fetchMessagesTimeoutId.value)
+  }
 })
 
 const handleEmptyChat = async () => {
@@ -793,14 +799,18 @@ const onQuotedMessageClick = async (transactionId: string) => {
   // if after fetching chat history the message still cannot be found
   // then do nothing
   if (transactionIndex === -1) {
-    console.warn(
+    logger.log(
+      'Chat',
+      'warn',
       'onQuotedMessageClick: Transaction not found in the chat history',
       `tx.id="${transactionId}"`
     )
     return
   }
 
-  await chatRef.value.scrollToMessageEasy(transactionIndex)
+  if (chatRef.value) {
+    await chatRef.value.scrollToMessageEasy(transactionIndex)
+  }
   highlightMessage(transactionId)
 }
 
@@ -924,9 +934,10 @@ const fetchChatMessages = async () => {
       if (areAdmNodesOnline.value) {
         // give health check time to be finished and then retry in case of miscoordination of nodes statuses
         // (when areAdmNodesOnline says there are some nodes online, but the request fails with allNodesOffline error)
-        return setTimeout(async () => {
+        fetchMessagesTimeoutId.value = setTimeout(async () => {
           await fetchChatMessages()
         }, 5000)
+        return
       }
 
       return (allowFetchingMessages.value = true)
@@ -936,14 +947,14 @@ const fetchChatMessages = async () => {
     if (isWelcomeChat(props.partnerId)) {
       loading.value = false
     }
-    chatRef.value.maintainScrollPosition()
+    chatRef.value?.maintainScrollPosition()
   }
 }
 const fetchUntilFindTransaction = (transactionId: string) => {
   const fetchMessages = async () => {
     await store.dispatch('chat/getChatRoomMessages', { contactId: props.partnerId })
 
-    chatRef.value.maintainScrollPosition()
+    chatRef.value?.maintainScrollPosition()
 
     const transactionFound = store.getters['chat/partnerMessageById'](
       props.partnerId,
@@ -970,6 +981,9 @@ const fetchUntilFindTransaction = (transactionId: string) => {
 
 const scrollBehavior = () => {
   nextTick(() => {
+    if (!chatRef.value) {
+      return
+    }
     if (numOfNewMessages.value > 0) {
       chatRef.value.scrollToMessage(numOfNewMessages.value - 1)
     } else if (scrollPosition.value !== false) {

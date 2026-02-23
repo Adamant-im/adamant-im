@@ -33,8 +33,16 @@ import {
 } from '@/lib/nodes/utils/errors'
 import adamant from '@/lib/adamant'
 import { useConsiderOffline } from '@/hooks/useConsiderOffline.js'
+import { getConnectionAwareTimeout } from '@/lib/network/connection'
+import { logger } from '@/utils/devTools/logger'
 
 export let interval
+/**
+ * Monotonic token for chat polling lifecycle.
+ * Allows us to invalidate in-flight polling chain (Promise -> then -> setTimeout)
+ * when user logs out or polling restarts.
+ */
+let pollingSessionId = 0
 
 const SOCKET_ENABLED_TIMEOUT = 10000
 const SOCKET_DISABLED_TIMEOUT = 3000
@@ -98,6 +106,15 @@ const getters = {
    */
   chatsPollingTimeout: (state, getters, rootState) => {
     return rootState.options.useSocketConnection ? SOCKET_ENABLED_TIMEOUT : SOCKET_DISABLED_TIMEOUT
+  },
+
+  /**
+   * Returns chat actuality timeout used to hide outdated-state spinner.
+   * On potentially slow connection we increase the tolerance by x1.5.
+   * @returns {number}
+   */
+  chatsActualityTimeout: (state, getters) => {
+    return getConnectionAwareTimeout(getters.chatsPollingTimeout)
   },
 
   reactions: (state, getters) => (transactionId, partnerId) => {
@@ -733,7 +750,7 @@ const actions = {
 
     return getChats(state.lastMessageHeight).then((result) => {
       const { messages, lastMessageHeight, nodeTimestamp } = result
-      const chatsActualInterval = getters.chatsPollingTimeout
+      const chatsActualInterval = getters.chatsActualityTimeout
 
       dispatch('pushMessages', messages)
 
@@ -1398,10 +1415,23 @@ const actions = {
   startInterval: {
     root: true,
     handler({ dispatch, getters }) {
+      // Start a new polling session and cancel the previously scheduled tick.
+      const currentSessionId = ++pollingSessionId
+      clearTimeout(interval)
+
       function repeat() {
+        // Polling has been stopped/restarted, ignore stale loop.
+        if (currentSessionId !== pollingSessionId) return
+
         dispatch('getNewMessages')
-          .catch((err) => console.error(err))
+          .catch((err) => {
+            // Skip stale async completion after stop/logout.
+            if (currentSessionId !== pollingSessionId) return
+            logger.log('chat', 'warn', err)
+          })
           .then(() => {
+            // Do not schedule next timeout for stale session.
+            if (currentSessionId !== pollingSessionId) return
             const timeout = getters.chatsPollingTimeout
             interval = setTimeout(repeat, timeout)
           })
@@ -1414,6 +1444,8 @@ const actions = {
   stopInterval: {
     root: true,
     handler() {
+      // Invalidate current session so in-flight promise chain cannot re-schedule polling.
+      pollingSessionId++
       clearTimeout(interval)
     }
   },

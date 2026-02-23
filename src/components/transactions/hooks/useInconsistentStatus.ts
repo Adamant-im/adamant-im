@@ -10,8 +10,7 @@ import {
   DashTransaction,
   DogeTransaction,
   Erc20Transaction,
-  EthTransaction,
-  KlyTransaction
+  EthTransaction
 } from '@/lib/nodes/types/transaction'
 import { PendingTransaction } from '@/lib/pending-transactions'
 
@@ -20,7 +19,6 @@ export function useInconsistentStatus(
     | BtcTransaction
     | DogeTransaction
     | DashTransaction
-    | KlyTransaction
     | EthTransaction
     | Erc20Transaction
     | PendingTransaction
