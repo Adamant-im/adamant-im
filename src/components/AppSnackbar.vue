@@ -8,6 +8,9 @@
     location="bottom"
     width="100%"
     :multi-line="message.length > 50"
+    :style="{
+      bottom: keyboardHeight > 100 ? `${keyboardHeight}px` : '0'
+    }"
     @click:outside="show = false"
   >
     <div :class="`${className}__container`">
@@ -28,7 +31,7 @@
 <script lang="ts" setup>
 import { mdiClose } from '@mdi/js'
 import { useI18n } from 'vue-i18n'
-import { computed } from 'vue'
+import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex'
 
 const className = 'app-snackbar'
@@ -54,6 +57,35 @@ const variant = computed(() => store.state.snackbar.variant)
 const timeout = computed(() =>
   message.value === t('connection.offline') ? -1 : store.state.snackbar.timeout
 )
+const keyboardHeight = ref(0)
+
+const adjustBottom = () => {
+  if (!window.visualViewport) {
+    return
+  }
+
+  const viewportHeight = window.visualViewport.height
+  const fullHeight = window.innerHeight
+  const height = fullHeight - viewportHeight
+
+  keyboardHeight.value = height > 100 ? height : 0
+}
+
+watch(show, (newValue) => {
+  if (newValue) {
+    setTimeout(adjustBottom, 100)
+  }
+})
+
+onMounted(() => {
+  window.visualViewport?.addEventListener('resize', adjustBottom)
+  window.addEventListener('scroll', adjustBottom)
+})
+
+onBeforeUnmount(() => {
+  window.visualViewport?.removeEventListener('resize', adjustBottom)
+  window.removeEventListener('scroll', adjustBottom)
+})
 </script>
 
 <style lang="scss" scoped>
@@ -63,6 +95,11 @@ const timeout = computed(() =>
 @use 'vuetify/settings';
 
 .app-snackbar {
+  :deep(.v-snackbar) {
+    top: auto;
+    position: fixed;
+  }
+
   :deep(.v-snackbar__wrapper) {
     @include mixins.a-text-regular-enlarged();
 
@@ -98,7 +135,7 @@ const timeout = computed(() =>
 
 .v-theme--light.app-snackbar {
   :deep(.v-snackbar__wrapper) {
-    background-color: map.get(settings.$shades, 'white');
+    background-color: map.get(colors.$adm-colors, 'secondary2');
     color: map.get(colors.$adm-colors, 'regular');
   }
 }
