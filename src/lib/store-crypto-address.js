@@ -38,14 +38,21 @@ export function flushCryptoAddresses() {
  * @returns object for stored addresses
  */
 export function parseCryptoAddressesKVStxs(txs) {
-  if (!txs || !txs.length || !txs[0].asset || !txs[0].asset.state || !txs[0].asset) return null
-  const addresses = {}
-  // validateInfo.storedAddresses = [...new Set(txs.map(tx => tx.asset.state.value))]
-  addresses.storedAddresses = uniqueCaseInsensitiveArray(txs.map((tx) => tx.asset.state.value))
+  if (!Array.isArray(txs) || txs.length === 0) return null
 
-  addresses.addressesCount = addresses.storedAddresses.length
-  addresses.mainAddress = addresses.storedAddresses[0]
-  return addresses
+  const storedAddresses = uniqueCaseInsensitiveArray(
+    txs
+      .map((tx) => tx?.asset?.state?.value)
+      .filter((value) => typeof value === 'string' && value.length > 0)
+  )
+
+  if (storedAddresses.length === 0) return null
+
+  return {
+    storedAddresses,
+    addressesCount: storedAddresses.length,
+    mainAddress: storedAddresses[0]
+  }
 }
 
 /**
@@ -73,7 +80,7 @@ export function validateStoredCryptoAddresses() {
         admApi.getStored(key, store.state.address, 20).then((txs) => {
           // It may be empty array: no addresses stored yet for this crypto
           if (txs) {
-            let validateInfo = parseCryptoAddressesKVStxs(txs, crypto)
+            let validateInfo = parseCryptoAddressesKVStxs(txs)
 
             if (validateInfo) {
               // Some address(es) is stored

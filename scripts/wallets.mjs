@@ -2,7 +2,12 @@ import { $ } from 'execa'
 
 import { copyFile, readdir, readFile, writeFile, mkdir, rm } from 'fs/promises'
 import { resolve, join } from 'path'
-import { capitalize, mapValues, mergeWith, isArray, omit, chain } from 'lodash-es'
+import capitalize from 'lodash-es/capitalize'
+import chain from 'lodash-es/chain'
+import isArray from 'lodash-es/isArray'
+import mapValues from 'lodash-es/mapValues'
+import mergeWith from 'lodash-es/mergeWith'
+import omit from 'lodash-es/omit'
 
 const CRYPTOS_DATA_FILE_PATH = resolve('src/lib/constants/cryptos/data.json')
 const CRYPTOS_ICONS_DIR_PATH = resolve('src/components/icons/cryptos')

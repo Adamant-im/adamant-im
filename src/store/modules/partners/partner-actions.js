@@ -78,7 +78,7 @@ export default {
     return admApi.getStored(key, payload.partner, MAXIMUM_ADDRESSES).then(
       (txs) => {
         if (txs.length > 0) {
-          const addresses = parseCryptoAddressesKVStxs(txs, crypto)
+          const addresses = parseCryptoAddressesKVStxs(txs)
           if (addresses) {
             // Some address(es) is stored
             context.commit('address', { ...payload, crypto, address: addresses.mainAddress })

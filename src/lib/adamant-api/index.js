@@ -409,7 +409,7 @@ export function storeCryptoAddress(crypto, address) {
       }
       // It may be empty array: no addresses stored yet for this crypto
       if (stored) {
-        stored = parseCryptoAddressesKVStxs(stored, crypto)
+        stored = parseCryptoAddressesKVStxs(stored)
       }
       return stored && stored.mainAddress
         ? true
