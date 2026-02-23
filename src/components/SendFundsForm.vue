@@ -198,6 +198,7 @@ import {
   isErc20,
   isFeeEstimate,
   isEthBased,
+  isSelfTxAllowed,
   getMinAmount,
   CryptosInfo,
   MessageType,
@@ -508,7 +509,10 @@ export default {
           (v) =>
             validateAddress(this.currency, v) ||
             this.$t('transfer.error_incorrect_address', { crypto: this.currency }),
-          (v) => !isStringEqualCI(v, this.ownAddress) || this.$t('transfer.error_same_recipient')
+          (v) =>
+            !isStringEqualCI(v, this.ownAddress) ||
+            isSelfTxAllowed(this.currency) ||
+            this.$t('transfer.error_same_recipient')
         ],
         amount: [
           (v) => v > 0 || this.$t('transfer.error_incorrect_amount'),

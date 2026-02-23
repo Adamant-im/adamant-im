@@ -100,6 +100,7 @@ export const isErc20 = (crypto: CryptoSymbol) => CryptosInfo[crypto]?.type === '
 export const isEthBased = (crypto: CryptoSymbol) => isErc20(crypto) || crypto === Cryptos.ETH
 export const isFeeEstimate = (crypto: CryptoSymbol) => isEthBased(crypto)
 export const isBtcBased = (crypto: CryptoSymbol) => BTC_BASED.includes(crypto)
+export const isSelfTxAllowed = (crypto: CryptoSymbol) => crypto === Cryptos.ADM
 
 export const isInstantSendPossible = (crypto: CryptoSymbol) => INSTANT_SEND.includes(crypto)
 /**
