@@ -2,6 +2,7 @@ import { Endpoints } from './types/api/endpoints'
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import { getConnectionAwareTimeout } from '@/lib/network/connection'
 import type { NodeInfo } from '@/types/wallets'
 
 /**
@@ -14,7 +15,10 @@ export class EthIndexer extends Node<AxiosInstance> {
   }
 
   protected buildClient(): AxiosInstance {
-    return axios.create({ baseURL: this.url, timeout: 10000 })
+    return axios.create({
+      baseURL: this.url,
+      timeout: getConnectionAwareTimeout(this.healthcheckRequestTimeoutMs)
+    })
   }
 
   /**

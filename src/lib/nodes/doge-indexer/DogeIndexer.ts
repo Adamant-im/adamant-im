@@ -14,7 +14,7 @@ export class DogeIndexer extends Node<AxiosInstance> {
   }
 
   protected buildClient(): AxiosInstance {
-    return createBtcLikeClient(this.url)
+    return createBtcLikeClient(this.url, this.healthcheckRequestTimeoutMs)
   }
 
   protected async checkHealth() {
