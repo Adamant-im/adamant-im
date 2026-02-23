@@ -54,7 +54,7 @@ import {
   defineProps,
   defineEmits
 } from 'vue'
-import { throttle } from 'lodash-es'
+import throttle from 'lodash-es/throttle'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import Styler from 'stylefire'
 import { animate } from 'popmotion'

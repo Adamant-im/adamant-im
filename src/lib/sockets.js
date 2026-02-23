@@ -1,5 +1,5 @@
 import { io } from 'socket.io-client'
-import { random } from 'lodash-es'
+import random from 'lodash-es/random'
 import { logger } from '@/utils/devTools/logger'
 
 /**
