@@ -1,5 +1,6 @@
 import { io } from 'socket.io-client'
 import { random } from 'lodash-es'
+import { logger } from '@/utils/devTools/logger'
 
 /**
  * interface Events {
@@ -170,12 +171,14 @@ export class SocketClient extends EventEmitter {
   }
 
   connect(node) {
-    console.log(`[Socket] Connecting to ${node.socketAddress}..`)
+    logger.log('socket', 'info', `[Socket] Connecting to ${node.socketAddress}..`)
     this.connection = io(`${node.socketAddress}`, { reconnection: false, timeout: 5000 })
 
     this.connection.on('connect', () => {
       this.currentNode = node
-      console.log(
+      logger.log(
+        'sockets',
+        'info',
         `[Socket] Connected to ${node.socketAddress} and subscribed to transactions of ${this.adamantAddress}`
       )
       this.connection.emit('address', this.adamantAddress)
@@ -184,12 +187,12 @@ export class SocketClient extends EventEmitter {
     this.connection.on('disconnect', (reason) => {
       // if (reason === 'ping timeout' || reason === 'io server disconnect') {
       // if (reason != 'io client disconnect') {
-      console.warn('[Socket] Disconnected. Reason:', reason)
+      logger.log('socket', 'warn', '[Socket] Disconnected. Reason:', reason)
       // }
     })
 
     this.connection.on('connect_error', (err) => {
-      console.warn('[Socket] connect_error', err)
+      logger.log('socket', 'warn', '[Socket] connect_error', err)
     })
   }
 
@@ -202,7 +205,7 @@ export class SocketClient extends EventEmitter {
     if (!this.isSocketEnabled) return
     if (!this.hasActiveNodes) {
       this.disconnect()
-      console.warn('[Socket]: No active nodes')
+      logger.log('socket', 'warn', '[Socket]: No active nodes')
       this.interval = setTimeout(() => this.reviseConnection(), this.REVISE_CONNECTION_TIMEOUT)
       return
     }

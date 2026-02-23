@@ -1,5 +1,6 @@
 import type { AxiosRequestConfig } from 'axios'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import type { NodeInfo } from '@/types/wallets'
 import { DogeIndexer } from './DogeIndexer'
 import { Client } from '../abstract.client'
 import { NB_BLOCKS } from './constants'
@@ -12,7 +13,7 @@ import { EstimatedFee, GetEstimatedFeeParams } from './types/api/estimated-fee'
 import { Balance } from './types/api/balance'
 
 export class DogeIndexerClient extends Client<DogeIndexer> {
-  constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
+  constructor(endpoints: NodeInfo[] = [], minNodeVersion = '0.0.0') {
     super('doge', 'service', NODE_LABELS.DogeIndexer)
     this.nodes = endpoints.map((endpoint) => new DogeIndexer(endpoint))
     this.minNodeVersion = minNodeVersion
@@ -29,7 +30,9 @@ export class DogeIndexerClient extends Client<DogeIndexer> {
     params?: Params,
     requestConfig?: AxiosRequestConfig
   ): Promise<Response> {
-    return this.getNode().request<Response, Params>(method, path, params, requestConfig)
+    return this.requestWithRetry((node) =>
+      node.request<Response, Params>(method, path, params, requestConfig)
+    )
   }
 
   async getTransaction(transactionId: string, address: string) {

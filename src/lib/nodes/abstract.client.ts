@@ -1,9 +1,11 @@
 import type { HealthcheckInterval, NodeKind, NodeType } from '@/lib/nodes/types'
 import { TNodeLabel } from '@/lib/nodes/constants'
-import { AllNodesDisabledError, AllNodesOfflineError } from './utils/errors'
+import { AllNodesDisabledError, AllNodesOfflineError, isNodeOfflineError } from './utils/errors'
 import { filterSyncedNodes } from './utils/filterSyncedNodes'
 import { Node } from './abstract.node'
 import { nodesStorage } from './storage'
+
+const INITIAL_HEALTHCHECK_SYNC_THRESHOLD = 0.3
 
 export abstract class Client<N extends Node> {
   /**
@@ -60,10 +62,11 @@ export abstract class Client<N extends Node> {
 
   protected async watchNodeStatusChange() {
     for (const node of this.nodes) {
-      node.onStatusChange((nodeStatus) => {
+      node.onStatusChange(() => {
+        this.syncInitialHealthcheckStatus()
         this.updateSyncStatuses()
 
-        this.statusUpdateCallback?.(nodeStatus)
+        this.statusUpdateCallback?.(node.getStatus())
 
         if (this.isActiveNode(node)) {
           // Resolve when at least one node is ready to accept requests
@@ -91,27 +94,18 @@ export abstract class Client<N extends Node> {
     }
   }
 
-  // Use with caution:
-  // This method can throw an error if there are no online nodes.
-  // Better use "useClient()" method.
-  getClient(): N['client'] {
-    return this.getNode().client
-  }
-
   /**
    * Invokes a client method.
    *
    * eth
-   *   .useClient((client) => client.getTransactionCount(this.$store.state.eth.address))
+   *   .useClient((client) => client().getTransactionCount(this.$store.state.eth.address))
    *   .then(res => console.log("res", res))
    *   .catch(err => console.log("err", err))
    *
    * @param cb
    */
   async useClient<T>(cb: (client: N['client']) => T) {
-    const node = this.getNode()
-
-    return cb(node.client)
+    return this.requestWithRetry((node) => cb(node.client))
   }
 
   /**
@@ -119,6 +113,9 @@ export abstract class Client<N extends Node> {
    * @returns {Array<{ url: string, online: boolean, ping: number }>}
    */
   getNodes() {
+    this.syncInitialHealthcheckStatus()
+    this.updateSyncStatuses()
+
     return this.nodes.map((node) => node.getStatus())
   }
 
@@ -150,29 +147,33 @@ export abstract class Client<N extends Node> {
    * Returns a random node.
    * @returns {ApiNode}
    */
-  protected getRandomNode() {
-    const onlineNodes = this.nodes.filter(this.isActiveNode)
+  protected getRandomNode(onlineNodes = this.nodes.filter(this.isActiveNode)) {
     return onlineNodes[Math.floor(Math.random() * onlineNodes.length)]
   }
 
   /**
    * Returns the fastest node.
    */
-  protected getFastestNode() {
-    const onlineNodes = this.nodes.filter(this.isActiveNode)
+  protected getFastestNode(onlineNodes = this.nodes.filter(this.isActiveNode)) {
     if (onlineNodes.length === 0) return undefined
     return onlineNodes.reduce((fastest, current) =>
       current.ping < fastest.ping ? current : fastest
     )
   }
 
-  protected getNode() {
-    const nodes = this.nodes.filter((node) => node.active)
-    if (nodes.length === 0) {
+  protected getNode(excludedUrls: Set<string> = new Set()) {
+    const activeNodes = this.nodes.filter((node) => node.active)
+    if (activeNodes.length === 0) {
       throw new AllNodesDisabledError(this.type)
     }
 
-    const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
+    const availableNodes = activeNodes.filter(
+      (node) => !excludedUrls.has(node.url) && this.isActiveNode(node)
+    )
+    const node = this.useFastest
+      ? this.getFastestNode(availableNodes)
+      : this.getRandomNode(availableNodes)
+
     if (!node) {
       // All nodes seem to be offline: let's refresh the statuses
       this.checkHealth()
@@ -202,15 +203,131 @@ export abstract class Client<N extends Node> {
    * all the others are not.
    */
   protected updateSyncStatuses() {
-    const nodes = this.nodes.filter((x) => x.online && x.active)
+    if (!this.shouldUpdateSyncStatuses()) {
+      return
+    }
+
+    const nodes = this.nodes.filter((x) => x.online && x.active && x.healthcheckAttemptCount > 0)
 
     const nodesInSync = filterSyncedNodes(nodes, this.label)
 
     // Finally, all the nodes from the winner list are considered to be in sync, all the
     // others are not
-    for (const node of nodes) {
+    for (const node of this.nodes) {
+      if (!nodes.includes(node)) {
+        node.outOfSync = false
+        continue
+      }
+
       node.outOfSync = !nodesInSync.nodes.includes(node)
     }
+  }
+
+  private syncInitialHealthcheckStatus() {
+    const initialHealthcheckInProgress = this.nodes.some(
+      (node) => node.active && node.healthcheckAttemptCount < 1
+    )
+
+    for (const node of this.nodes) {
+      node.initialHealthcheckInProgress = initialHealthcheckInProgress
+    }
+  }
+
+  protected async requestWithRetry<T>(request: (node: N) => Promise<T> | T): Promise<T> {
+    await this.ready
+
+    const triedNodes = new Set<string>()
+
+    while (true) {
+      const node = this.getNode(triedNodes)
+
+      try {
+        return await Promise.resolve(request(node))
+      } catch (error) {
+        if (!this.isNodeUnavailableError(error)) {
+          throw error
+        }
+
+        triedNodes.add(node.url)
+        this.markNodeAsUnavailable(node)
+      }
+    }
+  }
+
+  private isNodeUnavailableError(error: unknown) {
+    if (!error || typeof error !== 'object') {
+      return false
+    }
+
+    if (isNodeOfflineError(error as Error)) {
+      return true
+    }
+
+    const networkError = error as {
+      response?: unknown
+      request?: unknown
+      code?: string
+      name?: string
+      message?: string
+    }
+
+    if (networkError.code === 'ERR_CANCELED' || networkError.name === 'CanceledError') {
+      return false
+    }
+
+    if (!networkError.response && networkError.request) {
+      return true
+    }
+
+    const offlineCodes = new Set([
+      'ECONNABORTED',
+      'ECONNREFUSED',
+      'EHOSTUNREACH',
+      'ENETUNREACH',
+      'ENOTFOUND',
+      'ERR_NETWORK',
+      'ETIMEDOUT'
+    ])
+
+    if (networkError.code && offlineCodes.has(networkError.code)) {
+      return true
+    }
+
+    const message = (networkError.message || '').toLowerCase()
+
+    return message.includes('failed to fetch') || message.includes('network error')
+  }
+
+  private markNodeAsUnavailable(node: N) {
+    node.online = false
+    node.ping = Infinity
+    node.outOfSync = false
+
+    this.syncInitialHealthcheckStatus()
+    this.updateSyncStatuses()
+    this.statusUpdateCallback?.(node.getStatus())
+  }
+
+  private shouldUpdateSyncStatuses() {
+    const activeNodes = this.nodes.filter((node) => node.active)
+
+    if (activeNodes.length === 0) {
+      return false
+    }
+
+    const respondedInitially = activeNodes.filter((node) => node.healthcheckAttemptCount > 0).length
+    const initialHealthcheckInProgress = respondedInitially < activeNodes.length
+
+    if (initialHealthcheckInProgress) {
+      return respondedInitially / activeNodes.length >= INITIAL_HEALTHCHECK_SYNC_THRESHOLD
+    }
+
+    const [firstNode] = activeNodes
+    const allNodesReachedSameAttemptCount = activeNodes.every(
+      (node) => node.healthcheckAttemptCount === firstNode.healthcheckAttemptCount
+    )
+
+    return allNodesReachedSameAttemptCount
   }
 
   protected isActiveNode(node: Node) {

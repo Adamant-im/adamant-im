@@ -2,6 +2,7 @@ import { encodeFile } from '@/lib/adamant-api'
 import { watch } from 'vue'
 import ipfs from '@/lib/nodes/ipfs'
 import { useMutation } from '@tanstack/vue-query'
+import { logger } from '@/utils/devTools/logger'
 
 type ParsedFile = { file: File; binary: Buffer | Uint8Array }
 
@@ -30,7 +31,7 @@ async function uploadFile(files: File[], to: string) {
       binary: encoded.binary
     })
   }
-  console.log('Files', files)
+  logger.log('useUploadFile', 'info', 'Files', files)
 
   const formData = new FormData()
 
@@ -42,9 +43,9 @@ async function uploadFile(files: File[], to: string) {
   const response = await ipfs.upload(formData, (progress) => {
     const percentCompleted = Math.round((progress.loaded * 100) / progress.total!)
 
-    console.log(`Progress ${percentCompleted}%`)
+    logger.log('useUploadFile', 'info', `Progress ${percentCompleted}%`)
   })
-  console.log(`Uploaded CIDs`, response)
+  logger.log('useUploadFile', 'info', `Uploaded CIDs`, response)
 
   return response
 }
@@ -57,7 +58,7 @@ export function useUploadFile() {
   })
 
   watch(status, (status) => {
-    console.log('Status changed', status)
+    logger.log('useUploadFile', 'info', 'Status changed', status)
   })
 
   return {

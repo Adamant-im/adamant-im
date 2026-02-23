@@ -4,6 +4,7 @@ import { NODE_LABELS } from '@/lib/nodes/constants'
 import { TransactionNotFound } from '@/lib/nodes/utils/errors'
 import { CryptoSymbol } from '@/lib/constants'
 import { bytesToHex } from '@/lib/hex'
+import type { NodeInfo } from '@/types/wallets'
 import { EthNode } from './EthNode'
 import { Client } from '../abstract.client'
 import { normalizeEthTransaction, normalizeErc20Transaction } from './utils'
@@ -16,7 +17,7 @@ import { normalizeEthTransaction, normalizeErc20Transaction } from './utils'
  * is not available at the moment.
  */
 export class EthClient extends Client<EthNode> {
-  constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
+  constructor(endpoints: NodeInfo[] = [], minNodeVersion = '0.0.0') {
     super('eth', 'node', NODE_LABELS.EthNode)
     this.nodes = endpoints.map((endpoint) => new EthNode(endpoint))
     this.minNodeVersion = minNodeVersion
@@ -25,10 +26,10 @@ export class EthClient extends Client<EthNode> {
   }
 
   async isTransactionFinalized(hash: string): Promise<boolean> {
-    const node = this.getNode()
+    const client = this.getNodeClient()
 
     try {
-      const transaction = await node.client.getTransaction(hash)
+      const transaction = await client.getTransaction(hash)
       const isFinalized = !!transaction.blockNumber
 
       return isFinalized
@@ -37,22 +38,30 @@ export class EthClient extends Client<EthNode> {
     }
   }
 
+  // Use with caution:
+  // This method can throw an error if there are no online nodes.
+  // Better use "useClient()" method.
+  getClient(): Web3Eth {
+    // Ethereum nodes return a new client every time depending on `preferDomain` property.
+    return this.getNodeClient()
+  }
+
   /**
    * Fetch a single transaction by ID
    * @param hash Transaction hash
    * @param address Owner's ETH address
    */
   async getEthTransaction(hash: string, address: string) {
-    const node = this.getNode()
+    const client = this.getNodeClient()
 
     try {
-      const transaction = await node.client.getTransaction(hash)
+      const transaction = await client.getTransaction(hash)
       const isFinalized = transaction.blockNumber !== undefined
 
       const blockTimestamp = isFinalized
-        ? await node.client.getBlock(transaction.blockNumber).then((block) => block.timestamp)
+        ? await client.getBlock(transaction.blockNumber).then((block) => block.timestamp)
         : undefined
-      const receipt = isFinalized ? await node.client.getTransactionReceipt(hash) : undefined
+      const receipt = isFinalized ? await client.getTransactionReceipt(hash) : undefined
 
       return normalizeEthTransaction({ transaction, receipt }, address, blockTimestamp)
     } catch (err) {
@@ -71,16 +80,16 @@ export class EthClient extends Client<EthNode> {
    * @param crypto Crypto symbol
    */
   async getErc20Transaction(hash: string, address: string, crypto: CryptoSymbol) {
-    const node = this.getNode()
+    const client = this.getNodeClient()
 
     try {
-      const transaction = await node.client.getTransaction(hash)
+      const transaction = await client.getTransaction(hash)
       const isFinalized = transaction.blockNumber !== undefined
 
       const blockTimestamp = isFinalized
-        ? await node.client.getBlock(transaction.blockNumber).then((block) => block.timestamp)
+        ? await client.getBlock(transaction.blockNumber).then((block) => block.timestamp)
         : undefined
-      const receipt = isFinalized ? await node.client.getTransactionReceipt(hash) : undefined
+      const receipt = isFinalized ? await client.getTransactionReceipt(hash) : undefined
 
       return normalizeErc20Transaction(crypto, { transaction, receipt }, address, blockTimestamp)
     } catch (err) {
@@ -93,10 +102,12 @@ export class EthClient extends Client<EthNode> {
   }
 
   sendSignedTransaction(...args: Parameters<Web3Eth['sendSignedTransaction']>): Promise<string> {
+    const client = this.getNodeClient()
+
     return new Promise((resolve, reject) => {
       try {
-        this.getNode()
-          .client.sendSignedTransaction(...args)
+        client
+          .sendSignedTransaction(...args)
           .on('transactionHash', (hash) => {
             if (typeof hash === 'string') {
               resolve(hash)
@@ -111,12 +122,23 @@ export class EthClient extends Client<EthNode> {
     })
   }
 
+  /**
+   * Get node client instance depending on availability of a domain.
+   * @returns { Web3Eth } Web3 Ethereum module instance.
+   */
+  getNodeClient(): Web3Eth {
+    return this.getNode().client()
+  }
+
   async getNonce(address: string) {
-    return this.getNode().client.getTransactionCount(address)
+    const client = this.getNodeClient()
+
+    return client.getTransactionCount(address)
   }
 
   async getHeight() {
-    const blockNumber = await this.getNode().client.getBlockNumber()
+    const client = this.getNodeClient()
+    const blockNumber = await client.getBlockNumber()
 
     return Number(blockNumber)
   }

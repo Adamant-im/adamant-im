@@ -2,6 +2,7 @@ import utils from '@/lib/adamant'
 import { hexToBytes } from '@/lib/hex'
 import ipfs from '@/lib/nodes/ipfs'
 import { Buffer } from 'buffer'
+import { logger } from '@/utils/devTools/logger'
 
 export class AttachmentApi {
   public readonly myKeypair: { publicKey: Buffer; privateKey: Buffer }
@@ -28,8 +29,8 @@ export class AttachmentApi {
       'Content-Type': 'multipart/form-data'
     })
 
-    console.log('File:', file)
-    console.log('Public key:', publicKey)
+    logger.log('attachment-api/index', 'info', 'File:', file)
+    logger.log('attachment-api/index', 'info', 'Public key:', publicKey)
     return { cids, nonce }
   }
 }

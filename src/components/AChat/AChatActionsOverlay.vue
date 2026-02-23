@@ -38,6 +38,7 @@ import { usePartnerId } from '@/components/AChat/hooks/usePartnerId'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { computed, defineComponent, onMounted, PropType, reactive, ref } from 'vue'
 import { vibrate } from '@/lib/vibrate'
+import { logger } from '@/utils/devTools/logger'
 
 const className = 'a-chat-actions-overlay'
 const classes = {
@@ -73,7 +74,9 @@ export default defineComponent({
       if (element) {
         return element.getBoundingClientRect()
       } else {
-        console.warn(
+        logger.log(
+          'AChatActionsOverlay',
+          'warn',
           `[AChatActionsOverlay]: <AChatMessage/> with "data-id"="${props.transaction.id}" was not found`
         )
         return null

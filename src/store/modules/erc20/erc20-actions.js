@@ -5,6 +5,7 @@ import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
 import shouldUpdate from '../../utils/coinUpdatesGuard'
 import { validateStoredCryptoAddresses } from '@/lib/store-crypto-address.js'
+import { logger } from '@/utils/devTools/logger'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
@@ -35,7 +36,7 @@ const initTransaction = async (api, context, ethAddress, amount, nonce, increase
     tokenInfo.reliabilityGasLimitPercent ?? ethInfo.reliabilityGasLimitPercent
 
   try {
-    let estimatedGasLimit = await api.useClient((client) => client.estimateGas(transaction))
+    let estimatedGasLimit = await api.useClient((client) => client().estimateGas(transaction))
 
     const reliableGasLimit = ethUtils.calculateReliableValue(
       estimatedGasLimit,
@@ -74,7 +75,7 @@ const createSpecificActions = (api) => ({
         commit('setBalanceActualUntil', Date.now() + CryptosInfo.ETH.balanceValidInterval)
       } catch (err) {
         commit('setBalanceStatus', FetchStatus.Error)
-        console.warn(err)
+        logger.log('erc20-actions', 'warn', err)
       }
     }
   },
@@ -150,7 +151,7 @@ const createSpecificActions = (api) => ({
           }, delay)
         })
     } catch (err) {
-      console.warn(err)
+      logger.log('erc20-actions', 'warn', err)
     }
   }
 })

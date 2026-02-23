@@ -18,7 +18,7 @@ export function formatSendTxError(error) {
       formattedError.errorCode = errorData.error.code
       formattedError.errorMessage += ` ${codeString}${messageString}`
     } else if (errorData.errors && errorData.errors[0]) {
-      // Lisk-like
+      // Node returns errors array
       formattedError.errorMessage += errorData.errors[0].message
     } else {
       // Unknown response format

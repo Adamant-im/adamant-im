@@ -190,6 +190,7 @@ import QrcodeCapture from '@/components/QrcodeCapture.vue'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
 import { get } from 'lodash-es'
 import { BigNumber } from 'bignumber.js'
+import { logger } from '@/utils/devTools/logger'
 
 import {
   Cryptos,
@@ -318,7 +319,6 @@ export default {
     increaseFee: false,
     showWarningOnPartnerAddressDialog: false,
     warningOnPartnerInfo: {},
-    klayrOptionalMessage: '',
     estimatedGasLimit: null,
 
     // Account exists check
@@ -671,7 +671,7 @@ export default {
       this.$store.dispatch('snackbar/show', {
         message: this.$t('transfer.invalid_qr_code')
       })
-      console.warn(error)
+      logger.log('SendFundsForm', 'warn', error)
     },
 
     /**
@@ -751,7 +751,7 @@ export default {
         })
         .catch((error) => {
           const formattedError = formatSendTxError(error)
-          console.warn('Error while sending transaction', formattedError)
+          logger.log('SendFundsForm', 'warn', 'Error while sending transaction', formattedError)
           let message = formattedError.errorMessage
           if (/dust/i.test(message) || get(error, 'response.data.error.code') === -26) {
             message = this.$t('transfer.error_dust_amount')
@@ -940,7 +940,7 @@ export default {
 
         this.estimatedGasLimit = gasLimit
       } catch (error) {
-        console.warn(`${this.currency} EstimateGas failed:`, error)
+        logger.log('SendFundsForm', 'warn', `${this.currency} EstimateGas failed:`, error)
         this.estimatedGasLimit = null
       }
     }

@@ -4,6 +4,14 @@ import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { useNow } from '@vueuse/core'
 import Visibility from 'visibilityjs'
 
+export function shouldShowChatsSpinner(
+  admNodesOnline: boolean,
+  chatsActualUntil: number,
+  currentTimeMs: number
+) {
+  return !admNodesOnline || chatsActualUntil <= currentTimeMs
+}
+
 export function useChatsSpinner() {
   const store = useStore()
   const { now, pause, resume } = useNow({ interval: 500, controls: true })
@@ -14,7 +22,6 @@ export function useChatsSpinner() {
   const admNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
   const chatsActualUntil = computed(() => store.state.chat.chatsActualUntil)
   const currentTime = computed(() => now.value.getTime())
-  const chatsActual = computed(() => chatsActualUntil.value > currentTime.value)
 
   onMounted(() => {
     visibilityId.value = Visibility.change((event, state) => {
@@ -30,5 +37,7 @@ export function useChatsSpinner() {
     Visibility.unbind(Number(visibilityId.value))
   })
 
-  return computed(() => !admNodesOnline.value || !chatsActual.value)
+  return computed(() =>
+    shouldShowChatsSpinner(admNodesOnline.value, chatsActualUntil.value, currentTime.value)
+  )
 }

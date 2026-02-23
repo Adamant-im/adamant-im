@@ -1,6 +1,5 @@
 import config from '@/config'
 import { TNodeLabel } from '@/lib/nodes/constants'
-import { HealthcheckInterval } from '@/lib/nodes/types'
 import type { NodeHealthcheck } from '@/types/wallets'
 
 export function getNodeHealthcheckConfig(nodeLabel: TNodeLabel): NodeHealthcheck {
@@ -26,22 +25,5 @@ export function getNodeHealthcheckConfig(nodeLabel: TNodeLabel): NodeHealthcheck
       return config.adm.services.infoService.healthCheck
     default:
       throw new Error(`No healthcheck configuration found for ${nodeLabel}`)
-  }
-}
-
-export function getHealthCheckInterval(nodeLabel: TNodeLabel, interval: HealthcheckInterval) {
-  const config = getNodeHealthcheckConfig(nodeLabel)
-
-  switch (interval) {
-    case 'normal':
-      return config.normalUpdateInterval
-    case 'crucial':
-      return config.crucialUpdateInterval
-    case 'onScreen':
-      return config.onScreenUpdateInterval
-    default:
-      throw new Error(
-        `getNodeHealthCheckInterval: Interval ${interval} is not defined in the Node's config`
-      )
   }
 }

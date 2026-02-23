@@ -75,7 +75,7 @@ export function validateStoredCryptoAddresses() {
           if (txs) {
             let validateInfo = parseCryptoAddressesKVStxs(txs, crypto)
 
-            if (validateInfo && !validateInfo.onlyLegacyLiskAddress) {
+            if (validateInfo) {
               // Some address(es) is stored
               validateInfo.isSomeAddressStored = true
               validateInfo.isMainAddressValid = isStringEqualCI(validateInfo.mainAddress, address)
