@@ -23,6 +23,11 @@ If tradeoffs are required, preserve security and privacy first.
 - All repository artifacts must be in English only
 - Write all code, comments, docs, commit messages, and PR text in English
 
+## Writing Style
+
+- In bullet and numbered lists, do not add a trailing period when an item contains one sentence
+- If an item contains two or more sentences, end every sentence with a period
+
 ## Product Context and Values
 
 ADAMANT is a decentralized, anonymous, community-driven messenger and wallet ecosystem.
