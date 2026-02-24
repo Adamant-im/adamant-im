@@ -1,18 +1,46 @@
 import { app, BrowserWindow, Menu, nativeTheme, protocol } from 'electron'
 import { fileURLToPath, URL } from 'node:url'
-import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer'
+import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import path from 'node:path'
-import { readFile } from 'node:fs'
+import { readFile } from 'node:fs/promises'
 
 const SCHEME = 'app'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 // Electron main process runs in Node.js context, so browser logger dependencies are not used here.
 const logInfo = (...args) => console.info('[electron-main]', ...args)
+const useLegacyChromeDevtoolsExtension =
+  process.env.ELECTRON_USE_CHROME_DEVTOOLS_EXTENSION === 'true'
+const mimeTypes = {
+  '.js': 'text/javascript',
+  '.html': 'text/html',
+  '.css': 'text/css',
+  '.svg': 'image/svg+xml',
+  '.svgz': 'image/svg+xml',
+  '.json': 'application/json',
+  '.wasm': 'application/wasm'
+}
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected
 let appWindow
+let removeNativeThemeListener
+
+const syncDarkThemeWithRenderer = (value) => {
+  if (!appWindow || appWindow.isDestroyed() || appWindow.webContents.isDestroyed()) {
+    return
+  }
+
+  const darkTheme = value ? 'true' : 'false'
+  appWindow.webContents
+    .executeJavaScript(
+      `window.store?.commit?.('options/updateOption', { key: 'darkTheme', value: ${darkTheme} })`,
+      true
+    )
+    .catch((error) => {
+      logInfo('Failed to sync native theme with renderer store:', error)
+    })
+}
 
 // Standard scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -28,35 +56,36 @@ protocol.registerSchemesAsPrivileged([
   }
 ])
 
-// @source: https://github.com/nklayman/vue-cli-plugin-electron-builder/blob/master/lib/createProtocol.js
+// Adapted from https://github.com/nklayman/vue-cli-plugin-electron-builder/blob/master/lib/createProtocol.js
 function createProtocol(scheme, customProtocol) {
-  ;(customProtocol || protocol).registerBufferProtocol(scheme, (request, respond) => {
-    let pathName = new URL(request.url).pathname
-    pathName = decodeURI(pathName) // Needed in case URL contains spaces
+  const targetProtocol = customProtocol || protocol
+  if (targetProtocol.isProtocolHandled(scheme)) {
+    return
+  }
 
-    readFile(path.join(__dirname, pathName), (error, data) => {
-      if (error) {
-        console.error(`Failed to read ${pathName} on ${scheme} protocol`, error)
-      }
-      const extension = path.extname(pathName).toLowerCase()
-      let mimeType = ''
+  targetProtocol.handle(scheme, async (request) => {
+    const pathName = decodeURI(new URL(request.url).pathname) // Needed in case URL contains spaces
+    const filePath = path.join(__dirname, pathName)
 
-      if (extension === '.js') {
-        mimeType = 'text/javascript'
-      } else if (extension === '.html') {
-        mimeType = 'text/html'
-      } else if (extension === '.css') {
-        mimeType = 'text/css'
-      } else if (extension === '.svg' || extension === '.svgz') {
-        mimeType = 'image/svg+xml'
-      } else if (extension === '.json') {
-        mimeType = 'application/json'
-      } else if (extension === '.wasm') {
-        mimeType = 'application/wasm'
-      }
+    try {
+      const data = await readFile(filePath)
+      const extension = path.extname(filePath).toLowerCase()
+      const mimeType = mimeTypes[extension] || 'text/plain'
 
-      respond({ mimeType, data })
-    })
+      return new Response(data, {
+        headers: {
+          'content-type': mimeType
+        }
+      })
+    } catch (error) {
+      console.error(`Failed to read ${pathName} on ${scheme} protocol`, error)
+      return new Response('Not Found', {
+        status: 404,
+        headers: {
+          'content-type': 'text/plain'
+        }
+      })
+    }
   })
 }
 
@@ -83,6 +112,11 @@ function createWindow() {
   }
 
   appWindow.on('closed', () => {
+    if (removeNativeThemeListener) {
+      removeNativeThemeListener()
+      removeNativeThemeListener = undefined
+    }
+
     appWindow = null
   })
 
@@ -122,17 +156,15 @@ function createWindow() {
     }
   ]
 
-  const darkMode = nativeTheme.shouldUseDarkColors
-  appWindow.webContents.executeJavaScript(
-    "store.commit('options/updateOption', { key: 'darkTheme', value: " + darkMode + ' })'
-  )
-  nativeTheme.on('updated', function theThemeHasChanged() {
-    appWindow.webContents.executeJavaScript(
-      "store.commit('options/updateOption', { key: 'darkTheme', value: " +
-        nativeTheme.shouldUseDarkColors +
-        ' })'
-    )
+  appWindow.webContents.on('did-finish-load', () => {
+    syncDarkThemeWithRenderer(nativeTheme.shouldUseDarkColors)
   })
+
+  const handleNativeThemeUpdate = () => {
+    syncDarkThemeWithRenderer(nativeTheme.shouldUseDarkColors)
+  }
+  nativeTheme.on('updated', handleNativeThemeUpdate)
+  removeNativeThemeListener = () => nativeTheme.off('updated', handleNativeThemeUpdate)
 
   if (process.platform === 'darwin') {
     Menu.setApplicationMenu(Menu.buildFromTemplate(template))
@@ -154,9 +186,9 @@ app.on('activate', () => {
 // This method will be called when Electron has finished initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
-  if (import.meta.env.DEV) {
+  if (import.meta.env.DEV && useLegacyChromeDevtoolsExtension) {
     // Install Vue Devtools
-    installExtension(REDUX_DEVTOOLS, { loadExtensionOptions: { allowFileAccess: true } })
+    installExtension(VUEJS3_DEVTOOLS, { loadExtensionOptions: { allowFileAccess: true } })
       .then((name) => logInfo(`Electron extensions: added ${name}`))
       .catch((err) => logInfo('Electron extensions: an error occurred:', err))
   }

@@ -80,6 +80,12 @@ export default defineConfig({
     'process.env': {}
   },
   optimizeDeps: {
+    include: [
+      'buffer',
+      'vite-plugin-node-polyfills/shims/buffer',
+      'vite-plugin-node-polyfills/shims/global',
+      'vite-plugin-node-polyfills/shims/process'
+    ],
     esbuildOptions: {
       // Node.js global to browser globalThis
       define: {
