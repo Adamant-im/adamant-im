@@ -68,6 +68,33 @@ npm run serve
 npm run serve:testnet
 ```
 
+### CSP hardening dry run on `dev.adamant.im` (Report-Only)
+
+This repository includes `vercel.json` with `Content-Security-Policy-Report-Only` and sends browser reports to `/api/csp-report`.
+
+Current dry-run policy removes `unsafe-eval` from `script-src` and keeps `wasm-unsafe-eval`.
+
+Why `wasm-unsafe-eval` is still present:
+
+- ADAMANT uses WebAssembly code paths (for example, `tiny-secp256k1`)
+- without `wasm-unsafe-eval`, browsers can block `WebAssembly.instantiate(...)`
+- this would break wallet/crypto runtime flows
+
+How to verify the policy on dev:
+
+1. Deploy this branch to the Vercel project behind `dev.adamant.im`
+2. Check headers:
+   - `curl -sSI https://dev.adamant.im | grep -i content-security-policy-report-only`
+3. Run core scenarios in browser:
+   - auth by passphrase/password
+   - chats open/send/receive
+   - wallets open/send flow
+   - node switching / reconnect
+   - attachments preview/upload
+4. Open Vercel logs for function `api/csp-report`
+5. Group violations by `violatedDirective` and `sourceFile`
+6. Fix code or adjust policy, then move from Report-Only to enforced `Content-Security-Policy`
+
 ### Lints and fixes files
 
 ```
