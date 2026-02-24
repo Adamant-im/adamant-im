@@ -14,6 +14,23 @@
           "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'wasm-unsafe-eval' 'report-sample'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: http: https:; font-src 'self' data:; connect-src 'self' blob: http: https: ws: wss:; worker-src 'self' blob:; media-src 'self' data: blob: http: https:; manifest-src 'self'; report-uri /api/csp-report"
         }
       ]
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": {
+            "suf": "adamant-team.vercel.app"
+          }
+        }
+      ],
+      "headers": [
+        {
+          "key": "Content-Security-Policy-Report-Only",
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'wasm-unsafe-eval' 'report-sample'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: http: https:; font-src 'self' data:; connect-src 'self' blob: http: https: ws: wss:; worker-src 'self' blob:; media-src 'self' data: blob: http: https:; manifest-src 'self'; report-uri /api/csp-report"
+        }
+      ]
     }
   ]
 }

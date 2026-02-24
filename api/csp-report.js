@@ -1,6 +1,9 @@
 const MAX_PAYLOAD_SIZE_BYTES = 64_000
 const MAX_VIOLATIONS_TO_LOG = 25
-const ALLOWED_HOSTS = new Set(['dev.adamant.im'])
+
+function isAllowedHost(host) {
+  return host === 'dev.adamant.im' || host.endsWith('adamant-team.vercel.app')
+}
 
 function normalizeReportEntry(entry) {
   if (!entry || typeof entry !== 'object') {
@@ -55,7 +58,7 @@ export default function handler(request, response) {
   const hostHeader = request.headers.host ?? ''
   const host = String(hostHeader).split(':')[0]
 
-  if (!ALLOWED_HOSTS.has(host)) {
+  if (!isAllowedHost(host)) {
     response.status(404).end()
     return
   }
