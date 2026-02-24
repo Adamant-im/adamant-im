@@ -8,6 +8,7 @@
         <v-text-field
           ref="passphraseInput"
           v-model="passphrase"
+          @keydown.enter.prevent="submit"
           :label="t('login.password_label')"
           autocomplete="current-password"
           :class="classes.textField"
@@ -34,7 +35,7 @@
 
     <v-row align="center" justify="center" no-gutters>
       <slot name="button">
-        <v-btn class="login-form__button a-btn-primary" @click="submit">
+        <v-btn class="login-form__button a-btn-primary" type="submit">
           <v-progress-circular
             v-show="showSpinner"
             indeterminate

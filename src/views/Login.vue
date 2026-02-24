@@ -184,6 +184,7 @@ const onScanQrcode = (value: string) => {
 
 .login-page {
   height: 100%;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
 
   &__title {
     font-family:
@@ -217,6 +218,10 @@ const onScanQrcode = (value: string) => {
       display: block;
       opacity: 0.06;
     }
+  }
+
+  @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+    padding-bottom: calc(40px + env(safe-area-inset-bottom));
   }
 }
 

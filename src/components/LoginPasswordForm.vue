@@ -23,7 +23,7 @@
     <v-row align="center" justify="center" class="mt-2" no-gutters>
       <v-col cols="12">
         <slot name="button">
-          <v-btn class="login-form__button a-btn-primary" @click="submit">
+          <v-btn class="login-form__button a-btn-primary" type="submit">
             <v-progress-circular
               v-show="showSpinner"
               indeterminate
