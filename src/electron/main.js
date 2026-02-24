@@ -21,6 +21,20 @@ const mimeTypes = {
   '.json': 'application/json',
   '.wasm': 'application/wasm'
 }
+const electronRendererCsp = [
+  `default-src 'self'`,
+  `base-uri 'self'`,
+  `object-src 'none'`,
+  `frame-ancestors 'none'`,
+  `form-action 'self'`,
+  `script-src 'self' 'wasm-unsafe-eval'`,
+  `style-src 'self' 'unsafe-inline'`,
+  `img-src 'self' data: blob: http: https:`,
+  `font-src 'self' data:`,
+  `connect-src 'self' ws: wss: http: https: blob:`,
+  `worker-src 'self' blob:`,
+  `media-src 'self' data: blob: http: https:`
+].join('; ')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected
@@ -62,7 +76,6 @@ protocol.registerSchemesAsPrivileged([
       standard: true,
       secure: true,
       supportFetchAPI: true,
-      bypassCSP: true,
       allowServiceWorkers: true
     }
   }
@@ -83,11 +96,16 @@ function createProtocol(scheme, customProtocol) {
       const data = await readFile(filePath)
       const extension = path.extname(filePath).toLowerCase()
       const mimeType = mimeTypes[extension] || 'text/plain'
+      const headers = {
+        'content-type': mimeType
+      }
+
+      if (extension === '.html') {
+        headers['content-security-policy'] = electronRendererCsp
+      }
 
       return new Response(data, {
-        headers: {
-          'content-type': mimeType
-        }
+        headers
       })
     } catch (error) {
       console.error(`Failed to read ${pathName} on ${scheme} protocol`, error)
