@@ -15,18 +15,6 @@ protocols:
     schemes:
       - adm
 
-# Windows configuration
-win:
-  icon: './build/win/icon.ico'
-  target:
-    - 'nsis'
-
-# Config for the windows installer
-nsis:
-  deleteAppDataOnUninstall: true
-  createDesktopShortcut: 'always'
-
-# Mac OS configuration
 mac:
   category: 'public.app-category.social-networking'
   darkModeSupport: true
@@ -39,15 +27,12 @@ mac:
   target:
     target: 'default'
     arch:
-      - x64
       - arm64
-      - universal
 
 afterSign: 'scripts/electron/notarize.cjs'
 afterAllArtifactBuild: 'scripts/electron/staple.cjs'
 afterPack: 'scripts/electron/sandboxFix.mjs'
 
-# Config for OSX dmg
 dmg:
   background: './build/osx/background.jpeg'
   contents:
@@ -57,19 +42,3 @@ dmg:
       y: 186
       type: 'link'
       path: '/Applications'
-
-# Linux configuration
-linux:
-  category: 'InstantMessaging'
-  artifactName: 'ADAMANT-Messenger-${version}.${ext}'
-
-  desktop:
-    entry:
-      Icon: './build/linux/icon.png'
-      Name: 'ADAMANT Messenger'
-      Terminal: false
-      Type: 'Application'
-
-  icon: './build/linux/'
-  target:
-    - AppImage

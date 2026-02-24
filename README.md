@@ -80,16 +80,82 @@ npm run lint
 npm run electron:dev
 ```
 
+To force legacy Chrome extension-based Vue DevTools inside Electron:
+
+```bash
+ELECTRON_USE_CHROME_DEVTOOLS_EXTENSION=true npm run electron:dev
+```
+
 ### Build electron version
 
 ```
 npm run electron:build
 ```
 
+### Build electron version for macOS arm64 only
+
+```bash
+npm run electron:build:mac:arm64
+```
+
 ### Build electron version and notarize the app
 
+```bash
+npm run electron:build:notarize
 ```
-APPLE_NOTARIZE=true npm run electron:build
+
+### Build electron macOS arm64 version and notarize the app
+
+```bash
+npm run electron:build:mac:arm64:notarize
+```
+
+### macOS signing and notarization (local/CI)
+
+For distributable macOS builds, use a valid `Developer ID Application` certificate and notarization.
+
+The notarization hook (`scripts/electron/notarize.cjs`) supports 3 auth strategies:
+
+1. Apple ID + app-specific password (current CI compatible)
+2. Keychain profile (`xcrun notarytool store-credentials`)
+3. App Store Connect API key
+
+Supported environment variables:
+
+```bash
+# Common
+APPLE_NOTARIZE=true
+
+# Strategy 1 (Apple ID)
+APPLE_ID=...
+APPLE_APP_SPECIFIC_PASSWORD=...
+APPLE_TEAM_ID=...
+
+# Strategy 2 (Keychain profile)
+APPLE_KEYCHAIN_PROFILE=...
+# optional
+APPLE_KEYCHAIN=...
+
+# Strategy 3 (App Store Connect API key)
+APPLE_API_KEY=/absolute/path/to/AuthKey_XXXXXXXXXX.p8
+APPLE_API_KEY_ID=XXXXXXXXXX
+# optional for team keys
+APPLE_API_ISSUER=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+```
+
+Local builds can store these variables in `electron-builder.env.local` or `electron-builder.env` (also supported: `.env.local`, `.env`).
+The notarization hook loads them automatically and does not override variables already provided by shell/CI.
+For Apple ID strategy, `APPLE_APP_PASSWORD` is accepted as an alias for `APPLE_APP_SPECIFIC_PASSWORD`.
+
+Code-signing for `electron-builder`:
+
+```bash
+# local identity in Keychain
+CSC_NAME="Developer ID Application: <Company> (<TEAM_ID>)"
+
+# or CI/base64 P12
+CSC_LINK=...
+CSC_KEY_PASSWORD=...
 ```
 
 ### Preview electron production build
