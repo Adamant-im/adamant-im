@@ -10,8 +10,20 @@
       ],
       "headers": [
         {
-          "key": "Content-Security-Policy-Report-Only",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'wasm-unsafe-eval' 'report-sample'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: http: https:; font-src 'self' data:; connect-src 'self' blob: http: https: ws: wss:; worker-src 'self' blob:; media-src 'self' data: blob: http: https:; manifest-src 'self'; report-uri /api/csp-report"
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org; object-src 'none'; style-src 'self' data: 'unsafe-inline'; img-src 'self' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org data: blob:; media-src 'self' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org blob:; frame-src 'none'; font-src 'self'; connect-src 'self' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org ws://*.adamant.im ws://*.adm.im ws://*.adamant.business ws://*.blockchain2fa.io ws://*.adamant.chat ws://*.bbry.org; manifest-src 'self'; prefetch-src 'self' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org;"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1"
         }
       ]
     },
@@ -27,8 +39,20 @@
       ],
       "headers": [
         {
-          "key": "Content-Security-Policy-Report-Only",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'wasm-unsafe-eval' 'report-sample'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: http: https:; font-src 'self' data:; connect-src 'self' blob: http: https: ws: wss:; worker-src 'self' blob:; media-src 'self' data: blob: http: https:; manifest-src 'self'; report-uri /api/csp-report"
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org; object-src 'none'; style-src 'self' data: 'unsafe-inline'; img-src 'self' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org data: blob:; media-src 'self' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org blob:; frame-src 'none'; font-src 'self'; connect-src 'self' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org ws://*.adamant.im ws://*.adm.im ws://*.adamant.business ws://*.blockchain2fa.io ws://*.adamant.chat ws://*.bbry.org; manifest-src 'self'; prefetch-src 'self' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org;"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1"
         }
       ]
     }
