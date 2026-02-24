@@ -13,7 +13,17 @@ const loadEnvIfExists = (relativeFilePath) => {
   const absolutePath = path.resolve(process.cwd(), relativeFilePath)
 
   if (fs.existsSync(absolutePath)) {
-    dotenv.config({ path: absolutePath, override: false, quiet: true })
+    const parsedEnv = dotenv.parse(fs.readFileSync(absolutePath))
+
+    for (const [key, value] of Object.entries(parsedEnv)) {
+      if (key === 'APPLE_NOTARIZE') {
+        continue
+      }
+
+      if (process.env[key] === undefined) {
+        process.env[key] = value
+      }
+    }
   }
 }
 
@@ -27,6 +37,7 @@ const bootstrapNotarizationEnv = () => {
 }
 
 exports.default = async function notarizing(context) {
+  const shouldNotarize = process.env.APPLE_NOTARIZE === 'true'
   bootstrapNotarizationEnv()
 
   const { electronPlatformName, appOutDir } = context
@@ -35,7 +46,10 @@ exports.default = async function notarizing(context) {
     return
   }
 
-  if (process.env.APPLE_NOTARIZE !== 'true') {
+  // Read notarization toggle only from process env at startup.
+  // This prevents local dotenv files from forcing notarization
+  // for plain `electron:build` scripts.
+  if (!shouldNotarize) {
     logInfo('APPLE_NOTARIZE=false | Skipping the notarization')
     return
   }
