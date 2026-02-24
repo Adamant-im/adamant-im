@@ -39,7 +39,7 @@
 
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
-import draggable from 'vuedraggable'
+import draggable from 'vuedraggable/src/vuedraggable'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { CryptosInfo, CryptoSymbol, isErc20 } from '@/lib/constants'
 import { useStore } from 'vuex'
