@@ -42,6 +42,7 @@ exports[`LoginForm.vue > renders the correct markup 1`] = `
     <v-btn
       class="login-form__button a-btn-primary"
       data-v-ba684ca4=""
+      type="submit"
     >
       <v-progress-circular
         class="mr-4"
