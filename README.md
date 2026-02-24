@@ -86,6 +86,18 @@ To force legacy Chrome extension-based Vue DevTools inside Electron:
 ELECTRON_USE_CHROME_DEVTOOLS_EXTENSION=true npm run electron:dev
 ```
 
+To keep DevTools open but reduce noisy Chromium logs in terminal (default behavior):
+
+```bash
+npm run electron:dev
+```
+
+To disable log suppression and see full Chromium/Electron internals:
+
+```bash
+ELECTRON_SUPPRESS_CHROMIUM_LOGS=false npm run electron:dev
+```
+
 ### Build electron version
 
 ```

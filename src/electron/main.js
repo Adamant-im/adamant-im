@@ -11,6 +11,7 @@ const __dirname = path.dirname(__filename)
 const logInfo = (...args) => console.info('[electron-main]', ...args)
 const useLegacyChromeDevtoolsExtension =
   process.env.ELECTRON_USE_CHROME_DEVTOOLS_EXTENSION === 'true'
+const suppressChromiumLogs = process.env.ELECTRON_SUPPRESS_CHROMIUM_LOGS !== 'false'
 const mimeTypes = {
   '.js': 'text/javascript',
   '.html': 'text/html',
@@ -25,6 +26,17 @@ const mimeTypes = {
 // be closed automatically when the JavaScript object is garbage collected
 let appWindow
 let removeNativeThemeListener
+
+if (import.meta.env.DEV) {
+  app.commandLine.appendSwitch(
+    'disable-features',
+    'AutofillServerCommunication,AutofillEnableAccountWalletStorage'
+  )
+
+  if (suppressChromiumLogs) {
+    app.commandLine.appendSwitch('log-level', '3')
+  }
+}
 
 const syncDarkThemeWithRenderer = (value) => {
   if (!appWindow || appWindow.isDestroyed() || appWindow.webContents.isDestroyed()) {
