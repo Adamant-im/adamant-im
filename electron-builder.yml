@@ -49,6 +49,7 @@ afterPack: 'scripts/electron/sandboxFix.mjs'
 
 # Config for OSX dmg
 dmg:
+  sign: true
   background: './build/osx/background.jpeg'
   contents:
     - x: 260

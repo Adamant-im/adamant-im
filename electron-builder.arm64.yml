@@ -34,6 +34,7 @@ afterAllArtifactBuild: 'scripts/electron/staple.cjs'
 afterPack: 'scripts/electron/sandboxFix.mjs'
 
 dmg:
+  sign: true
   background: './build/osx/background.jpeg'
   contents:
     - x: 260

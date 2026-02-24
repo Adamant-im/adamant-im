@@ -24,6 +24,20 @@ const bootstrapEnv = () => {
   loadEnvIfExists('.env')
 }
 
+const summarizeOutput = (text, maxLines = 8) => {
+  if (!hasValue(text)) {
+    return ''
+  }
+
+  const lines = text.trim().split('\n')
+
+  if (lines.length <= maxLines) {
+    return lines.join('\n')
+  }
+
+  return `${lines.slice(0, maxLines).join('\n')}\n... (${lines.length - maxLines} more lines)`
+}
+
 const runXcrun = (args, label) => {
   const result = spawnSync('xcrun', args, {
     encoding: 'utf8',
@@ -31,8 +45,8 @@ const runXcrun = (args, label) => {
   })
 
   if (result.status !== 0) {
-    const stdout = hasValue(result.stdout) ? result.stdout.trim() : ''
-    const stderr = hasValue(result.stderr) ? result.stderr.trim() : ''
+    const stdout = summarizeOutput(result.stdout)
+    const stderr = summarizeOutput(result.stderr)
     const details = [stdout, stderr].filter(hasValue).join('\n')
     const detailsSuffix = hasValue(details) ? `\n${details}` : ''
     throw new Error(`${label} failed${detailsSuffix}`)
@@ -41,8 +55,28 @@ const runXcrun = (args, label) => {
   return hasValue(result.stdout) ? result.stdout.trim() : ''
 }
 
+const isStapled = (targetPath) => {
+  const result = spawnSync('xcrun', ['stapler', 'validate', targetPath], {
+    stdio: ['ignore', 'ignore', 'ignore']
+  })
+
+  return result.status === 0
+}
+
 const runStapler = (targetPath) => {
-  runXcrun(['stapler', 'staple', targetPath], `Stapling ${targetPath}`)
+  if (isStapled(targetPath)) {
+    return
+  }
+
+  try {
+    runXcrun(['stapler', 'staple', targetPath], `Stapling ${targetPath}`)
+  } catch (error) {
+    if (isStapled(targetPath)) {
+      return
+    }
+
+    throw error
+  }
 }
 
 const runNotarytoolSubmit = (artifactPath, authArgs) => {
