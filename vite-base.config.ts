@@ -65,7 +65,8 @@ export default defineConfig({
       http: 'stream-http',
       https: 'https-browserify',
       os: 'os-browserify/browser',
-      assert: 'assert'
+      assert: 'assert',
+      vm: path.resolve(__dirname, './src/lib/polyfills/vm.js')
     },
     extensions: ['.tsx', '.ts', '.js', '.json', '.vue']
   },
@@ -88,6 +89,9 @@ export default defineConfig({
   },
   build: {
     target: 'esnext',
+    // Current app bundles include heavy crypto/runtime chunks by design.
+    // Keep build output clean from non-actionable size warnings.
+    chunkSizeWarningLimit: 4000,
     commonjsOptions: {
       include: []
     },
