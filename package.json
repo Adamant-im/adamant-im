@@ -230,6 +230,15 @@
     "eslint": {
       "ajv": "^6.14.0"
     },
+    "editorconfig": {
+      "minimatch": "^9.0.6"
+    },
+    "js-beautify": {
+      "minimatch": "^9.0.6"
+    },
+    "filelist": {
+      "minimatch": "^5.1.7"
+    },
     "elliptic": "^6.6.1",
     "valibot": "^1.2.0",
     "validator": "^13.15.26",
