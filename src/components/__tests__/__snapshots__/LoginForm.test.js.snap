@@ -5,7 +5,7 @@ exports[`LoginForm.vue > renders the correct markup 1`] = `
   class="login-form"
   data-v-ba684ca4=""
 >
-  <!-- Hidden input with username to prevent Chorme warning in console -->
+  <!-- Hidden input with username to prevent Chrome warning in console -->
   <input
     autocomplete="username"
     data-v-ba684ca4=""
