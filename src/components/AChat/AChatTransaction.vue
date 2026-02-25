@@ -68,7 +68,7 @@
             :class="isCryptoSupported ? 'a-chat__amount--clickable' : ''"
             @click="onClickAmount"
           >
-            <v-row align="center" no-gutters>
+            <v-row align="center" gap="0">
               <slot name="crypto" />
               <div class="a-chat__rates-column d-flex ml-4">
                 <span class="mb-1">{{ currencyFormatter(transaction.amount, crypto) }}</span>

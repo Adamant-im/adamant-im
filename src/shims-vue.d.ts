@@ -13,3 +13,5 @@ declare module '@vue/runtime-core' {
     $i18n: VueI18n
   }
 }
+
+declare module '@vue/eslint-config-prettier/skip-formatting'

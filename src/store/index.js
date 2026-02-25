@@ -44,6 +44,7 @@ import { cryptoTransferAsset, replyWithCryptoTransferAsset } from '@/lib/adamant
 import { PendingTxStore } from '@/lib/pending-transactions'
 import servicesModule from './modules/services'
 import servicesPlugin from './modules/services/services-plugin'
+import { logger } from '@/utils/devTools/logger'
 
 export let interval
 
@@ -236,7 +237,7 @@ const store = {
         function repeat() {
           validateStoredCryptoAddresses()
           dispatch('updateBalance')
-            .catch((err) => console.error(err))
+            .catch((err) => logger.log('store', 'warn', err))
             .then(
               () =>
                 (interval = setTimeout(
@@ -247,7 +248,7 @@ const store = {
                 ))
             )
         }
-        dispatch('initBalanceUpdate').catch((err) => console.error(err))
+        dispatch('initBalanceUpdate').catch((err) => logger.log('store', 'warn', err))
         repeat()
       }
     },

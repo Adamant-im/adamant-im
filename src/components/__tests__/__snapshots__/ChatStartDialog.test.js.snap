@@ -14,7 +14,7 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
       class="a-text-header"
       data-v-50a3fb39=""
     >
-      Start a new chat
+      New chat
     </v-card-title>
     <v-divider
       class="a-divider"
@@ -24,17 +24,17 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
       align="center"
       class="pa-4"
       data-v-50a3fb39=""
+      gap="0"
       justify="center"
-      no-gutters=""
     >
       <v-text-field
         autofocus=""
         class="a-input"
         color="primary"
         data-v-50a3fb39=""
-        label="Partner's address"
+        label="Partner address"
         modelvalue=""
-        title="Partner's ADM address like U1234567890987654321 or Share link"
+        title="Partner ADM address like U1234567890987654321 or Share link"
         variant="underlined"
       />
       <v-col
@@ -46,7 +46,7 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
           class="chat-start-dialog__btn-start-chat a-btn-primary"
           data-v-50a3fb39=""
         >
-          Start a chat
+          Start chat
         </v-btn>
       </v-col>
       <v-col
@@ -72,17 +72,30 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
     <v-card>
       <v-row
         class="py-3"
+        gap="0"
         justify="center"
-        no-gutters=""
       >
         <div
           style="cursor: pointer;"
         >
-          <img
-            alt=""
+          <div
+            class="spinner-container"
             data-v-537400c4=""
-            src=""
-          />
+          >
+            <v-row
+              data-v-537400c4=""
+              gap="0"
+              justify="center"
+            >
+              <v-progress-circular
+                class="progress-circular"
+                color="#4A4A4A"
+                indeterminate=""
+                size="152"
+                stroke="1"
+              />
+            </v-row>
+          </div>
         </div>
         <v-btn
           class="a-btn-primary mt-4 mb-2"

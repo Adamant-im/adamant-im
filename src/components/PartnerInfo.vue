@@ -24,7 +24,7 @@
           </v-list-item-subtitle>
         </v-list-item>
       </v-list>
-      <v-row align="center" justify="center" class="pb-6" no-gutters>
+      <v-row align="center" justify="center" class="pb-6" gap="0">
         <QrcodeRenderer :logo="logo" :opts="opts" :text="text" />
       </v-row>
     </v-card>

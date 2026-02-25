@@ -7,6 +7,7 @@ import type { NodeInfo } from '@/types/wallets'
 import { RpcRequest, RpcResponse } from './types/api/common'
 import { NetworkInfo } from './types/api/network-info'
 import { BlockchainInfo } from './types/api/blockchain-info'
+import { logger } from '@/utils/devTools/logger'
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
@@ -18,7 +19,7 @@ export class DogeNode extends Node<AxiosInstance> {
   }
 
   protected buildClient(): AxiosInstance {
-    return createBtcLikeClient(this.url)
+    return createBtcLikeClient(this.url, this.healthcheckRequestTimeoutMs)
   }
 
   protected async checkHealth() {
@@ -36,13 +37,17 @@ export class DogeNode extends Node<AxiosInstance> {
   }
 
   protected async fetchNodeVersion(): Promise<void> {
-    const { version } = await this.invoke<NetworkInfo>({
-      method: 'getnetworkinfo',
-      params: []
-    })
+    try {
+      const { version } = await this.invoke<NetworkInfo>({
+        method: 'getnetworkinfo',
+        params: []
+      })
 
-    if (version) {
-      this.version = formatDogeVersion(version)
+      if (version) {
+        this.version = formatDogeVersion(version)
+      }
+    } catch (e) {
+      logger.log('doge-node', 'warn', e)
     }
   }
 

@@ -10,8 +10,18 @@
   text-transform: unset;
 }
 
+.v-btn.a-btn-primary:not(.v-btn--icon),
+.v-btn.a-btn-regular:not(.v-btn--icon) {
+  text-transform: uppercase;
+}
+
+.v-overlay.v-dialog .v-card-actions,
 .v-dialog--active .v-card__actions {
   padding-bottom: 15px;
+
+  .v-btn:not(.v-btn--icon) {
+    text-transform: uppercase;
+  }
 }
 
 .v-theme--light {

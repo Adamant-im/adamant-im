@@ -34,6 +34,10 @@ export default defineComponent({
     return {
       isUploadInProgress
     }
+  },
+
+  render() {
+    return null
   }
 })
 </script>

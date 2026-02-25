@@ -1,9 +1,9 @@
 <template>
-  <v-row no-gutters>
+  <v-row gap="0">
     <v-col cols="12">
       <div :class="classes.section">
         <h4 :class="classes.sectionTitle">{{ t('dev_vibrations.custom_pattern') }}</h4>
-        <v-row align="center" no-gutters>
+        <v-row align="center" gap="0">
           <v-col cols="8">
             <v-text-field
               v-model="customPattern"
@@ -28,7 +28,7 @@
 
       <div :class="classes.section">
         <h4 :class="classes.sectionTitle">{{ t('dev_vibrations.presets') }}</h4>
-        <v-row no-gutters>
+        <v-row gap="0">
           <v-col cols="12" class="mb-3">
             <v-btn @click="veryShort" :class="classes.presetButton" :prepend-icon="mdiPlay" block>
               {{ t('dev_vibrations.very_short') }}
@@ -86,6 +86,7 @@ import { mdiPlay } from '@mdi/js'
 import { useI18n } from 'vue-i18n'
 
 import { vibrate } from '@/lib/vibrate'
+import { logger } from '@/utils/devTools/logger'
 
 const { t } = useI18n()
 
@@ -107,7 +108,7 @@ const playCustomPattern = () => {
     const pattern = customPattern.value.split(',').map((i) => Number(i.trim()))
     navigator.vibrate(pattern)
   } catch (error) {
-    console.error('Invalid vibration pattern:', error)
+    logger.log('dev-vibrations', 'warn', 'Invalid vibration pattern:', error)
   }
 }
 

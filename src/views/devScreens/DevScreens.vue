@@ -3,7 +3,7 @@
     {{ t('dev_screens.title') }}
   </h3>
 
-  <v-row no-gutters>
+  <v-row gap="0">
     <v-col cols="12">
       <v-list class="dev-list">
         <v-list-item
@@ -19,7 +19,7 @@
         />
       </v-list>
       <v-list-item>
-        <v-row no-gutters>
+        <v-row gap="0">
           <v-col class="mt-3">
             <span class="dev-list">
               {{ t('dev_screens.logging') }}

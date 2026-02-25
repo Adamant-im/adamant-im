@@ -1,0 +1,60 @@
+{
+  "headers": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "dev.adamant.im"
+        }
+      ],
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org; object-src 'none'; style-src 'self' data: 'unsafe-inline'; img-src 'self' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org data: blob:; media-src 'self' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org blob:; frame-src 'none'; font-src 'self'; connect-src 'self' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org ws://*.adamant.im ws://*.adm.im ws://*.adamant.business ws://*.blockchain2fa.io ws://*.adamant.chat ws://*.bbry.org; manifest-src 'self'; prefetch-src 'self' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org;"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": {
+            "suf": "adamant-team.vercel.app"
+          }
+        }
+      ],
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org; object-src 'none'; style-src 'self' data: 'unsafe-inline'; img-src 'self' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org data: blob:; media-src 'self' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org blob:; frame-src 'none'; font-src 'self'; connect-src 'self' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org ws://*.adamant.im ws://*.adm.im ws://*.adamant.business ws://*.blockchain2fa.io ws://*.adamant.chat ws://*.bbry.org; manifest-src 'self'; prefetch-src 'self' *.adamant.im *.adm.im *.adamant.business *.blockchain2fa.io *.adamant.chat *.bbry.org;"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1"
+        }
+      ]
+    }
+  ]
+}

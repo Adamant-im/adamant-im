@@ -133,17 +133,14 @@ describe('LoginForm.vue', () => {
     })
 
     // default values
-    expect(wrapper.vm.disabledButton).toBe(false)
     expect(wrapper.vm.showSpinner).toBe(false)
 
     // freeze
     wrapper.vm.freeze()
-    expect(wrapper.vm.disabledButton).toBe(true)
     expect(wrapper.vm.showSpinner).toBe(true)
 
     // antifreeze
     wrapper.vm.antiFreeze()
-    expect(wrapper.vm.disabledButton).toBe(false)
     expect(wrapper.vm.showSpinner).toBe(false)
   })
 })

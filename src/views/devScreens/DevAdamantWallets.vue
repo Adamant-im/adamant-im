@@ -1,10 +1,10 @@
 <template>
-  <v-row no-gutters>
+  <v-row gap="0">
     <v-col cols="12">
       <div :class="classes.section">
         <h4 :class="classes.sectionTitle">{{ t('dev_wallets.configuration') }}</h4>
 
-        <v-row no-gutters>
+        <v-row gap="0">
           <v-col cols="12" md="4" class="pr-0 pr-md-2 mb-3">
             <v-autocomplete
               v-model="selectedCoin"

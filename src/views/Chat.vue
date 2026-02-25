@@ -1,5 +1,5 @@
 <template>
-  <v-row justify="center" no-gutters class="w-100">
+  <v-row justify="center" gap="0" class="w-100">
     <container>
       <chat
         :key="partnerId"

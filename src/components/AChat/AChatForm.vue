@@ -289,7 +289,9 @@ const submitMessage = () => {
 }
 
 const calculateInputHeight = () => {
-  nextTick(messageTextarea.value?.calculateInputHeight)
+  if (messageTextarea.value) {
+    nextTick(messageTextarea.value.calculateInputHeight)
+  }
 }
 
 const addLineFeed = () => {

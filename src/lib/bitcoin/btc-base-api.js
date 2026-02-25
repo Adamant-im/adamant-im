@@ -187,7 +187,7 @@ export default class BtcBaseApi {
   }
 
   _mapTransaction(tx) {
-    // Remove курьи txs like "possibleDoubleSpend" and txs without info
+    // Remove invalid txs like "possibleDoubleSpend" and txs without info
     if (tx.possibleDoubleSpend || (!tx.txid && !tx.time && !tx.valueIn && !tx.vin)) return
 
     const addressField = tx.vin[0].address ? 'address' : 'addr'

@@ -20,42 +20,39 @@
   </v-menu>
 </template>
 
-<script>
-export default {
-  props: {
-    prependIcon: {
-      type: String,
-      default: ''
-    },
-    appendIcon: {
-      type: String,
-      default: ''
-    }
-  },
-  computed: {
-    languages() {
-      return this.$i18n.messages
-    },
-    currentLocale: {
-      get() {
-        return this.$store.state.language.currentLocale
-      },
-      set(value) {
-        this.$store.dispatch('language/changeLocale', value)
-        this.$i18n.locale = value
-      }
-    },
-    currentLanguageName() {
-      const locale = Object.keys(this.languages).find((code) => code === this.currentLocale)
+<script setup>
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useStore } from 'vuex'
 
-      return this.languages[locale].title
-    }
+defineProps({
+  prependIcon: {
+    type: String,
+    default: ''
   },
-  methods: {
-    onSelect(locale) {
-      this.currentLocale = locale
-    }
+  appendIcon: {
+    type: String,
+    default: ''
   }
+})
+
+const { messages, locale } = useI18n()
+const store = useStore()
+
+const languages = computed(() => messages.value)
+
+const currentLocale = computed({
+  get: () => store.state.language.currentLocale,
+  set: (value) => {
+    store.dispatch('language/changeLocale', value)
+    locale.value = value
+  }
+})
+
+const currentLanguageName = computed(() => languages.value[currentLocale.value]?.title || '')
+
+const onSelect = (code) => {
+  currentLocale.value = code
 }
 </script>
 

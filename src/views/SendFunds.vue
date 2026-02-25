@@ -47,7 +47,7 @@ onBeforeMount(() => {
   validateAmountToSend()
 })
 
-onBeforeRouteLeave((to, from, next) => {
+onBeforeRouteLeave((to) => {
   const currentData = store.state.options.sendFundsData
 
   // if not from chats
@@ -83,7 +83,6 @@ onBeforeRouteLeave((to, from, next) => {
       }
     })
   }
-  next()
 })
 
 const validateCryptoCurrency = () => {

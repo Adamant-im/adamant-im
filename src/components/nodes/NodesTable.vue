@@ -170,6 +170,10 @@ const preferFasterServiceNodeOption = computed<boolean>({
   margin-left: -24px;
   margin-right: -24px;
 
+  :deep(.v-tab) {
+    text-transform: uppercase;
+  }
+
   &__info {
     :deep(a) {
       text-decoration-line: none;

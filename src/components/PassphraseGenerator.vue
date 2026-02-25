@@ -32,6 +32,7 @@
           rows="3"
           class="pt-0"
           color="grey"
+          hide-details
           no-resize
           @click.prevent="selectText"
         >

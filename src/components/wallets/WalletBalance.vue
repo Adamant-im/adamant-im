@@ -3,7 +3,7 @@
     class="px-0"
     :class="{
       [classes.root]: true,
-      'justify-center': balance === 0
+      [classes.singleLine]: Number(balance) === 0
     }"
   >
     <p
@@ -39,6 +39,7 @@ const className = 'wallet-balance'
 
 const classes = {
   root: className,
+  singleLine: `${className}--single-line`,
   statusTitle: `${className}__status-title`,
   statusText: `${className}__status-text`
 }
@@ -110,7 +111,16 @@ export default defineComponent({
   display: flex;
   line-height: 1;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 6px;
+
+  p {
+    margin: 0;
+  }
+
+  &--single-line {
+    gap: 0;
+  }
 
   &__status-title {
     line-height: 1.1;

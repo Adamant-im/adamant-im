@@ -1,11 +1,14 @@
 <template>
   <v-form ref="form" :class="classes.root" @submit.prevent="submit">
-    <v-row no-gutters>
+    <!-- Hidden input with username to prevent Chrome warning in console -->
+    <input type="text" name="username" autocomplete="username" style="display: none" />
+    <v-row gap="0">
       <slot>
         <!--     Todo: check src/components/PasswordSetDialog.vue component and consider the possibility to move common code to new component  -->
         <v-text-field
           ref="passphraseInput"
           v-model="passphrase"
+          @keydown.enter.prevent="submit"
           :label="t('login.password_label')"
           autocomplete="current-password"
           :class="classes.textField"
@@ -30,9 +33,9 @@
       <slot name="append-outer" />
     </v-row>
 
-    <v-row align="center" justify="center" no-gutters>
+    <v-row align="center" justify="center" gap="0">
       <slot name="button">
-        <v-btn class="login-form__button a-btn-primary" @click="submit">
+        <v-btn class="login-form__button a-btn-primary" type="submit">
           <v-progress-circular
             v-show="showSpinner"
             indeterminate
@@ -46,7 +49,7 @@
     </v-row>
 
     <transition name="slide-fade">
-      <v-row justify="center" no-gutters>
+      <v-row justify="center" gap="0">
         <slot name="qrcode-renderer" />
       </v-row>
     </transition>

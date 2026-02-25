@@ -83,7 +83,7 @@ describe('LanguageSwitcher.vue', () => {
     language.state.currentLocale = 'ru'
 
     expect(wrapper.vm.currentLocale).toBe('ru')
-    expect(wrapper.vm.currentLanguageName).toBe('Русский')
+    expect(wrapper.vm.currentLanguageName).toBe(ru.title)
   })
 
   it('should dispatch action when modify "currentLocale" computed', () => {

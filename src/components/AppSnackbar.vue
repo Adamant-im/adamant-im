@@ -3,11 +3,10 @@
     v-model="show"
     :timeout="timeout"
     :color="color"
-    :class="[className, { outlined: variant === 'outlined' }]"
+    :class="[className, { outlined: variant === 'outlined', multiline: message.length > 50 }]"
     :variant="variant"
     location="bottom"
     width="100%"
-    :multi-line="message.length > 50"
     @click:outside="show = false"
   >
     <div :class="`${className}__container`">
@@ -50,7 +49,7 @@ const show = computed({
 })
 const message = computed(() => store.state.snackbar.message)
 const color = computed(() => store.state.snackbar.color)
-const variant = computed(() => store.state.snackbar.variant)
+const variant = computed(() => store.state.snackbar.variant || 'flat')
 const timeout = computed(() =>
   message.value === t('connection.offline') ? -1 : store.state.snackbar.timeout
 )
@@ -81,6 +80,17 @@ const timeout = computed(() =>
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+
+  &.multiline {
+    :deep(.v-snackbar__wrapper) {
+      min-height: 64px;
+    }
+
+    .app-snackbar__container {
+      align-items: flex-start;
+      gap: 8px;
+    }
   }
 
   &__close-button {

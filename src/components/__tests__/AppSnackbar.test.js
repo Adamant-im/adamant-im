@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { SNACKBAR_TIMEOUT } from '@/store/modules/snackbar/constants'
 import { mount } from '@vue/test-utils'
 import { createStore } from 'vuex'
+import mockupI18n from './__mocks__/plugins/i18n'
 
 import mockupSnackbar from './__mocks__/store/modules/snackbar'
 import AppSnackbar from '@/components/AppSnackbar'
@@ -25,7 +26,7 @@ describe('AppSnackbar.vue', () => {
     const wrapper = mount(AppSnackbar, {
       shallow: true,
       global: {
-        plugins: [store]
+        plugins: [store, mockupI18n()]
       }
     })
 
@@ -39,7 +40,7 @@ describe('AppSnackbar.vue', () => {
     const wrapper = mount(AppSnackbar, {
       shallow: true,
       global: {
-        plugins: [store]
+        plugins: [store, mockupI18n()]
       }
     })
 

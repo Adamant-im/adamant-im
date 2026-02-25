@@ -188,7 +188,7 @@ $scroll-bar-width: 4px;
   }
 
   /**
-   * 1. Аvatar must have width/height even if empty.
+   * 1. Avatar must have width/height even if empty.
    */
   &__message-avatar {
     width: $chat-avatar-size;
@@ -248,6 +248,7 @@ $scroll-bar-width: 4px;
     }
 
     p {
+      margin-top: 0;
       margin-bottom: 0;
     }
 

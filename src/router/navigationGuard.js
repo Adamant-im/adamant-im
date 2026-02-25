@@ -8,35 +8,29 @@ import { AllCryptos } from '@/lib/constants/cryptos'
 
 /**
  * Navigate by contact info from URI or redirect to chats
- *
- * @param {function} next Resolves the hook (redirect to Chats)
  */
-export function navigateByURI(next = null) {
+export function navigateByURI() {
   const contact = parseURIasAIP()
 
   if (contact.address) {
     _navigateByContact(contact.params.message, contact.address, contact.params.label)
   } else {
-    if (next) {
-      next({ name: 'Chats' })
-    } else {
-      router.push({ name: 'Chats' })
-    }
+    router.push({ name: 'Chats' })
   }
 }
 
 export default {
-  chats: (to, from, next) => {
+  chats: (to) => {
     const chat = store.state.chat.chats[to.params.partnerId]
 
     // is valid ADM address or is Adamant Chat
     if (validateAddress('ADM', to.params.partnerId) || (chat && chat.readOnly)) {
-      return next()
+      return true
     }
 
-    next('/chats')
+    return '/chats'
   },
-  transactions: (to, from, next) => {
+  transactions: (to, from) => {
     if (to.meta.previousRoute) {
       to.meta.previousRoute = from
       if (to.meta.previousPreviousRoute && from.meta.previousRoute) {
@@ -45,8 +39,10 @@ export default {
     }
     const crypto = (to.params.crypto || '').toUpperCase()
     if (crypto in AllCryptos) {
-      next()
-    } else next('/home')
+      return true
+    }
+
+    return '/home'
   }
 }
 

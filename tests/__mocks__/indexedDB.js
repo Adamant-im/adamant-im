@@ -1,12 +1,23 @@
-// mock these modules to avoid `indexedDb` execution
-jest.mock('@/lib/idb', () => ({
+import { vi } from 'vitest'
+
+vi.mock('@/lib/idb', () => ({
   clearDb: () => Promise.resolve()
 }))
-jest.mock('@/lib/idb/state', () => ({
-  modules: []
+vi.mock('@/lib/idb/state', () => ({
+  modules: [],
+  restoreState: vi.fn(() => Promise.resolve()),
+  saveState: vi.fn(() => Promise.resolve())
 }))
-jest.mock('@/lib/idb/crypto', () => {})
-jest.mock('@/lib/idb/db', () => {})
-jest.mock('@/lib/idb/stores/Chats', () => {})
-jest.mock('@/lib/idb/stores/Modules', () => {})
-jest.mock('@/lib/idb/stores/Security', () => {})
+vi.mock('@/lib/idb/crypto', () => ({
+  encryptPassword: vi.fn(),
+  decryptPassword: vi.fn()
+}))
+vi.mock('@/lib/idb/db', () => ({}))
+vi.mock('@/lib/idb/stores/Chats', () => ({}))
+vi.mock('@/lib/idb/stores/Modules', () => ({
+  default: {
+    getAll: vi.fn(() => Promise.resolve([])),
+    saveAll: vi.fn(() => Promise.resolve())
+  }
+}))
+vi.mock('@/lib/idb/stores/Security', () => ({}))

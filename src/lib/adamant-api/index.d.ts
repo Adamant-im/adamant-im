@@ -99,7 +99,7 @@ export function sendSignedTransaction(
 ): Promise<CreateNewChatMessageResponseDto>
 
 export type EncodedFile = {
-  binary: Uint8Array
+  binary: Uint8Array<ArrayBuffer>
   nonce: string
 }
 

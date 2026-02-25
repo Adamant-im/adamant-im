@@ -28,6 +28,7 @@ import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import numberFormat from '@/filters/numberFormat'
 import { mdiDotsHorizontal } from '@mdi/js'
 import { vibrate } from '@/lib/vibrate'
+import { CryptoSymbol } from '@/lib/constants'
 
 const className = 'wallet-tab'
 const classes = {
@@ -44,9 +45,7 @@ export type Wallet = {
   cryptoName: string
   erc20: boolean
   rate: number
-  cryptoCurrency: string
-  isBalanceLoading: boolean
-  hasBalanceLoaded: boolean
+  cryptoCurrency: CryptoSymbol
 }
 
 type Props = {

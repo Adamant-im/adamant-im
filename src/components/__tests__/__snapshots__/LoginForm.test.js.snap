@@ -3,17 +3,27 @@
 exports[`LoginForm.vue > renders the correct markup 1`] = `
 <v-form
   class="login-form"
-  modelvalue="true"
+  data-v-ba684ca4=""
 >
+  <!-- Hidden input with username to prevent Chrome warning in console -->
+  <input
+    autocomplete="username"
+    data-v-ba684ca4=""
+    name="username"
+    style="display: none;"
+    type="text"
+  />
   <v-row
-    no-gutters=""
+    data-v-ba684ca4=""
+    gap="0"
   >
     
+    <!--     Todo: check src/components/PasswordSetDialog.vue component and consider the possibility to move common code to new component  -->
     <v-text-field
       autocomplete="current-password"
-      class="text-center"
-      color="#BBDEFB"
-      label="Enter your passphrase to login"
+      class="login-form__textfield text-center"
+      data-v-ba684ca4=""
+      label="Passphrase"
       modelvalue=""
       type="password"
       variant="underlined"
@@ -24,17 +34,20 @@ exports[`LoginForm.vue > renders the correct markup 1`] = `
   </v-row>
   <v-row
     align="center"
+    data-v-ba684ca4=""
+    gap="0"
     justify="center"
-    no-gutters=""
   >
     
     <v-btn
       class="login-form__button a-btn-primary"
-      disabled="false"
+      data-v-ba684ca4=""
+      type="submit"
     >
       <v-progress-circular
         class="mr-4"
         color="primary"
+        data-v-ba684ca4=""
         indeterminate=""
         size="24"
         style="display: none;"
@@ -46,12 +59,14 @@ exports[`LoginForm.vue > renders the correct markup 1`] = `
   <transition-stub
     appear="false"
     css="true"
+    data-v-ba684ca4=""
     name="slide-fade"
     persisted="false"
   >
     <v-row
+      data-v-ba684ca4=""
+      gap="0"
       justify="center"
-      no-gutters=""
     >
       
       

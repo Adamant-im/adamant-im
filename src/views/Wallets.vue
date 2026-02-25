@@ -1,39 +1,36 @@
 <template>
   <div :class="classes.root" class="w-100">
-    <WalletsSearchInput @change="searchChanged" />
-    <div
-      class="v-list v-list--density-default v-list--one-line"
-      :class="[isDarkTheme ? 'v-theme--dark' : 'v-theme--light']"
-    >
-      <draggable
-        class="list-group"
-        v-model="filteredWallets"
-        v-bind="dragOptions"
-        handle=".handle"
-        @start="isDragging = true"
-        @end="isDragging = false"
-        item-key="cryptoName"
+    <v-card flat color="transparent" :class="`${classes.root}__card`">
+      <WalletsSearchInput @change="searchChanged" />
+      <div
+        class="v-list v-list--density-default v-list--one-line"
+        :class="[`${classes.root}__list`, isDarkTheme ? 'v-theme--dark' : 'v-theme--light']"
       >
-        <template #item="{ element }">
-          <WalletsListItem :wallet="element" :search="search"></WalletsListItem>
-        </template>
-      </draggable>
-      <v-list-item
-        v-if="!filteredWallets.length"
-        :title="t('wallets.coins_not_found_title')"
-        class="text-center"
-      ></v-list-item>
-    </div>
-    <v-row
-      v-if="filteredWallets.length"
-      :class="`${classes.root}__review`"
-      align="center"
-      justify="space-between"
-      no-gutters
-    >
-      <v-spacer></v-spacer>
-      <WalletResetDialog></WalletResetDialog>
-    </v-row>
+        <draggable
+          :class="classes.draggableList"
+          v-model="filteredWallets"
+          v-bind="dragOptions"
+          handle=".handle"
+          item-key="cryptoName"
+        >
+          <template #item="{ element }">
+            <WalletsListItem :wallet="element" :search="search"></WalletsListItem>
+          </template>
+        </draggable>
+        <v-list-item
+          v-if="!filteredWallets.length"
+          :title="t('wallets.coins_not_found_title')"
+          class="text-center"
+        ></v-list-item>
+      </div>
+      <v-row
+        class="align-center justify-space-between v-row--no-gutters"
+        :class="`${classes.root}__review`"
+      >
+        <v-spacer></v-spacer>
+        <WalletResetDialog></WalletResetDialog>
+      </v-row>
+    </v-card>
   </div>
 </template>
 
@@ -54,7 +51,8 @@ const BALANCE_UPDATE_INTERVAL_MS = 30000
 
 const className = 'wallets-view'
 const classes = {
-  root: className
+  root: className,
+  draggableList: `${className}__draggable-list`
 }
 
 const dragOptions = {
@@ -80,7 +78,6 @@ const { t } = useI18n()
 const store = useStore()
 const { isDarkTheme } = useTheme()
 
-const isDragging = ref(false)
 const search = ref('')
 
 const orderedAllWalletSymbols = computed<CoinSymbol[]>(() => {
@@ -153,9 +150,32 @@ onBeforeUnmount(() => {
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
-@use 'vuetify/settings';
 
 .wallets-view {
+  position: relative;
+  height: calc(100vh - var(--v-layout-bottom) - var(--toolbar-height));
+
+  &__card {
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  &__list {
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  &__draggable-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    width: 100%;
+    margin: 0;
+  }
+
   &__review {
     padding-top: 15px !important;
     padding-bottom: 15px !important;
@@ -163,7 +183,7 @@ onBeforeUnmount(() => {
 }
 
 .v-theme--dark {
-  .v-list {
+  .wallets-view__list {
     background-color: map.get(colors.$adm-colors, 'black2');
   }
 }

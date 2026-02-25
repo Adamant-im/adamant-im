@@ -1,31 +1,63 @@
-import { vi, describe, it, beforeEach, expect } from 'vitest'
+import { vi, describe, it, beforeEach, afterEach, expect } from 'vitest'
+
+// 1. Mock everything that can trigger side effects first
+vi.mock('@/lib/idb/state', () => ({
+  restoreState: vi.fn(() => Promise.resolve()),
+  saveState: vi.fn(() => Promise.resolve())
+}))
+
+vi.mock('@/lib/idb/crypto', () => ({
+  encryptPassword: vi.fn(),
+  decryptPassword: vi.fn()
+}))
+
+// Mock modules that access nodes config
+vi.mock('@/lib/nodes/ipfs/index', () => ({ ipfs: {} }))
+vi.mock('@/lib/adamant-api', () => ({
+  adm: {},
+  getPublicKey: vi.fn(),
+  getChatRooms: vi.fn(),
+  getChatRoomMessages: vi.fn(),
+  signChatMessageTransaction: vi.fn()
+}))
+
 import chatModule from '@/store/modules/chat'
 import sinon from 'sinon'
+import * as admApi from '@/lib/adamant-api'
+import * as chatHelpers from '@/lib/chat/helpers'
+import adamant from '@/lib/adamant'
 
 import { TransactionStatus as TS } from '@/lib/constants'
 
 const { getters, mutations, actions } = chatModule
 
-vi.mock('@/store', () => {
-  return {
-    default: {},
-    store: {}
+const rewireDependency = (name, value) => {
+  if (name === 'admApi') {
+    Object.entries(value).forEach(([method, impl]) => {
+      vi.spyOn(admApi, method).mockImplementation(impl)
+    })
+    return
   }
-})
 
-vi.mock('@/lib/idb/crypto', () => ({
-  encryptPassword: () => {}
-}))
+  if (['getChats', 'createMessage', 'queueMessage', 'queueSignedMessage'].includes(name)) {
+    vi.spyOn(chatHelpers, name).mockImplementation(value)
+    return
+  }
 
-vi.mock('@/lib/idb/state', () => ({
-  restoreState: () => {}
-}))
+  throw new Error(`Unsupported dependency rewire: ${name}`)
+}
+
+chatModule.__Rewire__ = rewireDependency
 
 describe('Store: chat.js', () => {
   let state = null
 
   beforeEach(() => {
     state = chatModule.state()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   /**
@@ -976,7 +1008,9 @@ describe('Store: chat.js', () => {
 
         expect(state.chats['chats.virtual.welcome_message_title']).toBeTruthy() // Welcome ADAMANT
         expect(state.chats['U5149447931090026688']).toBeTruthy() // ADAMANT Exchange Bot
-        expect(state.chats['U17840858470710371662']).toBeTruthy() // Bet on Bitcoin price
+        expect(state.chats['U1644771796259136854']).toBeTruthy() // ADAMANT Bounty Bot
+        expect(state.chats['U380651761819723095']).toBeTruthy() // ADAMANT Donate Bot
+        expect(state.chats['U11138426591213238985']).toBeTruthy() // Adelina AI
       })
     })
 
@@ -1018,7 +1052,11 @@ describe('Store: chat.js', () => {
         expect(state).toEqual({
           chats: {},
           lastMessageHeight: 0,
-          isFulfilled: false
+          isFulfilled: false,
+          offset: 0,
+          noActiveNodesDialog: undefined,
+          newChats: {},
+          chatsActualUntil: 0
         })
       })
     })
@@ -1049,8 +1087,8 @@ describe('Store: chat.js', () => {
           address: 'U123456'
         }
 
-        const commit = vi.spy()
-        const dispatch = vi.spy()
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
 
         await actions.loadChats({ state, commit, dispatch, rootState }, { perPage: 50 })
 
@@ -1120,7 +1158,8 @@ describe('Store: chat.js', () => {
         chatModule.__Rewire__('admApi', {
           getChatRoomMessages: () =>
             Promise.resolve({
-              messages: [1, 2, 3]
+              messages: [1, 2, 3],
+              lastOffset: 25
             })
         })
 
@@ -1171,26 +1210,38 @@ describe('Store: chat.js', () => {
     describe('actions.pushMessages', () => {
       it('should commit(pushMessage) n times', () => {
         const commit = sinon.spy()
+        const dispatch = sinon.spy()
         const rootState = {
           address: 'U123456'
         }
-        const messages = [{}, {}, {}] // 3 times
+        const messages = [
+          { id: 1, senderId: 'U123456', recipientId: 'U111111' },
+          { id: 2, senderId: 'U123456', recipientId: 'U222222' },
+          { id: 3, senderId: 'U123456', recipientId: 'U333333' }
+        ] // 3 times
 
-        actions.pushMessages({ commit, rootState }, messages)
+        actions.pushMessages({ commit, rootState, dispatch }, messages)
 
         expect(commit.callCount).toBe(3)
+        expect(dispatch.calledOnce).toBe(true)
+        expect(dispatch.args[0][0]).toBe('botCommands/reInitCommands')
+        expect(dispatch.args[0][2]).toEqual({ root: true })
       })
 
       it('should commit(pushMessage) 0 times', () => {
         const commit = sinon.spy()
+        const dispatch = sinon.spy()
         const rootState = {
           address: 'U123456'
         }
         const messages = []
 
-        actions.pushMessages({ commit, rootState }, messages)
+        actions.pushMessages({ commit, rootState, dispatch }, messages)
 
         expect(commit.callCount).toBe(0)
+        expect(dispatch.calledOnce).toBe(true)
+        expect(dispatch.args[0][0]).toBe('botCommands/reInitCommands')
+        expect(dispatch.args[0][2]).toEqual({ root: true })
       })
     })
 
@@ -1212,20 +1263,24 @@ describe('Store: chat.js', () => {
         chatModule.__Rewire__('getChats', () =>
           Promise.resolve({
             messages: [],
-            lastMessageHeight: 0
+            lastMessageHeight: 0,
+            nodeTimestamp: 1
           })
         )
 
         const state = {
           isFulfilled: true
         }
+        const getters = {
+          chatsActualityTimeout: 1000
+        }
         const commit = sinon.spy()
         const dispatch = sinon.spy()
 
-        await expect(actions.getNewMessages({ state, commit, dispatch })).resolves.toEqual(
+        await expect(actions.getNewMessages({ getters, state, commit, dispatch })).resolves.toEqual(
           undefined
         )
-        expect(commit.args).toEqual([])
+        expect(commit.args).toEqual([['setChatsActualUntil', expect.any(Number)]])
         expect(dispatch.args).toEqual([['pushMessages', []]])
       })
 
@@ -1233,20 +1288,27 @@ describe('Store: chat.js', () => {
         chatModule.__Rewire__('getChats', () =>
           Promise.resolve({
             messages: [],
-            lastMessageHeight: 100
+            lastMessageHeight: 100,
+            nodeTimestamp: 1
           })
         )
 
         const state = {
           isFulfilled: true
         }
+        const getters = {
+          chatsActualityTimeout: 1000
+        }
         const commit = sinon.spy()
         const dispatch = sinon.spy()
 
-        await expect(actions.getNewMessages({ state, commit, dispatch })).resolves.toEqual(
+        await expect(actions.getNewMessages({ getters, state, commit, dispatch })).resolves.toEqual(
           undefined
         )
-        expect(commit.args).toEqual([['setHeight', 100]])
+        expect(commit.args).toEqual([
+          ['setChatsActualUntil', expect.any(Number)],
+          ['setHeight', 100]
+        ])
         expect(dispatch.args).toEqual([['pushMessages', []]])
       })
     })
@@ -1316,7 +1378,10 @@ describe('Store: chat.js', () => {
 
         await expect(actions.createChat({ commit }, { partnerId })).resolves.toEqual('public key')
 
-        expect(commit.args).toEqual([['createEmptyChat', partnerId]])
+        expect(commit.args).toEqual([
+          ['createEmptyChat', partnerId],
+          ['removeNewChat', partnerId]
+        ])
       })
 
       it('should resolve and create chat with `partnerName`', async () => {
@@ -1340,7 +1405,8 @@ describe('Store: chat.js', () => {
             { partner: partnerId, displayName: partnerName },
             { root: true }
           ],
-          ['createEmptyChat', partnerId]
+          ['createEmptyChat', partnerId],
+          ['removeNewChat', partnerId]
         ])
       })
     })
@@ -1360,16 +1426,26 @@ describe('Store: chat.js', () => {
           status: TS.PENDING
         }
 
-        // mock & replace `createMessage` & `queueMessage` dependency
+        // mock & replace send message dependencies
+        chatModule.__Rewire__('admApi', {
+          signChatMessageTransaction: () => ({ signature: 'mock-signature' })
+        })
+        vi.spyOn(adamant, 'getTransactionId').mockReturnValue(messageObject.id)
         chatModule.__Rewire__('createMessage', () => messageObject)
-        chatModule.__Rewire__('queueMessage', () => Promise.reject(new Error('Message rejected')))
+        chatModule.__Rewire__('queueSignedMessage', () =>
+          Promise.reject(new Error('Message rejected'))
+        )
 
         const commit = sinon.spy()
+        const dispatch = sinon.spy()
         const rootState = {
           address: userId
         }
 
-        const promise = actions.sendMessage({ commit, rootState }, { message, recipientId })
+        const promise = actions.sendMessage(
+          { commit, rootState, dispatch },
+          { message, recipientId }
+        )
         await expect(promise).rejects.toEqual(new Error('Message rejected'))
 
         expect(commit.args).toEqual([
@@ -1393,19 +1469,27 @@ describe('Store: chat.js', () => {
         }
         const transactionId = 't1'
 
-        // mock & replace `createMessage` & `queueMessage` dependency
+        // mock & replace send message dependencies
+        chatModule.__Rewire__('admApi', {
+          signChatMessageTransaction: () => ({ signature: 'mock-signature' })
+        })
+        vi.spyOn(adamant, 'getTransactionId').mockReturnValue(messageObject.id)
         chatModule.__Rewire__('createMessage', () => messageObject)
-        chatModule.__Rewire__('queueMessage', () =>
+        chatModule.__Rewire__('queueSignedMessage', () =>
           Promise.resolve({ success: true, transactionId })
         )
 
         const commit = sinon.spy()
+        const dispatch = sinon.spy()
         const rootState = {
           address: userId
         }
 
-        const promise = actions.sendMessage({ commit, rootState }, { message, recipientId })
-        await expect(promise).resolves.toEqual({ success: true, transactionId })
+        const promise = actions.sendMessage(
+          { commit, rootState, dispatch },
+          { message, recipientId }
+        )
+        await expect(promise).resolves.toEqual(undefined)
 
         expect(commit.args).toEqual([
           ['pushMessage', { message: messageObject, userId }],
@@ -1413,7 +1497,6 @@ describe('Store: chat.js', () => {
             'updateMessage',
             {
               id: messageObject.id,
-              realId: transactionId,
               status: TS.REGISTERED,
               partnerId: recipientId
             }
@@ -1439,23 +1522,24 @@ describe('Store: chat.js', () => {
       const transactionId = 't1'
 
       it('should resend message successfully', async () => {
-        // mock & replace `createMessage` & `queueMessage` dependency
-        chatModule.__Rewire__('createMessage', () => messageObject)
+        // mock & replace resend dependencies
         chatModule.__Rewire__('queueMessage', () => {
           return Promise.resolve({ success: true, transactionId })
         })
 
         const commit = sinon.spy()
+        const dispatch = sinon.spy()
         const mockGetters = {
           partnerMessageById: () => ({
             id: 1,
             recipientId,
-            message: 'hello world'
+            message: 'hello world',
+            isReply: false
           })
         }
 
         const promise = actions.resendMessage(
-          { commit, getters: mockGetters },
+          { commit, dispatch, getters: mockGetters },
           { recipientId, messageId }
         )
         await expect(promise).resolves.toEqual({ success: true, transactionId })
@@ -1468,37 +1552,39 @@ describe('Store: chat.js', () => {
               status: TS.PENDING,
               partnerId: recipientId
             }
-          ],
+          ]
+        ])
+        expect(dispatch.args).toEqual([
           [
-            'updateMessage',
+            'registerPendingMessage',
             {
-              id: messageId,
-              realId: transactionId,
-              status: TS.REGISTERED,
-              partnerId: recipientId
+              messageId,
+              recipientId,
+              transactionId
             }
           ]
         ])
       })
 
       it('resend should fail', async () => {
-        // mock & replace `createMessage` & `queueMessage` dependency
-        chatModule.__Rewire__('createMessage', () => messageObject)
+        // mock & replace resend dependencies
         chatModule.__Rewire__('queueMessage', () => {
           return Promise.reject(new Error('No connection'))
         })
 
         const commit = sinon.spy()
+        const dispatch = sinon.spy()
         const mockGetters = {
           partnerMessageById: () => ({
             id: 1,
             recipientId,
-            message: 'hello world'
+            message: 'hello world',
+            isReply: false
           })
         }
 
         const promise = actions.resendMessage(
-          { commit, getters: mockGetters },
+          { commit, dispatch, getters: mockGetters },
           { recipientId, messageId }
         )
         await expect(promise).rejects.toEqual(new Error('No connection'))
@@ -1511,13 +1597,14 @@ describe('Store: chat.js', () => {
               status: TS.PENDING,
               partnerId: recipientId
             }
-          ],
+          ]
+        ])
+        expect(dispatch.args).toEqual([
           [
-            'updateMessage',
+            'rejectPendingMessage',
             {
-              id: messageId,
-              status: TS.REJECTED,
-              partnerId: recipientId
+              messageId,
+              recipientId
             }
           ]
         ])
@@ -1551,6 +1638,7 @@ describe('Store: chat.js', () => {
         transactionObject.id = payload.transactionId
         transactionObject.message = payload.comment
         transactionObject.senderId = 'U123456'
+        transactionObject.isReply = false
         delete transactionObject.comment
         delete transactionObject.transactionId
 

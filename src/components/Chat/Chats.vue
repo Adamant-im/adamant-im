@@ -1,7 +1,7 @@
 <template>
   <div :class="className">
     <v-list subheader class="pa-0" bg-color="transparent" v-if="isFulfilled">
-      <v-row :class="`${className}__chats-actions`" no-gutters>
+      <v-row class="v-row--no-gutters" :class="`${className}__chats-actions`">
         <v-btn
           :class="`${className}__btn mt-2 ml-4`"
           @click="markAllAsRead"
@@ -354,15 +354,15 @@ const checkDate = () => {
   }
   &__messages {
     &.chats-view__messages--chat {
+      max-height: calc(100vh - 56px - var(--v-layout-bottom));
+      overflow-y: auto;
+
       @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
         max-height: calc(
           100vh -
             56px - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top)
         );
       }
-
-      max-height: calc(100vh - 56px - var(--v-layout-bottom));
-      overflow-y: auto;
     }
   }
 

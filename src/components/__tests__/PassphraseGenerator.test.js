@@ -1,9 +1,10 @@
-import { vi, describe, expect, it, beforeEach } from 'vitest'
+import { vi, describe, expect, it, beforeEach, beforeAll } from 'vitest'
 import { mount } from '@vue/test-utils'
 import PassphraseGenerator from '@/components/PassphraseGenerator'
 
 import mockupI18n from './__mocks__/plugins/i18n'
 
+// mocks
 vi.mock('@/lib/textHelpers', () => ({
   downloadFile: () => {}
 }))
@@ -11,6 +12,14 @@ vi.mock('@/lib/textHelpers', () => ({
 vi.mock('copy-to-clipboard', () => ({
   default: vi.fn()
 }))
+
+// Prevent jsdom errors for element.scrollIntoView
+beforeAll(() => {
+  if (!HTMLElement.prototype.scrollIntoView) {
+    // use vitest spy so we can inspect calls if needed
+    HTMLElement.prototype.scrollIntoView = vi.fn()
+  }
+})
 
 describe('PassphraseGenerator.vue', () => {
   let i18n = null
@@ -42,13 +51,14 @@ describe('PassphraseGenerator.vue', () => {
     expect(wrapper.vm.showPassphrase).toBe(false)
   })
 
-  it('should emit "copy" when copyToClipboard()', () => {
+  it('should emit "copy" when copyToClipboardHandler()', () => {
     const wrapper = mount(PassphraseGenerator, {
       shallow: true,
       global: {
         stubs: {
+          // ensure there is a textarea element for selectText()
           VTextarea: {
-            template: `<textarea/>`
+            template: `<div><textarea /></div>`
           }
         },
         plugins: [i18n]
@@ -56,7 +66,8 @@ describe('PassphraseGenerator.vue', () => {
     })
 
     wrapper.vm.passphrase = 'passphrase'
-    wrapper.vm.copyToClipboard()
+    // call the actual handler defined in the component
+    wrapper.vm.copyToClipboardHandler()
 
     expect(wrapper.emitted().copy).toBeTruthy()
   })
@@ -82,7 +93,7 @@ describe('PassphraseGenerator.vue', () => {
     expect(wrapper.emitted().save).toBeTruthy()
   })
 
-  it('should generate passphrase when generatePassphrase()', () => {
+  it('should generate passphrase when generatePassphrase()', async () => {
     const wrapper = mount(PassphraseGenerator, {
       shallow: true,
       global: {
@@ -90,7 +101,9 @@ describe('PassphraseGenerator.vue', () => {
       }
     })
 
+    // call, wait a tick so setTimeout runs (generatePassphrase uses setTimeout)
     wrapper.vm.generatePassphrase()
+    await new Promise((r) => setTimeout(r, 0))
 
     expect(wrapper.vm.showPassphrase).toBe(true)
     expect(wrapper.vm.passphrase.length > 0).toBe(true)

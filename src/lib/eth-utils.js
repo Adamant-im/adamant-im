@@ -52,8 +52,8 @@ export function getAccountFromPassphrase(passphrase, api) {
 export function calculateFee(gasUsed, gasPrice) {
   // After London hardfork we may not receive gasPrice. Still we change gasPrice to effectiveGasPrice where it's possible
   if (!gasPrice) return '0'
-  const gas = BigNumber(gasUsed, 10)
-  const price = BigNumber(gasPrice, 10)
+  const gas = new BigNumber(String(gasUsed), 10)
+  const price = new BigNumber(String(gasPrice), 10)
   const fee = gas.times(price).toString(10)
   return toEther(fee)
 }
@@ -74,9 +74,9 @@ export function toWhole(amount, decimals) {
     fraction += '0'
   }
 
-  const num = BigNumber(whole, 10)
-    .times(BigNumber(10, 10).pow(BigNumber(decimals, 10)))
-    .plus(BigNumber(fraction, 10))
+  const num = new BigNumber(String(whole), 10)
+    .times(new BigNumber('10', 10).pow(new BigNumber(String(decimals), 10)))
+    .plus(new BigNumber(String(fraction), 10))
     .toString(10)
 
   return num

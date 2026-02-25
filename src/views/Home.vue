@@ -1,6 +1,6 @@
 <template>
   <pull-down @action="updateBalances" :action-text="t('chats.pull_down_actions.update_balances')">
-    <v-row justify="center" no-gutters :class="className">
+    <v-row class="justify-center v-row--no-gutters" :class="className">
       <container disableMaxWidth>
         <v-sheet class="white--text" color="transparent" :class="`${className}__card`">
           <!-- Wallets -->
@@ -18,7 +18,6 @@
                 v-for="(wallet, index) in wallets"
                 :key="wallet.cryptoCurrency"
                 :value="wallet.cryptoCurrency"
-                @wheel="onWheel"
               >
                 <wallet-tab
                   :wallet="wallet"
@@ -122,7 +121,7 @@ const coinNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/coins'
 const allCoinNodesDisabled = computed(() =>
   coinNodes.value.every((node) => node.status === 'disabled')
 )
-const wallets = computed(() => {
+const wallets = computed<Wallet[]>(() => {
   const state = store.state
   return orderedVisibleWalletSymbols.value.map((crypto: CoinSymbol) => {
     const key = crypto.symbol.toLowerCase()
@@ -204,18 +203,6 @@ const handleBalanceClick = (crypto: string) => {
   goToTransactions(crypto)
 }
 
-const onWheel = (e: WheelEvent) => {
-  const currentWallet = wallets.value.find(
-    (wallet: Wallet) => wallet.cryptoCurrency === currentWallet.value
-  )
-  const currentWalletIndex = wallets.value.indexOf(currentWallet)
-
-  const nextWalletIndex = e.deltaY < 0 ? currentWalletIndex + 1 : currentWalletIndex - 1
-  const nextWallet = wallets.value[nextWalletIndex]
-
-  if (nextWallet) currentWallet.value = nextWallet.cryptoCurrency
-}
-
 const currentWallet = computed({
   get() {
     return store.state.options.currentWallet
@@ -270,7 +257,12 @@ watch(currentWallet, (value) => {
       letter-spacing: normal;
       min-width: 84px;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
+      justify-content: center;
+    }
+    :deep(.v-tab .v-btn__content) {
+      align-items: center;
+      justify-content: center;
     }
     :deep(.v-tab--selected) {
       font-weight: 500;
@@ -279,7 +271,7 @@ watch(currentWallet, (value) => {
       opacity: 1;
     }
     :deep(.v-tabs.v-tabs.v-tabs .v-slide-group__prev.v-slide-group__prev--disabled) {
-      display: none; // workaround: hide left/right arrows
+      visibility: hidden; // keep affix width so first tab stays centered
     }
     :deep(.v-tab.v-tab--selected::before) {
       background-color: unset;
@@ -301,7 +293,7 @@ watch(currentWallet, (value) => {
       min-width: 32px;
     }
     :deep(.v-slide-group__next.v-slide-group__next--disabled) {
-      display: none;
+      visibility: hidden; // keep affix width so last tab stays centered
     }
     :deep(.v-tabs .v-btn--stacked .v-btn__content) {
       line-height: normal;

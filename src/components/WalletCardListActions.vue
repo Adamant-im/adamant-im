@@ -1,5 +1,5 @@
 <template>
-  <v-list :class="className">
+  <v-list bg-color="transparent" :class="className">
     <v-list-item @click="sendFunds">
       <template #prepend>
         <v-icon :class="`${className}__icon`" :icon="mdiBankTransferOut" />
@@ -118,6 +118,11 @@ const getFreeTokens = () => {
   }
   :deep(.v-list-item) {
     padding: 0 28px;
+  }
+  :deep(.v-list-item--density-default.v-list-item--one-line) {
+    min-height: 56px;
+    padding-top: 8px;
+    padding-bottom: 8px;
   }
   :deep(.v-list-item__prepend) {
     > .v-icon {

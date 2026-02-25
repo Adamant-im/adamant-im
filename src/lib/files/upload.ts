@@ -40,7 +40,7 @@ export function readFileAsDataURL(file: File): Promise<string> {
   })
 }
 
-export function readFileAsBuffer(file: File): Promise<Uint8Array> {
+export function readFileAsBuffer(file: File): Promise<Uint8Array<ArrayBuffer>> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
 

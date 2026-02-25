@@ -12,7 +12,7 @@
 
         <v-divider :class="`${classes.root}__divider`" />
 
-        <v-row no-gutters class="pa-4">
+        <v-row gap="0" class="pa-4">
           <div :class="`${classes.root}__dialog-summary`">
             {{ t('wallets.reset_message') }}
           </div>

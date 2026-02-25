@@ -2,12 +2,11 @@ import { $ } from 'execa'
 
 import { copyFile, readdir, readFile, writeFile, mkdir, rm } from 'fs/promises'
 import { resolve, join } from 'path'
-import capitalize from 'lodash-es/capitalize'
-import chain from 'lodash-es/chain'
-import isArray from 'lodash-es/isArray'
-import mapValues from 'lodash-es/mapValues'
-import mergeWith from 'lodash-es/mergeWith'
-import omit from 'lodash-es/omit'
+import capitalize from 'lodash-es/capitalize.js'
+import isArray from 'lodash-es/isArray.js'
+import mapValues from 'lodash-es/mapValues.js'
+import mergeWith from 'lodash-es/mergeWith.js'
+import omit from 'lodash-es/omit.js'
 
 const CRYPTOS_DATA_FILE_PATH = resolve('src/lib/constants/cryptos/data.json')
 const CRYPTOS_ICONS_DIR_PATH = resolve('src/components/icons/cryptos')
@@ -21,14 +20,14 @@ void run(BRANCH)
 
 /**
  *
- * @param {string} branch The branch to pull from. E.g.: dev, master
+ * @param {string} branch The branch to sync from. E.g.: dev, master
  * @return {Promise<void>}
  */
-async function run(branch = 'master') {
+async function run(branch = 'dev') {
   // update adamant-wallets repo
-  await $`git submodule init`
-  await $`git submodule update`
-  await $`git submodule foreach git pull origin ${branch}`
+  await $`git submodule update --init`
+  await $`git -C adamant-wallets fetch origin ${branch}`
+  await $`git -C adamant-wallets checkout --detach origin/${branch}`
 
   logInfo('Updating coins data from `adamant-wallets`. Using branch:', branch)
 
@@ -74,7 +73,9 @@ async function initCoins() {
   })
 
   // Sort by key (coin symbol)
-  const sortedCoins = chain(coins).toPairs().sortBy(0).fromPairs().value()
+  const sortedCoins = Object.fromEntries(
+    Object.entries(coins).sort(([first], [second]) => first.localeCompare(second))
+  )
 
   return {
     coins: sortedCoins,

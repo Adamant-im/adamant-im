@@ -16,8 +16,8 @@ exports[`QrcodeScannerDialog.vue > renders the correct markup 1`] = `
       align="center"
       class="pa-8"
       data-v-c5e2af2c=""
+      gap="0"
       justify="center"
-      no-gutters=""
     >
       <div
         class="a-text-header"
@@ -36,7 +36,7 @@ exports[`QrcodeScannerDialog.vue > renders the correct markup 1`] = `
     <!-- Camera Active -->
     <v-row
       data-v-c5e2af2c=""
-      no-gutters=""
+      gap="0"
       style="display: none;"
     >
       <v-col
@@ -62,11 +62,11 @@ exports[`QrcodeScannerDialog.vue > renders the correct markup 1`] = `
           class="a-text-regular text-center"
           data-v-c5e2af2c=""
         >
-          Hold your device steady for 2-3 seconds to scan the QR code
+          Hold steady for 2—3 seconds to scan QR code
         </h3>
       </v-col>
     </v-row>
-    <!-- No Camera -->
+    <!-- No Camera || No access || No stream -->
     <!--v-if-->
     <v-divider
       class="a-divider"

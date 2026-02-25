@@ -1,6 +1,6 @@
 <template>
   <component :is="layout">
-    <v-row justify="center" no-gutters :class="className">
+    <v-row justify="center" gap="0" :class="className">
       <container>
         <div :class="`${className}__buttons`">
           <div class="text-right">
@@ -33,7 +33,7 @@
         </v-sheet>
 
         <v-sheet v-if="!isLoginViaPassword" class="text-center mt-4" color="transparent">
-          <v-row justify="center" no-gutters>
+          <v-row justify="center" gap="0">
             <v-col sm="8" md="8" lg="8">
               <login-form
                 ref="loginForm"
@@ -44,7 +44,7 @@
             </v-col>
           </v-row>
 
-          <v-row justify="center" class="mt-4" no-gutters>
+          <v-row justify="center" class="mt-4" gap="0">
             <v-col cols="auto">
               <v-btn
                 class="ma-2"
@@ -83,7 +83,7 @@
         </v-row>
 
         <v-sheet v-if="isLoginViaPassword" class="text-center mt-6" color="transparent">
-          <v-row no-gutters justify="center">
+          <v-row gap="0" justify="center">
             <v-col sm="8" md="8" lg="8">
               <login-password-form v-model="password" @login="onLogin" @error="onLoginError" />
             </v-col>
@@ -184,6 +184,7 @@ const onScanQrcode = (value: string) => {
 
 .login-page {
   height: 100%;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
 
   &__title {
     font-family:
@@ -217,6 +218,10 @@ const onScanQrcode = (value: string) => {
       display: block;
       opacity: 0.06;
     }
+  }
+
+  @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+    padding-bottom: calc(40px + env(safe-area-inset-bottom));
   }
 }
 

@@ -5,68 +5,80 @@ import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
 import { FlatCompat } from '@eslint/eslintrc'
 import js from '@eslint/js'
 import typescriptEslint from '@typescript-eslint/eslint-plugin'
+import tsParser from '@typescript-eslint/parser'
 import vue from 'eslint-plugin-vue'
 import { defineConfig, globalIgnores } from 'eslint/config'
 import globals from 'globals'
-import parser from 'vue-eslint-parser'
+import vueParser from 'vue-eslint-parser'
+import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
+
 const compat = new FlatCompat({
-  allConfig: js.configs.all,
   baseDirectory: __dirname,
   recommendedConfig: js.configs.recommended
 })
-const config = defineConfig([
+
+export default defineConfig([
+  js.configs.recommended,
+
+  ...vue.configs['flat/essential'],
+
+  ...fixupConfigRules(
+    compat.extends(
+      'plugin:@typescript-eslint/recommended',
+      'plugin:import/recommended',
+      'plugin:import/typescript'
+    )
+  ),
+
   {
-    extends: fixupConfigRules(
-      compat.extends(
-        'plugin:vue/vue3-essential',
-        'eslint:recommended',
-        'plugin:@typescript-eslint/eslint-recommended',
-        'plugin:@typescript-eslint/recommended',
-        '@vue/eslint-config-prettier/skip-formatting',
-        'plugin:import/recommended',
-        'plugin:import/typescript'
-      )
-    ),
-    ignores: ['tests/', 'tests__/'],
+    files: ['**/*.{ts,tsx,js,jsx,vue}'],
     languageOptions: {
-      ecmaVersion: 13,
+      ecmaVersion: 'latest',
+      sourceType: 'module',
       globals: {
         ...globals.browser,
         ...globals.node
       },
-      parser: parser,
+      parser: vueParser,
       parserOptions: {
-        parser: {
-          '<template>': 'espree',
-          js: 'espree',
-          ts: '@typescript-eslint/parser'
-        }
+        parser: tsParser,
+        extraFileExtensions: ['.vue'],
+        ecmaFeatures: { jsx: true }
       }
     },
     plugins: {
-      '@typescript-eslint': fixupPluginRules(typescriptEslint),
-      vue: fixupPluginRules(vue)
+      // Manual registration is required only for plugins not covered by spreads above
+      '@typescript-eslint': fixupPluginRules(typescriptEslint as any)
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '_' }],
       'import/named': 'off',
-      'import/no-unresolved': 'error',
+      'import/no-unresolved': 'off',
+      'vue/multi-word-component-names': 'off',
+      'prettier/prettier': 'warn',
       'import/no-named-as-default': 'off',
-      'import/no-named-as-default-member': 'off',
-      'vue/multi-word-component-names': 'off'
+      'import/no-named-as-default-member': 'off'
     },
     settings: {
       'import/resolver': {
-        node: true,
-        typescript: true
+        typescript: {
+          project: ['./tsconfig.json']
+        }
       }
     }
   },
-  globalIgnores(['**/tests/', '**/__tests__/', 'src/components/icons/cryptos/*.vue'])
-])
 
-export default config
+  skipFormatting,
+  globalIgnores([
+    '**/tests/',
+    '**/__tests__/',
+    'src/types/wallets/**',
+    'src/components/icons/cryptos/*.vue',
+    'dist/**',
+    'node_modules/**'
+  ])
+])

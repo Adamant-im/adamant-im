@@ -1,6 +1,6 @@
 <template>
-  <v-card flat :class="classes.root">
-    <v-list lines="two" :class="classes.walletCardList">
+  <v-card flat color="transparent" :class="classes.root">
+    <v-list lines="two" bg-color="transparent" :class="classes.walletCardList">
       <v-list-item :class="classes.walletCardTile" @click="showShareURIDialog = true">
         <v-list-item-title :class="classes.walletCardTitle">
           {{ t('home.wallet_crypto', { crypto: cryptoName }) }}
@@ -141,6 +141,7 @@ const isADM = computed(() => {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
     span {
       font-style: italic;
       color: inherit;

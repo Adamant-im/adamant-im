@@ -3,36 +3,49 @@
 exports[`AChat.vue > renders the correct markup 1`] = `
 <div
   class="a-chat"
+  data-v-f44da01d=""
 >
   <div
     class="a-chat__content"
+    data-v-f44da01d=""
   >
     
     
-    <v-divider />
+    <v-divider
+      data-v-f44da01d=""
+    />
     <div
       class="a-chat__body"
+      data-v-f44da01d=""
     >
       <div
-        class="text-center py-2"
+        class="a-chat__spinner-wrapper"
+        data-v-f44da01d=""
+        style="top: 36px; display: none;"
       >
         <v-progress-circular
-          color="primary"
+          class="a-chat__spinner"
+          data-v-f44da01d=""
           indeterminate=""
-          size="24"
-          style="z-index: 100; display: none;"
+          size="20"
         />
       </div>
       <div
         class="a-chat__body-messages"
+        data-v-f44da01d=""
       >
-        
-        
+        <div
+          data-v-f44da01d=""
+        >
+          
+          
+        </div>
         
         
       </div>
       <div
         class="a-chat__fab"
+        data-v-f44da01d=""
       >
         
         
@@ -41,5 +54,6 @@ exports[`AChat.vue > renders the correct markup 1`] = `
     
     
   </div>
+  <!--v-if-->
 </div>
 `;
