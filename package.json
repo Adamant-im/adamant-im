@@ -124,7 +124,6 @@
     "web3-validator": "^2.0.6"
   },
   "devDependencies": {
-    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.1.0",
     "@commitlint/cli": "^20.4.2",
     "@commitlint/config-conventional": "^20.4.2",
@@ -228,9 +227,12 @@
     "2fa"
   ],
   "overrides": {
+    "eslint": {
+      "ajv": "^6.14.0"
+    },
     "elliptic": "^6.6.1",
-    "valibot": "^0.36.0",
-    "validator": "^13.12.0",
-    "tar": "^7.4.3"
+    "valibot": "^1.2.0",
+    "validator": "^13.15.26",
+    "tar": "^7.5.9"
   }
 }
