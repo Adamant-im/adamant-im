@@ -2,13 +2,7 @@
   <v-dialog v-model="show" :class="classes.root" width="500">
     <v-card :class="classes.root">
       <!-- Camera Waiting -->
-      <v-row
-        v-if="cameraStatus === 'waiting'"
-        justify="center"
-        align="center"
-        class="pa-8"
-        no-gutters
-      >
+      <v-row v-if="cameraStatus === 'waiting'" justify="center" align="center" class="pa-8" gap="0">
         <div class="a-text-header">
           {{ t('scan.waiting_camera') }}
         </div>
@@ -16,7 +10,7 @@
       </v-row>
 
       <!-- Camera Active -->
-      <v-row v-show="cameraStatus === 'active'" no-gutters>
+      <v-row v-show="cameraStatus === 'active'" gap="0">
         <v-col cols="12">
           <div :class="classes.camera">
             <video ref="videoElement" />
@@ -54,7 +48,7 @@
         justify="center"
         align="center"
         class="text-center pa-8"
-        no-gutters
+        gap="0"
       >
         <v-col cols="12">
           <template v-if="cameraStatus === 'nocamera'">

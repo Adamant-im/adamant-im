@@ -121,7 +121,8 @@ const knownIntlifyNoise = ['Legacy API mode has been deprecated in v11', 'Detect
 const knownRuntimeNoise = [
   "Not implemented: HTMLCanvasElement's getContext() method",
   "Cannot read properties of undefined (reading 'enumerateDevices')",
-  'Failed setting prop "prefix" on <v-textarea-stub>'
+  'Failed setting prop "prefix" on <v-textarea-stub>',
+  'Could not parse CSS stylesheet'
 ]
 
 const shouldIgnoreLog = (args) => {

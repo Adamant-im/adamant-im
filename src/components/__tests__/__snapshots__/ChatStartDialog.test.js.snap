@@ -24,8 +24,8 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
       align="center"
       class="pa-4"
       data-v-50a3fb39=""
+      gap="0"
       justify="center"
-      no-gutters=""
     >
       <v-text-field
         autofocus=""
@@ -72,8 +72,8 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
     <v-card>
       <v-row
         class="py-3"
+        gap="0"
         justify="center"
-        no-gutters=""
       >
         <div
           style="cursor: pointer;"
@@ -84,8 +84,8 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
           >
             <v-row
               data-v-537400c4=""
+              gap="0"
               justify="center"
-              no-gutters=""
             >
               <v-progress-circular
                 class="progress-circular"

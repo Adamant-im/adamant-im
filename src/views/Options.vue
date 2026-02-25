@@ -6,7 +6,7 @@
       <h3 :class="`${className}__title a-text-caption`" class="mt-4 mb-4">
         {{ t('options.general_title') }}
       </h3>
-      <v-row align="center" no-gutters>
+      <v-row align="center" gap="0">
         <v-col cols="6">
           <v-list-subheader :class="`${className}__label`">
             {{ t('options.language_label') }}
@@ -38,7 +38,7 @@
       <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
         {{ t('options.security_title') }}
       </h3>
-      <v-row align="center" no-gutters>
+      <v-row align="center" gap="0">
         <v-col cols="12" a-text-regular-enlarged>
           <v-checkbox
             :label="t('options.stay_logged_in')"
@@ -61,7 +61,7 @@
       <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
         {{ t('options.chats_title') }}
       </h3>
-      <v-row align="center" no-gutters>
+      <v-row align="center" gap="0">
         <v-col cols="12">
           <v-checkbox
             v-model="sendMessageOnEnter"
@@ -109,7 +109,7 @@
       <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
         {{ t('options.notification_title') }}
       </h3>
-      <v-row align="center" no-gutters>
+      <v-row align="center" gap="0">
         <v-col cols="12">
           <v-checkbox
             v-model="allowSoundNotifications"
@@ -142,7 +142,7 @@
       <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
         {{ t('options.actions') }}
       </h3>
-      <v-row no-gutters>
+      <v-row gap="0">
         <v-col cols="12">
           <v-list class="actions-list">
             <v-list-item
@@ -186,7 +186,7 @@
           </v-list>
         </v-col>
       </v-row>
-      <v-row no-gutters>
+      <v-row gap="0">
         <div
           :class="`${className}__version_info ml-auto`"
           @click="onVersionClick"

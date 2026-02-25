@@ -1,6 +1,6 @@
 <template>
   <v-form ref="form" :class="classes.root" @submit.prevent="submit">
-    <v-row no-gutters>
+    <v-row gap="0">
       <v-text-field
         ref="passwordInput"
         v-model="password"
@@ -20,7 +20,7 @@
       </v-text-field>
     </v-row>
 
-    <v-row align="center" justify="center" class="mt-2" no-gutters>
+    <v-row align="center" justify="center" class="mt-2" gap="0">
       <v-col cols="12">
         <slot name="button">
           <v-btn class="login-form__button a-btn-primary" type="submit">

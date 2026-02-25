@@ -65,7 +65,7 @@ html {
 
 // Change default dialog background color
 .v-card {
-  &.v-theme--dark {
+  &.v-theme--dark:not(.bg-transparent) {
     background-color: #424242; // secondary
     border-color: #424242; // secondary
   }
@@ -73,12 +73,6 @@ html {
 
 .v-dialog .v-card > .v-card-title {
   padding: 16px;
-}
-
-.v-list {
-  &.v-theme--dark {
-    background-color: #424242; // secondary
-  }
 }
 
 .v-menu .v-overlay__content > .v-card,
@@ -188,6 +182,10 @@ html {
 
 .v-list-item-subtitle {
   opacity: unset;
+
+  p {
+    margin: 0;
+  }
 }
 
 .v-label {
@@ -206,10 +204,34 @@ html {
   color: map.get(colors.$adm-colors, 'grey-transparent');
 }
 
-.v-list-item--density-default.v-list-item--one-line {
-  min-height: 56px;
-  padding-top: 8px;
-  padding-bottom: 8px;
+/* Restore brand accent for focused fields after Vuetify migration */
+.v-theme--light
+  .v-field.v-field--focused:not(.v-field--error):not(.v-field--disabled)
+  .v-field__outline,
+.v-theme--light
+  .v-field.v-field--focused:not(.v-field--error):not(.v-field--disabled)
+  .v-field__field
+  .v-label {
+  color: map.get(colors.$adm-colors, 'primary');
+}
+
+.v-theme--dark
+  .v-field.v-field--focused:not(.v-field--error):not(.v-field--disabled)
+  .v-field__outline,
+.v-theme--dark
+  .v-field.v-field--focused:not(.v-field--error):not(.v-field--disabled)
+  .v-field__field
+  .v-label {
+  color: map.get(colors.$adm-colors, 'primary');
+}
+
+/**
+ * Legacy alias from Vuetify 2 naming used in templates/styles.
+ * Vuetify 4 class is `.v-row--no-gutter`.
+ */
+.v-row--no-gutters {
+  --v-col-gap-x: 0px;
+  --v-col-gap-y: 0px;
 }
 
 .v-theme--dark {

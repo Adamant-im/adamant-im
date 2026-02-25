@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 import navigationGuard from '@/router/navigationGuard'
+import { patchLegacyNavigationGuards } from '@/router/legacyGuardCompat'
 
 import IsLogged from '@/middlewares/isLogged'
 import AuthMiddleware from '@/middlewares/auth'
@@ -226,6 +227,8 @@ const router = createRouter({
     }
   }
 })
+
+patchLegacyNavigationGuards(router)
 
 router.beforeEach(IsLogged)
 router.beforeEach(AuthMiddleware)

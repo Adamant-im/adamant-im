@@ -19,7 +19,10 @@
         :search-query="search"
         :waiting-for-confirmation="waitingForConfirmation"
       />
-      <v-row :class="`${className}__review`" align="center" justify="space-between" no-gutters>
+      <v-row
+        class="align-center justify-space-between v-row--no-gutters"
+        :class="`${className}__review`"
+      >
         <pagination-component v-if="showPagination" v-model="pagination.page" :pages="pages" />
 
         <v-btn
@@ -40,7 +43,7 @@
 
         <v-divider :class="`${className}__divider`" />
 
-        <v-row no-gutters class="pa-4">
+        <v-row class="pa-4 v-row--no-gutters">
           <div :class="`${className}__dialog-summary`">
             {{ t('votes.upvotes') }}: <strong>{{ numOfUpvotes }}</strong
             >,&nbsp; {{ t('votes.downvotes') }}: <strong>{{ numOfDownvotes }}</strong

@@ -1,20 +1,19 @@
 import store from '@/store'
 
-export default (to, from, next) => {
+export default (to) => {
   if (!to.meta.requiresAuth) {
-    next()
-    return
+    return true
   }
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     const isLogged = store.getters.isLogged
 
     if (isLogged) {
-      next()
+      return true
     } else {
-      next({ name: 'Login' })
+      return { name: 'Login' }
     }
-  } else {
-    next()
   }
+
+  return true
 }

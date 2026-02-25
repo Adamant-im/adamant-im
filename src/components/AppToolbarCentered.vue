@@ -1,6 +1,6 @@
 <template>
   <v-container :class="[classes, className]" fluid>
-    <v-row justify="center" no-gutters>
+    <v-row justify="center" gap="0">
       <container :disableMaxWidth="disableMaxWidth">
         <v-toolbar ref="toolbar" :flat="flat" :height="height">
           <back-button v-if="showBack" @click="goBack" />

@@ -15,7 +15,7 @@ exports[`LoginForm.vue > renders the correct markup 1`] = `
   />
   <v-row
     data-v-ba684ca4=""
-    no-gutters=""
+    gap="0"
   >
     
     <!--     Todo: check src/components/PasswordSetDialog.vue component and consider the possibility to move common code to new component  -->
@@ -35,8 +35,8 @@ exports[`LoginForm.vue > renders the correct markup 1`] = `
   <v-row
     align="center"
     data-v-ba684ca4=""
+    gap="0"
     justify="center"
-    no-gutters=""
   >
     
     <v-btn
@@ -65,8 +65,8 @@ exports[`LoginForm.vue > renders the correct markup 1`] = `
   >
     <v-row
       data-v-ba684ca4=""
+      gap="0"
       justify="center"
-      no-gutters=""
     >
       
       

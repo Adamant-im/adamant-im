@@ -105,8 +105,8 @@ const areNodesDisabled = computed(() => nodes.value?.some((node) => node.status 
 const areNodesOnline = computed(() => nodes.value?.some((node) => node.status === 'online'))
 const isOnline = computed(() => store.getters['isOnline'])
 
-onBeforeRouteUpdate((to, from, next) => {
-  navigationGuard.transactions(to, from, next)
+onBeforeRouteUpdate((to, from) => {
+  return navigationGuard.transactions(to, from)
 })
 
 const getNewTransactions = () => {

@@ -1,7 +1,7 @@
 <template>
   <div :class="className">
     <v-list subheader class="pa-0" bg-color="transparent" v-if="isFulfilled">
-      <v-row :class="`${className}__chats-actions`" no-gutters>
+      <v-row class="v-row--no-gutters" :class="`${className}__chats-actions`">
         <v-btn
           :class="`${className}__btn mt-2 ml-4`"
           @click="markAllAsRead"

@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="show" width="250">
     <v-card>
-      <v-row justify="center" class="py-3" no-gutters>
+      <v-row justify="center" class="py-3" gap="0">
         <div :style="{ cursor: 'pointer' }" @click="saveQrcode">
           <QrcodeRenderer ref="qrcode" :text="text" :logo="logoURL" :opts="opts" />
         </div>

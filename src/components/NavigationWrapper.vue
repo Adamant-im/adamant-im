@@ -18,7 +18,7 @@
         [classes.containerWithLoader]: hasLoaderSlot
       }"
     >
-      <v-row justify="center" no-gutters>
+      <v-row justify="center" gap="0">
         <slot name="loader" />
 
         <container

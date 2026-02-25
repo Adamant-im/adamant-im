@@ -1,5 +1,5 @@
 <template>
-  <v-row justify="center" no-gutters>
+  <v-row justify="center" gap="0">
     <v-progress-circular
       :size="spinnerSize"
       :stroke="1"

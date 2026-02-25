@@ -16,8 +16,8 @@ exports[`QrcodeScannerDialog.vue > renders the correct markup 1`] = `
       align="center"
       class="pa-8"
       data-v-c5e2af2c=""
+      gap="0"
       justify="center"
-      no-gutters=""
     >
       <div
         class="a-text-header"
@@ -36,7 +36,7 @@ exports[`QrcodeScannerDialog.vue > renders the correct markup 1`] = `
     <!-- Camera Active -->
     <v-row
       data-v-c5e2af2c=""
-      no-gutters=""
+      gap="0"
       style="display: none;"
     >
       <v-col

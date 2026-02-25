@@ -1,5 +1,5 @@
 <template>
-  <v-list bg-color="transparent">
+  <v-list bg-color="transparent" :class="`${className}__list`">
     <TransactionListItem :title="t('transaction.amount')">
       {{
         typeof transaction?.amount === 'number'
@@ -369,6 +369,19 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
 @use '@/assets/styles/settings/_colors.scss';
 
 .transaction-view {
+  &__list {
+    :deep(.v-list-item--density-default.v-list-item--one-line) {
+      min-height: 56px;
+      padding-top: 8px;
+      padding-bottom: 8px;
+    }
+
+    :deep(.v-divider) {
+      /* Keep row separators visually soft after Vuetify defaults update */
+      opacity: calc(var(--v-border-opacity) * 0.6);
+    }
+  }
+
   position: relative;
 
   &__content {
@@ -404,14 +417,6 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
   }
 }
 
-/** Themes **/
-.v-theme--light {
-  .transaction-view {
-    :deep(.v-divider) {
-      border-color: map.get(colors.$adm-colors, 'secondary2');
-    }
-  }
-}
 .v-theme--light,
 .v-theme--dark {
   .transaction-view {

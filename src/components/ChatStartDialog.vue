@@ -7,7 +7,7 @@
 
       <v-divider class="a-divider" />
 
-      <v-row justify="center" align="center" no-gutters class="pa-4">
+      <v-row justify="center" align="center" gap="0" class="pa-4">
         <v-text-field
           ref="partnerField"
           v-model="recipientAddress"

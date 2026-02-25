@@ -3,11 +3,10 @@
     v-model="show"
     :timeout="timeout"
     :color="color"
-    :class="[className, { outlined: variant === 'outlined' }]"
+    :class="[className, { outlined: variant === 'outlined', multiline: message.length > 50 }]"
     :variant="variant"
     location="bottom"
     width="100%"
-    :multi-line="message.length > 50"
     @click:outside="show = false"
   >
     <div :class="`${className}__container`">
@@ -81,6 +80,17 @@ const timeout = computed(() =>
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+
+  &.multiline {
+    :deep(.v-snackbar__wrapper) {
+      min-height: 64px;
+    }
+
+    .app-snackbar__container {
+      align-items: flex-start;
+      gap: 8px;
+    }
   }
 
   &__close-button {
