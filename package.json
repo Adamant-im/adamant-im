@@ -45,7 +45,7 @@
     "postinstall": "npm exec husky && npm run schema:generate"
   },
   "dependencies": {
-    "@capacitor-community/file-opener": "^7.0.1",
+    "@capacitor-community/file-opener": "^8.0.0",
     "@capacitor/android": "^8.1.0",
     "@capacitor/core": "^8.1.0",
     "@capacitor/filesystem": "^8.1.2",
@@ -59,7 +59,7 @@
     "assert": "^2.1.0",
     "axios": "^1.13.5",
     "b64-to-blob": "^1.2.19",
-    "bignumber.js": "^9.3.1",
+    "bignumber.js": "^10.0.2",
     "bip39": "^3.1.0",
     "bitcoinjs-lib": "^7.0.1",
     "buffer": "^6.0.3",
@@ -155,7 +155,7 @@
     "dotenv": "^17.3.1",
     "electron": "^39.6.1",
     "electron-builder": "^26.8.1",
-    "electron-devtools-installer": "^3.2.1",
+    "electron-devtools-installer": "^4.0.0",
     "eslint": "^9.39.3",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",

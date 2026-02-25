@@ -76,6 +76,7 @@ export default defineConfig([
   globalIgnores([
     '**/tests/',
     '**/__tests__/',
+    'src/types/wallets/**',
     'src/components/icons/cryptos/*.vue',
     'dist/**',
     'node_modules/**'
