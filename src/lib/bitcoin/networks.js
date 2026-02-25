@@ -7,7 +7,9 @@ const nets = {
   [Cryptos.BTC]: coininfo.bitcoin.main.toBitcoinJS()
 }
 
-// fix lack of bech32 value as new validation rules of ecpair dependency require string value in this key
+// ECPair v3 validates network shape and expects `bech32` to be a string key.
+// DOGE and DASH network objects do not define bech32 (no native segwit/bech32 usage),
+// so we provide an empty string to satisfy validation without changing address behavior.
 Object.values(nets).forEach((net) => {
   net.bech32 ??= ''
 })

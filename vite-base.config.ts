@@ -58,7 +58,7 @@ export default defineConfig({
 
       // Node.js polyfills
       buffer: 'buffer/',
-      events: 'rollup-plugin-node-polyfills/polyfills/events',
+      events: 'events/',
       stream: 'stream-browserify',
       path: 'path-browserify',
       crypto: 'crypto-browserify',
