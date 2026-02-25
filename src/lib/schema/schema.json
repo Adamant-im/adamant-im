@@ -1299,7 +1299,7 @@
             "type": "string"
           },
           "amount": {
-            "type": "number",
+            "type": "integer",
             "format": "int64",
             "description": "Amount to transfer, 8 decimal points (100000000 equals to 1 ADM). For non-transfer transactions must be `0`"
           },
