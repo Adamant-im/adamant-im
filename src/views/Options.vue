@@ -149,7 +149,7 @@
                 :disabled="isNotificationRegistering"
               >
                 <template v-slot:item="{ props: itemProps, item }">
-                  <v-list-item v-bind="itemProps" :disabled="item.raw.disabled"></v-list-item>
+                  <v-list-item v-bind="itemProps" :disabled="item.disabled"></v-list-item>
                 </template>
               </v-select>
             </v-col>
@@ -238,6 +238,8 @@ import NavigationWrapper from '@/components/NavigationWrapper.vue'
 import { useSavedScroll } from '@/hooks/useSavedScroll'
 import { sidebarLayoutKey, NotificationType } from '@/lib/constants'
 import { useChatStateStore } from '@/stores/modal-state'
+import { logger } from '@/utils/devTools/logger'
+
 import { pushService } from '@/lib/notifications/pushServiceFactory'
 import { usePushNotificationSetup } from '@/hooks/pushNotifications/usePushNotificationSetup'
 import { Capacitor } from '@capacitor/core'

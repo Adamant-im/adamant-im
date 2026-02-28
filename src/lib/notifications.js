@@ -6,6 +6,7 @@ import currency from '@/filters/currencyAmountWithSymbol'
 import { formatMessageBasic } from '@/lib/markdown'
 import { isAdamantChat } from '@/lib/chat/meta/utils'
 import { joinUrl } from '@/lib/urlFormatter.js'
+import { logger } from '@/utils/devTools/logger'
 import { NotificationType } from '@/lib/constants'
 
 let _this

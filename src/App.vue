@@ -20,11 +20,13 @@ import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { useResendPendingMessages } from '@/hooks/useResendPendingMessages'
 import { useTrackConnection } from '@/hooks/useTrackConnection'
+import { useHealthcheckResume } from '@/hooks/useHealthcheckResume'
 import { usePushNotificationSetup } from '@/hooks/pushNotifications/usePushNotificationSetup'
 
 useResendPendingMessages()
 useTrackConnection()
 usePushNotificationSetup()
+useHealthcheckResume()
 
 const store = useStore()
 const isSnackbarShowing = computed(() => store.state.snackbar.show)
