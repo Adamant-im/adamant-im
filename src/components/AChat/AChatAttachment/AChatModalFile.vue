@@ -1,8 +1,8 @@
 <template>
-  <v-carousel-item :class="classes.root" :max-width="500" :max-height="250">
+  <v-carousel-item :class="classes.root" :max-width="fileMaxWidth" :max-height="fileMaxHeight">
     <v-card :class="classes.card" width="100%" height="100%">
       <div :class="classes.container">
-        <IconFile :width="128" :height="128" :text="fileExtension" />
+        <IconFile :width="iconSize" :height="iconSize" :text="fileExtension" />
 
         <div>
           <div :class="classes.fileName">{{ fileName }}</div>
@@ -30,6 +30,9 @@ const classes = {
   fileName: `${className}__file-name`,
   fileSize: `${className}__file-size`
 }
+const fileMaxWidth = 500
+const fileMaxHeight = 250
+const iconSize = 128
 
 export default defineComponent({
   components: { IconFile },
@@ -61,7 +64,10 @@ export default defineComponent({
       fileName,
       fileExtension,
       fileSize,
-      formatBytes
+      formatBytes,
+      fileMaxWidth,
+      fileMaxHeight,
+      iconSize
     }
   }
 })
@@ -86,7 +92,7 @@ export default defineComponent({
   }
 
   &__card {
-    margin: 8px;
+    margin: var(--a-space-2);
   }
 
   &__container {
@@ -94,7 +100,7 @@ export default defineComponent({
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 8px;
+    gap: var(--a-space-2);
   }
 
   &__file-name {

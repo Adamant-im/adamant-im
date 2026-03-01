@@ -246,8 +246,13 @@ export default defineComponent({
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
+$attachments-width: 500px;
+$file-container-max-width: 420px;
+$file-grid-max-width: 200px;
+$file-grid-min-column-width: 98px;
+
 .a-chat__attachments {
-  width: 500px;
+  width: $attachments-width;
   max-width: 100%;
   margin-top: var(--a-space-1);
 
@@ -257,15 +262,15 @@ export default defineComponent({
 }
 
 .a-chat_file-container {
-  max-width: 420px;
+  max-width: $file-container-max-width;
 }
 
 .a-chat_fileContainerWithElement {
   display: grid;
   gap: calc(var(--a-space-1) / 2);
   width: 80vw;
-  max-width: 200px;
-  grid-template-columns: repeat(auto-fit, minmax(98px, 1fr));
+  max-width: $file-grid-max-width;
+  grid-template-columns: repeat(auto-fit, minmax($file-grid-min-column-width, 1fr));
 }
 
 .a-chat_file-img {

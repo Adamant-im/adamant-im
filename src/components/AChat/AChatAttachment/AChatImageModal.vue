@@ -27,7 +27,7 @@
           <AChatImageModalItem v-if="isTypeImage(file)" :transaction="transaction" :file="file" />
           <AChatModalFile v-else :file="file">
             <v-btn
-              class="mt-3"
+              :class="classes.downloadButton"
               color="primary"
               variant="flat"
               @click="downloadFile"
@@ -122,7 +122,8 @@ const classes = {
   carousel: `${className}__carousel`,
   saveButton: `${className}__save-btn`,
   closeButton: `${className}__close-btn`,
-  imageCounter: `${className}__img-counter`
+  imageCounter: `${className}__img-counter`,
+  downloadButton: `${className}__download-btn`
 }
 
 export default {
@@ -288,7 +289,7 @@ export default {
 .a-chat-image-modal {
   &__container {
     position: relative;
-    padding-bottom: 32px;
+    padding-bottom: var(--a-space-8);
   }
   &__close-btn {
   }
@@ -302,6 +303,10 @@ export default {
     flex-shrink: 1;
     margin-inline-start: 0;
     text-align: center;
+  }
+
+  &__download-btn {
+    margin-top: var(--a-space-3);
   }
 }
 
