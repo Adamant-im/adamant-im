@@ -2,7 +2,13 @@
   <div :class="classes.root">
     <div :class="classes.preview">
       <img v-if="file.isImage" :class="classes.img" :alt="file.name" :src="file.content" />
-      <IconFile :class="classes.icon" :text="extension" :height="80" :width="80" v-else />
+      <IconFile
+        :class="classes.icon"
+        :text="extension"
+        :height="previewSize"
+        :width="previewSize"
+        v-else
+      />
 
       <v-icon size="18" :icon="mdiClose" @click="$emit('remove')" :class="classes.removeIcon" />
     </div>
@@ -27,6 +33,7 @@ const classes = {
   removeIcon: `${className}__remove-icon`,
   fileName: `${className}__file-name`
 }
+const previewSize = 80
 
 export default defineComponent({
   components: {
@@ -48,6 +55,7 @@ export default defineComponent({
     return {
       classes,
       extension,
+      previewSize,
       mdiClose
     }
   }
@@ -60,11 +68,11 @@ export default defineComponent({
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .preview-file {
-  width: 80px;
+  width: calc(var(--a-space-10) * 2);
 
   &__preview {
-    width: 80px;
-    height: 80px;
+    width: calc(var(--a-space-10) * 2);
+    height: calc(var(--a-space-10) * 2);
     position: relative;
   }
 
@@ -84,8 +92,8 @@ export default defineComponent({
 
   &__remove-icon {
     position: absolute;
-    top: 2px;
-    right: 2px;
+    top: calc(var(--a-space-1) / 2);
+    right: calc(var(--a-space-1) / 2);
     border-radius: 50%;
   }
 }

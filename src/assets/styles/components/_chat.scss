@@ -313,7 +313,13 @@ $scroll-bar-width: 4px;
   }
 
   &__rates-column {
+    display: flex;
     flex-direction: column;
+    margin-left: var(--a-space-4);
+  }
+
+  &__rates-amount {
+    margin-bottom: var(--a-space-1);
   }
 
   &__rates {
@@ -344,6 +350,10 @@ $scroll-bar-width: 4px;
     border-bottom: 1px solid map.get(colors.$adm-colors, 'secondary2');
     padding-bottom: 5px;
     margin-bottom: 15px;
+  }
+
+  &__transaction-note {
+    margin-bottom: var(--a-space-1);
   }
 
   &__form {

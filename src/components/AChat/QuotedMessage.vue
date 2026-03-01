@@ -189,9 +189,9 @@ export default defineComponent({
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .quoted-message {
-  height: 32px;
-  border-radius: 8px;
-  padding: 4px 8px;
+  height: var(--a-control-size-sm);
+  border-radius: var(--a-radius-sm);
+  padding: var(--a-space-1) var(--a-space-2);
   cursor: pointer;
 
   &--non-clickable {

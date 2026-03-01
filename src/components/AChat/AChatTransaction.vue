@@ -70,8 +70,10 @@
           >
             <v-row align="center" gap="0">
               <slot name="crypto" />
-              <div class="a-chat__rates-column d-flex ml-4">
-                <span class="mb-1">{{ currencyFormatter(transaction.amount, crypto) }}</span>
+              <div class="a-chat__rates-column">
+                <span class="a-chat__rates-amount">{{
+                  currencyFormatter(transaction.amount, crypto)
+                }}</span>
                 <span class="a-chat__rates">{{ historyRate }}</span>
               </div>
             </v-row>
@@ -79,7 +81,7 @@
         </div>
 
         <div class="a-chat__message-card-body">
-          <div class="a-chat__message-text mb-1 a-text-regular-enlarged">
+          <div class="a-chat__message-text a-chat__transaction-note a-text-regular-enlarged">
             {{ transaction.message }}
           </div>
         </div>

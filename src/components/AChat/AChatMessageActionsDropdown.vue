@@ -35,7 +35,6 @@ import { defineComponent, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { mdiChevronDown } from '@mdi/js'
 
-
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 
 const className = 'message-actions-dropdown'
@@ -70,7 +69,7 @@ export default defineComponent({
 <style lang="scss">
 .message-actions-dropdown {
   &__top {
-    margin-top: 8px;
+    margin-top: var(--a-space-2);
   }
 }
 </style>

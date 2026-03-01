@@ -87,11 +87,11 @@ $message-max-lines: 2;
 
 .a-chat-reply-preview {
   border-left: 3px solid map.get(colors.$adm-colors, 'attention');
-  border-radius: 8px;
-  margin: 8px;
+  border-radius: var(--a-radius-sm);
+  margin: var(--a-space-2);
 
   &__container {
-    padding: 8px 16px;
+    padding: var(--a-space-2) var(--a-space-4);
     position: relative;
     display: flex;
   }
@@ -100,8 +100,8 @@ $message-max-lines: 2;
     @include mixins.a-text-regular-enlarged();
     line-height: 20px; // half of <ChatAvatar/> height
 
-    margin-left: 8px;
-    margin-right: 8px;
+    margin-left: var(--a-space-2);
+    margin-right: var(--a-space-2);
 
     overflow: hidden;
     display: -webkit-box;
@@ -113,8 +113,8 @@ $message-max-lines: 2;
     position: absolute;
     right: 0;
     top: 0;
-    margin-right: 4px;
-    margin-top: 4px;
+    margin-right: var(--a-space-1);
+    margin-top: var(--a-space-1);
   }
 }
 

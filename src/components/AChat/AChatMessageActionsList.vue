@@ -23,8 +23,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { mdiContentCopy,  mdiReply } from '@mdi/js'
-
+import { mdiContentCopy, mdiReply } from '@mdi/js'
 
 const className = 'message-actions-list'
 const classes = {
@@ -51,7 +50,7 @@ export default defineComponent({
 .message-actions-list {
   padding-top: 0;
   padding-bottom: 0;
-  border-radius: 8px;
-  margin-top: 16px;
+  border-radius: var(--a-radius-sm);
+  margin-top: var(--a-space-4);
 }
 </style>

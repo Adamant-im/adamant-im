@@ -26,7 +26,6 @@ import type { FileData } from '@/lib/files'
 import FilesPreviewItem from './FilesPreviewItem.vue'
 import { mdiClose } from '@mdi/js'
 
-
 const className = 'files-preview'
 const classes = {
   root: className,
@@ -60,24 +59,24 @@ export default defineComponent({
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .files-preview {
-  border-radius: 8px;
-  margin-bottom: 8px;
-  padding: 8px 16px;
+  border-radius: var(--a-radius-sm);
+  margin-bottom: var(--a-space-2);
+  padding: var(--a-space-2) var(--a-space-4);
   position: relative;
 
   &__files {
     display: flex;
-    gap: 8px;
+    gap: var(--a-space-2);
     overflow: auto;
-    margin-right: 12px;
+    margin-right: var(--a-space-3);
   }
 
   &__close-button {
     position: absolute;
     right: 0;
     top: 0;
-    margin-right: 4px;
-    margin-top: 4px;
+    margin-right: var(--a-space-1);
+    margin-top: var(--a-space-1);
   }
 }
 
