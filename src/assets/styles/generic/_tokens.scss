@@ -1,0 +1,34 @@
+:root {
+  --a-font-family-sans:
+    -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+
+  --a-space-1: 4px;
+  --a-space-2: 8px;
+  --a-space-3: 12px;
+  --a-space-4: 16px;
+  --a-space-5: 20px;
+  --a-space-6: 24px;
+  --a-space-8: 32px;
+  --a-space-10: 40px;
+
+  --a-radius-xs: 4px;
+  --a-radius-sm: 8px;
+  --a-radius-md: 12px;
+  --a-radius-round: 9999px;
+
+  --a-control-size-sm: 32px;
+  --a-control-size-md: 40px;
+  --a-control-size-lg: 48px;
+
+  --a-motion-fast: 150ms;
+  --a-motion-base: 200ms;
+  --a-motion-slow: 300ms;
+  --a-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  --a-focus-ring: 0 0 0 2px rgba(46, 126, 237, 0.35);
+}
+
+.v-theme--dark {
+  --a-focus-ring: 0 0 0 2px rgba(33, 150, 243, 0.45);
+}

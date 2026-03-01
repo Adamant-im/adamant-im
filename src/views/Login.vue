@@ -180,30 +180,26 @@ const onScanQrcode = (value: string) => {
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
 
 .login-page {
   height: 100%;
-  padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  padding-bottom: calc(var(--a-space-6) + env(safe-area-inset-bottom));
 
   &__title {
-    font-family:
-      -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-      sans-serif;
-    font-weight: 100;
-    font-size: 40px;
+    @include mixins.a-text-headline();
+    font-family: var(--a-font-family-sans);
     line-height: 40px;
-    text-transform: uppercase;
   }
   &__subtitle {
-    font-family:
-      -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-      sans-serif;
-    font-weight: 100;
-    font-size: 18px;
+    @include mixins.a-text-caption-light();
+    font-family: var(--a-font-family-sans);
   }
   &__icon {
-    transition: 0.2s linear;
+    transition:
+      opacity var(--a-motion-base) linear,
+      color var(--a-motion-base) linear;
   }
   &__buttons {
     position: relative;
@@ -211,17 +207,22 @@ const onScanQrcode = (value: string) => {
   &__settings-button-container {
     position: absolute;
     right: 0;
-    margin-right: 8px;
+    margin-right: var(--a-space-2);
   }
   &__settings-button {
     &:hover > ::v-deep(.v-btn__overlay) {
       display: block;
       opacity: 0.06;
     }
+
+    &:focus-visible {
+      box-shadow: var(--a-focus-ring);
+      border-radius: var(--a-radius-round);
+    }
   }
 
   @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-    padding-bottom: calc(40px + env(safe-area-inset-bottom));
+    padding-bottom: calc(var(--a-space-10) + env(safe-area-inset-bottom));
   }
 }
 

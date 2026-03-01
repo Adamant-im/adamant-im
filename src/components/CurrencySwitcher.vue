@@ -2,7 +2,7 @@
   <v-menu offset-y>
     <template #activator="{ props }">
       <v-btn
-        class="ma-0 btn"
+        class="ma-0 a-switcher-button"
         variant="text"
         v-bind="props"
         :prepend-icon="prependIcon"
@@ -64,35 +64,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-@use 'sass:map';
-@use '@/assets/styles/settings/_colors.scss';
-@use 'vuetify/settings';
-
-.btn {
-  text-transform: capitalize;
-  font-weight: 300;
-
-  :deep(.v-icon) {
-    margin-top: 2px;
-
-    &:before {
-      transition: 0.2s linear;
-    }
-  }
-
-  &[aria-expanded='true'] {
-    :deep(.v-icon) {
-      transform: rotate(90deg);
-    }
-  }
-}
-
-/** Themes **/
-.v-theme--light {
-  .btn {
-    color: map.get(colors.$adm-colors, 'regular');
-  }
-}
-</style>
