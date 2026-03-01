@@ -80,6 +80,28 @@ Strict CSP hardening (removing `unsafe-eval`) is tracked separately and must be 
 npm run lint
 ```
 
+### Run UI smoke checks with Playwright (dev-only)
+
+Install Chromium for Playwright:
+
+```bash
+npm run test:e2e:install
+```
+
+Run smoke checks:
+
+```bash
+npm run test:e2e
+```
+
+Open the HTML report:
+
+```bash
+npm run test:e2e:report
+```
+
+These checks are for local development and CI only and are not included in production bundles.
+
 ### Start dev server and electron app
 
 ```
