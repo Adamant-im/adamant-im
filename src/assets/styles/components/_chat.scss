@@ -60,7 +60,7 @@ $scroll-bar-width: 4px;
     scrollbar-gutter: stable both-edges;
     width: 100%;
     height: 100%;
-    padding: 16px 16px 16px 16px;
+    padding: var(--a-space-4);
 
     /* Scrollbar styles (Firefox) */
     scrollbar-color: map.get(settings.$grey, 'lighten-2' transparent);
@@ -91,7 +91,7 @@ $scroll-bar-width: 4px;
     float: left;
     max-width: 80%;
     margin: unset; // resets margins of <v-row/>
-    margin-bottom: 16px;
+    margin-bottom: var(--a-space-4);
 
     &:hover {
       .a-chat__message-actions-icon {
@@ -111,11 +111,11 @@ $scroll-bar-width: 4px;
     }
 
     &--grouped {
-      margin-bottom: 4px;
+      margin-bottom: var(--a-space-1);
     }
 
     &--grouped-left {
-      margin-bottom: 4px;
+      margin-bottom: var(--a-space-1);
     }
 
     &--right {
@@ -134,8 +134,8 @@ $scroll-bar-width: 4px;
   &__message {
     display: flex;
     flex-direction: row;
-    padding: 8px 16px;
-    border-radius: 16px;
+    padding: var(--a-space-2) var(--a-space-4);
+    border-radius: var(--a-radius-md);
     position: relative;
 
     &::after {
@@ -170,7 +170,7 @@ $scroll-bar-width: 4px;
     top: 0;
     right: 0;
     overflow: hidden;
-    border-radius: 0 8px;
+    border-radius: 0 var(--a-radius-sm);
   }
 
   @keyframes flashing {
@@ -195,8 +195,8 @@ $scroll-bar-width: 4px;
     height: $chat-avatar-size;
     min-width: $chat-avatar-size;
     min-height: $chat-avatar-size;
-    margin-right: 8px;
-    border-radius: 4px;
+    margin-right: var(--a-space-2);
+    border-radius: var(--a-radius-xs);
 
     img {
       border-radius: inherit;
@@ -204,8 +204,8 @@ $scroll-bar-width: 4px;
 
     &--right {
       order: 2;
-      margin-right: 0px;
-      margin-left: 8px;
+      margin-right: 0;
+      margin-left: var(--a-space-2);
     }
   }
 
@@ -236,7 +236,7 @@ $scroll-bar-width: 4px;
     code {
       font-weight: inherit;
       font-size: 14px;
-      padding: 2px 4px;
+      padding: calc(var(--a-space-1) / 2) var(--a-space-1);
       border-radius: 6px;
       overflow-x: auto;
       max-width: 100%;
@@ -254,7 +254,7 @@ $scroll-bar-width: 4px;
     }
 
     p:not(:last-child) {
-      margin-bottom: 8px;
+      margin-bottom: var(--a-space-2);
     }
 
     a {
@@ -267,22 +267,22 @@ $scroll-bar-width: 4px;
 
     pre {
       font-size: 12px;
-      padding: 8px;
-      margin-bottom: 8px;
+      padding: var(--a-space-2);
+      margin-bottom: var(--a-space-2);
       tab-size: 4;
       border-radius: 6px;
       overflow-x: auto;
       max-width: 100%;
 
       code {
-        padding: 0px;
+        padding: 0;
       }
     }
   }
 
   &__quoted-message {
-    margin-top: 4px;
-    margin-bottom: 4px;
+    margin-top: var(--a-space-1);
+    margin-bottom: var(--a-space-1);
   }
 
   /**
@@ -292,7 +292,7 @@ $scroll-bar-width: 4px;
     font-size: map.get($chat-sender, 'font-size');
     line-height: map.get($chat-sender, 'line-height');
     font-weight: 700;
-    margin-right: 8px;
+    margin-right: var(--a-space-2);
   }
 
   &__timestamp {
@@ -301,7 +301,7 @@ $scroll-bar-width: 4px;
   }
 
   &__amount {
-    font-size: 16px;
+    font-size: var(--a-space-4);
     font-weight: 500;
     line-height: 1;
     margin-top: 6px;
@@ -325,7 +325,7 @@ $scroll-bar-width: 4px;
 
   &__status {
     line-height: 1;
-    margin-left: 8px;
+    margin-left: var(--a-space-2);
 
     i {
       line-height: 1.2;
@@ -333,7 +333,7 @@ $scroll-bar-width: 4px;
   }
 
   &__blockchain-status {
-    font-size: 12px;
+    font-size: var(--a-space-3);
     line-height: 1;
     margin-right: 5px;
   }
@@ -347,7 +347,7 @@ $scroll-bar-width: 4px;
   }
 
   &__form {
-    padding: 8px 12px 8px 12px;
+    padding: var(--a-space-2) var(--a-space-3);
     position: relative;
     width: 100%;
 
@@ -399,12 +399,12 @@ $scroll-bar-width: 4px;
     }
   }
   &__form-append {
-    margin-right: 8px;
+    margin-right: var(--a-space-2);
   }
   &__fab {
     position: absolute;
-    right: 16px;
-    bottom: 16px;
+    right: var(--a-space-4);
+    bottom: var(--a-space-4);
     opacity: 0.7;
 
     &:hover {

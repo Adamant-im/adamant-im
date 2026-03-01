@@ -1,10 +1,11 @@
 # Playwright UI Smoke Checks
 
-This folder contains dev-only Playwright smoke checks for public UI routes
+This folder contains dev-only Playwright smoke and regression checks for public and core authenticated routes
 
 ## Scope
 
 - Verify core public screens render without runtime regressions
+- Verify core authenticated chat routes render and navigate without runtime regressions
 - Catch critical UI breakages early (missing form controls, broken menu interactions, route rendering issues)
 - Provide screenshots in Playwright reports for quick visual review
 
