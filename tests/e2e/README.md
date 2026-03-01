@@ -22,7 +22,13 @@ npm run test:e2e:install
 npm run test:e2e
 ```
 
-3. Open HTML report
+3. Run smoke checks with extended artifacts (manual mode)
+
+```bash
+npm run test:e2e:detailed
+```
+
+4. Open latest HTML report
 
 ```bash
 npm run test:e2e:report
@@ -33,3 +39,6 @@ npm run test:e2e:report
 - Playwright is used as a development and CI quality gate only
 - It is not bundled into production artifacts
 - Tests intentionally focus on stable, high-value checks to reduce flaky runs
+- Every run is stored under `playwright-report/YYYY-MM-DD HH:MM/`
+- If the same minute is reused, a numeric suffix is appended: `YYYY-MM-DD HH:MM (2)`
+- Default mode keeps only failure artifacts, detailed mode keeps artifacts for all tests

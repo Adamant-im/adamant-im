@@ -94,10 +94,28 @@ Run smoke checks:
 npm run test:e2e
 ```
 
+Run smoke checks with extended artifacts (manual mode):
+
+```bash
+npm run test:e2e:detailed
+```
+
 Open the HTML report:
 
 ```bash
 npm run test:e2e:report
+```
+
+Playwright keeps run history in timestamped folders:
+
+```text
+playwright-report/YYYY-MM-DD HH:MM/
+```
+
+If multiple runs start within the same minute, an automatic suffix is added:
+
+```text
+playwright-report/YYYY-MM-DD HH:MM (2)/
 ```
 
 These checks are for local development and CI only and are not included in production bundles.
