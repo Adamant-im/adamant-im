@@ -249,13 +249,13 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
   position: relative;
 
   &__chat-avatar {
-    margin-right: 16px;
+    margin-right: var(--a-space-4);
   }
 
   &__icon {
-    width: 48px;
-    height: 48px;
-    margin-right: 16px;
+    width: var(--a-control-size-lg);
+    height: var(--a-control-size-lg);
+    margin-right: var(--a-space-4);
 
     :deep(.svg-icon) {
       width: 100%;
@@ -284,13 +284,13 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 
   &__date {
     @include mixins.a-text-explanation-small();
-    margin-left: 16px;
+    margin-left: var(--a-space-4);
     white-space: nowrap;
   }
 
   &__badge {
     :deep(.v-badge__badge) {
-      left: calc(100% - 12px - 16px) !important;
+      left: calc(100% - var(--a-space-3) - var(--a-space-4)) !important;
       font-size: 14px;
       width: 22px;
       height: 22px;

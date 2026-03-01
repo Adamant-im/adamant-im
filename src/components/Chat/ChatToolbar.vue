@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar flat height="56" :class="`${className}`" color="transparent">
+  <v-toolbar flat :class="`${className}`" color="transparent">
     <back-button @click="goBack" v-if="isMobileView">
       <v-badge
         v-if="numOfNewMessages > 0"
@@ -89,7 +89,12 @@ const goBack = () => {
 .chat-toolbar {
   flex-grow: 0;
   flex-shrink: 0;
-  padding-left: 12px;
+  padding-left: var(--a-space-3);
+
+  :deep(.v-toolbar__content) {
+    min-height: var(--toolbar-height) !important;
+    height: var(--toolbar-height) !important;
+  }
 
   @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
     padding-left: 0;
@@ -105,8 +110,7 @@ const goBack = () => {
   }
 
   &__adm-chat-name {
-    font-size: 20px;
-    font-weight: 500;
+    @include mixins.a-text-header();
     letter-spacing: 0.02em;
   }
 
@@ -133,20 +137,20 @@ const goBack = () => {
       .v-label.v-field-label {
         max-width: unset;
         @include mixins.a-text-regular-enlarged-bold();
-        font-size: 16px;
+        font-size: var(--a-space-4);
       }
     }
 
     .v-field__input {
       line-height: 20px;
-      padding-top: 20px;
+      padding-top: var(--a-space-5);
       font-weight: 500;
     }
 
     .v-field__outline {
       .v-label.v-field-label.v-field-label--floating {
         line-height: 20px;
-        font-size: 20px;
+        font-size: var(--a-space-5);
         transform: translateY(-6px) scale(0.6875);
         font-weight: 500;
       }

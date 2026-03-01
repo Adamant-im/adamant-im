@@ -3,7 +3,7 @@
     <v-list subheader class="pa-0" bg-color="transparent" v-if="isFulfilled">
       <v-row class="v-row--no-gutters" :class="`${className}__chats-actions`">
         <v-btn
-          :class="`${className}__btn mt-2 ml-4`"
+          :class="`${className}__mark-read-btn`"
           @click="markAllAsRead"
           v-if="unreadMessagesCount > 0"
           :icon="mdiCheckAll"
@@ -11,7 +11,7 @@
           variant="text"
         />
         <v-progress-circular
-          :class="`${className}__connection-spinner mt-4 ml-6`"
+          :class="`${className}__connection-spinner`"
           v-show="showSpinner"
           indeterminate
           :size="24"
@@ -315,7 +315,7 @@ const checkDate = () => {
 @use '@/assets/styles/generic/_variables.scss';
 
 .chats-view {
-  margin-top: env(safe-area-inset-top);
+  margin-top: var(--a-safe-area-top);
   height: 100%;
 
   &.a-container,
@@ -323,18 +323,28 @@ const checkDate = () => {
     max-width: 1300px;
   }
 
+  &__mark-read-btn {
+    margin-top: var(--a-space-2);
+    margin-left: var(--a-space-4);
+  }
+
+  &__connection-spinner {
+    margin-top: var(--a-space-4);
+    margin-left: var(--a-space-6);
+  }
+
   &__item {
     justify-content: flex-end;
-    height: 56px;
-    min-height: 56px;
+    height: var(--toolbar-height);
+    min-height: var(--toolbar-height);
 
     & :deep(.v-list-item__avatar) {
-      margin-right: 4px;
+      margin-right: var(--a-space-1);
     }
 
     :deep(.v-list-item__prepend) {
       > .v-icon {
-        margin-inline-end: 8px;
+        margin-inline-end: var(--a-space-2);
       }
     }
   }
@@ -354,14 +364,15 @@ const checkDate = () => {
   }
   &__messages {
     &.chats-view__messages--chat {
-      max-height: calc(100vh - 56px - var(--v-layout-bottom));
+      height: calc(var(--a-layout-height) - var(--toolbar-height));
+      max-height: calc(var(--a-layout-height) - var(--toolbar-height));
       overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
 
       @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
-        max-height: calc(
-          100vh -
-            56px - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top)
-        );
+        height: calc(var(--a-layout-height-safe) - var(--toolbar-height));
+        max-height: calc(var(--a-layout-height-safe) - var(--toolbar-height));
       }
     }
   }

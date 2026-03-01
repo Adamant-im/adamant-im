@@ -2,3 +2,18 @@
 html {
   overflow-y: auto;
 }
+
+/**
+ * Resolve layout-driven height tokens in Vuetify layout context
+ * `--v-layout-bottom` is not guaranteed to exist on `:root`
+ */
+.v-application,
+.v-application__wrap,
+.v-main,
+.v-layout {
+  --a-layout-bottom: var(--v-layout-bottom, 0px);
+  --a-layout-height: calc(100vh - var(--a-layout-bottom));
+  --a-layout-height-safe: calc(
+    100vh - var(--a-layout-bottom) - var(--a-safe-area-bottom) - var(--a-safe-area-top)
+  );
+}
