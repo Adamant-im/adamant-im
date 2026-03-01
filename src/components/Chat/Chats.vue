@@ -1,6 +1,6 @@
 <template>
   <div :class="className">
-    <v-list subheader class="pa-0" bg-color="transparent" v-if="isFulfilled">
+    <v-list subheader :class="`${className}__list`" bg-color="transparent" v-if="isFulfilled">
       <v-row class="v-row--no-gutters" :class="`${className}__chats-actions`">
         <v-btn
           :class="`${className}__mark-read-btn`"
@@ -55,11 +55,7 @@
       </div>
     </v-list>
 
-    <div
-      class="d-flex justify-center align-center"
-      :class="`${className}__chat-spinner-wrapper`"
-      v-if="!isFulfilled"
-    >
+    <div :class="`${className}__chat-spinner-wrapper`" v-if="!isFulfilled">
       <ChatSpinner :value="!isFulfilled" />
     </div>
 
@@ -80,6 +76,7 @@ import ChatStartDialog from '@/components/ChatStartDialog.vue'
 import ChatSpinner from '@/components/ChatSpinner.vue'
 import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
+import { shouldDisplayChat } from '@/components/Chat/helpers/chatVisibility'
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
 import { useRoute, useRouter } from 'vue-router'
 import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, watch } from 'vue'
@@ -284,10 +281,11 @@ const messagesCount = (partnerId: string) => {
 }
 
 const displayChat = (partnerId: string) => {
-  const isUserChat = !isAdamantChat(partnerId)
-  const ifChattedBefore = isAdamantChat(partnerId) && messagesCount(partnerId) > 1
-
-  return isUserChat || isStaticChat(partnerId) || ifChattedBefore
+  return shouldDisplayChat({
+    isAdamantChat: isAdamantChat(partnerId),
+    isStaticChat: isStaticChat(partnerId),
+    messagesCount: messagesCount(partnerId)
+  })
 }
 
 const markAllAsRead = () => {
@@ -320,7 +318,11 @@ const checkDate = () => {
 
   &.a-container,
   :deep(.a-container) {
-    max-width: 1300px;
+    max-width: var(--a-layout-max-width);
+  }
+
+  &__list {
+    padding: 0;
   }
 
   &__mark-read-btn {
@@ -353,10 +355,10 @@ const checkDate = () => {
   }
   &__title {
     font-weight: 300;
-    font-size: 14px;
+    font-size: var(--a-font-size-sm);
   }
   &__container--chat {
-    max-width: 1300px;
+    max-width: var(--a-layout-max-width);
 
     @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
       display: none;
@@ -380,6 +382,9 @@ const checkDate = () => {
   &__chat-spinner-wrapper {
     position: relative;
     height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 

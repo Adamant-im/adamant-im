@@ -34,6 +34,10 @@ test.describe('Chats core smoke checks', () => {
     await page.goto('/chats')
     await expect(page).toHaveURL(/\/chats$/)
 
+    await expect(page.locator('.chats-view__list')).toBeVisible()
+    await expect(page.locator('.chats-view__chats-actions')).toBeVisible()
+    await expect(page.locator('.chats-view__item')).toBeVisible()
+    await expect(page.locator('.chats-view__item .chats-view__icon')).toBeVisible()
     await expect(page.locator('.chats-view__messages--chat')).toBeVisible()
     await expect(page.locator('.sidebar__router-view--logo img')).toBeVisible()
 

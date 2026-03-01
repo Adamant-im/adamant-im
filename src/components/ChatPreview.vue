@@ -1,6 +1,6 @@
 <template>
   <v-list-item v-if="isLoadingSeparator">
-    <div class="d-flex justify-center">
+    <div :class="`${className}__loading-separator`">
       <v-icon
         ref="loadingDots"
         :class="{ kmove: isLoadingSeparatorActive }"
@@ -87,9 +87,9 @@
               v-if="transaction.isReply && isConfirmed"
               :icon="mdiArrowLeftTop"
               size="15"
-              class="mr-1"
+              :class="`${className}__status-icon`"
             />
-            <v-icon v-else :icon="admStatusIcon" size="15" class="mr-1" />
+            <v-icon v-else :icon="admStatusIcon" size="15" :class="`${className}__status-icon`" />
           </template>
 
           <span v-html="lastMessageTextNoFormats"></span>
@@ -248,6 +248,11 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 .chat-brief {
   position: relative;
 
+  &__loading-separator {
+    display: flex;
+    justify-content: center;
+  }
+
   &__chat-avatar {
     margin-right: var(--a-space-4);
   }
@@ -270,7 +275,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
   }
 
   &__title {
-    line-height: 24px;
+    line-height: var(--a-line-height-md);
     margin-bottom: 0;
   }
 
@@ -288,12 +293,16 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
     white-space: nowrap;
   }
 
+  &__status-icon {
+    margin-inline-end: var(--a-space-1);
+  }
+
   &__badge {
     :deep(.v-badge__badge) {
       left: calc(100% - var(--a-space-3) - var(--a-space-4)) !important;
-      font-size: 14px;
-      width: 22px;
-      height: 22px;
+      font-size: var(--a-font-size-sm);
+      width: var(--a-size-badge-md);
+      height: var(--a-size-badge-md);
     }
   }
 

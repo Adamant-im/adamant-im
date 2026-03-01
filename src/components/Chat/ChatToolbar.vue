@@ -102,8 +102,8 @@ const goBack = () => {
 
   &__messages-counter {
     position: relative;
-    top: -14px;
-    left: -2px;
+    top: calc((var(--a-space-3) + (var(--a-space-1) / 2)) * -1);
+    left: calc(var(--a-space-1) / -2);
   }
   &__textfield-container {
     width: 100%;
@@ -137,21 +137,21 @@ const goBack = () => {
       .v-label.v-field-label {
         max-width: unset;
         @include mixins.a-text-regular-enlarged-bold();
-        font-size: var(--a-space-4);
+        font-size: var(--a-font-size-md);
       }
     }
 
     .v-field__input {
-      line-height: 20px;
+      line-height: var(--a-line-height-sm);
       padding-top: var(--a-space-5);
       font-weight: 500;
     }
 
     .v-field__outline {
       .v-label.v-field-label.v-field-label--floating {
-        line-height: 20px;
+        line-height: var(--a-line-height-sm);
         font-size: var(--a-space-5);
-        transform: translateY(-6px) scale(0.6875);
+        transform: translateY(calc(var(--a-space-3) / -2)) scale(0.6875);
         font-weight: 500;
       }
     }
