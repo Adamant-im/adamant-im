@@ -28,6 +28,13 @@ If tradeoffs are required, preserve security and privacy first.
 - In bullet and numbered lists, do not add a trailing period when an item contains one sentence
 - If an item contains two or more sentences, end every sentence with a period
 
+## Markdown Lint Rules for AI-Generated Docs
+
+- For every Markdown list, keep one blank line before the list and one blank line after the list
+- Always keep a blank line between a heading and the list that follows it to satisfy MD032 (`blanks-around-lists`)
+- Use fenced code blocks with matching opening and closing fences and include a language tag when applicable
+- Follow other best practice markdown rules
+
 ## Product Context and Values
 
 ADAMANT is a decentralized, anonymous, community-driven messenger and wallet ecosystem.
