@@ -185,7 +185,7 @@ const onScanQrcode = (value: string) => {
 
 .login-page {
   height: 100%;
-  padding-bottom: calc(var(--a-space-6) + env(safe-area-inset-bottom));
+  padding-bottom: calc(var(--a-space-6) + var(--a-safe-area-bottom));
 
   &__title {
     @include mixins.a-text-headline();
@@ -222,7 +222,7 @@ const onScanQrcode = (value: string) => {
   }
 
   @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-    padding-bottom: calc(var(--a-space-10) + env(safe-area-inset-bottom));
+    padding-bottom: calc(var(--a-space-10) + var(--a-safe-area-bottom));
   }
 }
 

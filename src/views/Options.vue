@@ -435,17 +435,19 @@ onBeforeUnmount(() => {
 @use 'vuetify/settings';
 
 .settings-view {
+  --settings-gutter: var(--a-space-6);
+
   &__title {
     padding-top: 15px;
-    margin-left: -24px;
-    margin-right: -24px;
-    padding-left: 24px;
-    padding-right: 24px;
+    margin-left: calc(var(--settings-gutter) * -1);
+    margin-right: calc(var(--settings-gutter) * -1);
+    padding-left: var(--settings-gutter);
+    padding-right: var(--settings-gutter);
   }
   &__version_info {
     @include mixins.a-text-explanation();
-    margin-top: 24px;
-    margin-bottom: 16px;
+    margin-top: var(--a-space-6);
+    margin-bottom: var(--a-space-4);
     cursor: pointer;
     user-select: none;
 
@@ -462,8 +464,8 @@ onBeforeUnmount(() => {
     font-size: 16px;
     font-weight: 500;
     text-decoration-line: underline;
-    margin: 6px 8px;
-    padding: 0 16px;
+    margin: 6px var(--a-space-2);
+    padding: 0 var(--a-space-4);
   }
   :deep(.v-input--selection-controls):not(.v-input--hide-details) .v-input__slot {
     margin-bottom: 0;
@@ -481,19 +483,19 @@ onBeforeUnmount(() => {
     padding: 0;
   }
   .actions-list {
-    margin-left: -24px;
-    margin-right: -24px;
+    margin-left: calc(var(--settings-gutter) * -1);
+    margin-right: calc(var(--settings-gutter) * -1);
 
     :deep(.v-list-item) {
-      padding-inline-start: 24px;
-      padding-inline-end: 24px;
+      padding-inline-start: var(--settings-gutter);
+      padding-inline-end: var(--settings-gutter);
     }
   }
   :deep(.v-list-subheader) {
-    height: 48px;
+    height: var(--a-control-size-lg);
   }
   :deep(.v-checkbox) {
-    margin-left: -8px;
+    margin-left: calc(var(--a-space-2) * -1);
   }
 }
 
@@ -530,22 +532,7 @@ onBeforeUnmount(() => {
 /** Breakpoints **/
 @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
   .settings-view {
-    &__title {
-      margin-left: -16px;
-      margin-right: -16px;
-      padding-left: 16px;
-      padding-right: 16px;
-    }
-
-    .actions-list {
-      margin-left: -16px;
-      margin-right: -16px;
-
-      :deep(.v-list-item) {
-        padding-inline-start: 16px;
-        padding-inline-end: 16px;
-      }
-    }
+    --settings-gutter: var(--a-space-4);
   }
 }
 </style>

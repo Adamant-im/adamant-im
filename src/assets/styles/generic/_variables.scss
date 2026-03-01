@@ -4,4 +4,10 @@ $breakpoints: (
 
 :root {
   --toolbar-height: 56px;
+  --a-safe-area-top: env(safe-area-inset-top);
+  --a-safe-area-bottom: env(safe-area-inset-bottom);
+  --a-layout-height: calc(100vh - var(--v-layout-bottom));
+  --a-layout-height-safe: calc(
+    100vh - var(--v-layout-bottom) - var(--a-safe-area-bottom) - var(--a-safe-area-top)
+  );
 }
