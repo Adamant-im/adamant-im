@@ -105,6 +105,10 @@ const currentClientHeight = ref(0)
 const placeholderHeight = ref(0)
 const scrollTop = ref(0)
 
+const SPINNER_VISIBLE_PLACEHOLDER_OFFSET = 12
+const SPINNER_PLACEHOLDER_TOP_OFFSET = 48
+const SPINNER_DEFAULT_TOP = 36
+
 const resizeHandler = () => {
   if (!messagesRef.value) return
 
@@ -263,11 +267,11 @@ defineExpose({
 const spinnerTop = computed(() => {
   if (
     (props.showNewChatPlaceholder || props.isGettingPublicKey) &&
-    scrollTop.value < placeholderHeight.value + 12
+    scrollTop.value < placeholderHeight.value + SPINNER_VISIBLE_PLACEHOLDER_OFFSET
   ) {
-    return placeholderHeight.value - scrollTop.value + 48
+    return placeholderHeight.value - scrollTop.value + SPINNER_PLACEHOLDER_TOP_OFFSET
   }
-  return 36
+  return SPINNER_DEFAULT_TOP
 })
 </script>
 

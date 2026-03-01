@@ -86,7 +86,7 @@
             />
             <v-progress-circular
               v-else
-              class="connection-spinner ml-1 mr-4"
+              class="connection-spinner chat__connection-spinner"
               indeterminate
               :size="32"
             />
@@ -1016,16 +1016,21 @@ const onKeyPress = (e: KeyboardEvent) => {
 @use '@/assets/styles/settings/_colors.scss';
 
 .chat-menu {
-  margin-right: 12px;
+  margin-right: var(--a-space-3);
 }
 .chat {
-  height: calc(100vh - var(--v-layout-bottom));
+  height: var(--a-layout-height);
   box-shadow: none;
   background-color: transparent !important;
 }
 
 .chat-avatar {
-  margin-right: 12px;
+  margin-right: var(--a-space-3);
+}
+
+.chat__connection-spinner {
+  margin-left: var(--a-space-1);
+  margin-right: var(--a-space-4);
 }
 
 /** Themes **/

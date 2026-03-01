@@ -368,7 +368,7 @@ defineExpose({
     .v-field__prepend-inner {
       margin-top: auto;
       padding-top: 0;
-      margin-bottom: 4px;
+      margin-bottom: var(--a-space-1);
     }
     .v-field__prepend-inner > .v-icon,
     .v-field__append-inner > .v-icon,
@@ -411,7 +411,7 @@ defineExpose({
     border-radius: 50%;
     opacity: 0;
     transform: translate(-50%, -50%);
-    transition: opacity 0.3s;
+    transition: opacity var(--a-motion-slow) var(--a-ease-standard);
     z-index: -1;
   }
 
