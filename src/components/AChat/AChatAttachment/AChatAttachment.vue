@@ -28,7 +28,7 @@
       :data-id="dataId"
     >
       <div class="a-chat__message-card">
-        <div class="a-chat__message-card-header mt-1">
+        <div class="a-chat__message-card-header">
           <div v-if="transaction.status === 'CONFIRMED'" class="a-chat__blockchain-status">
             &#x26AD;
           </div>
@@ -249,7 +249,7 @@ export default defineComponent({
 .a-chat__attachments {
   width: 500px;
   max-width: 100%;
-  margin-top: 4px;
+  margin-top: var(--a-space-1);
 
   &--inline {
     width: auto;
@@ -262,7 +262,7 @@ export default defineComponent({
 
 .a-chat_fileContainerWithElement {
   display: grid;
-  gap: 2px;
+  gap: calc(var(--a-space-1) / 2);
   width: 80vw;
   max-width: 200px;
   grid-template-columns: repeat(auto-fit, minmax(98px, 1fr));

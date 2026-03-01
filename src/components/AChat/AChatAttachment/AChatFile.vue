@@ -47,7 +47,6 @@
         <div
           v-show="uploadProgress < 100"
           :class="[classes.placeholder, classes.placeholderTransparent, classes.uploadFileProgress]"
-          style=""
         >
           <v-progress-circular color="grey-lighten-4" :model-value="uploadProgress" />
         </div>
@@ -162,7 +161,7 @@ const uploadProgress = computed(() => {
 .a-chat-file {
   display: flex;
   margin-left: auto;
-  width: 160px;
+  width: calc(var(--a-space-10) * 4);
 
   &__placeholder {
     display: flex;
@@ -173,8 +172,8 @@ const uploadProgress = computed(() => {
 
   &__file-icon {
     position: relative;
-    width: 64px;
-    height: 64px;
+    width: calc(var(--a-space-4) * 4);
+    height: calc(var(--a-space-4) * 4);
   }
 
   &__upload-file-progress {
@@ -183,7 +182,7 @@ const uploadProgress = computed(() => {
     bottom: 0;
     left: 0;
     right: 0;
-    border-radius: 8px;
+    border-radius: var(--a-radius-sm);
   }
 
   &__icon {
@@ -191,12 +190,12 @@ const uploadProgress = computed(() => {
   }
 
   &__file-info {
-    margin-left: 8px;
+    margin-left: var(--a-space-2);
     overflow: hidden;
   }
 
   &__name {
-    font-size: 16px;
+    font-size: var(--a-space-4);
     font-weight: 400;
     white-space: nowrap;
     overflow: hidden;

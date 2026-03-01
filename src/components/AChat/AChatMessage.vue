@@ -28,7 +28,7 @@
       :data-id="dataId"
     >
       <div class="a-chat__message-card">
-        <div v-if="transaction.showTime" class="a-chat__message-card-header mt-1">
+        <div v-if="transaction.showTime" class="a-chat__message-card-header">
           <div v-if="transaction.status === 'CONFIRMED'" class="a-chat__blockchain-status">
             &#x26AD;
           </div>

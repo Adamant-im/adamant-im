@@ -61,10 +61,10 @@ export default defineComponent({
 
 .a-chat-inline-layout {
   display: grid;
-  gap: 8px;
+  gap: var(--a-space-2);
   border-style: solid;
-  border-width: 8px;
-  border-radius: 8px;
+  border-width: var(--a-space-2);
+  border-radius: var(--a-radius-sm);
 }
 
 .v-theme--dark {

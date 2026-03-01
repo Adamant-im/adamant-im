@@ -86,23 +86,21 @@ export default defineComponent({
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
 
-$gap-size: 4px;
-
 .a-chat-image-layout {
   max-width: 100%;
   width: 100%;
-  border-radius: 8px;
+  border-radius: var(--a-radius-sm);
   overflow: hidden;
-  border-width: $gap-size;
+  border-width: var(--a-space-1);
   border-style: solid;
 
   &__row {
     display: grid;
     max-width: 100%;
-    gap: $gap-size;
+    gap: var(--a-space-1);
 
     & ~ & {
-      margin-top: $gap-size;
+      margin-top: var(--a-space-1);
     }
   }
 }

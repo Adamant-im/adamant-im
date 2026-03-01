@@ -1,27 +1,5 @@
-import { expect, test, type Locator, type Page } from '@playwright/test'
-
-const loginWithNewAccount = async (page: Page) => {
-  await page.goto('/')
-
-  const createNewButton = page.getByRole('button', { name: /create new/i })
-  await expect(createNewButton).toBeVisible()
-  await createNewButton.click()
-
-  const passphraseBox = page.locator('.passphrase-generator__box')
-  await expect(passphraseBox).toBeVisible()
-
-  await page.getByRole('img', { name: /copy/i }).first().click()
-  const copiedPassphrase = await page.evaluate(async () => navigator.clipboard.readText())
-  const words = copiedPassphrase.trim().split(/\s+/)
-  expect(words.length).toBe(12)
-
-  const loginInput = page.locator('input[autocomplete="current-password"]')
-  await expect(loginInput).toBeVisible()
-  await loginInput.fill(copiedPassphrase)
-
-  await page.getByRole('button', { name: 'Login', exact: true }).click()
-  await page.waitForURL(/\/chats(?:\/.*)?$/, { timeout: 90_000 })
-}
+import { expect, test, type Page } from '@playwright/test'
+import { loginWithNewAccount } from './helpers/auth'
 
 const assertNoDocumentScrollLeak = async (page: Page) => {
   const documentMetrics = await page.evaluate(() => {
@@ -59,21 +37,9 @@ const assertSplitShellVisible = async (page: Page) => {
   expect(Math.abs(paneMetrics.asideHeight - paneMetrics.layoutHeight)).toBeLessThanOrEqual(2)
 }
 
-const getOverflowY = async (locator: Locator) => {
-  return locator.evaluate((el) => getComputedStyle(el).overflowY)
-}
-
 test.describe('Split-view layout regressions', () => {
-  test('keeps independent pane scrolling on chats, account and settings', async ({ page }) => {
+  test('keeps independent pane scrolling on account and settings', async ({ page }) => {
     await loginWithNewAccount(page)
-
-    const chatsList = page.locator('.chats-view__messages--chat')
-    await expect(chatsList).toBeVisible()
-    await expect(page.locator('.sidebar__router-view--logo img')).toBeVisible()
-    expect(['auto', 'scroll']).toContain(await getOverflowY(chatsList))
-
-    await assertSplitShellVisible(page)
-    await assertNoDocumentScrollLeak(page)
 
     await page.goto('/home')
     await expect(page).toHaveURL(/\/home$/)

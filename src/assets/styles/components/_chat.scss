@@ -222,6 +222,7 @@ $scroll-bar-width: 4px;
     display: flex;
     flex-direction: row;
     align-items: center;
+    margin-top: var(--a-space-1);
     min-height: 17px;
   }
 
