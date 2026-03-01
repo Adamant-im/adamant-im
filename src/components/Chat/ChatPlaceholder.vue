@@ -37,7 +37,7 @@ type Props = {
 }
 
 defineProps<Props>()
-const logo = joinUrl(import.meta.env.BASE_URL, '/img/adamant-logo-transparent-512x512.png');
+const logo = joinUrl(import.meta.env.BASE_URL, '/img/adamant-logo-transparent-512x512.png')
 const className = 'chat-placeholder'
 const classes = {
   root: className,
@@ -63,9 +63,9 @@ function openLink() {
 .chat-placeholder {
   display: flex;
   flex-direction: column;
-  row-gap: 16px;
+  row-gap: var(--a-space-4);
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: var(--a-space-4);
 
   &__container {
     margin: auto;
@@ -74,21 +74,21 @@ function openLink() {
     height: auto;
     justify-content: flex-start;
     align-items: center;
-    row-gap: 5px;
-    padding: 16px;
+    row-gap: var(--a-space-1);
+    padding: var(--a-space-4);
     background: map.get(colors.$adm-colors, 'black');
-    border-radius: 8px;
+    border-radius: var(--a-radius-sm);
 
     &_public-key {
       height: auto;
       flex-direction: row;
-      column-gap: 8px;
+      column-gap: var(--a-space-2);
     }
   }
 
   &__spinner {
-    margin-bottom: 4px;
-    margin-right: 4px;
+    margin-bottom: var(--a-space-1);
+    margin-right: var(--a-space-1);
   }
 
   &__row {

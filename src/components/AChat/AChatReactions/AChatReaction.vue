@@ -97,15 +97,15 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: space-around;
-  width: 24px;
-  height: 24px;
+  width: var(--a-space-6);
+  height: var(--a-space-6);
   position: relative;
 
   &__emoji {
     text-align: center;
     vertical-align: middle;
     line-height: 1;
-    font-size: 16px;
+    font-size: var(--a-space-4);
   }
 
   &__emoji--animate {

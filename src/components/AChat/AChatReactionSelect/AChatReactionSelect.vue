@@ -103,14 +103,14 @@ export default defineComponent({
 @use 'vuetify/settings';
 
 .a-chat-reaction-select {
-  border-radius: 16px;
+  border-radius: var(--a-radius-md);
   cursor: pointer;
   user-select: none;
 
   &__predefined-reactions {
     display: flex;
     align-items: center;
-    padding: 4px;
+    padding: var(--a-space-1);
   }
 
   &__more-button {

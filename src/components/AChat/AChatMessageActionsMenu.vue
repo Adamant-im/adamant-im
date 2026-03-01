@@ -57,23 +57,21 @@ export default defineComponent({
 <style lang="scss">
 @use '@/assets/styles/components/_chat.scss';
 
-$padding-x: 16px;
-
 .message-actions-menu {
   &__list {
     padding-top: 0;
     padding-bottom: 0;
-    border-radius: 8px;
+    border-radius: var(--a-radius-sm);
   }
 
   &__overlay-content {
     &--left {
-      left: $padding-x !important;
+      left: var(--a-space-4) !important;
     }
 
     &--right {
       left: unset !important;
-      right: $padding-x + chat.$scroll-bar-width;
+      right: calc(var(--a-space-4) + #{chat.$scroll-bar-width});
     }
   }
 }

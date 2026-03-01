@@ -86,14 +86,14 @@ watch(
   position: absolute;
   display: flex;
   flex-direction: row;
-  border-radius: 8px;
-  padding: 2px;
+  border-radius: var(--a-radius-sm);
+  padding: calc(var(--a-space-1) / 2);
 
   bottom: 0;
 
   right: 100%;
-  margin-right: -4px;
-  margin-bottom: -4px;
+  margin-right: calc(var(--a-space-1) * -1);
+  margin-bottom: calc(var(--a-space-1) * -1);
 
   cursor: default;
   user-select: none;
@@ -102,12 +102,12 @@ watch(
     right: unset;
     left: 100%;
     margin-right: unset;
-    margin-left: -4px;
+    margin-left: calc(var(--a-space-1) * -1);
   }
 
   &__reaction {
     & ~ & {
-      margin-left: 4px;
+      margin-left: var(--a-space-1);
     }
   }
 }

@@ -149,7 +149,7 @@ export default defineComponent({
   &__reaction-select {
     position: absolute;
     bottom: 100%;
-    margin-bottom: 16px;
+    margin-bottom: var(--a-space-4);
     z-index: 1;
 
     right: 0;
@@ -179,7 +179,7 @@ export default defineComponent({
     }
 
     &--bottom {
-      margin-top: calc(46px + 16px); // <AReactionSelect/> height + margin
+      margin-top: calc(46px + var(--a-space-4)); // <AReactionSelect/> height + margin
     }
   }
 }
