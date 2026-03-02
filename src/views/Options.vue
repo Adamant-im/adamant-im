@@ -435,14 +435,17 @@ onBeforeUnmount(() => {
 @use 'vuetify/settings';
 
 .settings-view {
-  --settings-gutter: var(--a-space-6);
+  --a-settings-gutter: var(--a-space-6);
+  --a-settings-title-padding-top: 15px;
+  --a-settings-action-font-size: var(--a-font-size-md);
+  --a-settings-action-margin-block: 6px;
 
   &__title {
-    padding-top: 15px;
-    margin-left: calc(var(--settings-gutter) * -1);
-    margin-right: calc(var(--settings-gutter) * -1);
-    padding-left: var(--settings-gutter);
-    padding-right: var(--settings-gutter);
+    padding-top: var(--a-settings-title-padding-top);
+    margin-left: calc(var(--a-settings-gutter) * -1);
+    margin-right: calc(var(--a-settings-gutter) * -1);
+    padding-left: var(--a-settings-gutter);
+    padding-right: var(--a-settings-gutter);
   }
   &__version_info {
     @include mixins.a-text-explanation();
@@ -461,10 +464,10 @@ onBeforeUnmount(() => {
   }
   &__action {
     display: block;
-    font-size: 16px;
+    font-size: var(--a-settings-action-font-size);
     font-weight: 500;
     text-decoration-line: underline;
-    margin: 6px var(--a-space-2);
+    margin: var(--a-settings-action-margin-block) var(--a-space-2);
     padding: 0 var(--a-space-4);
   }
   :deep(.v-input--selection-controls):not(.v-input--hide-details) .v-input__slot {
@@ -483,12 +486,12 @@ onBeforeUnmount(() => {
     padding: 0;
   }
   .actions-list {
-    margin-left: calc(var(--settings-gutter) * -1);
-    margin-right: calc(var(--settings-gutter) * -1);
+    margin-left: calc(var(--a-settings-gutter) * -1);
+    margin-right: calc(var(--a-settings-gutter) * -1);
 
     :deep(.v-list-item) {
-      padding-inline-start: var(--settings-gutter);
-      padding-inline-end: var(--settings-gutter);
+      padding-inline-start: var(--a-settings-gutter);
+      padding-inline-end: var(--a-settings-gutter);
     }
   }
   :deep(.v-list-subheader) {
@@ -532,7 +535,7 @@ onBeforeUnmount(() => {
 /** Breakpoints **/
 @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
   .settings-view {
-    --settings-gutter: var(--a-space-4);
+    --a-settings-gutter: var(--a-space-4);
   }
 }
 </style>

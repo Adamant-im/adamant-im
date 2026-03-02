@@ -167,4 +167,69 @@ test.describe('Wallets layout regressions', () => {
 
     await assertNoDocumentScrollLeak(page)
   })
+
+  test('keeps wallet tabs sizing and slider controls consistent on home', async ({ page }) => {
+    await loginWithNewAccount(page)
+
+    await page.goto('/home')
+    await expect(page).toHaveURL(/\/home$/)
+    await expect(page.locator('.account-view')).toBeVisible()
+
+    const metrics = await page.evaluate(() => {
+      const root = document.querySelector('.account-view') as HTMLElement | null
+      const tab = document.querySelector('.account-view .v-tab') as HTMLElement | null
+      const tabs = document.querySelector('.account-view .v-tabs') as HTMLElement | null
+      const prev = document.querySelector(
+        '.account-view .v-slide-group__prev'
+      ) as HTMLElement | null
+      const next = document.querySelector(
+        '.account-view .v-slide-group__next'
+      ) as HTMLElement | null
+
+      if (!root || !tab || !tabs) {
+        return null
+      }
+
+      const rootStyle = getComputedStyle(root)
+      const tabStyle = getComputedStyle(tab)
+      const tabsStyle = getComputedStyle(tabs)
+      const prevStyle = prev ? getComputedStyle(prev) : null
+      const nextStyle = next ? getComputedStyle(next) : null
+
+      return {
+        rootTabFontSizeVar: rootStyle.getPropertyValue('--a-account-tab-font-size').trim(),
+        rootAffixWidthVar: rootStyle.getPropertyValue('--a-account-tab-affix-width').trim(),
+        tabFontSize: Number.parseFloat(tabStyle.fontSize),
+        tabMinWidth: Number.parseFloat(tabStyle.minWidth),
+        tabsPaddingTop: Number.parseFloat(tabsStyle.paddingTop),
+        tabsPaddingBottom: Number.parseFloat(tabsStyle.paddingBottom),
+        prevMinWidth: prevStyle ? Number.parseFloat(prevStyle.minWidth) : null,
+        nextMinWidth: nextStyle ? Number.parseFloat(nextStyle.minWidth) : null
+      }
+    })
+
+    expect(metrics).not.toBeNull()
+    expect(metrics?.rootTabFontSizeVar).not.toBe('')
+    expect(metrics?.rootAffixWidthVar).not.toBe('')
+    expect(metrics?.tabFontSize ?? 0).toBeGreaterThanOrEqual(15)
+    expect(metrics?.tabFontSize ?? 999).toBeLessThanOrEqual(17)
+    expect(metrics?.tabMinWidth ?? 0).toBeGreaterThanOrEqual(83)
+    expect(metrics?.tabMinWidth ?? 999).toBeLessThanOrEqual(85)
+    expect(metrics?.tabsPaddingTop ?? 0).toBeGreaterThanOrEqual(9)
+    expect(metrics?.tabsPaddingTop ?? 999).toBeLessThanOrEqual(11)
+    expect(metrics?.tabsPaddingBottom ?? 0).toBeGreaterThanOrEqual(0)
+    expect(metrics?.tabsPaddingBottom ?? 999).toBeLessThanOrEqual(2)
+
+    if (metrics?.prevMinWidth !== null) {
+      expect(metrics?.prevMinWidth ?? 0).toBeGreaterThanOrEqual(31)
+      expect(metrics?.prevMinWidth ?? 999).toBeLessThanOrEqual(33)
+    }
+
+    if (metrics?.nextMinWidth !== null) {
+      expect(metrics?.nextMinWidth ?? 0).toBeGreaterThanOrEqual(31)
+      expect(metrics?.nextMinWidth ?? 999).toBeLessThanOrEqual(33)
+    }
+
+    await assertNoDocumentScrollLeak(page)
+  })
 })

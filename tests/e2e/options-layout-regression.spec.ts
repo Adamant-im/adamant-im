@@ -1,0 +1,60 @@
+import { expect, test, type Page } from '@playwright/test'
+import { loginWithNewAccount } from './helpers/auth'
+
+const assertNoDocumentScrollLeak = async (page: Page) => {
+  const documentMetrics = await page.evaluate(() => {
+    const root = document.documentElement
+    const body = document.body
+
+    return {
+      scrollHeight: root.scrollHeight,
+      clientHeight: root.clientHeight,
+      scrollTop: root.scrollTop || body.scrollTop || 0
+    }
+  })
+
+  expect(documentMetrics.scrollHeight - documentMetrics.clientHeight).toBeLessThanOrEqual(2)
+  expect(documentMetrics.scrollTop).toBe(0)
+}
+
+test.describe('Options layout regressions', () => {
+  test('keeps title and action list gutters consistent', async ({ page }) => {
+    await loginWithNewAccount(page)
+
+    await page.goto('/options')
+    await expect(page).toHaveURL(/\/options$/)
+    await expect(page.locator('.settings-view')).toBeVisible()
+
+    const metrics = await page.evaluate(() => {
+      const root = document.querySelector('.settings-view') as HTMLElement | null
+      const title = document.querySelector('.settings-view__title') as HTMLElement | null
+      const actionItem = document.querySelector('.actions-list .v-list-item') as HTMLElement | null
+
+      if (!root || !title || !actionItem) {
+        return null
+      }
+
+      const rootStyle = getComputedStyle(root)
+      const titleStyle = getComputedStyle(title)
+      const actionItemStyle = getComputedStyle(actionItem)
+
+      return {
+        gutterVar: rootStyle.getPropertyValue('--a-settings-gutter').trim(),
+        titlePaddingTop: Number.parseFloat(titleStyle.paddingTop),
+        actionPaddingInlineStart: Number.parseFloat(actionItemStyle.paddingInlineStart),
+        actionPaddingInlineEnd: Number.parseFloat(actionItemStyle.paddingInlineEnd)
+      }
+    })
+
+    expect(metrics).not.toBeNull()
+    expect(metrics?.gutterVar).not.toBe('')
+    expect(metrics?.titlePaddingTop ?? 0).toBeGreaterThanOrEqual(14)
+    expect(metrics?.titlePaddingTop ?? 999).toBeLessThanOrEqual(16)
+    expect(metrics?.actionPaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.actionPaddingInlineStart ?? 999).toBeLessThanOrEqual(25)
+    expect(metrics?.actionPaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.actionPaddingInlineEnd ?? 999).toBeLessThanOrEqual(25)
+
+    await assertNoDocumentScrollLeak(page)
+  })
+})

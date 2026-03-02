@@ -239,23 +239,36 @@ watch(currentWallet, (value) => {
  * 2. Reset VTabItem opacity.
  */
 .account-view {
+  --a-account-tabs-slider-height: 2px;
+  --a-account-tabs-padding-top: 10px;
+  --a-account-tabs-padding-bottom: 1px;
+  --a-account-tabs-margin-bottom: 10px;
+  --a-account-tab-font-size: var(--a-font-size-md);
+  --a-account-tab-padding-block: 6px;
+  --a-account-tab-padding-inline: var(--a-space-1);
+  --a-account-tab-min-width: 84px;
+  --a-account-tab-affix-width: var(--a-control-size-sm);
+  --a-account-tab-icon-offset: 3px;
+
   &__wallets {
     &.v-card {
       background-color: transparent;
     }
     :deep(.v-tabs-slider) {
-      height: 2px;
+      height: var(--a-account-tabs-slider-height);
     }
     :deep(.v-tabs) {
-      padding: 10px 0 1px 0;
-      margin-bottom: 10px;
+      padding-top: var(--a-account-tabs-padding-top);
+      padding-bottom: var(--a-account-tabs-padding-bottom);
+      margin-bottom: var(--a-account-tabs-margin-bottom);
     }
     :deep(.v-tab) {
       font-weight: 300;
-      font-size: 16px;
-      padding: 6px 4px;
+      font-size: var(--a-account-tab-font-size);
+      padding-block: var(--a-account-tab-padding-block);
+      padding-inline: var(--a-account-tab-padding-inline);
       letter-spacing: normal;
-      min-width: 84px;
+      min-width: var(--a-account-tab-min-width);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -281,16 +294,16 @@ watch(currentWallet, (value) => {
       top: 0;
       bottom: 0;
       left: 0;
-      flex-basis: 32px;
-      min-width: 32px;
+      flex-basis: var(--a-account-tab-affix-width);
+      min-width: var(--a-account-tab-affix-width);
     }
     :deep(.v-slide-group__next) {
       position: absolute;
       top: 0;
       bottom: 0;
       right: 0;
-      flex-basis: 32px;
-      min-width: 32px;
+      flex-basis: var(--a-account-tab-affix-width);
+      min-width: var(--a-account-tab-affix-width);
     }
     :deep(.v-slide-group__next.v-slide-group__next--disabled) {
       visibility: hidden; // keep affix width so last tab stays centered
@@ -303,7 +316,7 @@ watch(currentWallet, (value) => {
     position: relative;
   }
   &__icon {
-    margin-bottom: 3px;
+    margin-bottom: var(--a-account-tab-icon-offset);
   }
 }
 
@@ -326,7 +339,7 @@ watch(currentWallet, (value) => {
       :deep(.v-tabs .v-slide-group__next .v-icon) {
         z-index: 1;
         color: map.get(colors.$adm-colors, 'primary');
-        border-radius: 50%;
+        border-radius: var(--a-radius-round);
         background-color: color.adjust(map.get(colors.$adm-colors, 'primary2'), $alpha: -0.7);
       }
       :deep(.v-tabs .v-slide-group__prev),
@@ -363,7 +376,7 @@ watch(currentWallet, (value) => {
       :deep(.v-tabs .v-slide-group__next .v-icon) {
         z-index: 1;
         color: map.get(colors.$adm-colors, 'primary');
-        border-radius: 50%;
+        border-radius: var(--a-radius-round);
         background-color: color.adjust(map.get(colors.$adm-colors, 'primary2'), $alpha: -0.7);
       }
       :deep(.v-tabs .v-slide-group__prev),
