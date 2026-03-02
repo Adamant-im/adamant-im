@@ -157,6 +157,8 @@ onBeforeUnmount(() => {
 @use '@/assets/styles/generic/_variables.scss';
 
 .wallets-view {
+  --a-wallets-review-padding-block: 15px;
+
   position: relative;
   height: calc(var(--a-layout-height) - var(--toolbar-height));
 
@@ -184,8 +186,8 @@ onBeforeUnmount(() => {
   }
 
   &__review {
-    padding-top: 15px !important;
-    padding-bottom: 15px !important;
+    padding-top: var(--a-wallets-review-padding-block) !important;
+    padding-bottom: var(--a-wallets-review-padding-block) !important;
   }
 }
 

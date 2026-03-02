@@ -114,16 +114,21 @@ export default defineComponent({
 @use 'vuetify/settings';
 
 .wallets-view {
+  --a-wallets-list-item-content-height: var(--a-control-size-md);
+  --a-wallets-list-item-line-height: 1;
+  --a-wallets-list-item-title-line-height: 1.1;
+  --a-wallets-list-item-checkbox-offset: calc(var(--a-space-2) * -1);
+
   &__crypto-content {
-    height: 40px;
+    height: var(--a-wallets-list-item-content-height);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    line-height: 1;
+    line-height: var(--a-wallets-list-item-line-height);
   }
   &__crypto-subtitle {
     font-weight: 300;
-    line-height: 1;
+    line-height: var(--a-wallets-list-item-line-height);
   }
   &__crypto-subtitle-muted {
     color: rgba(map.get(settings.$shades, 'white'), 70%);
@@ -132,7 +137,7 @@ export default defineComponent({
     font-weight: 600;
   }
   &__crypto-title {
-    line-height: 1.1;
+    line-height: var(--a-wallets-list-item-title-line-height);
   }
   &__info {
     :deep(a) {
@@ -147,7 +152,7 @@ export default defineComponent({
   }
 
   :deep(.v-checkbox) {
-    margin-left: -8px;
+    margin-left: var(--a-wallets-list-item-checkbox-offset);
   }
 
   :deep(.sortable-chosen) {

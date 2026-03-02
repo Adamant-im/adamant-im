@@ -1,21 +1,33 @@
 <template>
-  <crypto-icon :class="classes.cryptoIcon" :crypto="wallet.cryptoCurrency" size="medium" />
+  <div :class="classes.root">
+    <crypto-icon :class="classes.cryptoIcon" :crypto="wallet.cryptoCurrency" size="medium" />
 
-  <div>
-    <div v-if="isBalanceValid && !isRefreshing">{{ formattedBalance }}</div>
-    <div v-else :class="classes.balanceLoading">
-      <v-icon :icon="mdiDotsHorizontal" size="18" />
-    </div>
+    <div :class="classes.content">
+      <div v-if="isBalanceValid && !isRefreshing">{{ formattedBalance }}</div>
+      <div v-else :class="classes.balanceLoading">
+        <v-icon :icon="mdiDotsHorizontal" size="18" />
+      </div>
 
-    <div>
-      {{ wallet.cryptoCurrency }}
-      <span v-if="wallet.erc20" style="font-size: 10px">
-        <sub>ERC20</sub>
-      </span>
-    </div>
+      <div :class="classes.networkRow">
+        {{ wallet.cryptoCurrency }}
+        <span v-if="wallet.erc20" :class="classes.networkLabel">
+          <sub>ERC20</sub>
+        </span>
+      </div>
 
-    <div v-if="isRateLoaded" :class="['a-text-explanation', classes.rates]">
-      {{ wallet.rate }} {{ fiatCurrency }}
+      <div
+        :class="[
+          'a-text-explanation',
+          classes.rates,
+          {
+            [classes.ratesPlaceholder]: !isRateLoaded
+          }
+        ]"
+        :aria-hidden="!isRateLoaded"
+      >
+        <span v-if="isRateLoaded">{{ wallet.rate }} {{ fiatCurrency }}</span>
+        <span v-else>&nbsp;</span>
+      </div>
     </div>
   </div>
 </template>
@@ -33,10 +45,14 @@ import { CryptoSymbol } from '@/lib/constants'
 const className = 'wallet-tab'
 const classes = {
   root: className,
+  content: `${className}__content`,
   cryptoIcon: `${className}__crypto-icon`,
   balanceLoading: `${className}__balance-loading`,
   balanceError: `${className}__balance-error`,
-  rates: `${className}__rates`
+  networkRow: `${className}__network-row`,
+  networkLabel: `${className}__network-label`,
+  rates: `${className}__rates`,
+  ratesPlaceholder: `${className}__rates-placeholder`
 }
 
 export type Wallet = {
@@ -78,20 +94,66 @@ watch(currentBalance, (newBalance, oldBalance) => {
 @use 'vuetify/settings';
 
 .wallet-tab {
+  --a-wallet-tab-icon-offset: 3px;
+  --a-wallet-tab-rates-offset: var(--a-space-1);
+  --a-wallet-tab-line-height: 1;
+  --a-wallet-tab-network-label-size: 10px;
+  --a-wallet-tab-content-min-height: 44px;
+  --a-wallet-tab-balance-to-ticker-offset: 2px;
+  --a-wallet-tab-network-label-shift-x: -2px;
+  --a-wallet-tab-network-label-shift-y: -2px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
   &__crypto-icon {
-    margin-bottom: 3px;
+    margin-bottom: var(--a-wallet-tab-icon-offset);
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: var(--a-wallet-tab-content-min-height);
+  }
+
+  &__network-row {
+    line-height: var(--a-wallet-tab-line-height);
+    margin-top: var(--a-wallet-tab-balance-to-ticker-offset);
   }
 
   &__balance-loading {
-    line-height: 1;
+    line-height: var(--a-wallet-tab-line-height);
   }
 
   &__balance-error {
-    line-height: 1;
+    line-height: var(--a-wallet-tab-line-height);
+  }
+
+  &__network-label {
+    font-size: var(--a-wallet-tab-network-label-size);
+    line-height: var(--a-wallet-tab-line-height);
+    position: relative;
+    transform: translate(
+      var(--a-wallet-tab-network-label-shift-x),
+      var(--a-wallet-tab-network-label-shift-y)
+    );
+
+    sub {
+      font-size: inherit;
+      line-height: inherit;
+      vertical-align: baseline;
+    }
   }
 
   &__rates {
-    margin-top: 2px;
+    margin-top: var(--a-wallet-tab-rates-offset);
+  }
+
+  &__rates-placeholder {
+    visibility: hidden;
   }
 }
 

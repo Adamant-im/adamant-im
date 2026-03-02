@@ -107,12 +107,18 @@ export default defineComponent({
 @use 'vuetify/settings';
 
 .wallet-balance {
-  height: 40px;
+  --a-wallet-balance-height: var(--a-control-size-md);
+  --a-wallet-balance-gap: 8px;
+  --a-wallet-balance-line-height: 1;
+  --a-wallet-balance-title-line-height: 1.1;
+  --a-wallet-balance-fiat-size: var(--a-font-size-xs);
+
+  height: var(--a-wallet-balance-height);
   display: flex;
-  line-height: 1;
+  line-height: var(--a-wallet-balance-line-height);
   flex-direction: column;
   justify-content: center;
-  gap: 6px;
+  gap: var(--a-wallet-balance-gap);
 
   p {
     margin: 0;
@@ -120,16 +126,17 @@ export default defineComponent({
 
   &--single-line {
     gap: 0;
+    justify-content: flex-start;
   }
 
   &__status-title {
-    line-height: 1.1;
+    line-height: var(--a-wallet-balance-title-line-height);
   }
 
   &__status-text {
-    font-size: 12px;
+    font-size: var(--a-wallet-balance-fiat-size);
     font-weight: 300;
-    line-height: 1.1;
+    line-height: var(--a-wallet-balance-title-line-height);
   }
 }
 
