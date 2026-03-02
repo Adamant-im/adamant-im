@@ -100,7 +100,7 @@ self.registration.showNotification = function (title, options) {
   return Promise.resolve() // return promise as original functions returns promise
 }
 
-// Sync settings witn the main app
+// Sync settings with the main app
 channel.onmessage = (event) => {
   const data = event.data
 
