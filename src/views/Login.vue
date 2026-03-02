@@ -32,7 +32,12 @@
           </h2>
         </v-sheet>
 
-        <v-sheet v-if="!isLoginViaPassword" class="text-center mt-4" color="transparent">
+        <v-sheet
+          v-if="!isLoginViaPassword"
+          class="text-center"
+          :class="`${className}__auth-sheet`"
+          color="transparent"
+        >
           <v-row justify="center" gap="0">
             <v-col sm="8" md="8" lg="8">
               <login-form
@@ -82,7 +87,12 @@
           </v-col>
         </v-row>
 
-        <v-sheet v-if="isLoginViaPassword" class="text-center mt-6" color="transparent">
+        <v-sheet
+          v-if="isLoginViaPassword"
+          class="text-center"
+          :class="`${className}__auth-sheet`"
+          color="transparent"
+        >
           <v-row gap="0" justify="center">
             <v-col sm="8" md="8" lg="8">
               <login-password-form v-model="password" @login="onLogin" @error="onLoginError" />
@@ -191,6 +201,7 @@ const onScanQrcode = (value: string) => {
   --a-login-title-gap-from-logo: var(--a-space-6);
   --a-login-subtitle-gap: var(--a-space-2);
   --a-login-subtitle-weight: 100;
+  --a-login-auth-sheet-margin-top: var(--a-space-6);
   --a-login-passphrase-row-margin-top: var(--a-space-10);
   --a-login-settings-offset-inline: var(--a-space-2);
   --a-login-settings-hover-overlay-opacity: 0.06;
@@ -251,6 +262,10 @@ const onScanQrcode = (value: string) => {
 
   &__passphrase-row {
     margin-top: var(--a-login-passphrase-row-margin-top);
+  }
+
+  &__auth-sheet {
+    margin-top: var(--a-login-auth-sheet-margin-top);
   }
 
   @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {

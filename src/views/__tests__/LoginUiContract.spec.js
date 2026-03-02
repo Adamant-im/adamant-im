@@ -25,8 +25,10 @@ describe('Login UI style contract', () => {
     expect(content).toContain('--a-login-title-letter-spacing')
     expect(content).toContain('--a-login-subtitle-weight')
     expect(content).toContain('--a-login-bottom-padding')
+    expect(content).toContain('--a-login-auth-sheet-margin-top')
     expect(content).toContain('--a-login-passphrase-row-margin-top')
     expect(content).toContain('${className}__passphrase-row')
+    expect(content).toContain('${className}__auth-sheet')
     expect(content).toContain('${className}__logo')
 
     expect(content).not.toContain('style="width: 300px"')
@@ -39,6 +41,8 @@ describe('Login UI style contract', () => {
 
     expect(content).toContain('--a-login-form-passphrase-toggle-offset')
     expect(content).toContain('--a-login-form-passphrase-input-padding-inline')
+    expect(content).toContain('--a-login-form-submit-row-margin-top')
+    expect(content).toContain('login-form__submit-row')
     expect(content).toContain('var(--a-control-size-sm)')
 
     expect(content).not.toContain('margin-left: -28px;')
@@ -59,7 +63,11 @@ describe('Login UI style contract', () => {
     expect(loginPasswordContent).toContain('--a-login-password-hint-block-gap')
     expect(loginPasswordContent).toContain('--a-login-password-hint-title-gap')
     expect(loginPasswordContent).toContain('--a-login-password-hint-button-margin-top')
-    expect(loginPasswordContent).toContain('--a-login-password-hint-block-gap: var(--a-space-8);')
+    expect(loginPasswordContent).toContain('--a-login-form-submit-row-margin-top')
+    expect(loginPasswordContent).toContain('login-form__submit-row')
+    expect(loginPasswordContent).not.toContain(
+      '<v-row align="center" justify="center" class="mt-2"'
+    )
   })
 
   it('defines stronger hover/focus feedback for link-like action buttons globally', () => {

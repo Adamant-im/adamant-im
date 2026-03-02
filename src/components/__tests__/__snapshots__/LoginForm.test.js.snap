@@ -34,6 +34,7 @@ exports[`LoginForm.vue > renders the correct markup 1`] = `
   </v-row>
   <v-row
     align="center"
+    class="login-form__submit-row"
     data-v-ba684ca4=""
     gap="0"
     justify="center"

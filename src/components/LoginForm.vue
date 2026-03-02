@@ -33,7 +33,7 @@
       <slot name="append-outer" />
     </v-row>
 
-    <v-row align="center" justify="center" gap="0">
+    <v-row align="center" justify="center" gap="0" class="login-form__submit-row">
       <slot name="button">
         <v-btn class="login-form__button a-btn-primary" type="submit">
           <v-progress-circular
@@ -164,6 +164,7 @@ defineExpose({
   --a-login-form-passphrase-toggle-size: 28px;
   --a-login-form-passphrase-toggle-offset: calc(var(--a-login-form-passphrase-toggle-size) * -1);
   --a-login-form-passphrase-input-padding-inline: var(--a-control-size-sm);
+  --a-login-form-submit-row-margin-top: var(--a-space-2);
 
   &__textfield {
     &:deep(.v-field__append-inner) {
@@ -176,6 +177,10 @@ defineExpose({
       padding-right: var(--a-login-form-passphrase-input-padding-inline);
       padding-left: var(--a-login-form-passphrase-input-padding-inline);
     }
+  }
+
+  &__submit-row {
+    margin-top: var(--a-login-form-submit-row-margin-top);
   }
 }
 

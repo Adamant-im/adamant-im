@@ -20,7 +20,7 @@
       </v-text-field>
     </v-row>
 
-    <v-row align="center" justify="center" class="mt-2" gap="0">
+    <v-row align="center" justify="center" class="login-form__submit-row" gap="0">
       <v-col cols="12">
         <slot name="button">
           <v-btn class="login-form__button a-btn-primary" type="submit">
@@ -153,7 +153,8 @@ const removePassword = () => {
 
 <style lang="scss" scoped>
 .login-form {
-  --a-login-password-hint-block-gap: var(--a-space-8);
+  --a-login-form-submit-row-margin-top: var(--a-space-2);
+  --a-login-password-hint-block-gap: var(--a-space-10);
   --a-login-password-hint-title-gap: var(--a-space-1);
   --a-login-password-hint-button-margin-top: var(--a-space-2);
 
@@ -172,6 +173,10 @@ const removePassword = () => {
     :deep(input) {
       font-size: 16px !important;
     }
+  }
+
+  &__submit-row {
+    margin-top: var(--a-login-form-submit-row-margin-top);
   }
 
   :deep(.text-center.mt-11) {
