@@ -36,7 +36,7 @@
             <TransactionProvider :transaction="transaction">
               <template #default="{ status, refetch }">
                 <v-icon
-                  size="13"
+                  :size="CHAT_STATUS_ICON_SIZE"
                   :icon="tsIcon(status)"
                   :title="t(`chats.transaction_statuses.${status}`)"
                   :color="tsColor(status)"
@@ -108,6 +108,7 @@ import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
 import QuotedMessage from './QuotedMessage.vue'
 import { TransactionProvider } from '@/providers/TransactionProvider'
+import { CHAT_STATUS_ICON_SIZE } from './helpers/uiMetrics'
 
 export default defineComponent({
   components: {
@@ -213,6 +214,7 @@ export default defineComponent({
       historyRate,
       onClickAmount,
       onLongPress,
+      CHAT_STATUS_ICON_SIZE,
 
       onMove,
       onSwipeEnd,

@@ -40,11 +40,11 @@
               v-if="transaction.status === 'REJECTED'"
               :icon="statusIcon"
               :title="t('chats.retry_message')"
-              size="15"
+              :size="CHAT_STATUS_ICON_ERROR_SIZE"
               color="red"
               @click="$emit('resend')"
             />
-            <v-icon v-else :icon="statusIcon" size="13" />
+            <v-icon v-else :icon="statusIcon" :size="CHAT_STATUS_ICON_SIZE" />
           </div>
         </div>
 
@@ -129,6 +129,7 @@ import { isWelcomeChat } from '@/lib/chat/meta/utils'
 import ImageLayout from './ImageLayout.vue'
 import InlineLayout from './InlineLayout.vue'
 import AChatImageModal from './AChatImageModal.vue'
+import { CHAT_STATUS_ICON_ERROR_SIZE, CHAT_STATUS_ICON_SIZE } from '../helpers/uiMetrics'
 
 export default defineComponent({
   methods: { downloadFile },
@@ -232,6 +233,8 @@ export default defineComponent({
       onLongPress,
       formatDate,
       time,
+      CHAT_STATUS_ICON_SIZE,
+      CHAT_STATUS_ICON_ERROR_SIZE,
       currentIndex,
       isModalOpen,
       openModal,

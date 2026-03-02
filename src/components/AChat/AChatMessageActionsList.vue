@@ -48,9 +48,12 @@ export default defineComponent({
 
 <style lang="scss">
 .message-actions-list {
-  padding-top: 0;
-  padding-bottom: 0;
-  border-radius: var(--a-radius-sm);
-  margin-top: var(--a-space-4);
+  --a-chat-message-actions-list-padding-block: 0;
+  --a-chat-message-actions-list-radius: var(--a-radius-sm);
+  --a-chat-message-actions-list-offset-top: var(--a-space-4);
+  padding-top: var(--a-chat-message-actions-list-padding-block);
+  padding-bottom: var(--a-chat-message-actions-list-padding-block);
+  border-radius: var(--a-chat-message-actions-list-radius);
+  margin-top: var(--a-chat-message-actions-list-offset-top);
 }
 </style>

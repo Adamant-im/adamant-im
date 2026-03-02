@@ -135,6 +135,10 @@ export default defineComponent({
 
 <style lang="scss">
 .a-chat-actions-overlay {
+  --a-chat-actions-overlay-transition-duration: 50ms;
+  --a-chat-actions-overlay-transition-ease: var(--a-ease-standard);
+  --a-chat-actions-overlay-reaction-gap: var(--a-space-4);
+  --a-chat-actions-overlay-reaction-height: 46px;
   position: absolute;
   top: 0;
   bottom: 0;
@@ -143,13 +147,14 @@ export default defineComponent({
 
   &__message {
     position: fixed;
-    transition: all 0.05s ease;
+    transition: all var(--a-chat-actions-overlay-transition-duration)
+      var(--a-chat-actions-overlay-transition-ease);
   }
 
   &__reaction-select {
     position: absolute;
     bottom: 100%;
-    margin-bottom: var(--a-space-4);
+    margin-bottom: var(--a-chat-actions-overlay-reaction-gap);
     z-index: 1;
 
     right: 0;
@@ -179,7 +184,9 @@ export default defineComponent({
     }
 
     &--bottom {
-      margin-top: calc(46px + var(--a-space-4)); // <AReactionSelect/> height + margin
+      margin-top: calc(
+        var(--a-chat-actions-overlay-reaction-height) + var(--a-chat-actions-overlay-reaction-gap)
+      ); // <AReactionSelect/> height + margin
     }
   }
 }

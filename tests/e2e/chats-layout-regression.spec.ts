@@ -231,6 +231,82 @@ test.describe('Chats layout regressions', () => {
     if (metrics?.dateMarginLeft !== null) {
       expect(metrics?.dateMarginLeft ?? 0).toBeGreaterThanOrEqual(15)
       expect(metrics?.dateMarginLeft ?? 999).toBeLessThanOrEqual(17)
+
+      test('keeps opened chat message bubble spacing and paddings stable', async ({ page }) => {
+        await loginWithNewAccount(page)
+
+        const chatItems = page.locator('.chats-view__messages--chat .v-list-item')
+        await expect(chatItems.first()).toBeVisible()
+        await chatItems.first().click()
+
+        await page.waitForURL(/\/chats\/[^/?#]+$/, { timeout: 90_000 })
+
+        const firstMessageBubble = page
+          .locator('.a-chat__message-container .a-chat__message')
+          .first()
+        await expect(firstMessageBubble).toBeVisible()
+
+        const metrics = await page.evaluate(() => {
+          const chatRoot = document.querySelector('.a-chat') as HTMLElement | null
+          const containers = Array.from(
+            document.querySelectorAll('.a-chat__message-container')
+          ) as HTMLElement[]
+          const container = containers[0] ?? null
+          const bubble = container?.querySelector('.a-chat__message') as HTMLElement | null
+
+          if (!chatRoot || !container || !bubble) {
+            return null
+          }
+
+          const rootStyle = getComputedStyle(chatRoot)
+          const containerStyle = getComputedStyle(container)
+          const bubbleStyle = getComputedStyle(bubble)
+
+          return {
+            containerGapVar: rootStyle.getPropertyValue('--a-chat-message-container-gap').trim(),
+            groupedGapVar: rootStyle
+              .getPropertyValue('--a-chat-message-container-grouped-gap')
+              .trim(),
+            paddingBlockVar: rootStyle.getPropertyValue('--a-chat-message-padding-block').trim(),
+            paddingInlineVar: rootStyle.getPropertyValue('--a-chat-message-padding-inline').trim(),
+            hasMultipleBubbles: containers.length > 1,
+            isGrouped:
+              container.classList.contains('a-chat__message-container--grouped') ||
+              container.classList.contains('a-chat__message-container--grouped-left'),
+            isLast: container.matches(':last-child'),
+            marginBottom: Number.parseFloat(containerStyle.marginBottom),
+            paddingTop: Number.parseFloat(bubbleStyle.paddingTop),
+            paddingRight: Number.parseFloat(bubbleStyle.paddingRight),
+            paddingBottom: Number.parseFloat(bubbleStyle.paddingBottom),
+            paddingLeft: Number.parseFloat(bubbleStyle.paddingLeft)
+          }
+        })
+
+        expect(metrics).not.toBeNull()
+        expect(metrics?.containerGapVar).not.toBe('')
+        expect(metrics?.groupedGapVar).not.toBe('')
+        expect(metrics?.paddingBlockVar).not.toBe('')
+        expect(metrics?.paddingInlineVar).not.toBe('')
+
+        if (metrics?.isLast) {
+          expect(metrics?.marginBottom ?? 999).toBeLessThanOrEqual(1)
+        } else if (metrics?.isGrouped) {
+          expect(metrics?.marginBottom ?? 0).toBeGreaterThanOrEqual(3)
+          expect(metrics?.marginBottom ?? 999).toBeLessThanOrEqual(5)
+        } else if (metrics?.hasMultipleBubbles) {
+          expect(metrics?.marginBottom ?? 0).toBeGreaterThanOrEqual(15)
+          expect(metrics?.marginBottom ?? 999).toBeLessThanOrEqual(17)
+        }
+
+        expect(metrics?.paddingTop ?? 0).toBeGreaterThanOrEqual(7)
+        expect(metrics?.paddingTop ?? 999).toBeLessThanOrEqual(9)
+        expect(metrics?.paddingBottom ?? 0).toBeGreaterThanOrEqual(7)
+        expect(metrics?.paddingBottom ?? 999).toBeLessThanOrEqual(9)
+        expect(metrics?.paddingRight ?? 0).toBeGreaterThanOrEqual(15)
+        expect(metrics?.paddingRight ?? 999).toBeLessThanOrEqual(17)
+        expect(metrics?.paddingLeft ?? 0).toBeGreaterThanOrEqual(15)
+        expect(metrics?.paddingLeft ?? 999).toBeLessThanOrEqual(17)
+      })
     }
   })
 })

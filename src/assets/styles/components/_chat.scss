@@ -21,6 +21,16 @@ $chat-avatar-size: 40px;
 $scroll-bar-width: 4px;
 
 .a-chat {
+  --a-chat-message-container-gap: var(--a-space-4);
+  --a-chat-message-container-grouped-gap: var(--a-space-1);
+  --a-chat-message-padding-block: var(--a-space-2);
+  --a-chat-message-padding-inline: var(--a-space-4);
+  --a-chat-message-header-min-height: 17px;
+  --a-chat-message-status-gap-inline: var(--a-space-2);
+  --a-chat-message-swipe-transition-duration: 400ms;
+  --a-chat-message-swipe-transition-ease: var(--a-ease-standard);
+  --a-chat-message-actions-icon-transition-duration: var(--a-motion-slow);
+  --a-chat-message-actions-icon-transition-ease: var(--a-ease-standard);
   display: block;
   text-decoration: none;
   height: 100%; // <-- Fallback for Chrome < v108
@@ -91,14 +101,16 @@ $scroll-bar-width: 4px;
     float: left;
     max-width: 80%;
     margin: unset; // resets margins of <v-row/>
-    margin-bottom: var(--a-space-4);
+    margin-bottom: var(--a-chat-message-container-gap);
 
     &:hover {
       .a-chat__message-actions-icon {
         visibility: visible;
         transition:
-          visibility 0.5s,
-          max-height 0.5s;
+          visibility var(--a-chat-message-actions-icon-transition-duration)
+            var(--a-chat-message-actions-icon-transition-ease),
+          max-height var(--a-chat-message-actions-icon-transition-duration)
+            var(--a-chat-message-actions-icon-transition-ease);
       }
     }
 
@@ -111,11 +123,11 @@ $scroll-bar-width: 4px;
     }
 
     &--grouped {
-      margin-bottom: var(--a-space-1);
+      margin-bottom: var(--a-chat-message-container-grouped-gap);
     }
 
     &--grouped-left {
-      margin-bottom: var(--a-space-1);
+      margin-bottom: var(--a-chat-message-container-grouped-gap);
     }
 
     &--right {
@@ -123,7 +135,8 @@ $scroll-bar-width: 4px;
     }
 
     &--transition {
-      transition: left 0.4s;
+      transition: left var(--a-chat-message-swipe-transition-duration)
+        var(--a-chat-message-swipe-transition-ease);
     }
 
     &--disable-max-width {
@@ -134,7 +147,7 @@ $scroll-bar-width: 4px;
   &__message {
     display: flex;
     flex-direction: row;
-    padding: var(--a-space-2) var(--a-space-4);
+    padding: var(--a-chat-message-padding-block) var(--a-chat-message-padding-inline);
     border-radius: var(--a-radius-md);
     position: relative;
 
@@ -223,7 +236,7 @@ $scroll-bar-width: 4px;
     flex-direction: row;
     align-items: center;
     margin-top: var(--a-space-1);
-    min-height: 17px;
+    min-height: var(--a-chat-message-header-min-height);
   }
 
   &__message-text {
@@ -331,7 +344,7 @@ $scroll-bar-width: 4px;
 
   &__status {
     line-height: 1;
-    margin-left: var(--a-space-2);
+    margin-left: var(--a-chat-message-status-gap-inline);
 
     i {
       line-height: 1.2;

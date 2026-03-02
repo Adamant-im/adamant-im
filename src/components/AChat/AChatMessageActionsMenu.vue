@@ -58,20 +58,26 @@ export default defineComponent({
 @use '@/assets/styles/components/_chat.scss';
 
 .message-actions-menu {
+  --a-chat-message-actions-menu-list-padding-block: 0;
+  --a-chat-message-actions-menu-list-radius: var(--a-radius-sm);
+  --a-chat-message-actions-menu-overlay-inset-inline: var(--a-space-4);
+
   &__list {
-    padding-top: 0;
-    padding-bottom: 0;
-    border-radius: var(--a-radius-sm);
+    padding-top: var(--a-chat-message-actions-menu-list-padding-block);
+    padding-bottom: var(--a-chat-message-actions-menu-list-padding-block);
+    border-radius: var(--a-chat-message-actions-menu-list-radius);
   }
 
   &__overlay-content {
     &--left {
-      left: var(--a-space-4) !important;
+      left: var(--a-chat-message-actions-menu-overlay-inset-inline) !important;
     }
 
     &--right {
       left: unset !important;
-      right: calc(var(--a-space-4) + #{chat.$scroll-bar-width});
+      right: calc(
+        var(--a-chat-message-actions-menu-overlay-inset-inline) + #{chat.$scroll-bar-width}
+      );
     }
   }
 }
