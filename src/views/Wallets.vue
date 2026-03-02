@@ -4,7 +4,11 @@
       <WalletsSearchInput @change="searchChanged" />
       <div
         class="v-list v-list--density-default v-list--one-line"
-        :class="[`${classes.root}__list`, isDarkTheme ? 'v-theme--dark' : 'v-theme--light']"
+        :class="[
+          `${classes.root}__list`,
+          'a-scroll-pane',
+          isDarkTheme ? 'v-theme--dark' : 'v-theme--light'
+        ]"
       >
         <draggable
           :class="classes.draggableList"
@@ -150,10 +154,15 @@ onBeforeUnmount(() => {
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/generic/_variables.scss';
 
 .wallets-view {
   position: relative;
-  height: calc(100vh - var(--v-layout-bottom) - var(--toolbar-height));
+  height: calc(var(--a-layout-height) - var(--toolbar-height));
+
+  @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
+    height: calc(var(--a-layout-height-safe) - var(--toolbar-height));
+  }
 
   &__card {
     height: 100%;
@@ -163,8 +172,6 @@ onBeforeUnmount(() => {
 
   &__list {
     min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
   }
 
   &__draggable-list {

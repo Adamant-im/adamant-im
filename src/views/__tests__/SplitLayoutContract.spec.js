@@ -9,6 +9,12 @@ const layoutVariablesPath = path.resolve(currentDir, '../../assets/styles/generi
 const layoutScssPath = path.resolve(currentDir, '../../assets/styles/generic/_layout.scss')
 const appSidebarPath = path.resolve(currentDir, '../AppSidebar.vue')
 const chatsPath = path.resolve(currentDir, '../../components/Chat/Chats.vue')
+const walletsPath = path.resolve(currentDir, '../Wallets.vue')
+const sendFundsPath = path.resolve(currentDir, '../SendFunds.vue')
+const transactionTemplatePath = path.resolve(
+  currentDir,
+  '../../components/transactions/TransactionTemplate.vue'
+)
 
 describe('Split layout style contract', () => {
   it('defines safe fallback for layout height variables', () => {
@@ -48,5 +54,24 @@ describe('Split layout style contract', () => {
     const content = readFileSync(chatsPath, 'utf8')
 
     expect(content).toContain('class="a-scroll-pane"')
+  })
+
+  it('uses shared split-pane utility in wallets list pane', () => {
+    const content = readFileSync(walletsPath, 'utf8')
+
+    expect(content).toContain("'a-scroll-pane'")
+    expect(content).toContain('var(--a-layout-height)')
+    expect(content).toContain('var(--a-layout-height-safe)')
+  })
+
+  it('removes legacy fixed-height scroll wrappers from send funds and transaction template', () => {
+    const sendFundsContent = readFileSync(sendFundsPath, 'utf8')
+    const transactionTemplateContent = readFileSync(transactionTemplatePath, 'utf8')
+    const legacyHeightExpression = 'calc(100vh - var(--v-layout-bottom) - var(--toolbar-height))'
+
+    expect(sendFundsContent).not.toContain('&__content')
+    expect(transactionTemplateContent).not.toContain('&__content')
+    expect(sendFundsContent).not.toContain(legacyHeightExpression)
+    expect(transactionTemplateContent).not.toContain(legacyHeightExpression)
   })
 })

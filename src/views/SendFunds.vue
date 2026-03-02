@@ -130,11 +130,5 @@ const onError = (message: string) => {
 <style scoped lang="scss">
 .send-funds {
   position: relative;
-
-  &__content {
-    overflow-y: auto;
-    height: calc(100vh - var(--v-layout-bottom) - var(--toolbar-height));
-    padding-top: var(--toolbar-height);
-  }
 }
 </style>

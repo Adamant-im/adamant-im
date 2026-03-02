@@ -384,12 +384,6 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
 
   position: relative;
 
-  &__content {
-    overflow-y: auto;
-    height: calc(100vh - var(--v-layout-bottom) - var(--toolbar-height));
-    padding-top: var(--toolbar-height);
-  }
-
   &__titlecontent {
     flex: 1 0 auto;
   }
