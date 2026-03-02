@@ -21,7 +21,7 @@
         <adm-fill-icon />
       </icon>
       <div v-else :class="`${className}__chat-avatar`">
-        <chat-avatar :size="48" :user-id="contactId" use-public-key />
+        <chat-avatar :size="CHAT_PREVIEW_AVATAR_SIZE" :user-id="contactId" use-public-key />
       </div>
 
       <v-badge
@@ -57,9 +57,17 @@
         <TransactionProvider :transaction="transaction">
           <template #default="{ status }">
             <v-list-item-subtitle :class="`${className}__subtitle`">
-              <v-icon v-if="!isIncomingTransaction" size="15" :icon="tsIcon(status)" />
+              <v-icon
+                v-if="!isIncomingTransaction"
+                :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
+                :icon="tsIcon(status)"
+              />
               {{ transactionDirection }} {{ currency(transaction.amount, transaction.type) }}
-              <v-icon v-if="isIncomingTransaction" size="15" :icon="tsIcon(status)" />
+              <v-icon
+                v-if="isIncomingTransaction"
+                :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
+                :icon="tsIcon(status)"
+              />
             </v-list-item-subtitle>
           </template>
         </TransactionProvider>
@@ -86,10 +94,15 @@
             <v-icon
               v-if="transaction.isReply && isConfirmed"
               :icon="mdiArrowLeftTop"
-              size="15"
+              :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
               :class="`${className}__status-icon`"
             />
-            <v-icon v-else :icon="admStatusIcon" size="15" :class="`${className}__status-icon`" />
+            <v-icon
+              v-else
+              :icon="admStatusIcon"
+              :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
+              :class="`${className}__status-icon`"
+            />
           </template>
 
           <span v-html="lastMessageTextNoFormats"></span>
@@ -120,6 +133,8 @@ import { mdiArrowLeftTop, mdiDotsHorizontal } from '@mdi/js'
 import { AdamantChatMeta } from '@/lib/chat/meta/chat-meta'
 
 const className = 'chat-brief'
+const CHAT_PREVIEW_AVATAR_SIZE = 48
+const CHAT_PREVIEW_STATUS_ICON_SIZE = 15
 
 type Props = {
   userId: string
@@ -227,17 +242,19 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 
 @keyframes movement {
   from {
-    left: -50px;
+    left: calc(var(--a-chat-brief-loading-separator-shift) * -1);
   }
   to {
-    left: 50px;
+    left: var(--a-chat-brief-loading-separator-shift);
   }
 }
 
 .kmove {
+  --a-chat-brief-loading-separator-shift: 50px;
+  --a-chat-brief-loading-separator-duration: 500ms;
   position: relative;
   animation-name: movement;
-  animation-duration: 0.5s;
+  animation-duration: var(--a-chat-brief-loading-separator-duration);
   animation-iteration-count: infinite;
   animation-direction: alternate;
 }
@@ -246,6 +263,11 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
  * 1. Message/Transaction content.
  */
 .chat-brief {
+  --a-chat-brief-avatar-gap: var(--a-space-4);
+  --a-chat-brief-date-gap: var(--a-space-4);
+  --a-chat-brief-subtitle-line-height: 1.5;
+  --a-chat-brief-border-width: 1px;
+  --a-chat-brief-icon-fill-light: #bdbdbd;
   position: relative;
 
   &__loading-separator {
@@ -254,13 +276,13 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
   }
 
   &__chat-avatar {
-    margin-right: var(--a-space-4);
+    margin-right: var(--a-chat-brief-avatar-gap);
   }
 
   &__icon {
     width: var(--a-control-size-lg);
     height: var(--a-control-size-lg);
-    margin-right: var(--a-space-4);
+    margin-right: var(--a-chat-brief-avatar-gap);
 
     :deep(.svg-icon) {
       width: 100%;
@@ -280,7 +302,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
   }
 
   &__subtitle {
-    line-height: 1.5;
+    line-height: var(--a-chat-brief-subtitle-line-height);
     display: block;
     white-space: nowrap;
     overflow: hidden;
@@ -289,7 +311,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 
   &__date {
     @include mixins.a-text-explanation-small();
-    margin-left: var(--a-space-4);
+    margin-left: var(--a-chat-brief-date-gap);
     white-space: nowrap;
   }
 
@@ -314,14 +336,14 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 /** Themes **/
 .v-theme--light {
   .chat-brief {
-    border-bottom: 1px solid map.get(colors.$adm-colors, 'secondary2');
+    border-bottom: var(--a-chat-brief-border-width) solid map.get(colors.$adm-colors, 'secondary2');
 
     &__date {
       color: map.get(colors.$adm-colors, 'muted');
     }
 
     &__icon {
-      fill: #bdbdbd;
+      fill: var(--a-chat-brief-icon-fill-light);
     }
 
     &--active {

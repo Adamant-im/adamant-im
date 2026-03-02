@@ -173,4 +173,64 @@ test.describe('Chats layout regressions', () => {
       expect(metrics?.admNameLetterSpacing ?? 0).toBeGreaterThan(0)
     }
   })
+
+  test('keeps chat preview spacing and subtitle clamping stable in chats list', async ({
+    page
+  }) => {
+    await loginWithNewAccount(page)
+
+    const preview = page.locator('.chats-view__messages--chat .chat-brief').first()
+    await expect(preview).toBeVisible()
+
+    const metrics = await page.evaluate(() => {
+      const previewItem = document.querySelector(
+        '.chats-view__messages--chat .chat-brief'
+      ) as HTMLElement | null
+      const subtitle = previewItem?.querySelector('.chat-brief__subtitle') as HTMLElement | null
+      const date = previewItem?.querySelector('.chat-brief__date') as HTMLElement | null
+      const avatar = previewItem?.querySelector(
+        '.chat-brief__chat-avatar, .chat-brief__icon'
+      ) as HTMLElement | null
+
+      if (!previewItem || !subtitle || !avatar) {
+        return null
+      }
+
+      const previewStyle = getComputedStyle(previewItem)
+      const subtitleStyle = getComputedStyle(subtitle)
+      const avatarStyle = getComputedStyle(avatar)
+      const dateStyle = date ? getComputedStyle(date) : null
+
+      return {
+        avatarGapVar: previewStyle.getPropertyValue('--a-chat-brief-avatar-gap').trim(),
+        dateGapVar: previewStyle.getPropertyValue('--a-chat-brief-date-gap').trim(),
+        subtitleLineHeightVar: previewStyle
+          .getPropertyValue('--a-chat-brief-subtitle-line-height')
+          .trim(),
+        subtitleLineHeight: Number.parseFloat(subtitleStyle.lineHeight),
+        subtitleWhiteSpace: subtitleStyle.whiteSpace,
+        subtitleOverflow: subtitleStyle.overflow,
+        subtitleTextOverflow: subtitleStyle.textOverflow,
+        avatarMarginRight: Number.parseFloat(avatarStyle.marginRight),
+        dateMarginLeft: dateStyle ? Number.parseFloat(dateStyle.marginLeft) : null
+      }
+    })
+
+    expect(metrics).not.toBeNull()
+    expect(metrics?.avatarGapVar).not.toBe('')
+    expect(metrics?.dateGapVar).not.toBe('')
+    expect(metrics?.subtitleLineHeightVar).not.toBe('')
+    expect(metrics?.subtitleLineHeight ?? 0).toBeGreaterThanOrEqual(20)
+    expect(metrics?.subtitleLineHeight ?? 999).toBeLessThanOrEqual(22)
+    expect(metrics?.subtitleWhiteSpace).toBe('nowrap')
+    expect(metrics?.subtitleOverflow).toBe('hidden')
+    expect(metrics?.subtitleTextOverflow).toBe('ellipsis')
+    expect(metrics?.avatarMarginRight ?? 0).toBeGreaterThanOrEqual(15)
+    expect(metrics?.avatarMarginRight ?? 999).toBeLessThanOrEqual(17)
+
+    if (metrics?.dateMarginLeft !== null) {
+      expect(metrics?.dateMarginLeft ?? 0).toBeGreaterThanOrEqual(15)
+      expect(metrics?.dateMarginLeft ?? 999).toBeLessThanOrEqual(17)
+    }
+  })
 })

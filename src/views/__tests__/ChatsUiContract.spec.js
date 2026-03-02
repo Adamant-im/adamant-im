@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest'
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const chatToolbarPath = path.resolve(currentDir, '../../components/Chat/ChatToolbar.vue')
 const chatsPath = path.resolve(currentDir, '../../components/Chat/Chats.vue')
+const chatPreviewPath = path.resolve(currentDir, '../../components/ChatPreview.vue')
 
 describe('Chats UI style contract', () => {
   it('uses tokenized toolbar typography, spacing and floating label transforms', () => {
@@ -37,5 +38,23 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('column-gap: var(--a-chats-actions-gap);')
 
     expect(content).not.toContain('height: 56px;')
+  })
+
+  it('keeps chat preview spacing, line-height and icon sizes tokenized', () => {
+    const content = readFileSync(chatPreviewPath, 'utf8')
+
+    expect(content).toContain('CHAT_PREVIEW_AVATAR_SIZE')
+    expect(content).toContain('CHAT_PREVIEW_STATUS_ICON_SIZE')
+    expect(content).toContain('--a-chat-brief-avatar-gap')
+    expect(content).toContain('--a-chat-brief-date-gap')
+    expect(content).toContain('--a-chat-brief-subtitle-line-height')
+    expect(content).toContain('--a-chat-brief-loading-separator-shift')
+    expect(content).toContain('--a-chat-brief-loading-separator-duration')
+    expect(content).toContain('--a-chat-brief-icon-fill-light')
+    expect(content).toContain('line-height: var(--a-chat-brief-subtitle-line-height);')
+
+    expect(content).not.toContain('size="15"')
+    expect(content).not.toMatch(/&__subtitle\s*\{[^}]*line-height:\s*1\.5;/s)
+    expect(content).not.toContain('fill: #bdbdbd;')
   })
 })
