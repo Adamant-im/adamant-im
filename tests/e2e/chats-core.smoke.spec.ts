@@ -23,6 +23,12 @@ test.describe('Chats core smoke checks', () => {
     await expect(page.locator('.chat-toolbar')).toBeVisible()
     await expect(page.locator('.a-chat__body-messages')).toBeVisible()
     await expect(page.locator('.a-chat__form')).toBeVisible()
+    const sendArea = page.locator('.a-chat__form-send-area')
+    await expect(sendArea).toBeVisible()
+    const sendAreaOpacity = await sendArea.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).opacity)
+    )
+    expect(sendAreaOpacity).toBeGreaterThan(0.95)
     await expect(page.locator('.sidebar__router-view--logo img')).toBeHidden()
 
     await attachPageScreenshot(page, testInfo, 'chat-opened')

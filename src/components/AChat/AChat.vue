@@ -108,6 +108,8 @@ const scrollTop = ref(0)
 const SPINNER_VISIBLE_PLACEHOLDER_OFFSET = 12
 const SPINNER_PLACEHOLDER_TOP_OFFSET = 48
 const SPINNER_DEFAULT_TOP = 36
+// Mobile browsers can report fractional scroll positions while at the visual bottom
+const BOTTOM_SCROLL_TOLERANCE_PX = 2
 
 const resizeHandler = () => {
   if (!messagesRef.value) return
@@ -115,12 +117,13 @@ const resizeHandler = () => {
   const clientHeightDelta = currentClientHeight.value - messagesRef.value.clientHeight
 
   const nonVisibleClientHeight =
-    messagesRef.value.scrollHeight -
-    messagesRef.value.clientHeight -
-    Math.ceil(messagesRef.value.scrollTop)
-  const scrolledToBottom = nonVisibleClientHeight === 0
+    messagesRef.value.scrollHeight - messagesRef.value.clientHeight - messagesRef.value.scrollTop
+  const scrolledToBottom = nonVisibleClientHeight <= BOTTOM_SCROLL_TOLERANCE_PX
 
-  if (!scrolledToBottom) {
+  if (scrolledToBottom) {
+    // Keep the viewport anchored to the latest message when composer height changes
+    messagesRef.value.scrollTop = messagesRef.value.scrollHeight
+  } else {
     messagesRef.value.scrollTop += clientHeightDelta
   }
 
@@ -137,8 +140,9 @@ const onScroll = () => {
   const scrollHeight = messagesRef.value.scrollHeight
   const scrollTopVal = Math.ceil(messagesRef.value.scrollTop)
   const clientHeight = messagesRef.value.clientHeight
+  const offsetToBottom = scrollHeight - scrollTopVal - clientHeight
 
-  if (scrollHeight - scrollTopVal === clientHeight) {
+  if (offsetToBottom <= BOTTOM_SCROLL_TOLERANCE_PX) {
     emit('scroll:bottom')
   } else if (scrollTopVal === 0) {
     currentScrollHeight.value = scrollHeight
