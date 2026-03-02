@@ -248,16 +248,18 @@ export default defineComponent({
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
-
-$attachments-width: 500px;
-$file-container-max-width: 420px;
-$file-grid-max-width: 200px;
-$file-grid-min-column-width: 98px;
+@use 'vuetify/settings';
 
 .a-chat__attachments {
-  width: $attachments-width;
+  --a-chat-attachments-max-width: 500px;
+  --a-chat-attachments-offset-top: var(--a-space-1);
+  --a-chat-attachments-file-container-max-width: 420px;
+  --a-chat-attachments-grid-max-width: 200px;
+  --a-chat-attachments-grid-min-column-width: 98px;
+  --a-chat-attachments-grid-width: 80vw;
+  width: var(--a-chat-attachments-max-width);
   max-width: 100%;
-  margin-top: var(--a-space-1);
+  margin-top: var(--a-chat-attachments-offset-top);
 
   &--inline {
     width: auto;
@@ -265,15 +267,18 @@ $file-grid-min-column-width: 98px;
 }
 
 .a-chat_file-container {
-  max-width: $file-container-max-width;
+  max-width: var(--a-chat-attachments-file-container-max-width);
 }
 
 .a-chat_fileContainerWithElement {
   display: grid;
   gap: calc(var(--a-space-1) / 2);
-  width: 80vw;
-  max-width: $file-grid-max-width;
-  grid-template-columns: repeat(auto-fit, minmax($file-grid-min-column-width, 1fr));
+  width: var(--a-chat-attachments-grid-width);
+  max-width: var(--a-chat-attachments-grid-max-width);
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(var(--a-chat-attachments-grid-min-column-width), 1fr)
+  );
 }
 
 .a-chat_file-img {
@@ -292,8 +297,8 @@ $file-grid-min-column-width: 98px;
 
 .v-theme--dark {
   .a-chat-file {
-    background-color: rgba(245, 245, 245, 0.1); // @todo const
-    color: #fff;
+    background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
+    color: map.get(settings.$shades, 'white');
   }
 }
 </style>

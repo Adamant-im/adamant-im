@@ -27,6 +27,7 @@ const actionsOverlayPath = path.resolve(
   currentDir,
   '../../components/AChat/AChatActionsOverlay.vue'
 )
+const quotedMessagePath = path.resolve(currentDir, '../../components/AChat/QuotedMessage.vue')
 const chatStylesPath = path.resolve(currentDir, '../../assets/styles/components/_chat.scss')
 
 describe('AChat UI style contract', () => {
@@ -98,5 +99,43 @@ describe('AChat UI style contract', () => {
     expect(content).not.toContain('margin-bottom: var(--a-space-4);')
     expect(content).not.toContain('padding: var(--a-space-2) var(--a-space-4);')
     expect(content).not.toContain('transition: left 0.4s;')
+  })
+
+  it('tokenizes quoted message sizing and accent border styles', () => {
+    const content = readFileSync(quotedMessagePath, 'utf8')
+
+    expect(content).toContain('--a-quoted-message-height')
+    expect(content).toContain('--a-quoted-message-radius')
+    expect(content).toContain('--a-quoted-message-padding-block')
+    expect(content).toContain('--a-quoted-message-padding-inline')
+    expect(content).toContain('--a-quoted-message-border-width')
+    expect(content).toContain('--a-quoted-message-error-font-style')
+    expect(content).toContain(
+      "border-left: var(--a-quoted-message-border-width) solid map.get(colors.$adm-colors, 'attention');"
+    )
+
+    expect(content).not.toContain('border-left: 3px solid')
+    expect(content).not.toMatch(/&__invalid-message\s*\{[^}]*font-style:\s*italic;/s)
+    expect(content).not.toMatch(/&__message-not-found\s*\{[^}]*font-style:\s*italic;/s)
+  })
+
+  it('tokenizes attachment layout widths and avoids hardcoded dark text color', () => {
+    const content = readFileSync(attachmentPath, 'utf8')
+
+    expect(content).toContain('--a-chat-attachments-max-width')
+    expect(content).toContain('--a-chat-attachments-offset-top')
+    expect(content).toContain('--a-chat-attachments-file-container-max-width')
+    expect(content).toContain('--a-chat-attachments-grid-max-width')
+    expect(content).toContain('--a-chat-attachments-grid-min-column-width')
+    expect(content).toContain('--a-chat-attachments-grid-width')
+    expect(content).toContain('width: var(--a-chat-attachments-max-width);')
+    expect(content).toContain('max-width: var(--a-chat-attachments-grid-max-width);')
+    expect(content).toContain("color: map.get(settings.$shades, 'white');")
+
+    expect(content).not.toContain('$attachments-width: 500px;')
+    expect(content).not.toContain('$file-container-max-width: 420px;')
+    expect(content).not.toContain('$file-grid-max-width: 200px;')
+    expect(content).not.toContain('$file-grid-min-column-width: 98px;')
+    expect(content).not.toContain('color: #fff;')
   })
 })

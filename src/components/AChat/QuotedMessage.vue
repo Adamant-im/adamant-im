@@ -189,9 +189,15 @@ export default defineComponent({
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .quoted-message {
-  height: var(--a-control-size-sm);
-  border-radius: var(--a-radius-sm);
-  padding: var(--a-space-1) var(--a-space-2);
+  --a-quoted-message-height: var(--a-control-size-sm);
+  --a-quoted-message-radius: var(--a-radius-sm);
+  --a-quoted-message-padding-block: var(--a-space-1);
+  --a-quoted-message-padding-inline: var(--a-space-2);
+  --a-quoted-message-border-width: 3px;
+  --a-quoted-message-error-font-style: italic;
+  height: var(--a-quoted-message-height);
+  border-radius: var(--a-quoted-message-radius);
+  padding: var(--a-quoted-message-padding-block) var(--a-quoted-message-padding-inline);
   cursor: pointer;
 
   &--non-clickable {
@@ -206,17 +212,17 @@ export default defineComponent({
   }
 
   &__invalid-message {
-    font-style: italic;
+    font-style: var(--a-quoted-message-error-font-style);
   }
 
   &__message-not-found {
-    font-style: italic;
+    font-style: var(--a-quoted-message-error-font-style);
   }
 }
 
 .v-theme--light {
   .quoted-message {
-    border-left: 3px solid map.get(colors.$adm-colors, 'attention');
+    border-left: var(--a-quoted-message-border-width) solid map.get(colors.$adm-colors, 'attention');
     background-color: map.get(colors.$adm-colors, 'secondary2');
     color: map.get(colors.$adm-colors, 'regular');
   }
@@ -224,7 +230,7 @@ export default defineComponent({
 
 .v-theme--dark {
   .quoted-message {
-    border-left: 3px solid map.get(colors.$adm-colors, 'attention');
+    border-left: var(--a-quoted-message-border-width) solid map.get(colors.$adm-colors, 'attention');
     background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
     color: map.get(colors.$adm-colors, 'secondary');
   }
