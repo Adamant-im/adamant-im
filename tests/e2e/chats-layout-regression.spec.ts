@@ -25,8 +25,18 @@ test.describe('Chats layout regressions', () => {
     await expect(chatsList).toBeVisible()
     await expect(page.locator('.sidebar__router-view--logo img')).toBeVisible()
 
-    const chatsOverflowY = await chatsList.evaluate((el) => getComputedStyle(el).overflowY)
-    expect(['auto', 'scroll']).toContain(chatsOverflowY)
+    const chatsOverflow = await chatsList.evaluate((el) => {
+      const style = getComputedStyle(el)
+
+      return {
+        overflowY: style.overflowY,
+        overflowX: style.overflowX,
+        overscrollBehavior: style.overscrollBehavior
+      }
+    })
+    expect(['auto', 'scroll']).toContain(chatsOverflow.overflowY)
+    expect(chatsOverflow.overflowX).toBe('hidden')
+    expect(chatsOverflow.overscrollBehavior).toBe('contain')
 
     const chatsHeight = await chatsList.evaluate((el) => el.clientHeight)
     expect(chatsHeight).toBeGreaterThan(0)

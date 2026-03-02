@@ -18,7 +18,7 @@
     >
       <left-side />
     </aside>
-    <div :class="classes.layout" ref="sidebarLayout">
+    <div :class="[classes.layout, 'a-scroll-pane']" ref="sidebarLayout">
       <component :is="layout">
         <div
           class="d-flex justify-center"
@@ -277,8 +277,6 @@ onBeforeUnmount(() => {
     }
 
     flex: 1 1 auto;
-    overflow-y: auto;
-    overflow-x: hidden;
     height: var(--a-layout-height);
     width: calc(100% - var(--asideWidth));
 

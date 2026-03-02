@@ -30,6 +30,7 @@
         </v-btn>
       </v-row>
       <div
+        class="a-scroll-pane"
         :class="{
           [`${className}__messages`]: true,
           [`${className}__messages--chat`]: true
@@ -378,9 +379,6 @@ const checkDate = () => {
     &.chats-view__messages--chat {
       height: calc(var(--a-layout-height) - var(--toolbar-height));
       max-height: calc(var(--a-layout-height) - var(--toolbar-height));
-      overflow-y: auto;
-      overflow-x: hidden;
-      overscroll-behavior: contain;
 
       @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
         height: calc(var(--a-layout-height-safe) - var(--toolbar-height));

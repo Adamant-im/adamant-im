@@ -37,6 +37,22 @@ const assertSplitShellVisible = async (page: Page) => {
   expect(Math.abs(paneMetrics.asideHeight - paneMetrics.layoutHeight)).toBeLessThanOrEqual(2)
 }
 
+const assertPaneScrollContract = async (page: Page) => {
+  const layoutOverflow = await page.locator('.sidebar__layout').evaluate((element) => {
+    const style = getComputedStyle(element)
+
+    return {
+      overflowY: style.overflowY,
+      overflowX: style.overflowX,
+      overscrollBehavior: style.overscrollBehavior
+    }
+  })
+
+  expect(['auto', 'scroll']).toContain(layoutOverflow.overflowY)
+  expect(layoutOverflow.overflowX).toBe('hidden')
+  expect(layoutOverflow.overscrollBehavior).toBe('contain')
+}
+
 test.describe('Split-view layout regressions', () => {
   test('keeps independent pane scrolling on account and settings', async ({ page }) => {
     await loginWithNewAccount(page)
@@ -46,6 +62,7 @@ test.describe('Split-view layout regressions', () => {
     await expect(page.locator('.account-view')).toBeVisible()
 
     await assertSplitShellVisible(page)
+    await assertPaneScrollContract(page)
     await assertNoDocumentScrollLeak(page)
 
     await page.goto('/options')
@@ -64,6 +81,7 @@ test.describe('Split-view layout regressions', () => {
     }
 
     await assertSplitShellVisible(page)
+    await assertPaneScrollContract(page)
     await assertNoDocumentScrollLeak(page)
   })
 })

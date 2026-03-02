@@ -17,3 +17,14 @@ html {
     100vh - var(--a-layout-bottom) - var(--a-safe-area-bottom) - var(--a-safe-area-top)
   );
 }
+
+/**
+ * Shared split-pane scroll contract
+ * Keeps scrolling inside panes and prevents document-level scroll leaks
+ */
+.a-scroll-pane {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}
