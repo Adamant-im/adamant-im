@@ -3,7 +3,7 @@
     <v-list-item avatar :class="`${className}__tile`" @click="onClickTransaction">
       <template #prepend>
         <v-icon
-          :class="`${className}__prepend-icon ${className}__prepend-icon ${directionClass}`"
+          :class="`${className}__prepend-icon ${directionClass}`"
           :icon="isStringEqualCI(senderId, userId) ? mdiAirplaneTakeoff : mdiAirplaneLanding"
           size="small"
         />
@@ -22,16 +22,22 @@
           currency(amount, crypto)
         }}</span>
         <span :class="`${className}__rates`">{{ historyRate }}</span>
-        <span v-if="comment" class="a-text-regular-enlarged-bold" style="font-style: italic">
+        <span
+          v-if="comment"
+          :class="`${className}__note-prefix ${className}__note-prefix--comment a-text-regular-enlarged-bold`"
+        >
           "</span
         >
-        <span v-if="comment" class="a-text-explanation" style="font-weight: 100">{{
+        <span v-if="comment" :class="`${className}__note-text a-text-explanation`">{{
           comment
         }}</span>
-        <span v-if="textData" class="a-text-regular-enlarged-bold" style="font-style: italic">
+        <span
+          v-if="textData"
+          :class="`${className}__note-prefix ${className}__note-prefix--text-data a-text-regular-enlarged-bold`"
+        >
           #</span
         >
-        <span v-if="textData" class="a-text-explanation" style="font-weight: 100">{{
+        <span v-if="textData" :class="`${className}__note-text a-text-explanation`">{{
           textData
         }}</span>
       </v-list-item-title>
@@ -271,28 +277,43 @@ export default {
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .transaction-item {
+  --a-transaction-item-rates-gap: var(--a-space-1);
+  --a-transaction-item-subtitle-margin-top: var(--a-space-1);
+  --a-transaction-item-prepend-gap: var(--a-space-4);
+  --a-transaction-item-prepend-top: var(--a-space-2);
+  --a-transaction-item-divider-inset: var(--toolbar-height);
+  --a-transaction-item-action-width: var(--a-control-size-sm);
+  --a-transaction-item-note-weight: 100;
+  --a-transaction-item-note-prefix-style: italic;
+
   &__rates {
     color: hsla(0, 0%, 100%, 0.7);
     font-style: italic;
     @include mixins.a-text-regular();
-    margin-left: 4px;
+    margin-left: var(--a-transaction-item-rates-gap);
   }
   &__amount {
     @include mixins.a-text-regular-enlarged-bold();
   }
   &__date {
-    margin-top: 4px;
+    margin-top: var(--a-transaction-item-subtitle-margin-top);
   }
   &__prepend-icon {
-    margin-inline-end: 16px;
-    margin-top: 8px;
+    margin-inline-end: var(--a-transaction-item-prepend-gap);
+    margin-top: var(--a-transaction-item-prepend-top);
   }
   :deep(.v-divider--inset:not(.v-divider--vertical)) {
-    margin-left: 56px;
-    max-width: calc(100% - 56px);
+    margin-left: var(--a-transaction-item-divider-inset);
+    max-width: calc(100% - var(--a-transaction-item-divider-inset));
   }
   &__action {
-    min-width: 36px;
+    min-width: var(--a-transaction-item-action-width);
+  }
+  &__note-prefix {
+    font-style: var(--a-transaction-item-note-prefix-style);
+  }
+  &__note-text {
+    font-weight: var(--a-transaction-item-note-weight);
   }
   &__status {
     color: map.get(colors.$adm-colors, 'attention');

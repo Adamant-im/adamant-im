@@ -961,8 +961,13 @@ export default {
   -webkit-appearance: none;
 }
 .send-funds-form {
+  --a-send-funds-button-margin-top: var(--a-space-4);
+  --a-send-funds-amount-label-size: var(--a-font-size-sm);
+  --a-send-funds-amount-label-floating-scale: 0.75;
+  --a-send-funds-amount-label-line-height: 1;
+
   &__button {
-    margin-top: 15px;
+    margin-top: var(--a-send-funds-button-margin-top);
   }
   &__amount-input {
     :deep(.v-field__field) {
@@ -970,15 +975,17 @@ export default {
         align-items: baseline;
 
         .max-amount-label {
-          font-size: 14px;
+          font-size: var(--a-send-funds-amount-label-size);
         }
       }
     }
 
     :deep(.v-field__outline) {
       .v-label.v-field-label.v-field-label--floating .max-amount-label {
-        font-size: 10.5px; // -25% from original size
-        line-height: 1;
+        font-size: calc(
+          var(--a-send-funds-amount-label-size) * var(--a-send-funds-amount-label-floating-scale)
+        );
+        line-height: var(--a-send-funds-amount-label-line-height);
       }
     }
   }
