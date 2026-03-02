@@ -313,6 +313,11 @@ const checkDate = () => {
 @use '@/assets/styles/generic/_variables.scss';
 
 .chats-view {
+  --a-chats-actions-height: var(--toolbar-height);
+  --a-chats-actions-padding-inline-start: var(--a-space-3);
+  --a-chats-actions-padding-inline-end: var(--a-space-2);
+  --a-chats-actions-gap: var(--a-space-2);
+
   margin-top: var(--a-safe-area-top);
   height: 100%;
 
@@ -326,19 +331,18 @@ const checkDate = () => {
   }
 
   &__mark-read-btn {
-    margin-top: var(--a-space-2);
-    margin-left: var(--a-space-4);
+    margin: 0;
   }
 
   &__connection-spinner {
-    margin-top: var(--a-space-4);
-    margin-left: var(--a-space-6);
+    margin: 0;
   }
 
   &__item {
     justify-content: flex-end;
-    height: var(--toolbar-height);
-    min-height: var(--toolbar-height);
+    height: 100%;
+    min-height: 100%;
+    padding-inline: var(--a-space-2);
 
     & :deep(.v-list-item__avatar) {
       margin-right: var(--a-space-1);
@@ -352,6 +356,12 @@ const checkDate = () => {
   }
   &__chats-actions {
     margin: 0;
+    min-height: var(--a-chats-actions-height);
+    height: var(--a-chats-actions-height);
+    align-items: center;
+    padding-inline-start: var(--a-chats-actions-padding-inline-start);
+    padding-inline-end: var(--a-chats-actions-padding-inline-end);
+    column-gap: var(--a-chats-actions-gap);
   }
   &__title {
     font-weight: 300;

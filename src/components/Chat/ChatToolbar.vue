@@ -87,26 +87,40 @@ const goBack = () => {
 @use 'vuetify/settings';
 
 .chat-toolbar {
+  --a-chat-toolbar-padding-inline-start: var(--a-space-3);
+  --a-chat-toolbar-content-gap: var(--a-space-2);
+  --a-chat-toolbar-content-padding-inline-end: var(--a-space-3);
+  --a-chat-toolbar-content-padding-inline-end-mobile: var(--a-space-2);
+  --a-chat-toolbar-counter-offset-top: calc((var(--a-space-3) + (var(--a-space-1) / 2)) * -1);
+  --a-chat-toolbar-counter-offset-left: calc(var(--a-space-1) / -2);
+
   flex-grow: 0;
   flex-shrink: 0;
-  padding-left: var(--a-space-3);
+  padding-inline-start: var(--a-chat-toolbar-padding-inline-start);
 
   :deep(.v-toolbar__content) {
     min-height: var(--toolbar-height) !important;
     height: var(--toolbar-height) !important;
+    gap: var(--a-chat-toolbar-content-gap);
+    padding-inline-end: var(--a-chat-toolbar-content-padding-inline-end);
   }
 
   @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
-    padding-left: 0;
+    padding-inline-start: 0;
+
+    :deep(.v-toolbar__content) {
+      padding-inline-end: var(--a-chat-toolbar-content-padding-inline-end-mobile);
+    }
   }
 
   &__messages-counter {
     position: relative;
-    top: calc((var(--a-space-3) + (var(--a-space-1) / 2)) * -1);
-    left: calc(var(--a-space-1) / -2);
+    top: var(--a-chat-toolbar-counter-offset-top);
+    left: var(--a-chat-toolbar-counter-offset-left);
   }
   &__textfield-container {
     width: 100%;
+    min-width: 0;
   }
 
   &__adm-chat-name {

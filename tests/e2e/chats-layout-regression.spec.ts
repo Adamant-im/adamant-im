@@ -43,4 +43,51 @@ test.describe('Chats layout regressions', () => {
 
     await assertNoDocumentScrollLeak(page)
   })
+
+  test('keeps chats action row controls aligned and inside toolbar height', async ({ page }) => {
+    await loginWithNewAccount(page)
+    await page.goto('/chats')
+    await expect(page).toHaveURL(/\/chats$/)
+
+    const actionsRow = page.locator('.chats-view__chats-actions')
+    const newChatButton = page.locator('.chats-view__item')
+    await expect(actionsRow).toBeVisible()
+    await expect(newChatButton).toBeVisible()
+
+    const geometry = await page.evaluate(() => {
+      const row = document.querySelector('.chats-view__chats-actions') as HTMLElement | null
+      const button = document.querySelector('.chats-view__item') as HTMLElement | null
+
+      if (!row || !button) {
+        return null
+      }
+
+      const rowRect = row.getBoundingClientRect()
+      const buttonRect = button.getBoundingClientRect()
+      const markRead = document.querySelector('.chats-view__mark-read-btn') as HTMLElement | null
+      const markReadRect = markRead?.getBoundingClientRect() ?? null
+
+      return {
+        rowHeight: rowRect.height,
+        buttonHeight: buttonRect.height,
+        centerDelta: Math.abs(
+          rowRect.top + rowRect.height / 2 - (buttonRect.top + buttonRect.height / 2)
+        ),
+        markReadCenterDelta: markReadRect
+          ? Math.abs(
+              rowRect.top + rowRect.height / 2 - (markReadRect.top + markReadRect.height / 2)
+            )
+          : null
+      }
+    })
+
+    expect(geometry).not.toBeNull()
+    expect(geometry?.rowHeight ?? 0).toBeGreaterThan(0)
+    expect(geometry?.buttonHeight ?? 0).toBeGreaterThanOrEqual((geometry?.rowHeight ?? 0) - 1)
+    expect(geometry?.centerDelta ?? 999).toBeLessThanOrEqual(2)
+
+    if (geometry?.markReadCenterDelta !== null) {
+      expect(geometry?.markReadCenterDelta ?? 999).toBeLessThanOrEqual(2)
+    }
+  })
 })
