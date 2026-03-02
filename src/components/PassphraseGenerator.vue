@@ -188,8 +188,21 @@ const togglePassphraseVisibility = () => {
  * 2. Remove textarea border bottom.
  */
 .passphrase-generator {
+  --a-passphrase-create-title-gap: var(--a-space-1);
+  --a-passphrase-create-button-margin-top: var(--a-space-2);
+  --a-passphrase-box-margin-top: var(--a-space-8);
+
+  h3.a-text-regular {
+    margin-top: 0;
+    margin-bottom: var(--a-passphrase-create-title-gap);
+  }
+
+  .a-btn-link {
+    margin-top: var(--a-passphrase-create-button-margin-top) !important;
+  }
+
   &__box {
-    margin-top: 36px;
+    margin-top: var(--a-passphrase-box-margin-top);
     :deep(.v-input) {
       margin-top: 0;
     }

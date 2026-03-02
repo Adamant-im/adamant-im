@@ -12,7 +12,7 @@
                 @click="navigate"
                 icon
                 variant="plain"
-                :size="32"
+                :size="settingsButtonSize"
                 :class="`${className}__settings-button`"
               >
                 <v-icon :icon="mdiCog" />
@@ -22,12 +22,12 @@
         </div>
 
         <v-sheet class="text-center mt-4" color="transparent">
-          <logo style="width: 300px" />
+          <logo :class="`${className}__logo`" />
 
           <h1 :class="`${className}__title`">
             {{ t('login.brand_title') }}
           </h1>
-          <h2 :class="`${className}__subtitle`" class="hidden-sm-and-down mt-4">
+          <h2 :class="`${className}__subtitle`">
             {{ t('login.subheader') }}
           </h2>
         </v-sheet>
@@ -76,7 +76,7 @@
           </v-row>
         </v-sheet>
 
-        <v-row v-if="!isLoginViaPassword" justify="center" class="mt-8">
+        <v-row v-if="!isLoginViaPassword" justify="center" :class="`${className}__passphrase-row`">
           <v-col sm="8" md="8" lg="8">
             <passphrase-generator @copy="onCopyPassphrase" />
           </v-col>
@@ -125,6 +125,7 @@ const route = useRoute()
 const { t } = useI18n()
 
 const className = 'login-page'
+const settingsButtonSize = 32
 const passphrase = ref('')
 const password = ref('')
 const showQrcodeScanner = ref(false)
@@ -184,17 +185,44 @@ const onScanQrcode = (value: string) => {
 @use 'vuetify/settings';
 
 .login-page {
+  --a-login-logo-width: 300px;
+  --a-login-title-line-height: 40px;
+  --a-login-title-letter-spacing: 0.12em;
+  --a-login-title-gap-from-logo: var(--a-space-6);
+  --a-login-subtitle-gap: var(--a-space-2);
+  --a-login-subtitle-weight: 100;
+  --a-login-passphrase-row-margin-top: var(--a-space-10);
+  --a-login-settings-offset-inline: var(--a-space-2);
+  --a-login-settings-hover-overlay-opacity: 0.06;
+  --a-login-icon-opacity: 0.62;
+  --a-login-bottom-padding: calc(var(--a-space-8) + var(--a-safe-area-bottom));
+  --a-login-bottom-padding-mobile: calc(
+    var(--a-space-10) + var(--a-space-2) + var(--a-safe-area-bottom)
+  );
+
   height: 100%;
-  padding-bottom: calc(var(--a-space-6) + var(--a-safe-area-bottom));
+  padding-bottom: var(--a-login-bottom-padding);
+
+  &__logo {
+    width: var(--a-login-logo-width);
+    max-width: 100%;
+    height: auto;
+  }
 
   &__title {
     @include mixins.a-text-headline();
     font-family: var(--a-font-family-sans);
-    line-height: 40px;
+    line-height: var(--a-login-title-line-height);
+    letter-spacing: var(--a-login-title-letter-spacing);
+    margin-top: var(--a-login-title-gap-from-logo);
+    margin-bottom: 0;
   }
   &__subtitle {
     @include mixins.a-text-caption-light();
     font-family: var(--a-font-family-sans);
+    font-weight: var(--a-login-subtitle-weight);
+    margin-top: var(--a-login-subtitle-gap);
+    margin-bottom: 0;
   }
   &__icon {
     transition:
@@ -207,12 +235,12 @@ const onScanQrcode = (value: string) => {
   &__settings-button-container {
     position: absolute;
     right: 0;
-    margin-right: var(--a-space-2);
+    margin-right: var(--a-login-settings-offset-inline);
   }
   &__settings-button {
     &:hover > ::v-deep(.v-btn__overlay) {
       display: block;
-      opacity: 0.06;
+      opacity: var(--a-login-settings-hover-overlay-opacity);
     }
 
     &:focus-visible {
@@ -221,8 +249,12 @@ const onScanQrcode = (value: string) => {
     }
   }
 
+  &__passphrase-row {
+    margin-top: var(--a-login-passphrase-row-margin-top);
+  }
+
   @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-    padding-bottom: calc(var(--a-space-10) + var(--a-safe-area-bottom));
+    padding-bottom: var(--a-login-bottom-padding-mobile);
   }
 }
 
@@ -236,7 +268,7 @@ const onScanQrcode = (value: string) => {
 
     &__icon {
       color: map.get(colors.$adm-colors, 'black2');
-      opacity: 0.62;
+      opacity: var(--a-login-icon-opacity);
 
       &:hover {
         opacity: 1;

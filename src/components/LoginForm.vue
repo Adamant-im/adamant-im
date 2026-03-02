@@ -21,7 +21,7 @@
               @click="togglePassphraseVisibility"
               icon
               :ripple="false"
-              :size="28"
+              :size="passphraseToggleSize"
               variant="plain"
             >
               <v-icon :icon="showPassphrase ? mdiEye : mdiEyeOff" :size="24" />
@@ -73,6 +73,7 @@ const classes = {
   root: className,
   textField: `${className}__textfield`
 }
+const passphraseToggleSize = 28
 
 type Props = {
   modelValue: string
@@ -160,16 +161,20 @@ defineExpose({
 @use 'vuetify/settings';
 
 .login-form {
+  --a-login-form-passphrase-toggle-size: 28px;
+  --a-login-form-passphrase-toggle-offset: calc(var(--a-login-form-passphrase-toggle-size) * -1);
+  --a-login-form-passphrase-input-padding-inline: var(--a-control-size-sm);
+
   &__textfield {
     &:deep(.v-field__append-inner) {
       padding-left: 0;
-      margin-left: -28px; // compensate the append-inner icon
+      margin-left: var(--a-login-form-passphrase-toggle-offset);
     }
 
     &:deep(.v-field__input) {
       width: 100%;
-      padding-right: 32px;
-      padding-left: 32px;
+      padding-right: var(--a-login-form-passphrase-input-padding-inline);
+      padding-left: var(--a-login-form-passphrase-input-padding-inline);
     }
   }
 }

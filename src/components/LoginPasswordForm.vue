@@ -153,6 +153,10 @@ const removePassword = () => {
 
 <style lang="scss" scoped>
 .login-form {
+  --a-login-password-hint-block-gap: var(--a-space-8);
+  --a-login-password-hint-title-gap: var(--a-space-1);
+  --a-login-password-hint-button-margin-top: var(--a-space-2);
+
   &__textfield {
     &:deep(.v-field__append-inner) {
       padding-left: 0;
@@ -168,6 +172,19 @@ const removePassword = () => {
     :deep(input) {
       font-size: 16px !important;
     }
+  }
+
+  :deep(.text-center.mt-11) {
+    margin-top: var(--a-login-password-hint-block-gap) !important;
+  }
+
+  :deep(.text-center.mt-11 h3) {
+    margin-top: 0;
+    margin-bottom: var(--a-login-password-hint-title-gap);
+  }
+
+  :deep(.text-center.mt-11 .a-btn-link) {
+    margin-top: var(--a-login-password-hint-button-margin-top) !important;
   }
 }
 </style>
