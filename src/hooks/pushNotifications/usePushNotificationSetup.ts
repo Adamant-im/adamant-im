@@ -2,7 +2,7 @@ import { ref, computed, watch, onMounted, readonly } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { Capacitor } from '@capacitor/core'
-import { NotificationType } from '@/lib/constants'
+import { NotificationType, PUSH_REGISTRATION_RETRY_DELAY } from '@/lib/constants'
 import { usePrivateKeyManager } from './usePrivateKeyManager'
 import { usePushEventHandlers } from './usePushEventHandlers'
 import { useWebPushNotifications } from './useWebPushNotifications'
@@ -78,7 +78,7 @@ export function usePushNotificationSetup() {
           return
         }
 
-        await new Promise((resolve) => setTimeout(resolve, 2000))
+        await new Promise((resolve) => setTimeout(resolve, PUSH_REGISTRATION_RETRY_DELAY))
       }
     }
   }

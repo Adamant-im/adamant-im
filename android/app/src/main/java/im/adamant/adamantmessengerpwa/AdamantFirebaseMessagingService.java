@@ -69,11 +69,14 @@ public class AdamantFirebaseMessagingService extends FirebaseMessagingService {
                     return;
                 }
                 processedEvents.add(transactionId);
+                // Check if this is a signal message that should be hidden
+                if (isSignalMessage(txnData)) {
+                    // Signal message - don't show notification but still mark as processed
+                    return;
+                }
 
-                // Also check if this is a signal message that should be hidden
                 String body = formatNotificationText(txnData);
                 if (body == null) {
-                    // Signal message - don't show notification but still mark as processed
                     return;
                 }
             }
@@ -190,9 +193,6 @@ public class AdamantFirebaseMessagingService extends FirebaseMessagingService {
                 case 2:
                     // Rich Content Message (crypto transfers, etc.)
                     return "sent you crypto";
-                case 3:
-                    // Signal Message (should be hidden per documentation)
-                    return null; // Don't show notification for signal messages
                 default:
                     return "New message";
             }
@@ -299,6 +299,18 @@ public class AdamantFirebaseMessagingService extends FirebaseMessagingService {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
+    }
+
+    private boolean isSignalMessage(String txnData) {
+        try {
+            JSONObject transaction = new JSONObject(txnData);
+            if (transaction.has("asset") && transaction.getJSONObject("asset").has("chat")) {
+                return transaction.getJSONObject("asset").getJSONObject("chat").optInt("type", -1) == 3;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error checking for signal message", e);
+        }
+        return false;
     }
 
     @Override

@@ -256,8 +256,10 @@ self.addEventListener('notificationclick', (event) => {
           return
         }
 
-        // Open a new window (always root as user will need to login)
-        await self.clients.openWindow('/')
+        // Use AIP-9 format to open a specific chat after login
+        // @see https://aips.adamant.im/AIPS/aip-9
+        const targetUrl = data?.senderId ? `/?address=${data.senderId}` : '/'
+        await self.clients.openWindow(targetUrl)
       } catch (error) {
         console.error('Click handler error:', error)
       }

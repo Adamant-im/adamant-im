@@ -259,13 +259,34 @@ export const VALIDATION_ERRORS = {
 
 export const sidebarLayoutKey = Symbol('sidebarLayout')
 
+/**
+ * Native Push notifications for Web/Android, Desktop
+ * @see https://github.com/Adamant-im/adamant-im/issues/881
+ */
+
 export const ADAMANT_NOTIFICATION_SERVICE_ADDRESS = 'U922832474468487910'
 export const ADAMANT_NOTIFICATION_SERVICE_PUBLIC_KEY =
   'e62976484f30862e26765ad98a5835fbccc43a50de59c56bd2e0b4989ee2e0af'
 export const VAPID_KEY =
   'BOUaH-qBAFhcEzR3sETwqJDDP-WjWShYr3NAXFQwHTXT0ZIQirLuTTgL7U20kAzsFD5FE4nvTWbF1iSiAMGnyiY'
+
+/** * Time to wait (in ms) before retrying push notification registration
+ */
+export const PUSH_REGISTRATION_RETRY_DELAY = 2000
+
+/**
+ * Types of notification delivery services available in the app.
+ * Used in settings to toggle between different update mechanisms.
+ */
 export const NotificationType = {
+  /** Notifications are completely disabled */
   NoNotifications: 0,
+  /** * Local notifications using Background Fetch.
+   * Works only when the app is running or minimized.
+   */
   BackgroundFetch: 1,
+  /** * Remote push notifications via Firebase Cloud Messaging (ANS).
+   * Works even if the app is not running.
+   */
   Push: 2
 } as const
