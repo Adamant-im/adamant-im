@@ -100,4 +100,77 @@ test.describe('Chats layout regressions', () => {
       expect(geometry?.markReadCenterDelta ?? 999).toBeLessThanOrEqual(2)
     }
   })
+
+  test('keeps chat toolbar sizing and typography tokenized when chat is opened', async ({
+    page
+  }) => {
+    await loginWithNewAccount(page)
+
+    const chatItems = page.locator('.chats-view__messages--chat .v-list-item')
+    await expect(chatItems.first()).toBeVisible()
+
+    await chatItems.first().click()
+    await page.waitForURL(/\/chats\/[^/?#]+$/, { timeout: 90_000 })
+    await expect(page.locator('.chat-toolbar')).toBeVisible()
+
+    const metrics = await page.evaluate(() => {
+      const toolbar = document.querySelector('.chat-toolbar') as HTMLElement | null
+      const toolbarContent = toolbar?.querySelector('.v-toolbar__content') as HTMLElement | null
+      const fieldLabel = document.querySelector(
+        '.chat-toolbar .v-text-field .v-field__field .v-label.v-field-label'
+      ) as HTMLElement | null
+      const fieldInput = document.querySelector(
+        '.chat-toolbar .v-text-field .v-field__input'
+      ) as HTMLElement | null
+      const admChatName = document.querySelector(
+        '.chat-toolbar__adm-chat-name'
+      ) as HTMLElement | null
+
+      if (!toolbar || !toolbarContent) {
+        return null
+      }
+
+      const toolbarStyle = getComputedStyle(toolbar)
+      const toolbarContentStyle = getComputedStyle(toolbarContent)
+      const fieldLabelStyle = fieldLabel ? getComputedStyle(fieldLabel) : null
+      const fieldInputStyle = fieldInput ? getComputedStyle(fieldInput) : null
+      const admChatNameStyle = admChatName ? getComputedStyle(admChatName) : null
+
+      return {
+        labelFontSizeVar: toolbarStyle.getPropertyValue('--a-chat-toolbar-label-font-size').trim(),
+        inputPaddingTopVar: toolbarStyle
+          .getPropertyValue('--a-chat-toolbar-input-padding-top')
+          .trim(),
+        contentHeight: Number.parseFloat(toolbarContentStyle.height),
+        contentGap: Number.parseFloat(toolbarContentStyle.columnGap || toolbarContentStyle.gap),
+        labelFontSize: fieldLabelStyle ? Number.parseFloat(fieldLabelStyle.fontSize) : null,
+        inputPaddingTop: fieldInputStyle ? Number.parseFloat(fieldInputStyle.paddingTop) : null,
+        admNameLetterSpacing: admChatNameStyle
+          ? Number.parseFloat(admChatNameStyle.letterSpacing)
+          : null
+      }
+    })
+
+    expect(metrics).not.toBeNull()
+    expect(metrics?.labelFontSizeVar).not.toBe('')
+    expect(metrics?.inputPaddingTopVar).not.toBe('')
+    expect(metrics?.contentHeight ?? 0).toBeGreaterThanOrEqual(55)
+    expect(metrics?.contentHeight ?? 999).toBeLessThanOrEqual(57)
+    expect(metrics?.contentGap ?? 0).toBeGreaterThanOrEqual(7)
+    expect(metrics?.contentGap ?? 999).toBeLessThanOrEqual(9)
+
+    if (metrics?.labelFontSize !== null) {
+      expect(metrics?.labelFontSize ?? 0).toBeGreaterThanOrEqual(15)
+      expect(metrics?.labelFontSize ?? 999).toBeLessThanOrEqual(17)
+    }
+
+    if (metrics?.inputPaddingTop !== null) {
+      expect(metrics?.inputPaddingTop ?? 0).toBeGreaterThanOrEqual(19)
+      expect(metrics?.inputPaddingTop ?? 999).toBeLessThanOrEqual(21)
+    }
+
+    if (metrics?.admNameLetterSpacing !== null) {
+      expect(metrics?.admNameLetterSpacing ?? 0).toBeGreaterThan(0)
+    }
+  })
 })

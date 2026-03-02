@@ -93,6 +93,13 @@ const goBack = () => {
   --a-chat-toolbar-content-padding-inline-end-mobile: var(--a-space-2);
   --a-chat-toolbar-counter-offset-top: calc((var(--a-space-3) + (var(--a-space-1) / 2)) * -1);
   --a-chat-toolbar-counter-offset-left: calc(var(--a-space-1) / -2);
+  --a-chat-toolbar-adm-name-letter-spacing: 0.02em;
+  --a-chat-toolbar-label-font-size: var(--a-font-size-md);
+  --a-chat-toolbar-input-padding-top: var(--a-space-5);
+  --a-chat-toolbar-input-font-weight: 500;
+  --a-chat-toolbar-floating-label-font-size: var(--a-space-5);
+  --a-chat-toolbar-floating-label-offset-y: calc(var(--a-space-3) / -2);
+  --a-chat-toolbar-floating-label-scale: 0.6875;
 
   flex-grow: 0;
   flex-shrink: 0;
@@ -125,7 +132,7 @@ const goBack = () => {
 
   &__adm-chat-name {
     @include mixins.a-text-header();
-    letter-spacing: 0.02em;
+    letter-spacing: var(--a-chat-toolbar-adm-name-letter-spacing);
   }
 
   &__textfield {
@@ -151,22 +158,23 @@ const goBack = () => {
       .v-label.v-field-label {
         max-width: unset;
         @include mixins.a-text-regular-enlarged-bold();
-        font-size: var(--a-font-size-md);
+        font-size: var(--a-chat-toolbar-label-font-size);
       }
     }
 
     .v-field__input {
       line-height: var(--a-line-height-sm);
-      padding-top: var(--a-space-5);
-      font-weight: 500;
+      padding-top: var(--a-chat-toolbar-input-padding-top);
+      font-weight: var(--a-chat-toolbar-input-font-weight);
     }
 
     .v-field__outline {
       .v-label.v-field-label.v-field-label--floating {
         line-height: var(--a-line-height-sm);
-        font-size: var(--a-space-5);
-        transform: translateY(calc(var(--a-space-3) / -2)) scale(0.6875);
-        font-weight: 500;
+        font-size: var(--a-chat-toolbar-floating-label-font-size);
+        transform: translateY(var(--a-chat-toolbar-floating-label-offset-y))
+          scale(var(--a-chat-toolbar-floating-label-scale));
+        font-weight: var(--a-chat-toolbar-input-font-weight);
       }
     }
 
