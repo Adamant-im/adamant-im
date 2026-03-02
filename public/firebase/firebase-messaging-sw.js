@@ -38,7 +38,7 @@ const channel = new BroadcastChannel('adm_notifications')
 // Resolvers for settings initialization promises
 let settingsInitializedResolvers = []
 
-// Utillites for decoding
+// Utilities for decoding
 function hexToBytes(hex) {
   const bytes = []
   for (let i = 0; i < hex.length; i += 2) {
