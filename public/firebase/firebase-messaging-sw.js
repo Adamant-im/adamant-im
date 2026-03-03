@@ -30,11 +30,85 @@ const messaging = firebase.messaging()
 let privateKey = ''
 let currentUserAddress = ''
 let notificationSettings = {
-  type: 2, // Default: PUSH
+  type: NOTIFICATION_TYPES['PUSH'], // Default: PUSH
   initialized: false
 }
-const channel = new BroadcastChannel('adm_notifications')
 
+let securePort = null
+const usedNonces = new Set()
+
+/**
+ * Global message listener to intercept the MessagePort transfer.
+ */
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'INIT_SECURE_CHANNEL') {
+    securePort = event.ports[0]
+
+    securePort.onmessage = (portEvent) => {
+      handleSecureMessage(portEvent.data)
+    }
+
+    securePort.postMessage({
+      type: 'CONFIRM_CHANNEL',
+      timestamp: Date.now()
+    })
+  }
+})
+
+/**
+ * Logic for processing messages received through the secure port.
+ */
+function handleSecureMessage(data) {
+  const { type, payload, timestamp, nonce } = data
+
+  // Time-based  and nonce-based security
+  if (!timestamp || !nonce || Math.abs(Date.now() - timestamp) > 10000 || usedNonces.has(nonce)) {
+    return
+  }
+
+  usedNonces.add(nonce)
+
+  // Keep the Set size manageable
+  if (usedNonces.size > 100) {
+    const [firstItem] = usedNonces
+    usedNonces.delete(firstItem)
+  }
+
+  switch (type) {
+    case 'SET_PRIVATE_KEY':
+      if (payload?.privateKey) {
+        privateKey = payload.privateKey
+      }
+      break
+
+    case 'CLEAR_PRIVATE_KEY':
+      privateKey = ''
+      break
+
+    case 'SYNC_SETTINGS':
+      if (payload?.currentUserAddress) {
+        if (currentUserAddress !== payload.currentUserAddress) {
+          privateKey = ''
+        }
+        currentUserAddress = payload.currentUserAddress
+      }
+
+      if (payload?.type !== undefined) {
+        notificationSettings.type = payload.type
+      }
+
+      notificationSettings.initialized = true
+
+      if (settingsInitializedResolvers.length > 0) {
+        settingsInitializedResolvers.forEach((resolve) => resolve())
+        settingsInitializedResolvers = []
+      }
+      break
+
+    default:
+      console.warn('[SW] Unknown secure command:', type)
+  }
+}
 // Resolvers for settings initialization promises
 let settingsInitializedResolvers = []
 
@@ -98,32 +172,6 @@ self.registration.showNotification = function (title, options) {
   }
 
   return Promise.resolve() // return promise as original functions returns promise
-}
-
-// Sync settings with the main app
-channel.onmessage = (event) => {
-  const data = event.data
-
-  if (data?.privateKey) {
-    privateKey = data.privateKey
-  }
-
-  if (data?.clearPrivateKey) {
-    privateKey = ''
-  }
-
-  if (data?.currentUserAddress) {
-    currentUserAddress = data.currentUserAddress
-  }
-
-  if (data?.notificationType !== undefined) {
-    notificationSettings.type = data.notificationType
-    notificationSettings.initialized = true
-
-    // Resolve all waiting promises
-    settingsInitializedResolvers.forEach((resolve) => resolve())
-    settingsInitializedResolvers = []
-  }
 }
 
 function parseTransactionPayload(payload) {
@@ -266,8 +314,3 @@ self.addEventListener('notificationclick', (event) => {
     })()
   )
 })
-
-// Fetch notifications during the app starting
-setTimeout(() => {
-  channel.postMessage({ requestCurrentSettings: true })
-}, 1000)

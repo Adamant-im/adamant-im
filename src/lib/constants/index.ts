@@ -290,3 +290,28 @@ export const NotificationType = {
    */
   Push: 2
 } as const
+
+/**
+ * Types of messages sent between Main Thread and Service Worker
+ */
+export const SW_SECURE_COMMANDS = {
+  INIT_SECURE_CHANNEL: 'INIT_SECURE_CHANNEL',
+
+  SET_PRIVATE_KEY: 'SET_PRIVATE_KEY',
+  CLEAR_PRIVATE_KEY: 'CLEAR_PRIVATE_KEY',
+  SYNC_SETTINGS: 'SYNC_SETTINGS',
+
+  CONFIRM_CHANNEL: 'CONFIRM_CHANNEL'
+} as const
+
+export type SwSecureCommand = (typeof SW_SECURE_COMMANDS)[keyof typeof SW_SECURE_COMMANDS]
+
+/**
+ * Structure of the secure message
+ */
+export interface SecureMessage {
+  type: SwSecureCommand
+  payload?: any
+  timestamp: number
+  nonce: string // Unique ID for each message to prevent replay attacks
+}

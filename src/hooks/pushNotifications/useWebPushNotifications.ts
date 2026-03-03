@@ -1,4 +1,5 @@
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { SW_SECURE_COMMANDS } from '@/lib/constants'
+import { ref, onBeforeUnmount } from 'vue'
 
 export interface WebNotificationSettings {
   type: number
@@ -7,60 +8,64 @@ export interface WebNotificationSettings {
 }
 
 export function useWebPushNotifications() {
-  const channel = ref<BroadcastChannel | null>(null)
-  const isSupported = typeof BroadcastChannel !== 'undefined'
+  const port = ref<MessagePort | null>(null)
+  const isSecureChannelReady = ref(false)
 
-  /**
-   * Closes the broadcast channel in case of error for preventing memory leaks
-   */
-  const safeCloseChannel = () => {
-    if (channel.value) {
-      try {
-        channel.value.close()
-      } catch (error) {
-        console.warn('[Web Push] Error closing BroadcastChannel:', error)
-      } finally {
-        channel.value = null
-      }
-    }
-  }
+  const generateNonce = () => Math.random().toString(36).substring(2, 15)
 
   /**
    * Gets reference to pushService (always WebPushService on web)
    */
   const getPushService = async () => {
-    if (!isSupported) return null
-
     const { pushService } = await import('@/lib/notifications/pushServiceFactory')
     return pushService
   }
 
   /**
-   * Creates BroadcastChannel for Service Worker communication
+   * Initializes secure MessageChannel with Service Worker
    */
-  const setupChannel = () => {
-    if (!isSupported) return
-
-    try {
-      channel.value = new BroadcastChannel('adm_notifications')
-    } catch (error) {
-      console.error('[Web Push] Failed to create BroadcastChannel:', error)
-      channel.value = null
+  const initSecureChannel = async () => {
+    if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) {
+      console.warn('[Web Push] Service Worker controller not found')
+      return
     }
+
+    const channel = new MessageChannel()
+    const port1 = channel.port1
+    const port2 = channel.port2
+
+    port1.onmessage = (event) => {
+      if (event.data?.type === SW_SECURE_COMMANDS.CONFIRM_CHANNEL) {
+        isSecureChannelReady.value = true
+        port.value = port1
+      }
+    }
+
+    navigator.serviceWorker.controller.postMessage(
+      { type: SW_SECURE_COMMANDS.INIT_SECURE_CHANNEL },
+      [port2]
+    )
   }
 
   /**
-   * Sends private key to Service Worker via BroadcastChannel
+   * Sends a secure message through the established port
    */
-  const sendPrivateKeyToSW = (privateKey: string): boolean => {
-    if (!channel.value) return false
+  const sendSecureMessage = (type: string, payload?: any): boolean => {
+    if (!port.value || !isSecureChannelReady.value) {
+      console.warn('[Web Push] Cannot send message: channel not ready')
+      return false
+    }
 
     try {
-      channel.value.postMessage({ privateKey })
+      port.value.postMessage({
+        type,
+        payload,
+        timestamp: Date.now(),
+        nonce: generateNonce()
+      })
       return true
     } catch (error) {
-      console.error('[Web Push] Failed to send private key to SW:', error)
-      safeCloseChannel()
+      console.error('[Web Push] Failed to send secure message:', error)
       return false
     }
   }
@@ -69,15 +74,11 @@ export function useWebPushNotifications() {
    * Sets private key both in Service Worker and PushService
    */
   const setPrivateKey = async (privateKey: string): Promise<boolean> => {
-    if (!isSupported) return false
+    const swResult = sendSecureMessage(SW_SECURE_COMMANDS.SET_PRIVATE_KEY, { privateKey })
 
-    // Send to Service Worker
-    const swResult = sendPrivateKeyToSW(privateKey)
-
-    // Send to PushService
-    const service = await getPushService()
-    if (service) {
-      service.setPrivateKey(privateKey)
+    const pushService = await getPushService()
+    if (pushService) {
+      pushService.setPrivateKey(privateKey)
     }
 
     return swResult
@@ -87,76 +88,57 @@ export function useWebPushNotifications() {
    * Clears private key from both Service Worker and PushService
    */
   const clearPrivateKey = async (): Promise<boolean> => {
-    if (!channel.value) return false
+    const swResult = sendSecureMessage(SW_SECURE_COMMANDS.CLEAR_PRIVATE_KEY)
 
-    try {
-      // Clear from Service Worker
-      channel.value.postMessage({ clearPrivateKey: true })
-
-      // Clear from PushService
-      const service = await getPushService()
-      if (service) {
-        service.clearPrivateKey()
-      }
-
-      return true
-    } catch (error) {
-      console.error('[Web Push] Failed to clear private key:', error)
-      safeCloseChannel()
-      return false
+    const pushService = await getPushService()
+    if (pushService) {
+      pushService.clearPrivateKey()
     }
+
+    return swResult
   }
 
   /**
    * Syncs notification settings with Service Worker
    */
   const syncNotificationSettings = (settings: WebNotificationSettings): boolean => {
-    if (!channel.value) return false
-
-    try {
-      channel.value.postMessage({
-        notificationType: settings.type,
-        currentUserAddress: settings.currentUserAddress
-      })
-
-      if (settings.privateKey) {
-        sendPrivateKeyToSW(settings.privateKey)
-      }
-
-      return true
-    } catch (error) {
-      console.error('[Web Push] Failed to sync settings:', error)
-      safeCloseChannel()
-      return false
-    }
+    return sendSecureMessage(SW_SECURE_COMMANDS.SYNC_SETTINGS, {
+      type: settings.type,
+      currentUserAddress: settings.currentUserAddress
+    })
   }
 
   /**
-   * Sets message handler for Service Worker communication
+   * Implementation for MessagePort doesn't support global onmessage easily.
+   * Usually, SW sends messages back to the port it received.
    */
   const setMessageHandler = (handler: (event: MessageEvent) => void): boolean => {
-    if (!channel.value) return false
-
-    try {
-      channel.value.onmessage = handler
-      return true
-    } catch (error) {
-      console.error('[Web Push] Failed to set message handler:', error)
-      safeCloseChannel()
-      return false
+    if (!port.value) return false
+    port.value.onmessage = (event) => {
+      // If SW sends a CONFIRM, we handle it internally, otherwise pass to handler
+      if (event.data?.type === SW_SECURE_COMMANDS.CONFIRM_CHANNEL) {
+        isSecureChannelReady.value = true
+      } else {
+        handler(event)
+      }
     }
+    return true
   }
 
-  onMounted(setupChannel)
-
-  onBeforeUnmount(safeCloseChannel)
+  onBeforeUnmount(() => {
+    if (port.value) {
+      port.value.close()
+      port.value = null
+    }
+  })
 
   return {
-    isSupported,
+    isSupported: 'MessageChannel' in window,
+    isSecureChannelReady,
+    initSecureChannel,
     setPrivateKey,
     clearPrivateKey,
     syncNotificationSettings,
-    setMessageHandler,
-    getPushService
+    setMessageHandler
   }
 }

@@ -23,17 +23,6 @@ export function usePushNotificationSetup() {
   })
 
   /**
-   * Handles BroadcastChannel messages from Service Worker
-   */
-  const handleChannelMessage = (event: MessageEvent) => {
-    const { data } = event
-
-    if (data?.requestCurrentSettings) {
-      sendCurrentSettings()
-    }
-  }
-
-  /**
    * Sends current settings to Service Worker
    */
   const sendCurrentSettings = async () => {
@@ -86,20 +75,20 @@ export function usePushNotificationSetup() {
   /**
    * Registers push notifications on login
    */
+
   const registerPushNotificationsOnLogin = async () => {
     if (!isPushNotification.value) return
 
     const privateKey = await getPrivateKey()
     if (!privateKey) return
 
-    if (Capacitor.isNativePlatform()) {
-      const { pushService } = await import('@/lib/notifications/pushServiceFactory')
-      pushService.setPrivateKey(privateKey)
-      await pushService.initialize()
-      await pushService.registerDevice()
-    } else {
-      const { pushService } = await import('@/lib/notifications/pushServiceFactory')
-      pushService.setPrivateKey(privateKey)
+    const { pushService } = await import('@/lib/notifications/pushServiceFactory')
+
+    pushService.setPrivateKey(privateKey)
+    await pushService.initialize()
+    await pushService.registerDevice()
+
+    if (!Capacitor.isNativePlatform() && webPush?.isSecureChannelReady.value) {
       await sendPrivateKey()
     }
   }
@@ -108,6 +97,28 @@ export function usePushNotificationSetup() {
    * Sets up watchers for automatic registration and settings sync
    */
   const setupWatchers = () => {
+    if (webPush) {
+      watch(
+        () => webPush.isSecureChannelReady.value,
+        async (isReady) => {
+          if (isReady) {
+            console.log('[Push] Secure channel ready. Syncing...')
+
+            // Sync settings only if we have an address
+            if (store.state.address) {
+              await sendCurrentSettings()
+            }
+
+            // Sync key only if logged in
+            if (store.state.passphrase) {
+              await sendPrivateKey()
+            }
+          }
+        },
+        { immediate: true }
+      )
+    }
+
     // Auto-register on login
     watch(
       () => store.state.passphrase,
@@ -125,7 +136,6 @@ export function usePushNotificationSetup() {
         if (newType !== oldType) {
           syncNotificationSettings(newType)
 
-          // Clear key if push disabled
           if (oldType === NotificationType['Push'] && newType !== NotificationType['Push']) {
             await clearPrivateKey()
           }
@@ -147,15 +157,9 @@ export function usePushNotificationSetup() {
   /**
    * Initialize the composable
    */
-  const initialize = () => {
+  const initialize = async () => {
     if (webPush) {
-      webPush.setMessageHandler(handleChannelMessage)
-      // Send settings when Service Worker is ready
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.ready
-          .then(() => sendCurrentSettings())
-          .catch((err) => console.warn('[Push] Failed to send initial settings:', err))
-      }
+      await webPush.initSecureChannel()
     }
     setupWatchers()
   }
