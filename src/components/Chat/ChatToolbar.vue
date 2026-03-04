@@ -6,7 +6,7 @@
         :value="numOfNewMessages"
         color="primary"
         :class="`${className}__messages-counter`"
-        :content="numOfNewMessages > 99 ? '99+' : numOfNewMessages"
+        :content="messagesCounterContent"
       >
       </v-badge>
     </back-button>
@@ -44,6 +44,7 @@ import { useRouter } from 'vue-router'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
 import { useI18n } from 'vue-i18n'
 import { useChatName } from '@/components/AChat/hooks/useChatName'
+import { CHAT_TOOLBAR_UNREAD_COUNTER_MAX } from './helpers/uiMetrics'
 
 const { partnerId } = defineProps({
   partnerId: {
@@ -73,6 +74,11 @@ const partnerName = computed({
 })
 
 const numOfNewMessages = computed(() => store.getters['chat/numWithoutTheCurrentChat'](partnerId))
+const messagesCounterContent = computed(() => {
+  return numOfNewMessages.value > CHAT_TOOLBAR_UNREAD_COUNTER_MAX
+    ? `${CHAT_TOOLBAR_UNREAD_COUNTER_MAX}+`
+    : numOfNewMessages.value
+})
 
 const goBack = () => {
   router.push({ name: 'Chats' })

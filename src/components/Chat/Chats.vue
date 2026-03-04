@@ -14,7 +14,7 @@
           :class="`${className}__connection-spinner`"
           v-show="showSpinner"
           indeterminate
-          :size="24"
+          :size="CHATS_CONNECTION_SPINNER_SIZE"
         />
         <v-spacer />
         <v-btn :class="`${className}__item`" @click="setShowChatStartDialog(true)" variant="plain">
@@ -89,8 +89,9 @@ import { computedEager } from '@vueuse/core'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 import Visibility from 'visibilityjs'
+import { CHATS_CONNECTION_SPINNER_SIZE, CHATS_SCROLL_OFFSET } from './helpers/uiMetrics'
 
-const scrollOffset = 64
+const scrollOffset = CHATS_SCROLL_OFFSET
 
 const props = withDefaults(
   defineProps<{
@@ -318,6 +319,12 @@ const checkDate = () => {
   --a-chats-actions-padding-inline-start: var(--a-space-3);
   --a-chats-actions-padding-inline-end: var(--a-space-2);
   --a-chats-actions-gap: var(--a-space-2);
+  --a-chats-item-padding-inline: var(--a-space-2);
+  --a-chats-item-avatar-gap-inline: var(--a-space-1);
+  --a-chats-item-icon-gap-inline: var(--a-space-2);
+  --a-chats-title-font-weight: 300;
+  --a-chats-title-font-size: var(--a-font-size-sm);
+  --a-chats-messages-move-duration: var(--a-motion-slow);
 
   margin-top: var(--a-safe-area-top);
   height: 100%;
@@ -343,15 +350,15 @@ const checkDate = () => {
     justify-content: flex-end;
     height: 100%;
     min-height: 100%;
-    padding-inline: var(--a-space-2);
+    padding-inline: var(--a-chats-item-padding-inline);
 
     & :deep(.v-list-item__avatar) {
-      margin-right: var(--a-space-1);
+      margin-right: var(--a-chats-item-avatar-gap-inline);
     }
 
     :deep(.v-list-item__prepend) {
       > .v-icon {
-        margin-inline-end: var(--a-space-2);
+        margin-inline-end: var(--a-chats-item-icon-gap-inline);
       }
     }
   }
@@ -365,8 +372,8 @@ const checkDate = () => {
     column-gap: var(--a-chats-actions-gap);
   }
   &__title {
-    font-weight: 300;
-    font-size: var(--a-font-size-sm);
+    font-weight: var(--a-chats-title-font-weight);
+    font-size: var(--a-chats-title-font-size);
   }
   &__container--chat {
     max-width: var(--a-layout-max-width);
@@ -427,6 +434,6 @@ const checkDate = () => {
 
 /** Animations **/
 .messages-move {
-  transition: transform 0.5s;
+  transition: transform var(--a-chats-messages-move-duration);
 }
 </style>
