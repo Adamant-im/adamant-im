@@ -173,26 +173,33 @@ describe('AChat UI style contract', () => {
     expect(fileContent).not.toContain('font-size: 14px;')
   })
 
-  it('keeps image modal preview background translucent in both themes', () => {
+  it('keeps image modal preview background non-interactive with blurred backdrop in both themes', () => {
     const content = readFileSync(attachmentImageModalPath, 'utf8')
 
-    expect(content).toContain('scrim="transparent"')
+    expect(content).toContain('\n    scrim\n')
     expect(content).toContain('@click.capture="handleBackgroundClick"')
     expect(content).toContain('<v-card :class="classes.container">')
     expect(content).toContain(
       '<div :class="classes.content" @click.capture="handleBackgroundClick">'
     )
     expect(content).toContain('--a-chat-image-modal-surface')
+    expect(content).toContain('--a-chat-image-modal-backdrop-color')
+    expect(content).toContain('--a-chat-image-modal-backdrop-blur')
     expect(content).toContain('background-color: var(--a-chat-image-modal-surface) !important;')
+    expect(content).toContain(':deep(.v-overlay__scrim) {')
+    expect(content).toContain('opacity: 1 !important;')
+    expect(content).toContain('backdrop-filter: blur(var(--a-chat-image-modal-backdrop-blur));')
+    expect(content).toContain(
+      'background-color: var(--a-chat-image-modal-backdrop-color) !important;'
+    )
     expect(content).toContain('-webkit-tap-highlight-color: transparent;')
     expect(content).toContain(':deep(.v-img__img),')
     expect(content).toContain(':deep(.v-btn),')
     expect(content).toContain(
       'const clickedControl = target.closest(\'.v-toolbar, .v-btn, button, [role="button"]\')'
     )
-    expect(content).toContain(
-      "const clickedFileContent = target.closest('.v-window-item--active .a-chat-modal-file__container')"
-    )
+    expect(content).toContain('const clickedFileContent = target.closest(')
+    expect(content).toContain("'.v-window-item--active .a-chat-modal-file__container'")
     expect(content).toContain('const activeImageSlideSelector =')
     expect(content).toContain(
       "'.v-window-item--active.a-chat-image-modal-item, .v-window-item--active .a-chat-image-modal-item'"
@@ -202,6 +209,8 @@ describe('AChat UI style contract', () => {
     expect(content).toContain('props.files[slide.value]?.resolution')
     expect(content).toContain('const isPointInsideBounds = (')
     expect(content).toContain('--a-chat-image-modal-surface: transparent;')
+    expect(content).toContain('--a-chat-image-modal-backdrop-color: rgb(0 0 0 / 68%);')
+    expect(content).toContain('--a-chat-image-modal-backdrop-color: rgb(18 22 30 / 54%);')
     expect(content).toContain('&__content {')
     expect(content).not.toContain(
       '<v-card :class="classes.container" @click.capture="handleBackgroundClick">'

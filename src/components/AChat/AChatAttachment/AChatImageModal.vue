@@ -1,11 +1,5 @@
 <template>
-  <v-dialog
-    v-model="show"
-    fullscreen
-    scrim="transparent"
-    :class="classes.root"
-    @keydown="handleKeydown"
-  >
+  <v-dialog v-model="show" fullscreen scrim :class="classes.root" @keydown="handleKeydown">
     <v-card :class="classes.container">
       <div :class="classes.content" @click.capture="handleBackgroundClick">
         <v-toolbar color="transparent">
@@ -229,6 +223,8 @@ export default {
       sourceWidth: number,
       sourceHeight: number
     ) => {
+      // `v-img` uses object-fit: contain, so hit-testing against raw container bounds is incorrect
+      // for portrait/landscape mismatches. We mirror contain math to get actual bitmap bounds.
       const containerWidth = containerRect.width
       const containerHeight = containerRect.height
       if (containerWidth <= 0 || containerHeight <= 0) {
@@ -257,8 +253,8 @@ export default {
       }
     }
 
-    // Vuetify image node can occupy the whole slide while the actual bitmap is letterboxed
-    // This computes rendered bitmap bounds so clicks on transparent gutters close the modal
+    // Vuetify can render several internal image layers depending on loading state/viewport.
+    // We resolve bounds from most precise to broadest fallback to keep backdrop-click behavior stable.
     const getRenderedImageBounds = () => {
       const activeSlide = document.querySelector(activeImageSlideSelector)
       if (!(activeSlide instanceof HTMLElement)) return null
@@ -269,6 +265,7 @@ export default {
           ? imageContainer.getBoundingClientRect()
           : activeSlide.getBoundingClientRect()
 
+      // Preferred source: real decoded image dimensions.
       const pictureImage = activeSlide.querySelector('.v-img__picture img')
       if (
         pictureImage instanceof HTMLImageElement &&
@@ -285,6 +282,7 @@ export default {
         }
       }
 
+      // Fallback before image decode is complete: dimensions from attachment metadata.
       const resolution = props.files[slide.value]?.resolution
       if (resolution) {
         const [sourceWidth, sourceHeight] = resolution
@@ -301,6 +299,7 @@ export default {
         }
       }
 
+      // Last visual fallback: image layer rect that Vuetify paints to screen.
       const imageSurface = activeSlide.querySelector('.v-img__img')
       if (imageSurface instanceof HTMLElement) {
         const imageSurfaceRect = imageSurface.getBoundingClientRect()
@@ -314,6 +313,7 @@ export default {
         }
       }
 
+      // Safety fallback: close behavior still works even if internals change.
       return {
         left: containerRect.left,
         right: containerRect.right,
@@ -326,6 +326,7 @@ export default {
       const target = e.target as HTMLElement | null
       if (!target) return
 
+      // Toolbar/buttons must keep their own click semantics (navigation/download/close).
       const clickedControl = target.closest('.v-toolbar, .v-btn, button, [role="button"]')
       if (clickedControl) return
 
@@ -333,6 +334,7 @@ export default {
       if (!activeFile) return
 
       if (!isTypeImage(activeFile)) {
+        // Non-image attachments are centered content cards; click inside card must not close modal.
         const clickedFileContent = target.closest(
           '.v-window-item--active .a-chat-modal-file__container'
         )
@@ -346,6 +348,7 @@ export default {
 
       const activeImageSlide = document.querySelector(activeImageSlideSelector)
       if (activeImageSlide instanceof HTMLElement && activeImageSlide.contains(target)) {
+        // For images we close only if click is outside rendered bitmap (letterbox gutters included).
         const renderedImageBounds = getRenderedImageBounds()
         if (!renderedImageBounds) return
 
@@ -430,6 +433,8 @@ export default {
 
 .a-chat-image-modal {
   --a-chat-image-modal-surface: transparent;
+  --a-chat-image-modal-backdrop-color: rgb(0 0 0 / 40%);
+  --a-chat-image-modal-backdrop-blur: 3px;
 
   &__container {
     position: relative;
@@ -476,17 +481,26 @@ export default {
   :deep(button) {
     cursor: pointer !important;
   }
+
+  :deep(.v-overlay__scrim) {
+    opacity: 1 !important;
+    background-color: var(--a-chat-image-modal-backdrop-color) !important;
+    backdrop-filter: blur(var(--a-chat-image-modal-backdrop-blur));
+    -webkit-backdrop-filter: blur(var(--a-chat-image-modal-backdrop-blur));
+  }
 }
 
 .v-theme--dark {
   .a-chat-image-modal {
     --a-chat-image-modal-surface: transparent;
+    --a-chat-image-modal-backdrop-color: rgb(0 0 0 / 40%);
   }
 }
 
 .v-theme--light {
   .a-chat-image-modal {
     --a-chat-image-modal-surface: transparent;
+    --a-chat-image-modal-backdrop-color: rgb(18 22 30 / 40%);
   }
 }
 </style>

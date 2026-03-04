@@ -237,7 +237,8 @@ test.describe('Chat attachment modal regressions', () => {
 
           return {
             modalBackground: modalEl ? getComputedStyle(modalEl).backgroundColor : null,
-            scrimBackground: scrimEl ? getComputedStyle(scrimEl).backgroundColor : null
+            scrimBackground: scrimEl ? getComputedStyle(scrimEl).backgroundColor : null,
+            scrimBackdropFilter: scrimEl ? getComputedStyle(scrimEl).backdropFilter : null
           }
         })
 
@@ -245,8 +246,12 @@ test.describe('Chat attachment modal regressions', () => {
         expect(parseAlpha(surfaces.modalBackground ?? '')).toBeLessThan(0.05)
 
         if (surfaces.scrimBackground) {
-          expect(parseAlpha(surfaces.scrimBackground)).toBeLessThan(0.05)
+          const scrimAlpha = parseAlpha(surfaces.scrimBackground)
+          expect(scrimAlpha).toBeGreaterThan(0.2)
+          expect(scrimAlpha).toBeLessThan(0.9)
         }
+
+        expect(surfaces.scrimBackdropFilter).toContain('blur(')
 
         surfaceChecked = true
       }
