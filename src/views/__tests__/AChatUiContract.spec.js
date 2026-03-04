@@ -10,6 +10,18 @@ const attachmentPath = path.resolve(
   currentDir,
   '../../components/AChat/AChatAttachment/AChatAttachment.vue'
 )
+const attachmentFilePath = path.resolve(
+  currentDir,
+  '../../components/AChat/AChatAttachment/AChatFile.vue'
+)
+const attachmentImagePath = path.resolve(
+  currentDir,
+  '../../components/AChat/AChatAttachment/AChatImage.vue'
+)
+const attachmentImageModalPath = path.resolve(
+  currentDir,
+  '../../components/AChat/AChatAttachment/AChatImageModal.vue'
+)
 const transactionPath = path.resolve(currentDir, '../../components/AChat/AChatTransaction.vue')
 const actionsDropdownPath = path.resolve(
   currentDir,
@@ -40,6 +52,7 @@ describe('AChat UI style contract', () => {
     expect(content).toContain('CHAT_ACTIONS_DROPDOWN_MAX_WIDTH')
     expect(content).toContain('CHAT_ACTIONS_DROPDOWN_BUTTON_SIZE')
     expect(content).toContain('CHAT_ACTIONS_DROPDOWN_ICON_SIZE')
+    expect(content).toContain('CHAT_ATTACHMENT_PREVIEW_SIZE')
   })
 
   it('uses shared status icon sizes across message, attachment and transaction cards', () => {
@@ -137,5 +150,63 @@ describe('AChat UI style contract', () => {
     expect(content).not.toContain('$file-grid-max-width: 200px;')
     expect(content).not.toContain('$file-grid-min-column-width: 98px;')
     expect(content).not.toContain('color: #fff;')
+  })
+
+  it('shares attachment placeholder and error tokens between file and image components', () => {
+    const fileContent = readFileSync(attachmentFilePath, 'utf8')
+    const imageContent = readFileSync(attachmentImagePath, 'utf8')
+
+    expect(fileContent).toContain('CHAT_ATTACHMENT_PREVIEW_SIZE')
+    expect(fileContent).toContain('--a-chat-file-preview-size')
+    expect(fileContent).toContain('--a-chat-file-size-font-size')
+    expect(fileContent).toContain('--a-chat-attachment-placeholder-surface')
+    expect(fileContent).toContain('--a-chat-attachment-placeholder-surface-transparent')
+    expect(fileContent).toContain('--a-chat-attachment-error-surface')
+    expect(fileContent).toContain('--a-chat-attachment-error-icon-color')
+
+    expect(imageContent).toContain('--a-chat-attachment-placeholder-surface')
+    expect(imageContent).toContain('--a-chat-attachment-placeholder-surface-transparent')
+    expect(imageContent).toContain('--a-chat-attachment-error-surface')
+    expect(imageContent).toContain('--a-chat-attachment-error-icon-color')
+
+    expect(fileContent).not.toContain('const iconSize = 64')
+    expect(fileContent).not.toContain('font-size: 14px;')
+  })
+
+  it('keeps image modal preview background translucent in both themes', () => {
+    const content = readFileSync(attachmentImageModalPath, 'utf8')
+
+    expect(content).toContain('scrim="transparent"')
+    expect(content).toContain('@click.capture="handleBackgroundClick"')
+    expect(content).toContain('<v-card :class="classes.container">')
+    expect(content).toContain(
+      '<div :class="classes.content" @click.capture="handleBackgroundClick">'
+    )
+    expect(content).toContain('--a-chat-image-modal-surface')
+    expect(content).toContain('background-color: var(--a-chat-image-modal-surface) !important;')
+    expect(content).toContain('-webkit-tap-highlight-color: transparent;')
+    expect(content).toContain(':deep(.v-img__img),')
+    expect(content).toContain(':deep(.v-btn),')
+    expect(content).toContain(
+      'const clickedControl = target.closest(\'.v-toolbar, .v-btn, button, [role="button"]\')'
+    )
+    expect(content).toContain(
+      "const clickedFileContent = target.closest('.v-window-item--active .a-chat-modal-file__container')"
+    )
+    expect(content).toContain('const activeImageSlideSelector =')
+    expect(content).toContain(
+      "'.v-window-item--active.a-chat-image-modal-item, .v-window-item--active .a-chat-image-modal-item'"
+    )
+    expect(content).toContain('const getRenderedImageBounds = () => {')
+    expect(content).toContain("const imageSurface = activeSlide.querySelector('.v-img__img')")
+    expect(content).toContain('props.files[slide.value]?.resolution')
+    expect(content).toContain('const isPointInsideBounds = (')
+    expect(content).toContain('--a-chat-image-modal-surface: transparent;')
+    expect(content).toContain('&__content {')
+    expect(content).not.toContain(
+      '<v-card :class="classes.container" @click.capture="handleBackgroundClick">'
+    )
+    expect(content).not.toContain("background-color: map.get(colors.$adm-colors, 'muted');")
+    expect(content).not.toContain("classList?.contains('v-window-item')")
   })
 })

@@ -95,11 +95,25 @@ export default defineComponent({
 @use 'vuetify/settings';
 
 .a-chat-image {
+  --a-chat-attachment-error-font-weight: 400;
+  --a-chat-attachment-placeholder-surface: #{map.get(colors.$adm-colors, 'secondary2')};
+  --a-chat-attachment-placeholder-surface-transparent: #{rgba(
+      map.get(colors.$adm-colors, 'grey'),
+      0.35
+    )};
+  --a-chat-attachment-error-surface: #{map.get(colors.$adm-colors, 'secondary2')};
+  --a-chat-attachment-error-icon-color: #{map.get(settings.$grey, 'darken-1')};
+
   &__placeholder {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100%;
+    background-color: var(--a-chat-attachment-placeholder-surface);
+
+    &--transparent {
+      background-color: var(--a-chat-attachment-placeholder-surface-transparent);
+    }
   }
 
   &__error {
@@ -108,47 +122,33 @@ export default defineComponent({
     justify-content: space-around;
     width: 100%;
     height: 100%;
-    font-weight: 400;
+    font-weight: var(--a-chat-attachment-error-font-weight);
+    background-color: var(--a-chat-attachment-error-surface);
+  }
+
+  &__error-icon {
+    color: var(--a-chat-attachment-error-icon-color);
   }
 }
 
 .v-theme--light {
   .a-chat-image {
-    &__placeholder {
-      background-color: map.get(colors.$adm-colors, 'secondary2');
-
-      &--transparent {
-        background-color: rgba(map.get(colors.$adm-colors, 'grey'), 0.35);
-      }
-    }
-
-    &__error {
-      background-color: map.get(colors.$adm-colors, 'secondary2');
-    }
-
-    &__error-icon {
-      color: map.get(settings.$grey, 'darken-1');
-    }
+    --a-chat-attachment-placeholder-surface: #{map.get(colors.$adm-colors, 'secondary2')};
+    --a-chat-attachment-placeholder-surface-transparent: #{rgba(
+        map.get(colors.$adm-colors, 'grey'),
+        0.35
+      )};
+    --a-chat-attachment-error-surface: #{map.get(colors.$adm-colors, 'secondary2')};
+    --a-chat-attachment-error-icon-color: #{map.get(settings.$grey, 'darken-1')};
   }
 }
 
 .v-theme--dark {
   .a-chat-image {
-    &__placeholder {
-      background-color: map.get(colors.$adm-colors, 'muted');
-
-      &--transparent {
-        background-color: map.get(colors.$adm-colors, 'muted');
-      }
-    }
-
-    &__error {
-      background-color: map.get(colors.$adm-colors, 'muted');
-    }
-
-    &__error-icon {
-      color: map.get(settings.$shades, 'white');
-    }
+    --a-chat-attachment-placeholder-surface: #{map.get(colors.$adm-colors, 'muted')};
+    --a-chat-attachment-placeholder-surface-transparent: #{map.get(colors.$adm-colors, 'muted')};
+    --a-chat-attachment-error-surface: #{map.get(colors.$adm-colors, 'muted')};
+    --a-chat-attachment-error-icon-color: #{map.get(settings.$shades, 'white')};
   }
 }
 </style>
