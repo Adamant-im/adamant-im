@@ -7,6 +7,9 @@ const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const chatToolbarPath = path.resolve(currentDir, '../../components/Chat/ChatToolbar.vue')
 const chatsPath = path.resolve(currentDir, '../../components/Chat/Chats.vue')
 const chatPreviewPath = path.resolve(currentDir, '../../components/ChatPreview.vue')
+const chatPlaceholderPath = path.resolve(currentDir, '../../components/Chat/ChatPlaceholder.vue')
+const chatStylesPath = path.resolve(currentDir, '../../assets/styles/components/_chat.scss')
+const themeMixinsPath = path.resolve(currentDir, '../../assets/styles/themes/adamant/_mixins.scss')
 
 describe('Chats UI style contract', () => {
   it('uses tokenized toolbar typography, spacing and floating label transforms', () => {
@@ -56,5 +59,18 @@ describe('Chats UI style contract', () => {
     expect(content).not.toContain('size="15"')
     expect(content).not.toMatch(/&__subtitle\s*\{[^}]*line-height:\s*1\.5;/s)
     expect(content).not.toContain('fill: #bdbdbd;')
+  })
+
+  it('shares soft surface elevation mixin across chat placeholder and message bubbles', () => {
+    const mixinsContent = readFileSync(themeMixinsPath, 'utf8')
+    const placeholderContent = readFileSync(chatPlaceholderPath, 'utf8')
+    const chatStylesContent = readFileSync(chatStylesPath, 'utf8')
+
+    expect(mixinsContent).toContain('@mixin a-surface-elevation-soft {')
+    expect(placeholderContent).toContain('@include mixins.a-surface-elevation-soft();')
+    expect(chatStylesContent).toContain('@include mixins.a-surface-elevation-soft();')
+
+    expect(placeholderContent).not.toContain('0 1px 10px hsla(0, 0%, 39.2%, 0.06),')
+    expect(chatStylesContent).not.toContain('0 1px 10px hsla(0, 0%, 39.2%, 0.06),')
   })
 })

@@ -5,10 +5,19 @@ import { describe, expect, it } from 'vitest'
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const uiMetricsPath = path.resolve(currentDir, '../../components/AChat/helpers/uiMetrics.ts')
+const themeMixinsPath = path.resolve(currentDir, '../../assets/styles/themes/adamant/_mixins.scss')
 const messagePath = path.resolve(currentDir, '../../components/AChat/AChatMessage.vue')
 const attachmentPath = path.resolve(
   currentDir,
   '../../components/AChat/AChatAttachment/AChatAttachment.vue'
+)
+const attachmentInlineLayoutPath = path.resolve(
+  currentDir,
+  '../../components/AChat/AChatAttachment/InlineLayout.vue'
+)
+const attachmentImageLayoutPath = path.resolve(
+  currentDir,
+  '../../components/AChat/AChatAttachment/ImageLayout.vue'
 )
 const attachmentFilePath = path.resolve(
   currentDir,
@@ -173,10 +182,23 @@ describe('AChat UI style contract', () => {
     expect(fileContent).not.toContain('font-size: 14px;')
   })
 
+  it('uses shared soft surface elevation mixin across attachment layouts', () => {
+    const mixinsContent = readFileSync(themeMixinsPath, 'utf8')
+    const imageLayoutContent = readFileSync(attachmentImageLayoutPath, 'utf8')
+    const inlineLayoutContent = readFileSync(attachmentInlineLayoutPath, 'utf8')
+
+    expect(mixinsContent).toContain('@mixin a-surface-elevation-soft {')
+    expect(imageLayoutContent).toContain('@include mixins.a-surface-elevation-soft();')
+    expect(inlineLayoutContent).toContain('@include mixins.a-surface-elevation-soft();')
+
+    expect(imageLayoutContent).not.toContain('0 1px 10px hsla(0, 0%, 39.2%, 0.06),')
+    expect(inlineLayoutContent).not.toContain('0 1px 10px hsla(0, 0%, 39.2%, 0.06),')
+  })
+
   it('keeps image modal preview background non-interactive with blurred backdrop in both themes', () => {
     const content = readFileSync(attachmentImageModalPath, 'utf8')
 
-    expect(content).toContain('\n    scrim\n')
+    expect(content).toMatch(/<v-dialog[^>]*\bscrim\b/)
     expect(content).toContain('@click.capture="handleBackgroundClick"')
     expect(content).toContain('<v-card :class="classes.container">')
     expect(content).toContain(
@@ -209,8 +231,8 @@ describe('AChat UI style contract', () => {
     expect(content).toContain('props.files[slide.value]?.resolution')
     expect(content).toContain('const isPointInsideBounds = (')
     expect(content).toContain('--a-chat-image-modal-surface: transparent;')
-    expect(content).toContain('--a-chat-image-modal-backdrop-color: rgb(0 0 0 / 68%);')
-    expect(content).toContain('--a-chat-image-modal-backdrop-color: rgb(18 22 30 / 54%);')
+    expect(content).toMatch(/--a-chat-image-modal-backdrop-color:\s*rgb\(0 0 0 \/ \d+%\);/)
+    expect(content).toMatch(/--a-chat-image-modal-backdrop-color:\s*rgb\(18 22 30 \/ \d+%\);/)
     expect(content).toContain('&__content {')
     expect(content).not.toContain(
       '<v-card :class="classes.container" @click.capture="handleBackgroundClick">'

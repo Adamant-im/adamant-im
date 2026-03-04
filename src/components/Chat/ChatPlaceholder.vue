@@ -58,6 +58,7 @@ function openLink() {
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/components/_chat.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
 
 .chat-placeholder {
@@ -78,6 +79,7 @@ function openLink() {
     padding: var(--a-space-4);
     background: map.get(colors.$adm-colors, 'black');
     border-radius: var(--a-radius-sm);
+    @include mixins.a-surface-elevation-soft();
 
     &_public-key {
       height: auto;
@@ -113,10 +115,6 @@ function openLink() {
       }
 
       background: #fff;
-      box-shadow:
-        0 1px 10px hsla(0, 0%, 39.2%, 0.06),
-        0 1px 1px hsla(0, 0%, 39.2%, 0.04),
-        0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
     }
 
     &__spinner {
@@ -133,10 +131,6 @@ function openLink() {
       }
 
       background-color: map.get(colors.$adm-colors, 'black');
-      box-shadow:
-        0 1px 10px hsla(0, 0%, 39.2%, 0.06),
-        0 1px 1px hsla(0, 0%, 39.2%, 0.04),
-        0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
     }
 
     &__spinner {
