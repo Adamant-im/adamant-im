@@ -118,10 +118,12 @@ const goBack = () => {
 @use 'vuetify/settings';
 
 .app-toolbar-centered {
+  --a-app-toolbar-title-letter-spacing: var(--a-letter-spacing-caps-subtle);
+
   padding: 0;
 
   :deep(.v-toolbar-title) {
-    letter-spacing: 0.02em;
+    letter-spacing: var(--a-app-toolbar-title-letter-spacing);
   }
 
   .spinner {

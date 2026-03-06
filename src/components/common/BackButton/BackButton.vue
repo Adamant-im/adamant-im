@@ -13,16 +13,21 @@ const className = 'back-button'
 
 <style lang="scss">
 .back-button {
+  --a-back-button-size: 36px;
+  --a-back-button-margin-inline: var(--a-space-3);
+  --a-back-button-hover-overlay-opacity: 0.2;
+  --a-back-button-hover-transition-duration: 0.4s;
+
   &:first-child {
-    width: 36px;
-    height: 36px;
-    margin: 0 12px !important;
-    border-radius: 50%;
+    width: var(--a-back-button-size);
+    height: var(--a-back-button-size);
+    margin: 0 var(--a-back-button-margin-inline) !important;
+    border-radius: var(--a-radius-round);
   }
 
   &:hover > .v-btn__overlay {
-    opacity: 0.2;
-    transition: all 0.4s ease;
+    opacity: var(--a-back-button-hover-overlay-opacity);
+    transition: all var(--a-back-button-hover-transition-duration) ease;
   }
 }
 </style>
