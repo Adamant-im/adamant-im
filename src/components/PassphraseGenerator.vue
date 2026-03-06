@@ -1,10 +1,15 @@
 <template>
   <div :class="classes.root">
-    <div class="text-center">
-      <h3 class="a-text-regular">
+    <div :class="classes.createSection">
+      <h3 :class="['a-text-regular', classes.createTitle]">
         {{ t('login.create_address_label') }}
       </h3>
-      <v-btn class="a-btn-link mt-2" variant="text" size="small" @click="generatePassphrase">
+      <v-btn
+        :class="['a-btn-link', classes.createButton]"
+        variant="text"
+        size="small"
+        @click="generatePassphrase"
+      >
         {{ t('login.new_button') }}
       </v-btn>
     </div>
@@ -12,14 +17,7 @@
     <transition name="slide-fade">
       <div v-if="showPassphrase" :class="classes.box">
         <!-- eslint-disable vue/no-v-html -- Safe internal content -->
-        <div
-          ref="el"
-          :class="{
-            'mt-2': true,
-            [classes.passphraseLabel]: true
-          }"
-          v-html="t('login.new_passphrase_label')"
-        />
+        <div ref="el" :class="classes.passphraseLabel" v-html="t('login.new_passphrase_label')" />
         <!-- eslint-enable vue/no-v-html -->
 
         <v-textarea
@@ -30,7 +28,7 @@
           multi-line
           readonly
           rows="3"
-          class="pt-0"
+          :class="classes.textarea"
           color="grey"
           hide-details
           no-resize
@@ -108,8 +106,12 @@ const emit = defineEmits(['copy', 'save'])
 const className = 'passphrase-generator'
 const classes = {
   root: className,
+  createSection: `${className}__create-section`,
+  createTitle: `${className}__create-title`,
+  createButton: `${className}__create-button`,
   box: `${className}__box`,
   passphraseLabel: `${className}__passphrase-label`,
+  textarea: `${className}__textarea`,
   icons: `${className}__icons`,
   icon: `${className}__icon`
 }
@@ -190,15 +192,32 @@ const togglePassphraseVisibility = () => {
 .passphrase-generator {
   --a-passphrase-create-title-gap: var(--a-space-1);
   --a-passphrase-create-button-margin-top: var(--a-space-2);
-  --a-passphrase-box-margin-top: var(--a-space-8);
+  --a-passphrase-box-margin-top: var(--a-space-10);
+  --a-passphrase-label-margin-top: var(--a-space-2);
+  --a-passphrase-label-font-size: var(--a-font-size-xs);
+  --a-passphrase-label-font-weight: var(--a-font-weight-regular);
+  --a-passphrase-label-letter-spacing: var(--a-letter-spacing-normal);
+  --a-passphrase-textarea-padding-top: var(--a-space-3);
+  --a-passphrase-icon-opacity: var(--a-opacity-icon-muted);
+  --a-passphrase-icon-transition-duration: var(--a-motion-emphasized);
+  --a-passphrase-icon-size: 36px;
+  --a-passphrase-icon-hit-offset: calc((var(--a-passphrase-icon-size) - 24px) / -2);
+  --a-passphrase-icons-top-offset: calc(var(--a-space-1) * -1);
+  --a-passphrase-icons-gap: var(--a-space-5);
+  --a-passphrase-icon-backdrop-opacity-dark: 0.3;
+  --a-passphrase-icon-backdrop-opacity-light: 0.12;
 
-  h3.a-text-regular {
+  &__create-section {
+    text-align: center;
+  }
+
+  &__create-title {
     margin-top: 0;
     margin-bottom: var(--a-passphrase-create-title-gap);
   }
 
-  .a-btn-link {
-    margin-top: var(--a-passphrase-create-button-margin-top) !important;
+  &__create-button {
+    margin-top: var(--a-passphrase-create-button-margin-top);
   }
 
   &__box {
@@ -209,7 +228,7 @@ const togglePassphraseVisibility = () => {
     :deep(.v-textarea) textarea {
       @include mixins.a-text-regular();
       line-height: 18px;
-      padding-top: 12px;
+      padding-top: var(--a-passphrase-textarea-padding-top);
       mask-image: unset;
     }
     :deep(.v-textarea) {
@@ -219,22 +238,29 @@ const togglePassphraseVisibility = () => {
       }
     }
   }
+
+  &__textarea {
+    :deep(.v-field__input) {
+      padding-top: 0;
+    }
+  }
+
   &__icon {
     position: relative;
-    opacity: 0.62;
-    transition: all 0.4s ease;
+    opacity: var(--a-passphrase-icon-opacity);
+    transition: all var(--a-passphrase-icon-transition-duration) ease;
 
     &::before {
       content: '';
       position: absolute;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      top: -6px;
-      left: -6px;
+      border-radius: var(--a-radius-round);
+      width: var(--a-passphrase-icon-size);
+      height: var(--a-passphrase-icon-size);
+      top: var(--a-passphrase-icon-hit-offset);
+      left: var(--a-passphrase-icon-hit-offset);
       background-color: map.get(colors.$adm-colors, 'regular');
       opacity: 0;
-      transition: all 0.4s ease;
+      transition: all var(--a-passphrase-icon-transition-duration) ease;
     }
 
     &:hover {
@@ -242,17 +268,18 @@ const togglePassphraseVisibility = () => {
     }
   }
   &__icons {
-    margin-top: -4px;
+    margin-top: var(--a-passphrase-icons-top-offset);
     > *:not(:first-child) {
-      margin-left: 20px;
+      margin-left: var(--a-passphrase-icons-gap);
     }
   }
   &__passphrase-label {
+    margin-top: var(--a-passphrase-label-margin-top);
     color: map.get(colors.$adm-colors, 'grey');
-    font-size: 12px;
-    font-weight: 400;
+    font-size: var(--a-passphrase-label-font-size);
+    font-weight: var(--a-passphrase-label-font-weight);
     line-height: 18px;
-    letter-spacing: normal !important;
+    letter-spacing: var(--a-passphrase-label-letter-spacing);
   }
 
   :deep(.v-input--is-focused) {
@@ -280,7 +307,7 @@ const togglePassphraseVisibility = () => {
         }
 
         &:before {
-          opacity: 0.3;
+          opacity: var(--a-passphrase-icon-backdrop-opacity-dark);
         }
       }
     }
@@ -307,7 +334,7 @@ const togglePassphraseVisibility = () => {
         }
 
         &:before {
-          opacity: 0.12;
+          opacity: var(--a-passphrase-icon-backdrop-opacity-light);
         }
       }
     }

@@ -1,0 +1,2 @@
+export const AUTH_FORM_TOGGLE_BUTTON_SIZE = 28
+export const AUTH_FORM_TOGGLE_ICON_SIZE = 24

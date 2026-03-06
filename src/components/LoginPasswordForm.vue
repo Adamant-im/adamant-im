@@ -13,8 +13,14 @@
         variant="underlined"
       >
         <template #append-inner>
-          <v-btn @click="togglePasswordVisibility" icon :ripple="false" :size="28" variant="plain">
-            <v-icon :icon="showPassword ? mdiEye : mdiEyeOff" :size="24" />
+          <v-btn
+            @click="togglePasswordVisibility"
+            icon
+            :ripple="false"
+            :size="AUTH_FORM_TOGGLE_BUTTON_SIZE"
+            variant="plain"
+          >
+            <v-icon :icon="showPassword ? mdiEye : mdiEyeOff" :size="AUTH_FORM_TOGGLE_ICON_SIZE" />
           </v-btn>
         </template>
       </v-text-field>
@@ -35,11 +41,16 @@
           </v-btn>
         </slot>
       </v-col>
-      <div class="text-center mt-11">
-        <h3 class="a-text-regular">
+      <div :class="classes.passwordHint">
+        <h3 :class="['a-text-regular', classes.passwordHintTitle]">
           {{ t('login_via_password.remove_password_hint') }}
         </h3>
-        <v-btn class="a-btn-link mt-2" variant="text" size="small" @click="removePassword">
+        <v-btn
+          :class="['a-btn-link', classes.passwordHintAction]"
+          variant="text"
+          size="small"
+          @click="removePassword"
+        >
           {{ t('login_via_password.remove_password') }}
         </v-btn>
       </div>
@@ -61,11 +72,18 @@ import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useSaveCursor } from '@/hooks/useSaveCursor'
 import { useConsiderOffline } from '@/hooks/useConsiderOffline'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import {
+  AUTH_FORM_TOGGLE_BUTTON_SIZE,
+  AUTH_FORM_TOGGLE_ICON_SIZE
+} from '@/components/Login/helpers/uiMetrics'
 
 const className = 'login-form'
 const classes = {
   root: className,
-  textField: `${className}__textfield`
+  textField: `${className}__textfield`,
+  passwordHint: `${className}__password-hint`,
+  passwordHintTitle: `${className}__password-hint-title`,
+  passwordHintAction: `${className}__password-hint-action`
 }
 
 const props = defineProps<{
@@ -153,6 +171,10 @@ const removePassword = () => {
 
 <style lang="scss" scoped>
 .login-form {
+  --a-login-form-passphrase-toggle-size: 28px;
+  --a-login-form-passphrase-toggle-offset: calc(var(--a-login-form-passphrase-toggle-size) * -1);
+  --a-login-form-passphrase-input-padding-inline: var(--a-control-size-sm);
+  --a-login-form-passphrase-input-font-size: var(--a-font-size-md);
   --a-login-form-submit-row-margin-top: var(--a-space-2);
   --a-login-password-hint-block-gap: var(--a-space-10);
   --a-login-password-hint-title-gap: var(--a-space-1);
@@ -161,17 +183,17 @@ const removePassword = () => {
   &__textfield {
     &:deep(.v-field__append-inner) {
       padding-left: 0;
-      margin-left: -28px; // compensate the append-inner icon
+      margin-left: var(--a-login-form-passphrase-toggle-offset);
     }
 
     &:deep(.v-field__input) {
       width: 100%;
-      padding-right: 32px;
-      padding-left: 32px;
+      padding-right: var(--a-login-form-passphrase-input-padding-inline);
+      padding-left: var(--a-login-form-passphrase-input-padding-inline);
     }
 
     :deep(input) {
-      font-size: 16px !important;
+      font-size: var(--a-login-form-passphrase-input-font-size);
     }
   }
 
@@ -179,17 +201,18 @@ const removePassword = () => {
     margin-top: var(--a-login-form-submit-row-margin-top);
   }
 
-  :deep(.text-center.mt-11) {
-    margin-top: var(--a-login-password-hint-block-gap) !important;
+  &__password-hint {
+    margin-top: var(--a-login-password-hint-block-gap);
+    text-align: center;
   }
 
-  :deep(.text-center.mt-11 h3) {
+  &__password-hint-title {
     margin-top: 0;
     margin-bottom: var(--a-login-password-hint-title-gap);
   }
 
-  :deep(.text-center.mt-11 .a-btn-link) {
-    margin-top: var(--a-login-password-hint-button-margin-top) !important;
+  &__password-hint-action {
+    margin-top: var(--a-login-password-hint-button-margin-top);
   }
 }
 </style>

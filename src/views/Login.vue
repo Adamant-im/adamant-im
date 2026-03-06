@@ -204,8 +204,8 @@ const onScanQrcode = (value: string) => {
   --a-login-auth-sheet-margin-top: var(--a-space-6);
   --a-login-passphrase-row-margin-top: var(--a-space-10);
   --a-login-settings-offset-inline: var(--a-space-2);
-  --a-login-settings-hover-overlay-opacity: 0.06;
-  --a-login-icon-opacity: 0.62;
+  --a-login-settings-hover-overlay-opacity: var(--a-opacity-overlay-soft);
+  --a-login-icon-opacity: var(--a-opacity-icon-muted);
   --a-login-bottom-padding: calc(var(--a-space-8) + var(--a-safe-area-bottom));
   --a-login-bottom-padding-mobile: calc(
     var(--a-space-10) + var(--a-space-2) + var(--a-safe-area-bottom)

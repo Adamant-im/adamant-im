@@ -21,10 +21,13 @@
               @click="togglePassphraseVisibility"
               icon
               :ripple="false"
-              :size="passphraseToggleSize"
+              :size="AUTH_FORM_TOGGLE_BUTTON_SIZE"
               variant="plain"
             >
-              <v-icon :icon="showPassphrase ? mdiEye : mdiEyeOff" :size="24" />
+              <v-icon
+                :icon="showPassphrase ? mdiEye : mdiEyeOff"
+                :size="AUTH_FORM_TOGGLE_ICON_SIZE"
+              />
             </v-btn>
           </template>
         </v-text-field>
@@ -67,13 +70,16 @@ import { isAllNodesOfflineError, isAllNodesDisabledError } from '@/lib/nodes/uti
 import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useSaveCursor } from '@/hooks/useSaveCursor'
 import { logger } from '@/utils/devTools/logger'
+import {
+  AUTH_FORM_TOGGLE_BUTTON_SIZE,
+  AUTH_FORM_TOGGLE_ICON_SIZE
+} from '@/components/Login/helpers/uiMetrics'
 
 const className = 'login-form'
 const classes = {
   root: className,
   textField: `${className}__textfield`
 }
-const passphraseToggleSize = 28
 
 type Props = {
   modelValue: string

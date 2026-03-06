@@ -4,8 +4,13 @@
 @use 'vuetify/settings';
 
 .a-btn-link {
-  font-size: 16px !important;
-  font-weight: 500;
+  --a-btn-link-font-size: var(--a-font-size-md);
+  --a-btn-link-font-weight: var(--a-font-weight-medium);
+  --a-btn-link-overlay-opacity-light: 0.18;
+  --a-btn-link-overlay-opacity-dark: 0.24;
+
+  font-size: var(--a-btn-link-font-size) !important;
+  font-weight: var(--a-btn-link-font-weight);
   text-decoration: underline;
   text-transform: unset;
 
@@ -74,7 +79,7 @@
 
     &.v-btn:not(.v-btn--disabled):hover > .v-btn__overlay,
     &.v-btn:not(.v-btn--disabled):focus-visible > .v-btn__overlay {
-      opacity: 0.18;
+      opacity: var(--a-btn-link-overlay-opacity-light);
     }
   }
 }
@@ -96,7 +101,7 @@
 
     &.v-btn:not(.v-btn--disabled):hover > .v-btn__overlay,
     &.v-btn:not(.v-btn--disabled):focus-visible > .v-btn__overlay {
-      opacity: 0.24;
+      opacity: var(--a-btn-link-overlay-opacity-dark);
     }
   }
 }

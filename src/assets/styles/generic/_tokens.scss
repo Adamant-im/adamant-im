@@ -15,6 +15,7 @@
   --a-font-size-xs: 12px;
   --a-font-size-sm: 14px;
   --a-font-size-md: 16px;
+  --a-font-weight-regular: 400;
   --a-font-weight-light: 300;
   --a-font-weight-medium: 500;
   --a-letter-spacing-normal: normal;
@@ -39,7 +40,10 @@
   --a-motion-fast: 150ms;
   --a-motion-base: 200ms;
   --a-motion-slow: 300ms;
+  --a-motion-emphasized: 400ms;
   --a-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --a-opacity-icon-muted: 0.62;
+  --a-opacity-overlay-soft: 0.06;
   --a-opacity-interactive-hover: 0.8;
   --a-opacity-interactive-pressed: 0.6;
 
