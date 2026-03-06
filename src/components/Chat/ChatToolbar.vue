@@ -95,17 +95,19 @@ const goBack = () => {
 .chat-toolbar {
   --a-chat-toolbar-padding-inline-start: var(--a-space-3);
   --a-chat-toolbar-content-gap: var(--a-space-2);
+  --a-chat-toolbar-content-gap-mobile: var(--a-chat-toolbar-content-gap);
+  --a-chat-toolbar-back-button-margin-inline-end-mobile: var(--a-space-1);
   --a-chat-toolbar-content-padding-inline-end: var(--a-space-3);
   --a-chat-toolbar-content-padding-inline-end-mobile: var(--a-space-2);
   --a-chat-toolbar-counter-offset-top: calc((var(--a-space-3) + (var(--a-space-1) / 2)) * -1);
   --a-chat-toolbar-counter-offset-left: calc(var(--a-space-1) / -2);
-  --a-chat-toolbar-adm-name-letter-spacing: 0.02em;
+  --a-chat-toolbar-adm-name-letter-spacing: var(--a-letter-spacing-caps-subtle);
   --a-chat-toolbar-label-font-size: var(--a-font-size-md);
   --a-chat-toolbar-input-padding-top: var(--a-space-5);
-  --a-chat-toolbar-input-font-weight: 500;
+  --a-chat-toolbar-input-font-weight: var(--a-font-weight-medium);
   --a-chat-toolbar-floating-label-font-size: var(--a-space-5);
   --a-chat-toolbar-floating-label-offset-y: calc(var(--a-space-3) / -2);
-  --a-chat-toolbar-floating-label-scale: 0.6875;
+  --a-chat-toolbar-floating-label-scale: var(--a-field-floating-label-scale);
 
   flex-grow: 0;
   flex-shrink: 0;
@@ -122,7 +124,13 @@ const goBack = () => {
     padding-inline-start: 0;
 
     :deep(.v-toolbar__content) {
+      gap: var(--a-chat-toolbar-content-gap-mobile);
       padding-inline-end: var(--a-chat-toolbar-content-padding-inline-end-mobile);
+    }
+
+    // Keep avatar/name spacing unchanged and only tighten the back-button to avatar gap.
+    :deep(.v-toolbar__content > .back-button:first-child) {
+      margin-inline-end: var(--a-chat-toolbar-back-button-margin-inline-end-mobile) !important;
     }
   }
 

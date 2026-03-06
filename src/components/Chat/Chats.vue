@@ -322,7 +322,7 @@ const checkDate = () => {
   --a-chats-item-padding-inline: var(--a-space-2);
   --a-chats-item-avatar-gap-inline: var(--a-space-1);
   --a-chats-item-icon-gap-inline: var(--a-space-2);
-  --a-chats-title-font-weight: 300;
+  --a-chats-title-font-weight: var(--a-font-weight-light);
   --a-chats-title-font-size: var(--a-font-size-sm);
   --a-chats-messages-move-duration: var(--a-motion-slow);
 

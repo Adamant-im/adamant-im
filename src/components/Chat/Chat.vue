@@ -1025,7 +1025,7 @@ const onKeyPress = (e: KeyboardEvent) => {
 }
 
 .chat-avatar {
-  margin-right: var(--a-space-3);
+  margin-right: var(--a-space-1);
 }
 
 .chat__connection-spinner {

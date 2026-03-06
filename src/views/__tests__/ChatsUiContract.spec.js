@@ -6,8 +6,10 @@ import { describe, expect, it } from 'vitest'
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const chatToolbarPath = path.resolve(currentDir, '../../components/Chat/ChatToolbar.vue')
 const chatsPath = path.resolve(currentDir, '../../components/Chat/Chats.vue')
+const chatPath = path.resolve(currentDir, '../../components/Chat/Chat.vue')
 const chatPreviewPath = path.resolve(currentDir, '../../components/ChatPreview.vue')
 const chatUiMetricsPath = path.resolve(currentDir, '../../components/Chat/helpers/uiMetrics.ts')
+const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
 const chatPlaceholderPath = path.resolve(currentDir, '../../components/Chat/ChatPlaceholder.vue')
 const chatStylesPath = path.resolve(currentDir, '../../assets/styles/components/_chat.scss')
 const themeMixinsPath = path.resolve(currentDir, '../../assets/styles/themes/adamant/_mixins.scss')
@@ -21,6 +23,15 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('CHATS_SCROLL_OFFSET')
   })
 
+  it('defines shared typography tokens for chat toolbar and list', () => {
+    const content = readFileSync(genericTokensPath, 'utf8')
+
+    expect(content).toContain('--a-font-weight-light')
+    expect(content).toContain('--a-font-weight-medium')
+    expect(content).toContain('--a-letter-spacing-caps-subtle')
+    expect(content).toContain('--a-field-floating-label-scale')
+  })
+
   it('uses tokenized toolbar typography, spacing and floating label transforms', () => {
     const content = readFileSync(chatToolbarPath, 'utf8')
 
@@ -31,14 +42,26 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('--a-chat-toolbar-floating-label-font-size')
     expect(content).toContain('--a-chat-toolbar-floating-label-offset-y')
     expect(content).toContain('--a-chat-toolbar-floating-label-scale')
+    expect(content).toContain('--a-chat-toolbar-content-gap-mobile')
+    expect(content).toContain('--a-chat-toolbar-back-button-margin-inline-end-mobile')
+    expect(content).toContain('var(--a-letter-spacing-caps-subtle)')
+    expect(content).toContain('var(--a-font-weight-medium)')
+    expect(content).toContain('var(--a-field-floating-label-scale)')
     expect(content).toContain('messagesCounterContent')
     expect(content).toContain('CHAT_TOOLBAR_UNREAD_COUNTER_MAX')
     expect(content).toContain('translateY(var(--a-chat-toolbar-floating-label-offset-y))')
     expect(content).toContain('scale(var(--a-chat-toolbar-floating-label-scale))')
+    expect(content).toContain('gap: var(--a-chat-toolbar-content-gap-mobile);')
+    expect(content).toContain(
+      'margin-inline-end: var(--a-chat-toolbar-back-button-margin-inline-end-mobile) !important;'
+    )
 
     expect(content).not.toMatch(/(^|\n)\s*letter-spacing:\s*0\.02em;/)
     expect(content).not.toMatch(/(^|\n)\s*font-size:\s*var\(--a-space-5\);/)
     expect(content).not.toMatch(/(^|\n)\s*font-weight:\s*500;/)
+    expect(content).not.toContain('--a-chat-toolbar-adm-name-letter-spacing: 0.02em;')
+    expect(content).not.toContain('--a-chat-toolbar-input-font-weight: 500;')
+    expect(content).not.toContain('--a-chat-toolbar-floating-label-scale: 0.6875;')
     expect(content).not.toContain("numOfNewMessages > 99 ? '99+' : numOfNewMessages")
   })
 
@@ -57,6 +80,7 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('--a-chats-title-font-weight')
     expect(content).toContain('--a-chats-title-font-size')
     expect(content).toContain('--a-chats-messages-move-duration')
+    expect(content).toContain('var(--a-font-weight-light)')
     expect(content).toContain('height: var(--a-chats-actions-height);')
     expect(content).toContain('column-gap: var(--a-chats-actions-gap);')
     expect(content).toContain(':size="CHATS_CONNECTION_SPINNER_SIZE"')
@@ -67,6 +91,7 @@ describe('Chats UI style contract', () => {
     expect(content).not.toContain(':size="24"')
     expect(content).not.toContain('const scrollOffset = 64')
     expect(content).not.toContain('transition: transform 0.5s;')
+    expect(content).not.toContain('--a-chats-title-font-weight: 300;')
   })
 
   it('keeps chat preview spacing, line-height and icon sizes tokenized', () => {
@@ -98,5 +123,13 @@ describe('Chats UI style contract', () => {
 
     expect(placeholderContent).not.toContain('0 1px 10px hsla(0, 0%, 39.2%, 0.06),')
     expect(chatStylesContent).not.toContain('0 1px 10px hsla(0, 0%, 39.2%, 0.06),')
+  })
+
+  it('keeps header avatar offset compact to avoid doubled spacing with toolbar gap', () => {
+    const content = readFileSync(chatPath, 'utf8')
+
+    expect(content).toContain('.chat-avatar {')
+    expect(content).toContain('margin-right: var(--a-space-1);')
+    expect(content).not.toMatch(/\.chat-avatar\s*\{[^}]*margin-right:\s*var\(--a-space-3\);/s)
   })
 })
