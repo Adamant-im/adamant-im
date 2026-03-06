@@ -15,6 +15,10 @@ const transactionDetailsListItemPath = path.resolve(
   currentDir,
   '../../components/transactions/TransactionListItem.vue'
 )
+const splitDisplayByNamePath = path.resolve(
+  currentDir,
+  '../../components/transactions/utils/splitDisplayValueByName.ts'
+)
 const walletActionsPath = path.resolve(currentDir, '../../components/WalletCardListActions.vue')
 
 describe('Financial UI style contract', () => {
@@ -69,8 +73,23 @@ describe('Financial UI style contract', () => {
     expect(content).toContain('var(--a-financial-text-font-weight)')
     expect(content).toContain('font-size: var(--a-transaction-list-item-font-size);')
     expect(content).toContain('font-weight: var(--a-transaction-list-item-font-weight);')
+    expect(content).toContain("color: map.get(colors.$adm-colors, 'regular') !important;")
+    expect(content).not.toContain('--a-transaction-list-item-value-color-dark')
     expect(content).not.toContain('font-size: 14px;')
     expect(content).not.toContain('font-weight: 300;')
+  })
+
+  it('keeps muted color only for fee equivalent and named address suffix in details', () => {
+    const content = readFileSync(transactionTemplatePath, 'utf8')
+    const splitContent = readFileSync(splitDisplayByNamePath, 'utf8')
+
+    expect(content).toContain('calculatedFeeDisplay.fiat')
+    expect(content).toContain('senderDisplay.muted')
+    expect(content).toContain('recipientDisplay.muted')
+    expect(content).toContain('__value-muted')
+    expect(content).toContain('splitDisplayValueByName')
+    expect(splitContent).toContain('main !== rawAddress || bracketAddress === rawAddress')
+    expect(content).toContain('var(--a-color-text-muted-dark)')
   })
 
   it('uses shared list row tokens in wallet actions list', () => {

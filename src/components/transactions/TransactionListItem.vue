@@ -49,7 +49,6 @@ export default defineComponent({
 .transaction-list-item {
   --a-transaction-list-item-font-size: var(--a-financial-text-font-size);
   --a-transaction-list-item-font-weight: var(--a-financial-text-font-weight);
-  --a-transaction-list-item-value-color-dark: var(--a-color-text-muted-dark);
 
   &__title {
     font-weight: var(--a-transaction-list-item-font-weight);
@@ -71,15 +70,7 @@ export default defineComponent({
       color: map.get(colors.$adm-colors, 'regular');
     }
     &__value {
-      color: map.get(colors.$adm-colors, 'muted') !important;
-    }
-  }
-}
-
-.v-theme--dark {
-  .transaction-list-item {
-    &__value {
-      color: var(--a-transaction-list-item-value-color-dark) !important;
+      color: map.get(colors.$adm-colors, 'regular') !important;
     }
   }
 }

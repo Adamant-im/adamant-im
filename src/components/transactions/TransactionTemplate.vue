@@ -72,7 +72,10 @@
     <v-divider />
 
     <TransactionListItem :title="t('transaction.commission')">
-      {{ calculatedFee }}
+      <span>{{ calculatedFeeDisplay.token }}</span>
+      <span v-if="calculatedFeeDisplay.fiat" :class="`${className}__value-muted`">
+        {{ ` ${calculatedFeeDisplay.fiat}` }}
+      </span>
     </TransactionListItem>
 
     <v-divider />
@@ -87,7 +90,13 @@
     <v-divider />
 
     <TransactionListItem :title="t('transaction.sender')" @click="handleCopyToClipboard(sender)">
-      {{ senderFormatted || placeholder }}
+      <template v-if="senderDisplay.main">
+        <span>{{ senderDisplay.main }}</span>
+        <span v-if="senderDisplay.muted" :class="`${className}__value-muted`">
+          {{ senderDisplay.muted }}
+        </span>
+      </template>
+      <template v-else>{{ placeholder }}</template>
     </TransactionListItem>
 
     <v-divider />
@@ -96,7 +105,13 @@
       :title="t('transaction.recipient')"
       @click="handleCopyToClipboard(recipient)"
     >
-      {{ recipientFormatted || placeholder }}
+      <template v-if="recipientDisplay.main">
+        <span>{{ recipientDisplay.main }}</span>
+        <span v-if="recipientDisplay.muted" :class="`${className}__value-muted`">
+          {{ recipientDisplay.muted }}
+        </span>
+      </template>
+      <template v-else>{{ placeholder }}</template>
     </TransactionListItem>
 
     <v-divider v-if="comment" />
@@ -164,6 +179,10 @@ import {
   mdiRefresh
 } from '@mdi/js'
 import { useFormattedDate } from '@/hooks/useFormattedDate'
+import {
+  splitDisplayValueByName,
+  type SplitDisplayValue
+} from '@/components/transactions/utils/splitDisplayValueByName'
 
 const className = 'transaction-view'
 
@@ -231,7 +250,7 @@ const { formatDate } = useFormattedDate()
 
 const transaction = computed(() => props.transaction)
 const sender = computed(() => props.senders?.join(',') ?? transaction.value?.senderId)
-const recipient = computed(() => props.recipients?.join(',') ?? transaction.value?.senderId)
+const recipient = computed(() => props.recipients?.join(',') ?? transaction.value?.recipientId)
 
 const hasMessages = computed(() => {
   if (!props.partner) return false
@@ -290,7 +309,15 @@ const calculatedTimestampInSec = computed(() => {
   return timestampInSec(props.crypto, transaction.value.timestamp!)
 })
 
-const calculatedFee = computed(() => {
+const senderDisplay = computed<SplitDisplayValue>(() =>
+  splitDisplayValueByName(props.senderFormatted || '', sender.value)
+)
+
+const recipientDisplay = computed<SplitDisplayValue>(() =>
+  splitDisplayValueByName(props.recipientFormatted || '', recipient.value)
+)
+
+const calculatedFeeDisplay = computed(() => {
   const commissionTokenLabel = (props.feeCrypto ?? props.crypto) as CryptoSymbol
 
   const { cryptoTransferDecimals, decimals } = CryptosInfo[commissionTokenLabel]
@@ -303,7 +330,12 @@ const calculatedFee = computed(() => {
     ? `${formatAmount(props.fee, cryptoTransferDecimals ?? decimals)} ${commissionTokenLabel}`
     : placeholder.value
 
-  if (!props.fee || !calculatedTimestampInSec.value) return tokenFee
+  if (!props.fee || !calculatedTimestampInSec.value) {
+    return {
+      token: tokenFee,
+      fiat: ''
+    }
+  }
 
   const commissionUsdAmount = store.getters['rate/historyRate'](
     calculatedTimestampInSec.value,
@@ -311,9 +343,17 @@ const calculatedFee = computed(() => {
     commissionTokenLabel
   )
 
-  if (!commissionUsdAmount) return tokenFee
+  if (!commissionUsdAmount) {
+    return {
+      token: tokenFee,
+      fiat: ''
+    }
+  }
 
-  return tokenFee + ` ~${commissionUsdAmount}`
+  return {
+    token: tokenFee,
+    fiat: `~${commissionUsdAmount}`
+  }
 })
 
 const handleCopyToClipboard = (text?: string) => {
@@ -373,6 +413,7 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
   --a-transaction-view-row-padding-block: var(--a-list-row-padding-block);
   --a-transaction-view-status-font-size: var(--a-financial-text-font-size);
   --a-transaction-view-status-font-weight: var(--a-financial-text-font-weight);
+  --a-transaction-view-value-muted-color-dark: var(--a-color-text-muted-dark);
 
   &__list {
     :deep(.v-list-item--density-default.v-list-item--one-line) {
@@ -413,6 +454,26 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
     overflow: hidden;
     max-width: 100%;
     width: 100%;
+  }
+
+  &__value-muted {
+    white-space: pre;
+  }
+}
+
+.v-theme--light {
+  .transaction-view {
+    &__value-muted {
+      color: map.get(colors.$adm-colors, 'muted');
+    }
+  }
+}
+
+.v-theme--dark {
+  .transaction-view {
+    &__value-muted {
+      color: var(--a-transaction-view-value-muted-color-dark);
+    }
   }
 }
 
