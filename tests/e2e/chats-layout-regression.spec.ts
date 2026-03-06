@@ -67,6 +67,12 @@ test.describe('Chats layout regressions', () => {
     const geometry = await page.evaluate(() => {
       const row = document.querySelector('.chats-view__chats-actions') as HTMLElement | null
       const button = document.querySelector('.chats-view__item') as HTMLElement | null
+      const spinner = document.querySelector(
+        '.chats-view__connection-spinner'
+      ) as HTMLElement | null
+      const avatarOrIcon = document.querySelector(
+        '.chats-view__messages--chat .chat-brief__chat-avatar, .chats-view__messages--chat .chat-brief__icon'
+      ) as HTMLElement | null
 
       if (!row || !button) {
         return null
@@ -76,6 +82,25 @@ test.describe('Chats layout regressions', () => {
       const buttonRect = button.getBoundingClientRect()
       const markRead = document.querySelector('.chats-view__mark-read-btn') as HTMLElement | null
       const markReadRect = markRead?.getBoundingClientRect() ?? null
+      let spinnerToAvatarAxisDeltaX = null as number | null
+
+      if (spinner && avatarOrIcon) {
+        // Spinner can be hidden by v-show when nodes are online. Temporarily reveal it
+        // to validate horizontal axis alignment against chat avatar/icon column.
+        const previousDisplay = spinner.style.display
+        const previousVisibility = spinner.style.visibility
+        spinner.style.display = 'inline-flex'
+        spinner.style.visibility = 'hidden'
+
+        const spinnerRect = spinner.getBoundingClientRect()
+        const avatarRect = avatarOrIcon.getBoundingClientRect()
+        spinnerToAvatarAxisDeltaX = Math.abs(
+          spinnerRect.left + spinnerRect.width / 2 - (avatarRect.left + avatarRect.width / 2)
+        )
+
+        spinner.style.display = previousDisplay
+        spinner.style.visibility = previousVisibility
+      }
 
       return {
         rowHeight: rowRect.height,
@@ -87,7 +112,8 @@ test.describe('Chats layout regressions', () => {
           ? Math.abs(
               rowRect.top + rowRect.height / 2 - (markReadRect.top + markReadRect.height / 2)
             )
-          : null
+          : null,
+        spinnerToAvatarAxisDeltaX
       }
     })
 
@@ -98,6 +124,10 @@ test.describe('Chats layout regressions', () => {
 
     if (geometry?.markReadCenterDelta !== null) {
       expect(geometry?.markReadCenterDelta ?? 999).toBeLessThanOrEqual(2)
+    }
+
+    if (geometry?.spinnerToAvatarAxisDeltaX !== null) {
+      expect(geometry?.spinnerToAvatarAxisDeltaX ?? 999).toBeLessThanOrEqual(2)
     }
   })
 

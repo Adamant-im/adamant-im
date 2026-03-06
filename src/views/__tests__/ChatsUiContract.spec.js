@@ -74,6 +74,7 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('--a-chats-actions-padding-inline-start')
     expect(content).toContain('--a-chats-actions-padding-inline-end')
     expect(content).toContain('--a-chats-actions-gap')
+    expect(content).toContain('--a-chats-connection-spinner-offset-inline-start')
     expect(content).toContain('--a-chats-item-padding-inline')
     expect(content).toContain('--a-chats-item-avatar-gap-inline')
     expect(content).toContain('--a-chats-item-icon-gap-inline')
@@ -83,6 +84,9 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('var(--a-font-weight-light)')
     expect(content).toContain('height: var(--a-chats-actions-height);')
     expect(content).toContain('column-gap: var(--a-chats-actions-gap);')
+    expect(content).toContain(
+      'margin-inline-start: var(--a-chats-connection-spinner-offset-inline-start);'
+    )
     expect(content).toContain(':size="CHATS_CONNECTION_SPINNER_SIZE"')
     expect(content).toContain('const scrollOffset = CHATS_SCROLL_OFFSET')
     expect(content).toContain('transition: transform var(--a-chats-messages-move-duration);')

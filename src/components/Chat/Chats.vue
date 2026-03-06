@@ -319,6 +319,7 @@ const checkDate = () => {
   --a-chats-actions-padding-inline-start: var(--a-space-3);
   --a-chats-actions-padding-inline-end: var(--a-space-2);
   --a-chats-actions-gap: var(--a-space-2);
+  --a-chats-connection-spinner-offset-inline-start: var(--a-space-4);
   --a-chats-item-padding-inline: var(--a-space-2);
   --a-chats-item-avatar-gap-inline: var(--a-space-1);
   --a-chats-item-icon-gap-inline: var(--a-space-2);
@@ -344,6 +345,7 @@ const checkDate = () => {
 
   &__connection-spinner {
     margin: 0;
+    margin-inline-start: var(--a-chats-connection-spinner-offset-inline-start);
   }
 
   &__item {
