@@ -244,6 +244,9 @@ watch(currentWallet, (value) => {
   --a-account-tabs-padding-bottom: 1px;
   --a-account-tabs-margin-bottom: 10px;
   --a-account-tab-font-size: var(--a-font-size-md);
+  --a-account-tab-font-weight: var(--a-font-weight-light);
+  --a-account-tab-font-weight-selected: var(--a-font-weight-medium);
+  --a-account-tab-letter-spacing: var(--a-letter-spacing-normal);
   --a-account-tab-padding-block: 6px;
   --a-account-tab-padding-inline: var(--a-space-1);
   --a-account-tab-min-width: 84px;
@@ -263,11 +266,11 @@ watch(currentWallet, (value) => {
       margin-bottom: var(--a-account-tabs-margin-bottom);
     }
     :deep(.v-tab) {
-      font-weight: 300;
+      font-weight: var(--a-account-tab-font-weight);
       font-size: var(--a-account-tab-font-size);
       padding-block: var(--a-account-tab-padding-block);
       padding-inline: var(--a-account-tab-padding-inline);
-      letter-spacing: normal;
+      letter-spacing: var(--a-account-tab-letter-spacing);
       min-width: var(--a-account-tab-min-width);
       display: flex;
       align-items: center;
@@ -278,7 +281,7 @@ watch(currentWallet, (value) => {
       justify-content: center;
     }
     :deep(.v-tab--selected) {
-      font-weight: 500;
+      font-weight: var(--a-account-tab-font-weight-selected);
     }
     :deep(.v-tab):not(.v-tab--selected) {
       opacity: 1;
