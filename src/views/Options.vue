@@ -436,10 +436,9 @@ onBeforeUnmount(() => {
 
 .settings-view {
   --a-settings-gutter: var(--a-space-6);
-  --a-settings-title-padding-top: 15px;
-  --a-settings-action-font-size: var(--a-font-size-md);
-  --a-settings-action-font-weight: var(--a-font-weight-medium);
-  --a-settings-action-margin-block: 6px;
+  --a-settings-title-padding-top: var(--a-space-4);
+  --a-settings-actions-row-min-height: var(--a-list-row-min-height);
+  --a-settings-actions-row-padding-block: var(--a-list-row-padding-block);
   --a-settings-version-info-hover-opacity: var(--a-opacity-interactive-hover);
   --a-settings-version-info-active-opacity: var(--a-opacity-interactive-pressed);
 
@@ -465,14 +464,6 @@ onBeforeUnmount(() => {
       opacity: var(--a-settings-version-info-active-opacity);
     }
   }
-  &__action {
-    display: block;
-    font-size: var(--a-settings-action-font-size);
-    font-weight: var(--a-settings-action-font-weight);
-    text-decoration-line: underline;
-    margin: var(--a-settings-action-margin-block) var(--a-space-2);
-    padding: 0 var(--a-space-4);
-  }
   :deep(.v-input--selection-controls):not(.v-input--hide-details) .v-input__slot {
     margin-bottom: 0;
   }
@@ -496,6 +487,12 @@ onBeforeUnmount(() => {
       padding-inline-start: var(--a-settings-gutter);
       padding-inline-end: var(--a-settings-gutter);
     }
+
+    :deep(.v-list-item--density-default.v-list-item--one-line) {
+      min-height: var(--a-settings-actions-row-min-height);
+      padding-top: var(--a-settings-actions-row-padding-block);
+      padding-bottom: var(--a-settings-actions-row-padding-block);
+    }
   }
   :deep(.v-list-subheader) {
     height: var(--a-control-size-lg);
@@ -515,9 +512,6 @@ onBeforeUnmount(() => {
       background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
       color: map.get(colors.$adm-colors, 'regular');
     }
-    &__action {
-      color: map.get(colors.$adm-colors, 'regular');
-    }
     :deep(.v-label),
     &__label {
       color: map.get(colors.$adm-colors, 'regular');
@@ -529,8 +523,10 @@ onBeforeUnmount(() => {
 }
 .v-theme--dark {
   .settings-view {
-    &__action {
-      color: map.get(settings.$shades, 'white');
+    .actions-list {
+      :deep(.v-list-item-title) {
+        color: map.get(settings.$shades, 'white');
+      }
     }
   }
 }
