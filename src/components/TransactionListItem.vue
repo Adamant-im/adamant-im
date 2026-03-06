@@ -285,9 +285,10 @@ export default {
   --a-transaction-item-action-width: var(--a-control-size-sm);
   --a-transaction-item-note-weight: 100;
   --a-transaction-item-note-prefix-style: italic;
+  --a-transaction-item-rates-color-dark: var(--a-color-text-muted-dark);
 
   &__rates {
-    color: hsla(0, 0%, 100%, 0.7);
+    color: var(--a-transaction-item-rates-color-dark);
     font-style: italic;
     @include mixins.a-text-regular();
     margin-left: var(--a-transaction-item-rates-gap);

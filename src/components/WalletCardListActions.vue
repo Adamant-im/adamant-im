@@ -108,21 +108,26 @@ const getFreeTokens = () => {
 @use 'vuetify/settings';
 
 .wallet-actions {
+  --a-wallet-actions-icon-gap: var(--a-space-4);
+  --a-wallet-actions-item-padding-inline: 28px;
+  --a-wallet-actions-row-min-height: var(--a-list-row-min-height);
+  --a-wallet-actions-row-padding-block: var(--a-list-row-padding-block);
+
   &__title {
     @include mixins.a-text-caption-light();
   }
   :deep(.v-list-item__prepend) {
     > .v-icon {
-      margin-inline-end: 16px;
+      margin-inline-end: var(--a-wallet-actions-icon-gap);
     }
   }
   :deep(.v-list-item) {
-    padding: 0 28px;
+    padding: 0 var(--a-wallet-actions-item-padding-inline);
   }
   :deep(.v-list-item--density-default.v-list-item--one-line) {
-    min-height: 56px;
-    padding-top: 8px;
-    padding-bottom: 8px;
+    min-height: var(--a-wallet-actions-row-min-height);
+    padding-top: var(--a-wallet-actions-row-padding-block);
+    padding-bottom: var(--a-wallet-actions-row-padding-block);
   }
   :deep(.v-list-item__prepend) {
     > .v-icon {

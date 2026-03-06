@@ -104,14 +104,15 @@ export default defineComponent({
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
-@use 'vuetify/settings';
 
 .wallet-balance {
   --a-wallet-balance-height: var(--a-control-size-md);
-  --a-wallet-balance-gap: 8px;
+  --a-wallet-balance-gap: var(--a-space-2);
   --a-wallet-balance-line-height: 1;
   --a-wallet-balance-title-line-height: 1.1;
   --a-wallet-balance-fiat-size: var(--a-font-size-xs);
+  --a-wallet-balance-status-font-weight: var(--a-financial-text-font-weight);
+  --a-wallet-balance-status-color-dark: var(--a-color-text-muted-dark);
 
   height: var(--a-wallet-balance-height);
   display: flex;
@@ -135,7 +136,7 @@ export default defineComponent({
 
   &__status-text {
     font-size: var(--a-wallet-balance-fiat-size);
-    font-weight: 300;
+    font-weight: var(--a-wallet-balance-status-font-weight);
     line-height: var(--a-wallet-balance-title-line-height);
   }
 }
@@ -151,8 +152,7 @@ export default defineComponent({
 .v-theme--dark {
   .wallet-balance {
     &__status-text {
-      color: map.get(settings.$shades, 'white');
-      opacity: 0.7;
+      color: var(--a-wallet-balance-status-color-dark);
     }
   }
 }

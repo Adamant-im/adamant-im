@@ -1,5 +1,5 @@
 <template>
-  <v-list bg-color="transparent" :class="`${className}__list`">
+  <v-list bg-color="transparent" :class="[className, `${className}__list`]">
     <TransactionListItem :title="t('transaction.amount')">
       {{
         typeof transaction?.amount === 'number'
@@ -369,11 +369,16 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
 @use '@/assets/styles/settings/_colors.scss';
 
 .transaction-view {
+  --a-transaction-view-row-min-height: var(--a-list-row-min-height);
+  --a-transaction-view-row-padding-block: var(--a-list-row-padding-block);
+  --a-transaction-view-status-font-size: var(--a-financial-text-font-size);
+  --a-transaction-view-status-font-weight: var(--a-financial-text-font-weight);
+
   &__list {
     :deep(.v-list-item--density-default.v-list-item--one-line) {
-      min-height: 56px;
-      padding-top: 8px;
-      padding-bottom: 8px;
+      min-height: var(--a-transaction-view-row-min-height);
+      padding-top: var(--a-transaction-view-row-padding-block);
+      padding-bottom: var(--a-transaction-view-row-padding-block);
     }
 
     :deep(.v-divider) {
@@ -401,8 +406,8 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
     }
   }
   &__inconsistent-status {
-    font-weight: 300;
-    font-size: 14px;
+    font-weight: var(--a-transaction-view-status-font-weight);
+    font-size: var(--a-transaction-view-status-font-size);
     text-align: right;
     text-overflow: ellipsis;
     overflow: hidden;

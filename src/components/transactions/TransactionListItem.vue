@@ -1,5 +1,5 @@
 <template>
-  <v-list-item>
+  <v-list-item :class="classes.root">
     <template #prepend>
       <v-list-item-title :class="classes.title">
         <slot name="prepend" />
@@ -47,12 +47,16 @@ export default defineComponent({
 @use '@/assets/styles/settings/_colors.scss';
 
 .transaction-list-item {
+  --a-transaction-list-item-font-size: var(--a-financial-text-font-size);
+  --a-transaction-list-item-font-weight: var(--a-financial-text-font-weight);
+  --a-transaction-list-item-value-color-dark: var(--a-color-text-muted-dark);
+
   &__title {
-    font-weight: 300;
+    font-weight: var(--a-transaction-list-item-font-weight);
   }
   &__value {
-    font-weight: 300;
-    font-size: 14px;
+    font-weight: var(--a-transaction-list-item-font-weight);
+    font-size: var(--a-transaction-list-item-font-size);
     text-align: right;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -74,6 +78,9 @@ export default defineComponent({
 
 .v-theme--dark {
   .transaction-list-item {
+    &__value {
+      color: var(--a-transaction-list-item-value-color-dark) !important;
+    }
   }
 }
 </style>

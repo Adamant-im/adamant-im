@@ -102,6 +102,7 @@ watch(currentBalance, (newBalance, oldBalance) => {
   --a-wallet-tab-balance-to-ticker-offset: 2px;
   --a-wallet-tab-network-label-shift-x: -2px;
   --a-wallet-tab-network-label-shift-y: -2px;
+  --a-wallet-tab-rates-color-dark: var(--a-color-text-muted-dark);
 
   display: flex;
   flex-direction: column;
@@ -168,7 +169,7 @@ watch(currentBalance, (newBalance, oldBalance) => {
 .v-theme--dark {
   .wallet-tab {
     &__rates {
-      color: hsla(0, 0%, 100%, 0.7);
+      color: var(--a-wallet-tab-rates-color-dark);
     }
   }
 }

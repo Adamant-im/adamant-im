@@ -111,13 +111,14 @@ export default defineComponent({
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
-@use 'vuetify/settings';
 
 .wallets-view {
   --a-wallets-list-item-content-height: var(--a-control-size-md);
   --a-wallets-list-item-line-height: 1;
   --a-wallets-list-item-title-line-height: 1.1;
   --a-wallets-list-item-checkbox-offset: calc(var(--a-space-2) * -1);
+  --a-wallets-list-item-subtitle-weight: var(--a-financial-text-font-weight);
+  --a-wallets-list-item-subtitle-muted-dark: var(--a-color-text-muted-dark);
 
   &__crypto-content {
     height: var(--a-wallets-list-item-content-height);
@@ -127,11 +128,11 @@ export default defineComponent({
     line-height: var(--a-wallets-list-item-line-height);
   }
   &__crypto-subtitle {
-    font-weight: 300;
+    font-weight: var(--a-wallets-list-item-subtitle-weight);
     line-height: var(--a-wallets-list-item-line-height);
   }
   &__crypto-subtitle-muted {
-    color: rgba(map.get(settings.$shades, 'white'), 70%);
+    color: var(--a-wallets-list-item-subtitle-muted-dark);
   }
   &__crypto-subtitle-bold {
     font-weight: 600;
