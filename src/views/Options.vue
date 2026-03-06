@@ -438,7 +438,10 @@ onBeforeUnmount(() => {
   --a-settings-gutter: var(--a-space-6);
   --a-settings-title-padding-top: 15px;
   --a-settings-action-font-size: var(--a-font-size-md);
+  --a-settings-action-font-weight: var(--a-font-weight-medium);
   --a-settings-action-margin-block: 6px;
+  --a-settings-version-info-hover-opacity: var(--a-opacity-interactive-hover);
+  --a-settings-version-info-active-opacity: var(--a-opacity-interactive-pressed);
 
   &__title {
     padding-top: var(--a-settings-title-padding-top);
@@ -455,17 +458,17 @@ onBeforeUnmount(() => {
     user-select: none;
 
     &:hover {
-      opacity: 0.8;
+      opacity: var(--a-settings-version-info-hover-opacity);
     }
 
     &:active {
-      opacity: 0.6;
+      opacity: var(--a-settings-version-info-active-opacity);
     }
   }
   &__action {
     display: block;
     font-size: var(--a-settings-action-font-size);
-    font-weight: 500;
+    font-weight: var(--a-settings-action-font-weight);
     text-decoration-line: underline;
     margin: var(--a-settings-action-margin-block) var(--a-space-2);
     padding: 0 var(--a-space-4);
