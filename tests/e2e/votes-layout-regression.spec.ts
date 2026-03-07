@@ -36,8 +36,17 @@ test.describe('Votes layout regressions', () => {
       const beforeSection = sections[0] as HTMLElement | undefined
       const afterSection = sections[1] as HTMLElement | undefined
       const table = document.querySelector('.settings-data-table') as HTMLElement | null
+      const pagination = document.querySelector('.delegates-view__pagination') as HTMLElement | null
 
-      if (!content || !shell || !bleed || !beforeSection || !afterSection || !table) {
+      if (
+        !content ||
+        !shell ||
+        !bleed ||
+        !beforeSection ||
+        !afterSection ||
+        !table ||
+        !pagination
+      ) {
         return null
       }
 
@@ -48,6 +57,7 @@ test.describe('Votes layout regressions', () => {
       const beforeStyle = getComputedStyle(beforeSection)
       const afterStyle = getComputedStyle(afterSection)
       const bleedRect = bleed.getBoundingClientRect()
+      const paginationRect = pagination.getBoundingClientRect()
       const tableRect = table.getBoundingClientRect()
 
       return {
@@ -67,6 +77,7 @@ test.describe('Votes layout regressions', () => {
         afterPaddingInlineEnd: Number.parseFloat(afterStyle.paddingInlineEnd),
         bleedLeftGap: bleedRect.left - contentRect.left,
         bleedRightGap: contentRect.right - bleedRect.right,
+        paginationLeftGap: paginationRect.left - contentRect.left,
         tableBleedLeftGap: tableRect.left - bleedRect.left,
         tableBleedRightGap: bleedRect.right - tableRect.right
       }
@@ -87,6 +98,8 @@ test.describe('Votes layout regressions', () => {
     expect(metrics?.beforePaddingInlineEnd ?? 99).toBeLessThanOrEqual(1)
     expect(metrics?.afterPaddingInlineStart ?? 99).toBeLessThanOrEqual(1)
     expect(metrics?.afterPaddingInlineEnd ?? 99).toBeLessThanOrEqual(1)
+    expect(metrics?.paginationLeftGap ?? 0).toBeGreaterThanOrEqual(7)
+    expect(metrics?.paginationLeftGap ?? 999).toBeLessThanOrEqual(9)
     expect(Math.abs(metrics?.bleedLeftGap ?? 99)).toBeLessThanOrEqual(1)
     expect(Math.abs(metrics?.bleedRightGap ?? 99)).toBeLessThanOrEqual(1)
     expect(Math.abs(metrics?.tableBleedLeftGap ?? 99)).toBeLessThanOrEqual(1)

@@ -523,6 +523,14 @@ onBeforeUnmount(() => {
 }
 .v-theme--dark {
   .settings-view {
+    :deep(.a-text-explanation),
+    :deep(.a-text-explanation-small),
+    :deep(.a-text-explanation-bold),
+    :deep(.a-text-explanation-enlarged),
+    :deep(.a-text-explanation-enlarged-bold) {
+      color: var(--a-color-text-muted-dark);
+    }
+
     .actions-list {
       :deep(.v-list-item-title) {
         color: map.get(settings.$shades, 'white');

@@ -49,6 +49,7 @@ describe('Nodes UI style contract', () => {
     expect(shellContent).toContain('--a-settings-table-shell-section-inline-start: 0px;')
     expect(shellContent).toContain('--a-settings-table-shell-section-inline-end: 0px;')
     expect(shellContent).toContain('--a-settings-table-shell-checkbox-offset')
+    expect(shellContent).toContain('var(--a-color-text-muted-dark)')
     expect(shellContent).toContain('var(--a-space-6)')
     expect(shellContent).toContain('var(--a-space-4)')
     expect(shellContent).toContain(

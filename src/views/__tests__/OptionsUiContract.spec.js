@@ -28,6 +28,7 @@ describe('Options UI style contract', () => {
     expect(content).toContain('var(--a-list-row-padding-block)')
     expect(content).toContain('var(--a-opacity-interactive-hover)')
     expect(content).toContain('var(--a-opacity-interactive-pressed)')
+    expect(content).toContain('var(--a-color-text-muted-dark)')
     expect(content).toContain('var(--a-space-6)')
     expect(content).toContain('var(--a-space-4)')
     expect(content).not.toMatch(/(^|\n)\s*padding-top:\s*15px;/)

@@ -18,6 +18,81 @@ const assertNoDocumentScrollLeak = async (page: Page) => {
 }
 
 test.describe('Wallets layout regressions', () => {
+  test('keeps wallets shell aligned to settings content on desktop', async ({ page }) => {
+    await loginWithNewAccount(page)
+
+    await page.goto('/options/wallets')
+    await expect(page).toHaveURL(/\/options\/wallets$/)
+    await expect(page.locator('.wallets-view')).toBeVisible()
+    await expect(page.locator('.wallets-view__list')).toBeVisible()
+
+    const metrics = await page.evaluate(() => {
+      const content = document.querySelector('.navigation-wrapper__content') as HTMLElement | null
+      const shell = document.querySelector('.settings-table-shell') as HTMLElement | null
+      const bleed = document.querySelector('.settings-table-shell__bleed') as HTMLElement | null
+      const sections = document.querySelectorAll('.settings-table-shell__section')
+      const beforeSection = sections[0] as HTMLElement | undefined
+      const afterSection = sections[1] as HTMLElement | undefined
+      const list = document.querySelector('.wallets-view__list') as HTMLElement | null
+
+      if (!content || !shell || !bleed || !beforeSection || !afterSection || !list) {
+        return null
+      }
+
+      const contentRect = content.getBoundingClientRect()
+      const shellStyle = getComputedStyle(shell)
+      const contentStyle = getComputedStyle(content)
+      const bleedStyle = getComputedStyle(bleed)
+      const beforeStyle = getComputedStyle(beforeSection)
+      const afterStyle = getComputedStyle(afterSection)
+      const bleedRect = bleed.getBoundingClientRect()
+      const listRect = list.getBoundingClientRect()
+
+      return {
+        bleedInlineStartVar: shellStyle
+          .getPropertyValue('--a-settings-table-shell-bleed-inline-start')
+          .trim(),
+        bleedInlineEndVar: shellStyle
+          .getPropertyValue('--a-settings-table-shell-bleed-inline-end')
+          .trim(),
+        marginInlineStart: Number.parseFloat(bleedStyle.marginInlineStart),
+        marginInlineEnd: Number.parseFloat(bleedStyle.marginInlineEnd),
+        contentPaddingInlineStart: Number.parseFloat(contentStyle.paddingInlineStart),
+        contentPaddingInlineEnd: Number.parseFloat(contentStyle.paddingInlineEnd),
+        beforePaddingInlineStart: Number.parseFloat(beforeStyle.paddingInlineStart),
+        beforePaddingInlineEnd: Number.parseFloat(beforeStyle.paddingInlineEnd),
+        afterPaddingInlineStart: Number.parseFloat(afterStyle.paddingInlineStart),
+        afterPaddingInlineEnd: Number.parseFloat(afterStyle.paddingInlineEnd),
+        bleedLeftGap: bleedRect.left - contentRect.left,
+        bleedRightGap: contentRect.right - bleedRect.right,
+        listBleedLeftGap: listRect.left - bleedRect.left,
+        listBleedRightGap: bleedRect.right - listRect.right
+      }
+    })
+
+    expect(metrics).not.toBeNull()
+    expect(metrics?.bleedInlineStartVar).not.toBe('')
+    expect(metrics?.bleedInlineEndVar).not.toBe('')
+    expect(metrics?.marginInlineStart ?? 0).toBeLessThanOrEqual(-23)
+    expect(metrics?.marginInlineStart ?? 0).toBeGreaterThanOrEqual(-25)
+    expect(metrics?.marginInlineEnd ?? 0).toBeLessThanOrEqual(-23)
+    expect(metrics?.marginInlineEnd ?? 0).toBeGreaterThanOrEqual(-25)
+    expect(metrics?.contentPaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.contentPaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.contentPaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.contentPaddingInlineEnd ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.beforePaddingInlineStart ?? 99).toBeLessThanOrEqual(1)
+    expect(metrics?.beforePaddingInlineEnd ?? 99).toBeLessThanOrEqual(1)
+    expect(metrics?.afterPaddingInlineStart ?? 99).toBeLessThanOrEqual(1)
+    expect(metrics?.afterPaddingInlineEnd ?? 99).toBeLessThanOrEqual(1)
+    expect(Math.abs(metrics?.bleedLeftGap ?? 99)).toBeLessThanOrEqual(1)
+    expect(Math.abs(metrics?.bleedRightGap ?? 99)).toBeLessThanOrEqual(1)
+    expect(Math.abs(metrics?.listBleedLeftGap ?? 99)).toBeLessThanOrEqual(1)
+    expect(Math.abs(metrics?.listBleedRightGap ?? 99)).toBeLessThanOrEqual(1)
+
+    await assertNoDocumentScrollLeak(page)
+  })
+
   test('keeps wallets list scrolling inside local pane', async ({ page }) => {
     await loginWithNewAccount(page)
 
@@ -104,6 +179,64 @@ test.describe('Wallets layout regressions', () => {
       expect(metrics?.balanceGap ?? 0).toBeGreaterThanOrEqual(7)
       expect(metrics?.balanceGap ?? 999).toBeLessThanOrEqual(9)
     }
+
+    await assertNoDocumentScrollLeak(page)
+  })
+
+  test('keeps wallets list edge-to-edge on mobile while search/footer stay on settings gutters', async ({
+    page
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await loginWithNewAccount(page)
+
+    await page.goto('/options/wallets')
+    await expect(page).toHaveURL(/\/options\/wallets$/)
+    await expect(page.locator('.wallets-view__list')).toBeVisible()
+
+    const metrics = await page.evaluate(() => {
+      const shell = document.querySelector('.settings-table-shell') as HTMLElement | null
+      const bleed = document.querySelector('.settings-table-shell__bleed') as HTMLElement | null
+      const beforeSection = document.querySelector(
+        '.settings-table-shell__section'
+      ) as HTMLElement | null
+      const list = document.querySelector('.wallets-view__list') as HTMLElement | null
+
+      if (!shell || !bleed || !beforeSection || !list) {
+        return null
+      }
+
+      const shellStyle = getComputedStyle(shell)
+      const bleedStyle = getComputedStyle(bleed)
+      const beforeStyle = getComputedStyle(beforeSection)
+      const listRect = list.getBoundingClientRect()
+
+      return {
+        bleedInlineStartVar: shellStyle
+          .getPropertyValue('--a-settings-table-shell-bleed-inline-start')
+          .trim(),
+        bleedInlineEndVar: shellStyle
+          .getPropertyValue('--a-settings-table-shell-bleed-inline-end')
+          .trim(),
+        marginInlineStart: Number.parseFloat(bleedStyle.marginInlineStart),
+        marginInlineEnd: Number.parseFloat(bleedStyle.marginInlineEnd),
+        beforePaddingInlineStart: Number.parseFloat(beforeStyle.paddingInlineStart),
+        beforePaddingInlineEnd: Number.parseFloat(beforeStyle.paddingInlineEnd),
+        listLeft: listRect.left,
+        listRightGap: window.innerWidth - listRect.right
+      }
+    })
+
+    expect(metrics).not.toBeNull()
+    expect(metrics?.bleedInlineStartVar).not.toBe('')
+    expect(metrics?.bleedInlineEndVar).not.toBe('')
+    expect(metrics?.marginInlineStart ?? 0).toBeLessThanOrEqual(-23)
+    expect(metrics?.marginInlineStart ?? 0).toBeGreaterThanOrEqual(-25)
+    expect(metrics?.marginInlineEnd ?? 0).toBeLessThanOrEqual(-15)
+    expect(metrics?.marginInlineEnd ?? 0).toBeGreaterThanOrEqual(-17)
+    expect(metrics?.beforePaddingInlineStart ?? 99).toBeLessThanOrEqual(1)
+    expect(metrics?.beforePaddingInlineEnd ?? 99).toBeLessThanOrEqual(1)
+    expect(Math.abs(metrics?.listLeft ?? 99)).toBeLessThanOrEqual(1)
+    expect(Math.abs(metrics?.listRightGap ?? 99)).toBeLessThanOrEqual(1)
 
     await assertNoDocumentScrollLeak(page)
   })

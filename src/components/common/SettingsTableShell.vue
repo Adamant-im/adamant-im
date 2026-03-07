@@ -70,4 +70,16 @@ const classes = {
     --a-settings-table-shell-bleed-inline-end: var(--a-space-4);
   }
 }
+
+.v-theme--dark {
+  .settings-table-shell {
+    :deep(.a-text-explanation),
+    :deep(.a-text-explanation-small),
+    :deep(.a-text-explanation-bold),
+    :deep(.a-text-explanation-enlarged),
+    :deep(.a-text-explanation-enlarged-bold) {
+      color: var(--a-color-text-muted-dark);
+    }
+  }
+}
 </style>

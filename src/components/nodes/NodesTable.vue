@@ -79,7 +79,7 @@
         <!-- eslint-disable vue/no-v-html -- Safe internal content -->
         <div
           :class="classes.info"
-          class="a-text-regular-enlarged mt-6"
+          class="a-text-explanation-enlarged mt-6"
           v-html="t('nodes.nodeLabelDescription')"
         />
         <!-- eslint-enable vue/no-v-html -->

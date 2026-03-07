@@ -1,7 +1,10 @@
 <template>
   <div :class="classes.root" class="w-100">
-    <v-card flat color="transparent" :class="`${classes.root}__card`">
-      <WalletsSearchInput @change="searchChanged" />
+    <SettingsTableShell :class="classes.layout">
+      <template #before>
+        <WalletsSearchInput @change="searchChanged" />
+      </template>
+
       <div
         class="v-list v-list--density-default v-list--one-line"
         :class="[
@@ -27,14 +30,14 @@
           class="text-center"
         ></v-list-item>
       </div>
-      <v-row
-        class="align-center justify-space-between v-row--no-gutters"
-        :class="`${classes.root}__review`"
-      >
-        <v-spacer></v-spacer>
-        <WalletResetDialog></WalletResetDialog>
-      </v-row>
-    </v-card>
+
+      <template #after>
+        <v-row class="align-center v-row--no-gutters" :class="`${classes.root}__review`">
+          <v-spacer />
+          <WalletResetDialog></WalletResetDialog>
+        </v-row>
+      </template>
+    </SettingsTableShell>
   </div>
 </template>
 
@@ -47,6 +50,7 @@ import { useStore } from 'vuex'
 import WalletsSearchInput from '@/components/wallets/WalletsSearchInput.vue'
 import WalletsListItem from '@/components/wallets/WalletsListItem.vue'
 import WalletResetDialog from '@/components/wallets/WalletResetDialog.vue'
+import SettingsTableShell from '@/components/common/SettingsTableShell.vue'
 import { CoinSymbol } from '@/store/modules/wallets/types'
 import { useTheme } from '@/hooks/useTheme'
 import { useTimeoutPoll } from '@vueuse/core'
@@ -56,6 +60,7 @@ const BALANCE_UPDATE_INTERVAL_MS = 30000
 const className = 'wallets-view'
 const classes = {
   root: className,
+  layout: `${className}__layout`,
   draggableList: `${className}__draggable-list`
 }
 
@@ -166,14 +171,17 @@ onBeforeUnmount(() => {
     height: calc(var(--a-layout-height-safe) - var(--toolbar-height));
   }
 
-  &__card {
+  &__layout {
     height: 100%;
     display: grid;
     grid-template-rows: auto minmax(0, 1fr) auto;
+    min-height: 0;
+    width: 100%;
   }
 
   &__list {
     min-height: 0;
+    height: 100%;
   }
 
   &__draggable-list {
@@ -188,6 +196,10 @@ onBeforeUnmount(() => {
   &__review {
     padding-top: var(--a-wallets-review-padding-block) !important;
     padding-bottom: var(--a-wallets-review-padding-block) !important;
+  }
+
+  :deep(.settings-table-shell__bleed) {
+    min-height: 0;
   }
 }
 

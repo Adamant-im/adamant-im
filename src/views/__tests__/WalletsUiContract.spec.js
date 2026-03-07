@@ -11,10 +11,25 @@ const walletsSearchInputPath = path.resolve(
   currentDir,
   '../../components/wallets/WalletsSearchInput.vue'
 )
+const settingsTableShellPath = path.resolve(
+  currentDir,
+  '../../components/common/SettingsTableShell.vue'
+)
 const walletTabPath = path.resolve(currentDir, '../../components/WalletTab.vue')
 const walletBalancePath = path.resolve(currentDir, '../../components/wallets/WalletBalance.vue')
 
 describe('Wallets UI style contract', () => {
+  it('uses shared settings shell for wallets screen layout', () => {
+    const content = readFileSync(walletsViewPath, 'utf8')
+    const shellContent = readFileSync(settingsTableShellPath, 'utf8')
+
+    expect(content).toContain('<SettingsTableShell :class="classes.layout">')
+    expect(content).toContain('grid-template-rows: auto minmax(0, 1fr) auto;')
+    expect(content).toContain(':deep(.settings-table-shell__bleed)')
+    expect(content).not.toContain('<v-card flat color="transparent"')
+    expect(shellContent).toContain('--a-settings-table-shell-bleed-inline-start')
+  })
+
   it('uses shared spacing variable for wallets footer review row', () => {
     const content = readFileSync(walletsViewPath, 'utf8')
 

@@ -13,7 +13,10 @@
           class="a-input"
           color="primary"
         />
-        <div :class="`${className}__info`" v-html="t('votes.stake_info')" />
+        <div
+          :class="['a-text-explanation-enlarged', `${className}__info`]"
+          v-html="t('votes.stake_info')"
+        />
       </template>
 
       <delegates-table
@@ -233,7 +236,6 @@ const showConfirmationDialog = () => {
     }
   }
   &__info {
-    @include mixins.a-text-explanation-enlarged();
     padding: var(--a-space-5) 0;
     :deep(a) {
       text-decoration-line: none;
@@ -248,6 +250,9 @@ const showConfirmationDialog = () => {
   }
   &__review-button {
     margin-left: auto !important;
+  }
+  &__pagination {
+    margin-inline-start: calc(var(--a-space-4) * -1);
   }
   &__search {
     :deep(.v-field) {
