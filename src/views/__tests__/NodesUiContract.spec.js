@@ -39,7 +39,7 @@ const ipfsNodesTableItemPath = path.resolve(
 )
 
 describe('Nodes UI style contract', () => {
-  it('uses shared settings table shell with asymmetric mobile bleed compensation', () => {
+  it('uses shared settings table shell with shared mobile bleed gutters', () => {
     const content = readFileSync(nodesTablePath, 'utf8')
     const shellContent = readFileSync(settingsTableShellPath, 'utf8')
 
@@ -51,7 +51,6 @@ describe('Nodes UI style contract', () => {
     expect(shellContent).toContain('--a-settings-table-shell-checkbox-offset')
     expect(shellContent).toContain('var(--a-color-text-muted-dark)')
     expect(shellContent).toContain('var(--a-space-6)')
-    expect(shellContent).toContain('var(--a-space-4)')
     expect(shellContent).toContain(
       'margin-inline-start: calc(var(--a-settings-table-shell-bleed-inline-start) * -1);'
     )

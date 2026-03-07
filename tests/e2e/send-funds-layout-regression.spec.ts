@@ -49,4 +49,44 @@ test.describe('Transfer layout regressions', () => {
 
     await assertNoDocumentScrollLeak(page)
   })
+
+  test('keeps symmetric mobile gutters on send funds screen', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await loginWithNewAccount(page)
+
+    await page.goto('/transfer')
+    await expect(page).toHaveURL(/\/transfer(?:\/)?$/)
+    await expect(page.locator('.send-funds-form')).toBeVisible()
+
+    const metrics = await page.evaluate(() => {
+      const content = document.querySelector('.navigation-wrapper__content') as HTMLElement | null
+      const field = document.querySelector('.send-funds-form .v-field') as HTMLElement | null
+
+      if (!content || !field) {
+        return null
+      }
+
+      const contentStyle = getComputedStyle(content)
+      const fieldRect = field.getBoundingClientRect()
+
+      return {
+        contentPaddingInlineStart: Number.parseFloat(contentStyle.paddingInlineStart),
+        contentPaddingInlineEnd: Number.parseFloat(contentStyle.paddingInlineEnd),
+        fieldLeftGap: fieldRect.left,
+        fieldRightGap: window.innerWidth - fieldRect.right
+      }
+    })
+
+    expect(metrics).not.toBeNull()
+    expect(metrics?.contentPaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.contentPaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.contentPaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.contentPaddingInlineEnd ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.fieldLeftGap ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.fieldLeftGap ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.fieldRightGap ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.fieldRightGap ?? 99).toBeLessThanOrEqual(25)
+
+    await assertNoDocumentScrollLeak(page)
+  })
 })

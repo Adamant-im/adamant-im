@@ -552,11 +552,4 @@ onBeforeUnmount(() => {
     }
   }
 }
-
-/** Breakpoints **/
-@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-  .settings-view {
-    --a-settings-gutter: var(--a-space-4);
-  }
-}
 </style>

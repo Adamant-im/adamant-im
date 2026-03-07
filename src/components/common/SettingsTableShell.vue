@@ -24,9 +24,6 @@ const classes = {
 </script>
 
 <style lang="scss" scoped>
-@use 'sass:map';
-@use 'vuetify/settings';
-
 .settings-table-shell {
   --a-settings-table-shell-bleed-inline-start: var(--a-space-6);
   --a-settings-table-shell-bleed-inline-end: var(--a-space-6);
@@ -57,17 +54,6 @@ const classes = {
 
   :deep(.v-checkbox) {
     margin-inline-start: var(--a-settings-table-shell-checkbox-offset);
-  }
-}
-
-@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-  .settings-table-shell {
-    /*
-      Match NavigationWrapper -> Container mobile padding (left 24px, right 16px),
-      so bleed sections truly stretch edge-to-edge on mobile too.
-    */
-    --a-settings-table-shell-bleed-inline-start: var(--a-space-6);
-    --a-settings-table-shell-bleed-inline-end: var(--a-space-4);
   }
 }
 

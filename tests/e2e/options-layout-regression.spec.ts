@@ -72,4 +72,52 @@ test.describe('Options layout regressions', () => {
 
     await assertNoDocumentScrollLeak(page)
   })
+
+  test('keeps symmetric mobile gutters on settings screen', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await loginWithNewAccount(page)
+
+    await page.goto('/options')
+    await expect(page).toHaveURL(/\/options$/)
+    await expect(page.locator('.settings-view')).toBeVisible()
+
+    const metrics = await page.evaluate(() => {
+      const content = document.querySelector('.navigation-wrapper__content') as HTMLElement | null
+      const title = document.querySelector('.settings-view__title') as HTMLElement | null
+      const actionItem = document.querySelector('.actions-list .v-list-item') as HTMLElement | null
+
+      if (!content || !title || !actionItem) {
+        return null
+      }
+
+      const contentStyle = getComputedStyle(content)
+      const titleStyle = getComputedStyle(title)
+      const actionItemStyle = getComputedStyle(actionItem)
+
+      return {
+        contentPaddingInlineStart: Number.parseFloat(contentStyle.paddingInlineStart),
+        contentPaddingInlineEnd: Number.parseFloat(contentStyle.paddingInlineEnd),
+        titlePaddingInlineStart: Number.parseFloat(titleStyle.paddingInlineStart),
+        titlePaddingInlineEnd: Number.parseFloat(titleStyle.paddingInlineEnd),
+        actionPaddingInlineStart: Number.parseFloat(actionItemStyle.paddingInlineStart),
+        actionPaddingInlineEnd: Number.parseFloat(actionItemStyle.paddingInlineEnd)
+      }
+    })
+
+    expect(metrics).not.toBeNull()
+    expect(metrics?.contentPaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.contentPaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.contentPaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.contentPaddingInlineEnd ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.titlePaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.titlePaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.titlePaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.titlePaddingInlineEnd ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.actionPaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.actionPaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.actionPaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.actionPaddingInlineEnd ?? 99).toBeLessThanOrEqual(25)
+
+    await assertNoDocumentScrollLeak(page)
+  })
 })

@@ -136,7 +136,7 @@ test.describe('Votes layout regressions', () => {
     expect(Math.abs(filteredRightGap - initialRightGap)).toBeLessThanOrEqual(1)
   })
 
-  test('keeps delegates table edge-to-edge on mobile while padded content stays asymmetric', async ({
+  test('keeps delegates table edge-to-edge on mobile while padded content stays on shared gutters', async ({
     page
   }) => {
     await page.setViewportSize({ width: 390, height: 844 })
@@ -185,8 +185,8 @@ test.describe('Votes layout regressions', () => {
     expect(metrics?.bleedInlineEndVar).not.toBe('')
     expect(metrics?.marginInlineStart ?? 0).toBeLessThanOrEqual(-23)
     expect(metrics?.marginInlineStart ?? 0).toBeGreaterThanOrEqual(-25)
-    expect(metrics?.marginInlineEnd ?? 0).toBeLessThanOrEqual(-15)
-    expect(metrics?.marginInlineEnd ?? 0).toBeGreaterThanOrEqual(-17)
+    expect(metrics?.marginInlineEnd ?? 0).toBeLessThanOrEqual(-23)
+    expect(metrics?.marginInlineEnd ?? 0).toBeGreaterThanOrEqual(-25)
     expect(metrics?.beforePaddingInlineStart ?? 99).toBeLessThanOrEqual(1)
     expect(metrics?.beforePaddingInlineEnd ?? 99).toBeLessThanOrEqual(1)
     expect(Math.abs(metrics?.tableLeft ?? 99)).toBeLessThanOrEqual(1)

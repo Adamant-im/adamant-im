@@ -235,20 +235,15 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-@use 'sass:map';
-@use 'vuetify/settings';
-
 .export-keys-form {
   --a-export-keys-section-spacing: var(--a-space-6);
   --a-export-keys-key-field-gap: var(--a-space-4);
   --a-export-keys-copy-all-margin-bottom: var(--a-space-3);
   --a-export-keys-button-margin-top: var(--a-space-4);
   --a-export-keys-button-margin-bottom: var(--a-space-6);
-  --a-export-keys-mobile-inline-end-compensation: 0px;
 
   width: 100%;
   box-sizing: border-box;
-  padding-inline-end: var(--a-export-keys-mobile-inline-end-compensation);
 
   &__keys {
     margin-top: var(--a-export-keys-section-spacing);
@@ -278,12 +273,6 @@ export default defineComponent({
     padding-inline-end: 0;
     margin-inline-end: 0;
     margin-bottom: var(--a-export-keys-copy-all-margin-bottom);
-  }
-}
-
-@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-  .export-keys-form {
-    --a-export-keys-mobile-inline-end-compensation: var(--a-space-2);
   }
 }
 </style>

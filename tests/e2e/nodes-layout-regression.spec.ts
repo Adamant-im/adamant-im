@@ -138,7 +138,7 @@ test.describe('Nodes layout regressions', () => {
     await assertNoDocumentScrollLeak(page)
   })
 
-  test('keeps nodes table truly edge-to-edge on mobile', async ({ page }) => {
+  test('keeps nodes table truly edge-to-edge on mobile with shared gutters', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 })
     await loginWithNewAccount(page)
 
@@ -179,8 +179,8 @@ test.describe('Nodes layout regressions', () => {
     expect(metrics?.bleedInlineEndVar).not.toBe('')
     expect(metrics?.marginInlineStart ?? 0).toBeLessThanOrEqual(-23)
     expect(metrics?.marginInlineStart ?? 0).toBeGreaterThanOrEqual(-25)
-    expect(metrics?.marginInlineEnd ?? 0).toBeLessThanOrEqual(-15)
-    expect(metrics?.marginInlineEnd ?? 0).toBeGreaterThanOrEqual(-17)
+    expect(metrics?.marginInlineEnd ?? 0).toBeLessThanOrEqual(-23)
+    expect(metrics?.marginInlineEnd ?? 0).toBeGreaterThanOrEqual(-25)
     expect(Math.abs(metrics?.tableLeft ?? 99)).toBeLessThanOrEqual(1)
     expect(Math.abs(metrics?.tableRightGap ?? 99)).toBeLessThanOrEqual(1)
 

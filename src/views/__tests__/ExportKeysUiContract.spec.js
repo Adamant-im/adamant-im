@@ -20,14 +20,9 @@ describe('Export keys UI style contract', () => {
     expect(content).toContain('--a-export-keys-copy-all-margin-bottom')
     expect(content).toContain('--a-export-keys-button-margin-top')
     expect(content).toContain('--a-export-keys-button-margin-bottom')
-    expect(content).toContain('--a-export-keys-mobile-inline-end-compensation')
     expect(content).toContain('var(--a-space-6)')
     expect(content).toContain('var(--a-space-4)')
     expect(content).toContain('var(--a-space-3)')
-    expect(content).toContain('var(--a-space-2)')
-    expect(content).toContain(
-      'padding-inline-end: var(--a-export-keys-mobile-inline-end-compensation);'
-    )
     expect(content).toContain('__copy-all-row')
     expect(content).toContain('__field-action')
     expect(content).not.toContain('margin-top: 24px;')
@@ -36,5 +31,6 @@ describe('Export keys UI style contract', () => {
     expect(content).not.toContain('margin-bottom: 12px;')
     expect(content).not.toContain('padding-right: 0;')
     expect(content).not.toContain('margin-right: 0;')
+    expect(content).not.toContain('--a-export-keys-mobile-inline-end-compensation')
   })
 })

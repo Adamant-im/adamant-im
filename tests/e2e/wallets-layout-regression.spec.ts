@@ -23,7 +23,7 @@ test.describe('Wallets layout regressions', () => {
 
     await page.goto('/options/wallets')
     await expect(page).toHaveURL(/\/options\/wallets$/)
-    await expect(page.locator('.wallets-view')).toBeVisible()
+    await expect(page.locator('div.wallets-view.w-100')).toBeVisible()
     await expect(page.locator('.wallets-view__list')).toBeVisible()
 
     const metrics = await page.evaluate(() => {
@@ -99,7 +99,7 @@ test.describe('Wallets layout regressions', () => {
 
     await page.goto('/options/wallets')
     await expect(page).toHaveURL(/\/options\/wallets$/)
-    await expect(page.locator('.wallets-view')).toBeVisible()
+    await expect(page.locator('div.wallets-view.w-100')).toBeVisible()
     await expect(page.locator('.sidebar__layout.a-scroll-pane')).toBeVisible()
 
     const sidebarPane = page.locator('.sidebar__layout.a-scroll-pane')
@@ -236,7 +236,7 @@ test.describe('Wallets layout regressions', () => {
     await assertNoDocumentScrollLeak(page)
   })
 
-  test('keeps wallets list edge-to-edge on mobile while search/footer stay on settings gutters', async ({
+  test('keeps wallets list edge-to-edge on mobile while search/footer stay on shared settings gutters', async ({
     page
   }) => {
     await page.setViewportSize({ width: 390, height: 844 })
@@ -284,8 +284,8 @@ test.describe('Wallets layout regressions', () => {
     expect(metrics?.bleedInlineEndVar).not.toBe('')
     expect(metrics?.marginInlineStart ?? 0).toBeLessThanOrEqual(-23)
     expect(metrics?.marginInlineStart ?? 0).toBeGreaterThanOrEqual(-25)
-    expect(metrics?.marginInlineEnd ?? 0).toBeLessThanOrEqual(-15)
-    expect(metrics?.marginInlineEnd ?? 0).toBeGreaterThanOrEqual(-17)
+    expect(metrics?.marginInlineEnd ?? 0).toBeLessThanOrEqual(-23)
+    expect(metrics?.marginInlineEnd ?? 0).toBeGreaterThanOrEqual(-25)
     expect(metrics?.beforePaddingInlineStart ?? 99).toBeLessThanOrEqual(1)
     expect(metrics?.beforePaddingInlineEnd ?? 99).toBeLessThanOrEqual(1)
     expect(Math.abs(metrics?.listLeft ?? 99)).toBeLessThanOrEqual(1)
