@@ -19,13 +19,20 @@ const walletTabPath = path.resolve(currentDir, '../../components/WalletTab.vue')
 const walletBalancePath = path.resolve(currentDir, '../../components/wallets/WalletBalance.vue')
 
 describe('Wallets UI style contract', () => {
-  it('uses shared settings shell for wallets screen layout', () => {
+  it('uses shared settings shell for wallets screen layout without local scroll pane', () => {
     const content = readFileSync(walletsViewPath, 'utf8')
     const shellContent = readFileSync(settingsTableShellPath, 'utf8')
 
     expect(content).toContain('<SettingsTableShell :class="classes.layout">')
-    expect(content).toContain('grid-template-rows: auto minmax(0, 1fr) auto;')
-    expect(content).toContain(':deep(.settings-table-shell__bleed)')
+    expect(content).toContain('<template #before>')
+    expect(content).toContain('<template #after>')
+    expect(content).toContain('`${classes.root}__list`')
+    expect(content).not.toContain("'a-scroll-pane'")
+    expect(content).not.toContain('grid-template-rows: auto minmax(0, 1fr) auto;')
+    expect(content).not.toContain('overflow: hidden;')
+    expect(content).not.toContain('var(--a-layout-height)')
+    expect(content).not.toContain('var(--a-layout-height-safe)')
+    expect(content).not.toContain(':deep(.settings-table-shell__bleed)')
     expect(content).not.toContain('<v-card flat color="transparent"')
     expect(shellContent).toContain('--a-settings-table-shell-bleed-inline-start')
   })
@@ -35,6 +42,7 @@ describe('Wallets UI style contract', () => {
 
     expect(content).toContain('--a-wallets-review-padding-block')
     expect(content).toContain('var(--a-wallets-review-padding-block)')
+    expect(content).toContain('var(--a-space-4)')
     expect(content).not.toContain('padding-top: 15px !important;')
     expect(content).not.toContain('padding-bottom: 15px !important;')
   })

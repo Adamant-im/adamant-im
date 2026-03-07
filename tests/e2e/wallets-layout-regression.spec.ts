@@ -93,43 +93,75 @@ test.describe('Wallets layout regressions', () => {
     await assertNoDocumentScrollLeak(page)
   })
 
-  test('keeps wallets list scrolling inside local pane', async ({ page }) => {
+  test('keeps reset below the fold until the shared sidebar pane scrolls', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 })
     await loginWithNewAccount(page)
 
     await page.goto('/options/wallets')
     await expect(page).toHaveURL(/\/options\/wallets$/)
     await expect(page.locator('.wallets-view')).toBeVisible()
+    await expect(page.locator('.sidebar__layout.a-scroll-pane')).toBeVisible()
 
-    const walletsList = page.locator('.wallets-view__list')
-    await expect(walletsList).toBeVisible()
+    const sidebarPane = page.locator('.sidebar__layout.a-scroll-pane')
 
-    const overflow = await walletsList.evaluate((element) => {
-      const style = getComputedStyle(element)
+    const initialMetrics = await page.evaluate(() => {
+      const pane = document.querySelector('.sidebar__layout.a-scroll-pane') as HTMLElement | null
+      const button = document.querySelector('.wallets-view .a-btn-primary') as HTMLElement | null
+
+      if (!pane || !button) {
+        return null
+      }
+
+      const paneStyle = getComputedStyle(pane)
+      const paneRect = pane.getBoundingClientRect()
+      const buttonRect = button.getBoundingClientRect()
 
       return {
-        overflowY: style.overflowY,
-        overflowX: style.overflowX,
-        overscrollBehavior: style.overscrollBehavior
+        paneOverflowY: paneStyle.overflowY,
+        canScroll: pane.scrollHeight > pane.clientHeight + 1,
+        scrollTop: pane.scrollTop,
+        buttonBelowPane: buttonRect.top > paneRect.bottom + 1
       }
     })
 
-    expect(['auto', 'scroll']).toContain(overflow.overflowY)
-    expect(overflow.overflowX).toBe('hidden')
-    expect(overflow.overscrollBehavior).toBe('contain')
+    expect(initialMetrics).not.toBeNull()
+    expect(initialMetrics?.paneOverflowY).toBe('auto')
+    expect(initialMetrics?.canScroll).toBe(true)
+    expect(initialMetrics?.scrollTop).toBe(0)
+    expect(initialMetrics?.buttonBelowPane).toBe(true)
 
-    const canScroll = await walletsList.evaluate((element) => {
-      return element.scrollHeight > element.clientHeight + 1
+    await sidebarPane.evaluate((element) => {
+      element.scrollTop = element.scrollHeight
     })
 
-    if (canScroll) {
-      await walletsList.evaluate((element) => {
-        element.scrollTop = 300
-      })
+    await expect.poll(() => sidebarPane.evaluate((element) => element.scrollTop)).toBeGreaterThan(0)
 
-      await expect
-        .poll(() => walletsList.evaluate((element) => element.scrollTop))
-        .toBeGreaterThan(0)
-    }
+    const scrolledMetrics = await page.evaluate(() => {
+      const pane = document.querySelector('.sidebar__layout.a-scroll-pane') as HTMLElement | null
+      const button = document.querySelector('.wallets-view .a-btn-primary') as HTMLElement | null
+
+      if (!pane || !button) {
+        return null
+      }
+
+      const paneRect = pane.getBoundingClientRect()
+      const buttonRect = button.getBoundingClientRect()
+
+      return {
+        paneTop: paneRect.top,
+        paneBottom: paneRect.bottom,
+        buttonTop: buttonRect.top,
+        buttonBottom: buttonRect.bottom
+      }
+    })
+
+    expect(scrolledMetrics).not.toBeNull()
+    expect((scrolledMetrics?.buttonTop ?? 0) + 1).toBeGreaterThanOrEqual(
+      scrolledMetrics?.paneTop ?? 0
+    )
+    expect((scrolledMetrics?.buttonBottom ?? 9999) - 1).toBeLessThanOrEqual(
+      scrolledMetrics?.paneBottom ?? 0
+    )
 
     await assertNoDocumentScrollLeak(page)
   })

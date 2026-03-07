@@ -179,6 +179,7 @@
             <v-divider />
 
             <v-list-item
+              :class="`${className}__logout`"
               :title="t('bottom.exit_button')"
               :append-icon="mdiLogoutVariant"
               @click="logout"
@@ -439,6 +440,7 @@ onBeforeUnmount(() => {
   --a-settings-title-padding-top: var(--a-space-4);
   --a-settings-actions-row-min-height: var(--a-list-row-min-height);
   --a-settings-actions-row-padding-block: var(--a-list-row-padding-block);
+  --a-settings-logout-margin-top: var(--a-space-4);
   --a-settings-version-info-hover-opacity: var(--a-opacity-interactive-hover);
   --a-settings-version-info-active-opacity: var(--a-opacity-interactive-pressed);
 
@@ -500,6 +502,10 @@ onBeforeUnmount(() => {
   :deep(.v-checkbox) {
     margin-left: calc(var(--a-space-2) * -1);
   }
+
+  &__logout {
+    margin-top: var(--a-settings-logout-margin-top);
+  }
 }
 
 /** Themes **/
@@ -512,6 +518,8 @@ onBeforeUnmount(() => {
       background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
       color: map.get(colors.$adm-colors, 'regular');
     }
+    :deep(.a-switcher-button),
+    :deep(.a-switcher-button .v-icon),
     :deep(.v-label),
     &__label {
       color: map.get(colors.$adm-colors, 'regular');
@@ -529,6 +537,12 @@ onBeforeUnmount(() => {
     :deep(.a-text-explanation-enlarged),
     :deep(.a-text-explanation-enlarged-bold) {
       color: var(--a-color-text-muted-dark);
+    }
+
+    :deep(.a-switcher-button),
+    :deep(.a-switcher-button .v-icon),
+    &__label {
+      color: map.get(settings.$shades, 'white');
     }
 
     .actions-list {

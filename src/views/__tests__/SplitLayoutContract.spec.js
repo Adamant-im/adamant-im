@@ -56,12 +56,12 @@ describe('Split layout style contract', () => {
     expect(content).toContain('class="a-scroll-pane"')
   })
 
-  it('uses shared split-pane utility in wallets list pane', () => {
+  it('keeps wallets screen on the shared sidebar scroll instead of a local pane', () => {
     const content = readFileSync(walletsPath, 'utf8')
 
-    expect(content).toContain("'a-scroll-pane'")
-    expect(content).toContain('var(--a-layout-height)')
-    expect(content).toContain('var(--a-layout-height-safe)')
+    expect(content).not.toContain("'a-scroll-pane'")
+    expect(content).not.toContain('var(--a-layout-height)')
+    expect(content).not.toContain('var(--a-layout-height-safe)')
   })
 
   it('removes legacy fixed-height scroll wrappers from send funds and transaction template', () => {

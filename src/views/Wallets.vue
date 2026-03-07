@@ -7,11 +7,7 @@
 
       <div
         class="v-list v-list--density-default v-list--one-line"
-        :class="[
-          `${classes.root}__list`,
-          'a-scroll-pane',
-          isDarkTheme ? 'v-theme--dark' : 'v-theme--light'
-        ]"
+        :class="[`${classes.root}__list`, isDarkTheme ? 'v-theme--dark' : 'v-theme--light']"
       >
         <draggable
           :class="classes.draggableList"
@@ -159,30 +155,9 @@ onBeforeUnmount(() => {
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
-@use '@/assets/styles/generic/_variables.scss';
 
 .wallets-view {
-  --a-wallets-review-padding-block: 15px;
-
-  position: relative;
-  height: calc(var(--a-layout-height) - var(--toolbar-height));
-
-  @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
-    height: calc(var(--a-layout-height-safe) - var(--toolbar-height));
-  }
-
-  &__layout {
-    height: 100%;
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr) auto;
-    min-height: 0;
-    width: 100%;
-  }
-
-  &__list {
-    min-height: 0;
-    height: 100%;
-  }
+  --a-wallets-review-padding-block: var(--a-space-4);
 
   &__draggable-list {
     display: flex;
@@ -196,10 +171,6 @@ onBeforeUnmount(() => {
   &__review {
     padding-top: var(--a-wallets-review-padding-block) !important;
     padding-bottom: var(--a-wallets-review-padding-block) !important;
-  }
-
-  :deep(.settings-table-shell__bleed) {
-    min-height: 0;
   }
 }
 
