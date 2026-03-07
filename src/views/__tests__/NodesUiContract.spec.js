@@ -6,9 +6,13 @@ import { describe, expect, it } from 'vitest'
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 
 const nodesTablePath = path.resolve(currentDir, '../../components/nodes/NodesTable.vue')
-const nodesTableContainerPath = path.resolve(
+const settingsTableShellPath = path.resolve(
   currentDir,
-  '../../components/nodes/components/NodesTableContainer.vue'
+  '../../components/common/SettingsTableShell.vue'
+)
+const settingsDataTablePath = path.resolve(
+  currentDir,
+  '../../components/common/SettingsDataTable.vue'
 )
 const nodeColumnPath = path.resolve(currentDir, '../../components/nodes/components/NodeColumn.vue')
 const nodeStatusPath = path.resolve(currentDir, '../../components/nodes/components/NodeStatus.vue')
@@ -35,30 +39,37 @@ const ipfsNodesTableItemPath = path.resolve(
 )
 
 describe('Nodes UI style contract', () => {
-  it('uses tokenized gutters for nodes table container on desktop and mobile', () => {
+  it('uses shared settings table shell with asymmetric mobile bleed compensation', () => {
     const content = readFileSync(nodesTablePath, 'utf8')
+    const shellContent = readFileSync(settingsTableShellPath, 'utf8')
 
-    expect(content).toContain('--a-nodes-table-gutter')
-    expect(content).toContain('--a-nodes-table-checkbox-offset')
-    expect(content).toContain('var(--a-space-6)')
-    expect(content).toContain('var(--a-space-4)')
-    expect(content).toContain('calc(var(--a-nodes-table-gutter) * -1)')
-    expect(content).not.toContain('margin-left: -24px;')
-    expect(content).not.toContain('margin-right: -24px;')
-    expect(content).not.toContain('margin-left: -16px;')
-    expect(content).not.toContain('margin-right: -16px;')
-    expect(content).not.toContain('margin-left: -8px;')
+    expect(content).toContain('<SettingsTableShell :class="classes.root">')
+    expect(shellContent).toContain('--a-settings-table-shell-bleed-inline-start')
+    expect(shellContent).toContain('--a-settings-table-shell-bleed-inline-end')
+    expect(shellContent).toContain('--a-settings-table-shell-checkbox-offset')
+    expect(shellContent).toContain('var(--a-space-6)')
+    expect(shellContent).toContain('var(--a-space-4)')
+    expect(shellContent).toContain(
+      'margin-inline-start: calc(var(--a-settings-table-shell-bleed-inline-start) * -1);'
+    )
+    expect(shellContent).toContain(
+      'margin-inline-end: calc(var(--a-settings-table-shell-bleed-inline-end) * -1);'
+    )
+    expect(shellContent).not.toContain('margin-left: -24px;')
+    expect(shellContent).not.toContain('margin-right: -24px;')
+    expect(shellContent).not.toContain('margin-left: -16px;')
+    expect(shellContent).not.toContain('margin-right: -16px;')
   })
 
   it('uses tokenized typography and spacing in node cells and status widgets', () => {
     const columnContent = readFileSync(nodeColumnPath, 'utf8')
     const statusContent = readFileSync(nodeStatusPath, 'utf8')
     const checkboxContent = readFileSync(nodeStatusCheckboxPath, 'utf8')
-    const containerContent = readFileSync(nodesTableContainerPath, 'utf8')
+    const dataTableContent = readFileSync(settingsDataTablePath, 'utf8')
 
-    expect(containerContent).toContain('--a-nodes-table-container-line-height')
-    expect(containerContent).toContain('var(--a-font-size-sm)')
-    expect(containerContent).not.toContain('line-height: 14px;')
+    expect(dataTableContent).toContain('--a-settings-data-table-line-height')
+    expect(dataTableContent).toContain('var(--a-font-size-sm)')
+    expect(dataTableContent).not.toContain('line-height: 14px;')
 
     expect(columnContent).toContain('--a-node-column-font-size')
     expect(columnContent).toContain('--a-node-column-padding-inline-end')
@@ -70,6 +81,7 @@ describe('Nodes UI style contract', () => {
     expect(statusContent).toContain('--a-node-status-detail-font-size')
     expect(statusContent).toContain('--a-node-status-detail-font-weight')
     expect(statusContent).toContain('--a-node-status-text-color-dark')
+    expect(statusContent).toContain('root: className')
     expect(statusContent).toContain('var(--a-font-size-xs)')
     expect(statusContent).toContain('var(--a-font-weight-light)')
     expect(statusContent).toContain('var(--a-color-text-muted-dark)')
@@ -105,6 +117,7 @@ describe('Nodes UI style contract', () => {
     const ipfsRowContent = readFileSync(ipfsNodesTableItemPath, 'utf8')
 
     expect(urlContent).toContain('--a-node-url-meta-font-size')
+    expect(urlContent).toContain('root: className')
     expect(urlContent).toContain('var(--a-font-size-xs)')
     expect(urlContent).not.toContain('font-size: 12px;')
 

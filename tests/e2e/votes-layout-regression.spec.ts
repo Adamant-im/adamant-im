@@ -17,90 +17,64 @@ const assertNoDocumentScrollLeak = async (page: Page) => {
   expect(documentMetrics.scrollTop).toBe(0)
 }
 
-test.describe('Nodes layout regressions', () => {
-  test('keeps nodes table gutters and row typography consistent', async ({ page }) => {
+test.describe('Votes layout regressions', () => {
+  test('keeps delegates screen aligned to shared settings table shell on desktop', async ({
+    page
+  }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/options/nodes')
-    await expect(page).toHaveURL(/\/options\/nodes$/)
-    await expect(page.locator('.nodes-table')).toBeVisible()
-
-    const firstTab = page.locator('.nodes-table .v-tab').first()
-    await expect(firstTab).toBeVisible()
-    await firstTab.click()
-
-    const firstRow = page.locator('.settings-data-table tbody tr').first()
-    await expect(firstRow).toBeVisible()
+    await page.goto('/votes')
+    await expect(page).toHaveURL(/\/votes$/)
+    await expect(page.locator('.delegates-view')).toBeVisible()
+    await expect(page.locator('.settings-data-table')).toBeVisible()
 
     const metrics = await page.evaluate(() => {
       const content = document.querySelector('.navigation-wrapper__content') as HTMLElement | null
-      const root = document.querySelector('.settings-table-shell') as HTMLElement | null
+      const shell = document.querySelector('.settings-table-shell') as HTMLElement | null
       const bleed = document.querySelector('.settings-table-shell__bleed') as HTMLElement | null
+      const sections = document.querySelectorAll('.settings-table-shell__section')
+      const beforeSection = sections[0] as HTMLElement | undefined
+      const afterSection = sections[1] as HTMLElement | undefined
       const table = document.querySelector('.settings-data-table') as HTMLElement | null
-      const headCell = document.querySelector('.nodes-table-head__th') as HTMLElement | null
-      const dataCell = document.querySelector(
-        '.settings-data-table tbody tr td:nth-child(2)'
-      ) as HTMLElement | null
-      const statusText = document.querySelector('.node-status__status-text') as HTMLElement | null
-      const toggle = document.querySelector('.node-toggle-status-checkbox') as HTMLElement | null
 
-      if (
-        !content ||
-        !root ||
-        !bleed ||
-        !table ||
-        !headCell ||
-        !dataCell ||
-        !statusText ||
-        !toggle
-      ) {
+      if (!content || !shell || !bleed || !beforeSection || !afterSection || !table) {
         return null
       }
 
       const contentRect = content.getBoundingClientRect()
-      const bleedRect = bleed.getBoundingClientRect()
-      const tableRect = table.getBoundingClientRect()
-      const rootStyle = getComputedStyle(root)
+      const shellStyle = getComputedStyle(shell)
       const contentStyle = getComputedStyle(content)
       const bleedStyle = getComputedStyle(bleed)
-      const tableStyle = getComputedStyle(table)
-      const headStyle = getComputedStyle(headCell)
-      const dataStyle = getComputedStyle(dataCell)
-      const statusTextStyle = getComputedStyle(statusText)
-      const toggleStyle = getComputedStyle(toggle)
+      const beforeStyle = getComputedStyle(beforeSection)
+      const afterStyle = getComputedStyle(afterSection)
+      const bleedRect = bleed.getBoundingClientRect()
+      const tableRect = table.getBoundingClientRect()
 
       return {
-        bleedInlineStartVar: rootStyle
+        bleedInlineStartVar: shellStyle
           .getPropertyValue('--a-settings-table-shell-bleed-inline-start')
           .trim(),
-        bleedInlineEndVar: rootStyle
+        bleedInlineEndVar: shellStyle
           .getPropertyValue('--a-settings-table-shell-bleed-inline-end')
-          .trim(),
-        checkboxOffsetVar: rootStyle
-          .getPropertyValue('--a-settings-table-shell-checkbox-offset')
           .trim(),
         marginInlineStart: Number.parseFloat(bleedStyle.marginInlineStart),
         marginInlineEnd: Number.parseFloat(bleedStyle.marginInlineEnd),
         contentPaddingInlineStart: Number.parseFloat(contentStyle.paddingInlineStart),
         contentPaddingInlineEnd: Number.parseFloat(contentStyle.paddingInlineEnd),
+        beforePaddingInlineStart: Number.parseFloat(beforeStyle.paddingInlineStart),
+        beforePaddingInlineEnd: Number.parseFloat(beforeStyle.paddingInlineEnd),
+        afterPaddingInlineStart: Number.parseFloat(afterStyle.paddingInlineStart),
+        afterPaddingInlineEnd: Number.parseFloat(afterStyle.paddingInlineEnd),
         bleedLeftGap: bleedRect.left - contentRect.left,
         bleedRightGap: contentRect.right - bleedRect.right,
         tableBleedLeftGap: tableRect.left - bleedRect.left,
-        tableBleedRightGap: bleedRect.right - tableRect.right,
-        tableLineHeight: Number.parseFloat(tableStyle.lineHeight),
-        headFontSize: Number.parseFloat(headStyle.fontSize),
-        dataFontSize: Number.parseFloat(dataStyle.fontSize),
-        dataPaddingInlineEnd: Number.parseFloat(dataStyle.paddingInlineEnd),
-        statusFontSize: Number.parseFloat(statusTextStyle.fontSize),
-        statusFontWeight: Number.parseFloat(statusTextStyle.fontWeight),
-        checkboxOffset: Number.parseFloat(toggleStyle.marginInlineStart)
+        tableBleedRightGap: bleedRect.right - tableRect.right
       }
     })
 
     expect(metrics).not.toBeNull()
     expect(metrics?.bleedInlineStartVar).not.toBe('')
     expect(metrics?.bleedInlineEndVar).not.toBe('')
-    expect(metrics?.checkboxOffsetVar).not.toBe('')
     expect(metrics?.marginInlineStart ?? 0).toBeLessThanOrEqual(-23)
     expect(metrics?.marginInlineStart ?? 0).toBeGreaterThanOrEqual(-25)
     expect(metrics?.marginInlineEnd ?? 0).toBeLessThanOrEqual(-23)
@@ -109,59 +83,61 @@ test.describe('Nodes layout regressions', () => {
     expect(metrics?.contentPaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
     expect(metrics?.contentPaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)
     expect(metrics?.contentPaddingInlineEnd ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.beforePaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.beforePaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.beforePaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.beforePaddingInlineEnd ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.afterPaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.afterPaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.afterPaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.afterPaddingInlineEnd ?? 99).toBeLessThanOrEqual(25)
     expect(Math.abs(metrics?.bleedLeftGap ?? 99)).toBeLessThanOrEqual(1)
     expect(Math.abs(metrics?.bleedRightGap ?? 99)).toBeLessThanOrEqual(1)
     expect(Math.abs(metrics?.tableBleedLeftGap ?? 99)).toBeLessThanOrEqual(1)
     expect(Math.abs(metrics?.tableBleedRightGap ?? 99)).toBeLessThanOrEqual(1)
-    expect(metrics?.tableLineHeight ?? 0).toBeGreaterThanOrEqual(13)
-    expect(metrics?.tableLineHeight ?? 99).toBeLessThanOrEqual(15)
-    expect(metrics?.headFontSize ?? 0).toBeGreaterThanOrEqual(11)
-    expect(metrics?.headFontSize ?? 99).toBeLessThanOrEqual(13)
-    expect(metrics?.dataFontSize ?? 0).toBeGreaterThanOrEqual(13)
-    expect(metrics?.dataFontSize ?? 99).toBeLessThanOrEqual(15)
-    expect(metrics?.dataPaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(7)
-    expect(metrics?.dataPaddingInlineEnd ?? 99).toBeLessThanOrEqual(9)
-    expect(metrics?.statusFontSize ?? 0).toBeGreaterThanOrEqual(11)
-    expect(metrics?.statusFontSize ?? 99).toBeLessThanOrEqual(13)
-    expect(metrics?.statusFontWeight ?? 0).toBeGreaterThanOrEqual(300)
-    expect(metrics?.statusFontWeight ?? 999).toBeLessThanOrEqual(400)
-    expect(metrics?.checkboxOffset ?? 0).toBeGreaterThanOrEqual(15)
-    expect(metrics?.checkboxOffset ?? 99).toBeLessThanOrEqual(17)
 
     await assertNoDocumentScrollLeak(page)
   })
 
-  test('keeps nodes table truly edge-to-edge on mobile', async ({ page }) => {
+  test('keeps delegates table edge-to-edge on mobile while padded content stays asymmetric', async ({
+    page
+  }) => {
     await page.setViewportSize({ width: 390, height: 844 })
     await loginWithNewAccount(page)
 
-    await page.goto('/options/nodes')
-    await expect(page).toHaveURL(/\/options\/nodes$/)
-    await expect(page.locator('.nodes-table')).toBeVisible()
+    await page.goto('/votes')
+    await expect(page).toHaveURL(/\/votes$/)
+    await expect(page.locator('.delegates-view')).toBeVisible()
     await expect(page.locator('.settings-data-table')).toBeVisible()
 
     const metrics = await page.evaluate(() => {
-      const root = document.querySelector('.settings-table-shell') as HTMLElement | null
+      const shell = document.querySelector('.settings-table-shell') as HTMLElement | null
       const bleed = document.querySelector('.settings-table-shell__bleed') as HTMLElement | null
+      const beforeSection = document.querySelector(
+        '.settings-table-shell__section'
+      ) as HTMLElement | null
       const table = document.querySelector('.settings-data-table') as HTMLElement | null
 
-      if (!root || !bleed || !table) {
+      if (!shell || !bleed || !beforeSection || !table) {
         return null
       }
 
-      const rootStyle = getComputedStyle(root)
+      const shellStyle = getComputedStyle(shell)
       const bleedStyle = getComputedStyle(bleed)
+      const beforeStyle = getComputedStyle(beforeSection)
       const tableRect = table.getBoundingClientRect()
 
       return {
-        bleedInlineStartVar: rootStyle
+        bleedInlineStartVar: shellStyle
           .getPropertyValue('--a-settings-table-shell-bleed-inline-start')
           .trim(),
-        bleedInlineEndVar: rootStyle
+        bleedInlineEndVar: shellStyle
           .getPropertyValue('--a-settings-table-shell-bleed-inline-end')
           .trim(),
         marginInlineStart: Number.parseFloat(bleedStyle.marginInlineStart),
         marginInlineEnd: Number.parseFloat(bleedStyle.marginInlineEnd),
+        beforePaddingInlineStart: Number.parseFloat(beforeStyle.paddingInlineStart),
+        beforePaddingInlineEnd: Number.parseFloat(beforeStyle.paddingInlineEnd),
         tableLeft: tableRect.left,
         tableRightGap: window.innerWidth - tableRect.right
       }
@@ -174,6 +150,10 @@ test.describe('Nodes layout regressions', () => {
     expect(metrics?.marginInlineStart ?? 0).toBeGreaterThanOrEqual(-25)
     expect(metrics?.marginInlineEnd ?? 0).toBeLessThanOrEqual(-15)
     expect(metrics?.marginInlineEnd ?? 0).toBeGreaterThanOrEqual(-17)
+    expect(metrics?.beforePaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.beforePaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.beforePaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(15)
+    expect(metrics?.beforePaddingInlineEnd ?? 99).toBeLessThanOrEqual(17)
     expect(Math.abs(metrics?.tableLeft ?? 99)).toBeLessThanOrEqual(1)
     expect(Math.abs(metrics?.tableRightGap ?? 99)).toBeLessThanOrEqual(1)
 

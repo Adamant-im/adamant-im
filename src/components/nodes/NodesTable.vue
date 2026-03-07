@@ -1,5 +1,5 @@
 <template>
-  <div :class="classes.root">
+  <SettingsTableShell :class="classes.root">
     <v-tabs v-model="tab" bg-color="transparent">
       <v-tab value="adm">{{ t('nodes.tabs.adm_nodes') }}</v-tab>
       <v-tab value="coins">{{ t('nodes.tabs.coin_nodes') }}</v-tab>
@@ -22,7 +22,8 @@
         <IpfsNodesTable />
       </v-window-item>
     </v-window>
-    <div class="ml-6">
+
+    <template #after>
       <div v-if="tab === 'coins' || tab === 'ipfs'">
         <v-checkbox
           v-model="preferFastestCoinNodeOption"
@@ -85,8 +86,8 @@
 
         <div>&nbsp;<br />&nbsp;</div>
       </div>
-    </div>
-  </div>
+    </template>
+  </SettingsTableShell>
 </template>
 
 <script lang="ts" setup>
@@ -99,6 +100,7 @@ import { CoinNodesTable } from './coins'
 import { ServiceNodesTable } from './services'
 import { IpfsNodesTable } from './ipfs'
 import { Tab } from '@/components/nodes/types'
+import SettingsTableShell from '@/components/common/SettingsTableShell.vue'
 
 const className = 'nodes-table'
 const classes = {
@@ -163,16 +165,8 @@ const preferFasterServiceNodeOption = computed<boolean>({
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
-@use '@/assets/styles/themes/adamant/_mixins.scss';
-@use 'vuetify/settings';
 
 .nodes-table {
-  --a-nodes-table-gutter: var(--a-space-6);
-  --a-nodes-table-checkbox-offset: calc(var(--a-space-2) * -1);
-
-  margin-left: calc(var(--a-nodes-table-gutter) * -1);
-  margin-right: calc(var(--a-nodes-table-gutter) * -1);
-
   :deep(.v-tab) {
     text-transform: uppercase;
   }
@@ -184,19 +178,6 @@ const preferFasterServiceNodeOption = computed<boolean>({
         text-decoration-line: underline;
       }
     }
-  }
-  :deep(.v-input--selection-controls:not(.v-input--hide-details)) .v-input__slot {
-    margin-bottom: 0;
-  }
-
-  :deep(.v-checkbox) {
-    margin-left: var(--a-nodes-table-checkbox-offset);
-  }
-}
-
-@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-  .nodes-table {
-    --a-nodes-table-gutter: var(--a-space-4);
   }
 }
 /** Themes **/

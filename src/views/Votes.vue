@@ -1,39 +1,45 @@
 <template>
   <div :class="className" class="w-100">
-    <v-card flat color="transparent">
-      <v-text-field
-        v-model="search"
-        :append-inner-icon="mdiMagnify"
-        :label="t('votes.search')"
-        :class="`${className}__search`"
-        single-line
-        hide-details
-        variant="underlined"
-        class="a-input"
-        color="primary"
-      />
-      <div :class="`${className}__info`" v-html="t('votes.stake_info')" />
+    <SettingsTableShell :class="`${className}__layout`">
+      <template #before>
+        <v-text-field
+          v-model="search"
+          :append-inner-icon="mdiMagnify"
+          :label="t('votes.search')"
+          :class="`${className}__search`"
+          single-line
+          hide-details
+          variant="underlined"
+          class="a-input"
+          color="primary"
+        />
+        <div :class="`${className}__info`" v-html="t('votes.stake_info')" />
+      </template>
+
       <delegates-table
         :page="pagination.page"
         :per-page="pagination.rowsPerPage"
         :search-query="search"
         :waiting-for-confirmation="waitingForConfirmation"
       />
-      <v-row
-        class="align-center justify-space-between v-row--no-gutters"
-        :class="`${className}__review`"
-      >
-        <pagination-component v-if="showPagination" v-model="pagination.page" :pages="pages" />
 
-        <v-btn
-          :disabled="reviewButtonDisabled"
-          class="a-btn-primary ma-2"
-          @click="showConfirmationDialog"
+      <template #after>
+        <v-row
+          class="align-center justify-space-between v-row--no-gutters"
+          :class="`${className}__review`"
         >
-          {{ t('votes.summary_title') }}
-        </v-btn>
-      </v-row>
-    </v-card>
+          <pagination-component v-if="showPagination" v-model="pagination.page" :pages="pages" />
+
+          <v-btn
+            :disabled="reviewButtonDisabled"
+            class="a-btn-primary ma-2"
+            @click="showConfirmationDialog"
+          >
+            {{ t('votes.summary_title') }}
+          </v-btn>
+        </v-row>
+      </template>
+    </SettingsTableShell>
 
     <v-dialog v-model="dialog" width="500">
       <v-card>
@@ -81,6 +87,7 @@ import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { mdiMagnify } from '@mdi/js'
 import { DelegateDto } from '@/lib/schema/client'
+import SettingsTableShell from '@/components/common/SettingsTableShell.vue'
 
 const VOTE_REQUEST_LIMIT = 30
 
@@ -201,16 +208,10 @@ const showConfirmationDialog = () => {
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
-@use 'vuetify/settings';
 
 .delegates-view {
   position: relative;
 
-  &__body {
-    font-size: 14px;
-    font-weight: 300;
-    padding: 0 16px !important;
-  }
   &__dialog-title {
     @include mixins.a-text-header();
   }
@@ -219,7 +220,7 @@ const showConfirmationDialog = () => {
   }
   &__dialog-info {
     @include mixins.a-text-regular-enlarged();
-    margin-top: 16px;
+    margin-top: var(--a-space-4);
     :deep(a) {
       text-decoration-line: none;
       &:hover {
@@ -229,7 +230,7 @@ const showConfirmationDialog = () => {
   }
   &__info {
     @include mixins.a-text-explanation-enlarged();
-    padding: 20px 16px !important;
+    padding: var(--a-space-5) 0;
     :deep(a) {
       text-decoration-line: none;
       &:hover {
@@ -238,13 +239,13 @@ const showConfirmationDialog = () => {
     }
   }
   &__review {
-    padding-top: 15px !important;
-    padding-bottom: 15px !important;
+    padding-top: var(--a-space-4) !important;
+    padding-bottom: var(--a-space-4) !important;
   }
   &__search {
     :deep(.v-field) {
-      padding-left: 16px;
-      padding-right: 16px;
+      padding-left: var(--a-space-4);
+      padding-right: var(--a-space-4);
     }
   }
 }
@@ -252,9 +253,6 @@ const showConfirmationDialog = () => {
 /** Themes **/
 .v-theme--light {
   .delegates-view {
-    &__body {
-      color: map.get(colors.$adm-colors, 'regular');
-    }
     &__dialog-title {
       color: map.get(colors.$adm-colors, 'regular');
     }
@@ -267,7 +265,7 @@ const showConfirmationDialog = () => {
     &__divider {
       border-color: map.get(colors.$adm-colors, 'regular');
     }
-    :deep(.v-table) tbody tr:not(:last-child) {
+    :deep(.settings-data-table) tbody tr:not(:last-child) {
       border-bottom:
         1px solid,
         map.get(colors.$adm-colors, 'secondary2');

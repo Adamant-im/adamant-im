@@ -1,9 +1,9 @@
 <template>
-  <tr class="text-xs-center mt-3 mb-3">
+  <tr :class="classes.root">
     <td colspan="3">
       <v-row align="center" justify="center">
         <v-progress-circular indeterminate color="primary" size="24" class="mr-3" />
-        <div class="a-text-regular" style="line-height: 1">
+        <div :class="classes.text" class="a-text-regular">
           {{
             waitingForConfirmation
               ? $t('votes.waiting_confirmations')
@@ -24,6 +24,25 @@ export default defineComponent({
       type: Boolean,
       required: true
     }
+  },
+  setup() {
+    const className = 'delegates-loader'
+    const classes = {
+      root: className,
+      text: `${className}__text`
+    }
+
+    return {
+      classes
+    }
   }
 })
 </script>
+
+<style lang="scss">
+.delegates-loader {
+  &__text {
+    line-height: 1;
+  }
+}
+</style>

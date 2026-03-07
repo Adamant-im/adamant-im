@@ -5,16 +5,15 @@
         [classes.td]: true,
         [classes.tdUsername]: true
       }"
-      class="pl-4 pr-2"
     >
       {{ username }}
     </td>
 
-    <td :class="classes.td" class="pl-0 pr-2">
+    <td :class="classes.td">
       {{ rank }}
     </td>
 
-    <td :class="classes.td" class="pl-0 pr-2">
+    <td :class="classes.td">
       <delegate-vote-checkbox :delegate="delegate" />
     </td>
   </tr>
@@ -29,7 +28,7 @@
 </template>
 
 <script>
-import { computed, reactive } from 'vue'
+import { computed } from 'vue'
 import { useStore } from 'vuex'
 
 import DelegateVoteCheckbox from '@/components/DelegatesTable/DelegateVoteCheckbox.vue'
@@ -69,8 +68,6 @@ export default {
       tdUsername: `${className}__td-username`
     }
 
-    const delegateObj = reactive(() => delegate)
-    const address = computed(() => delegate.address)
     const username = computed(() => delegate.username)
     const rank = computed(() => delegate.rank)
 
@@ -87,8 +84,6 @@ export default {
 
     return {
       classes,
-      delegateObj,
-      address,
       username,
       rank,
       handleClick
@@ -100,20 +95,24 @@ export default {
 <style lang="scss">
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
-@use '@/assets/styles/themes/adamant/_mixins.scss';
-@use 'vuetify/settings';
 
 .delegates-table-item {
+  --a-delegates-table-item-font-size: var(--a-font-size-sm);
+  --a-delegates-table-item-padding-inline-end: var(--a-space-2);
+  --a-delegates-table-item-padding-inline-start-primary: var(--a-space-4);
+
   &__td {
-    font-size: 14px;
+    font-size: var(--a-delegates-table-item-font-size);
+    padding-left: 0 !important;
+    padding-right: var(--a-delegates-table-item-padding-inline-end) !important;
   }
+
+  td:first-child {
+    padding-left: var(--a-delegates-table-item-padding-inline-start-primary) !important;
+  }
+
   &__td-username {
     cursor: pointer;
-  }
-}
-
-@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-  .delegates-table-item {
   }
 }
 
