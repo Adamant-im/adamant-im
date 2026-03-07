@@ -1,14 +1,16 @@
 <template>
-  <span :class="classes.protocol">{{ protocol }}//</span>
+  <span :class="classes.root">
+    <span :class="classes.protocol">{{ protocol }}//</span>
 
-  <span v-if="isIP" :class="classes.nodeName">{{ hostname }}</span>
+    <span v-if="isIP" :class="classes.nodeName">{{ hostname }}</span>
 
-  <template v-else>
-    <span :class="classes.nodeName">{{ nodeHost.name }}</span>
-    <span v-if="nodeHost.domain" :class="classes.domain">.{{ nodeHost.domain }}</span>
-  </template>
+    <template v-else>
+      <span :class="classes.nodeName">{{ nodeHost.name }}</span>
+      <span v-if="nodeHost.domain" :class="classes.domain">.{{ nodeHost.domain }}</span>
+    </template>
 
-  <span v-if="port" :class="classes.port">:{{ port }}</span>
+    <span v-if="port" :class="classes.port">:{{ port }}</span>
+  </span>
 </template>
 <script lang="ts">
 import { computed, PropType } from 'vue'
@@ -71,13 +73,14 @@ export default {
 <style lang="scss">
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
-@use 'vuetify/settings';
 
 .node-url {
+  --a-node-url-meta-font-size: var(--a-font-size-xs);
+
   &__domain,
   &__protocol,
   &__port {
-    font-size: 12px;
+    font-size: var(--a-node-url-meta-font-size);
     display: inline-block;
   }
 }

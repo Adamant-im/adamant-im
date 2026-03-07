@@ -1,61 +1,63 @@
 <template>
-  <div :class="classes.statusTitle">
-    <span
-      :class="{
-        [classes.statusTitleText]: true,
-        [classes.statusTitleTextMuted]: nodeStatusUpdating
-      }"
-    >
-      {{ nodeStatusTitle
-      }}<span v-if="node.status === 'online' && !nodeStatusUpdating" :class="classes.textMs">{{
-        t('nodes.ms')
-      }}</span></span
-    >
+  <div :class="classes.root">
+    <div :class="classes.statusTitle">
+      <span
+        :class="{
+          [classes.statusTitleText]: true,
+          [classes.statusTitleTextMuted]: nodeStatusUpdating
+        }"
+      >
+        {{ nodeStatusTitle
+        }}<span v-if="node.status === 'online' && !nodeStatusUpdating" :class="classes.textMs">{{
+          t('nodes.ms')
+        }}</span></span
+      >
 
-    <v-progress-circular
-      v-if="nodeStatusUpdating"
-      :class="classes.spinner"
-      indeterminate
-      size="12"
-      width="2"
-    />
-
-    <v-icon
-      v-else
-      :class="{
-        [classes.icon]: true,
-        [classes.iconGreen]: nodeStatusColor === 'green',
-        [classes.iconRed]: nodeStatusColor === 'red',
-        [classes.iconOrange]: nodeStatusColor === 'orange',
-        [classes.iconGrey]: nodeStatusColor === 'grey'
-      }"
-      :color="nodeStatusColor"
-      :icon="mdiCheckboxBlankCircle"
-      size="small"
-    />
-  </div>
-
-  <span
-    v-if="nodeStatusDetail && node.status !== 'sync' && !nodeStatusUpdating"
-    :class="classes.statusText"
-  >
-    <span v-if="nodeStatusDetail.icon" :class="classes.statusTextValueNoWrap">
-      <v-icon :icon="nodeStatusDetail.icon" :size="12" />
-      <span>&nbsp;{{ nodeStatusDetail.text }}</span>
-    </span>
-    <span v-else-if="!node.hasSupportedProtocol" :class="classes.statusTextValueNoWrap">
-      {{ nodeStatusDetail.text }}
-      <v-icon
-        :icon="mdiHelpCircleOutline"
-        size="small"
-        class="ml-1 cursor-pointer mb-0"
-        @click="$emit('showHttpInfo')"
+      <v-progress-circular
+        v-if="nodeStatusUpdating"
+        :class="classes.spinner"
+        indeterminate
+        size="12"
+        width="2"
       />
+
+      <v-icon
+        v-else
+        :class="{
+          [classes.icon]: true,
+          [classes.iconGreen]: nodeStatusColor === 'green',
+          [classes.iconRed]: nodeStatusColor === 'red',
+          [classes.iconOrange]: nodeStatusColor === 'orange',
+          [classes.iconGrey]: nodeStatusColor === 'grey'
+        }"
+        :color="nodeStatusColor"
+        :icon="mdiCheckboxBlankCircle"
+        size="small"
+      />
+    </div>
+
+    <span
+      v-if="nodeStatusDetail && node.status !== 'sync' && !nodeStatusUpdating"
+      :class="classes.statusText"
+    >
+      <span v-if="nodeStatusDetail.icon" :class="classes.statusTextValueNoWrap">
+        <v-icon :icon="nodeStatusDetail.icon" :size="12" />
+        <span>&nbsp;{{ nodeStatusDetail.text }}</span>
+      </span>
+      <span v-else-if="!node.hasSupportedProtocol" :class="classes.statusTextValueNoWrap">
+        {{ nodeStatusDetail.text }}
+        <v-icon
+          :icon="mdiHelpCircleOutline"
+          size="small"
+          class="ml-1 cursor-pointer mb-0"
+          @click="$emit('showHttpInfo')"
+        />
+      </span>
+      <template v-else>
+        {{ nodeStatusDetail.text }}
+      </template>
     </span>
-    <template v-else>
-      {{ nodeStatusDetail.text }}
-    </template>
-  </span>
+  </div>
 </template>
 
 <script lang="ts">
@@ -67,6 +69,7 @@ import { mdiCheckboxBlankCircle, mdiHelpCircleOutline } from '@mdi/js'
 
 const className = 'node-status'
 const classes = {
+  root: className,
   textMs: `${className}__text-ms`,
   statusTitle: `${className}__status-title`,
   statusTitleText: `${className}__status-title-text`,
@@ -114,12 +117,19 @@ export default defineComponent({
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
-@use 'vuetify/settings';
 
 .node-status {
+  --a-node-status-width: 76px;
+  --a-node-status-max-width: 80px;
+  --a-node-status-detail-offset-block-start: 2px;
+  --a-node-status-detail-font-size: var(--a-font-size-xs);
+  --a-node-status-detail-font-weight: var(--a-font-weight-light);
+  --a-node-status-indicator-offset-inline-start: var(--a-space-1);
+  --a-node-status-text-color-dark: var(--a-color-text-muted-dark);
+
   &__status-title {
-    width: 76px;
-    max-width: 80px;
+    width: var(--a-node-status-width);
+    max-width: var(--a-node-status-max-width);
     display: flex;
     align-items: center;
   }
@@ -130,9 +140,9 @@ export default defineComponent({
 
   &__status-text {
     display: block;
-    margin-top: 2px;
-    font-size: 12px;
-    font-weight: 300;
+    margin-top: var(--a-node-status-detail-offset-block-start);
+    font-size: var(--a-node-status-detail-font-size);
+    font-weight: var(--a-node-status-detail-font-weight);
   }
   &__status-text-value--nowrap {
     white-space: nowrap;
@@ -141,10 +151,10 @@ export default defineComponent({
   }
 
   &__icon {
-    margin-inline-start: 4px;
+    margin-inline-start: var(--a-node-status-indicator-offset-inline-start);
   }
   &__spinner {
-    margin-inline-start: 4px;
+    margin-inline-start: var(--a-node-status-indicator-offset-inline-start);
 
     :deep(svg) {
       animation-duration: 2.2s !important;
@@ -194,8 +204,7 @@ export default defineComponent({
 .v-theme--dark {
   .node-status {
     &__status-text {
-      color: map.get(settings.$shades, 'white');
-      opacity: 0.7;
+      color: var(--a-node-status-text-color-dark);
     }
     &__text-ms {
       color: map.get(colors.$adm-colors, 'grey-transparent');

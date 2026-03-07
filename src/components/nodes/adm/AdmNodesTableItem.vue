@@ -119,7 +119,7 @@ export default {
 
 <style lang="scss">
 .amd-nodes-table-item {
-  line-height: 14px;
+  line-height: var(--a-font-size-sm);
 
   &__column--status {
     max-width: 84px;

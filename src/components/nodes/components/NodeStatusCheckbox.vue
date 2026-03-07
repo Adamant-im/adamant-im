@@ -38,13 +38,17 @@ export default defineComponent({
 @use 'vuetify/settings';
 
 .node-toggle-status-checkbox {
-  font-size: 16px;
-  margin-left: 16px;
+  --a-node-toggle-checkbox-font-size: var(--a-font-size-md);
+  --a-node-toggle-checkbox-offset-inline-start: var(--a-space-4);
+  --a-node-toggle-checkbox-offset-inline-start-mobile: var(--a-space-2);
+
+  font-size: var(--a-node-toggle-checkbox-font-size);
+  margin-left: var(--a-node-toggle-checkbox-offset-inline-start);
 }
 
 @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
   .node-toggle-status-checkbox {
-    margin-left: 8px;
+    margin-left: var(--a-node-toggle-checkbox-offset-inline-start-mobile);
   }
 }
 

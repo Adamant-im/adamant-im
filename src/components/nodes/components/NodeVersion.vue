@@ -37,6 +37,8 @@ export default defineComponent({
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .node-version {
+  --a-node-version-color-dark: var(--a-color-text-muted-dark);
+
   @include mixins.a-text-explanation-small();
 }
 
@@ -48,7 +50,7 @@ export default defineComponent({
 
 .v-theme--dark {
   .node-version {
-    opacity: 0.7;
+    color: var(--a-node-version-color-dark);
   }
 }
 </style>

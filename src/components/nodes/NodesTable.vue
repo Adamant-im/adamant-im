@@ -167,8 +167,11 @@ const preferFasterServiceNodeOption = computed<boolean>({
 @use 'vuetify/settings';
 
 .nodes-table {
-  margin-left: -24px;
-  margin-right: -24px;
+  --a-nodes-table-gutter: var(--a-space-6);
+  --a-nodes-table-checkbox-offset: calc(var(--a-space-2) * -1);
+
+  margin-left: calc(var(--a-nodes-table-gutter) * -1);
+  margin-right: calc(var(--a-nodes-table-gutter) * -1);
 
   :deep(.v-tab) {
     text-transform: uppercase;
@@ -187,14 +190,13 @@ const preferFasterServiceNodeOption = computed<boolean>({
   }
 
   :deep(.v-checkbox) {
-    margin-left: -8px;
+    margin-left: var(--a-nodes-table-checkbox-offset);
   }
 }
 
 @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
   .nodes-table {
-    margin-left: -16px;
-    margin-right: -16px;
+    --a-nodes-table-gutter: var(--a-space-4);
   }
 }
 /** Themes **/
