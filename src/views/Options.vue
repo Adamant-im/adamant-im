@@ -251,7 +251,7 @@ const router = useRouter()
 const { t } = useI18n()
 const theme = useTheme()
 
-const { syncNotificationSettings } = usePushNotificationSetup()
+usePushNotificationSetup()
 
 const className = 'settings-view'
 
@@ -413,7 +413,6 @@ const handleNotificationTypeChange = async (newVal: number) => {
       }
     }
 
-    syncNotificationSettings(newVal)
     lastSuccessfulNotificationType.value = newVal
 
     console.log(`[Options] Notification type changed: ${newVal}`)

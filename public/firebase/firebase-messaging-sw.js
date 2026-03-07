@@ -10,10 +10,60 @@ const NOTIFICATION_TYPES = {
   PUSH: 2
 }
 
+let privateKey = ''
+let currentUserAddress = ''
+let notificationSettings = {
+  type: NOTIFICATION_TYPES.NO_NOTIFICATIONS, // default
+  initialized: false
+}
+
 // Checking double notifications
 const processedEvents = new Set()
 setInterval(() => processedEvents.clear(), 2 * 60 * 1000) // 2 minutes
 
+let securePort = null
+const usedNonces = new Set()
+
+// Resolvers for settings initialization promises
+let settingsInitializedResolvers = []
+
+// Database configuration
+const DB_NAME = 'AdamantSWStorage'
+const STORE_NAME = 'secure_context'
+const DB_VERSION = 1
+
+// IndexedDB Helper
+const dbPromise = new Promise((resolve) => {
+  const request = indexedDB.open(DB_NAME, DB_VERSION)
+  request.onupgradeneeded = (e) => {
+    const db = e.target.result
+    if (!db.objectStoreNames.contains(STORE_NAME)) {
+      db.createObjectStore(STORE_NAME)
+    }
+  }
+  request.onsuccess = (e) => resolve(e.target.result)
+  request.onerror = () => resolve(null)
+})
+
+async function getFromStorage(key) {
+  const db = await dbPromise
+  if (!db) return null
+  return new Promise((resolve) => {
+    const transaction = db.transaction(STORE_NAME, 'readonly')
+    const request = transaction.objectStore(STORE_NAME).get(key)
+    request.onsuccess = () => resolve(request.result)
+    request.onerror = () => resolve(null)
+  })
+}
+
+async function saveToStorage(key, value) {
+  const db = await dbPromise
+  if (!db) return
+  const transaction = db.transaction(STORE_NAME, 'readwrite')
+  transaction.objectStore(STORE_NAME).put(value, key)
+}
+
+// Firebase initialization
 const firebaseConfig = {
   apiKey: 'AIzaSyDgtB_hqwL1SS_YMYepRMmXYhmc7154wmU',
   authDomain: 'adamant-messenger.firebaseapp.com',
@@ -26,16 +76,6 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig)
 const messaging = firebase.messaging()
-
-let privateKey = ''
-let currentUserAddress = ''
-let notificationSettings = {
-  type: NOTIFICATION_TYPES['PUSH'], // Default: PUSH
-  initialized: false
-}
-
-let securePort = null
-const usedNonces = new Set()
 
 /**
  * Global message listener to intercept the MessagePort transfer.
@@ -58,7 +98,7 @@ self.addEventListener('message', (event) => {
 /**
  * Logic for processing messages received through the secure port.
  */
-function handleSecureMessage(data) {
+async function handleSecureMessage(data) {
   const { type, payload, timestamp, nonce } = data
 
   // Time-based  and nonce-based security
@@ -78,6 +118,7 @@ function handleSecureMessage(data) {
     case 'SET_PRIVATE_KEY':
       if (payload?.privateKey) {
         privateKey = payload.privateKey
+        await saveToStorage('privateKey', privateKey)
       }
       break
 
@@ -87,14 +128,17 @@ function handleSecureMessage(data) {
 
     case 'SYNC_SETTINGS':
       if (payload?.currentUserAddress) {
-        if (currentUserAddress !== payload.currentUserAddress) {
+        if (currentUserAddress && currentUserAddress !== payload.currentUserAddress) {
           privateKey = ''
+          await saveToStorage('privateKey', '')
         }
         currentUserAddress = payload.currentUserAddress
+        await saveToStorage('currentUserAddress', currentUserAddress)
       }
 
       if (payload?.type !== undefined) {
         notificationSettings.type = payload.type
+        await saveToStorage('notificationType', payload.type)
       }
 
       notificationSettings.initialized = true
@@ -109,8 +153,6 @@ function handleSecureMessage(data) {
       console.warn('[SW] Unknown secure command:', type)
   }
 }
-// Resolvers for settings initialization promises
-let settingsInitializedResolvers = []
 
 // Utilities for decoding
 function hexToBytes(hex) {
@@ -231,15 +273,34 @@ function isPushEnabled() {
 }
 
 messaging.onBackgroundMessage(async (payload) => {
+  // Restore state from IDB
+  if (!currentUserAddress) {
+    currentUserAddress = (await getFromStorage('currentUserAddress')) || ''
+    const savedType = await getFromStorage('notificationType')
+    notificationSettings.type = savedType ?? NOTIFICATION_TYPES.NO_NOTIFICATIONS
+  }
+
+  if (!privateKey) {
+    privateKey = (await getFromStorage('privateKey')) || ''
+  }
+
+  if (notificationSettings.type !== NOTIFICATION_TYPES.PUSH) {
+    return // Push is disabled in UI for this account
+  }
+
   const parsed = parseTransactionPayload(payload)
   if (!parsed) return
 
   const { transaction, eventId } = parsed
 
+  // Ensure the push is meant for the currently logged-in address in SW
+  if (transaction.recipientId !== currentUserAddress) {
+    return
+  }
+
   if (isEventProcessed(eventId)) return
 
   await ensureSettingsInitialized()
-
   if (!isPushEnabled() || (await isAppVisible())) {
     return
   }
@@ -281,11 +342,6 @@ self.addEventListener('notificationclick', (event) => {
   event.waitUntil(
     (async () => {
       try {
-        // Block click if notification is not for current user
-        if (data?.recipientId !== currentUserAddress && currentUserAddress) {
-          return
-        }
-
         const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
 
         // Set focus to the existing window

@@ -1,4 +1,4 @@
-import { ref, computed, watch, onMounted, readonly } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { Capacitor } from '@capacitor/core'
@@ -17,16 +17,15 @@ export function usePushNotificationSetup() {
   const { clearPrivateKey, getPrivateKey, sendPrivateKey, syncNotificationSettings } =
     usePrivateKeyManager()
   const webPush = platform === 'web' ? useWebPushNotifications() : null
-
+  const currentNotificationType = store.state.options.allowNotificationType
   const isPushNotification = computed(() => {
-    return store.state.options.allowNotificationType === NotificationType['Push']
+    return currentNotificationType === NotificationType['Push']
   })
 
   /**
    * Sends current settings to Service Worker
    */
   const sendCurrentSettings = async () => {
-    const currentNotificationType = store.state.options.allowNotificationType
     const privateKey = store.state.passphrase ? await getPrivateKey() : undefined
     const currentUserAddress = store.state.address
 
@@ -88,9 +87,8 @@ export function usePushNotificationSetup() {
     await pushService.initialize()
     await pushService.registerDevice()
 
-    if (!Capacitor.isNativePlatform() && webPush?.isSecureChannelReady.value) {
-      await sendPrivateKey()
-    }
+    syncNotificationSettings(currentNotificationType)
+    await sendPrivateKey()
   }
 
   /**
@@ -102,20 +100,9 @@ export function usePushNotificationSetup() {
         () => webPush.isSecureChannelReady.value,
         async (isReady) => {
           if (isReady) {
-            console.log('[Push] Secure channel ready. Syncing...')
-
-            // Sync settings only if we have an address
-            if (store.state.address) {
-              await sendCurrentSettings()
-            }
-
-            // Sync key only if logged in
-            if (store.state.passphrase) {
-              await sendPrivateKey()
-            }
+            await sendCurrentSettings()
           }
-        },
-        { immediate: true }
+        }
       )
     }
 
@@ -132,13 +119,13 @@ export function usePushNotificationSetup() {
     // Sync settings when notification type changes
     watch(
       () => store.state.options.allowNotificationType,
-      async (newType, oldType) => {
-        if (newType !== oldType) {
-          syncNotificationSettings(newType)
+      async (newType) => {
+        syncNotificationSettings(newType)
 
-          if (oldType === NotificationType['Push'] && newType !== NotificationType['Push']) {
-            await clearPrivateKey()
-          }
+        if (newType == NotificationType['Push']) {
+          await sendPrivateKey()
+        } else {
+          await clearPrivateKey()
         }
       }
     )
@@ -158,19 +145,11 @@ export function usePushNotificationSetup() {
    * Initialize the composable
    */
   const initialize = async () => {
-    if (webPush) {
+    if (webPush && !webPush?.isSecureChannelReady.value) {
       await webPush.initSecureChannel()
     }
     setupWatchers()
   }
 
   onMounted(initialize)
-
-  return {
-    sendPrivateKeyToFirebaseSW: sendPrivateKey,
-    clearPrivateKeyFromSW: clearPrivateKey,
-    isPushNotification,
-    registrationInProgress: readonly(registrationInProgress),
-    syncNotificationSettings: syncNotificationSettings
-  }
 }

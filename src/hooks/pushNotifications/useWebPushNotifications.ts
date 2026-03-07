@@ -1,16 +1,15 @@
 import { SW_SECURE_COMMANDS } from '@/lib/constants'
-import { ref, onBeforeUnmount } from 'vue'
+import { ref } from 'vue'
 
 export interface WebNotificationSettings {
   type: number
   privateKey?: string
   currentUserAddress?: string
 }
+const port = ref<MessagePort | null>(null)
+const isSecureChannelReady = ref(false)
 
 export function useWebPushNotifications() {
-  const port = ref<MessagePort | null>(null)
-  const isSecureChannelReady = ref(false)
-
   const generateNonce = () => Math.random().toString(36).substring(2, 15)
 
   /**
@@ -25,26 +24,43 @@ export function useWebPushNotifications() {
    * Initializes secure MessageChannel with Service Worker
    */
   const initSecureChannel = async () => {
-    if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) {
-      console.warn('[Web Push] Service Worker controller not found')
-      return
-    }
+    if (!('serviceWorker' in navigator)) return
 
-    const channel = new MessageChannel()
-    const port1 = channel.port1
-    const port2 = channel.port2
+    try {
+      // Since the SW is registered with a specific scope (/firebase/),
+      // we need to find that specific registration to get the active worker.
+      const registrations = await navigator.serviceWorker.getRegistrations()
+      const firebaseReg = registrations.find((reg) => reg.scope.includes('/firebase/'))
 
-    port1.onmessage = (event) => {
-      if (event.data?.type === SW_SECURE_COMMANDS.CONFIRM_CHANNEL) {
-        isSecureChannelReady.value = true
-        port.value = port1
+      if (!firebaseReg) {
+        console.warn('[Web Push] Firebase Service Worker registration not found')
+        return
       }
-    }
 
-    navigator.serviceWorker.controller.postMessage(
-      { type: SW_SECURE_COMMANDS.INIT_SECURE_CHANNEL },
-      [port2]
-    )
+      // Wait for the worker to become active if it's still installing/activating
+      const worker = firebaseReg.active || firebaseReg.waiting || firebaseReg.installing
+
+      if (!worker) {
+        console.warn('[Web Push] No worker instance found in registration')
+        return
+      }
+
+      const channel = new MessageChannel()
+      const port1 = channel.port1
+      const port2 = channel.port2
+
+      port1.onmessage = (event) => {
+        if (event.data?.type === SW_SECURE_COMMANDS.CONFIRM_CHANNEL) {
+          isSecureChannelReady.value = true
+          port.value = port1
+        }
+      }
+
+      // Use the found worker instance to post the message
+      worker.postMessage({ type: SW_SECURE_COMMANDS.INIT_SECURE_CHANNEL }, [port2])
+    } catch (error) {
+      console.error('[Web Push] Failed to initialize secure channel:', error)
+    }
   }
 
   /**
@@ -124,13 +140,6 @@ export function useWebPushNotifications() {
     }
     return true
   }
-
-  onBeforeUnmount(() => {
-    if (port.value) {
-      port.value.close()
-      port.value = null
-    }
-  })
 
   return {
     isSupported: 'MessageChannel' in window,
