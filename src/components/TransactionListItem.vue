@@ -275,6 +275,7 @@ export default {
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .transaction-item {
   --a-transaction-item-rates-gap: var(--a-space-1);
@@ -283,6 +284,7 @@ export default {
   --a-transaction-item-prepend-top: var(--a-space-2);
   --a-transaction-item-divider-inset: var(--toolbar-height);
   --a-transaction-item-action-width: var(--a-control-size-sm);
+  --a-transaction-item-padding-inline-mobile: var(--a-mobile-screen-padding-inline);
   --a-transaction-item-note-weight: 100;
   --a-transaction-item-note-prefix-style: italic;
   --a-transaction-item-rates-color-dark: var(--a-color-text-muted-dark);
@@ -327,6 +329,12 @@ export default {
   /*&__tile*/
   /*:deep(.v-list__tile)*/
   /*padding: 0 12px*/
+
+  @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+    &__tile {
+      padding-inline: var(--a-transaction-item-padding-inline-mobile);
+    }
+  }
 }
 
 /** Themes **/

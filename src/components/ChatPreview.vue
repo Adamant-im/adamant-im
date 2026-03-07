@@ -133,7 +133,7 @@ import { mdiArrowLeftTop, mdiDotsHorizontal } from '@mdi/js'
 import { AdamantChatMeta } from '@/lib/chat/meta/chat-meta'
 
 const className = 'chat-brief'
-const CHAT_PREVIEW_AVATAR_SIZE = 48
+const CHAT_PREVIEW_AVATAR_SIZE = 52
 const CHAT_PREVIEW_STATUS_ICON_SIZE = 15
 
 type Props = {
@@ -239,6 +239,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 @keyframes movement {
   from {
@@ -263,12 +264,26 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
  * 1. Message/Transaction content.
  */
 .chat-brief {
+  --a-chat-brief-avatar-size: var(--a-chat-preview-avatar-size);
   --a-chat-brief-avatar-gap: var(--a-space-4);
   --a-chat-brief-date-gap: var(--a-space-4);
+  --a-chat-brief-heading-gap: var(--a-chat-preview-heading-gap);
+  --a-chat-brief-icon-size: var(--a-chat-preview-avatar-size);
+  --a-chat-brief-item-padding-inline-start-mobile: var(
+    --a-chat-preview-item-padding-inline-start-mobile
+  );
+  --a-chat-brief-item-padding-inline-end-mobile: var(
+    --a-chat-preview-item-padding-inline-end-mobile
+  );
   --a-chat-brief-subtitle-line-height: 1.5;
   --a-chat-brief-border-width: 1px;
   --a-chat-brief-icon-fill-light: #bdbdbd;
   position: relative;
+
+  @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+    padding-inline-start: var(--a-chat-brief-item-padding-inline-start-mobile);
+    padding-inline-end: var(--a-chat-brief-item-padding-inline-end-mobile);
+  }
 
   &__loading-separator {
     display: flex;
@@ -280,8 +295,8 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
   }
 
   &__icon {
-    width: var(--a-control-size-lg);
-    height: var(--a-control-size-lg);
+    width: var(--a-chat-brief-icon-size);
+    height: var(--a-chat-brief-icon-size);
     margin-right: var(--a-chat-brief-avatar-gap);
 
     :deep(.svg-icon) {
@@ -294,6 +309,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: var(--a-chat-brief-heading-gap);
   }
 
   &__title {

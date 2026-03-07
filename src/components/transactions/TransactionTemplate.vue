@@ -407,10 +407,12 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
 
 .transaction-view {
   --a-transaction-view-row-min-height: var(--a-list-row-min-height);
   --a-transaction-view-row-padding-block: var(--a-list-row-padding-block);
+  --a-transaction-view-row-padding-inline-mobile: var(--a-mobile-screen-padding-inline);
   --a-transaction-view-status-font-size: var(--a-financial-text-font-size);
   --a-transaction-view-status-font-weight: var(--a-financial-text-font-weight);
   --a-transaction-view-value-muted-color-dark: var(--a-color-text-muted-dark);
@@ -420,6 +422,10 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
       min-height: var(--a-transaction-view-row-min-height);
       padding-top: var(--a-transaction-view-row-padding-block);
       padding-bottom: var(--a-transaction-view-row-padding-block);
+
+      @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+        padding-inline: var(--a-transaction-view-row-padding-inline-mobile);
+      }
     }
 
     :deep(.v-divider) {

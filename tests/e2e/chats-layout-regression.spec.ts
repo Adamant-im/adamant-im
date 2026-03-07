@@ -216,13 +216,14 @@ test.describe('Chats layout regressions', () => {
       const previewItem = document.querySelector(
         '.chats-view__messages--chat .chat-brief'
       ) as HTMLElement | null
+      const heading = previewItem?.querySelector('.chat-brief__heading') as HTMLElement | null
       const subtitle = previewItem?.querySelector('.chat-brief__subtitle') as HTMLElement | null
       const date = previewItem?.querySelector('.chat-brief__date') as HTMLElement | null
       const avatar = previewItem?.querySelector(
         '.chat-brief__chat-avatar, .chat-brief__icon'
       ) as HTMLElement | null
 
-      if (!previewItem || !subtitle || !avatar) {
+      if (!previewItem || !heading || !subtitle || !avatar) {
         return null
       }
 
@@ -230,10 +231,14 @@ test.describe('Chats layout regressions', () => {
       const subtitleStyle = getComputedStyle(subtitle)
       const avatarStyle = getComputedStyle(avatar)
       const dateStyle = date ? getComputedStyle(date) : null
+      const headingRect = heading.getBoundingClientRect()
+      const subtitleRect = subtitle.getBoundingClientRect()
+      const avatarRect = avatar.getBoundingClientRect()
 
       return {
         avatarGapVar: previewStyle.getPropertyValue('--a-chat-brief-avatar-gap').trim(),
         dateGapVar: previewStyle.getPropertyValue('--a-chat-brief-date-gap').trim(),
+        headingGapVar: previewStyle.getPropertyValue('--a-chat-brief-heading-gap').trim(),
         subtitleLineHeightVar: previewStyle
           .getPropertyValue('--a-chat-brief-subtitle-line-height')
           .trim(),
@@ -241,22 +246,29 @@ test.describe('Chats layout regressions', () => {
         subtitleWhiteSpace: subtitleStyle.whiteSpace,
         subtitleOverflow: subtitleStyle.overflow,
         subtitleTextOverflow: subtitleStyle.textOverflow,
+        avatarWidth: avatarRect.width,
         avatarMarginRight: Number.parseFloat(avatarStyle.marginRight),
-        dateMarginLeft: dateStyle ? Number.parseFloat(dateStyle.marginLeft) : null
+        dateMarginLeft: dateStyle ? Number.parseFloat(dateStyle.marginLeft) : null,
+        headingGap: subtitleRect.top - headingRect.bottom
       }
     })
 
     expect(metrics).not.toBeNull()
     expect(metrics?.avatarGapVar).not.toBe('')
     expect(metrics?.dateGapVar).not.toBe('')
+    expect(metrics?.headingGapVar).not.toBe('')
     expect(metrics?.subtitleLineHeightVar).not.toBe('')
     expect(metrics?.subtitleLineHeight ?? 0).toBeGreaterThanOrEqual(20)
     expect(metrics?.subtitleLineHeight ?? 999).toBeLessThanOrEqual(22)
     expect(metrics?.subtitleWhiteSpace).toBe('nowrap')
     expect(metrics?.subtitleOverflow).toBe('hidden')
     expect(metrics?.subtitleTextOverflow).toBe('ellipsis')
+    expect(metrics?.avatarWidth ?? 0).toBeGreaterThanOrEqual(51)
+    expect(metrics?.avatarWidth ?? 999).toBeLessThanOrEqual(53)
     expect(metrics?.avatarMarginRight ?? 0).toBeGreaterThanOrEqual(15)
     expect(metrics?.avatarMarginRight ?? 999).toBeLessThanOrEqual(17)
+    expect(metrics?.headingGap ?? 0).toBeGreaterThanOrEqual(1)
+    expect(metrics?.headingGap ?? 99).toBeLessThanOrEqual(3)
 
     if (metrics?.dateMarginLeft !== null) {
       expect(metrics?.dateMarginLeft ?? 0).toBeGreaterThanOrEqual(15)
@@ -287,8 +299,11 @@ test.describe('Chats layout regressions', () => {
       const avatar = document.querySelector(
         '.chats-view__messages--chat .chat-brief__chat-avatar, .chats-view__messages--chat .chat-brief__icon'
       ) as HTMLElement | null
+      const title = preview?.querySelector('.chat-brief__title') as HTMLElement | null
+      const subtitle = preview?.querySelector('.chat-brief__subtitle') as HTMLElement | null
+      const heading = preview?.querySelector('.chat-brief__heading') as HTMLElement | null
 
-      if (!row || !preview) {
+      if (!row || !preview || !avatar || !title || !subtitle || !heading) {
         return null
       }
 
@@ -312,12 +327,21 @@ test.describe('Chats layout regressions', () => {
 
       const rowRect = row.getBoundingClientRect()
       const previewRect = preview.getBoundingClientRect()
+      const avatarRect = avatar.getBoundingClientRect()
+      const titleRect = title.getBoundingClientRect()
+      const subtitleRect = subtitle.getBoundingClientRect()
+      const headingRect = heading.getBoundingClientRect()
 
       return {
         rowLeft: rowRect.left,
         rowRightGap: window.innerWidth - rowRect.right,
         previewLeft: previewRect.left,
         previewRightGap: window.innerWidth - previewRect.right,
+        avatarLeft: avatarRect.left,
+        avatarWidth: avatarRect.width,
+        titleLeft: titleRect.left,
+        subtitleLeft: subtitleRect.left,
+        headingGap: subtitleRect.top - headingRect.bottom,
         spinnerToAvatarAxisDeltaX
       }
     })
@@ -327,6 +351,16 @@ test.describe('Chats layout regressions', () => {
     expect(Math.abs(metrics?.rowRightGap ?? 99)).toBeLessThanOrEqual(1)
     expect(Math.abs(metrics?.previewLeft ?? 99)).toBeLessThanOrEqual(1)
     expect(Math.abs(metrics?.previewRightGap ?? 99)).toBeLessThanOrEqual(1)
+    expect(metrics?.avatarLeft ?? 0).toBeGreaterThanOrEqual(19)
+    expect(metrics?.avatarLeft ?? 99).toBeLessThanOrEqual(21)
+    expect(metrics?.avatarWidth ?? 0).toBeGreaterThanOrEqual(51)
+    expect(metrics?.avatarWidth ?? 999).toBeLessThanOrEqual(53)
+    expect(metrics?.titleLeft ?? 0).toBeGreaterThanOrEqual(87)
+    expect(metrics?.titleLeft ?? 999).toBeLessThanOrEqual(89)
+    expect(metrics?.subtitleLeft ?? 0).toBeGreaterThanOrEqual(87)
+    expect(metrics?.subtitleLeft ?? 999).toBeLessThanOrEqual(89)
+    expect(metrics?.headingGap ?? 0).toBeGreaterThanOrEqual(1)
+    expect(metrics?.headingGap ?? 99).toBeLessThanOrEqual(3)
 
     if (metrics?.spinnerToAvatarAxisDeltaX !== null) {
       expect(metrics?.spinnerToAvatarAxisDeltaX ?? 999).toBeLessThanOrEqual(2)
