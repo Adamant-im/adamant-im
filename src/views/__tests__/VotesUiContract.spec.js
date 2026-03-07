@@ -63,9 +63,11 @@ describe('Votes UI style contract', () => {
     expect(headContent).toContain('var(--a-font-size-xs)')
     expect(headContent).toContain('var(--a-space-2)')
     expect(headContent).toContain('var(--a-space-4)')
+    expect(headContent).toContain("color: map.get(colors.$adm-colors, 'white');")
     expect(headContent).not.toContain('class="pl-4 pr-2"')
     expect(headContent).not.toContain('class="pl-0 pr-2"')
     expect(headContent).not.toContain('font-size: 12px;')
+    expect(headContent).not.toContain("color: map.get(colors.$adm-colors, 'grey-transparent');")
 
     expect(itemContent).toContain('--a-delegates-table-item-font-size')
     expect(itemContent).toContain('--a-delegates-table-item-padding-inline-end')
