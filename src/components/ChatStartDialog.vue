@@ -7,7 +7,7 @@
 
       <v-divider class="a-divider" />
 
-      <v-row justify="center" align="center" gap="0" class="pa-4">
+      <v-row justify="center" align="center" gap="0" :class="`${className}__body`">
         <v-text-field
           ref="partnerField"
           v-model="recipientAddress"
@@ -237,13 +237,17 @@ export default {
 @use '@/assets/styles/settings/_colors.scss';
 
 .chat-start-dialog {
+  &__body {
+    padding: var(--a-secondary-dialog-content-padding);
+  }
+
   &__btn-start-chat {
-    margin-top: 15px;
+    margin-top: var(--a-secondary-dialog-action-margin-top);
   }
 
   &__btn-show-qrcode {
-    margin-top: 15px;
-    margin-bottom: 15px;
+    margin-top: var(--a-secondary-dialog-link-margin-top);
+    margin-bottom: var(--a-secondary-dialog-link-margin-bottom);
     text-align: center;
   }
 }

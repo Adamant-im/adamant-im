@@ -47,11 +47,14 @@ export default {
   },
   emits: ['update:modelValue'],
   setup(props) {
-    watch(() => props.modelValue, () => {
-      if (props.modelValue) {
-        vibrate.medium()
+    watch(
+      () => props.modelValue,
+      () => {
+        if (props.modelValue) {
+          vibrate.medium()
+        }
       }
-    })
+    )
 
     return {
       mdiGift
@@ -69,7 +72,6 @@ export default {
     }
   },
   methods: {
-
     getFreeTokens() {
       const link = websiteUriToOnion(
         this.$t('home.free_tokens_link') + '?wallet=' + this.$store.state.address
@@ -92,24 +94,18 @@ export default {
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 @use 'vuetify/_settings.scss';
 
 .free-tokens-dialog {
-  &__card-text {
-    padding: 16px !important;
-  }
-  &__disclaimer {
-    margin-top: 10px;
-  }
+  @include secondaryDialog.a-secondary-dialog-warning-frame();
+
   &__btn-free-tokens {
-    margin-top: 15px;
-    margin-bottom: 20px;
-  }
-  &__btn-icon {
-    margin-right: 8px;
+    margin-top: var(--a-secondary-dialog-action-margin-top);
+    margin-bottom: var(--a-secondary-dialog-action-margin-bottom);
   }
   &__btn-show-article {
-    padding: 0 0 30px 0;
+    padding: 0 0 var(--a-secondary-dialog-footer-padding-bottom) 0;
     text-align: center;
   }
 }

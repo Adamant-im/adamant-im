@@ -4,7 +4,12 @@
       {{ t('wallets.reset') }}
     </v-btn>
 
-    <v-dialog v-model="isDialogVisible" width="500" scroll-strategy="reposition">
+    <v-dialog
+      v-model="isDialogVisible"
+      width="500"
+      scroll-strategy="reposition"
+      :class="classes.root"
+    >
       <v-card>
         <v-card-title :class="`${classes.root}__dialog-title`">
           {{ t('wallets.summary_title') }}
@@ -12,7 +17,7 @@
 
         <v-divider :class="`${classes.root}__divider`" />
 
-        <v-row gap="0" class="pa-4">
+        <v-row gap="0" :class="`${classes.root}__dialog-body`">
           <div :class="`${classes.root}__dialog-summary`">
             {{ t('wallets.reset_message') }}
           </div>
@@ -37,7 +42,7 @@ import { defineComponent, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 
-const className = 'wallets-view'
+const className = 'wallet-reset-dialog'
 const classes = {
   root: className
 }
@@ -70,7 +75,10 @@ export default defineComponent({
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
 
-.wallets-view {
+.wallet-reset-dialog {
+  &__dialog-body {
+    padding: var(--a-secondary-dialog-content-padding);
+  }
   &__dialog-summary {
     @include mixins.a-text-regular-enlarged();
   }
@@ -81,7 +89,7 @@ export default defineComponent({
 
 /** Themes **/
 .v-theme--light {
-  .wallets-view {
+  .wallet-reset-dialog {
     &__dialog-summary {
       color: map.get(colors.$adm-colors, 'regular');
     }

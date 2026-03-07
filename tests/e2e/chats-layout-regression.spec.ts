@@ -335,6 +335,71 @@ test.describe('Chats layout regressions', () => {
     await assertNoDocumentScrollLeak(page)
   })
 
+  test('keeps chat start dialog secondary spacing stable on mobile', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await loginWithNewAccount(page)
+
+    await page.goto('/chats')
+    await expect(page).toHaveURL(/\/chats$/)
+
+    const newChatButton = page.locator('.chats-view__item')
+    await expect(newChatButton).toBeVisible()
+    await newChatButton.click()
+
+    const dialog = page.locator('.chat-start-dialog')
+    await expect(dialog).toBeVisible()
+    await expect(page.locator('.chat-start-dialog__body')).toBeVisible()
+
+    const metrics = await page.evaluate(() => {
+      const body = document.querySelector('.chat-start-dialog__body') as HTMLElement | null
+      const field = body?.querySelector('.v-field') as HTMLElement | null
+      const startButton = document.querySelector(
+        '.chat-start-dialog__btn-start-chat'
+      ) as HTMLElement | null
+      const qrLink = document.querySelector(
+        '.chat-start-dialog__btn-show-qrcode'
+      ) as HTMLElement | null
+
+      if (!body || !field || !startButton || !qrLink) {
+        return null
+      }
+
+      const bodyStyle = getComputedStyle(body)
+      const startButtonStyle = getComputedStyle(startButton)
+      const qrLinkStyle = getComputedStyle(qrLink)
+      const bodyRect = body.getBoundingClientRect()
+      const fieldRect = field.getBoundingClientRect()
+
+      return {
+        bodyPaddingInlineStart: Number.parseFloat(bodyStyle.paddingInlineStart),
+        bodyPaddingInlineEnd: Number.parseFloat(bodyStyle.paddingInlineEnd),
+        fieldLeftGap: fieldRect.left - bodyRect.left,
+        fieldRightGap: bodyRect.right - fieldRect.right,
+        startButtonMarginTop: Number.parseFloat(startButtonStyle.marginTop),
+        qrLinkMarginTop: Number.parseFloat(qrLinkStyle.marginTop),
+        qrLinkMarginBottom: Number.parseFloat(qrLinkStyle.marginBottom)
+      }
+    })
+
+    expect(metrics).not.toBeNull()
+    expect(metrics?.bodyPaddingInlineStart ?? 0).toBeGreaterThanOrEqual(15)
+    expect(metrics?.bodyPaddingInlineStart ?? 99).toBeLessThanOrEqual(17)
+    expect(metrics?.bodyPaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(15)
+    expect(metrics?.bodyPaddingInlineEnd ?? 99).toBeLessThanOrEqual(17)
+    expect(metrics?.fieldLeftGap ?? 0).toBeGreaterThanOrEqual(14)
+    expect(metrics?.fieldLeftGap ?? 99).toBeLessThanOrEqual(16)
+    expect(metrics?.fieldRightGap ?? 0).toBeGreaterThanOrEqual(14)
+    expect(metrics?.fieldRightGap ?? 99).toBeLessThanOrEqual(16)
+    expect(metrics?.startButtonMarginTop ?? 0).toBeGreaterThanOrEqual(14)
+    expect(metrics?.startButtonMarginTop ?? 99).toBeLessThanOrEqual(16)
+    expect(metrics?.qrLinkMarginTop ?? 0).toBeGreaterThanOrEqual(14)
+    expect(metrics?.qrLinkMarginTop ?? 99).toBeLessThanOrEqual(16)
+    expect(metrics?.qrLinkMarginBottom ?? 0).toBeGreaterThanOrEqual(14)
+    expect(metrics?.qrLinkMarginBottom ?? 99).toBeLessThanOrEqual(16)
+
+    await assertNoDocumentScrollLeak(page)
+  })
+
   test('keeps opened chat message bubble spacing and paddings stable', async ({ page }) => {
     await loginWithNewAccount(page)
 

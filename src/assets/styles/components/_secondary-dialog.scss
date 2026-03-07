@@ -1,0 +1,17 @@
+@mixin a-secondary-dialog-warning-frame() {
+  &__card-text {
+    padding: var(--a-secondary-dialog-content-padding) !important;
+  }
+
+  &__disclaimer {
+    margin-top: var(--a-secondary-dialog-disclaimer-gap);
+  }
+
+  &__highlight {
+    padding: var(--a-secondary-dialog-highlight-padding);
+  }
+
+  &__btn-icon {
+    margin-inline-end: var(--a-secondary-dialog-action-icon-gap);
+  }
+}

@@ -104,25 +104,18 @@ export default {
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 @use 'vuetify/_settings.scss';
 
 .warning-on-partner-address-dialog {
-  &__card-text {
-    padding: 16px !important;
-  }
-  &__disclaimer {
-    margin-top: 10px;
-  }
+  @include secondaryDialog.a-secondary-dialog-warning-frame();
+
   &__highlight {
     background-color: rgba(map.get(colors.$adm-colors, 'attention'), 0.6);
-    padding: 10px;
-  }
-  &__btn-icon {
-    margin-right: 8px;
   }
   &__btn-hide {
-    margin-top: 15px;
-    margin-bottom: 20px;
+    margin-top: var(--a-secondary-dialog-action-margin-top);
+    margin-bottom: var(--a-secondary-dialog-action-margin-bottom);
   }
 }
 </style>

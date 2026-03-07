@@ -97,7 +97,7 @@ export default {
 
 .input {
   border: 2px solid orange;
-  margin-right: 16px;
+  margin-right: var(--a-space-4);
 }
 .btnPlay {
   background-color: rgba(205, 144, 31, 0.93);

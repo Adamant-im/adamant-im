@@ -77,23 +77,15 @@ export default {
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 @use 'vuetify/_settings.scss';
 
 .all-nodes-disabled-dialog {
-  &__card-title {
-  }
-  &__card-text {
-    padding: 16px !important;
-  }
-  &__btn {
-    margin-top: 15px;
-    margin-bottom: 20px;
-  }
-  &__btn-icon {
-    margin-right: 8px;
-  }
+  @include secondaryDialog.a-secondary-dialog-warning-frame();
+
   &__btn-block {
-    padding: 12px 0 24px 0;
+    padding: var(--a-secondary-dialog-button-block-padding-top) 0
+      var(--a-secondary-dialog-button-block-padding-bottom) 0;
     text-align: center;
   }
 }

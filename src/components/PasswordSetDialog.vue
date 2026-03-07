@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" width="500">
+  <v-dialog v-model="show" :class="className" width="500">
     <v-card>
       <v-card-title class="a-text-header">
         {{ t('login_via_password.popup_title') }}
@@ -7,7 +7,7 @@
 
       <v-divider class="a-divider" />
 
-      <v-card-text class="pa-4">
+      <v-card-text :class="`${className}__body`">
         <!--     Todo: check src/components/LoginForm.vue component and consider the possibility to move common code to new component  -->
         <v-text-field
           v-model="password"
@@ -41,7 +41,7 @@
         </div>
       </v-card-text>
 
-      <v-card-actions class="pa-3">
+      <v-card-actions :class="`${className}__actions`">
         <v-spacer />
 
         <v-btn variant="text" class="a-btn-regular" @click="show = false">
@@ -89,6 +89,7 @@ const emit = defineEmits<{
 
 const store = useStore()
 const { t } = useI18n()
+const className = 'password-set-dialog'
 
 const password = ref('')
 const showSpinner = ref(false)
@@ -138,3 +139,15 @@ const submit = () => {
     })
 }
 </script>
+
+<style lang="scss" scoped>
+.password-set-dialog {
+  &__body {
+    padding: var(--a-secondary-dialog-content-padding);
+  }
+
+  &__actions {
+    padding: var(--a-space-3);
+  }
+}
+</style>
