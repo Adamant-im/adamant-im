@@ -1,7 +1,7 @@
 <template>
-  <v-form @submit.prevent="revealKeys">
+  <v-form :class="className" @submit.prevent="revealKeys">
     <div v-if="keys.length" :class="`${className}__keys`">
-      <div v-for="key in keys" :key="key.crypto">
+      <div v-for="key in keys" :key="key.crypto" :class="`${className}__key-field`">
         <v-text-field
           v-model="key.key"
           :readonly="true"
@@ -18,6 +18,7 @@
           <template #append-inner>
             <v-btn
               icon
+              type="button"
               ripple
               size="28"
               :class="`${className}__btn-copy`"
@@ -29,12 +30,13 @@
         </v-text-field>
       </div>
 
-      <div class="text-right">
+      <div :class="`${className}__copy-all-row`">
         <v-btn
           :class="`${className}__copy_all_button`"
           class="a-btn-link"
           variant="text"
           size="small"
+          type="button"
           @click="copyAll"
         >
           {{ t('options.export_keys.copy_all') }}
@@ -42,7 +44,7 @@
       </div>
     </div>
 
-    <div :class="`${className}__disclaimer a-text-regular-enlarged`">
+    <div :class="`${className}__disclaimer a-text-explanation-enlarged`">
       {{ t('options.export_keys.disclaimer') }}
     </div>
 
@@ -59,13 +61,29 @@
         </span>
       </template>
       <template #append-inner>
-        <v-btn @click="togglePassphraseVisibility" icon :ripple="false" :size="28" variant="plain">
+        <v-btn
+          :class="`${className}__field-action`"
+          @click="togglePassphraseVisibility"
+          icon
+          type="button"
+          :ripple="false"
+          :size="28"
+          variant="plain"
+        >
           <v-icon :icon="showPassphrase ? mdiEye : mdiEyeOff" :size="24" />
         </v-btn>
 
         <v-menu :offset-overflow="true" :offset-y="false" left eager>
           <template #activator="{ props }">
-            <v-btn v-bind="props" icon variant="plain" :size="28" :ripple="false">
+            <v-btn
+              v-bind="props"
+              :class="`${className}__field-action`"
+              icon
+              type="button"
+              variant="plain"
+              :size="28"
+              :ripple="false"
+            >
               <v-icon :icon="mdiDotsVertical" :size="24" />
             </v-btn>
           </template>
@@ -86,7 +104,7 @@
     </v-text-field>
 
     <div class="text-center">
-      <v-btn :class="`${className}__export_keys_button`" class="a-btn-primary" @click="revealKeys">
+      <v-btn :class="`${className}__export_keys_button`" class="a-btn-primary" type="submit">
         {{ t('options.export_keys.button') }}
       </v-btn>
     </div>
@@ -217,27 +235,55 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
+@use 'sass:map';
+@use 'vuetify/settings';
+
 .export-keys-form {
+  --a-export-keys-section-spacing: var(--a-space-6);
+  --a-export-keys-key-field-gap: var(--a-space-4);
+  --a-export-keys-copy-all-margin-bottom: var(--a-space-3);
+  --a-export-keys-button-margin-top: var(--a-space-4);
+  --a-export-keys-button-margin-bottom: var(--a-space-6);
+  --a-export-keys-mobile-inline-end-compensation: 0px;
+
+  width: 100%;
+  box-sizing: border-box;
+  padding-inline-end: var(--a-export-keys-mobile-inline-end-compensation);
+
   &__keys {
-    margin-top: 24px;
-    margin-bottom: 24px;
+    margin-top: var(--a-export-keys-section-spacing);
+    margin-bottom: var(--a-export-keys-section-spacing);
+    display: grid;
+    gap: var(--a-export-keys-key-field-gap);
+  }
+  &__copy-all-row {
+    display: flex;
+    justify-content: flex-end;
   }
   &__disclaimer {
-    margin-top: 24px;
-    margin-bottom: 24px;
+    margin-top: var(--a-export-keys-section-spacing);
+    margin-bottom: var(--a-export-keys-section-spacing);
   }
   &__btn-copy {
-    margin-right: 0;
-    margin-bottom: 0;
+    margin: 0;
+  }
+  &__field-action {
+    margin: 0;
   }
   &__export_keys_button {
-    margin-top: 15px;
-    margin-bottom: 24px;
+    margin-top: var(--a-export-keys-button-margin-top);
+    margin-bottom: var(--a-export-keys-button-margin-bottom);
   }
   &__copy_all_button {
-    padding-right: 0;
-    margin-right: 0;
-    margin-bottom: 12px;
+    padding-inline-end: 0;
+    margin-inline-end: 0;
+    margin-bottom: var(--a-export-keys-copy-all-margin-bottom);
+  }
+}
+
+@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+  .export-keys-form {
+    --a-export-keys-mobile-inline-end-compensation: var(--a-space-2);
   }
 }
 </style>

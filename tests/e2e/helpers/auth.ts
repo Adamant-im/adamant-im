@@ -41,6 +41,8 @@ export const loginWithNewAccount = async (page: Page) => {
   await page.getByRole('button', { name: 'Login', exact: true }).click()
   await page.waitForURL(/\/chats(?:\/.*)?$/, { timeout: 90_000 })
   await dismissAddressWarningIfVisible(page, 8_000)
+
+  return copiedPassphrase
 }
 
 export const loginWithPassphrase = async (page: Page, passphrase: string) => {
