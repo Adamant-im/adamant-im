@@ -1,14 +1,13 @@
 <template>
-  <v-list-item>
+  <v-list-item :class="classes.root">
     <template v-slot:default>
       <div :class="classes.cryptoContent">
         <v-list-item-title :class="classes.cryptoTitle">{{
           localWallet.cryptoName
         }}</v-list-item-title>
-        <v-list-item-subtitle>
+        <v-list-item-subtitle :class="classes.cryptoSubtitleWrap">
           <p :class="classes.cryptoSubtitle">
             <span :class="classes.cryptoSubtitleMuted">{{ localWallet.type }}</span>
-            {{ ' ' }}
             <span :class="classes.cryptoSubtitleBold">{{ localWallet.symbol }}</span>
           </p>
         </v-list-item-subtitle>
@@ -69,6 +68,7 @@ const classes = {
   root: className,
   cryptoContent: `${className}__crypto-content`,
   cryptoSubtitle: `${className}__crypto-subtitle`,
+  cryptoSubtitleWrap: `${className}__crypto-subtitle-wrap`,
   cryptoSubtitleMuted: `${className}__crypto-subtitle-muted`,
   cryptoSubtitleBold: `${className}__crypto-subtitle-bold`,
   cryptoTitle: `${className}__crypto-title`,
@@ -114,6 +114,7 @@ export default defineComponent({
 
 .wallets-view {
   --a-wallets-list-item-content-height: var(--a-control-size-md);
+  --a-wallets-list-item-content-gap: var(--a-financial-stack-gap);
   --a-wallets-list-item-line-height: 1;
   --a-wallets-list-item-title-line-height: 1.1;
   --a-wallets-list-item-checkbox-offset: calc(var(--a-space-2) * -1);
@@ -124,10 +125,18 @@ export default defineComponent({
     height: var(--a-wallets-list-item-content-height);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
+    gap: var(--a-wallets-list-item-content-gap);
+    line-height: var(--a-wallets-list-item-line-height);
+  }
+  &__crypto-subtitle-wrap {
+    opacity: 1;
     line-height: var(--a-wallets-list-item-line-height);
   }
   &__crypto-subtitle {
+    display: flex;
+    align-items: baseline;
+    gap: var(--a-space-1);
     font-weight: var(--a-wallets-list-item-subtitle-weight);
     line-height: var(--a-wallets-list-item-line-height);
   }

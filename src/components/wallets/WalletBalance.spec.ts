@@ -39,5 +39,7 @@ describe('WalletBalance', () => {
 
     expect(wrapper.text()).toContain('0')
     expect(wrapper.find('.wallet-balance__status-title').exists()).toBe(true)
+    expect(wrapper.find('.wallet-balance--single-line').exists()).toBe(true)
+    expect(wrapper.find('.wallet-balance__status-text').exists()).toBe(false)
   })
 })

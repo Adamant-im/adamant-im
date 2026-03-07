@@ -107,7 +107,7 @@ export default defineComponent({
 
 .wallet-balance {
   --a-wallet-balance-height: var(--a-control-size-md);
-  --a-wallet-balance-gap: var(--a-space-2);
+  --a-wallet-balance-gap: var(--a-financial-stack-gap);
   --a-wallet-balance-line-height: 1;
   --a-wallet-balance-title-line-height: 1.1;
   --a-wallet-balance-fiat-size: var(--a-font-size-xs);
@@ -127,7 +127,7 @@ export default defineComponent({
 
   &--single-line {
     gap: 0;
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   &__status-title {

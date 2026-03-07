@@ -182,31 +182,52 @@ test.describe('Wallets layout regressions', () => {
 
     const metrics = await page.evaluate(() => {
       const content = document.querySelector('.wallets-view__crypto-content') as HTMLElement | null
+      const subtitle = document.querySelector(
+        '.wallets-view__crypto-subtitle'
+      ) as HTMLElement | null
+      const subtitleMuted = document.querySelector(
+        '.wallets-view__crypto-subtitle-muted'
+      ) as HTMLElement | null
+      const subtitleBold = document.querySelector(
+        '.wallets-view__crypto-subtitle-bold'
+      ) as HTMLElement | null
       const walletBalance = document.querySelector('.wallet-balance') as HTMLElement | null
 
-      if (!content || !walletBalance) {
+      if (!content || !subtitle || !subtitleMuted || !subtitleBold || !walletBalance) {
         return null
       }
 
       const contentStyle = getComputedStyle(content)
+      const subtitleStyle = getComputedStyle(subtitle)
+      const subtitleMutedStyle = getComputedStyle(subtitleMuted)
+      const subtitleBoldStyle = getComputedStyle(subtitleBold)
       const balanceStyle = getComputedStyle(walletBalance)
 
       return {
         cryptoContentHeight: Number.parseFloat(contentStyle.height),
+        cryptoContentJustify: contentStyle.justifyContent,
+        subtitleOpacity: Number.parseFloat(subtitleStyle.opacity),
+        subtitleMutedColor: subtitleMutedStyle.color,
+        subtitleBoldColor: subtitleBoldStyle.color,
         balanceHeight: Number.parseFloat(balanceStyle.height),
         balanceGap: Number.parseFloat(balanceStyle.gap),
+        balanceJustify: balanceStyle.justifyContent,
         balanceIsSingleLine: walletBalance.classList.contains('wallet-balance--single-line')
       }
     })
 
     expect(metrics).not.toBeNull()
     expect(metrics?.cryptoContentHeight ?? 0).toBeGreaterThanOrEqual(39)
-    expect(metrics?.cryptoContentHeight ?? 999).toBeLessThanOrEqual(41)
+    expect(metrics?.cryptoContentHeight ?? 999).toBeLessThanOrEqual(46)
+    expect(metrics?.cryptoContentJustify).toBe('center')
+    expect(metrics?.subtitleOpacity ?? 0).toBeGreaterThanOrEqual(0.99)
+    expect(metrics?.subtitleMutedColor).not.toBe(metrics?.subtitleBoldColor)
     expect(metrics?.balanceHeight ?? 0).toBeGreaterThanOrEqual(39)
     expect(metrics?.balanceHeight ?? 999).toBeLessThanOrEqual(41)
 
     if (metrics?.balanceIsSingleLine) {
       expect(metrics?.balanceGap ?? 999).toBeLessThanOrEqual(1)
+      expect(metrics?.balanceJustify).toBe('center')
     } else {
       expect(metrics?.balanceGap ?? 0).toBeGreaterThanOrEqual(7)
       expect(metrics?.balanceGap ?? 999).toBeLessThanOrEqual(9)
