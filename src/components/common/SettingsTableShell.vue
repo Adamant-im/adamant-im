@@ -30,6 +30,8 @@ const classes = {
 .settings-table-shell {
   --a-settings-table-shell-bleed-inline-start: var(--a-space-6);
   --a-settings-table-shell-bleed-inline-end: var(--a-space-6);
+  --a-settings-table-shell-section-inline-start: 0px;
+  --a-settings-table-shell-section-inline-end: 0px;
   --a-settings-table-shell-checkbox-offset: calc(var(--a-space-2) * -1);
 
   display: block;
@@ -41,8 +43,8 @@ const classes = {
   }
 
   &__section {
-    padding-inline-start: var(--a-settings-table-shell-bleed-inline-start);
-    padding-inline-end: var(--a-settings-table-shell-bleed-inline-end);
+    padding-inline-start: var(--a-settings-table-shell-section-inline-start);
+    padding-inline-end: var(--a-settings-table-shell-section-inline-end);
   }
 
   :deep(.v-input--selection-controls:not(.v-input--hide-details)) .v-input__slot {

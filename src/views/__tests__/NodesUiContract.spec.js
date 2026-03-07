@@ -46,6 +46,8 @@ describe('Nodes UI style contract', () => {
     expect(content).toContain('<SettingsTableShell :class="classes.root">')
     expect(shellContent).toContain('--a-settings-table-shell-bleed-inline-start')
     expect(shellContent).toContain('--a-settings-table-shell-bleed-inline-end')
+    expect(shellContent).toContain('--a-settings-table-shell-section-inline-start: 0px;')
+    expect(shellContent).toContain('--a-settings-table-shell-section-inline-end: 0px;')
     expect(shellContent).toContain('--a-settings-table-shell-checkbox-offset')
     expect(shellContent).toContain('var(--a-space-6)')
     expect(shellContent).toContain('var(--a-space-4)')

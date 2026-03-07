@@ -36,6 +36,7 @@ test.describe('Nodes layout regressions', () => {
       const content = document.querySelector('.navigation-wrapper__content') as HTMLElement | null
       const root = document.querySelector('.settings-table-shell') as HTMLElement | null
       const bleed = document.querySelector('.settings-table-shell__bleed') as HTMLElement | null
+      const section = document.querySelector('.settings-table-shell__section') as HTMLElement | null
       const table = document.querySelector('.settings-data-table') as HTMLElement | null
       const headCell = document.querySelector('.nodes-table-head__th') as HTMLElement | null
       const dataCell = document.querySelector(
@@ -48,6 +49,7 @@ test.describe('Nodes layout regressions', () => {
         !content ||
         !root ||
         !bleed ||
+        !section ||
         !table ||
         !headCell ||
         !dataCell ||
@@ -63,6 +65,7 @@ test.describe('Nodes layout regressions', () => {
       const rootStyle = getComputedStyle(root)
       const contentStyle = getComputedStyle(content)
       const bleedStyle = getComputedStyle(bleed)
+      const sectionStyle = getComputedStyle(section)
       const tableStyle = getComputedStyle(table)
       const headStyle = getComputedStyle(headCell)
       const dataStyle = getComputedStyle(dataCell)
@@ -81,6 +84,8 @@ test.describe('Nodes layout regressions', () => {
           .trim(),
         marginInlineStart: Number.parseFloat(bleedStyle.marginInlineStart),
         marginInlineEnd: Number.parseFloat(bleedStyle.marginInlineEnd),
+        sectionPaddingInlineStart: Number.parseFloat(sectionStyle.paddingInlineStart),
+        sectionPaddingInlineEnd: Number.parseFloat(sectionStyle.paddingInlineEnd),
         contentPaddingInlineStart: Number.parseFloat(contentStyle.paddingInlineStart),
         contentPaddingInlineEnd: Number.parseFloat(contentStyle.paddingInlineEnd),
         bleedLeftGap: bleedRect.left - contentRect.left,
@@ -105,6 +110,8 @@ test.describe('Nodes layout regressions', () => {
     expect(metrics?.marginInlineStart ?? 0).toBeGreaterThanOrEqual(-25)
     expect(metrics?.marginInlineEnd ?? 0).toBeLessThanOrEqual(-23)
     expect(metrics?.marginInlineEnd ?? 0).toBeGreaterThanOrEqual(-25)
+    expect(metrics?.sectionPaddingInlineStart ?? 99).toBeLessThanOrEqual(1)
+    expect(metrics?.sectionPaddingInlineEnd ?? 99).toBeLessThanOrEqual(1)
     expect(metrics?.contentPaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
     expect(metrics?.contentPaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
     expect(metrics?.contentPaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)

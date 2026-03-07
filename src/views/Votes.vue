@@ -24,15 +24,19 @@
       />
 
       <template #after>
-        <v-row
-          class="align-center justify-space-between v-row--no-gutters"
-          :class="`${className}__review`"
-        >
-          <pagination-component v-if="showPagination" v-model="pagination.page" :pages="pages" />
+        <v-row class="align-center v-row--no-gutters" :class="`${className}__review`">
+          <pagination-component
+            v-if="showPagination"
+            v-model="pagination.page"
+            :pages="pages"
+            :class="`${className}__pagination`"
+          />
+          <v-spacer />
 
           <v-btn
             :disabled="reviewButtonDisabled"
             class="a-btn-primary ma-2"
+            :class="`${className}__review-button`"
             @click="showConfirmationDialog"
           >
             {{ t('votes.summary_title') }}
@@ -241,6 +245,9 @@ const showConfirmationDialog = () => {
   &__review {
     padding-top: var(--a-space-4) !important;
     padding-bottom: var(--a-space-4) !important;
+  }
+  &__review-button {
+    margin-left: auto !important;
   }
   &__search {
     :deep(.v-field) {

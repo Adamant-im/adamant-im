@@ -83,20 +83,44 @@ test.describe('Votes layout regressions', () => {
     expect(metrics?.contentPaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
     expect(metrics?.contentPaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)
     expect(metrics?.contentPaddingInlineEnd ?? 99).toBeLessThanOrEqual(25)
-    expect(metrics?.beforePaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
-    expect(metrics?.beforePaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
-    expect(metrics?.beforePaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)
-    expect(metrics?.beforePaddingInlineEnd ?? 99).toBeLessThanOrEqual(25)
-    expect(metrics?.afterPaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
-    expect(metrics?.afterPaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
-    expect(metrics?.afterPaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)
-    expect(metrics?.afterPaddingInlineEnd ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.beforePaddingInlineStart ?? 99).toBeLessThanOrEqual(1)
+    expect(metrics?.beforePaddingInlineEnd ?? 99).toBeLessThanOrEqual(1)
+    expect(metrics?.afterPaddingInlineStart ?? 99).toBeLessThanOrEqual(1)
+    expect(metrics?.afterPaddingInlineEnd ?? 99).toBeLessThanOrEqual(1)
     expect(Math.abs(metrics?.bleedLeftGap ?? 99)).toBeLessThanOrEqual(1)
     expect(Math.abs(metrics?.bleedRightGap ?? 99)).toBeLessThanOrEqual(1)
     expect(Math.abs(metrics?.tableBleedLeftGap ?? 99)).toBeLessThanOrEqual(1)
     expect(Math.abs(metrics?.tableBleedRightGap ?? 99)).toBeLessThanOrEqual(1)
 
     await assertNoDocumentScrollLeak(page)
+  })
+
+  test('keeps the review voting button anchored to the right when search hides pagination', async ({
+    page
+  }) => {
+    await loginWithNewAccount(page)
+
+    await page.goto('/votes')
+    await expect(page).toHaveURL(/\/votes$/)
+
+    const reviewButton = page.getByRole('button', { name: /review voting/i })
+    const searchInput = page.locator('.delegates-view input').first()
+
+    await expect(reviewButton).toBeVisible()
+    await expect(searchInput).toBeVisible()
+
+    const initialRightGap = await reviewButton.evaluate((button) => {
+      return window.innerWidth - button.getBoundingClientRect().right
+    })
+
+    await searchInput.fill('zzzzzzzz')
+    await expect(page.locator('.delegates-view__pagination')).toHaveCount(0)
+
+    const filteredRightGap = await reviewButton.evaluate((button) => {
+      return window.innerWidth - button.getBoundingClientRect().right
+    })
+
+    expect(Math.abs(filteredRightGap - initialRightGap)).toBeLessThanOrEqual(1)
   })
 
   test('keeps delegates table edge-to-edge on mobile while padded content stays asymmetric', async ({
@@ -150,10 +174,8 @@ test.describe('Votes layout regressions', () => {
     expect(metrics?.marginInlineStart ?? 0).toBeGreaterThanOrEqual(-25)
     expect(metrics?.marginInlineEnd ?? 0).toBeLessThanOrEqual(-15)
     expect(metrics?.marginInlineEnd ?? 0).toBeGreaterThanOrEqual(-17)
-    expect(metrics?.beforePaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
-    expect(metrics?.beforePaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
-    expect(metrics?.beforePaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(15)
-    expect(metrics?.beforePaddingInlineEnd ?? 99).toBeLessThanOrEqual(17)
+    expect(metrics?.beforePaddingInlineStart ?? 99).toBeLessThanOrEqual(1)
+    expect(metrics?.beforePaddingInlineEnd ?? 99).toBeLessThanOrEqual(1)
     expect(Math.abs(metrics?.tableLeft ?? 99)).toBeLessThanOrEqual(1)
     expect(Math.abs(metrics?.tableRightGap ?? 99)).toBeLessThanOrEqual(1)
 
