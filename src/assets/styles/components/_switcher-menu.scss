@@ -1,0 +1,22 @@
+@mixin a-switcher-menu() {
+  &__button {
+    margin: 0;
+  }
+
+  &__list {
+    padding-block: 0;
+  }
+
+  &__item {
+    min-height: var(--a-switcher-menu-row-min-height);
+    padding-top: var(--a-switcher-menu-row-padding-block);
+    padding-bottom: var(--a-switcher-menu-row-padding-block);
+    padding-inline: var(--a-switcher-menu-item-padding-inline);
+  }
+
+  &__item-title {
+    font-size: var(--a-switcher-menu-title-font-size);
+    line-height: var(--a-switcher-menu-title-line-height);
+    display: block;
+  }
+}

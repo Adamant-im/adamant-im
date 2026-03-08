@@ -1,8 +1,8 @@
 <template>
-  <v-menu offset-y>
+  <v-menu offset-y :class="className">
     <template #activator="{ props }">
       <v-btn
-        class="ma-0 a-switcher-button"
+        :class="[`${className}__button`, 'a-switcher-button']"
         variant="text"
         v-bind="props"
         :prepend-icon="prependIcon"
@@ -12,9 +12,16 @@
       </v-btn>
     </template>
 
-    <v-list>
-      <v-list-item v-for="(currency, idx) in currencies" :key="idx" @click="onSelect(idx)">
-        <v-list-item-title>{{ currency }}</v-list-item-title>
+    <v-list :class="`${className}__list`">
+      <v-list-item
+        v-for="(currency, idx) in currencies"
+        :key="idx"
+        :class="`${className}__item`"
+        @click="onSelect(idx)"
+      >
+        <v-list-item-title :class="`${className}__item-title`">
+          {{ currency }}
+        </v-list-item-title>
       </v-list-item>
     </v-list>
   </v-menu>
@@ -37,6 +44,7 @@ export default defineComponent({
     }
   },
   setup() {
+    const className = 'currency-switcher'
     const store = useStore()
     const currencies = RatesNames
 
@@ -57,6 +65,7 @@ export default defineComponent({
     }
 
     return {
+      className,
       currencies,
       currentCurrency,
       onSelect
@@ -64,3 +73,11 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="scss" scoped>
+@use '@/assets/styles/components/_switcher-menu.scss' as switcherMenu;
+
+.currency-switcher {
+  @include switcherMenu.a-switcher-menu();
+}
+</style>

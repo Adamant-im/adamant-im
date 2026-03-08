@@ -1,8 +1,8 @@
 <template>
-  <v-menu offset-y>
+  <v-menu offset-y :class="className">
     <template #activator="{ props }">
       <v-btn
-        class="ma-0 a-switcher-button"
+        :class="[`${className}__button`, 'a-switcher-button']"
         variant="text"
         v-bind="props"
         :prepend-icon="prependIcon"
@@ -12,9 +12,16 @@
       </v-btn>
     </template>
 
-    <v-list>
-      <v-list-item v-for="(language, code) in languages" :key="code" @click="onSelect(code)">
-        <v-list-item-title>{{ language.title }}</v-list-item-title>
+    <v-list :class="`${className}__list`">
+      <v-list-item
+        v-for="(language, code) in languages"
+        :key="code"
+        :class="`${className}__item`"
+        @click="onSelect(code)"
+      >
+        <v-list-item-title :class="`${className}__item-title`">
+          {{ language.title }}
+        </v-list-item-title>
       </v-list-item>
     </v-list>
   </v-menu>
@@ -24,6 +31,8 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
+
+const className = 'language-switcher'
 
 defineProps({
   prependIcon: {
@@ -55,3 +64,11 @@ const onSelect = (code) => {
   currentLocale.value = code
 }
 </script>
+
+<style lang="scss" scoped>
+@use '@/assets/styles/components/_switcher-menu.scss' as switcherMenu;
+
+.language-switcher {
+  @include switcherMenu.a-switcher-menu();
+}
+</style>

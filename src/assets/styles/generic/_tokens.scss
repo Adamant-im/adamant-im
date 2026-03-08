@@ -40,6 +40,11 @@
   --a-input-action-menu-row-padding-block: var(--a-list-row-padding-block);
   --a-input-action-menu-title-font-size: var(--a-font-size-sm);
   --a-input-action-menu-title-line-height: var(--a-line-height-sm);
+  --a-switcher-menu-item-padding-inline: var(--a-screen-padding-inline);
+  --a-switcher-menu-row-min-height: var(--a-list-row-min-height);
+  --a-switcher-menu-row-padding-block: var(--a-list-row-padding-block);
+  --a-switcher-menu-title-font-size: var(--a-font-size-sm);
+  --a-switcher-menu-title-line-height: var(--a-line-height-sm);
   --a-fake-input-padding-top: var(--a-space-3);
   --a-fake-input-margin-top: var(--a-space-1);
   --a-fake-input-font-size: var(--a-font-size-md);
@@ -55,6 +60,11 @@
   --a-chat-preview-item-padding-inline-start: var(--a-space-5);
   --a-chat-preview-item-padding-inline-end: var(--a-space-6);
   --a-chat-preview-heading-gap: calc(var(--a-space-1) / 2);
+  --a-app-navigation-height: 50px;
+  --a-app-navigation-button-font-weight: var(--a-font-weight-light);
+  --a-app-navigation-label-font-size: var(--a-font-size-sm);
+  --a-app-navigation-badge-size: var(--a-size-badge-md);
+  --a-app-navigation-badge-font-size: var(--a-font-size-sm);
   --a-secondary-dialog-padding-inline: var(--a-space-6);
   --a-secondary-dialog-title-padding: var(--a-space-4) var(--a-secondary-dialog-padding-inline);
   --a-secondary-dialog-content-padding: var(--a-space-4) var(--a-secondary-dialog-padding-inline);
@@ -74,6 +84,7 @@
   --a-radius-sm: 8px;
   --a-radius-md: 12px;
   --a-radius-round: 9999px;
+  --a-border-width-thin: 1px;
   --a-border-width-strong: 2px;
 
   --a-control-size-sm: 32px;

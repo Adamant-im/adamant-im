@@ -2,21 +2,27 @@
   <v-bottom-navigation
     v-model="currentPageIndex"
     app
-    height="50"
     class="app-navigation"
     :elevation="0"
     :absolute="absolute"
   >
     <!-- Wallet -->
-    <v-btn v-if="walletShouldBeVisible" to="/home" :exact="true" draggable="false">
+    <v-btn
+      v-if="walletShouldBeVisible"
+      :class="`${className}__button`"
+      to="/home"
+      :exact="true"
+      draggable="false"
+    >
       <v-icon :icon="mdiWallet" />
-      <span>{{ t('bottom.wallet_button') }}</span>
+      <span :class="`${className}__label`">{{ t('bottom.wallet_button') }}</span>
     </v-btn>
 
     <!-- Chat -->
-    <v-btn to="/chats" draggable="false">
+    <v-btn :class="`${className}__button`" to="/chats" draggable="false">
       <v-badge
         v-if="numOfNewMessages > 0"
+        :class="`${className}__badge`"
         :value="numOfNewMessages"
         overlap
         color="primary"
@@ -26,13 +32,13 @@
       </v-badge>
       <v-icon v-else :icon="mdiForum" />
 
-      <span>{{ t('bottom.chats_button') }}</span>
+      <span :class="`${className}__label`">{{ t('bottom.chats_button') }}</span>
     </v-btn>
 
     <!-- Settings -->
-    <v-btn to="/options" draggable="false">
+    <v-btn :class="`${className}__button`" to="/options" draggable="false">
       <v-icon :icon="mdiCog" />
-      <span>{{ t('bottom.settings_button') }}</span>
+      <span :class="`${className}__label`">{{ t('bottom.settings_button') }}</span>
     </v-btn>
   </v-bottom-navigation>
 </template>
@@ -46,6 +52,8 @@ import { useI18n } from 'vue-i18n'
 defineProps({
   absolute: Boolean
 })
+
+const className = 'app-navigation'
 
 const pages = [
   {
@@ -100,18 +108,27 @@ onMounted(() => {
  */
 .app-navigation {
   &.v-bottom-navigation {
+    --a-app-navigation-border-width: var(--a-border-width-thin);
+
+    height: var(--a-app-navigation-height) !important;
+    min-height: var(--a-app-navigation-height) !important;
     transform: unset !important;
     overflow: visible;
 
     @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
-      bottom: calc(0px +  env(safe-area-inset-bottom)) !important;
+      bottom: env(safe-area-inset-bottom) !important;
     }
   }
-  &.v-bottom-navigation .v-btn {
-    font-weight: 300;
+
+  &__button {
+    height: 100%;
+    font-weight: var(--a-app-navigation-button-font-weight);
     flex-grow: 1;
     flex-shrink: 1;
     flex-basis: 0;
+  }
+  &__label {
+    font-size: var(--a-app-navigation-label-font-size);
   }
   :deep(.v-btn.v-btn--active) {
     font-size: unset;
@@ -120,25 +137,23 @@ onMounted(() => {
       background-color: unset;
     }
   }
-  :deep(.v-btn.v-btn--active) {
-    .v-btn__content > span {
-      font-size: 14px;
-    }
-  }
   :deep(.v-btn:not(.v-btn--active)) {
     filter: unset;
   }
-  :deep(.v-badge__badge) {
-    font-size: 14px;
-    width: 22px;
-    height: 22px;
+  :deep(.v-bottom-navigation__content) {
+    height: 100%;
+  }
+  :deep(.app-navigation__badge .v-badge__badge) {
+    font-size: var(--a-app-navigation-badge-font-size);
+    width: var(--a-app-navigation-badge-size);
+    height: var(--a-app-navigation-badge-size);
   }
 }
 
 .v-theme--light {
   .app-navigation {
     &__container {
-      border-top: 1px solid map.get(settings.$grey, 'lighten-2');
+      border-top: var(--a-app-navigation-border-width) solid map.get(settings.$grey, 'lighten-2');
     }
     &.v-bottom-navigation {
       background-color: map.get(settings.$shades, 'white');
@@ -150,7 +165,7 @@ onMounted(() => {
       color: map.get(colors.$adm-colors, 'muted') !important;
     }
     :deep(.v-bottom-navigation__content) {
-      border-top: 1px solid map.get(settings.$grey, 'lighten-2');
+      border-top: var(--a-app-navigation-border-width) solid map.get(settings.$grey, 'lighten-2');
     }
   }
 }
