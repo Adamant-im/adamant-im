@@ -91,6 +91,10 @@ function openLink() {
       flex-direction: row;
       column-gap: var(--a-space-2);
     }
+
+    p {
+      margin: 0;
+    }
   }
 
   &__spinner {

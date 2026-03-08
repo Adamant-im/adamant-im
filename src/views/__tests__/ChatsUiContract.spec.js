@@ -150,6 +150,8 @@ describe('Chats UI style contract', () => {
 
     expect(mixinsContent).toContain('@mixin a-surface-elevation-soft {')
     expect(placeholderContent).toContain('@include mixins.a-surface-elevation-soft();')
+    expect(placeholderContent).toContain('p {')
+    expect(placeholderContent).toContain('margin: 0;')
     expect(chatStylesContent).toContain('@include mixins.a-surface-elevation-soft();')
 
     expect(placeholderContent).not.toContain('0 1px 10px hsla(0, 0%, 39.2%, 0.06),')
