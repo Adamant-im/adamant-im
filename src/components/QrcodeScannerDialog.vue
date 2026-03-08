@@ -2,7 +2,13 @@
   <v-dialog v-model="show" :class="classes.root" width="500">
     <v-card :class="classes.root">
       <!-- Camera Waiting -->
-      <v-row v-if="cameraStatus === 'waiting'" justify="center" align="center" class="pa-8" gap="0">
+      <v-row
+        v-if="cameraStatus === 'waiting'"
+        justify="center"
+        align="center"
+        :class="`${classes.root}__status`"
+        gap="0"
+      >
         <div class="a-text-header">
           {{ t('scan.waiting_camera') }}
         </div>
@@ -33,7 +39,7 @@
             </v-menu>
           </div>
         </v-col>
-        <v-col cols="12" class="pa-6">
+        <v-col cols="12" :class="`${classes.root}__hint`">
           <h3 class="a-text-regular text-center">
             {{ t('scan.hold_your_device') }}
           </h3>
@@ -47,7 +53,7 @@
         "
         justify="center"
         align="center"
-        class="text-center pa-8"
+        :class="['text-center', `${classes.root}__state`]"
         gap="0"
       >
         <v-col cols="12">
@@ -81,7 +87,7 @@
 
       <v-divider class="a-divider" />
 
-      <v-card-actions>
+      <v-card-actions :class="`${classes.root}__dialog-actions`">
         <v-spacer />
         <v-btn variant="text" class="a-btn-regular" @click="show = false">
           {{ t('scan.close_button') }}
@@ -227,7 +233,20 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+
 .qrcode-scanner-dialog {
+  @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  &__status,
+  &__state {
+    padding: var(--a-space-8) var(--a-space-6);
+  }
+
+  &__hint {
+    padding: var(--a-space-6);
+  }
+
   &__camera {
     width: 100%;
     height: 300px;

@@ -14,7 +14,7 @@ exports[`QrcodeScannerDialog.vue > renders the correct markup 1`] = `
     <!-- Camera Waiting -->
     <v-row
       align="center"
-      class="pa-8"
+      class="qrcode-scanner-dialog__status"
       data-v-c5e2af2c=""
       gap="0"
       justify="center"
@@ -54,7 +54,7 @@ exports[`QrcodeScannerDialog.vue > renders the correct markup 1`] = `
         </div>
       </v-col>
       <v-col
-        class="pa-6"
+        class="qrcode-scanner-dialog__hint"
         cols="12"
         data-v-c5e2af2c=""
       >
@@ -73,6 +73,7 @@ exports[`QrcodeScannerDialog.vue > renders the correct markup 1`] = `
       data-v-c5e2af2c=""
     />
     <v-card-actions
+      class="qrcode-scanner-dialog__dialog-actions"
       data-v-c5e2af2c=""
     >
       <v-spacer

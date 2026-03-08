@@ -30,6 +30,11 @@ const shareUriDialogPath = path.resolve(currentDir, '../../components/ShareURIDi
 const buyTokensDialogPath = path.resolve(currentDir, '../../components/BuyTokensDialog.vue')
 const chatDialogPath = path.resolve(currentDir, '../../components/Chat/ChatDialog.vue')
 const partnerInfoDialogPath = path.resolve(currentDir, '../../components/PartnerInfo.vue')
+const qrcodeRendererDialogPath = path.resolve(
+  currentDir,
+  '../../components/QrcodeRendererDialog.vue'
+)
+const qrcodeScannerDialogPath = path.resolve(currentDir, '../../components/QrcodeScannerDialog.vue')
 const sendFundsFormPath = path.resolve(currentDir, '../../components/SendFundsForm.vue')
 const httpProtocolInfoDialogPath = path.resolve(
   currentDir,
@@ -95,6 +100,8 @@ describe('Secondary dialogs UI contract', () => {
     const buyTokensContent = readFileSync(buyTokensDialogPath, 'utf8')
     const chatDialogContent = readFileSync(chatDialogPath, 'utf8')
     const partnerInfoContent = readFileSync(partnerInfoDialogPath, 'utf8')
+    const qrcodeRendererContent = readFileSync(qrcodeRendererDialogPath, 'utf8')
+    const qrcodeScannerContent = readFileSync(qrcodeScannerDialogPath, 'utf8')
     const sendFundsFormContent = readFileSync(sendFundsFormPath, 'utf8')
     const httpProtocolInfoContent = readFileSync(httpProtocolInfoDialogPath, 'utf8')
     const votesViewContent = readFileSync(votesViewPath, 'utf8')
@@ -151,7 +158,26 @@ describe('Secondary dialogs UI contract', () => {
 
     expect(partnerInfoContent).toContain("const className = 'partner-info-dialog'")
     expect(partnerInfoContent).toContain('`${className}__list`')
+    expect(partnerInfoContent).toContain('bg-color="transparent"')
+    expect(partnerInfoContent).toContain('background: inherit;')
     expect(partnerInfoContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
+
+    expect(qrcodeRendererContent).toContain("className: () => 'qrcode-renderer-dialog'")
+    expect(qrcodeRendererContent).toContain('`${className}__body`')
+    expect(qrcodeRendererContent).toContain('`${className}__content`')
+    expect(qrcodeRendererContent).toContain('`${className}__button`')
+    expect(qrcodeRendererContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
+    expect(qrcodeRendererContent).not.toContain('class="py-3"')
+    expect(qrcodeRendererContent).not.toContain('class="a-btn-primary mt-4 mb-2"')
+
+    expect(qrcodeScannerContent).toContain("const className = 'qrcode-scanner-dialog'")
+    expect(qrcodeScannerContent).toContain('`${classes.root}__status`')
+    expect(qrcodeScannerContent).toContain('`${classes.root}__hint`')
+    expect(qrcodeScannerContent).toContain('`${classes.root}__state`')
+    expect(qrcodeScannerContent).toContain('`${classes.root}__dialog-actions`')
+    expect(qrcodeScannerContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
+    expect(qrcodeScannerContent).not.toContain('class="pa-8"')
+    expect(qrcodeScannerContent).not.toContain('class="pa-6"')
 
     expect(sendFundsFormContent).toContain('send-funds-confirm-dialog__dialog-title')
     expect(sendFundsFormContent).toContain('send-funds-confirm-dialog__dialog-body')

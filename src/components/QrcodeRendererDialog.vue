@@ -1,15 +1,17 @@
 <template>
-  <v-dialog v-model="show" width="250">
+  <v-dialog v-model="show" width="250" :class="className">
     <v-card>
-      <v-row justify="center" class="py-3" gap="0">
-        <div :style="{ cursor: 'pointer' }" @click="saveQrcode">
-          <QrcodeRenderer ref="qrcode" :text="text" :logo="logoURL" :opts="opts" />
-        </div>
+      <v-card-text :class="`${className}__body`">
+        <div :class="`${className}__content`">
+          <div :style="{ cursor: 'pointer' }" @click="saveQrcode">
+            <QrcodeRenderer ref="qrcode" :text="text" :logo="logoURL" :opts="opts" />
+          </div>
 
-        <v-btn class="a-btn-primary mt-4 mb-2" @click="saveQrcode">
-          {{ $t('login.save_qr_code_to_images') }}
-        </v-btn>
-      </v-row>
+          <v-btn :class="[`${className}__button`, 'a-btn-primary']" @click="saveQrcode">
+            {{ $t('login.save_qr_code_to_images') }}
+          </v-btn>
+        </div>
+      </v-card-text>
     </v-card>
   </v-dialog>
 </template>
@@ -46,6 +48,7 @@ export default {
     }
   }),
   computed: {
+    className: () => 'qrcode-renderer-dialog',
     show: {
       get() {
         return this.modelValue
@@ -69,3 +72,22 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+
+.qrcode-renderer-dialog {
+  @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__button {
+    margin-top: var(--a-space-4);
+    margin-bottom: var(--a-space-2);
+  }
+}
+</style>

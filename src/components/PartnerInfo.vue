@@ -9,7 +9,7 @@
         </v-btn>
       </v-card-title>
       <v-divider class="a-divider" />
-      <v-list lines="two" :class="`${className}__list`">
+      <v-list bg-color="transparent" lines="two" :class="`${className}__list`">
         <v-list-item>
           <template #prepend>
             <icon-box>
@@ -99,6 +99,10 @@ const text = computed(() =>
   &__dialog-title {
     display: flex;
     align-items: center;
+  }
+
+  &__list {
+    background: inherit;
   }
 }
 
