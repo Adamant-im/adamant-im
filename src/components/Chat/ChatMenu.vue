@@ -201,7 +201,7 @@ function fetchCryptoAddress(selectedCrypto: string): Promise<any> {
     max-height: 100vh;
 
     :deep(.v-list-item-title) {
-      font-weight: 400;
+      font-weight: 300;
     }
   }
 }

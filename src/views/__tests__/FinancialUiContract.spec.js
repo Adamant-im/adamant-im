@@ -50,7 +50,7 @@ describe('Financial UI style contract', () => {
     expect(menuMixinContent).toContain('var(--a-input-action-menu-item-padding-inline)')
     expect(menuMixinContent).toContain('var(--a-input-action-menu-title-font-size)')
     expect(menuMixinContent).toContain('var(--a-input-action-menu-title-line-height)')
-    expect(menuMixinContent).toContain('font-weight: var(--a-font-weight-regular);')
+    expect(menuMixinContent).toContain('font-weight: var(--a-font-weight-light);')
 
     expect(fakeInputContent).toContain('var(--a-fake-input-padding-top)')
     expect(fakeInputContent).toContain('var(--a-fake-input-margin-top)')

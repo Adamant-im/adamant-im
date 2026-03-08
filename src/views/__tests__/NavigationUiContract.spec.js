@@ -128,7 +128,7 @@ describe('Navigation UI style contract', () => {
     expect(mixinContent).toContain('var(--a-switcher-menu-row-padding-block)')
     expect(mixinContent).toContain('var(--a-switcher-menu-title-font-size)')
     expect(mixinContent).toContain('var(--a-switcher-menu-title-line-height)')
-    expect(mixinContent).toContain('font-weight: var(--a-font-weight-regular);')
+    expect(mixinContent).toContain('font-weight: var(--a-font-weight-light);')
 
     for (const content of [languageContent, currencyContent]) {
       expect(content).toContain('switcherMenu.a-switcher-menu()')

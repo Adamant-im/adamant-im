@@ -104,8 +104,8 @@ test.describe('Navigation layout regressions', () => {
     expect(languageMetrics?.titleFontSize ?? 99).toBeLessThanOrEqual(17)
     expect(languageMetrics?.titleLineHeight ?? 0).toBeGreaterThanOrEqual(23)
     expect(languageMetrics?.titleLineHeight ?? 99).toBeLessThanOrEqual(25)
-    expect(languageMetrics?.titleFontWeight ?? 0).toBeGreaterThanOrEqual(399)
-    expect(languageMetrics?.titleFontWeight ?? 999).toBeLessThanOrEqual(401)
+    expect(languageMetrics?.titleFontWeight ?? 0).toBeGreaterThanOrEqual(299)
+    expect(languageMetrics?.titleFontWeight ?? 999).toBeLessThanOrEqual(301)
 
     await page.keyboard.press('Escape')
 

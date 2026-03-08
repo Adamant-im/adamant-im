@@ -531,8 +531,8 @@ test.describe('Chats layout regressions', () => {
     expect(menuMetrics?.titleFontSize ?? 99).toBeLessThanOrEqual(17)
     expect(menuMetrics?.titleLineHeight ?? 0).toBeGreaterThanOrEqual(23)
     expect(menuMetrics?.titleLineHeight ?? 99).toBeLessThanOrEqual(25)
-    expect(menuMetrics?.titleFontWeight ?? 0).toBeGreaterThanOrEqual(399)
-    expect(menuMetrics?.titleFontWeight ?? 999).toBeLessThanOrEqual(401)
+    expect(menuMetrics?.titleFontWeight ?? 0).toBeGreaterThanOrEqual(299)
+    expect(menuMetrics?.titleFontWeight ?? 999).toBeLessThanOrEqual(301)
 
     await assertNoDocumentScrollLeak(page)
   })

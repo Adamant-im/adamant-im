@@ -156,8 +156,8 @@ test.describe('Transfer layout regressions', () => {
     expect(styles?.menuItemTitleFontSize ?? 99).toBeLessThanOrEqual(17)
     expect(styles?.menuItemTitleLineHeight ?? 0).toBeGreaterThanOrEqual(23)
     expect(styles?.menuItemTitleLineHeight ?? 99).toBeLessThanOrEqual(25)
-    expect(styles?.menuItemTitleFontWeight ?? 0).toBeGreaterThanOrEqual(399)
-    expect(styles?.menuItemTitleFontWeight ?? 999).toBeLessThanOrEqual(401)
+    expect(styles?.menuItemTitleFontWeight ?? 0).toBeGreaterThanOrEqual(299)
+    expect(styles?.menuItemTitleFontWeight ?? 999).toBeLessThanOrEqual(301)
 
     await assertNoDocumentScrollLeak(page)
   })
