@@ -23,17 +23,33 @@ const assertSplitShellVisible = async (page: Page) => {
   await expect(page.locator('.sidebar__layout')).toBeVisible()
 
   const paneMetrics = await page.evaluate(() => {
+    const sidebar = document.querySelector<HTMLElement>('.sidebar')
     const aside = document.querySelector<HTMLElement>('.sidebar__aside')
     const layout = document.querySelector<HTMLElement>('.sidebar__layout')
+    const sidebarStyle = sidebar ? getComputedStyle(sidebar) : null
+    const asideStyle = aside ? getComputedStyle(aside) : null
+    const asideHandleStyle = aside ? getComputedStyle(aside, '::after') : null
 
     return {
+      sidebarWidth: sidebar?.clientWidth ?? 0,
+      sidebarMaxWidth: sidebarStyle ? Number.parseFloat(sidebarStyle.maxWidth) : 0,
       asideHeight: aside?.clientHeight ?? 0,
+      asideMaxWidth: asideStyle ? Number.parseFloat(asideStyle.maxWidth) : 0,
+      asideMaxWidthRaw: asideStyle?.maxWidth ?? '',
+      asideResizeHandleWidth: asideHandleStyle ? Number.parseFloat(asideHandleStyle.width) : 0,
       layoutHeight: layout?.clientHeight ?? 0
     }
   })
 
+  expect(paneMetrics.sidebarWidth).toBeGreaterThan(0)
+  expect(paneMetrics.sidebarMaxWidth).toBeGreaterThanOrEqual(1511)
+  expect(paneMetrics.sidebarMaxWidth).toBeLessThanOrEqual(1513)
   expect(paneMetrics.asideHeight).toBeGreaterThan(0)
   expect(paneMetrics.layoutHeight).toBeGreaterThan(0)
+  expect(paneMetrics.asideMaxWidthRaw).toBe('75%')
+  expect(paneMetrics.asideMaxWidth).toBe(75)
+  expect(paneMetrics.asideResizeHandleWidth).toBeGreaterThanOrEqual(9)
+  expect(paneMetrics.asideResizeHandleWidth).toBeLessThanOrEqual(11)
   expect(Math.abs(paneMetrics.asideHeight - paneMetrics.layoutHeight)).toBeLessThanOrEqual(2)
 }
 

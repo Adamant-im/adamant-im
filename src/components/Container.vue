@@ -37,7 +37,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .a-container {
   width: 100%;
-  max-width: 800px;
+  max-width: var(--a-layout-content-max-width);
   position: relative;
 
   &--no-mw {

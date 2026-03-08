@@ -5,7 +5,10 @@
       [classes.root]: true,
       [classes.rootWithAside]: needAside
     }"
-    :style="{ '--asideWidth': asideWidth }"
+    :style="{
+      '--asideWidth': asideWidth,
+      '--asideResizeHandleWidth': `${ASIDE_RESIZE_HANDLE_WIDTH}px`
+    }"
   >
     <aside
       v-if="needAside"
@@ -76,6 +79,7 @@ const classes = {
 const layout = computed(() => route.meta.layout || 'default')
 
 const SAVED_WIDTH_KEY = 'aside_width'
+const ASIDE_RESIZE_HANDLE_WIDTH = 10
 
 const asideRef = useTemplateRef('aside')
 let isResizing = false
@@ -118,7 +122,7 @@ const startResize = (event: MouseEvent) => {
   const { left, width: boxWidth } = asideRef.value.getBoundingClientRect()
   const mouseX = event.clientX
 
-  if (mouseX >= left + boxWidth - 10 && !isResizing) {
+  if (mouseX >= left + boxWidth - ASIDE_RESIZE_HANDLE_WIDTH && !isResizing) {
     isResizing = true
     document.body.style.cursor = 'ew-resize'
     document.addEventListener('mousemove', resize)
@@ -273,11 +277,11 @@ onBeforeUnmount(() => {
 
 .sidebar {
   display: flex;
-  max-width: 800px;
+  max-width: var(--a-layout-content-max-width);
   width: 100%;
 
   &__with-aside {
-    max-width: 1512px;
+    max-width: var(--a-layout-split-max-width);
     @media (min-width: 1513px) {
       border-right: var(--a-border-width-strong) solid black;
       border-left: var(--a-border-width-strong) solid black;
@@ -290,7 +294,7 @@ onBeforeUnmount(() => {
     height: var(--a-layout-height);
     border-right: var(--a-border-width-strong) solid black;
     position: relative;
-    max-width: 75%;
+    max-width: var(--a-layout-split-pane-max-width-ratio);
     user-select: none;
 
     @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
@@ -304,7 +308,7 @@ onBeforeUnmount(() => {
       position: absolute;
       right: 0;
       top: 0;
-      width: 10px;
+      width: var(--asideResizeHandleWidth);
       height: 100%;
       cursor: ew-resize;
 
@@ -347,7 +351,7 @@ onBeforeUnmount(() => {
 
     &--no-aside {
       width: 100%;
-      max-width: 800px;
+      max-width: var(--a-layout-content-max-width);
     }
 
     &--logo {
@@ -355,7 +359,7 @@ onBeforeUnmount(() => {
     }
 
     img {
-      max-width: 512px;
+      max-width: var(--a-layout-logo-max-width);
       width: 100%;
       height: auto;
       user-select: none;

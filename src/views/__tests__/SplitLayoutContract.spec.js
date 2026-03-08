@@ -7,6 +7,7 @@ const currentDir = path.dirname(fileURLToPath(import.meta.url))
 
 const layoutVariablesPath = path.resolve(currentDir, '../../assets/styles/generic/_variables.scss')
 const layoutScssPath = path.resolve(currentDir, '../../assets/styles/generic/_layout.scss')
+const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
 const appSidebarPath = path.resolve(currentDir, '../AppSidebar.vue')
 const chatsPath = path.resolve(currentDir, '../../components/Chat/Chats.vue')
 const walletsPath = path.resolve(currentDir, '../Wallets.vue')
@@ -43,11 +44,29 @@ describe('Split layout style contract', () => {
   })
 
   it('keeps sidebar pane bound to shared layout height tokens and utility class', () => {
+    const tokensContent = readFileSync(genericTokensPath, 'utf8')
     const content = readFileSync(appSidebarPath, 'utf8')
 
+    expect(tokensContent).toContain('--a-layout-content-max-width')
+    expect(tokensContent).toContain('--a-layout-split-max-width')
+    expect(tokensContent).toContain('--a-layout-split-pane-max-width-ratio')
+    expect(tokensContent).toContain('--a-layout-resize-handle-width')
+    expect(tokensContent).toContain('--a-layout-logo-max-width')
+    expect(content).toContain('const ASIDE_RESIZE_HANDLE_WIDTH = 10')
+    expect(content).toContain("'--asideResizeHandleWidth': `${ASIDE_RESIZE_HANDLE_WIDTH}px`")
+    expect(content).toContain('max-width: var(--a-layout-content-max-width);')
+    expect(content).toContain('max-width: var(--a-layout-split-max-width);')
+    expect(content).toContain('max-width: var(--a-layout-split-pane-max-width-ratio);')
+    expect(content).toContain('width: var(--asideResizeHandleWidth);')
+    expect(content).toContain('max-width: var(--a-layout-logo-max-width);')
     expect(content).toContain('height: var(--a-layout-height);')
     expect(content).toContain('height: var(--a-layout-height-safe);')
     expect(content).toContain("'a-scroll-pane'")
+    expect(content).not.toContain('max-width: 800px;')
+    expect(content).not.toContain('max-width: 1512px;')
+    expect(content).not.toContain('max-width: 75%;')
+    expect(content).not.toContain('width: 10px;')
+    expect(content).not.toContain('max-width: 512px;')
   })
 
   it('uses shared split-pane utility in chats list pane', () => {
