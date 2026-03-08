@@ -38,6 +38,10 @@ const delegatesLoaderPath = path.resolve(
   currentDir,
   '../../components/DelegatesTable/DelegatesLoader.vue'
 )
+const delegatesNotFoundPath = path.resolve(
+  currentDir,
+  '../../components/DelegatesTable/DelegatesNotFound.vue'
+)
 const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
 
 describe('Votes UI style contract', () => {
@@ -142,5 +146,21 @@ describe('Votes UI style contract', () => {
     expect(loaderContent).toContain('line-height: var(--a-delegates-loader-line-height);')
     expect(loaderContent).not.toContain('class="mr-3"')
     expect(loaderContent).not.toContain('line-height: 1;')
+  })
+
+  it('uses shared tokens for votes dialog width and delegates not-found spacing', () => {
+    const tokensContent = readFileSync(genericTokensPath, 'utf8')
+    const votesContent = readFileSync(votesPath, 'utf8')
+    const notFoundContent = readFileSync(delegatesNotFoundPath, 'utf8')
+
+    expect(tokensContent).toContain('--a-delegates-summary-dialog-width')
+    expect(tokensContent).toContain('--a-delegates-not-found-margin-block')
+    expect(votesContent).toContain('width="var(--a-delegates-summary-dialog-width)"')
+    expect(votesContent).toContain('var(--a-border-width-thin) solid')
+    expect(votesContent).not.toContain('width="500"')
+    expect(votesContent).not.toContain('1px solid')
+    expect(notFoundContent).toContain('margin-block: var(--a-delegates-not-found-margin-block);')
+    expect(notFoundContent).not.toContain('margin-top: 4px;')
+    expect(notFoundContent).not.toContain('margin-bottom: 4px;')
   })
 })

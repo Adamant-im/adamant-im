@@ -37,8 +37,7 @@ export default defineComponent({
 <style lang="scss">
 .delegates-not-found {
   &__alert {
-    margin-top: 4px;
-    margin-bottom: 4px;
+    margin-block: var(--a-delegates-not-found-margin-block);
   }
 }
 </style>

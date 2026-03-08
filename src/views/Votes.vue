@@ -48,7 +48,11 @@
       </template>
     </SettingsTableShell>
 
-    <v-dialog v-model="dialog" width="500" :class="summaryDialogClass">
+    <v-dialog
+      v-model="dialog"
+      width="var(--a-delegates-summary-dialog-width)"
+      :class="summaryDialogClass"
+    >
       <v-card>
         <v-card-title :class="`${summaryDialogClass}__dialog-title`">
           {{ t('votes.summary_title') }}
@@ -292,7 +296,7 @@ const showConfirmationDialog = () => {
 
   .delegates-view :deep(.settings-data-table) tbody tr:not(:last-child) {
     border-bottom:
-      1px solid,
+      var(--a-border-width-thin) solid,
       map.get(colors.$adm-colors, 'secondary2');
   }
 }
