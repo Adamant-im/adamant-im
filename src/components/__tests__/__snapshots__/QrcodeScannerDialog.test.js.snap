@@ -26,7 +26,7 @@ exports[`QrcodeScannerDialog.vue > renders the correct markup 1`] = `
         Waiting for camera…
       </div>
       <v-progress-circular
-        class="ml-4"
+        class="qrcode-scanner-dialog__waiting-spinner"
         color="primary"
         data-v-c5e2af2c=""
         indeterminate=""

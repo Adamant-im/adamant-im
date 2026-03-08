@@ -12,7 +12,12 @@
         <div class="a-text-header">
           {{ t('scan.waiting_camera') }}
         </div>
-        <v-progress-circular indeterminate color="primary" size="32" class="ml-4" />
+        <v-progress-circular
+          indeterminate
+          color="primary"
+          :size="QRCODE_SCANNER_WAITING_SPINNER_SIZE"
+          :class="`${classes.root}__waiting-spinner`"
+        />
       </v-row>
 
       <!-- Camera Active -->
@@ -108,6 +113,7 @@ import { mdiCamera } from '@mdi/js'
 import { logger } from '@/utils/devTools/logger'
 
 const className = 'qrcode-scanner-dialog'
+const QRCODE_SCANNER_WAITING_SPINNER_SIZE = 32
 const classes = {
   root: className,
   camera: `${className}__camera`,
@@ -224,6 +230,7 @@ export default defineComponent({
       currentCamera,
       noStreamDetails,
       props,
+      QRCODE_SCANNER_WAITING_SPINNER_SIZE,
       show,
       videoElement,
       mdiCamera
@@ -243,13 +250,17 @@ export default defineComponent({
     padding: var(--a-space-8) var(--a-space-6);
   }
 
+  &__waiting-spinner {
+    margin-inline-start: var(--a-space-4);
+  }
+
   &__hint {
     padding: var(--a-space-6);
   }
 
   &__camera {
     width: 100%;
-    height: 300px;
+    height: var(--a-qrcode-scanner-camera-height);
     background-color: #000;
     position: relative;
 
@@ -268,7 +279,7 @@ export default defineComponent({
     bottom: 0;
     :deep(.v-btn) {
       min-width: auto;
-      padding: 0 8px;
+      padding: 0 var(--a-qrcode-scanner-camera-select-padding-inline);
     }
   }
 }

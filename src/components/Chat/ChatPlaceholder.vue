@@ -11,7 +11,11 @@
       :class="[classes.container, `${classes.container}_public-key`]"
     >
       <div v-if="!isKeyMissing">
-        <v-progress-circular :class="classes.spinner" indeterminate :size="20" />
+        <v-progress-circular
+          :class="classes.spinner"
+          indeterminate
+          :size="CHAT_PLACEHOLDER_PUBLIC_KEY_SPINNER_SIZE"
+        />
         {{ t('chats.placeholder.public-key') }}
       </div>
       <div v-else>
@@ -28,6 +32,7 @@
 import { useI18n } from 'vue-i18n'
 import { joinUrl } from '@/lib/urlFormatter'
 
+const CHAT_PLACEHOLDER_PUBLIC_KEY_SPINNER_SIZE = 20
 const { t } = useI18n()
 
 type Props = {
@@ -99,8 +104,8 @@ function openLink() {
   }
 
   &__logo {
-    width: 100px;
-    height: 100px;
+    width: var(--a-chat-placeholder-logo-size);
+    height: var(--a-chat-placeholder-logo-size);
   }
 }
 

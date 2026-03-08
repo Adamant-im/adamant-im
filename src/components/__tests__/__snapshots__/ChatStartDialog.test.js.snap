@@ -87,7 +87,7 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
             style="cursor: pointer;"
           >
             <div
-              class="spinner-container"
+              class="qrcode-renderer__spinner-container"
               data-v-426ca6ff=""
               data-v-537400c4=""
             >
@@ -98,7 +98,7 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
               >
                 <v-progress-circular
                   class="progress-circular"
-                  color="#4A4A4A"
+                  color="var(--a-spinner-neutral-color)"
                   indeterminate=""
                   size="152"
                   stroke="1"
