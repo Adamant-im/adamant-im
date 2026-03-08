@@ -109,7 +109,7 @@ const getFreeTokens = () => {
 
 .wallet-actions {
   --a-wallet-actions-icon-gap: var(--a-space-4);
-  --a-wallet-actions-item-padding-inline: 28px;
+  --a-wallet-actions-item-padding-inline: var(--a-wallet-card-item-padding-inline-start);
   --a-wallet-actions-row-min-height: var(--a-list-row-min-height);
   --a-wallet-actions-row-padding-block: var(--a-list-row-padding-block);
 

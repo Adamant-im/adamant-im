@@ -103,13 +103,16 @@ describe('Financial UI style contract', () => {
   it('uses shared list row tokens in wallet actions list', () => {
     const content = readFileSync(walletActionsPath, 'utf8')
 
+    expect(content).toContain('--a-wallet-actions-item-padding-inline')
     expect(content).toContain('--a-wallet-actions-row-min-height')
     expect(content).toContain('--a-wallet-actions-row-padding-block')
+    expect(content).toContain('var(--a-wallet-card-item-padding-inline-start)')
     expect(content).toContain('var(--a-list-row-min-height)')
     expect(content).toContain('var(--a-list-row-padding-block)')
     expect(content).toContain('min-height: var(--a-wallet-actions-row-min-height);')
     expect(content).toContain('padding-top: var(--a-wallet-actions-row-padding-block);')
     expect(content).toContain('padding-bottom: var(--a-wallet-actions-row-padding-block);')
+    expect(content).not.toContain('--a-wallet-actions-item-padding-inline: 28px;')
     expect(content).not.toContain('min-height: 56px;')
     expect(content).not.toContain('padding-top: 8px;')
     expect(content).not.toContain('padding-bottom: 8px;')

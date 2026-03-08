@@ -45,7 +45,7 @@
       </v-list-item>
     </v-list>
 
-    <WalletCardListActions :class="classes.walletCardList" :crypto="crypto" :is-a-d-m="isADM" />
+    <WalletCardListActions :class="classes.walletCardActions" :crypto="crypto" :is-a-d-m="isADM" />
 
     <ShareURIDialog
       v-model="showShareURIDialog"
@@ -83,6 +83,7 @@ type Props = {
 const classes = {
   root: className,
   walletCardAction: `${className}__action`,
+  walletCardActions: `${className}__actions`,
   walletCardIcon: `${className}__icon`,
   walletCardList: `${className}__list`,
   walletCardSubtitle: `${className}__subtitle`,
@@ -135,7 +136,7 @@ const isADM = computed(() => {
   }
   &__subtitle {
     @include mixins.a-text-regular-enlarged();
-    line-height: 24px;
+    line-height: var(--a-wallet-card-subtitle-line-height);
     word-break: break-word;
     display: block;
     white-space: nowrap;
@@ -148,13 +149,14 @@ const isADM = computed(() => {
     }
   }
   &__list {
-    padding: 8px 0 0;
+    padding-block-start: var(--a-wallet-card-list-padding-top);
+    padding-block-end: 0;
   }
 }
 
 ::v-deep(.wallet-card__list .wallet-card__tile) {
-  padding-inline: 16px;
-  padding-left: 28px;
+  padding-inline-start: var(--a-wallet-card-item-padding-inline-start);
+  padding-inline-end: var(--a-wallet-card-item-padding-inline-end);
 }
 
 /** Themes **/
