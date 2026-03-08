@@ -30,6 +30,14 @@ const delegateDetailsExpanderPath = path.resolve(
   currentDir,
   '../../components/DelegatesTable/DelegateDetailsExpander.vue'
 )
+const delegateVoteCheckboxPath = path.resolve(
+  currentDir,
+  '../../components/DelegatesTable/DelegateVoteCheckbox.vue'
+)
+const delegatesLoaderPath = path.resolve(
+  currentDir,
+  '../../components/DelegatesTable/DelegatesLoader.vue'
+)
 const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
 
 describe('Votes UI style contract', () => {
@@ -107,5 +115,32 @@ describe('Votes UI style contract', () => {
     expect(expanderContent).not.toContain(':deep(.v-list__tile)')
     expect(expanderContent).not.toContain('padding-left: 20px;')
     expect(expanderContent).not.toContain('padding-right: 20px;')
+  })
+
+  it('uses shared tokens for delegates vote checkbox and loading row spacing', () => {
+    const tokensContent = readFileSync(genericTokensPath, 'utf8')
+    const checkboxContent = readFileSync(delegateVoteCheckboxPath, 'utf8')
+    const loaderContent = readFileSync(delegatesLoaderPath, 'utf8')
+
+    expect(tokensContent).toContain('--a-delegate-vote-checkbox-icon-size')
+    expect(tokensContent).toContain('--a-delegates-loader-gap')
+    expect(tokensContent).toContain('--a-delegates-loader-line-height')
+    expect(tokensContent).toContain('--a-delegates-loader-padding-block')
+
+    expect(checkboxContent).toContain('classes.root')
+    expect(checkboxContent).toContain('var(--a-delegate-vote-checkbox-icon-size)')
+    expect(checkboxContent).toContain('inline-size: var(--a-delegate-vote-checkbox-icon-size);')
+    expect(checkboxContent).toContain('block-size: var(--a-delegate-vote-checkbox-icon-size);')
+    expect(checkboxContent).not.toContain('font-size: 24px !important;')
+    expect(checkboxContent).not.toContain('height: 24px !important;')
+    expect(checkboxContent).not.toContain('size="large"')
+
+    expect(loaderContent).toContain('classes.content')
+    expect(loaderContent).toContain('classes.spinner')
+    expect(loaderContent).toContain('gap: var(--a-delegates-loader-gap);')
+    expect(loaderContent).toContain('padding-block: var(--a-delegates-loader-padding-block);')
+    expect(loaderContent).toContain('line-height: var(--a-delegates-loader-line-height);')
+    expect(loaderContent).not.toContain('class="mr-3"')
+    expect(loaderContent).not.toContain('line-height: 1;')
   })
 })
