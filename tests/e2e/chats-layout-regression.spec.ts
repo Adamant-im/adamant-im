@@ -434,6 +434,9 @@ test.describe('Chats layout regressions', () => {
       const title = document.querySelector('.chat-start-dialog__card-title') as HTMLElement | null
       const body = document.querySelector('.chat-start-dialog__body') as HTMLElement | null
       const field = body?.querySelector('.v-field') as HTMLElement | null
+      const menuActivator = body?.querySelector(
+        '.chat-start-dialog__menu-activator'
+      ) as HTMLElement | null
       const startButton = document.querySelector(
         '.chat-start-dialog__btn-start-chat'
       ) as HTMLElement | null
@@ -441,7 +444,7 @@ test.describe('Chats layout regressions', () => {
         '.chat-start-dialog__btn-show-qrcode'
       ) as HTMLElement | null
 
-      if (!title || !body || !field || !startButton || !qrLink) {
+      if (!title || !body || !field || !menuActivator || !startButton || !qrLink) {
         return null
       }
 
@@ -484,6 +487,52 @@ test.describe('Chats layout regressions', () => {
     expect(metrics?.qrLinkMarginTop ?? 99).toBeLessThanOrEqual(16)
     expect(metrics?.qrLinkMarginBottom ?? 0).toBeGreaterThanOrEqual(14)
     expect(metrics?.qrLinkMarginBottom ?? 99).toBeLessThanOrEqual(16)
+
+    await page.locator('.chat-start-dialog__menu-activator').click()
+    await expect(page.locator('.chat-start-dialog__menu-list')).toBeVisible()
+
+    const menuMetrics = await page.evaluate(() => {
+      const item = document.querySelector('.chat-start-dialog__menu-item') as HTMLElement | null
+      const title = document.querySelector(
+        '.chat-start-dialog__menu-item-title'
+      ) as HTMLElement | null
+
+      if (!item || !title) {
+        return null
+      }
+
+      const itemStyle = getComputedStyle(item)
+      const titleStyle = getComputedStyle(title)
+
+      return {
+        itemPaddingInlineStart: Number.parseFloat(itemStyle.paddingInlineStart),
+        itemPaddingInlineEnd: Number.parseFloat(itemStyle.paddingInlineEnd),
+        itemMinHeight: Number.parseFloat(itemStyle.minHeight),
+        itemPaddingTop: Number.parseFloat(itemStyle.paddingTop),
+        itemPaddingBottom: Number.parseFloat(itemStyle.paddingBottom),
+        titleFontSize: Number.parseFloat(titleStyle.fontSize),
+        titleLineHeight: Number.parseFloat(titleStyle.lineHeight),
+        titleFontWeight: Number.parseFloat(titleStyle.fontWeight)
+      }
+    })
+
+    expect(menuMetrics).not.toBeNull()
+    expect(menuMetrics?.itemPaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
+    expect(menuMetrics?.itemPaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
+    expect(menuMetrics?.itemPaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)
+    expect(menuMetrics?.itemPaddingInlineEnd ?? 99).toBeLessThanOrEqual(25)
+    expect(menuMetrics?.itemMinHeight ?? 0).toBeGreaterThanOrEqual(55)
+    expect(menuMetrics?.itemMinHeight ?? 99).toBeLessThanOrEqual(57)
+    expect(menuMetrics?.itemPaddingTop ?? 0).toBeGreaterThanOrEqual(7)
+    expect(menuMetrics?.itemPaddingTop ?? 99).toBeLessThanOrEqual(9)
+    expect(menuMetrics?.itemPaddingBottom ?? 0).toBeGreaterThanOrEqual(7)
+    expect(menuMetrics?.itemPaddingBottom ?? 99).toBeLessThanOrEqual(9)
+    expect(menuMetrics?.titleFontSize ?? 0).toBeGreaterThanOrEqual(15)
+    expect(menuMetrics?.titleFontSize ?? 99).toBeLessThanOrEqual(17)
+    expect(menuMetrics?.titleLineHeight ?? 0).toBeGreaterThanOrEqual(23)
+    expect(menuMetrics?.titleLineHeight ?? 99).toBeLessThanOrEqual(25)
+    expect(menuMetrics?.titleFontWeight ?? 0).toBeGreaterThanOrEqual(399)
+    expect(menuMetrics?.titleFontWeight ?? 999).toBeLessThanOrEqual(401)
 
     await assertNoDocumentScrollLeak(page)
   })

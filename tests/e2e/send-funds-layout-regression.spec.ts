@@ -120,7 +120,8 @@ test.describe('Transfer layout regressions', () => {
         menuItemPaddingTop: Number.parseFloat(menuItemStyle.paddingTop),
         menuItemPaddingBottom: Number.parseFloat(menuItemStyle.paddingBottom),
         menuItemTitleFontSize: Number.parseFloat(menuItemTitleStyle.fontSize),
-        menuItemTitleLineHeight: Number.parseFloat(menuItemTitleStyle.lineHeight)
+        menuItemTitleLineHeight: Number.parseFloat(menuItemTitleStyle.lineHeight),
+        menuItemTitleFontWeight: Number.parseFloat(menuItemTitleStyle.fontWeight)
       }
     })
 
@@ -151,10 +152,12 @@ test.describe('Transfer layout regressions', () => {
     expect(styles?.menuItemPaddingTop ?? 99).toBeLessThanOrEqual(9)
     expect(styles?.menuItemPaddingBottom ?? 0).toBeGreaterThanOrEqual(7)
     expect(styles?.menuItemPaddingBottom ?? 99).toBeLessThanOrEqual(9)
-    expect(styles?.menuItemTitleFontSize ?? 0).toBeGreaterThanOrEqual(13)
-    expect(styles?.menuItemTitleFontSize ?? 99).toBeLessThanOrEqual(15)
-    expect(styles?.menuItemTitleLineHeight ?? 0).toBeGreaterThanOrEqual(19)
-    expect(styles?.menuItemTitleLineHeight ?? 99).toBeLessThanOrEqual(21)
+    expect(styles?.menuItemTitleFontSize ?? 0).toBeGreaterThanOrEqual(15)
+    expect(styles?.menuItemTitleFontSize ?? 99).toBeLessThanOrEqual(17)
+    expect(styles?.menuItemTitleLineHeight ?? 0).toBeGreaterThanOrEqual(23)
+    expect(styles?.menuItemTitleLineHeight ?? 99).toBeLessThanOrEqual(25)
+    expect(styles?.menuItemTitleFontWeight ?? 0).toBeGreaterThanOrEqual(399)
+    expect(styles?.menuItemTitleFontWeight ?? 999).toBeLessThanOrEqual(401)
 
     await assertNoDocumentScrollLeak(page)
   })

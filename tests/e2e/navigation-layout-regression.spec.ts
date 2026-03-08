@@ -84,7 +84,8 @@ test.describe('Navigation layout regressions', () => {
         itemPaddingTop: Number.parseFloat(itemStyle.paddingTop),
         itemPaddingBottom: Number.parseFloat(itemStyle.paddingBottom),
         titleFontSize: Number.parseFloat(titleStyle.fontSize),
-        titleLineHeight: Number.parseFloat(titleStyle.lineHeight)
+        titleLineHeight: Number.parseFloat(titleStyle.lineHeight),
+        titleFontWeight: Number.parseFloat(titleStyle.fontWeight)
       }
     })
 
@@ -99,10 +100,12 @@ test.describe('Navigation layout regressions', () => {
     expect(languageMetrics?.itemPaddingTop ?? 99).toBeLessThanOrEqual(9)
     expect(languageMetrics?.itemPaddingBottom ?? 0).toBeGreaterThanOrEqual(7)
     expect(languageMetrics?.itemPaddingBottom ?? 99).toBeLessThanOrEqual(9)
-    expect(languageMetrics?.titleFontSize ?? 0).toBeGreaterThanOrEqual(13)
-    expect(languageMetrics?.titleFontSize ?? 99).toBeLessThanOrEqual(15)
-    expect(languageMetrics?.titleLineHeight ?? 0).toBeGreaterThanOrEqual(19)
-    expect(languageMetrics?.titleLineHeight ?? 99).toBeLessThanOrEqual(21)
+    expect(languageMetrics?.titleFontSize ?? 0).toBeGreaterThanOrEqual(15)
+    expect(languageMetrics?.titleFontSize ?? 99).toBeLessThanOrEqual(17)
+    expect(languageMetrics?.titleLineHeight ?? 0).toBeGreaterThanOrEqual(23)
+    expect(languageMetrics?.titleLineHeight ?? 99).toBeLessThanOrEqual(25)
+    expect(languageMetrics?.titleFontWeight ?? 0).toBeGreaterThanOrEqual(399)
+    expect(languageMetrics?.titleFontWeight ?? 999).toBeLessThanOrEqual(401)
 
     await page.keyboard.press('Escape')
 
@@ -129,7 +132,8 @@ test.describe('Navigation layout regressions', () => {
         itemPaddingTop: Number.parseFloat(itemStyle.paddingTop),
         itemPaddingBottom: Number.parseFloat(itemStyle.paddingBottom),
         titleFontSize: Number.parseFloat(titleStyle.fontSize),
-        titleLineHeight: Number.parseFloat(titleStyle.lineHeight)
+        titleLineHeight: Number.parseFloat(titleStyle.lineHeight),
+        titleFontWeight: Number.parseFloat(titleStyle.fontWeight)
       }
     })
 
