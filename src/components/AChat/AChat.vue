@@ -11,7 +11,11 @@
           :class="classes.spinnerWrapper"
           :style="{ top: spinnerTop + 'px' }"
         >
-          <v-progress-circular indeterminate :size="20" :class="classes.spinner" />
+          <v-progress-circular
+            indeterminate
+            :size="CHAT_CONNECTION_SPINNER_SIZE"
+            :class="classes.spinner"
+          />
         </div>
 
         <div ref="messagesRef" :class="classes.bodyMessages">
@@ -54,6 +58,7 @@ import { SCROLL_TO_REPLIED_MESSAGE_ANIMATION_DURATION } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { User } from '@/components/AChat/types'
+import { CHAT_CONNECTION_SPINNER_SIZE } from '@/components/Chat/helpers/uiMetrics'
 import { isWelcomeChat } from '@/lib/chat/meta/utils'
 
 const className = 'a-chat'

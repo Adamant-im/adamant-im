@@ -32,6 +32,7 @@ const attachmentImageModalPath = path.resolve(
   '../../components/AChat/AChatAttachment/AChatImageModal.vue'
 )
 const transactionPath = path.resolve(currentDir, '../../components/AChat/AChatTransaction.vue')
+const chatContainerPath = path.resolve(currentDir, '../../components/AChat/AChat.vue')
 const actionsDropdownPath = path.resolve(
   currentDir,
   '../../components/AChat/AChatMessageActionsDropdown.vue'
@@ -62,6 +63,14 @@ describe('AChat UI style contract', () => {
     expect(content).toContain('CHAT_ACTIONS_DROPDOWN_BUTTON_SIZE')
     expect(content).toContain('CHAT_ACTIONS_DROPDOWN_ICON_SIZE')
     expect(content).toContain('CHAT_ATTACHMENT_PREVIEW_SIZE')
+  })
+
+  it('uses the shared chat connection spinner size for initial message loading', () => {
+    const content = readFileSync(chatContainerPath, 'utf8')
+
+    expect(content).toContain('CHAT_CONNECTION_SPINNER_SIZE')
+    expect(content).toContain(':size="CHAT_CONNECTION_SPINNER_SIZE"')
+    expect(content).not.toContain(':size="20"')
   })
 
   it('uses shared status icon sizes across message, attachment and transaction cards', () => {
