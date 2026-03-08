@@ -3,7 +3,7 @@
     v-if="reactions.length > 0"
     :class="{
       [classes.root]: true,
-      [classes.left]: transaction.senderId === partnerId
+      [classes.left]: incomingMessage
     }"
   >
     <a-chat-reaction
@@ -14,7 +14,7 @@
       :asset="reaction.asset"
       :partner-id="partnerId"
     >
-      <template #avatar v-if="reaction.senderId === partnerId">
+      <template #avatar v-if="showPartnerReactionAvatar && reaction.senderId === partnerId">
         <chat-avatar :user-id="partnerId" :size="16" />
       </template>
     </a-chat-reaction>
@@ -23,10 +23,12 @@
 
 <script setup lang="ts">
 import { usePartnerId } from '@/components/AChat/hooks/usePartnerId'
+import { isIncomingMessage } from '@/components/AChat/helpers/isIncomingMessage'
 import { isEmptyReaction, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { computed, PropType, watch } from 'vue'
 import { useStore } from 'vuex'
 import { vibrate } from '@/lib/vibrate'
+import { isStringEqualCI } from '@/lib/textHelpers'
 import AChatReaction from './AChatReaction.vue'
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 
@@ -46,12 +48,19 @@ const props = defineProps({
 
 const store = useStore()
 const partnerId = usePartnerId(props.transaction)
+const incomingMessage = computed(() =>
+  isIncomingMessage(props.transaction.senderId, store.state.address)
+)
+const isSelfChat = computed(() => isStringEqualCI(partnerId.value, store.state.address))
+const showPartnerReactionAvatar = computed(() => !isSelfChat.value)
 
 const myReaction = computed(() =>
   store.getters['chat/lastReaction'](props.transaction.id, partnerId.value, store.state.address)
 )
 const partnerReaction = computed(() =>
-  store.getters['chat/lastReaction'](props.transaction.id, partnerId.value, partnerId.value)
+  isSelfChat.value
+    ? null
+    : store.getters['chat/lastReaction'](props.transaction.id, partnerId.value, partnerId.value)
 )
 
 const displayMyReaction = computed(() => myReaction.value && !isEmptyReaction(myReaction.value))

@@ -11,6 +11,10 @@ const attachmentPath = path.resolve(
   currentDir,
   '../../components/AChat/AChatAttachment/AChatAttachment.vue'
 )
+const incomingMessageHelperPath = path.resolve(
+  currentDir,
+  '../../components/AChat/helpers/isIncomingMessage.ts'
+)
 const attachmentInlineLayoutPath = path.resolve(
   currentDir,
   '../../components/AChat/AChatAttachment/InlineLayout.vue'
@@ -48,6 +52,10 @@ const actionsMenuPath = path.resolve(
 const actionsOverlayPath = path.resolve(
   currentDir,
   '../../components/AChat/AChatActionsOverlay.vue'
+)
+const reactionsPath = path.resolve(
+  currentDir,
+  '../../components/AChat/AChatReactions/AChatReactions.vue'
 )
 const quotedMessagePath = path.resolve(currentDir, '../../components/AChat/QuotedMessage.vue')
 const chatStylesPath = path.resolve(currentDir, '../../assets/styles/components/_chat.scss')
@@ -108,6 +116,31 @@ describe('AChat UI style contract', () => {
     expect(overlayContent).toContain('--a-chat-actions-overlay-reaction-height')
     expect(overlayContent).toContain('--a-chat-actions-overlay-reaction-gap')
     expect(overlayContent).toContain('--a-chat-actions-overlay-transition-duration')
+  })
+
+  it('uses sender-vs-current-user direction for reactions and overlays, including self-chat', () => {
+    const helperContent = readFileSync(incomingMessageHelperPath, 'utf8')
+    const reactionsContent = readFileSync(reactionsPath, 'utf8')
+    const overlayContent = readFileSync(actionsOverlayPath, 'utf8')
+
+    expect(helperContent).toContain('return !isStringEqualCI(senderId, currentUserId)')
+
+    expect(reactionsContent).toContain(
+      'isIncomingMessage(props.transaction.senderId, store.state.address)'
+    )
+    expect(reactionsContent).toContain('[classes.left]: incomingMessage')
+    expect(reactionsContent).toContain('isSelfChat.value')
+    expect(reactionsContent).not.toContain('[classes.left]: transaction.senderId === partnerId')
+
+    expect(overlayContent).toContain(
+      'resolveIncomingMessage(props.transaction.senderId, store.state.address)'
+    )
+    expect(overlayContent).toContain('[classes.reactionSelectLeft]: incomingMessage')
+    expect(overlayContent).toContain('[classes.menuLeft]: incomingMessage')
+    expect(overlayContent).not.toContain(
+      '[classes.reactionSelectLeft]: transaction.senderId === partnerId'
+    )
+    expect(overlayContent).not.toContain('[classes.menuLeft]: transaction.senderId === partnerId')
   })
 
   it('keeps shared chat bubble spacing and transitions tokenized in global chat styles', () => {

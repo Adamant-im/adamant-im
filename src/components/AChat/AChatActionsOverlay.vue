@@ -11,7 +11,7 @@
       <div
         :class="{
           [classes.reactionSelect]: true,
-          [classes.reactionSelectLeft]: transaction.senderId === partnerId,
+          [classes.reactionSelectLeft]: incomingMessage,
           [classes.reactionSelectBottom]: isLargeMessage
         }"
       >
@@ -23,7 +23,7 @@
       <div
         :class="{
           [classes.menu]: true,
-          [classes.menuLeft]: transaction.senderId === partnerId,
+          [classes.menuLeft]: incomingMessage,
           [classes.menuBottom]: isLargeMessage
         }"
       >
@@ -34,9 +34,10 @@
 </template>
 
 <script lang="ts">
-import { usePartnerId } from '@/components/AChat/hooks/usePartnerId'
+import { isIncomingMessage as resolveIncomingMessage } from '@/components/AChat/helpers/isIncomingMessage'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { computed, defineComponent, onMounted, PropType, reactive, ref } from 'vue'
+import { useStore } from 'vuex'
 import { vibrate } from '@/lib/vibrate'
 import { logger } from '@/utils/devTools/logger'
 
@@ -65,8 +66,8 @@ export default defineComponent({
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
+    const store = useStore()
     const rootRef = ref<HTMLElement | null>(null)
-    const partnerId = usePartnerId(props.transaction)
 
     const rect = computed(() => {
       const element = document.querySelector(`.a-chat__message[data-id='${props.transaction.id}']`)
@@ -96,6 +97,9 @@ export default defineComponent({
 
       return rect.value.height > window.innerHeight / 2
     })
+    const incomingMessage = computed(() =>
+      resolveIncomingMessage(props.transaction.senderId, store.state.address)
+    )
 
     onMounted(() => {
       setTimeout(() => {
@@ -126,7 +130,7 @@ export default defineComponent({
       position,
       rootRef,
       handleClick,
-      partnerId,
+      incomingMessage,
       isLargeMessage
     }
   }
