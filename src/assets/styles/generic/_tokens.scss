@@ -62,6 +62,16 @@
   --a-chat-preview-item-padding-inline-start: var(--a-space-5);
   --a-chat-preview-item-padding-inline-end: var(--a-space-6);
   --a-chat-preview-heading-gap: calc(var(--a-space-1) / 2);
+  --a-snackbar-max-width: 300px;
+  --a-snackbar-content-font-size: var(--a-font-size-md);
+  --a-snackbar-content-line-height: var(--a-line-height-md);
+  --a-snackbar-content-gap: var(--a-space-2);
+  --a-snackbar-multiline-min-height: 64px;
+  --a-snackbar-close-button-size: 36px;
+  --a-progress-indicator-spinner-size: 150px;
+  --a-progress-indicator-spinner-stroke: 1;
+  --a-progress-indicator-z-index: 10;
+  --a-progress-indicator-backdrop: rgba(0, 0, 0, 0.3);
   --a-app-navigation-height: 50px;
   --a-app-navigation-button-font-weight: var(--a-font-weight-light);
   --a-app-navigation-label-font-size: var(--a-font-size-sm);

@@ -1,0 +1,16 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ProgressIndicator.vue > renders the centered overlay spinner markup 1`] = `
+<div
+  class="progress-indicator progress-fog"
+  data-v-859aa2b1=""
+>
+  <div
+    class="v-progress-circular-stub progress-indicator__spinner progress-circular progress-indicator__spinner progress-circular"
+    data-v-859aa2b1=""
+    indeterminate=""
+    size="150"
+    stroke="1"
+  />
+</div>
+`;

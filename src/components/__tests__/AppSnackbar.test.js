@@ -10,10 +10,12 @@ import AppSnackbar from '@/components/AppSnackbar'
 describe('AppSnackbar.vue', () => {
   let snackbar = null
   let store = null
+  let i18n = null
 
   // mockup store module
   beforeEach(() => {
     snackbar = mockupSnackbar()
+    i18n = mockupI18n()
 
     store = createStore({
       modules: {
@@ -26,7 +28,7 @@ describe('AppSnackbar.vue', () => {
     const wrapper = mount(AppSnackbar, {
       shallow: true,
       global: {
-        plugins: [store, mockupI18n()]
+        plugins: [store, i18n]
       }
     })
 
@@ -40,7 +42,7 @@ describe('AppSnackbar.vue', () => {
     const wrapper = mount(AppSnackbar, {
       shallow: true,
       global: {
-        plugins: [store, mockupI18n()]
+        plugins: [store, i18n]
       }
     })
 
@@ -53,5 +55,36 @@ describe('AppSnackbar.vue', () => {
     wrapper.vm.show = false
     expect(snackbar.mutations.changeState).toHaveBeenCalled()
     expect(snackbar.mutations.resetOptions).toHaveBeenCalled()
+  })
+
+  it('uses persistent timeout for the offline snackbar message', () => {
+    snackbar.state.message = i18n.global.t('connection.offline')
+    snackbar.state.timeout = SNACKBAR_TIMEOUT
+
+    const wrapper = mount(AppSnackbar, {
+      shallow: true,
+      global: {
+        plugins: [store, i18n]
+      }
+    })
+
+    expect(wrapper.vm.timeout).toBe(-1)
+  })
+
+  it('renders multiline messages with the semantic message and close button classes', () => {
+    snackbar.state.show = true
+    snackbar.state.message = 'x'.repeat(60)
+    snackbar.state.timeout = 0
+
+    const wrapper = mount(AppSnackbar, {
+      shallow: true,
+      global: {
+        plugins: [store, i18n]
+      }
+    })
+
+    expect(wrapper.classes()).toContain('multiline')
+    expect(wrapper.find('.app-snackbar__message').exists()).toBe(true)
+    expect(wrapper.find('.app-snackbar__close-button').exists()).toBe(true)
   })
 })

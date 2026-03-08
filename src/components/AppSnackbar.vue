@@ -10,10 +10,11 @@
     @click:outside="show = false"
   >
     <div :class="`${className}__container`">
-      {{ message }}
+      <span :class="`${className}__message`">{{ message }}</span>
       <v-btn
         v-if="timeout === 0 || timeout > 2000 || timeout === -1"
-        size="x-small"
+        :class="`${className}__close-button`"
+        size="small"
         variant="text"
         fab
         @click="show = false"
@@ -67,36 +68,44 @@ const timeout = computed(() =>
 
     margin: 0 auto;
     border-radius: 0;
-    max-width: 300px;
-    border: 1px solid transparent;
+    max-width: var(--a-snackbar-max-width);
+    border: var(--a-border-width-thin) solid transparent;
   }
 
   :deep(.v-snackbar__content) {
-    font-size: 16px;
-    font-weight: 300;
+    font-size: var(--a-snackbar-content-font-size);
+    line-height: var(--a-snackbar-content-line-height);
+    font-weight: var(--a-font-weight-light);
   }
 
   &__container {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: var(--a-snackbar-content-gap);
+  }
+
+  &__message {
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   &.multiline {
     :deep(.v-snackbar__wrapper) {
-      min-height: 64px;
+      min-height: var(--a-snackbar-multiline-min-height);
     }
 
     .app-snackbar__container {
       align-items: flex-start;
-      gap: 8px;
     }
   }
 
   &__close-button {
-    min-width: unset;
-    padding: 0;
-    width: 36px;
+    min-width: var(--a-snackbar-close-button-size) !important;
+    padding: 0 !important;
+    width: var(--a-snackbar-close-button-size) !important;
+    height: var(--a-snackbar-close-button-size) !important;
+    flex: 0 0 auto;
   }
 
   &.outlined {
