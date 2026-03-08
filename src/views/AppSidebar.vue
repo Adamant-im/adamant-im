@@ -209,11 +209,30 @@ const hasExpandedPopupActivator = () => {
   })
 }
 
+const hasFocusedEditableElement = () => {
+  const activeElement = document.activeElement
+
+  if (!(activeElement instanceof HTMLElement)) {
+    return false
+  }
+
+  if (activeElement instanceof HTMLTextAreaElement) {
+    return !activeElement.readOnly && !activeElement.disabled
+  }
+
+  if (activeElement instanceof HTMLInputElement) {
+    return !activeElement.readOnly && !activeElement.disabled
+  }
+
+  return activeElement.isContentEditable
+}
+
 const onKeydownHandler = (e: KeyboardEvent) => {
   if (
     e.key !== 'Escape' ||
     !canPressEscape.value ||
     e.defaultPrevented ||
+    hasFocusedEditableElement() ||
     hasActiveOverlay() ||
     hasExpandedPopupActivator()
   ) {

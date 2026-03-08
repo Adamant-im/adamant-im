@@ -89,6 +89,23 @@ const openChatWithEditableComposer = async (page: Page): Promise<Locator> => {
 }
 
 test.describe('Chat composer regressions', () => {
+  test('blurs composer on first Escape and leaves chat on second Escape', async ({ page }) => {
+    const textarea = await openChatWithEditableComposer(page)
+
+    const chatUrl = page.url()
+    await textarea.focus()
+    await expect(textarea).toBeFocused()
+
+    await page.keyboard.press('Escape')
+
+    await expect(textarea).not.toBeFocused()
+    await expect(page).toHaveURL(chatUrl)
+
+    await page.keyboard.press('Escape')
+
+    await expect(page).toHaveURL(/\/chats(?:\/)?$/, { timeout: 15_000 })
+  })
+
   test('collapses back to one row after deleting second-line content', async ({
     page
   }, testInfo) => {

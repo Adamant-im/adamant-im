@@ -162,6 +162,13 @@ const listeners = computed(() => {
     },
     keydown: (e: KeyboardEvent) => {
       if (e.code === 'Escape') {
+        if (isInputFocused.value) {
+          e.preventDefault()
+          e.stopPropagation()
+          getTextareaElement()?.blur()
+          return
+        }
+
         emit('esc')
       }
     }

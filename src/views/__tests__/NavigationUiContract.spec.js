@@ -73,13 +73,19 @@ describe('Navigation UI style contract', () => {
 
     expect(content).toContain('const hasActiveOverlay = () => {')
     expect(content).toContain('const hasExpandedPopupActivator = () => {')
+    expect(content).toContain('const hasFocusedEditableElement = () => {')
+    expect(content).toContain('activeElement instanceof HTMLTextAreaElement')
+    expect(content).toContain('activeElement instanceof HTMLInputElement')
+    expect(content).toContain('activeElement.isContentEditable')
     expect(content).toContain("document.querySelectorAll('.v-overlay.v-overlay--active')")
     expect(content).toContain('document.querySelectorAll(\'[aria-expanded="true"]\')')
     expect(content).toContain("style.display !== 'none' && style.visibility !== 'hidden'")
     expect(content).toContain("element.getAttribute('role') === 'combobox'")
     expect(content).toContain("document.addEventListener('keydown', onKeydownHandler, true)")
     expect(content).toContain("document.removeEventListener('keydown', onKeydownHandler, true)")
-    expect(content).toContain('hasActiveOverlay() ||\n    hasExpandedPopupActivator()')
+    expect(content).toContain(
+      'hasFocusedEditableElement() ||\n    hasActiveOverlay() ||\n    hasExpandedPopupActivator()'
+    )
   })
 
   it('filters route params before navigating to a parent route', () => {
