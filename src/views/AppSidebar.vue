@@ -180,32 +180,66 @@ const canPressEscape = computed(() => {
   )
 })
 
+const hasActiveOverlay = () => {
+  // Let Vuetify overlays consume Escape first. Otherwise the global sidebar handler
+  // can navigate away while a select/menu/dialog is still open in the current view.
+  return Array.from(document.querySelectorAll('.v-overlay.v-overlay--active')).some((overlay) => {
+    if (!(overlay instanceof HTMLElement)) {
+      return false
+    }
+
+    const style = window.getComputedStyle(overlay)
+
+    return style.display !== 'none' && style.visibility !== 'hidden'
+  })
+}
+
+const hasExpandedPopupActivator = () => {
+  return Array.from(document.querySelectorAll('[aria-expanded="true"]')).some((element) => {
+    if (!(element instanceof HTMLElement)) {
+      return false
+    }
+
+    return (
+      element.getAttribute('role') === 'combobox' ||
+      element.hasAttribute('aria-haspopup') ||
+      element.classList.contains('v-field')
+    )
+  })
+}
+
 const onKeydownHandler = (e: KeyboardEvent) => {
-  if (canPressEscape.value && e.key === 'Escape') {
-    if (route.query.from?.includes('chats')) {
-      router.push(route.query.from as string)
-      return
-    }
+  if (
+    e.key !== 'Escape' ||
+    !canPressEscape.value ||
+    e.defaultPrevented ||
+    hasActiveOverlay() ||
+    hasExpandedPopupActivator()
+  ) {
+    return
+  }
 
-    const parentRoute = route.matched.length > 1 ? route.matched.at(-2) : null
+  if (route.query.from?.includes('chats')) {
+    router.push(route.query.from as string)
+    return
+  }
 
-    if (parentRoute) {
-      router.push({
-        name: parentRoute.name,
-        params: { ...route.params }
-      })
+  const parentRoute = route.matched.length > 1 ? route.matched.at(-2) : null
 
-      return
-    }
+  if (parentRoute) {
+    router.push({
+      name: parentRoute.name,
+      params: { ...route.params }
+    })
   }
 }
 
 onMounted(() => {
-  document.addEventListener('keydown', onKeydownHandler)
+  document.addEventListener('keydown', onKeydownHandler, true)
 })
 
 onBeforeUnmount(() => {
-  document.removeEventListener('keydown', onKeydownHandler)
+  document.removeEventListener('keydown', onKeydownHandler, true)
 })
 </script>
 

@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest'
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const appToolbarPath = path.resolve(currentDir, '../../components/AppToolbarCentered.vue')
 const backButtonPath = path.resolve(currentDir, '../../components/common/BackButton/BackButton.vue')
+const appSidebarPath = path.resolve(currentDir, '../AppSidebar.vue')
 
 describe('Navigation UI style contract', () => {
   it('uses shared title letter-spacing token in app toolbar', () => {
@@ -29,5 +30,19 @@ describe('Navigation UI style contract', () => {
     expect(content).not.toContain('margin: 0 12px !important;')
     expect(content).not.toMatch(/(^|\n)\s*opacity:\s*0\.2;/)
     expect(content).not.toMatch(/(^|\n)\s*transition:\s*all 0\.4s ease;/)
+  })
+
+  it('lets active overlays consume Escape before sidebar navigation', () => {
+    const content = readFileSync(appSidebarPath, 'utf8')
+
+    expect(content).toContain('const hasActiveOverlay = () => {')
+    expect(content).toContain('const hasExpandedPopupActivator = () => {')
+    expect(content).toContain("document.querySelectorAll('.v-overlay.v-overlay--active')")
+    expect(content).toContain('document.querySelectorAll(\'[aria-expanded="true"]\')')
+    expect(content).toContain("style.display !== 'none' && style.visibility !== 'hidden'")
+    expect(content).toContain("element.getAttribute('role') === 'combobox'")
+    expect(content).toContain("document.addEventListener('keydown', onKeydownHandler, true)")
+    expect(content).toContain("document.removeEventListener('keydown', onKeydownHandler, true)")
+    expect(content).toContain('hasActiveOverlay() ||\n    hasExpandedPopupActivator()')
   })
 })

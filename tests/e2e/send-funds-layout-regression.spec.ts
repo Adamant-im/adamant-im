@@ -18,6 +18,28 @@ const assertNoDocumentScrollLeak = async (page: Page) => {
 }
 
 test.describe('Transfer layout regressions', () => {
+  test('lets Escape close currency dropdown before leaving send funds screen', async ({ page }) => {
+    await loginWithNewAccount(page)
+
+    await page.goto('/transfer')
+    await expect(page).toHaveURL(/\/transfer(?:\/)?$/)
+    await expect(page.locator('.send-funds-form')).toBeVisible()
+
+    await page.locator('.send-funds-form .v-select .v-field').click()
+    await expect(
+      page.locator('.v-overlay .v-list-item-title').filter({ hasText: 'ADM' })
+    ).toBeVisible()
+
+    await page.keyboard.press('Escape')
+
+    await expect(page).toHaveURL(/\/transfer(?:\/)?$/)
+    await expect(
+      page.locator('.v-overlay .v-list-item-title').filter({ hasText: 'ADM' })
+    ).toBeHidden()
+
+    await assertNoDocumentScrollLeak(page)
+  })
+
   test('keeps send funds form spacing and sizing stable', async ({ page }) => {
     await loginWithNewAccount(page)
 
