@@ -42,6 +42,7 @@ describe('Chats UI style contract', () => {
     const content = readFileSync(chatToolbarPath, 'utf8')
 
     expect(content).toContain('--a-chat-toolbar-adm-name-letter-spacing')
+    expect(content).toContain('--a-chat-toolbar-padding-inline-start')
     expect(content).toContain('--a-chat-toolbar-label-font-size')
     expect(content).toContain('--a-chat-toolbar-input-padding-top')
     expect(content).toContain('--a-chat-toolbar-input-font-weight')
@@ -57,6 +58,7 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('CHAT_TOOLBAR_UNREAD_COUNTER_MAX')
     expect(content).toContain('translateY(var(--a-chat-toolbar-floating-label-offset-y))')
     expect(content).toContain('scale(var(--a-chat-toolbar-floating-label-scale))')
+    expect(content).toContain('padding-inline-start: var(--a-chat-toolbar-padding-inline-start);')
     expect(content).toContain('gap: var(--a-chat-toolbar-content-gap-mobile);')
     expect(content).toContain(
       'margin-inline-end: var(--a-chat-toolbar-back-button-margin-inline-end-mobile) !important;'
@@ -66,6 +68,7 @@ describe('Chats UI style contract', () => {
     expect(content).not.toMatch(/(^|\n)\s*font-size:\s*var\(--a-space-5\);/)
     expect(content).not.toMatch(/(^|\n)\s*font-weight:\s*500;/)
     expect(content).not.toContain('--a-chat-toolbar-adm-name-letter-spacing: 0.02em;')
+    expect(content).not.toContain('--a-chat-toolbar-padding-inline-start: var(--a-space-3);')
     expect(content).not.toContain('--a-chat-toolbar-input-font-weight: 500;')
     expect(content).not.toContain('--a-chat-toolbar-floating-label-scale: 0.6875;')
     expect(content).not.toContain("numOfNewMessages > 99 ? '99+' : numOfNewMessages")

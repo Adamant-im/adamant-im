@@ -182,6 +182,7 @@ test.describe('Chats layout regressions', () => {
       const admChatNameStyle = admChatName ? getComputedStyle(admChatName) : null
 
       return {
+        toolbarPaddingInlineStart: Number.parseFloat(toolbarStyle.paddingInlineStart),
         labelFontSizeVar: toolbarStyle.getPropertyValue('--a-chat-toolbar-label-font-size').trim(),
         inputPaddingTopVar: toolbarStyle
           .getPropertyValue('--a-chat-toolbar-input-padding-top')
@@ -199,6 +200,8 @@ test.describe('Chats layout regressions', () => {
     expect(metrics).not.toBeNull()
     expect(metrics?.labelFontSizeVar).not.toBe('')
     expect(metrics?.inputPaddingTopVar).not.toBe('')
+    expect(metrics?.toolbarPaddingInlineStart ?? 0).toBeGreaterThanOrEqual(15)
+    expect(metrics?.toolbarPaddingInlineStart ?? 999).toBeLessThanOrEqual(17)
     expect(metrics?.contentHeight ?? 0).toBeGreaterThanOrEqual(55)
     expect(metrics?.contentHeight ?? 999).toBeLessThanOrEqual(57)
     expect(metrics?.contentGap ?? 0).toBeGreaterThanOrEqual(7)

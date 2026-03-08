@@ -93,7 +93,7 @@ const goBack = () => {
 @use 'vuetify/settings';
 
 .chat-toolbar {
-  --a-chat-toolbar-padding-inline-start: var(--a-space-3);
+  --a-chat-toolbar-padding-inline-start: var(--a-space-4);
   --a-chat-toolbar-content-gap: var(--a-space-2);
   --a-chat-toolbar-content-gap-mobile: var(--a-chat-toolbar-content-gap);
   --a-chat-toolbar-back-button-margin-inline-end-mobile: var(--a-space-1);
