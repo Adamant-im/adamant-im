@@ -45,6 +45,7 @@ describe('Financial UI style contract', () => {
     expect(content).not.toContain('margin-top: 15px;')
 
     expect(menuMixinContent).toContain('@mixin a-input-action-menu()')
+    expect(menuMixinContent).toContain('var(--a-input-action-menu-list-padding-block)')
     expect(menuMixinContent).toContain('var(--a-input-action-menu-row-min-height)')
     expect(menuMixinContent).toContain('var(--a-input-action-menu-row-padding-block)')
     expect(menuMixinContent).toContain('var(--a-input-action-menu-item-padding-inline)')

@@ -4,7 +4,7 @@
   }
 
   &__list {
-    padding-block: 0;
+    padding-block: var(--a-switcher-menu-list-padding-block);
   }
 
   &__item {

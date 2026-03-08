@@ -79,6 +79,9 @@ test.describe('Transfer layout regressions', () => {
       const fakeInputRate = document.querySelector(
         '.send-funds-form .fake-input__value--rate'
       ) as HTMLElement | null
+      const menuList = Array.from(document.querySelectorAll('.send-funds-form__menu-list')).find(
+        (element) => (element as HTMLElement).offsetParent !== null
+      ) as HTMLElement | undefined
       const menuItem = Array.from(document.querySelectorAll('.send-funds-form__menu-item')).find(
         (element) => (element as HTMLElement).offsetParent !== null
       ) as HTMLElement | undefined
@@ -93,12 +96,14 @@ test.describe('Transfer layout regressions', () => {
         !fakeInputBox ||
         !fakeInputValue ||
         !fakeInputRate ||
+        !menuList ||
         !menuItem ||
         !menuItemTitle
       ) {
         return null
       }
 
+      const menuListStyle = getComputedStyle(menuList)
       const fakeInputStyle = getComputedStyle(fakeInput)
       const fakeInputBoxStyle = getComputedStyle(fakeInputBox)
       const fakeInputRateStyle = getComputedStyle(fakeInputRate)
@@ -114,6 +119,8 @@ test.describe('Transfer layout regressions', () => {
         fakeInputBoxPaddingBottom: Number.parseFloat(fakeInputBoxStyle.paddingBottom),
         fakeInputValueLineHeight: Number.parseFloat(getComputedStyle(fakeInputValue).lineHeight),
         fakeInputRatePaddingInlineStart: Number.parseFloat(fakeInputRateStyle.paddingInlineStart),
+        menuListPaddingTop: Number.parseFloat(menuListStyle.paddingTop),
+        menuListPaddingBottom: Number.parseFloat(menuListStyle.paddingBottom),
         menuItemPaddingInlineStart: Number.parseFloat(menuItemStyle.paddingInlineStart),
         menuItemPaddingInlineEnd: Number.parseFloat(menuItemStyle.paddingInlineEnd),
         menuItemMinHeight: Number.parseFloat(menuItemStyle.minHeight),
@@ -142,16 +149,20 @@ test.describe('Transfer layout regressions', () => {
     expect(styles?.fakeInputValueLineHeight ?? 99).toBeLessThanOrEqual(33)
     expect(styles?.fakeInputRatePaddingInlineStart ?? 0).toBeGreaterThanOrEqual(2)
     expect(styles?.fakeInputRatePaddingInlineStart ?? 99).toBeLessThanOrEqual(4)
+    expect(styles?.menuListPaddingTop ?? 0).toBeGreaterThanOrEqual(7)
+    expect(styles?.menuListPaddingTop ?? 99).toBeLessThanOrEqual(9)
+    expect(styles?.menuListPaddingBottom ?? 0).toBeGreaterThanOrEqual(7)
+    expect(styles?.menuListPaddingBottom ?? 99).toBeLessThanOrEqual(9)
     expect(styles?.menuItemPaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
     expect(styles?.menuItemPaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
     expect(styles?.menuItemPaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)
     expect(styles?.menuItemPaddingInlineEnd ?? 99).toBeLessThanOrEqual(25)
-    expect(styles?.menuItemMinHeight ?? 0).toBeGreaterThanOrEqual(55)
-    expect(styles?.menuItemMinHeight ?? 99).toBeLessThanOrEqual(57)
-    expect(styles?.menuItemPaddingTop ?? 0).toBeGreaterThanOrEqual(7)
-    expect(styles?.menuItemPaddingTop ?? 99).toBeLessThanOrEqual(9)
-    expect(styles?.menuItemPaddingBottom ?? 0).toBeGreaterThanOrEqual(7)
-    expect(styles?.menuItemPaddingBottom ?? 99).toBeLessThanOrEqual(9)
+    expect(styles?.menuItemMinHeight ?? 0).toBeGreaterThanOrEqual(43)
+    expect(styles?.menuItemMinHeight ?? 99).toBeLessThanOrEqual(45)
+    expect(styles?.menuItemPaddingTop ?? 0).toBeGreaterThanOrEqual(0)
+    expect(styles?.menuItemPaddingTop ?? 99).toBeLessThanOrEqual(1)
+    expect(styles?.menuItemPaddingBottom ?? 0).toBeGreaterThanOrEqual(0)
+    expect(styles?.menuItemPaddingBottom ?? 99).toBeLessThanOrEqual(1)
     expect(styles?.menuItemTitleFontSize ?? 0).toBeGreaterThanOrEqual(15)
     expect(styles?.menuItemTitleFontSize ?? 99).toBeLessThanOrEqual(17)
     expect(styles?.menuItemTitleLineHeight ?? 0).toBeGreaterThanOrEqual(23)

@@ -492,19 +492,23 @@ test.describe('Chats layout regressions', () => {
     await expect(page.locator('.chat-start-dialog__menu-list')).toBeVisible()
 
     const menuMetrics = await page.evaluate(() => {
+      const list = document.querySelector('.chat-start-dialog__menu-list') as HTMLElement | null
       const item = document.querySelector('.chat-start-dialog__menu-item') as HTMLElement | null
       const title = document.querySelector(
         '.chat-start-dialog__menu-item-title'
       ) as HTMLElement | null
 
-      if (!item || !title) {
+      if (!list || !item || !title) {
         return null
       }
 
+      const listStyle = getComputedStyle(list)
       const itemStyle = getComputedStyle(item)
       const titleStyle = getComputedStyle(title)
 
       return {
+        listPaddingTop: Number.parseFloat(listStyle.paddingTop),
+        listPaddingBottom: Number.parseFloat(listStyle.paddingBottom),
         itemPaddingInlineStart: Number.parseFloat(itemStyle.paddingInlineStart),
         itemPaddingInlineEnd: Number.parseFloat(itemStyle.paddingInlineEnd),
         itemMinHeight: Number.parseFloat(itemStyle.minHeight),
@@ -517,16 +521,20 @@ test.describe('Chats layout regressions', () => {
     })
 
     expect(menuMetrics).not.toBeNull()
+    expect(menuMetrics?.listPaddingTop ?? 0).toBeGreaterThanOrEqual(7)
+    expect(menuMetrics?.listPaddingTop ?? 99).toBeLessThanOrEqual(9)
+    expect(menuMetrics?.listPaddingBottom ?? 0).toBeGreaterThanOrEqual(7)
+    expect(menuMetrics?.listPaddingBottom ?? 99).toBeLessThanOrEqual(9)
     expect(menuMetrics?.itemPaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
     expect(menuMetrics?.itemPaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
     expect(menuMetrics?.itemPaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)
     expect(menuMetrics?.itemPaddingInlineEnd ?? 99).toBeLessThanOrEqual(25)
-    expect(menuMetrics?.itemMinHeight ?? 0).toBeGreaterThanOrEqual(55)
-    expect(menuMetrics?.itemMinHeight ?? 99).toBeLessThanOrEqual(57)
-    expect(menuMetrics?.itemPaddingTop ?? 0).toBeGreaterThanOrEqual(7)
-    expect(menuMetrics?.itemPaddingTop ?? 99).toBeLessThanOrEqual(9)
-    expect(menuMetrics?.itemPaddingBottom ?? 0).toBeGreaterThanOrEqual(7)
-    expect(menuMetrics?.itemPaddingBottom ?? 99).toBeLessThanOrEqual(9)
+    expect(menuMetrics?.itemMinHeight ?? 0).toBeGreaterThanOrEqual(43)
+    expect(menuMetrics?.itemMinHeight ?? 99).toBeLessThanOrEqual(45)
+    expect(menuMetrics?.itemPaddingTop ?? 0).toBeGreaterThanOrEqual(0)
+    expect(menuMetrics?.itemPaddingTop ?? 99).toBeLessThanOrEqual(1)
+    expect(menuMetrics?.itemPaddingBottom ?? 0).toBeGreaterThanOrEqual(0)
+    expect(menuMetrics?.itemPaddingBottom ?? 99).toBeLessThanOrEqual(1)
     expect(menuMetrics?.titleFontSize ?? 0).toBeGreaterThanOrEqual(15)
     expect(menuMetrics?.titleFontSize ?? 99).toBeLessThanOrEqual(17)
     expect(menuMetrics?.titleLineHeight ?? 0).toBeGreaterThanOrEqual(23)

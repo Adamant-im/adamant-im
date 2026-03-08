@@ -118,11 +118,13 @@ describe('Navigation UI style contract', () => {
     const tokensContent = readFileSync(genericTokensPath, 'utf8')
 
     expect(tokensContent).toContain('--a-switcher-menu-item-padding-inline')
+    expect(tokensContent).toContain('--a-switcher-menu-list-padding-block')
     expect(tokensContent).toContain('--a-switcher-menu-row-min-height')
     expect(tokensContent).toContain('--a-switcher-menu-row-padding-block')
     expect(tokensContent).toContain('--a-switcher-menu-title-font-size')
     expect(tokensContent).toContain('--a-switcher-menu-title-line-height')
     expect(mixinContent).toContain('@mixin a-switcher-menu()')
+    expect(mixinContent).toContain('var(--a-switcher-menu-list-padding-block)')
     expect(mixinContent).toContain('var(--a-switcher-menu-item-padding-inline)')
     expect(mixinContent).toContain('var(--a-switcher-menu-row-min-height)')
     expect(mixinContent).toContain('var(--a-switcher-menu-row-padding-block)')

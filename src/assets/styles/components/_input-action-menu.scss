@@ -1,6 +1,6 @@
 @mixin a-input-action-menu() {
   &__menu-list {
-    padding-block: 0;
+    padding-block: var(--a-input-action-menu-list-padding-block);
   }
 
   &__menu-item {

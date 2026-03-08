@@ -67,17 +67,21 @@ test.describe('Navigation layout regressions', () => {
     await expect(page.locator('.language-switcher__list')).toBeVisible()
 
     const languageMetrics = await page.evaluate(() => {
+      const list = document.querySelector('.language-switcher__list') as HTMLElement | null
       const item = document.querySelector('.language-switcher__item') as HTMLElement | null
       const title = document.querySelector('.language-switcher__item-title') as HTMLElement | null
 
-      if (!item || !title) {
+      if (!list || !item || !title) {
         return null
       }
 
+      const listStyle = getComputedStyle(list)
       const itemStyle = getComputedStyle(item)
       const titleStyle = getComputedStyle(title)
 
       return {
+        listPaddingTop: Number.parseFloat(listStyle.paddingTop),
+        listPaddingBottom: Number.parseFloat(listStyle.paddingBottom),
         itemPaddingInlineStart: Number.parseFloat(itemStyle.paddingInlineStart),
         itemPaddingInlineEnd: Number.parseFloat(itemStyle.paddingInlineEnd),
         itemMinHeight: Number.parseFloat(itemStyle.minHeight),
@@ -90,16 +94,20 @@ test.describe('Navigation layout regressions', () => {
     })
 
     expect(languageMetrics).not.toBeNull()
+    expect(languageMetrics?.listPaddingTop ?? 0).toBeGreaterThanOrEqual(7)
+    expect(languageMetrics?.listPaddingTop ?? 99).toBeLessThanOrEqual(9)
+    expect(languageMetrics?.listPaddingBottom ?? 0).toBeGreaterThanOrEqual(7)
+    expect(languageMetrics?.listPaddingBottom ?? 99).toBeLessThanOrEqual(9)
     expect(languageMetrics?.itemPaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
     expect(languageMetrics?.itemPaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
     expect(languageMetrics?.itemPaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)
     expect(languageMetrics?.itemPaddingInlineEnd ?? 99).toBeLessThanOrEqual(25)
-    expect(languageMetrics?.itemMinHeight ?? 0).toBeGreaterThanOrEqual(55)
-    expect(languageMetrics?.itemMinHeight ?? 99).toBeLessThanOrEqual(57)
-    expect(languageMetrics?.itemPaddingTop ?? 0).toBeGreaterThanOrEqual(7)
-    expect(languageMetrics?.itemPaddingTop ?? 99).toBeLessThanOrEqual(9)
-    expect(languageMetrics?.itemPaddingBottom ?? 0).toBeGreaterThanOrEqual(7)
-    expect(languageMetrics?.itemPaddingBottom ?? 99).toBeLessThanOrEqual(9)
+    expect(languageMetrics?.itemMinHeight ?? 0).toBeGreaterThanOrEqual(43)
+    expect(languageMetrics?.itemMinHeight ?? 99).toBeLessThanOrEqual(45)
+    expect(languageMetrics?.itemPaddingTop ?? 0).toBeGreaterThanOrEqual(0)
+    expect(languageMetrics?.itemPaddingTop ?? 99).toBeLessThanOrEqual(1)
+    expect(languageMetrics?.itemPaddingBottom ?? 0).toBeGreaterThanOrEqual(0)
+    expect(languageMetrics?.itemPaddingBottom ?? 99).toBeLessThanOrEqual(1)
     expect(languageMetrics?.titleFontSize ?? 0).toBeGreaterThanOrEqual(15)
     expect(languageMetrics?.titleFontSize ?? 99).toBeLessThanOrEqual(17)
     expect(languageMetrics?.titleLineHeight ?? 0).toBeGreaterThanOrEqual(23)
@@ -115,17 +123,21 @@ test.describe('Navigation layout regressions', () => {
     await expect(page.locator('.currency-switcher__list')).toBeVisible()
 
     const currencyMetrics = await page.evaluate(() => {
+      const list = document.querySelector('.currency-switcher__list') as HTMLElement | null
       const item = document.querySelector('.currency-switcher__item') as HTMLElement | null
       const title = document.querySelector('.currency-switcher__item-title') as HTMLElement | null
 
-      if (!item || !title) {
+      if (!list || !item || !title) {
         return null
       }
 
+      const listStyle = getComputedStyle(list)
       const itemStyle = getComputedStyle(item)
       const titleStyle = getComputedStyle(title)
 
       return {
+        listPaddingTop: Number.parseFloat(listStyle.paddingTop),
+        listPaddingBottom: Number.parseFloat(listStyle.paddingBottom),
         itemPaddingInlineStart: Number.parseFloat(itemStyle.paddingInlineStart),
         itemPaddingInlineEnd: Number.parseFloat(itemStyle.paddingInlineEnd),
         itemMinHeight: Number.parseFloat(itemStyle.minHeight),
