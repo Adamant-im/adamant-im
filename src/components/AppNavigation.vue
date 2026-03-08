@@ -2,6 +2,7 @@
   <v-bottom-navigation
     v-model="currentPageIndex"
     app
+    :height="APP_NAVIGATION_HEIGHT"
     class="app-navigation"
     :elevation="0"
     :absolute="absolute"
@@ -54,6 +55,7 @@ defineProps({
 })
 
 const className = 'app-navigation'
+const APP_NAVIGATION_HEIGHT = 50
 
 const pages = [
   {
