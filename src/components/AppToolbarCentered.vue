@@ -27,6 +27,7 @@ import BackButton from '@/components/common/BackButton/BackButton.vue'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useConsiderOffline } from '@/hooks/useConsiderOffline'
+import { filterRouteParams } from '@/router/filterRouteParams'
 
 type Props = {
   title?: string
@@ -88,9 +89,11 @@ const goBack = () => {
   const parentRoute = route.matched.length > 1 ? route.matched.at(-2) : null
 
   if (parentRoute) {
+    const params = filterRouteParams(parentRoute.path, route.params)
+
     router.push({
       name: parentRoute.name,
-      params: { ...route.params }
+      ...(Object.keys(params).length > 0 ? { params } : {})
     })
     return
   }

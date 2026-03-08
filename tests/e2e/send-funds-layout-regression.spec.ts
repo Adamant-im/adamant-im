@@ -19,9 +19,23 @@ const assertNoDocumentScrollLeak = async (page: Page) => {
 
 test.describe('Transfer layout regressions', () => {
   test('lets Escape close currency dropdown before leaving send funds screen', async ({ page }) => {
+    const routerWarnings: string[] = []
+
+    page.on('console', (message) => {
+      if (message.type() !== 'warning') {
+        return
+      }
+
+      const text = message.text()
+
+      if (text.includes('Discarded invalid param(s)')) {
+        routerWarnings.push(text)
+      }
+    })
+
     await loginWithNewAccount(page)
 
-    await page.goto('/transfer')
+    await page.goto('/transfer', { waitUntil: 'domcontentloaded' })
     await expect(page).toHaveURL(/\/transfer(?:\/)?$/)
     await expect(page.locator('.send-funds-form')).toBeVisible()
 
@@ -36,6 +50,7 @@ test.describe('Transfer layout regressions', () => {
     await expect(
       page.locator('.v-overlay .v-list-item-title').filter({ hasText: 'ADM' })
     ).toBeHidden()
+    expect(routerWarnings).toEqual([])
 
     await assertNoDocumentScrollLeak(page)
   })

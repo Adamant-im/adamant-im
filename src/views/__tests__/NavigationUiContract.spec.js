@@ -7,6 +7,7 @@ const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const appToolbarPath = path.resolve(currentDir, '../../components/AppToolbarCentered.vue')
 const backButtonPath = path.resolve(currentDir, '../../components/common/BackButton/BackButton.vue')
 const appSidebarPath = path.resolve(currentDir, '../AppSidebar.vue')
+const filterRouteParamsPath = path.resolve(currentDir, '../../router/filterRouteParams.ts')
 
 describe('Navigation UI style contract', () => {
   it('uses shared title letter-spacing token in app toolbar', () => {
@@ -44,5 +45,28 @@ describe('Navigation UI style contract', () => {
     expect(content).toContain("document.addEventListener('keydown', onKeydownHandler, true)")
     expect(content).toContain("document.removeEventListener('keydown', onKeydownHandler, true)")
     expect(content).toContain('hasActiveOverlay() ||\n    hasExpandedPopupActivator()')
+  })
+
+  it('filters route params before navigating to a parent route', () => {
+    const toolbarContent = readFileSync(appToolbarPath, 'utf8')
+    const sidebarContent = readFileSync(appSidebarPath, 'utf8')
+    const helperContent = readFileSync(filterRouteParamsPath, 'utf8')
+
+    expect(toolbarContent).toContain(
+      "import { filterRouteParams } from '@/router/filterRouteParams'"
+    )
+    expect(sidebarContent).toContain(
+      "import { filterRouteParams } from '@/router/filterRouteParams'"
+    )
+    expect(toolbarContent).toContain(
+      'const params = filterRouteParams(parentRoute.path, route.params)'
+    )
+    expect(sidebarContent).toContain(
+      'const params = filterRouteParams(parentRoute.path, route.params)'
+    )
+    expect(toolbarContent).not.toContain('params: { ...route.params }')
+    expect(sidebarContent).not.toContain('params: { ...route.params }')
+    expect(helperContent).toContain('const ROUTE_PARAM_NAME_PATTERN = /:([A-Za-z0-9_]+)/g')
+    expect(helperContent).toContain('targetPath.matchAll(ROUTE_PARAM_NAME_PATTERN)')
   })
 })

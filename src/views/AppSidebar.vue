@@ -47,6 +47,7 @@ import { useStore } from 'vuex'
 import LeftSide from '@/components/LeftSide.vue'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { sidebarLayoutKey } from '@/lib/constants'
+import { filterRouteParams } from '@/router/filterRouteParams'
 import { useChatStateStore } from '@/stores/modal-state'
 import { storeToRefs } from 'pinia'
 
@@ -227,9 +228,11 @@ const onKeydownHandler = (e: KeyboardEvent) => {
   const parentRoute = route.matched.length > 1 ? route.matched.at(-2) : null
 
   if (parentRoute) {
+    const params = filterRouteParams(parentRoute.path, route.params)
+
     router.push({
       name: parentRoute.name,
-      params: { ...route.params }
+      ...(Object.keys(params).length > 0 ? { params } : {})
     })
   }
 }
