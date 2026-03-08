@@ -152,6 +152,23 @@ describe('Chats UI style contract', () => {
     expect(placeholderContent).toContain('@include mixins.a-surface-elevation-soft();')
     expect(placeholderContent).toContain('p {')
     expect(placeholderContent).toContain('margin: 0;')
+    expect(placeholderContent).toContain("@use '@/assets/styles/generic/_variables.scss';")
+    expect(placeholderContent).toContain('padding-bottom: var(--a-space-4);')
+    expect(placeholderContent).toContain('padding-inline: var(--a-screen-padding-inline);')
+    expect(placeholderContent).toContain(
+      "background-color: map.get(colors.$adm-colors, 'light-gray');"
+    )
+    expect(placeholderContent).toContain(
+      "border-color: map.get(colors.$adm-colors, 'light-gray2');"
+    )
+    expect(placeholderContent).toContain("background-color: map.get(colors.$adm-colors, 'black3');")
+    expect(placeholderContent).toContain("border-color: map.get(colors.$adm-colors, 'black4');")
+    expect(placeholderContent).not.toContain('background: #fff;')
+    expect(placeholderContent).not.toContain('background: var(--a-chat-placeholder-surface-light);')
+    expect(placeholderContent).not.toContain('background: var(--a-chat-placeholder-surface-dark);')
+    expect(placeholderContent).not.toMatch(/&__row\s*\{[^}]*padding-bottom:/s)
+    expect(placeholderContent).not.toContain('max-width: 100%;')
+    expect(placeholderContent).not.toContain('box-sizing: border-box;')
     expect(chatStylesContent).toContain('@include mixins.a-surface-elevation-soft();')
 
     expect(placeholderContent).not.toContain('0 1px 10px hsla(0, 0%, 39.2%, 0.06),')

@@ -63,6 +63,7 @@ function openLink() {
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/components/_chat.scss';
+@use '@/assets/styles/generic/_variables.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
 
@@ -82,7 +83,8 @@ function openLink() {
     align-items: center;
     row-gap: var(--a-space-1);
     padding: var(--a-space-4);
-    background: map.get(colors.$adm-colors, 'black');
+    padding-bottom: var(--a-space-6);
+    border: 1px solid transparent;
     border-radius: var(--a-radius-sm);
     @include mixins.a-surface-elevation-soft();
 
@@ -105,6 +107,10 @@ function openLink() {
   &__row {
     width: 100%;
     text-align: center;
+
+    @media (min-width: #{map.get(variables.$breakpoints, 'mobile') + 1px}) {
+      padding-inline: var(--a-screen-padding-inline);
+    }
   }
 
   &__logo {
@@ -123,7 +129,8 @@ function openLink() {
         color: map.get(settings.$blue, 'base');
       }
 
-      background: #fff;
+      background-color: map.get(colors.$adm-colors, 'light-gray');
+      border-color: map.get(colors.$adm-colors, 'light-gray2');
     }
 
     &__spinner {
@@ -139,7 +146,8 @@ function openLink() {
         color: map.get(settings.$blue, 'lighten-2');
       }
 
-      background-color: map.get(colors.$adm-colors, 'black');
+      background-color: map.get(colors.$adm-colors, 'black3');
+      border-color: map.get(colors.$adm-colors, 'black4');
     }
 
     &__spinner {
