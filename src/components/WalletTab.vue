@@ -94,14 +94,7 @@ watch(currentBalance, (newBalance, oldBalance) => {
 @use 'vuetify/settings';
 
 .wallet-tab {
-  --a-wallet-tab-icon-offset: 3px;
-  --a-wallet-tab-rates-offset: var(--a-space-1);
   --a-wallet-tab-line-height: 1;
-  --a-wallet-tab-network-label-size: 10px;
-  --a-wallet-tab-content-min-height: 44px;
-  --a-wallet-tab-balance-to-ticker-offset: 2px;
-  --a-wallet-tab-network-label-shift-x: -2px;
-  --a-wallet-tab-network-label-shift-y: -2px;
   --a-wallet-tab-rates-color-dark: var(--a-color-text-muted-dark);
 
   display: flex;

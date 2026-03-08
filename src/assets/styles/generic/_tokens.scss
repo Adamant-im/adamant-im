@@ -15,6 +15,7 @@
   --a-font-size-xs: 12px;
   --a-font-size-sm: 14px;
   --a-font-size-md: 16px;
+  --a-font-size-2xs: 10px;
   --a-font-weight-regular: 400;
   --a-font-weight-light: 300;
   --a-font-weight-medium: 500;
@@ -31,10 +32,36 @@
   --a-financial-text-font-size: var(--a-font-size-sm);
   --a-financial-text-font-weight: var(--a-font-weight-light);
   --a-financial-stack-gap: var(--a-space-2);
+  --a-account-tabs-slider-height: var(--a-border-width-strong);
+  --a-account-tabs-padding-top: calc(var(--a-space-5) / 2);
+  --a-account-tabs-padding-bottom: var(--a-border-width-thin);
+  --a-account-tabs-margin-bottom: calc(var(--a-space-5) / 2);
+  --a-account-tab-font-size: var(--a-font-size-md);
+  --a-account-tab-font-weight: var(--a-font-weight-light);
+  --a-account-tab-font-weight-selected: var(--a-font-weight-medium);
+  --a-account-tab-letter-spacing: var(--a-letter-spacing-normal);
+  --a-account-tab-padding-block: calc(var(--a-space-3) / 2);
+  --a-account-tab-padding-inline: var(--a-space-1);
+  --a-account-tab-min-width: calc((var(--a-control-size-md) * 2) + var(--a-space-1));
+  --a-account-tab-affix-width: var(--a-control-size-sm);
+  --a-account-tab-icon-offset: calc(var(--a-space-3) / 4);
+  --a-wallet-tab-icon-offset: var(--a-account-tab-icon-offset);
+  --a-wallet-tab-rates-offset: var(--a-space-1);
+  --a-wallet-tab-content-min-height: calc(var(--a-control-size-md) + var(--a-space-1));
+  --a-wallet-tab-balance-to-ticker-offset: calc(var(--a-space-1) / 2);
+  --a-wallet-tab-network-label-size: var(--a-font-size-2xs);
+  --a-wallet-tab-network-label-shift-x: calc(var(--a-space-1) / -2);
+  --a-wallet-tab-network-label-shift-y: calc(var(--a-space-1) / -2);
   --a-wallet-card-list-padding-top: var(--a-space-2);
   --a-wallet-card-item-padding-inline-start: calc(var(--a-space-6) + var(--a-space-1));
   --a-wallet-card-item-padding-inline-end: var(--a-space-4);
   --a-wallet-card-subtitle-line-height: var(--a-line-height-md);
+  --a-delegate-details-expander-margin-block: calc(var(--a-space-5) / 2);
+  --a-delegate-details-expander-margin-inline: calc(
+    var(--a-space-6) + (var(--a-space-1) / 2)
+  );
+  --a-delegate-details-expander-item-height: calc(var(--a-control-size-md) - var(--a-space-1));
+  --a-delegate-details-expander-item-padding-inline: var(--a-space-5);
   --a-input-action-menu-list-padding-block: var(--a-space-2);
   --a-input-action-menu-item-padding-inline: var(--a-screen-padding-inline);
   --a-input-action-menu-row-min-height: calc(var(--a-control-size-md) + var(--a-space-1));

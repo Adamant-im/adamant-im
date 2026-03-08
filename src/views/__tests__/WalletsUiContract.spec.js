@@ -17,6 +17,7 @@ const settingsTableShellPath = path.resolve(
 )
 const walletTabPath = path.resolve(currentDir, '../../components/WalletTab.vue')
 const walletBalancePath = path.resolve(currentDir, '../../components/wallets/WalletBalance.vue')
+const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
 
 describe('Wallets UI style contract', () => {
   it('uses shared settings shell for wallets screen layout without local scroll pane', () => {
@@ -57,8 +58,17 @@ describe('Wallets UI style contract', () => {
   })
 
   it('keeps wallet tab network marker styled via class, not inline style', () => {
+    const tokensContent = readFileSync(genericTokensPath, 'utf8')
     const content = readFileSync(walletTabPath, 'utf8')
 
+    expect(tokensContent).toContain('--a-font-size-2xs')
+    expect(tokensContent).toContain('--a-wallet-tab-icon-offset')
+    expect(tokensContent).toContain('--a-wallet-tab-rates-offset')
+    expect(tokensContent).toContain('--a-wallet-tab-content-min-height')
+    expect(tokensContent).toContain('--a-wallet-tab-balance-to-ticker-offset')
+    expect(tokensContent).toContain('--a-wallet-tab-network-label-size')
+    expect(tokensContent).toContain('--a-wallet-tab-network-label-shift-x')
+    expect(tokensContent).toContain('--a-wallet-tab-network-label-shift-y')
     expect(content).toContain('networkLabel')
     expect(content).toContain('networkRow')
     expect(content).toContain('ratesPlaceholder')
@@ -66,9 +76,18 @@ describe('Wallets UI style contract', () => {
     expect(content).toContain('__network-row')
     expect(content).toContain('__rates-placeholder')
     expect(content).toContain('--a-wallet-tab-rates-color-dark')
+    expect(content).toContain('var(--a-wallet-tab-icon-offset)')
+    expect(content).toContain('var(--a-wallet-tab-rates-offset)')
+    expect(content).toContain('var(--a-wallet-tab-content-min-height)')
+    expect(content).toContain('var(--a-wallet-tab-balance-to-ticker-offset)')
+    expect(content).toContain('var(--a-wallet-tab-network-label-size)')
+    expect(content).toContain('var(--a-wallet-tab-network-label-shift-x)')
+    expect(content).toContain('var(--a-wallet-tab-network-label-shift-y)')
     expect(content).toContain('var(--a-color-text-muted-dark)')
     expect(content).toContain('<sub>ERC20</sub>')
     expect(content).not.toContain('style="font-size: 10px"')
+    expect(content).not.toContain('--a-wallet-tab-network-label-size: 10px;')
+    expect(content).not.toContain('--a-wallet-tab-content-min-height: 44px;')
     expect(content).not.toContain('hsla(0, 0%, 100%, 0.7)')
   })
 

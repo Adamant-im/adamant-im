@@ -136,6 +136,51 @@ test.describe('Votes layout regressions', () => {
     expect(Math.abs(filteredRightGap - initialRightGap)).toBeLessThanOrEqual(1)
   })
 
+  test('keeps delegate details expander compact spacing tokenized on desktop', async ({ page }) => {
+    await loginWithNewAccount(page)
+
+    await page.goto('/votes')
+    await expect(page).toHaveURL(/\/votes$/)
+
+    const firstRow = page.locator('.delegates-table-item').first()
+    await expect(firstRow).toBeVisible()
+    await firstRow.click()
+
+    const metrics = await page.evaluate(() => {
+      const expander = document.querySelector('.delegate-details-expander') as HTMLElement | null
+      const listItem = document.querySelector(
+        '.delegate-details-expander__list-item'
+      ) as HTMLElement | null
+
+      if (!expander || !listItem) {
+        return null
+      }
+
+      const expanderStyle = getComputedStyle(expander)
+      const listItemStyle = getComputedStyle(listItem)
+
+      return {
+        marginTop: Number.parseFloat(expanderStyle.marginTop),
+        marginInlineStart: Number.parseFloat(expanderStyle.marginInlineStart),
+        itemMinHeight: Number.parseFloat(listItemStyle.minHeight),
+        itemPaddingLeft: Number.parseFloat(listItemStyle.paddingLeft),
+        itemPaddingRight: Number.parseFloat(listItemStyle.paddingRight)
+      }
+    })
+
+    expect(metrics).not.toBeNull()
+    expect(metrics?.marginTop ?? 0).toBeGreaterThanOrEqual(9)
+    expect(metrics?.marginTop ?? 999).toBeLessThanOrEqual(11)
+    expect(metrics?.marginInlineStart ?? 0).toBeGreaterThanOrEqual(25)
+    expect(metrics?.marginInlineStart ?? 999).toBeLessThanOrEqual(27)
+    expect(metrics?.itemMinHeight ?? 0).toBeGreaterThanOrEqual(35)
+    expect(metrics?.itemMinHeight ?? 999).toBeLessThanOrEqual(37)
+    expect(metrics?.itemPaddingLeft ?? 0).toBeGreaterThanOrEqual(19)
+    expect(metrics?.itemPaddingLeft ?? 999).toBeLessThanOrEqual(21)
+    expect(metrics?.itemPaddingRight ?? 0).toBeGreaterThanOrEqual(19)
+    expect(metrics?.itemPaddingRight ?? 999).toBeLessThanOrEqual(21)
+  })
+
   test('keeps delegates table edge-to-edge on mobile while padded content stays on shared gutters', async ({
     page
   }) => {

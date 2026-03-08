@@ -26,6 +26,11 @@ const delegatesTableItemPath = path.resolve(
   currentDir,
   '../../components/DelegatesTable/DelegatesTableItem.vue'
 )
+const delegateDetailsExpanderPath = path.resolve(
+  currentDir,
+  '../../components/DelegatesTable/DelegateDetailsExpander.vue'
+)
+const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
 
 describe('Votes UI style contract', () => {
   it('uses shared settings table shell for delegates screen layout', () => {
@@ -78,5 +83,29 @@ describe('Votes UI style contract', () => {
     expect(itemContent).not.toContain('class="pl-4 pr-2"')
     expect(itemContent).not.toContain('class="pl-0 pr-2"')
     expect(itemContent).not.toContain('font-size: 14px;')
+  })
+
+  it('uses shared compact spacing tokens in delegate details expander', () => {
+    const tokensContent = readFileSync(genericTokensPath, 'utf8')
+    const expanderContent = readFileSync(delegateDetailsExpanderPath, 'utf8')
+
+    expect(tokensContent).toContain('--a-delegate-details-expander-margin-block')
+    expect(tokensContent).toContain('--a-delegate-details-expander-margin-inline')
+    expect(tokensContent).toContain('--a-delegate-details-expander-item-height')
+    expect(tokensContent).toContain('--a-delegate-details-expander-item-padding-inline')
+    expect(tokensContent).toContain('--a-delegate-details-expander-margin-inline: calc(')
+    expect(tokensContent).toContain('var(--a-space-6) + (var(--a-space-1) / 2)')
+    expect(tokensContent).toContain('calc(var(--a-control-size-md) - var(--a-space-1))')
+
+    expect(expanderContent).toContain('var(--a-delegate-details-expander-margin-block)')
+    expect(expanderContent).toContain('var(--a-delegate-details-expander-margin-inline)')
+    expect(expanderContent).toContain('var(--a-delegate-details-expander-item-height)')
+    expect(expanderContent).toContain('var(--a-delegate-details-expander-item-padding-inline)')
+    expect(expanderContent).toContain('min-height: var(--a-delegate-details-expander-item-height);')
+    expect(expanderContent).not.toContain('margin: 10px 26px;')
+    expect(expanderContent).not.toContain('height: 36px;')
+    expect(expanderContent).not.toContain(':deep(.v-list__tile)')
+    expect(expanderContent).not.toContain('padding-left: 20px;')
+    expect(expanderContent).not.toContain('padding-right: 20px;')
   })
 })

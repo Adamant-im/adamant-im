@@ -87,14 +87,13 @@ export default defineComponent({
 @use 'vuetify/settings';
 
 .delegate-details-expander {
-  margin: 10px 26px;
+  margin-block: var(--a-delegate-details-expander-margin-block);
+  margin-inline: var(--a-delegate-details-expander-margin-inline);
 
   &__list-item {
-    height: 36px;
-    :deep(.v-list__tile) {
-      padding-left: 20px;
-      padding-right: 20px;
-    }
+    min-height: var(--a-delegate-details-expander-item-height);
+    padding-left: var(--a-delegate-details-expander-item-padding-inline);
+    padding-right: var(--a-delegate-details-expander-item-padding-inline);
   }
   &__address {
     a {

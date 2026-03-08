@@ -239,20 +239,6 @@ watch(currentWallet, (value) => {
  * 2. Reset VTabItem opacity.
  */
 .account-view {
-  --a-account-tabs-slider-height: 2px;
-  --a-account-tabs-padding-top: 10px;
-  --a-account-tabs-padding-bottom: 1px;
-  --a-account-tabs-margin-bottom: 10px;
-  --a-account-tab-font-size: var(--a-font-size-md);
-  --a-account-tab-font-weight: var(--a-font-weight-light);
-  --a-account-tab-font-weight-selected: var(--a-font-weight-medium);
-  --a-account-tab-letter-spacing: var(--a-letter-spacing-normal);
-  --a-account-tab-padding-block: 6px;
-  --a-account-tab-padding-inline: var(--a-space-1);
-  --a-account-tab-min-width: 84px;
-  --a-account-tab-affix-width: var(--a-control-size-sm);
-  --a-account-tab-icon-offset: 3px;
-
   &__wallets {
     &.v-card {
       background-color: transparent;
