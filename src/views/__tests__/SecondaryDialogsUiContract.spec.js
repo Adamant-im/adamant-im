@@ -108,6 +108,10 @@ describe('Secondary dialogs UI contract', () => {
 
     expect(chatStartContent).toContain('`${className}__body`')
     expect(chatStartContent).toContain('`${className}__card-title')
+    expect(chatStartContent).toContain('inputActionMenu.a-input-action-menu()')
+    expect(chatStartContent).toContain('__menu-list')
+    expect(chatStartContent).toContain('__menu-item')
+    expect(chatStartContent).toContain('__menu-item-title')
     expect(chatStartContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
     expect(chatStartContent).toContain('var(--a-secondary-dialog-action-margin-top)')
     expect(chatStartContent).toContain('var(--a-secondary-dialog-link-margin-top)')
@@ -182,8 +186,10 @@ describe('Secondary dialogs UI contract', () => {
     expect(sendFundsFormContent).toContain('send-funds-confirm-dialog__dialog-title')
     expect(sendFundsFormContent).toContain('send-funds-confirm-dialog__dialog-body')
     expect(sendFundsFormContent).toContain('send-funds-confirm-dialog__dialog-actions')
+    expect(sendFundsFormContent).toContain('send-funds-confirm-dialog__spinner')
     expect(sendFundsFormContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
     expect(sendFundsFormContent).not.toContain('v-card-actions class="pa-4"')
+    expect(sendFundsFormContent).not.toContain('class="mr-4"')
 
     expect(httpProtocolInfoContent).toContain("const className = 'http-protocol-info-dialog'")
     expect(httpProtocolInfoContent).toContain('`${className}__dialog-title')

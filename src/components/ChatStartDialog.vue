@@ -22,14 +22,20 @@
           <template #append-inner>
             <v-menu :offset-overflow="true" :offset-y="false" left eager>
               <template #activator="{ props }">
-                <v-icon v-bind="props" :icon="mdiDotsVertical" />
+                <v-icon
+                  v-bind="props"
+                  :class="`${className}__menu-activator`"
+                  :icon="mdiDotsVertical"
+                />
               </template>
-              <v-list>
-                <v-list-item @click="showQrcodeScanner = true">
-                  <v-list-item-title>{{ $t('transfer.decode_from_camera') }}</v-list-item-title>
+              <v-list :class="`${className}__menu-list`">
+                <v-list-item :class="`${className}__menu-item`" @click="showQrcodeScanner = true">
+                  <v-list-item-title :class="`${className}__menu-item-title`">
+                    {{ $t('transfer.decode_from_camera') }}
+                  </v-list-item-title>
                 </v-list-item>
-                <v-list-item link>
-                  <v-list-item-title>
+                <v-list-item :class="`${className}__menu-item`" link>
+                  <v-list-item-title :class="`${className}__menu-item-title`">
                     <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
                       <span>{{ $t('transfer.decode_from_image') }}</span>
                     </qrcode-capture>
@@ -234,11 +240,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/components/_input-action-menu.scss' as inputActionMenu;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 
 .chat-start-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
+  @include inputActionMenu.a-input-action-menu();
 
   &__btn-start-chat {
     margin-top: var(--a-secondary-dialog-action-margin-top);

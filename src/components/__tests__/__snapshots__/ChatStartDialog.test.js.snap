@@ -65,44 +65,55 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
   </v-card>
   <!--v-if-->
   <v-dialog
+    class="qrcode-renderer-dialog"
+    data-v-426ca6ff=""
     data-v-50a3fb39=""
     modelvalue="false"
     width="250"
   >
-    <v-card>
-      <v-row
-        class="py-3"
-        gap="0"
-        justify="center"
+    <v-card
+      data-v-426ca6ff=""
+    >
+      <v-card-text
+        class="qrcode-renderer-dialog__body"
+        data-v-426ca6ff=""
       >
         <div
-          style="cursor: pointer;"
+          class="qrcode-renderer-dialog__content"
+          data-v-426ca6ff=""
         >
           <div
-            class="spinner-container"
-            data-v-537400c4=""
+            data-v-426ca6ff=""
+            style="cursor: pointer;"
           >
-            <v-row
+            <div
+              class="spinner-container"
+              data-v-426ca6ff=""
               data-v-537400c4=""
-              gap="0"
-              justify="center"
             >
-              <v-progress-circular
-                class="progress-circular"
-                color="#4A4A4A"
-                indeterminate=""
-                size="152"
-                stroke="1"
-              />
-            </v-row>
+              <v-row
+                data-v-537400c4=""
+                gap="0"
+                justify="center"
+              >
+                <v-progress-circular
+                  class="progress-circular"
+                  color="#4A4A4A"
+                  indeterminate=""
+                  size="152"
+                  stroke="1"
+                />
+              </v-row>
+            </div>
           </div>
+          <v-btn
+            class="qrcode-renderer-dialog__button a-btn-primary"
+            data-v-426ca6ff=""
+          >
+            Save to images
+          </v-btn>
         </div>
-        <v-btn
-          class="a-btn-primary mt-4 mb-2"
-        >
-          Save to images
-        </v-btn>
-      </v-row>
+      </v-card-text>
     </v-card>
   </v-dialog>
 </v-dialog>

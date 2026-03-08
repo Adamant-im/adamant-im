@@ -12,6 +12,7 @@ describe('Export keys UI style contract', () => {
     const content = readFileSync(exportKeysPath, 'utf8')
 
     expect(content).toContain('<v-form :class="className" @submit.prevent="revealKeys">')
+    expect(content).toContain('inputActionMenu.a-input-action-menu()')
     expect(content).toContain('a-text-explanation-enlarged')
     expect(content).toContain('type="submit"')
     expect(content).toContain('type="button"')
@@ -25,6 +26,9 @@ describe('Export keys UI style contract', () => {
     expect(content).toContain('var(--a-space-3)')
     expect(content).toContain('__copy-all-row')
     expect(content).toContain('__field-action')
+    expect(content).toContain('__menu-list')
+    expect(content).toContain('__menu-item')
+    expect(content).toContain('__menu-item-title')
     expect(content).not.toContain('margin-top: 24px;')
     expect(content).not.toContain('margin-bottom: 24px;')
     expect(content).not.toContain('margin-top: 15px;')

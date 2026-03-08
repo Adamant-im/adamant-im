@@ -6,6 +6,11 @@ import { describe, expect, it } from 'vitest'
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 
 const sendFundsFormPath = path.resolve(currentDir, '../../components/SendFundsForm.vue')
+const inputStylesPath = path.resolve(currentDir, '../../assets/styles/themes/adamant/_inputs.scss')
+const inputActionMenuMixinPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_input-action-menu.scss'
+)
 const transactionTemplatePath = path.resolve(
   currentDir,
   '../../components/transactions/TransactionTemplate.vue'
@@ -24,12 +29,40 @@ const walletActionsPath = path.resolve(currentDir, '../../components/WalletCardL
 describe('Financial UI style contract', () => {
   it('uses tokenized spacing and typography in send funds form', () => {
     const content = readFileSync(sendFundsFormPath, 'utf8')
+    const fakeInputContent = readFileSync(inputStylesPath, 'utf8')
+    const menuMixinContent = readFileSync(inputActionMenuMixinPath, 'utf8')
 
     expect(content).toContain('--a-send-funds-button-margin-top')
     expect(content).toContain('--a-send-funds-amount-label-size')
+    expect(content).toContain('--a-send-funds-confirm-spinner-gap')
+    expect(content).toContain('inputActionMenu.a-input-action-menu()')
+    expect(content).toContain('__menu-list')
+    expect(content).toContain('__menu-item')
+    expect(content).toContain('__menu-item-title')
     expect(content).toContain('var(--a-space-4)')
     expect(content).toContain('var(--a-font-size-sm)')
+    expect(content).not.toContain('class="mr-4"')
     expect(content).not.toContain('margin-top: 15px;')
+
+    expect(menuMixinContent).toContain('@mixin a-input-action-menu()')
+    expect(menuMixinContent).toContain('var(--a-input-action-menu-row-min-height)')
+    expect(menuMixinContent).toContain('var(--a-input-action-menu-row-padding-block)')
+    expect(menuMixinContent).toContain('var(--a-input-action-menu-item-padding-inline)')
+    expect(menuMixinContent).toContain('var(--a-input-action-menu-title-font-size)')
+    expect(menuMixinContent).toContain('var(--a-input-action-menu-title-line-height)')
+
+    expect(fakeInputContent).toContain('var(--a-fake-input-padding-top)')
+    expect(fakeInputContent).toContain('var(--a-fake-input-margin-top)')
+    expect(fakeInputContent).toContain('var(--a-fake-input-font-size)')
+    expect(fakeInputContent).toContain('var(--a-fake-input-box-padding-bottom)')
+    expect(fakeInputContent).toContain('var(--a-fake-input-value-line-height)')
+    expect(fakeInputContent).toContain('var(--a-fake-input-rate-padding-inline-start)')
+    expect(fakeInputContent).not.toContain('padding-top: 12px;')
+    expect(fakeInputContent).not.toContain('margin-top: 4px;')
+    expect(fakeInputContent).not.toContain('font-size: 16px;')
+    expect(fakeInputContent).not.toContain('padding-bottom: 20px;')
+    expect(fakeInputContent).not.toContain('line-height: 32px;')
+    expect(fakeInputContent).not.toContain('padding-left: 3px;')
   })
 
   it('keeps stable row sizing in transaction template screens', () => {

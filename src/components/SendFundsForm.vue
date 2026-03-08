@@ -35,14 +35,20 @@
         <template v-if="!addressReadonly" #append-inner>
           <v-menu :offset-overflow="true" :offset-y="false" left eager>
             <template #activator="{ props }">
-              <v-icon v-bind="props" :icon="mdiDotsVertical" />
+              <v-icon
+                v-bind="props"
+                :class="`${className}__menu-activator`"
+                :icon="mdiDotsVertical"
+              />
             </template>
-            <v-list>
-              <v-list-item @click="showQrcodeScanner = true">
-                <v-list-item-title>{{ $t('transfer.decode_from_camera') }}</v-list-item-title>
+            <v-list :class="`${className}__menu-list`">
+              <v-list-item :class="`${className}__menu-item`" @click="showQrcodeScanner = true">
+                <v-list-item-title :class="`${className}__menu-item-title`">
+                  {{ $t('transfer.decode_from_camera') }}
+                </v-list-item-title>
               </v-list-item>
-              <v-list-item link>
-                <v-list-item-title>
+              <v-list-item :class="`${className}__menu-item`" link>
+                <v-list-item-title :class="`${className}__menu-item-title`">
                   <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
                     <span>{{ $t('transfer.decode_from_image') }}</span>
                   </qrcode-capture>
@@ -73,15 +79,22 @@
         <template #append-inner>
           <v-menu :offset-overflow="true" :offset-y="false" left>
             <template #activator="{ props }">
-              <v-icon v-bind="props" :icon="mdiDotsVertical" />
+              <v-icon
+                v-bind="props"
+                :class="`${className}__menu-activator`"
+                :icon="mdiDotsVertical"
+              />
             </template>
-            <v-list>
+            <v-list :class="`${className}__menu-list`">
               <v-list-item
                 v-for="item in amountMenuItems"
                 :key="item.title"
+                :class="`${className}__menu-item`"
                 @click="divideAmount(item.divider)"
               >
-                <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
+                <v-list-item-title :class="`${className}__menu-item-title`">
+                  {{ $t(item.title) }}
+                </v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -162,7 +175,7 @@
               indeterminate
               color="primary"
               size="24"
-              class="mr-4"
+              class="send-funds-confirm-dialog__spinner"
             />
             {{ $t('transfer.confirm_approve') }}
           </v-btn>
@@ -955,6 +968,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/components/_input-action-menu.scss' as inputActionMenu;
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 
 .a-input :deep(input[type='number']) {
@@ -967,6 +981,12 @@ export default {
 
 .send-funds-confirm-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  --a-send-funds-confirm-spinner-gap: var(--a-space-4);
+
+  &__spinner {
+    margin-inline-end: var(--a-send-funds-confirm-spinner-gap);
+  }
 }
 
 .send-funds-form {
@@ -974,6 +994,8 @@ export default {
   --a-send-funds-amount-label-size: var(--a-font-size-sm);
   --a-send-funds-amount-label-floating-scale: 0.75;
   --a-send-funds-amount-label-line-height: 1;
+
+  @include inputActionMenu.a-input-action-menu();
 
   &__button {
     margin-top: var(--a-send-funds-button-margin-top);

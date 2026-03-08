@@ -77,7 +77,7 @@
           <template #activator="{ props }">
             <v-btn
               v-bind="props"
-              :class="`${className}__field-action`"
+              :class="[`${className}__field-action`, `${className}__menu-activator`]"
               icon
               type="button"
               variant="plain"
@@ -87,12 +87,14 @@
               <v-icon :icon="mdiDotsVertical" :size="24" />
             </v-btn>
           </template>
-          <v-list>
-            <v-list-item @click="showQrcodeScanner = true">
-              <v-list-item-title>{{ t('transfer.decode_from_camera') }}</v-list-item-title>
+          <v-list :class="`${className}__menu-list`">
+            <v-list-item :class="`${className}__menu-item`" @click="showQrcodeScanner = true">
+              <v-list-item-title :class="`${className}__menu-item-title`">
+                {{ t('transfer.decode_from_camera') }}
+              </v-list-item-title>
             </v-list-item>
-            <v-list-item link>
-              <v-list-item-title>
+            <v-list-item :class="`${className}__menu-item`" link>
+              <v-list-item-title :class="`${className}__menu-item-title`">
                 <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
                   <span>{{ t('transfer.decode_from_image') }}</span>
                 </qrcode-capture>
@@ -235,12 +237,16 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
+@use '@/assets/styles/components/_input-action-menu.scss' as inputActionMenu;
+
 .export-keys-form {
   --a-export-keys-section-spacing: var(--a-space-6);
   --a-export-keys-key-field-gap: var(--a-space-4);
   --a-export-keys-copy-all-margin-bottom: var(--a-space-3);
   --a-export-keys-button-margin-top: var(--a-space-4);
   --a-export-keys-button-margin-bottom: var(--a-space-6);
+
+  @include inputActionMenu.a-input-action-menu();
 
   width: 100%;
   box-sizing: border-box;

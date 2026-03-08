@@ -30,12 +30,12 @@
 }
 .fake-input {
   color: rgba(255, 255, 255, 0.5);
-  font-weight: 400;
-  padding-top: 12px;
-  margin-top: 4px;
+  font-weight: var(--a-font-weight-regular);
+  padding-top: var(--a-fake-input-padding-top);
+  margin-top: var(--a-fake-input-margin-top);
   pointer-events: none;
   flex: 1 1 auto;
-  font-size: 16px;
+  font-size: var(--a-fake-input-font-size);
   text-align: left;
   display: flex;
   align-items: flex-start;
@@ -46,10 +46,11 @@
     left: 0px;
     right: auto;
     position: absolute;
-    transform: translateY(-18px) scale(0.75);
+    transform: translateY(var(--a-fake-input-label-translate-y))
+      scale(var(--a-fake-input-label-scale));
     overflow: hidden;
     text-overflow: ellipsis;
-    top: 15px;
+    top: var(--a-fake-input-label-top);
     transform-origin: top left;
     white-space: nowrap;
     max-width: 133%;
@@ -57,7 +58,7 @@
 
   &__box {
     width: 100%;
-    padding-bottom: 20px;
+    padding-bottom: var(--a-fake-input-box-padding-bottom);
     position: relative;
     display: flex;
     align-items: baseline;
@@ -81,19 +82,19 @@
       position: absolute;
       transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
       width: 100%;
-      top: 31px;
+      top: var(--a-fake-input-box-divider-top);
     }
   }
 
   &__value {
-    line-height: 32px;
+    line-height: var(--a-fake-input-value-line-height);
     display: block;
     text-overflow: ellipsis;
     white-space: nowrap;
 
     &--rate {
       font-style: italic;
-      padding-left: 3px;
+      padding-inline-start: var(--a-fake-input-rate-padding-inline-start);
       color: inherit !important;
     }
   }
