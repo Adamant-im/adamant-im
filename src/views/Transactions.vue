@@ -5,7 +5,10 @@
     @scroll-content="onScroll"
   >
     <template #loader>
-      <v-list-item v-if="isRecentLoading" style="position: absolute; top: 20px">
+      <v-list-item
+        v-if="isRecentLoading"
+        :class="[`${className}__loading-item`, `${className}__loading-item--recent`]"
+      >
         <InlineSpinner />
       </v-list-item>
     </template>
@@ -13,7 +16,12 @@
     <router-view v-if="hasView" />
 
     <template v-else>
-      <v-list v-if="hasTransactions" lines="three" bg-color="transparent">
+      <v-list
+        v-if="hasTransactions"
+        lines="three"
+        bg-color="transparent"
+        :class="`${className}__list`"
+      >
         <transaction-list-item
           v-for="(transaction, i) in transactions"
           :id="transaction.id"
@@ -28,7 +36,7 @@
           @click:transaction="goToTransaction"
           @click:icon="goToChat"
         />
-        <v-list-item>
+        <v-list-item :class="`${className}__loading-item`">
           <InlineSpinner v-if="isOlderLoading" />
         </v-list-item>
       </v-list>
@@ -68,6 +76,7 @@ const store = useStore()
 const router = useRouter()
 const route = useRoute()
 const { t } = useI18n()
+const className = 'transactions-view'
 
 const { hasView, sidebarLayoutRef } = useSavedScroll()
 
@@ -252,3 +261,18 @@ watch(isIDBReady, (newVal) => {
   }
 })
 </script>
+
+<style lang="scss" scoped>
+.transactions-view {
+  --a-transactions-loading-item-padding-inline: var(--a-screen-padding-inline);
+
+  &__loading-item {
+    padding-inline: var(--a-transactions-loading-item-padding-inline);
+
+    &--recent {
+      position: absolute;
+      top: 20px;
+    }
+  }
+}
+</style>

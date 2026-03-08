@@ -88,7 +88,7 @@
               v-else
               class="connection-spinner chat__connection-spinner"
               indeterminate
-              :size="32"
+              :size="CHAT_CONNECTION_SPINNER_SIZE"
             />
           </template>
         </chat-toolbar>
@@ -314,6 +314,7 @@ import { useChatsSpinner } from '@/hooks/useChatsSpinner'
 import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import { useChatStateStore } from '@/stores/modal-state'
 import ChatPlaceholder from '@/components/Chat/ChatPlaceholder.vue'
+import { CHAT_CONNECTION_SPINNER_SIZE } from '@/components/Chat/helpers/uiMetrics'
 import { watchImmediate } from '@vueuse/core'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 

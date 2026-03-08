@@ -27,13 +27,14 @@
   --a-color-text-muted-dark: hsla(0, 0%, 100%, 0.7);
   --a-list-row-min-height: 56px;
   --a-list-row-padding-block: var(--a-space-2);
-  --a-mobile-screen-padding-inline: var(--a-space-6);
+  --a-screen-padding-inline: var(--a-space-6);
   --a-financial-text-font-size: var(--a-font-size-sm);
   --a-financial-text-font-weight: var(--a-font-weight-light);
   --a-financial-stack-gap: var(--a-space-2);
+  --a-chat-connection-spinner-size: 32px;
   --a-chat-preview-avatar-size: 52px;
-  --a-chat-preview-item-padding-inline-start-mobile: var(--a-space-5);
-  --a-chat-preview-item-padding-inline-end-mobile: var(--a-space-6);
+  --a-chat-preview-item-padding-inline-start: var(--a-space-5);
+  --a-chat-preview-item-padding-inline-end: var(--a-space-6);
   --a-chat-preview-heading-gap: calc(var(--a-space-1) / 2);
   --a-secondary-dialog-content-padding: var(--a-space-4);
   --a-secondary-dialog-disclaimer-gap: 10px;

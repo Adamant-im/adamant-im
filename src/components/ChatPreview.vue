@@ -239,7 +239,6 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
-@use 'vuetify/settings';
 
 @keyframes movement {
   from {
@@ -269,21 +268,14 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
   --a-chat-brief-date-gap: var(--a-space-4);
   --a-chat-brief-heading-gap: var(--a-chat-preview-heading-gap);
   --a-chat-brief-icon-size: var(--a-chat-preview-avatar-size);
-  --a-chat-brief-item-padding-inline-start-mobile: var(
-    --a-chat-preview-item-padding-inline-start-mobile
-  );
-  --a-chat-brief-item-padding-inline-end-mobile: var(
-    --a-chat-preview-item-padding-inline-end-mobile
-  );
+  --a-chat-brief-item-padding-inline-start: var(--a-chat-preview-item-padding-inline-start);
+  --a-chat-brief-item-padding-inline-end: var(--a-chat-preview-item-padding-inline-end);
   --a-chat-brief-subtitle-line-height: 1.5;
   --a-chat-brief-border-width: 1px;
   --a-chat-brief-icon-fill-light: #bdbdbd;
   position: relative;
-
-  @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-    padding-inline-start: var(--a-chat-brief-item-padding-inline-start-mobile);
-    padding-inline-end: var(--a-chat-brief-item-padding-inline-end-mobile);
-  }
+  padding-inline-start: var(--a-chat-brief-item-padding-inline-start);
+  padding-inline-end: var(--a-chat-brief-item-padding-inline-end);
 
   &__loading-separator {
     display: flex;

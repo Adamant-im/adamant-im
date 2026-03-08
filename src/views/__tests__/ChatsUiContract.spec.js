@@ -19,6 +19,7 @@ describe('Chats UI style contract', () => {
     const content = readFileSync(chatUiMetricsPath, 'utf8')
 
     expect(content).toContain('CHAT_TOOLBAR_UNREAD_COUNTER_MAX')
+    expect(content).toContain('CHAT_CONNECTION_SPINNER_SIZE')
     expect(content).toContain('CHATS_CONNECTION_SPINNER_SIZE')
     expect(content).toContain('CHATS_SCROLL_OFFSET')
   })
@@ -30,9 +31,10 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('--a-font-weight-medium')
     expect(content).toContain('--a-letter-spacing-caps-subtle')
     expect(content).toContain('--a-field-floating-label-scale')
+    expect(content).toContain('--a-chat-connection-spinner-size')
     expect(content).toContain('--a-chat-preview-avatar-size')
-    expect(content).toContain('--a-chat-preview-item-padding-inline-start-mobile')
-    expect(content).toContain('--a-chat-preview-item-padding-inline-end-mobile')
+    expect(content).toContain('--a-chat-preview-item-padding-inline-start')
+    expect(content).toContain('--a-chat-preview-item-padding-inline-end')
     expect(content).toContain('--a-chat-preview-heading-gap')
   })
 
@@ -77,20 +79,18 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('--a-chats-actions-height')
     expect(content).toContain('--a-chats-actions-padding-inline-start')
     expect(content).toContain('--a-chats-actions-padding-inline-end')
-    expect(content).toContain('--a-chats-actions-padding-inline-start-mobile')
-    expect(content).toContain('--a-chats-actions-padding-inline-end-mobile')
     expect(content).toContain('--a-chats-actions-gap')
     expect(content).toContain('--a-chats-connection-spinner-size')
     expect(content).toContain('--a-chats-connection-spinner-offset-inline-start')
-    expect(content).toContain('--a-chats-connection-spinner-offset-inline-start-mobile')
     expect(content).toContain('--a-chats-item-padding-inline')
     expect(content).toContain('--a-chats-item-avatar-gap-inline')
     expect(content).toContain('--a-chats-item-icon-gap-inline')
     expect(content).toContain('--a-chats-title-font-weight')
     expect(content).toContain('--a-chats-title-font-size')
     expect(content).toContain('--a-chats-messages-move-duration')
-    expect(content).toContain('--a-chat-preview-item-padding-inline-start-mobile')
-    expect(content).toContain('--a-chat-preview-item-padding-inline-end-mobile')
+    expect(content).toContain('--a-chat-preview-item-padding-inline-start')
+    expect(content).toContain('--a-chat-preview-item-padding-inline-end')
+    expect(content).toContain('var(--a-chat-connection-spinner-size)')
     expect(content).toContain('var(--a-chat-preview-avatar-size)')
     expect(content).toContain('var(--a-font-weight-light)')
     expect(content).toContain('height: var(--a-chats-actions-height);')
@@ -107,7 +107,7 @@ describe('Chats UI style contract', () => {
     expect(content).not.toContain('const scrollOffset = 64')
     expect(content).not.toContain('transition: transform 0.5s;')
     expect(content).not.toContain('--a-chats-title-font-weight: 300;')
-    expect(content).not.toContain('--a-chats-connection-spinner-offset-inline-start-mobile: 34px;')
+    expect(content).not.toContain('--a-chats-connection-spinner-offset-inline-start: 34px;')
   })
 
   it('keeps chat preview spacing, line-height and icon sizes tokenized', () => {
@@ -119,16 +119,14 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('--a-chat-brief-avatar-gap')
     expect(content).toContain('--a-chat-brief-date-gap')
     expect(content).toContain('--a-chat-brief-heading-gap')
-    expect(content).toContain('--a-chat-brief-item-padding-inline-start-mobile')
-    expect(content).toContain('--a-chat-brief-item-padding-inline-end-mobile')
+    expect(content).toContain('--a-chat-brief-item-padding-inline-start')
+    expect(content).toContain('--a-chat-brief-item-padding-inline-end')
     expect(content).toContain('var(--a-chat-preview-avatar-size)')
     expect(content).toContain('var(--a-chat-preview-heading-gap)')
     expect(content).toContain(
-      'padding-inline-start: var(--a-chat-brief-item-padding-inline-start-mobile);'
+      'padding-inline-start: var(--a-chat-brief-item-padding-inline-start);'
     )
-    expect(content).toContain(
-      'padding-inline-end: var(--a-chat-brief-item-padding-inline-end-mobile);'
-    )
+    expect(content).toContain('padding-inline-end: var(--a-chat-brief-item-padding-inline-end);')
     expect(content).toContain('--a-chat-brief-subtitle-line-height')
     expect(content).toContain('--a-chat-brief-loading-separator-shift')
     expect(content).toContain('--a-chat-brief-loading-separator-duration')
@@ -159,6 +157,8 @@ describe('Chats UI style contract', () => {
     const content = readFileSync(chatPath, 'utf8')
 
     expect(content).toContain('.chat-avatar {')
+    expect(content).toContain('CHAT_CONNECTION_SPINNER_SIZE')
+    expect(content).toContain(':size="CHAT_CONNECTION_SPINNER_SIZE"')
     expect(content).toContain('margin-right: var(--a-space-1);')
     expect(content).not.toMatch(/\.chat-avatar\s*\{[^}]*margin-right:\s*var\(--a-space-3\);/s)
   })

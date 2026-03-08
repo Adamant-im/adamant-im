@@ -316,22 +316,12 @@ const checkDate = () => {
 
 .chats-view {
   --a-chats-actions-height: var(--toolbar-height);
-  --a-chats-actions-padding-inline-start: var(--a-space-3);
-  --a-chats-actions-padding-inline-end: var(--a-space-2);
-  --a-chats-actions-padding-inline-start-mobile: var(
-    --a-chat-preview-item-padding-inline-start-mobile
-  );
-  --a-chats-actions-padding-inline-end-mobile: var(--a-chat-preview-item-padding-inline-end-mobile);
+  --a-chats-actions-padding-inline-start: var(--a-chat-preview-item-padding-inline-start);
+  --a-chats-actions-padding-inline-end: var(--a-chat-preview-item-padding-inline-end);
   --a-chats-actions-gap: var(--a-space-2);
-  --a-chats-connection-spinner-size: 24px;
-  --a-chats-connection-spinner-offset-inline-start: var(--a-space-4);
-  --a-chats-connection-spinner-offset-inline-start-mobile: calc(
-    (
-        var(--a-chat-preview-item-padding-inline-start-mobile) - var(
-            --a-chats-actions-padding-inline-start-mobile
-          )
-      ) +
-      (var(--a-chat-preview-avatar-size) - var(--a-chats-connection-spinner-size)) / 2
+  --a-chats-connection-spinner-size: var(--a-chat-connection-spinner-size);
+  --a-chats-connection-spinner-offset-inline-start: calc(
+    (var(--a-chat-preview-avatar-size) - var(--a-chats-connection-spinner-size)) / 2
   );
   --a-chats-item-padding-inline: var(--a-space-2);
   --a-chats-item-avatar-gap-inline: var(--a-space-1);
@@ -385,11 +375,6 @@ const checkDate = () => {
     padding-inline-start: var(--a-chats-actions-padding-inline-start);
     padding-inline-end: var(--a-chats-actions-padding-inline-end);
     column-gap: var(--a-chats-actions-gap);
-
-    @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-      padding-inline-start: var(--a-chats-actions-padding-inline-start-mobile);
-      padding-inline-end: var(--a-chats-actions-padding-inline-end-mobile);
-    }
   }
   &__title {
     font-weight: var(--a-chats-title-font-weight);
@@ -420,12 +405,6 @@ const checkDate = () => {
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-
-  @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-    &__connection-spinner {
-      margin-inline-start: var(--a-chats-connection-spinner-offset-inline-start-mobile);
-    }
   }
 }
 

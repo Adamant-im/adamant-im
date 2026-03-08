@@ -1,74 +1,61 @@
 import { config as loadEnv } from 'dotenv'
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 import { loginWithPassphrase } from './helpers/auth'
 
 loadEnv({ path: '.env.local' })
 
 const testPassphrase = process.env.ADM_TEST_ACCOUNT_PK?.trim()
-const testCrypto = 'DOGE'
+const testDetailsCrypto = 'DOGE'
+const testListCrypto = 'ADM'
 const testTransactionId = '723a8f9d1f0083b5da91c2aae1df6434d854828d8e9fac5f11b30f021af3ba86'
 
-test.describe('Transactions layout regressions', () => {
-  test('keeps transaction details aligned to the shared mobile screen gutter', async ({ page }) => {
-    test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
+const assertTransactionDetailsScreenGutter = async (page: Page) => {
+  const firstRow = page.locator('.transaction-view__list .transaction-list-item').first()
+  await expect(firstRow).toBeVisible()
 
-    await page.setViewportSize({ width: 390, height: 844 })
-    await loginWithPassphrase(page, testPassphrase!)
+  const metrics = await page.evaluate(() => {
+    const list = document.querySelector('.transaction-view__list') as HTMLElement | null
+    const row = document.querySelector(
+      '.transaction-view__list .transaction-list-item'
+    ) as HTMLElement | null
+    const title = row?.querySelector('.transaction-list-item__title') as HTMLElement | null
+    const value = row?.querySelector('.transaction-list-item__value') as HTMLElement | null
 
-    await page.goto(`/transactions/${testCrypto}/${testTransactionId}`, {
-      waitUntil: 'domcontentloaded'
-    })
-    await expect(page).toHaveURL(new RegExp(`/transactions/${testCrypto}/${testTransactionId}$`))
+    if (!list || !row || !title || !value) {
+      return null
+    }
 
-    const firstRow = page.locator('.transaction-view__list .transaction-list-item').first()
-    await expect(firstRow).toBeVisible()
+    const listRect = list.getBoundingClientRect()
+    const rowRect = row.getBoundingClientRect()
+    const titleRect = title.getBoundingClientRect()
+    const valueRect = value.getBoundingClientRect()
+    const rowStyle = getComputedStyle(row)
 
-    const metrics = await page.evaluate(() => {
-      const list = document.querySelector('.transaction-view__list') as HTMLElement | null
-      const row = document.querySelector(
-        '.transaction-view__list .transaction-list-item'
-      ) as HTMLElement | null
-      const title = row?.querySelector('.transaction-list-item__title') as HTMLElement | null
-      const value = row?.querySelector('.transaction-list-item__value') as HTMLElement | null
-
-      if (!list || !row || !title || !value) {
-        return null
-      }
-
-      const listRect = list.getBoundingClientRect()
-      const rowRect = row.getBoundingClientRect()
-      const titleRect = title.getBoundingClientRect()
-      const valueRect = value.getBoundingClientRect()
-      const rowStyle = getComputedStyle(row)
-
-      return {
-        listLeft: listRect.left,
-        listRightGap: window.innerWidth - listRect.right,
-        rowLeft: rowRect.left,
-        rowRightGap: window.innerWidth - rowRect.right,
-        rowPaddingLeft: Number.parseFloat(rowStyle.paddingLeft),
-        rowPaddingRight: Number.parseFloat(rowStyle.paddingRight),
-        titleLeft: titleRect.left,
-        valueRightGap: window.innerWidth - valueRect.right
-      }
-    })
-
-    expect(metrics).not.toBeNull()
-    expect(Math.abs(metrics?.listLeft ?? 99)).toBeLessThanOrEqual(1)
-    expect(Math.abs(metrics?.listRightGap ?? 99)).toBeLessThanOrEqual(1)
-    expect(Math.abs(metrics?.rowLeft ?? 99)).toBeLessThanOrEqual(1)
-    expect(Math.abs(metrics?.rowRightGap ?? 99)).toBeLessThanOrEqual(1)
-    expect(metrics?.rowPaddingLeft ?? 0).toBeGreaterThanOrEqual(23)
-    expect(metrics?.rowPaddingLeft ?? 99).toBeLessThanOrEqual(25)
-    expect(metrics?.rowPaddingRight ?? 0).toBeGreaterThanOrEqual(23)
-    expect(metrics?.rowPaddingRight ?? 99).toBeLessThanOrEqual(25)
-    expect(metrics?.titleLeft ?? 0).toBeGreaterThanOrEqual(23)
-    expect(metrics?.titleLeft ?? 99).toBeLessThanOrEqual(25)
-    expect(metrics?.valueRightGap ?? 0).toBeGreaterThanOrEqual(23)
-    expect(metrics?.valueRightGap ?? 99).toBeLessThanOrEqual(25)
+    return {
+      rowLeftInset: rowRect.left - listRect.left,
+      rowRightInset: listRect.right - rowRect.right,
+      rowPaddingLeft: Number.parseFloat(rowStyle.paddingLeft),
+      rowPaddingRight: Number.parseFloat(rowStyle.paddingRight),
+      titleLeftInset: titleRect.left - rowRect.left,
+      valueRightInset: rowRect.right - valueRect.right
+    }
   })
 
-  test('keeps DOGE transaction rows aligned to the shared mobile screen gutter when present', async ({
+  expect(metrics).not.toBeNull()
+  expect(Math.abs(metrics?.rowLeftInset ?? 99)).toBeLessThanOrEqual(1)
+  expect(Math.abs(metrics?.rowRightInset ?? 99)).toBeLessThanOrEqual(1)
+  expect(metrics?.rowPaddingLeft ?? 0).toBeGreaterThanOrEqual(23)
+  expect(metrics?.rowPaddingLeft ?? 99).toBeLessThanOrEqual(25)
+  expect(metrics?.rowPaddingRight ?? 0).toBeGreaterThanOrEqual(23)
+  expect(metrics?.rowPaddingRight ?? 99).toBeLessThanOrEqual(25)
+  expect(metrics?.titleLeftInset ?? 0).toBeGreaterThanOrEqual(23)
+  expect(metrics?.titleLeftInset ?? 99).toBeLessThanOrEqual(25)
+  expect(metrics?.valueRightInset ?? 0).toBeGreaterThanOrEqual(23)
+  expect(metrics?.valueRightInset ?? 99).toBeLessThanOrEqual(25)
+}
+
+test.describe('Transactions layout regressions', () => {
+  test('keeps transaction details aligned to the shared screen gutter on mobile', async ({
     page
   }) => {
     test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
@@ -76,10 +63,46 @@ test.describe('Transactions layout regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await loginWithPassphrase(page, testPassphrase!)
 
-    await page.goto(`/transactions/${testCrypto}`, { waitUntil: 'domcontentloaded' })
+    await page.goto(`/transactions/${testDetailsCrypto}/${testTransactionId}`, {
+      waitUntil: 'domcontentloaded'
+    })
+    await expect(page).toHaveURL(
+      new RegExp(`/transactions/${testDetailsCrypto}/${testTransactionId}$`)
+    )
+
+    await assertTransactionDetailsScreenGutter(page)
+  })
+
+  test('keeps transaction details aligned to the shared screen gutter on desktop', async ({
+    page
+  }) => {
+    test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
+
+    await page.setViewportSize({ width: 1366, height: 900 })
+    await loginWithPassphrase(page, testPassphrase!)
+
+    await page.goto(`/transactions/${testDetailsCrypto}/${testTransactionId}`, {
+      waitUntil: 'domcontentloaded'
+    })
+    await expect(page).toHaveURL(
+      new RegExp(`/transactions/${testDetailsCrypto}/${testTransactionId}$`)
+    )
+
+    await assertTransactionDetailsScreenGutter(page)
+  })
+
+  test('keeps ADM transaction rows aligned to the shared screen gutter on desktop when route is available', async ({
+    page
+  }) => {
+    test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
+
+    await page.setViewportSize({ width: 1366, height: 900 })
+    await loginWithPassphrase(page, testPassphrase!)
+
+    await page.goto(`/transactions/${testListCrypto}`, { waitUntil: 'domcontentloaded' })
     test.skip(
-      !new RegExp(`/transactions/${testCrypto}$`).test(page.url()),
-      'The configured test account redirects DOGE list route to a different screen'
+      !new RegExp(`/transactions/${testListCrypto}$`).test(page.url()),
+      'The configured test account redirects ADM list route to a different screen'
     )
 
     const transactions = page.locator('.transaction-item__tile')
@@ -104,34 +127,42 @@ test.describe('Transactions layout regressions', () => {
 
     test.skip(
       routeState !== 'transactions',
-      'The configured test account does not expose stable DOGE list rows for e2e assertions'
+      'The configured test account does not expose stable ADM list rows for e2e assertions'
     )
 
     const firstRow = transactions.first()
     await expect(firstRow).toBeVisible()
 
-    const metrics = await firstRow.evaluate((row) => {
-      const title = row.querySelector('.v-list-item-title') as HTMLElement | null
+    const metrics = await page.evaluate(() => {
+      const list = document.querySelector('.v-list') as HTMLElement | null
+      const row = document.querySelector('.transaction-item__tile') as HTMLElement | null
+      const title = row?.querySelector('.v-list-item-title') as HTMLElement | null
+      if (!list || !row || !title) {
+        return null
+      }
+
+      const listRect = list.getBoundingClientRect()
       const rowRect = row.getBoundingClientRect()
-      const titleRect = title?.getBoundingClientRect()
+      const titleRect = title.getBoundingClientRect()
       const rowStyle = getComputedStyle(row)
 
       return {
-        rowLeft: rowRect.left,
-        rowRightGap: window.innerWidth - rowRect.right,
+        rowLeftInset: rowRect.left - listRect.left,
+        rowRightInset: listRect.right - rowRect.right,
         rowPaddingLeft: Number.parseFloat(rowStyle.paddingLeft),
         rowPaddingRight: Number.parseFloat(rowStyle.paddingRight),
-        titleLeft: titleRect?.left ?? null
+        titleLeftInset: titleRect.left - rowRect.left
       }
     })
 
-    expect(Math.abs(metrics.rowLeft)).toBeLessThanOrEqual(1)
-    expect(Math.abs(metrics.rowRightGap)).toBeLessThanOrEqual(1)
-    expect(metrics.rowPaddingLeft).toBeGreaterThanOrEqual(23)
-    expect(metrics.rowPaddingLeft).toBeLessThanOrEqual(25)
-    expect(metrics.rowPaddingRight).toBeGreaterThanOrEqual(23)
-    expect(metrics.rowPaddingRight).toBeLessThanOrEqual(25)
-    expect(metrics.titleLeft ?? 0).toBeGreaterThanOrEqual(47)
-    expect(metrics.titleLeft ?? 99).toBeLessThanOrEqual(73)
+    expect(metrics).not.toBeNull()
+    expect(Math.abs(metrics?.rowLeftInset ?? 99)).toBeLessThanOrEqual(1)
+    expect(Math.abs(metrics?.rowRightInset ?? 99)).toBeLessThanOrEqual(1)
+    expect(metrics?.rowPaddingLeft ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.rowPaddingLeft ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.rowPaddingRight ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.rowPaddingRight ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.titleLeftInset ?? 0).toBeGreaterThanOrEqual(47)
+    expect(metrics?.titleLeftInset ?? 99).toBeLessThanOrEqual(73)
   })
 })

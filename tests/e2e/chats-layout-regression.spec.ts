@@ -80,9 +80,11 @@ test.describe('Chats layout regressions', () => {
 
       const rowRect = row.getBoundingClientRect()
       const buttonRect = button.getBoundingClientRect()
+      const rowStyle = getComputedStyle(row)
       const markRead = document.querySelector('.chats-view__mark-read-btn') as HTMLElement | null
       const markReadRect = markRead?.getBoundingClientRect() ?? null
       let spinnerToAvatarAxisDeltaX = null as number | null
+      let spinnerSize = null as number | null
 
       if (spinner && avatarOrIcon) {
         // Spinner can be hidden by v-show when nodes are online. Temporarily reveal it
@@ -94,6 +96,7 @@ test.describe('Chats layout regressions', () => {
 
         const spinnerRect = spinner.getBoundingClientRect()
         const avatarRect = avatarOrIcon.getBoundingClientRect()
+        spinnerSize = spinnerRect.width
         spinnerToAvatarAxisDeltaX = Math.abs(
           spinnerRect.left + spinnerRect.width / 2 - (avatarRect.left + avatarRect.width / 2)
         )
@@ -105,6 +108,8 @@ test.describe('Chats layout regressions', () => {
       return {
         rowHeight: rowRect.height,
         buttonHeight: buttonRect.height,
+        rowPaddingLeft: Number.parseFloat(rowStyle.paddingLeft),
+        rowPaddingRight: Number.parseFloat(rowStyle.paddingRight),
         centerDelta: Math.abs(
           rowRect.top + rowRect.height / 2 - (buttonRect.top + buttonRect.height / 2)
         ),
@@ -113,6 +118,7 @@ test.describe('Chats layout regressions', () => {
               rowRect.top + rowRect.height / 2 - (markReadRect.top + markReadRect.height / 2)
             )
           : null,
+        spinnerSize,
         spinnerToAvatarAxisDeltaX
       }
     })
@@ -120,10 +126,19 @@ test.describe('Chats layout regressions', () => {
     expect(geometry).not.toBeNull()
     expect(geometry?.rowHeight ?? 0).toBeGreaterThan(0)
     expect(geometry?.buttonHeight ?? 0).toBeGreaterThanOrEqual((geometry?.rowHeight ?? 0) - 1)
+    expect(geometry?.rowPaddingLeft ?? 0).toBeGreaterThanOrEqual(19)
+    expect(geometry?.rowPaddingLeft ?? 99).toBeLessThanOrEqual(21)
+    expect(geometry?.rowPaddingRight ?? 0).toBeGreaterThanOrEqual(23)
+    expect(geometry?.rowPaddingRight ?? 99).toBeLessThanOrEqual(25)
     expect(geometry?.centerDelta ?? 999).toBeLessThanOrEqual(2)
 
     if (geometry?.markReadCenterDelta !== null) {
       expect(geometry?.markReadCenterDelta ?? 999).toBeLessThanOrEqual(2)
+    }
+
+    if (geometry?.spinnerSize !== null) {
+      expect(geometry?.spinnerSize ?? 0).toBeGreaterThanOrEqual(31)
+      expect(geometry?.spinnerSize ?? 999).toBeLessThanOrEqual(33)
     }
 
     if (geometry?.spinnerToAvatarAxisDeltaX !== null) {
@@ -236,6 +251,8 @@ test.describe('Chats layout regressions', () => {
       const avatarRect = avatar.getBoundingClientRect()
 
       return {
+        previewPaddingLeft: Number.parseFloat(previewStyle.paddingLeft),
+        previewPaddingRight: Number.parseFloat(previewStyle.paddingRight),
         avatarGapVar: previewStyle.getPropertyValue('--a-chat-brief-avatar-gap').trim(),
         dateGapVar: previewStyle.getPropertyValue('--a-chat-brief-date-gap').trim(),
         headingGapVar: previewStyle.getPropertyValue('--a-chat-brief-heading-gap').trim(),
@@ -257,6 +274,10 @@ test.describe('Chats layout regressions', () => {
     expect(metrics?.avatarGapVar).not.toBe('')
     expect(metrics?.dateGapVar).not.toBe('')
     expect(metrics?.headingGapVar).not.toBe('')
+    expect(metrics?.previewPaddingLeft ?? 0).toBeGreaterThanOrEqual(19)
+    expect(metrics?.previewPaddingLeft ?? 99).toBeLessThanOrEqual(21)
+    expect(metrics?.previewPaddingRight ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.previewPaddingRight ?? 99).toBeLessThanOrEqual(25)
     expect(metrics?.subtitleLineHeightVar).not.toBe('')
     expect(metrics?.subtitleLineHeight ?? 0).toBeGreaterThanOrEqual(20)
     expect(metrics?.subtitleLineHeight ?? 999).toBeLessThanOrEqual(22)
@@ -308,6 +329,7 @@ test.describe('Chats layout regressions', () => {
       }
 
       let spinnerToAvatarAxisDeltaX = null as number | null
+      let spinnerSize = null as number | null
 
       if (spinner && avatar) {
         const previousDisplay = spinner.style.display
@@ -317,6 +339,7 @@ test.describe('Chats layout regressions', () => {
 
         const spinnerRect = spinner.getBoundingClientRect()
         const avatarRect = avatar.getBoundingClientRect()
+        spinnerSize = spinnerRect.width
         spinnerToAvatarAxisDeltaX = Math.abs(
           spinnerRect.left + spinnerRect.width / 2 - (avatarRect.left + avatarRect.width / 2)
         )
@@ -327,6 +350,8 @@ test.describe('Chats layout regressions', () => {
 
       const rowRect = row.getBoundingClientRect()
       const previewRect = preview.getBoundingClientRect()
+      const rowStyle = getComputedStyle(row)
+      const previewStyle = getComputedStyle(preview)
       const avatarRect = avatar.getBoundingClientRect()
       const titleRect = title.getBoundingClientRect()
       const subtitleRect = subtitle.getBoundingClientRect()
@@ -335,13 +360,18 @@ test.describe('Chats layout regressions', () => {
       return {
         rowLeft: rowRect.left,
         rowRightGap: window.innerWidth - rowRect.right,
+        rowPaddingLeft: Number.parseFloat(rowStyle.paddingLeft),
+        rowPaddingRight: Number.parseFloat(rowStyle.paddingRight),
         previewLeft: previewRect.left,
         previewRightGap: window.innerWidth - previewRect.right,
+        previewPaddingLeft: Number.parseFloat(previewStyle.paddingLeft),
+        previewPaddingRight: Number.parseFloat(previewStyle.paddingRight),
         avatarLeft: avatarRect.left,
         avatarWidth: avatarRect.width,
         titleLeft: titleRect.left,
         subtitleLeft: subtitleRect.left,
         headingGap: subtitleRect.top - headingRect.bottom,
+        spinnerSize,
         spinnerToAvatarAxisDeltaX
       }
     })
@@ -351,6 +381,14 @@ test.describe('Chats layout regressions', () => {
     expect(Math.abs(metrics?.rowRightGap ?? 99)).toBeLessThanOrEqual(1)
     expect(Math.abs(metrics?.previewLeft ?? 99)).toBeLessThanOrEqual(1)
     expect(Math.abs(metrics?.previewRightGap ?? 99)).toBeLessThanOrEqual(1)
+    expect(metrics?.rowPaddingLeft ?? 0).toBeGreaterThanOrEqual(19)
+    expect(metrics?.rowPaddingLeft ?? 99).toBeLessThanOrEqual(21)
+    expect(metrics?.rowPaddingRight ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.rowPaddingRight ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.previewPaddingLeft ?? 0).toBeGreaterThanOrEqual(19)
+    expect(metrics?.previewPaddingLeft ?? 99).toBeLessThanOrEqual(21)
+    expect(metrics?.previewPaddingRight ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.previewPaddingRight ?? 99).toBeLessThanOrEqual(25)
     expect(metrics?.avatarLeft ?? 0).toBeGreaterThanOrEqual(19)
     expect(metrics?.avatarLeft ?? 99).toBeLessThanOrEqual(21)
     expect(metrics?.avatarWidth ?? 0).toBeGreaterThanOrEqual(51)
@@ -361,6 +399,11 @@ test.describe('Chats layout regressions', () => {
     expect(metrics?.subtitleLeft ?? 999).toBeLessThanOrEqual(89)
     expect(metrics?.headingGap ?? 0).toBeGreaterThanOrEqual(1)
     expect(metrics?.headingGap ?? 99).toBeLessThanOrEqual(3)
+
+    if (metrics?.spinnerSize !== null) {
+      expect(metrics?.spinnerSize ?? 0).toBeGreaterThanOrEqual(31)
+      expect(metrics?.spinnerSize ?? 999).toBeLessThanOrEqual(33)
+    }
 
     if (metrics?.spinnerToAvatarAxisDeltaX !== null) {
       expect(metrics?.spinnerToAvatarAxisDeltaX ?? 999).toBeLessThanOrEqual(2)
