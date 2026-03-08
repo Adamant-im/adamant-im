@@ -141,6 +141,10 @@ onMounted(() => {
   }
   :deep(.v-btn:not(.v-btn--active)) {
     filter: unset;
+
+    .app-navigation__label {
+      font-size: var(--a-app-navigation-label-font-size-inactive);
+    }
   }
   :deep(.v-bottom-navigation__content) {
     height: 100%;

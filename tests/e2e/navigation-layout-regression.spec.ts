@@ -12,21 +12,33 @@ test.describe('Navigation layout regressions', () => {
 
     const metrics = await page.evaluate(() => {
       const navigation = document.querySelector('.app-navigation') as HTMLElement | null
-      const button = document.querySelector('.app-navigation__button') as HTMLElement | null
-      const label = document.querySelector('.app-navigation__label') as HTMLElement | null
+      const activeButton = document.querySelector(
+        '.app-navigation .v-btn.v-btn--active'
+      ) as HTMLElement | null
+      const inactiveButton = document.querySelector(
+        '.app-navigation .v-btn:not(.v-btn--active)'
+      ) as HTMLElement | null
+      const activeLabel = activeButton?.querySelector(
+        '.app-navigation__label'
+      ) as HTMLElement | null
+      const inactiveLabel = inactiveButton?.querySelector(
+        '.app-navigation__label'
+      ) as HTMLElement | null
 
-      if (!navigation || !button || !label) {
+      if (!navigation || !activeButton || !inactiveButton || !activeLabel || !inactiveLabel) {
         return null
       }
 
       const navigationStyle = getComputedStyle(navigation)
-      const buttonStyle = getComputedStyle(button)
-      const labelStyle = getComputedStyle(label)
+      const buttonStyle = getComputedStyle(activeButton)
+      const activeLabelStyle = getComputedStyle(activeLabel)
+      const inactiveLabelStyle = getComputedStyle(inactiveLabel)
 
       return {
         navigationHeight: Number.parseFloat(navigationStyle.height),
         buttonFontWeight: Number.parseFloat(buttonStyle.fontWeight),
-        labelFontSize: Number.parseFloat(labelStyle.fontSize)
+        activeLabelFontSize: Number.parseFloat(activeLabelStyle.fontSize),
+        inactiveLabelFontSize: Number.parseFloat(inactiveLabelStyle.fontSize)
       }
     })
 
@@ -35,8 +47,11 @@ test.describe('Navigation layout regressions', () => {
     expect(metrics?.navigationHeight ?? 99).toBeLessThanOrEqual(51)
     expect(metrics?.buttonFontWeight ?? 0).toBeGreaterThanOrEqual(299)
     expect(metrics?.buttonFontWeight ?? 999).toBeLessThanOrEqual(301)
-    expect(metrics?.labelFontSize ?? 0).toBeGreaterThanOrEqual(13)
-    expect(metrics?.labelFontSize ?? 99).toBeLessThanOrEqual(15)
+    expect(metrics?.activeLabelFontSize ?? 0).toBeGreaterThanOrEqual(13)
+    expect(metrics?.activeLabelFontSize ?? 99).toBeLessThanOrEqual(15)
+    expect(metrics?.inactiveLabelFontSize ?? 0).toBeGreaterThanOrEqual(11)
+    expect(metrics?.inactiveLabelFontSize ?? 99).toBeLessThanOrEqual(13)
+    expect((metrics?.inactiveLabelFontSize ?? 99) < (metrics?.activeLabelFontSize ?? 0)).toBe(true)
   })
 
   test('keeps switcher dropdown rows stable on options screen', async ({ page }) => {
