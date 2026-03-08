@@ -198,7 +198,7 @@
   "main": "dist-electron/main.js",
   "lint-staged": {
     "*.(ts|js|vue)": [
-      "eslint --fix",
+      "eslint --fix --no-warn-ignored",
       "prettier --write"
     ]
   },

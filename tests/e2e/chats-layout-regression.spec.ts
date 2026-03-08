@@ -428,6 +428,7 @@ test.describe('Chats layout regressions', () => {
     await expect(page.locator('.chat-start-dialog__body')).toBeVisible()
 
     const metrics = await page.evaluate(() => {
+      const title = document.querySelector('.chat-start-dialog__card-title') as HTMLElement | null
       const body = document.querySelector('.chat-start-dialog__body') as HTMLElement | null
       const field = body?.querySelector('.v-field') as HTMLElement | null
       const startButton = document.querySelector(
@@ -437,10 +438,11 @@ test.describe('Chats layout regressions', () => {
         '.chat-start-dialog__btn-show-qrcode'
       ) as HTMLElement | null
 
-      if (!body || !field || !startButton || !qrLink) {
+      if (!title || !body || !field || !startButton || !qrLink) {
         return null
       }
 
+      const titleStyle = getComputedStyle(title)
       const bodyStyle = getComputedStyle(body)
       const startButtonStyle = getComputedStyle(startButton)
       const qrLinkStyle = getComputedStyle(qrLink)
@@ -448,6 +450,8 @@ test.describe('Chats layout regressions', () => {
       const fieldRect = field.getBoundingClientRect()
 
       return {
+        titlePaddingInlineStart: Number.parseFloat(titleStyle.paddingInlineStart),
+        titlePaddingInlineEnd: Number.parseFloat(titleStyle.paddingInlineEnd),
         bodyPaddingInlineStart: Number.parseFloat(bodyStyle.paddingInlineStart),
         bodyPaddingInlineEnd: Number.parseFloat(bodyStyle.paddingInlineEnd),
         fieldLeftGap: fieldRect.left - bodyRect.left,
@@ -459,14 +463,18 @@ test.describe('Chats layout regressions', () => {
     })
 
     expect(metrics).not.toBeNull()
-    expect(metrics?.bodyPaddingInlineStart ?? 0).toBeGreaterThanOrEqual(15)
-    expect(metrics?.bodyPaddingInlineStart ?? 99).toBeLessThanOrEqual(17)
-    expect(metrics?.bodyPaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(15)
-    expect(metrics?.bodyPaddingInlineEnd ?? 99).toBeLessThanOrEqual(17)
-    expect(metrics?.fieldLeftGap ?? 0).toBeGreaterThanOrEqual(14)
-    expect(metrics?.fieldLeftGap ?? 99).toBeLessThanOrEqual(16)
-    expect(metrics?.fieldRightGap ?? 0).toBeGreaterThanOrEqual(14)
-    expect(metrics?.fieldRightGap ?? 99).toBeLessThanOrEqual(16)
+    expect(metrics?.titlePaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.titlePaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.titlePaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.titlePaddingInlineEnd ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.bodyPaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.bodyPaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.bodyPaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.bodyPaddingInlineEnd ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.fieldLeftGap ?? 0).toBeGreaterThanOrEqual(21)
+    expect(metrics?.fieldLeftGap ?? 99).toBeLessThanOrEqual(24)
+    expect(metrics?.fieldRightGap ?? 0).toBeGreaterThanOrEqual(21)
+    expect(metrics?.fieldRightGap ?? 99).toBeLessThanOrEqual(24)
     expect(metrics?.startButtonMarginTop ?? 0).toBeGreaterThanOrEqual(14)
     expect(metrics?.startButtonMarginTop ?? 99).toBeLessThanOrEqual(16)
     expect(metrics?.qrLinkMarginTop ?? 0).toBeGreaterThanOrEqual(14)

@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="show" width="500" :class="className" @keydown.enter="onEnter">
     <v-card>
-      <v-card-title class="a-text-header">
+      <v-card-title :class="`${className}__card-title a-text-header`">
         {{ $t('chats.new_chat') }}
       </v-card-title>
 
@@ -235,11 +235,10 @@ export default {
 
 <style lang="scss" scoped>
 @use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 
 .chat-start-dialog {
-  &__body {
-    padding: var(--a-secondary-dialog-content-padding);
-  }
+  @include secondaryDialog.a-secondary-dialog-card-frame();
 
   &__btn-start-chat {
     margin-top: var(--a-secondary-dialog-action-margin-top);

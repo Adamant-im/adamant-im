@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" max-width="360">
+  <v-dialog v-model="show" max-width="360" :class="className">
     <v-card>
       <v-card-title :class="`${className}__dialog-title`" class="a-text-header">
         {{ isMe ? t('chats.my_qr_code') : t('chats.partner_info') }}
@@ -9,7 +9,7 @@
         </v-btn>
       </v-card-title>
       <v-divider class="a-divider" />
-      <v-list lines="two">
+      <v-list lines="two" :class="`${className}__list`">
         <v-list-item>
           <template #prepend>
             <icon-box>
@@ -89,10 +89,13 @@ const text = computed(() =>
 </script>
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 @use '@/assets/styles/settings/_colors.scss';
 @use 'vuetify/_settings.scss';
 
 .partner-info-dialog {
+  @include secondaryDialog.a-secondary-dialog-card-frame();
+
   &__dialog-title {
     display: flex;
     align-items: center;

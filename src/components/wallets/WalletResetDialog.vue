@@ -17,13 +17,13 @@
 
         <v-divider :class="`${classes.root}__divider`" />
 
-        <v-row gap="0" :class="`${classes.root}__dialog-body`">
+        <v-card-text :class="`${classes.root}__dialog-body`">
           <div :class="`${classes.root}__dialog-summary`">
             {{ t('wallets.reset_message') }}
           </div>
-        </v-row>
+        </v-card-text>
 
-        <v-card-actions>
+        <v-card-actions :class="`${classes.root}__dialog-actions`">
           <v-spacer></v-spacer>
           <v-btn variant="text" class="a-btn-regular" @click="isDialogVisible = false">
             {{ t('common.cancel') }}
@@ -71,14 +71,13 @@ export default defineComponent({
 
 <style scoped lang="scss">
 @use 'sass:map';
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
 
 .wallet-reset-dialog {
-  &__dialog-body {
-    padding: var(--a-secondary-dialog-content-padding);
-  }
+  @include secondaryDialog.a-secondary-dialog-card-frame();
   &__dialog-summary {
     @include mixins.a-text-regular-enlarged();
   }

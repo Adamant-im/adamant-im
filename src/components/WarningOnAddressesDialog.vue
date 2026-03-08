@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="show" width="500" :class="className" @keydown.enter="onEnter">
     <v-card>
-      <v-card-title class="a-text-header">
+      <v-card-title :class="`${className}__card-title a-text-header`">
         {{ header }}
       </v-card-title>
 

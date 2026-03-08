@@ -36,7 +36,10 @@
   --a-chat-preview-item-padding-inline-start: var(--a-space-5);
   --a-chat-preview-item-padding-inline-end: var(--a-space-6);
   --a-chat-preview-heading-gap: calc(var(--a-space-1) / 2);
-  --a-secondary-dialog-content-padding: var(--a-space-4);
+  --a-secondary-dialog-padding-inline: var(--a-space-6);
+  --a-secondary-dialog-title-padding: var(--a-space-4) var(--a-secondary-dialog-padding-inline);
+  --a-secondary-dialog-content-padding: var(--a-space-4) var(--a-secondary-dialog-padding-inline);
+  --a-secondary-dialog-actions-padding: var(--a-space-3) var(--a-secondary-dialog-padding-inline);
   --a-secondary-dialog-disclaimer-gap: 10px;
   --a-secondary-dialog-highlight-padding: 10px;
   --a-secondary-dialog-action-icon-gap: var(--a-space-2);

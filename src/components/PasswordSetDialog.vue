@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="show" :class="className" width="500">
     <v-card>
-      <v-card-title class="a-text-header">
+      <v-card-title :class="`${className}__card-title a-text-header`">
         {{ t('login_via_password.popup_title') }}
       </v-card-title>
 
@@ -141,13 +141,9 @@ const submit = () => {
 </script>
 
 <style lang="scss" scoped>
-.password-set-dialog {
-  &__body {
-    padding: var(--a-secondary-dialog-content-padding);
-  }
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 
-  &__actions {
-    padding: var(--a-space-3);
-  }
+.password-set-dialog {
+  @include secondaryDialog.a-secondary-dialog-card-frame();
 }
 </style>

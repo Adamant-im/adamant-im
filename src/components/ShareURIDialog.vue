@@ -6,23 +6,23 @@
       </v-card-title>
       <v-divider class="a-divider" />
       <v-card-text class="pa-0">
-        <v-list>
-          <v-list-item @click="copyAddress">
+        <v-list bg-color="transparent" :class="classes.list">
+          <v-list-item :class="classes.listItem" @click="copyAddress">
             <v-list-item-title :class="classes.listItemTitle">
               {{ t('home.copy_address') }}
             </v-list-item-title>
           </v-list-item>
-          <v-list-item v-if="isADM" @click="copyURI">
+          <v-list-item v-if="isADM" :class="classes.listItem" @click="copyURI">
             <v-list-item-title :class="classes.listItemTitle">
               {{ t('home.copy_uri') }}
             </v-list-item-title>
           </v-list-item>
-          <v-list-item @click="openQRCodeRenderer">
+          <v-list-item :class="classes.listItem" @click="openQRCodeRenderer">
             <v-list-item-title :class="classes.listItemTitle">
               {{ t('home.show_qr_code') }}
             </v-list-item-title>
           </v-list-item>
-          <v-list-item @click="openInExplorer">
+          <v-list-item :class="classes.listItem" @click="openInExplorer">
             <v-list-item-title :class="classes.listItemTitle">
               {{ t('home.explorer') }}
             </v-list-item-title>
@@ -50,6 +50,8 @@ const className = 'share-uri-dialog'
 const classes = {
   root: className,
   dialogTitle: `${className}__dialog-title`,
+  list: `${className}__list`,
+  listItem: `${className}__list-item`,
   listItemTitle: `${className}__list-item-title`
 }
 
@@ -133,17 +135,30 @@ export default defineComponent({
 
 <style lang="scss">
 @use 'sass:map';
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+@use '@/assets/styles/settings/_colors.scss';
 @use 'vuetify/_settings.scss';
 
 .share-uri-dialog {
+  @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  &__list {
+    background: inherit;
+  }
+}
+
+.v-theme--light {
+  .share-uri-dialog {
+    &__dialog-title,
+    &__list-item-title {
+      color: map.get(colors.$adm-colors, 'regular');
+    }
+  }
 }
 
 .v-theme--dark {
   .share-uri-dialog {
-    &__dialog-title {
-      color: map.get(settings.$shades, 'white');
-    }
-
+    &__dialog-title,
     &__list-item-title {
       color: map.get(settings.$shades, 'white');
     }

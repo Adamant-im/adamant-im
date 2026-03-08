@@ -1,31 +1,36 @@
 <template>
-  <v-dialog v-model="show" width="320">
+  <v-dialog v-model="show" width="320" :class="classes.root">
     <v-card>
-      <v-card-title class="a-text-header">
+      <v-card-title :class="`${classes.root}__dialog-title a-text-header`">
         {{ t('home.buy_tokens_btn') }}
       </v-card-title>
 
       <v-divider class="a-divider" />
 
       <v-card-text class="pa-0">
-        <v-list>
-          <v-list-item avatar @click="openLink('U5149447931090026688')">
+        <v-list bg-color="transparent" :class="`${classes.root}__list`">
+          <v-list-item :class="classes.listItem" avatar @click="openLink('U5149447931090026688')">
             <template #prepend>
               <icon><exchanger-icon /></icon>
             </template>
 
-            <v-list-item-title>{{ t('home.buy_tokens_exchanger') }}</v-list-item-title>
+            <v-list-item-title :class="classes.listItemTitle">{{
+              t('home.buy_tokens_exchanger')
+            }}</v-list-item-title>
           </v-list-item>
 
-          <v-list-item avatar @click="openLink(admLink)">
+          <v-list-item :class="classes.listItem" avatar @click="openLink(admLink)">
             <template #prepend>
               <icon><adamant-icon /></icon>
             </template>
 
-            <v-list-item-title>{{ t('home.buy_tokens_anonymously') }}</v-list-item-title>
+            <v-list-item-title :class="classes.listItemTitle">{{
+              t('home.buy_tokens_anonymously')
+            }}</v-list-item-title>
           </v-list-item>
 
           <v-list-item
+            :class="classes.listItem"
             avatar
             @click="openLink('https://coinmarketcap.com/currencies/adamant-messenger/#markets')"
           >
@@ -33,12 +38,13 @@
               <icon><coinmarketcap-icon /></icon>
             </template>
 
-            <v-list-item-title>{{
+            <v-list-item-title :class="classes.listItemTitle">{{
               t('home.exchanges_on', { aggregator: 'CoinMarketCap' })
             }}</v-list-item-title>
           </v-list-item>
 
           <v-list-item
+            :class="classes.listItem"
             avatar
             @click="openLink('https://www.coingecko.com/en/coins/adamant-messenger#markets')"
           >
@@ -46,7 +52,7 @@
               <icon><coingecko-icon /></icon>
             </template>
 
-            <v-list-item-title>{{
+            <v-list-item-title :class="classes.listItemTitle">{{
               t('home.exchanges_on', { aggregator: 'CoinGecko' })
             }}</v-list-item-title>
           </v-list-item>
@@ -69,6 +75,13 @@ import CoingeckoIcon from '@/components/icons/common/Coingecko.vue'
 import CoinmarketcapIcon from '@/components/icons/common/Coinmarketcap.vue'
 import ExchangerIcon from '@/components/icons/common/Exchanger.vue'
 import Icon from '@/components/icons/BaseIcon.vue'
+
+const className = 'buy-tokens-dialog'
+const classes = {
+  root: className,
+  listItem: `${className}__list-item`,
+  listItemTitle: `${className}__list-item-title`
+}
 
 const props = defineProps({
   modelValue: {
@@ -123,3 +136,36 @@ const openLink = (link: string) => {
   closeDialog()
 }
 </script>
+
+<style lang="scss">
+@use 'sass:map';
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/_settings.scss';
+
+.buy-tokens-dialog {
+  @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  &__list {
+    background: inherit;
+  }
+}
+
+.v-theme--light {
+  .buy-tokens-dialog {
+    &__dialog-title,
+    &__list-item-title {
+      color: map.get(colors.$adm-colors, 'regular');
+    }
+  }
+}
+
+.v-theme--dark {
+  .buy-tokens-dialog {
+    &__dialog-title,
+    &__list-item-title {
+      color: map.get(settings.$shades, 'white');
+    }
+  }
+}
+</style>

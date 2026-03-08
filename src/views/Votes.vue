@@ -48,16 +48,16 @@
       </template>
     </SettingsTableShell>
 
-    <v-dialog v-model="dialog" width="500">
+    <v-dialog v-model="dialog" width="500" :class="summaryDialogClass">
       <v-card>
-        <v-card-title :class="`${className}__dialog-title`">
+        <v-card-title :class="`${summaryDialogClass}__dialog-title`">
           {{ t('votes.summary_title') }}
         </v-card-title>
 
-        <v-divider :class="`${className}__divider`" />
+        <v-divider :class="`${summaryDialogClass}__divider`" />
 
-        <v-row class="pa-4 v-row--no-gutters">
-          <div :class="`${className}__dialog-summary`">
+        <v-card-text :class="`${summaryDialogClass}__dialog-body`">
+          <div :class="`${summaryDialogClass}__dialog-summary`">
             {{ t('votes.upvotes') }}: <strong>{{ numOfUpvotes }}</strong
             >,&nbsp; {{ t('votes.downvotes') }}: <strong>{{ numOfDownvotes }}</strong
             >,&nbsp; {{ t('votes.total_new_votes') }}:
@@ -66,11 +66,11 @@
             <strong>{{ totalVotes }} / {{ delegates.length }}</strong>
           </div>
           <!-- eslint-disable vue/no-v-html -- Safe internal content -->
-          <div :class="`${className}__dialog-info`" v-html="t('votes.summary_info')" />
+          <div :class="`${summaryDialogClass}__dialog-info`" v-html="t('votes.summary_info')" />
           <!-- eslint-enable vue/no-v-html -->
-        </v-row>
+        </v-card-text>
 
-        <v-card-actions>
+        <v-card-actions :class="`${summaryDialogClass}__dialog-actions`">
           <v-spacer />
 
           <v-btn variant="text" class="a-btn-regular" @click="dialog = false">
@@ -97,6 +97,7 @@ import { DelegateDto } from '@/lib/schema/client'
 import SettingsTableShell from '@/components/common/SettingsTableShell.vue'
 
 const VOTE_REQUEST_LIMIT = 30
+const summaryDialogClass = 'delegates-summary-dialog'
 
 const store = useStore()
 const { t } = useI18n()
@@ -213,28 +214,13 @@ const showConfirmationDialog = () => {
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .delegates-view {
   position: relative;
 
-  &__dialog-title {
-    @include mixins.a-text-header();
-  }
-  &__dialog-summary {
-    @include mixins.a-text-regular-enlarged();
-  }
-  &__dialog-info {
-    @include mixins.a-text-regular-enlarged();
-    margin-top: var(--a-space-4);
-    :deep(a) {
-      text-decoration-line: none;
-      &:hover {
-        text-decoration-line: underline;
-      }
-    }
-  }
   &__info {
     padding: var(--a-space-5) 0;
     :deep(a) {
@@ -262,9 +248,34 @@ const showConfirmationDialog = () => {
   }
 }
 
+.delegates-summary-dialog {
+  @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  &__dialog-title {
+    @include mixins.a-text-header();
+  }
+
+  &__dialog-summary {
+    @include mixins.a-text-regular-enlarged();
+  }
+
+  &__dialog-info {
+    @include mixins.a-text-regular-enlarged();
+    margin-top: var(--a-space-4);
+
+    :deep(a) {
+      text-decoration-line: none;
+
+      &:hover {
+        text-decoration-line: underline;
+      }
+    }
+  }
+}
+
 /** Themes **/
 .v-theme--light {
-  .delegates-view {
+  .delegates-summary-dialog {
     &__dialog-title {
       color: map.get(colors.$adm-colors, 'regular');
     }
@@ -277,11 +288,12 @@ const showConfirmationDialog = () => {
     &__divider {
       border-color: map.get(colors.$adm-colors, 'regular');
     }
-    :deep(.settings-data-table) tbody tr:not(:last-child) {
-      border-bottom:
-        1px solid,
-        map.get(colors.$adm-colors, 'secondary2');
-    }
+  }
+
+  .delegates-view :deep(.settings-data-table) tbody tr:not(:last-child) {
+    border-bottom:
+      1px solid,
+      map.get(colors.$adm-colors, 'secondary2');
   }
 }
 .v-theme--dark {

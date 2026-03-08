@@ -136,18 +136,20 @@
       </div>
     </v-form>
 
-    <v-dialog v-model="dialog" width="500">
+    <v-dialog v-model="dialog" width="500" class="send-funds-confirm-dialog">
       <v-card>
-        <v-card-title class="a-text-header">
+        <v-card-title class="send-funds-confirm-dialog__dialog-title a-text-header">
           {{ $t('transfer.confirm_title') }}
         </v-card-title>
 
         <v-divider class="a-divider" />
 
-        <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -- Safe internal content -->
-        <v-card-text class="a-text-regular-enlarged pa-4" v-html="confirmMessage" />
+        <v-card-text class="send-funds-confirm-dialog__dialog-body">
+          <!-- eslint-disable-next-line vue/no-v-html -- Safe internal content -->
+          <div class="a-text-regular-enlarged" v-html="confirmMessage" />
+        </v-card-text>
 
-        <v-card-actions class="pa-4">
+        <v-card-actions class="send-funds-confirm-dialog__dialog-actions">
           <v-spacer />
 
           <v-btn class="a-btn-regular" variant="text" @click="dialog = false">
@@ -953,6 +955,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+
 .a-input :deep(input[type='number']) {
   -moz-appearance: textfield;
 }
@@ -960,6 +964,11 @@ export default {
 .a-input :deep(input[type='number']::-webkit-outer-spin-button) {
   -webkit-appearance: none;
 }
+
+.send-funds-confirm-dialog {
+  @include secondaryDialog.a-secondary-dialog-card-frame();
+}
+
 .send-funds-form {
   --a-send-funds-button-margin-top: var(--a-space-4);
   --a-send-funds-amount-label-size: var(--a-font-size-sm);

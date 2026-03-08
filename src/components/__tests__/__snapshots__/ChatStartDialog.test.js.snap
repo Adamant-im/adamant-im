@@ -11,7 +11,7 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
     data-v-50a3fb39=""
   >
     <v-card-title
-      class="a-text-header"
+      class="chat-start-dialog__card-title a-text-header"
       data-v-50a3fb39=""
     >
       New chat
@@ -22,7 +22,7 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
     />
     <v-row
       align="center"
-      class="pa-4"
+      class="chat-start-dialog__body"
       data-v-50a3fb39=""
       gap="0"
       justify="center"

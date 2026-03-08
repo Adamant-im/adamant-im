@@ -116,6 +116,7 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
     
   </div>
   <v-dialog-stub
+    class="send-funds-confirm-dialog"
     data-v-7dc72237=""
     modelvalue="false"
     width="500"
