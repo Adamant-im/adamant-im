@@ -69,7 +69,7 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
     data-v-426ca6ff=""
     data-v-50a3fb39=""
     modelvalue="false"
-    width="250"
+    width="var(--a-secondary-dialog-width-qrcode)"
   >
     <v-card
       data-v-426ca6ff=""

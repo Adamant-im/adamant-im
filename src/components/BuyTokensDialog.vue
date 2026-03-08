@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" width="320" :class="classes.root">
+  <v-dialog v-model="show" width="var(--a-secondary-dialog-width-compact)" :class="classes.root">
     <v-card>
       <v-card-title :class="`${classes.root}__dialog-title a-text-header`">
         {{ t('home.buy_tokens_btn') }}

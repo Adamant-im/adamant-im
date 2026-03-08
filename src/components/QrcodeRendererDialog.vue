@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" width="250" :class="className">
+  <v-dialog v-model="show" width="var(--a-secondary-dialog-width-qrcode)" :class="className">
     <v-card>
       <v-card-text :class="`${className}__body`">
         <div :class="`${className}__content`">

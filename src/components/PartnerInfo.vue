@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" max-width="360" :class="className">
+  <v-dialog v-model="show" max-width="var(--a-secondary-dialog-width-info)" :class="className">
     <v-card>
       <v-card-title :class="`${className}__dialog-title`" class="a-text-header">
         {{ isMe ? t('chats.my_qr_code') : t('chats.partner_info') }}

@@ -1,5 +1,10 @@
 <template>
-  <v-dialog v-model="show" eager width="320" :class="classes.root">
+  <v-dialog
+    v-model="show"
+    eager
+    width="var(--a-secondary-dialog-width-compact)"
+    :class="classes.root"
+  >
     <v-card>
       <v-card-title :class="classes.dialogTitle" class="a-text-header">
         {{ t('home.share_uri', { crypto }) }}
