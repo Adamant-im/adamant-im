@@ -163,6 +163,22 @@ test.describe('Wallets layout regressions', () => {
       scrolledMetrics?.paneBottom ?? 0
     )
 
+    await page.getByRole('button', { name: /reset/i }).click()
+    await expect(page.locator('.wallet-reset-dialog .v-overlay__content')).toBeVisible()
+
+    const dialogMetrics = await page
+      .locator('.wallet-reset-dialog .v-overlay__content')
+      .evaluate((element) => {
+        return {
+          width: element.getBoundingClientRect().width,
+          inlineWidth: (element as HTMLElement).style.width
+        }
+      })
+
+    expect(dialogMetrics.inlineWidth).toBe('500px')
+    expect(dialogMetrics.width).toBeLessThanOrEqual(500)
+    expect(dialogMetrics.width).toBeGreaterThanOrEqual(440)
+
     await assertNoDocumentScrollLeak(page)
   })
 
@@ -202,14 +218,27 @@ test.describe('Wallets layout regressions', () => {
       const subtitleMutedStyle = getComputedStyle(subtitleMuted)
       const subtitleBoldStyle = getComputedStyle(subtitleBold)
       const balanceStyle = getComputedStyle(walletBalance)
+      const cryptoIcon = document.querySelector(
+        '.wallets-view__crypto-icon .svg-icon'
+      ) as SVGElement | null
+      const balance = document.querySelector('.wallets-view__balance') as HTMLElement | null
+
+      if (!cryptoIcon || !balance) {
+        return null
+      }
+
+      const balanceWrapperStyle = getComputedStyle(balance)
 
       return {
         cryptoContentHeight: Number.parseFloat(contentStyle.height),
         cryptoContentJustify: contentStyle.justifyContent,
+        cryptoIconWidth: cryptoIcon.getBoundingClientRect().width,
+        cryptoIconHeight: cryptoIcon.getBoundingClientRect().height,
         subtitleOpacity: Number.parseFloat(subtitleStyle.opacity),
         subtitleMutedColor: subtitleMutedStyle.color,
         subtitleBoldColor: subtitleBoldStyle.color,
         balanceHeight: Number.parseFloat(balanceStyle.height),
+        balanceMarginInlineEnd: Number.parseFloat(balanceWrapperStyle.marginInlineEnd),
         balanceGap: Number.parseFloat(balanceStyle.gap),
         balanceJustify: balanceStyle.justifyContent,
         balanceIsSingleLine: walletBalance.classList.contains('wallet-balance--single-line')
@@ -220,10 +249,16 @@ test.describe('Wallets layout regressions', () => {
     expect(metrics?.cryptoContentHeight ?? 0).toBeGreaterThanOrEqual(39)
     expect(metrics?.cryptoContentHeight ?? 999).toBeLessThanOrEqual(46)
     expect(metrics?.cryptoContentJustify).toBe('center')
+    expect(metrics?.cryptoIconWidth ?? 0).toBeGreaterThanOrEqual(31)
+    expect(metrics?.cryptoIconWidth ?? 99).toBeLessThanOrEqual(33)
+    expect(metrics?.cryptoIconHeight ?? 0).toBeGreaterThanOrEqual(31)
+    expect(metrics?.cryptoIconHeight ?? 99).toBeLessThanOrEqual(33)
     expect(metrics?.subtitleOpacity ?? 0).toBeGreaterThanOrEqual(0.99)
     expect(metrics?.subtitleMutedColor).not.toBe(metrics?.subtitleBoldColor)
     expect(metrics?.balanceHeight ?? 0).toBeGreaterThanOrEqual(39)
     expect(metrics?.balanceHeight ?? 999).toBeLessThanOrEqual(41)
+    expect(metrics?.balanceMarginInlineEnd ?? 0).toBeGreaterThanOrEqual(7)
+    expect(metrics?.balanceMarginInlineEnd ?? 99).toBeLessThanOrEqual(9)
 
     if (metrics?.balanceIsSingleLine) {
       expect(metrics?.balanceGap ?? 999).toBeLessThanOrEqual(1)

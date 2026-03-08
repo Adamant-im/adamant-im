@@ -48,6 +48,9 @@ test.describe('Home layout regressions', () => {
       const walletActionItemStyle = getComputedStyle(walletActionItem)
       const walletCardTileRect = walletCardTile.getBoundingClientRect()
       const walletActionItemRect = walletActionItem.getBoundingClientRect()
+      const stakeIcon = document.querySelector(
+        '.wallet-actions .icon .svg-icon'
+      ) as SVGElement | null
 
       return {
         walletCardListPaddingTop: Number.parseFloat(walletCardListStyle.paddingTop),
@@ -59,7 +62,9 @@ test.describe('Home layout regressions', () => {
         ),
         walletActionItemPaddingInlineEnd: Number.parseFloat(walletActionItemStyle.paddingInlineEnd),
         walletActionItemMinHeight: Number.parseFloat(walletActionItemStyle.minHeight),
-        walletActionGapFromBalance: walletActionItemRect.top - walletCardTileRect.bottom
+        walletActionGapFromBalance: walletActionItemRect.top - walletCardTileRect.bottom,
+        stakeIconWidth: stakeIcon?.getBoundingClientRect().width ?? 0,
+        stakeIconHeight: stakeIcon?.getBoundingClientRect().height ?? 0
       }
     })
 
@@ -80,6 +85,10 @@ test.describe('Home layout regressions', () => {
     expect(metrics?.walletActionItemMinHeight ?? 99).toBeLessThanOrEqual(57)
     expect(metrics?.walletActionGapFromBalance ?? 0).toBeGreaterThanOrEqual(7)
     expect(metrics?.walletActionGapFromBalance ?? 99).toBeLessThanOrEqual(9)
+    expect(metrics?.stakeIconWidth ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.stakeIconWidth ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.stakeIconHeight ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.stakeIconHeight ?? 99).toBeLessThanOrEqual(25)
 
     await assertNoDocumentScrollLeak(page)
   })

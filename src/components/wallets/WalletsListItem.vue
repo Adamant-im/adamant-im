@@ -15,15 +15,18 @@
     </template>
     <template v-slot:prepend>
       <v-avatar>
-        <crypto-icon :crypto="localWallet.symbol" :customSize="iconSize" />
+        <crypto-icon
+          :class="classes.cryptoIcon"
+          :crypto="localWallet.symbol"
+          :customSize="WALLET_LIST_ICON_SIZE"
+        />
       </v-avatar>
     </template>
 
     <template v-slot:append>
-      <WalletBalance :symbol="localWallet.symbol" class="mr-2"></WalletBalance>
+      <WalletBalance :symbol="localWallet.symbol" :class="classes.balance"></WalletBalance>
       <v-checkbox
-        class="pa-1"
-        :class="classes.checkbox"
+        :class="[classes.checkbox, classes.checkboxControl]"
         color="grey darken-1"
         density="comfortable"
         hide-details
@@ -50,6 +53,7 @@
 <script lang="ts">
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import WalletBalance from '@/components/wallets/WalletBalance.vue'
+import { WALLET_LIST_ICON_SIZE } from '@/components/wallets/helpers/uiMetrics'
 import { defineComponent, PropType, toRef } from 'vue'
 import { useStore } from 'vuex'
 import { CryptoSymbol } from '@/lib/constants'
@@ -66,15 +70,17 @@ type Wallet = {
 const className = 'wallets-view'
 const classes = {
   root: className,
+  balance: `${className}__balance`,
   cryptoContent: `${className}__crypto-content`,
+  cryptoIcon: `${className}__crypto-icon`,
   cryptoSubtitle: `${className}__crypto-subtitle`,
   cryptoSubtitleWrap: `${className}__crypto-subtitle-wrap`,
   cryptoSubtitleMuted: `${className}__crypto-subtitle-muted`,
   cryptoSubtitleBold: `${className}__crypto-subtitle-bold`,
   cryptoTitle: `${className}__crypto-title`,
-  checkbox: `${className}__checkbox`
+  checkbox: `${className}__checkbox`,
+  checkboxControl: `${className}__checkbox-control`
 }
-const iconSize = 32
 
 export default defineComponent({
   components: {
@@ -98,10 +104,10 @@ export default defineComponent({
 
     return {
       classes,
-      iconSize,
       localWallet,
       store,
-      mdiMenu
+      mdiMenu,
+      WALLET_LIST_ICON_SIZE
     }
   }
 })
@@ -115,8 +121,6 @@ export default defineComponent({
 .wallets-view {
   --a-wallets-list-item-content-height: var(--a-control-size-md);
   --a-wallets-list-item-content-gap: var(--a-financial-stack-gap);
-  --a-wallets-list-item-line-height: 1;
-  --a-wallets-list-item-title-line-height: 1.1;
   --a-wallets-list-item-checkbox-offset: calc(var(--a-space-2) * -1);
   --a-wallets-list-item-subtitle-weight: var(--a-financial-text-font-weight);
   --a-wallets-list-item-subtitle-muted-dark: var(--a-color-text-muted-dark);
@@ -127,18 +131,18 @@ export default defineComponent({
     flex-direction: column;
     justify-content: center;
     gap: var(--a-wallets-list-item-content-gap);
-    line-height: var(--a-wallets-list-item-line-height);
+    line-height: var(--a-wallet-compact-line-height);
   }
   &__crypto-subtitle-wrap {
     opacity: 1;
-    line-height: var(--a-wallets-list-item-line-height);
+    line-height: var(--a-wallet-compact-line-height);
   }
   &__crypto-subtitle {
     display: flex;
     align-items: baseline;
     gap: var(--a-space-1);
     font-weight: var(--a-wallets-list-item-subtitle-weight);
-    line-height: var(--a-wallets-list-item-line-height);
+    line-height: var(--a-wallet-compact-line-height);
   }
   &__crypto-subtitle-muted {
     color: var(--a-wallets-list-item-subtitle-muted-dark);
@@ -147,7 +151,13 @@ export default defineComponent({
     font-weight: 600;
   }
   &__crypto-title {
-    line-height: var(--a-wallets-list-item-title-line-height);
+    line-height: var(--a-wallet-compact-title-line-height);
+  }
+  &__balance {
+    margin-inline-end: var(--a-wallets-list-item-balance-offset-inline-end);
+  }
+  &__checkbox-control {
+    padding: var(--a-wallets-list-item-checkbox-padding);
   }
   &__info {
     :deep(a) {

@@ -25,6 +25,10 @@ const walletResetDialogPath = path.resolve(
   currentDir,
   '../../components/wallets/WalletResetDialog.vue'
 )
+const walletUiMetricsPath = path.resolve(
+  currentDir,
+  '../../components/wallets/helpers/uiMetrics.ts'
+)
 const passwordSetDialogPath = path.resolve(currentDir, '../../components/PasswordSetDialog.vue')
 const shareUriDialogPath = path.resolve(currentDir, '../../components/ShareURIDialog.vue')
 const buyTokensDialogPath = path.resolve(currentDir, '../../components/BuyTokensDialog.vue')
@@ -95,6 +99,7 @@ describe('Secondary dialogs UI contract', () => {
   it('uses semantic dialog body classes and shared tokens in secondary dialog forms', () => {
     const chatStartContent = readFileSync(chatStartDialogPath, 'utf8')
     const walletResetContent = readFileSync(walletResetDialogPath, 'utf8')
+    const walletMetricsContent = readFileSync(walletUiMetricsPath, 'utf8')
     const passwordSetContent = readFileSync(passwordSetDialogPath, 'utf8')
     const shareUriContent = readFileSync(shareUriDialogPath, 'utf8')
     const buyTokensContent = readFileSync(buyTokensDialogPath, 'utf8')
@@ -122,9 +127,12 @@ describe('Secondary dialogs UI contract', () => {
     expect(walletResetContent).toContain("const className = 'wallet-reset-dialog'")
     expect(walletResetContent).toContain('`${classes.root}__dialog-body`')
     expect(walletResetContent).toContain('`${classes.root}__dialog-actions`')
+    expect(walletResetContent).toContain('WALLET_RESET_DIALOG_WIDTH')
     expect(walletResetContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
+    expect(walletMetricsContent).toContain('WALLET_RESET_DIALOG_WIDTH = 500')
     expect(walletResetContent).not.toContain('class="pa-4"')
     expect(walletResetContent).not.toContain("const className = 'wallets-view'")
+    expect(walletResetContent).not.toContain('width="500"')
 
     expect(passwordSetContent).toContain("const className = 'password-set-dialog'")
     expect(passwordSetContent).toContain('`${className}__card-title')

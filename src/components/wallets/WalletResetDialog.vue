@@ -6,7 +6,7 @@
 
     <v-dialog
       v-model="isDialogVisible"
-      width="500"
+      :width="WALLET_RESET_DIALOG_WIDTH"
       scroll-strategy="reposition"
       :class="classes.root"
     >
@@ -41,6 +41,7 @@
 import { defineComponent, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
+import { WALLET_RESET_DIALOG_WIDTH } from '@/components/wallets/helpers/uiMetrics'
 
 const className = 'wallet-reset-dialog'
 const classes = {
@@ -63,7 +64,8 @@ export default defineComponent({
       classes,
       isDialogVisible,
       reset,
-      t
+      t,
+      WALLET_RESET_DIALOG_WIDTH
     }
   }
 })

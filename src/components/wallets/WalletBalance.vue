@@ -108,15 +108,13 @@ export default defineComponent({
 .wallet-balance {
   --a-wallet-balance-height: var(--a-control-size-md);
   --a-wallet-balance-gap: var(--a-financial-stack-gap);
-  --a-wallet-balance-line-height: 1;
-  --a-wallet-balance-title-line-height: 1.1;
   --a-wallet-balance-fiat-size: var(--a-font-size-xs);
   --a-wallet-balance-status-font-weight: var(--a-financial-text-font-weight);
   --a-wallet-balance-status-color-dark: var(--a-color-text-muted-dark);
 
   height: var(--a-wallet-balance-height);
   display: flex;
-  line-height: var(--a-wallet-balance-line-height);
+  line-height: var(--a-wallet-compact-line-height);
   flex-direction: column;
   justify-content: center;
   gap: var(--a-wallet-balance-gap);
@@ -131,13 +129,13 @@ export default defineComponent({
   }
 
   &__status-title {
-    line-height: var(--a-wallet-balance-title-line-height);
+    line-height: var(--a-wallet-compact-title-line-height);
   }
 
   &__status-text {
     font-size: var(--a-wallet-balance-fiat-size);
     font-weight: var(--a-wallet-balance-status-font-weight);
-    line-height: var(--a-wallet-balance-title-line-height);
+    line-height: var(--a-wallet-compact-title-line-height);
   }
 }
 

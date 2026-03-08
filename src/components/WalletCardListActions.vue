@@ -13,7 +13,9 @@
     <template v-if="isADM">
       <v-list-item @click="stakeAndEarn">
         <template #prepend>
-          <icon :width="24" :height="24"><stake-icon /></icon>
+          <icon :width="WALLET_ACTION_STAKE_ICON_SIZE" :height="WALLET_ACTION_STAKE_ICON_SIZE">
+            <stake-icon />
+          </icon>
         </template>
 
         <v-list-item-title :class="`${className}__title`">
@@ -51,6 +53,7 @@ import { CryptoSymbol } from '@/lib/constants/cryptos'
 import BuyTokensDialog from '@/components/BuyTokensDialog.vue'
 import Icon from '@/components/icons/BaseIcon.vue'
 import StakeIcon from '@/components/icons/common/Stake.vue'
+import { WALLET_ACTION_STAKE_ICON_SIZE } from '@/components/wallets/helpers/uiMetrics'
 import { websiteUriToOnion } from '@/lib/uri'
 
 import { mdiBankTransferOut, mdiFinance, mdiGift } from '@mdi/js'

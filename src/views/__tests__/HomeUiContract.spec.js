@@ -8,6 +8,10 @@ const homePath = path.resolve(currentDir, '../Home.vue')
 const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
 const walletCardPath = path.resolve(currentDir, '../../components/WalletCard.vue')
 const walletActionsPath = path.resolve(currentDir, '../../components/WalletCardListActions.vue')
+const walletUiMetricsPath = path.resolve(
+  currentDir,
+  '../../components/wallets/helpers/uiMetrics.ts'
+)
 
 describe('Home UI style contract', () => {
   it('defines a shared token for default letter spacing', () => {
@@ -92,9 +96,13 @@ describe('Home UI style contract', () => {
 
   it('shares wallet action row spacing with wallet card tokens', () => {
     const content = readFileSync(walletActionsPath, 'utf8')
+    const metricsContent = readFileSync(walletUiMetricsPath, 'utf8')
 
     expect(content).toContain('--a-wallet-actions-item-padding-inline')
+    expect(content).toContain('WALLET_ACTION_STAKE_ICON_SIZE')
     expect(content).toContain('var(--a-wallet-card-item-padding-inline-start)')
+    expect(metricsContent).toContain('WALLET_ACTION_STAKE_ICON_SIZE = 24')
     expect(content).not.toContain('--a-wallet-actions-item-padding-inline: 28px;')
+    expect(content).not.toContain('<icon :width="24" :height="24">')
   })
 })

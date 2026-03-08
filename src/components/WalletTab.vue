@@ -5,7 +5,7 @@
     <div :class="classes.content">
       <div v-if="isBalanceValid && !isRefreshing">{{ formattedBalance }}</div>
       <div v-else :class="classes.balanceLoading">
-        <v-icon :icon="mdiDotsHorizontal" size="18" />
+        <v-icon :icon="mdiDotsHorizontal" :size="WALLET_TAB_LOADING_ICON_SIZE" />
       </div>
 
       <div :class="classes.networkRow">
@@ -41,6 +41,7 @@ import numberFormat from '@/filters/numberFormat'
 import { mdiDotsHorizontal } from '@mdi/js'
 import { vibrate } from '@/lib/vibrate'
 import { CryptoSymbol } from '@/lib/constants'
+import { WALLET_TAB_LOADING_ICON_SIZE } from '@/components/wallets/helpers/uiMetrics'
 
 const className = 'wallet-tab'
 const classes = {
@@ -94,7 +95,6 @@ watch(currentBalance, (newBalance, oldBalance) => {
 @use 'vuetify/settings';
 
 .wallet-tab {
-  --a-wallet-tab-line-height: 1;
   --a-wallet-tab-rates-color-dark: var(--a-color-text-muted-dark);
 
   display: flex;
@@ -114,21 +114,21 @@ watch(currentBalance, (newBalance, oldBalance) => {
   }
 
   &__network-row {
-    line-height: var(--a-wallet-tab-line-height);
+    line-height: var(--a-wallet-compact-line-height);
     margin-top: var(--a-wallet-tab-balance-to-ticker-offset);
   }
 
   &__balance-loading {
-    line-height: var(--a-wallet-tab-line-height);
+    line-height: var(--a-wallet-compact-line-height);
   }
 
   &__balance-error {
-    line-height: var(--a-wallet-tab-line-height);
+    line-height: var(--a-wallet-compact-line-height);
   }
 
   &__network-label {
     font-size: var(--a-wallet-tab-network-label-size);
-    line-height: var(--a-wallet-tab-line-height);
+    line-height: var(--a-wallet-compact-line-height);
     position: relative;
     transform: translate(
       var(--a-wallet-tab-network-label-shift-x),
