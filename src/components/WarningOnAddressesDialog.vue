@@ -1,5 +1,10 @@
 <template>
-  <v-dialog v-model="show" width="500" :class="className" @keydown.enter="onEnter">
+  <v-dialog
+    v-model="show"
+    width="var(--a-secondary-dialog-width)"
+    :class="className"
+    @keydown.enter="onEnter"
+  >
     <v-card>
       <v-card-title :class="`${className}__card-title a-text-header`">
         {{ header }}

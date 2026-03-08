@@ -25,10 +25,6 @@ const walletResetDialogPath = path.resolve(
   currentDir,
   '../../components/wallets/WalletResetDialog.vue'
 )
-const walletUiMetricsPath = path.resolve(
-  currentDir,
-  '../../components/wallets/helpers/uiMetrics.ts'
-)
 const passwordSetDialogPath = path.resolve(currentDir, '../../components/PasswordSetDialog.vue')
 const shareUriDialogPath = path.resolve(currentDir, '../../components/ShareURIDialog.vue')
 const buyTokensDialogPath = path.resolve(currentDir, '../../components/BuyTokensDialog.vue')
@@ -56,6 +52,7 @@ describe('Secondary dialogs UI contract', () => {
     expect(tokensContent).toContain('--a-secondary-dialog-title-padding')
     expect(tokensContent).toContain('--a-secondary-dialog-content-padding')
     expect(tokensContent).toContain('--a-secondary-dialog-actions-padding')
+    expect(tokensContent).toContain('--a-secondary-dialog-width')
     expect(tokensContent).toContain('--a-secondary-dialog-disclaimer-gap')
     expect(tokensContent).toContain('--a-secondary-dialog-action-margin-top')
     expect(tokensContent).toContain('--a-secondary-dialog-footer-padding-bottom')
@@ -82,6 +79,7 @@ describe('Secondary dialogs UI contract', () => {
       nodesOfflineContent
     ]) {
       expect(content).toContain('secondaryDialog.a-secondary-dialog-warning-frame()')
+      expect(content).toContain('width="var(--a-secondary-dialog-width)"')
       expect(content).toContain('__card-title')
       expect(content).not.toContain('padding: 16px !important;')
       expect(content).not.toContain('margin-top: 10px;')
@@ -99,7 +97,6 @@ describe('Secondary dialogs UI contract', () => {
   it('uses semantic dialog body classes and shared tokens in secondary dialog forms', () => {
     const chatStartContent = readFileSync(chatStartDialogPath, 'utf8')
     const walletResetContent = readFileSync(walletResetDialogPath, 'utf8')
-    const walletMetricsContent = readFileSync(walletUiMetricsPath, 'utf8')
     const passwordSetContent = readFileSync(passwordSetDialogPath, 'utf8')
     const shareUriContent = readFileSync(shareUriDialogPath, 'utf8')
     const buyTokensContent = readFileSync(buyTokensDialogPath, 'utf8')
@@ -117,6 +114,7 @@ describe('Secondary dialogs UI contract', () => {
     expect(chatStartContent).toContain('__menu-list')
     expect(chatStartContent).toContain('__menu-item')
     expect(chatStartContent).toContain('__menu-item-title')
+    expect(chatStartContent).toContain('width="var(--a-secondary-dialog-width)"')
     expect(chatStartContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
     expect(chatStartContent).toContain('var(--a-secondary-dialog-action-margin-top)')
     expect(chatStartContent).toContain('var(--a-secondary-dialog-link-margin-top)')
@@ -127,9 +125,8 @@ describe('Secondary dialogs UI contract', () => {
     expect(walletResetContent).toContain("const className = 'wallet-reset-dialog'")
     expect(walletResetContent).toContain('`${classes.root}__dialog-body`')
     expect(walletResetContent).toContain('`${classes.root}__dialog-actions`')
-    expect(walletResetContent).toContain('WALLET_RESET_DIALOG_WIDTH')
+    expect(walletResetContent).toContain('width="var(--a-secondary-dialog-width)"')
     expect(walletResetContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
-    expect(walletMetricsContent).toContain('WALLET_RESET_DIALOG_WIDTH = 500')
     expect(walletResetContent).not.toContain('class="pa-4"')
     expect(walletResetContent).not.toContain("const className = 'wallets-view'")
     expect(walletResetContent).not.toContain('width="500"')
@@ -138,6 +135,7 @@ describe('Secondary dialogs UI contract', () => {
     expect(passwordSetContent).toContain('`${className}__card-title')
     expect(passwordSetContent).toContain('`${className}__body`')
     expect(passwordSetContent).toContain('`${className}__actions`')
+    expect(passwordSetContent).toContain('width="var(--a-secondary-dialog-width)"')
     expect(passwordSetContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
     expect(passwordSetContent).not.toContain('class="pa-4"')
     expect(passwordSetContent).not.toContain('class="pa-3"')
@@ -165,6 +163,7 @@ describe('Secondary dialogs UI contract', () => {
     expect(chatDialogContent).toContain('`${className}__card-title')
     expect(chatDialogContent).toContain('`${className}__card-text`')
     expect(chatDialogContent).toContain('`${className}__card-actions`')
+    expect(chatDialogContent).toContain('width="var(--a-secondary-dialog-width)"')
     expect(chatDialogContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
     expect(chatDialogContent).not.toContain('class="pa-4"')
 
@@ -187,6 +186,7 @@ describe('Secondary dialogs UI contract', () => {
     expect(qrcodeScannerContent).toContain('`${classes.root}__hint`')
     expect(qrcodeScannerContent).toContain('`${classes.root}__state`')
     expect(qrcodeScannerContent).toContain('`${classes.root}__dialog-actions`')
+    expect(qrcodeScannerContent).toContain('width="var(--a-secondary-dialog-width)"')
     expect(qrcodeScannerContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
     expect(qrcodeScannerContent).not.toContain('class="pa-8"')
     expect(qrcodeScannerContent).not.toContain('class="pa-6"')
@@ -195,6 +195,7 @@ describe('Secondary dialogs UI contract', () => {
     expect(sendFundsFormContent).toContain('send-funds-confirm-dialog__dialog-body')
     expect(sendFundsFormContent).toContain('send-funds-confirm-dialog__dialog-actions')
     expect(sendFundsFormContent).toContain('send-funds-confirm-dialog__spinner')
+    expect(sendFundsFormContent).toContain('width="var(--a-secondary-dialog-width)"')
     expect(sendFundsFormContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
     expect(sendFundsFormContent).not.toContain('v-card-actions class="pa-4"')
     expect(sendFundsFormContent).not.toContain('class="mr-4"')
@@ -203,6 +204,7 @@ describe('Secondary dialogs UI contract', () => {
     expect(httpProtocolInfoContent).toContain('`${className}__dialog-title')
     expect(httpProtocolInfoContent).toContain('`${className}__dialog-body')
     expect(httpProtocolInfoContent).toContain('`${className}__dialog-actions')
+    expect(httpProtocolInfoContent).toContain('width="var(--a-secondary-dialog-width)"')
     expect(httpProtocolInfoContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
     expect(httpProtocolInfoContent).not.toContain('class="pa-4 a-text-regular-enlarged"')
     expect(httpProtocolInfoContent).not.toContain('v-card-actions class="pa-3"')
@@ -211,6 +213,7 @@ describe('Secondary dialogs UI contract', () => {
     expect(votesViewContent).toContain('`${summaryDialogClass}__dialog-title`')
     expect(votesViewContent).toContain('`${summaryDialogClass}__dialog-body`')
     expect(votesViewContent).toContain('`${summaryDialogClass}__dialog-actions`')
+    expect(votesViewContent).toContain('width="var(--a-secondary-dialog-width)"')
     expect(votesViewContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
     expect(votesViewContent).not.toContain('class="pa-4 v-row--no-gutters"')
   })

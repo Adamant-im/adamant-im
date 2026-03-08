@@ -5,7 +5,7 @@ exports[`QrcodeScannerDialog.vue > renders the correct markup 1`] = `
   class="qrcode-scanner-dialog"
   data-v-c5e2af2c=""
   modelvalue="true"
-  width="500"
+  width="var(--a-secondary-dialog-width)"
 >
   <v-card
     class="qrcode-scanner-dialog"

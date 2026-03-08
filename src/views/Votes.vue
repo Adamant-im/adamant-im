@@ -48,11 +48,7 @@
       </template>
     </SettingsTableShell>
 
-    <v-dialog
-      v-model="dialog"
-      width="var(--a-delegates-summary-dialog-width)"
-      :class="summaryDialogClass"
-    >
+    <v-dialog v-model="dialog" width="var(--a-secondary-dialog-width)" :class="summaryDialogClass">
       <v-card>
         <v-card-title :class="`${summaryDialogClass}__dialog-title`">
           {{ t('votes.summary_title') }}

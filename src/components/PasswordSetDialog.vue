@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" :class="className" width="500">
+  <v-dialog v-model="show" :class="className" width="var(--a-secondary-dialog-width)">
     <v-card>
       <v-card-title :class="`${className}__card-title a-text-header`">
         {{ t('login_via_password.popup_title') }}

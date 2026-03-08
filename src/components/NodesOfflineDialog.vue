@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="showDialog" width="500" :class="className">
+  <v-dialog v-model="showDialog" width="var(--a-secondary-dialog-width)" :class="className">
     <v-card>
       <v-card-title :class="`${className}__card-title a-text-header`">
         {{ t('chats.nodes_offline_dialog.title', { coin: nodeType.toUpperCase() }) }}

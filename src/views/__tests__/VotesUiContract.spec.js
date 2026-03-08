@@ -153,9 +153,9 @@ describe('Votes UI style contract', () => {
     const votesContent = readFileSync(votesPath, 'utf8')
     const notFoundContent = readFileSync(delegatesNotFoundPath, 'utf8')
 
-    expect(tokensContent).toContain('--a-delegates-summary-dialog-width')
+    expect(tokensContent).toContain('--a-secondary-dialog-width')
     expect(tokensContent).toContain('--a-delegates-not-found-margin-block')
-    expect(votesContent).toContain('width="var(--a-delegates-summary-dialog-width)"')
+    expect(votesContent).toContain('width="var(--a-secondary-dialog-width)"')
     expect(votesContent).toContain('var(--a-border-width-thin) solid')
     expect(votesContent).not.toContain('width="500"')
     expect(votesContent).not.toContain('1px solid')

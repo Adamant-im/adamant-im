@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" width="500" :class="className">
+  <v-dialog v-model="show" width="var(--a-secondary-dialog-width)" :class="className">
     <v-card>
       <v-card-title :class="`${className}__dialog-title a-text-header`">
         {{ t('nodes.popup.http_restriction_title') }}

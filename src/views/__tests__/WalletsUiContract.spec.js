@@ -113,6 +113,7 @@ describe('Wallets UI style contract', () => {
     const resetDialogContent = readFileSync(walletResetDialogPath, 'utf8')
     const metricsContent = readFileSync(walletUiMetricsPath, 'utf8')
 
+    expect(tokensContent).toContain('--a-secondary-dialog-width')
     expect(tokensContent).toContain('--a-wallets-list-item-balance-offset-inline-end')
     expect(tokensContent).toContain('--a-wallets-list-item-checkbox-padding')
     expect(listItemContent).toContain('--a-wallets-list-item-content-height')
@@ -157,8 +158,7 @@ describe('Wallets UI style contract', () => {
     expect(balanceContent).not.toContain('font-weight: 300;')
     expect(balanceContent).not.toContain('opacity: 0.7;')
     expect(metricsContent).toContain('WALLET_LIST_ICON_SIZE = 32')
-    expect(metricsContent).toContain('WALLET_RESET_DIALOG_WIDTH = 500')
-    expect(resetDialogContent).toContain('WALLET_RESET_DIALOG_WIDTH')
+    expect(resetDialogContent).toContain('width="var(--a-secondary-dialog-width)"')
     expect(resetDialogContent).not.toContain('width="500"')
   })
 })

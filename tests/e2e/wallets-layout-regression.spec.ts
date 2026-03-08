@@ -175,7 +175,7 @@ test.describe('Wallets layout regressions', () => {
         }
       })
 
-    expect(dialogMetrics.inlineWidth).toBe('500px')
+    expect(dialogMetrics.inlineWidth).toBe('var(--a-secondary-dialog-width)')
     expect(dialogMetrics.width).toBeLessThanOrEqual(500)
     expect(dialogMetrics.width).toBeGreaterThanOrEqual(440)
 

@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" :class="classes.root" width="500">
+  <v-dialog v-model="show" :class="classes.root" width="var(--a-secondary-dialog-width)">
     <v-card :class="classes.root">
       <!-- Camera Waiting -->
       <v-row

@@ -5,7 +5,7 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
   class="chat-start-dialog"
   data-v-50a3fb39=""
   modelvalue="true"
-  width="500"
+  width="var(--a-secondary-dialog-width)"
 >
   <v-card
     data-v-50a3fb39=""

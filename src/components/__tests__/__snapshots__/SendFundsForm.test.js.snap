@@ -119,7 +119,7 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
     class="send-funds-confirm-dialog"
     data-v-7dc72237=""
     modelvalue="false"
-    width="500"
+    width="var(--a-secondary-dialog-width)"
   />
   <!--v-if-->
 </div>

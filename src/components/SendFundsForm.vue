@@ -149,7 +149,11 @@
       </div>
     </v-form>
 
-    <v-dialog v-model="dialog" width="500" class="send-funds-confirm-dialog">
+    <v-dialog
+      v-model="dialog"
+      width="var(--a-secondary-dialog-width)"
+      class="send-funds-confirm-dialog"
+    >
       <v-card>
         <v-card-title class="send-funds-confirm-dialog__dialog-title a-text-header">
           {{ $t('transfer.confirm_title') }}
