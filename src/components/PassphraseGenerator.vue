@@ -38,8 +38,8 @@
             <div :class="classes.icons">
               <icon
                 :class="classes.icon"
-                :width="24"
-                :height="24"
+                :width="AUTH_FORM_TOGGLE_ICON_SIZE"
+                :height="AUTH_FORM_TOGGLE_ICON_SIZE"
                 shape-rendering="crispEdges"
                 :title="t('login.copy_button_tooltip')"
                 @click="copyToClipboardHandler"
@@ -48,8 +48,8 @@
               </icon>
               <icon
                 :class="classes.icon"
-                :width="24"
-                :height="24"
+                :width="AUTH_FORM_TOGGLE_ICON_SIZE"
+                :height="AUTH_FORM_TOGGLE_ICON_SIZE"
                 shape-rendering="auto"
                 :title="t('login.save_button_tooltip')"
                 @click="saveFile"
@@ -58,8 +58,8 @@
               </icon>
               <icon
                 :class="classes.icon"
-                :width="24"
-                :height="24"
+                :width="AUTH_FORM_TOGGLE_ICON_SIZE"
+                :height="AUTH_FORM_TOGGLE_ICON_SIZE"
                 shape-rendering="crispEdges"
                 :title="t('login.save_qr_code_tooltip')"
                 @click="showQrcodeRendererDialog = true"
@@ -70,7 +70,7 @@
                 :class="classes.icon"
                 :title="passphraseVisibilityTooltip"
                 :icon="showSuggestedPassphrase ? mdiEye : mdiEyeOff"
-                size="24"
+                :size="AUTH_FORM_TOGGLE_ICON_SIZE"
                 @click="togglePassphraseVisibility"
               />
             </div>
@@ -98,6 +98,7 @@ import QrCodeIcon from '@/components/icons/common/QrCode.vue'
 import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { VTextarea } from 'vuetify/components'
 import { logger } from '@/utils/devTools/logger'
+import { AUTH_FORM_TOGGLE_ICON_SIZE } from '@/components/Login/helpers/uiMetrics'
 
 const { t } = useI18n()
 
@@ -201,11 +202,14 @@ const togglePassphraseVisibility = () => {
   --a-passphrase-icon-opacity: var(--a-opacity-icon-muted);
   --a-passphrase-icon-transition-duration: var(--a-motion-emphasized);
   --a-passphrase-icon-size: 36px;
-  --a-passphrase-icon-hit-offset: calc((var(--a-passphrase-icon-size) - 24px) / -2);
+  --a-passphrase-icon-hit-offset: calc(
+    (var(--a-passphrase-icon-size) - var(--a-auth-control-icon-size)) / -2
+  );
   --a-passphrase-icons-top-offset: calc(var(--a-space-1) * -1);
   --a-passphrase-icons-gap: var(--a-space-5);
   --a-passphrase-icon-backdrop-opacity-dark: 0.3;
   --a-passphrase-icon-backdrop-opacity-light: 0.12;
+  --a-passphrase-label-line-height: var(--a-auth-control-label-line-height);
 
   &__create-section {
     text-align: center;
@@ -227,7 +231,7 @@ const togglePassphraseVisibility = () => {
     }
     :deep(.v-textarea) textarea {
       @include mixins.a-text-regular();
-      line-height: 18px;
+      line-height: var(--a-passphrase-label-line-height);
       padding-top: var(--a-passphrase-textarea-padding-top);
       mask-image: unset;
     }
@@ -278,7 +282,7 @@ const togglePassphraseVisibility = () => {
     color: map.get(colors.$adm-colors, 'grey');
     font-size: var(--a-passphrase-label-font-size);
     font-weight: var(--a-passphrase-label-font-weight);
-    line-height: 18px;
+    line-height: var(--a-passphrase-label-line-height);
     letter-spacing: var(--a-passphrase-label-letter-spacing);
   }
 

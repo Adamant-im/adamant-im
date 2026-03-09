@@ -46,7 +46,7 @@ exports[`LoginForm.vue > renders the correct markup 1`] = `
       type="submit"
     >
       <v-progress-circular
-        class="mr-4"
+        class="login-form__submit-spinner"
         color="primary"
         data-v-ba684ca4=""
         indeterminate=""

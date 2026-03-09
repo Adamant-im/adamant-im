@@ -26,10 +26,13 @@
               @click="togglePasswordVisibility"
               icon
               :ripple="false"
-              :size="28"
+              :size="AUTH_FORM_TOGGLE_BUTTON_SIZE"
               variant="plain"
             >
-              <v-icon :icon="showPassword ? mdiEye : mdiEyeOff" :size="24" />
+              <v-icon
+                :icon="showPassword ? mdiEye : mdiEyeOff"
+                :size="AUTH_FORM_TOGGLE_ICON_SIZE"
+              />
             </v-btn>
           </template>
         </v-text-field>
@@ -58,8 +61,8 @@
             v-show="showSpinner"
             indeterminate
             color="primary"
-            size="24"
-            class="mr-4"
+            :size="AUTH_FORM_SUBMIT_SPINNER_SIZE"
+            :class="`${className}__submit-spinner`"
           />
           {{ t('login_via_password.popup_confirm_text') }}
         </v-btn>
@@ -77,6 +80,11 @@ import { useI18n } from 'vue-i18n'
 import { UserPasswordArticleLink } from '@/lib/constants'
 import { saveState } from '@/lib/idb/state'
 import { logger } from '@/utils/devTools/logger'
+import {
+  AUTH_FORM_SUBMIT_SPINNER_SIZE,
+  AUTH_FORM_TOGGLE_BUTTON_SIZE,
+  AUTH_FORM_TOGGLE_ICON_SIZE
+} from '@/components/Login/helpers/uiMetrics'
 
 const props = defineProps<{
   modelValue: boolean
@@ -145,5 +153,9 @@ const submit = () => {
 
 .password-set-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  &__submit-spinner {
+    margin-inline-end: var(--a-auth-control-inline-gap);
+  }
 }
 </style>

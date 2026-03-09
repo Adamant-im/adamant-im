@@ -20,11 +20,15 @@
               icon
               type="button"
               ripple
-              size="28"
+              :size="AUTH_FORM_TOGGLE_BUTTON_SIZE"
               :class="`${className}__btn-copy`"
               @click="copyKey(key.key)"
             >
-              <v-icon :class="`${className}__icon`" :icon="mdiContentCopy" size="20" />
+              <v-icon
+                :class="`${className}__icon`"
+                :icon="mdiContentCopy"
+                :size="AUTH_FORM_COPY_ICON_SIZE"
+              />
             </v-btn>
           </template>
         </v-text-field>
@@ -67,10 +71,10 @@
           icon
           type="button"
           :ripple="false"
-          :size="28"
+          :size="AUTH_FORM_TOGGLE_BUTTON_SIZE"
           variant="plain"
         >
-          <v-icon :icon="showPassphrase ? mdiEye : mdiEyeOff" :size="24" />
+          <v-icon :icon="showPassphrase ? mdiEye : mdiEyeOff" :size="AUTH_FORM_TOGGLE_ICON_SIZE" />
         </v-btn>
 
         <v-menu :offset-overflow="true" :offset-y="false" left eager>
@@ -81,10 +85,10 @@
               icon
               type="button"
               variant="plain"
-              :size="28"
+              :size="AUTH_FORM_TOGGLE_BUTTON_SIZE"
               :ripple="false"
             >
-              <v-icon :icon="mdiDotsVertical" :size="24" />
+              <v-icon :icon="mdiDotsVertical" :size="AUTH_FORM_MENU_ICON_SIZE" />
             </v-btn>
           </template>
           <v-list :class="`${className}__menu-list`">
@@ -131,6 +135,12 @@ import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { mdiContentCopy, mdiDotsVertical, mdiEye, mdiEyeOff } from '@mdi/js'
 import { logger } from '@/utils/devTools/logger'
+import {
+  AUTH_FORM_COPY_ICON_SIZE,
+  AUTH_FORM_MENU_ICON_SIZE,
+  AUTH_FORM_TOGGLE_BUTTON_SIZE,
+  AUTH_FORM_TOGGLE_ICON_SIZE
+} from '@/components/Login/helpers/uiMetrics'
 
 function getBtcKey(crypto, passphrase, asWif) {
   const keyPair = getBtcAccount(crypto, passphrase).keyPair
@@ -224,6 +234,10 @@ export default defineComponent({
       mdiDotsVertical,
       mdiEye,
       mdiEyeOff,
+      AUTH_FORM_COPY_ICON_SIZE,
+      AUTH_FORM_MENU_ICON_SIZE,
+      AUTH_FORM_TOGGLE_BUTTON_SIZE,
+      AUTH_FORM_TOGGLE_ICON_SIZE,
       onDetectQrcode,
       onDetectQrcodeError,
       onScanQrcode,

@@ -23,15 +23,23 @@ describe('Login UI style contract', () => {
     expect(content).toContain('--a-motion-emphasized')
     expect(content).toContain('--a-opacity-icon-muted')
     expect(content).toContain('--a-opacity-overlay-soft')
+    expect(content).toContain('--a-auth-control-button-size')
+    expect(content).toContain('--a-auth-control-icon-size')
+    expect(content).toContain('--a-auth-control-inline-gap')
+    expect(content).toContain('--a-auth-control-label-line-height')
   })
 
-  it('stores shared auth form toggle sizes in helper constants', () => {
+  it('stores shared auth form control sizes in helper constants', () => {
     const content = readFileSync(loginUiMetricsPath, 'utf8')
 
     expect(content).toContain('AUTH_FORM_TOGGLE_BUTTON_SIZE')
     expect(content).toContain('AUTH_FORM_TOGGLE_ICON_SIZE')
+    expect(content).toContain('AUTH_FORM_MENU_ICON_SIZE')
+    expect(content).toContain('AUTH_FORM_COPY_ICON_SIZE')
+    expect(content).toContain('AUTH_FORM_SUBMIT_SPINNER_SIZE')
     expect(content).toContain('= 28')
     expect(content).toContain('= 24')
+    expect(content).toContain('= 20')
   })
 
   it('uses tokenized hero spacing and removes inline logo styling', () => {
@@ -66,15 +74,21 @@ describe('Login UI style contract', () => {
     expect(content).toContain('--a-login-form-passphrase-toggle-offset')
     expect(content).toContain('--a-login-form-passphrase-input-padding-inline')
     expect(content).toContain('--a-login-form-submit-row-margin-top')
+    expect(content).toContain('--a-login-form-submit-spinner-gap')
     expect(content).toContain('AUTH_FORM_TOGGLE_BUTTON_SIZE')
     expect(content).toContain('AUTH_FORM_TOGGLE_ICON_SIZE')
+    expect(content).toContain('AUTH_FORM_SUBMIT_SPINNER_SIZE')
+    expect(content).toContain('login-form__submit-spinner')
     expect(content).toContain('login-form__submit-row')
     expect(content).toContain('var(--a-control-size-sm)')
+    expect(content).toContain('var(--a-auth-control-button-size)')
 
     expect(content).not.toContain('margin-left: -28px;')
     expect(content).not.toContain('padding-right: 32px;')
     expect(content).not.toContain('padding-left: 32px;')
     expect(content).not.toContain('const passphraseToggleSize = 28')
+    expect(content).not.toContain('class="mr-4"')
+    expect(content).not.toContain('size="24"')
   })
 
   it('uses semantic auth classes and tokenized spacing around create-new and password hint blocks', () => {
@@ -85,22 +99,30 @@ describe('Login UI style contract', () => {
     expect(passphraseContent).toContain('--a-passphrase-create-button-margin-top')
     expect(passphraseContent).toContain('--a-passphrase-box-margin-top')
     expect(passphraseContent).toContain('--a-passphrase-label-letter-spacing')
+    expect(passphraseContent).toContain('--a-passphrase-label-line-height')
     expect(passphraseContent).toContain('--a-passphrase-icon-transition-duration')
     expect(passphraseContent).toContain('createSection')
     expect(passphraseContent).toContain('createTitle')
     expect(passphraseContent).toContain('createButton')
     expect(passphraseContent).toContain('textarea')
-    expect(passphraseContent).toContain('--a-passphrase-box-margin-top: var(--a-space-8);')
+    expect(passphraseContent).toContain('AUTH_FORM_TOGGLE_ICON_SIZE')
+    expect(passphraseContent).toContain('var(--a-auth-control-icon-size)')
+    expect(passphraseContent).toContain('var(--a-auth-control-label-line-height)')
+    expect(passphraseContent).toContain('--a-passphrase-box-margin-top: var(--a-space-10);')
     expect(passphraseContent).not.toContain('margin-top: 36px;')
     expect(passphraseContent).not.toContain('class="a-btn-link mt-2"')
     expect(passphraseContent).not.toContain("'mt-2': true")
     expect(passphraseContent).not.toContain('class="pt-0"')
     expect(passphraseContent).not.toContain('letter-spacing: normal !important;')
+    expect(passphraseContent).not.toContain(':width="24"')
+    expect(passphraseContent).not.toContain(':height="24"')
+    expect(passphraseContent).not.toContain('size="24"')
 
     expect(loginPasswordContent).toContain('--a-login-password-hint-block-gap')
     expect(loginPasswordContent).toContain('--a-login-password-hint-title-gap')
     expect(loginPasswordContent).toContain('--a-login-password-hint-button-margin-top')
     expect(loginPasswordContent).toContain('--a-login-form-submit-row-margin-top')
+    expect(loginPasswordContent).toContain('--a-login-form-submit-spinner-gap')
     expect(loginPasswordContent).toContain('--a-login-form-passphrase-toggle-offset')
     expect(loginPasswordContent).toContain('--a-login-form-passphrase-input-padding-inline')
     expect(loginPasswordContent).toContain('--a-login-form-passphrase-input-font-size')
@@ -112,7 +134,10 @@ describe('Login UI style contract', () => {
     expect(loginPasswordContent).toContain('&__password-hint-action')
     expect(loginPasswordContent).toContain('AUTH_FORM_TOGGLE_BUTTON_SIZE')
     expect(loginPasswordContent).toContain('AUTH_FORM_TOGGLE_ICON_SIZE')
+    expect(loginPasswordContent).toContain('AUTH_FORM_SUBMIT_SPINNER_SIZE')
+    expect(loginPasswordContent).toContain('login-form__submit-spinner')
     expect(loginPasswordContent).toContain('login-form__submit-row')
+    expect(loginPasswordContent).toContain('var(--a-auth-control-button-size)')
     expect(loginPasswordContent).not.toContain(
       '<v-row align="center" justify="center" class="mt-2"'
     )
@@ -121,6 +146,8 @@ describe('Login UI style contract', () => {
     expect(loginPasswordContent).not.toContain('padding-right: 32px;')
     expect(loginPasswordContent).not.toContain('padding-left: 32px;')
     expect(loginPasswordContent).not.toContain('font-size: 16px !important;')
+    expect(loginPasswordContent).not.toContain('class="mr-4"')
+    expect(loginPasswordContent).not.toContain('size="24"')
   })
 
   it('defines stronger hover/focus feedback for link-like action buttons globally', () => {

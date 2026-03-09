@@ -93,6 +93,11 @@
   --a-fake-input-box-divider-top: calc(var(--a-space-8) - 1px);
   --a-fake-input-value-line-height: var(--a-space-8);
   --a-fake-input-rate-padding-inline-start: calc(var(--a-space-1) - 1px);
+  --a-auth-control-button-size: 28px;
+  --a-auth-control-icon-size: 24px;
+  --a-auth-control-icon-size-compact: 20px;
+  --a-auth-control-inline-gap: var(--a-space-4);
+  --a-auth-control-label-line-height: 18px;
   --a-chat-connection-spinner-size: 32px;
   --a-spinner-neutral-color: #4a4a4a;
   --a-chat-spinner-size: 150px;

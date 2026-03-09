@@ -43,8 +43,8 @@
             v-show="showSpinner"
             indeterminate
             color="primary"
-            size="24"
-            class="mr-4"
+            :size="AUTH_FORM_SUBMIT_SPINNER_SIZE"
+            class="login-form__submit-spinner"
           />
           {{ t('login.login_button') }}
         </v-btn>
@@ -71,6 +71,7 @@ import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useSaveCursor } from '@/hooks/useSaveCursor'
 import { logger } from '@/utils/devTools/logger'
 import {
+  AUTH_FORM_SUBMIT_SPINNER_SIZE,
   AUTH_FORM_TOGGLE_BUTTON_SIZE,
   AUTH_FORM_TOGGLE_ICON_SIZE
 } from '@/components/Login/helpers/uiMetrics'
@@ -167,7 +168,8 @@ defineExpose({
 @use 'vuetify/settings';
 
 .login-form {
-  --a-login-form-passphrase-toggle-size: 28px;
+  --a-login-form-passphrase-toggle-size: var(--a-auth-control-button-size);
+  --a-login-form-submit-spinner-gap: var(--a-auth-control-inline-gap);
   --a-login-form-passphrase-toggle-offset: calc(var(--a-login-form-passphrase-toggle-size) * -1);
   --a-login-form-passphrase-input-padding-inline: var(--a-control-size-sm);
   --a-login-form-submit-row-margin-top: var(--a-space-2);
@@ -187,6 +189,10 @@ defineExpose({
 
   &__submit-row {
     margin-top: var(--a-login-form-submit-row-margin-top);
+  }
+
+  &__submit-spinner {
+    margin-inline-end: var(--a-login-form-submit-spinner-gap);
   }
 }
 
