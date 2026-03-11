@@ -99,8 +99,16 @@
   --a-auth-control-button-size: 28px;
   --a-auth-control-icon-size: 24px;
   --a-auth-control-icon-size-compact: 20px;
+  --a-auth-control-hit-size: 36px;
   --a-auth-control-inline-gap: var(--a-space-4);
   --a-auth-control-label-line-height: 18px;
+  --a-login-settings-button-size: var(--a-control-size-sm);
+  --a-login-hero-logo-width: 300px;
+  --a-login-hero-title-line-height: 40px;
+  --a-back-button-size: var(--a-auth-control-hit-size);
+  --a-back-button-margin-inline: var(--a-space-3);
+  --a-back-button-hover-overlay-opacity: 0.2;
+  --a-back-button-hover-transition-duration: var(--a-motion-emphasized);
   --a-chat-connection-spinner-size: 32px;
   --a-spinner-neutral-color: #4a4a4a;
   --a-chat-spinner-size: 150px;

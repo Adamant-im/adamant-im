@@ -33,12 +33,17 @@ describe('Navigation UI style contract', () => {
 
   it('uses tokenized size, spacing and hover states for back button', () => {
     const content = readFileSync(backButtonPath, 'utf8')
+    const tokensContent = readFileSync(genericTokensPath, 'utf8')
 
-    expect(content).toContain('--a-back-button-size')
-    expect(content).toContain('--a-back-button-margin-inline')
-    expect(content).toContain('--a-back-button-hover-overlay-opacity')
-    expect(content).toContain('--a-back-button-hover-transition-duration')
-    expect(content).toContain('var(--a-space-3)')
+    expect(tokensContent).toContain('--a-back-button-size')
+    expect(tokensContent).toContain('--a-back-button-margin-inline')
+    expect(tokensContent).toContain('--a-back-button-hover-overlay-opacity')
+    expect(tokensContent).toContain('--a-back-button-hover-transition-duration')
+    expect(tokensContent).toContain('--a-auth-control-hit-size')
+    expect(content).toContain('var(--a-back-button-size)')
+    expect(content).toContain('var(--a-back-button-margin-inline)')
+    expect(content).toContain('var(--a-back-button-hover-overlay-opacity)')
+    expect(content).toContain('var(--a-back-button-hover-transition-duration)')
     expect(content).toContain('var(--a-radius-round)')
 
     expect(content).not.toContain('margin: 0 12px !important;')

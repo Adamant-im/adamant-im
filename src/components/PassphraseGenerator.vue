@@ -201,7 +201,7 @@ const togglePassphraseVisibility = () => {
   --a-passphrase-textarea-padding-top: var(--a-space-3);
   --a-passphrase-icon-opacity: var(--a-opacity-icon-muted);
   --a-passphrase-icon-transition-duration: var(--a-motion-emphasized);
-  --a-passphrase-icon-size: 36px;
+  --a-passphrase-icon-size: var(--a-auth-control-hit-size);
   --a-passphrase-icon-hit-offset: calc(
     (var(--a-passphrase-icon-size) - var(--a-auth-control-icon-size)) / -2
   );

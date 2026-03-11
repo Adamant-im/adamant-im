@@ -12,7 +12,7 @@
                 @click="navigate"
                 icon
                 variant="plain"
-                :size="settingsButtonSize"
+                :size="AUTH_FORM_SETTINGS_BUTTON_SIZE"
                 :class="`${className}__settings-button`"
               >
                 <v-icon :icon="mdiCog" />
@@ -129,13 +129,13 @@ import LoginPasswordForm from '@/components/LoginPasswordForm.vue'
 import Logo from '@/components/icons/common/Logo.vue'
 import { navigateByURI } from '@/router/navigationGuard'
 import { logger } from '@/utils/devTools/logger'
+import { AUTH_FORM_SETTINGS_BUTTON_SIZE } from '@/components/Login/helpers/uiMetrics'
 
 const store = useStore()
 const route = useRoute()
 const { t } = useI18n()
 
 const className = 'login-page'
-const settingsButtonSize = 32
 const passphrase = ref('')
 const password = ref('')
 const showQrcodeScanner = ref(false)
@@ -195,8 +195,6 @@ const onScanQrcode = (value: string) => {
 @use 'vuetify/settings';
 
 .login-page {
-  --a-login-logo-width: 300px;
-  --a-login-title-line-height: 40px;
   --a-login-title-letter-spacing: 0.12em;
   --a-login-title-gap-from-logo: var(--a-space-6);
   --a-login-subtitle-gap: var(--a-space-2);
@@ -215,7 +213,7 @@ const onScanQrcode = (value: string) => {
   padding-bottom: var(--a-login-bottom-padding);
 
   &__logo {
-    width: var(--a-login-logo-width);
+    width: var(--a-login-hero-logo-width);
     max-width: 100%;
     height: auto;
   }
@@ -223,7 +221,7 @@ const onScanQrcode = (value: string) => {
   &__title {
     @include mixins.a-text-headline();
     font-family: var(--a-font-family-sans);
-    line-height: var(--a-login-title-line-height);
+    line-height: var(--a-login-hero-title-line-height);
     letter-spacing: var(--a-login-title-letter-spacing);
     margin-top: var(--a-login-title-gap-from-logo);
     margin-bottom: 0;
