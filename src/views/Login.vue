@@ -3,7 +3,7 @@
     <v-row justify="center" gap="0" :class="className">
       <container>
         <div :class="`${className}__buttons`">
-          <div class="text-right">
+          <div :class="`${className}__language-switcher-wrap`">
             <language-switcher :prepend-icon="mdiChevronRight" />
           </div>
           <div :class="`${className}__settings-button-container`">
@@ -21,7 +21,7 @@
           </div>
         </div>
 
-        <v-sheet class="text-center mt-4" color="transparent">
+        <v-sheet :class="`${className}__hero`" color="transparent">
           <logo :class="`${className}__logo`" />
 
           <h1 :class="`${className}__title`">
@@ -34,8 +34,7 @@
 
         <v-sheet
           v-if="!isLoginViaPassword"
-          class="text-center"
-          :class="`${className}__auth-sheet`"
+          :class="[`${className}__auth-sheet`, `${className}__auth-sheet--centered`]"
           color="transparent"
         >
           <v-row justify="center" gap="0">
@@ -49,15 +48,14 @@
             </v-col>
           </v-row>
 
-          <v-row justify="center" class="mt-4" gap="0">
+          <v-row justify="center" :class="`${className}__qr-actions-row`" gap="0">
             <v-col cols="auto">
               <v-btn
-                class="ma-2"
                 :title="t('login.scan_qr_code_button_tooltip')"
                 icon
                 variant="text"
                 size="x-small"
-                :class="`${className}__icon`"
+                :class="[`${className}__icon`, `${className}__qr-action-button`]"
                 @click="showQrcodeScanner = true"
               >
                 <icon><qr-code-scan-icon /></icon>
@@ -67,12 +65,11 @@
             <v-col cols="auto">
               <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
                 <v-btn
-                  class="ma-2"
                   :title="t('login.login_by_qr_code_tooltip')"
                   icon
                   variant="text"
                   size="x-small"
-                  :class="`${className}__icon`"
+                  :class="[`${className}__icon`, `${className}__qr-action-button`]"
                 >
                   <icon><file-icon /></icon>
                 </v-btn>
@@ -89,8 +86,7 @@
 
         <v-sheet
           v-if="isLoginViaPassword"
-          class="text-center"
-          :class="`${className}__auth-sheet`"
+          :class="[`${className}__auth-sheet`, `${className}__auth-sheet--centered`]"
           color="transparent"
         >
           <v-row gap="0" justify="center">
@@ -204,6 +200,9 @@ const onScanQrcode = (value: string) => {
   --a-login-settings-offset-inline: var(--a-space-2);
   --a-login-settings-hover-overlay-opacity: var(--a-opacity-overlay-soft);
   --a-login-icon-opacity: var(--a-opacity-icon-muted);
+  --a-login-hero-margin-top: var(--a-space-4);
+  --a-login-qr-actions-row-margin-top: var(--a-space-4);
+  --a-login-qr-action-button-margin: var(--a-space-2);
   --a-login-bottom-padding: calc(var(--a-space-8) + var(--a-safe-area-bottom));
   --a-login-bottom-padding-mobile: calc(
     var(--a-space-10) + var(--a-space-2) + var(--a-safe-area-bottom)
@@ -238,9 +237,26 @@ const onScanQrcode = (value: string) => {
       opacity var(--a-motion-base) linear,
       color var(--a-motion-base) linear;
   }
+
+  &__language-switcher-wrap,
+  &__hero,
+  &__auth-sheet--centered {
+    text-align: end;
+  }
+
+  &__hero,
+  &__auth-sheet--centered {
+    text-align: center;
+  }
+
   &__buttons {
     position: relative;
   }
+
+  &__hero {
+    margin-top: var(--a-login-hero-margin-top);
+  }
+
   &__settings-button-container {
     position: absolute;
     right: 0;
@@ -264,6 +280,14 @@ const onScanQrcode = (value: string) => {
 
   &__auth-sheet {
     margin-top: var(--a-login-auth-sheet-margin-top);
+  }
+
+  &__qr-actions-row {
+    margin-top: var(--a-login-qr-actions-row-margin-top);
+  }
+
+  &__qr-action-button {
+    margin: var(--a-login-qr-action-button-margin);
   }
 
   @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {

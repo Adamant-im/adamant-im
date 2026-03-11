@@ -3,7 +3,7 @@
     <router-view v-if="hasView" />
     <template v-else>
       <!-- General -->
-      <h3 :class="`${className}__title a-text-caption`" class="mt-4 mb-4">
+      <h3 :class="[`${className}__title`, `${className}__title--first`, 'a-text-caption']">
         {{ t('options.general_title') }}
       </h3>
       <v-row align="center" gap="0">
@@ -12,7 +12,7 @@
             {{ t('options.language_label') }}
           </v-list-subheader>
         </v-col>
-        <v-col cols="6" class="text-right">
+        <v-col cols="6" :class="`${className}__control-col`">
           <language-switcher :append-icon="mdiChevronDown" />
         </v-col>
         <v-col cols="6">
@@ -20,7 +20,7 @@
             {{ t('options.currency_label') }}
           </v-list-subheader>
         </v-col>
-        <v-col cols="6" class="text-right">
+        <v-col cols="6" :class="`${className}__control-col`">
           <currency-switcher :append-icon="mdiChevronDown" />
         </v-col>
         <v-col cols="12">
@@ -35,7 +35,7 @@
       </v-row>
 
       <!-- Security -->
-      <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
+      <h3 :class="[`${className}__title`, `${className}__title--section`, 'a-text-caption']">
         {{ t('options.security_title') }}
       </h3>
       <v-row align="center" gap="0">
@@ -58,7 +58,7 @@
       </v-row>
 
       <!-- Chats -->
-      <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
+      <h3 :class="[`${className}__title`, `${className}__title--section`, 'a-text-caption']">
         {{ t('options.chats_title') }}
       </h3>
       <v-row align="center" gap="0">
@@ -76,7 +76,7 @@
           </div>
         </v-col>
 
-        <v-col cols="12" class="mt-6">
+        <v-col cols="12" :class="`${className}__option-offset`">
           <v-checkbox
             v-model="formatMessages"
             :label="t('options.format_messages')"
@@ -90,7 +90,7 @@
           </div>
         </v-col>
 
-        <v-col cols="12" class="mt-6">
+        <v-col cols="12" :class="`${className}__option-offset`">
           <v-checkbox
             v-model="useFullDate"
             :label="t('options.use_full_date')"
@@ -106,7 +106,7 @@
       </v-row>
 
       <!-- Notifications -->
-      <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
+      <h3 :class="[`${className}__title`, `${className}__title--section`, 'a-text-caption']">
         {{ t('options.notification_title') }}
       </h3>
       <v-row align="center" gap="0">
@@ -123,7 +123,7 @@
             {{ t('options.enable_sound_tooltip') }}
           </div>
         </v-col>
-        <v-col cols="12" class="mt-6">
+        <v-col cols="12" :class="`${className}__option-offset`">
           <v-checkbox
             v-model="allowPushNotifications"
             :label="t('options.enable_push')"
@@ -139,7 +139,7 @@
       </v-row>
 
       <!-- Actions -->
-      <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
+      <h3 :class="[`${className}__title`, `${className}__title--section`, 'a-text-caption']">
         {{ t('options.actions') }}
       </h3>
       <v-row gap="0">
@@ -189,7 +189,7 @@
       </v-row>
       <v-row gap="0">
         <div
-          :class="`${className}__version_info ml-auto`"
+          :class="`${className}__version_info`"
           @click="onVersionClick"
           data-test-id="version-info"
         >
@@ -438,21 +438,45 @@ onBeforeUnmount(() => {
 .settings-view {
   --a-settings-gutter: var(--a-space-6);
   --a-settings-title-padding-top: var(--a-space-4);
+  --a-settings-title-margin-top-section: var(--a-space-6);
+  --a-settings-title-margin-bottom-first: var(--a-space-4);
+  --a-settings-title-margin-bottom-section: var(--a-space-6);
   --a-settings-actions-row-min-height: var(--a-list-row-min-height);
   --a-settings-actions-row-padding-block: var(--a-list-row-padding-block);
   --a-settings-logout-margin-top: var(--a-space-4);
+  --a-settings-option-offset: var(--a-space-6);
   --a-settings-version-info-hover-opacity: var(--a-opacity-interactive-hover);
   --a-settings-version-info-active-opacity: var(--a-opacity-interactive-pressed);
 
   &__title {
     padding-top: var(--a-settings-title-padding-top);
+    margin-top: 0;
     margin-left: calc(var(--a-settings-gutter) * -1);
     margin-right: calc(var(--a-settings-gutter) * -1);
     padding-left: var(--a-settings-gutter);
     padding-right: var(--a-settings-gutter);
   }
+
+  &__title--first {
+    margin-bottom: var(--a-settings-title-margin-bottom-first);
+  }
+
+  &__title--section {
+    margin-top: var(--a-settings-title-margin-top-section);
+    margin-bottom: var(--a-settings-title-margin-bottom-section);
+  }
+
+  &__control-col {
+    text-align: end;
+  }
+
+  &__option-offset {
+    margin-top: var(--a-settings-option-offset);
+  }
+
   &__version_info {
     @include mixins.a-text-explanation();
+    margin-left: auto;
     margin-top: var(--a-space-6);
     margin-bottom: var(--a-space-4);
     cursor: pointer;

@@ -69,8 +69,8 @@ test.describe('Login layout regressions', () => {
       const fieldAppendInnerStyle = getComputedStyle(fieldAppendInner)
 
       return {
-        logoWidthVar: rootStyle.getPropertyValue('--a-login-logo-width').trim(),
-        titleLineHeightVar: rootStyle.getPropertyValue('--a-login-title-line-height').trim(),
+        logoWidthVar: rootStyle.getPropertyValue('--a-login-hero-logo-width').trim(),
+        titleLineHeightVar: rootStyle.getPropertyValue('--a-login-hero-title-line-height').trim(),
         inputPaddingVar: loginFormStyle
           .getPropertyValue('--a-login-form-passphrase-input-padding-inline')
           .trim(),
@@ -144,7 +144,7 @@ test.describe('Login layout regressions', () => {
     })
 
     expect(generatedMetrics).not.toBeNull()
-    expect(generatedMetrics?.passphraseBoxMarginTop ?? 0).toBeGreaterThanOrEqual(31)
-    expect(generatedMetrics?.passphraseBoxMarginTop ?? 999).toBeLessThanOrEqual(33)
+    expect(generatedMetrics?.passphraseBoxMarginTop ?? 0).toBeGreaterThanOrEqual(39)
+    expect(generatedMetrics?.passphraseBoxMarginTop ?? 999).toBeLessThanOrEqual(41)
   })
 })
