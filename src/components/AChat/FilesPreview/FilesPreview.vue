@@ -13,7 +13,7 @@
       @click="$emit('cancel')"
       :class="classes.closeButton"
       :icon="mdiClose"
-      size="24"
+      :size="COMMON_ICON_SIZE"
       variant="plain"
     />
   </div>
@@ -25,6 +25,7 @@ import { defineComponent, PropType } from 'vue'
 import type { FileData } from '@/lib/files'
 import FilesPreviewItem from './FilesPreviewItem.vue'
 import { mdiClose } from '@mdi/js'
+import { COMMON_ICON_SIZE } from '@/components/common/helpers/uiMetrics'
 
 const className = 'files-preview'
 const classes = {
@@ -47,6 +48,7 @@ export default defineComponent({
   setup() {
     return {
       classes,
+      COMMON_ICON_SIZE,
       mdiClose
     }
   }

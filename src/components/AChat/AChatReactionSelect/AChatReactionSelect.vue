@@ -16,9 +16,9 @@
         :class="classes.moreButton"
         @click="$emit('click:emojiPicker')"
         :elevation="0"
-        :size="32"
+        :size="COMMON_REACTION_MORE_BUTTON_SIZE"
       >
-        <v-icon :icon="mdiChevronDown" :size="24" />
+        <v-icon :icon="mdiChevronDown" :size="COMMON_ICON_SIZE" />
       </v-btn>
     </div>
   </div>
@@ -33,6 +33,10 @@ import { usePartnerId } from '@/components/AChat/hooks/usePartnerId'
 import { isEmptyReaction, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import AChatReactionSelectItem from './AChatReactionSelectItem.vue'
 import { mdiChevronDown } from '@mdi/js'
+import {
+  COMMON_ICON_SIZE,
+  COMMON_REACTION_MORE_BUTTON_SIZE
+} from '@/components/common/helpers/uiMetrics'
 
 const className = 'a-chat-reaction-select'
 const classes = {
@@ -88,6 +92,8 @@ export default defineComponent({
 
     return {
       classes,
+      COMMON_ICON_SIZE,
+      COMMON_REACTION_MORE_BUTTON_SIZE,
       emojis,
       lastReaction,
       mdiChevronDown,

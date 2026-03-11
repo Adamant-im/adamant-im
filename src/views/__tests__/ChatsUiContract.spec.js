@@ -9,19 +9,24 @@ const chatsPath = path.resolve(currentDir, '../../components/Chat/Chats.vue')
 const chatPath = path.resolve(currentDir, '../../components/Chat/Chat.vue')
 const chatPreviewPath = path.resolve(currentDir, '../../components/ChatPreview.vue')
 const chatUiMetricsPath = path.resolve(currentDir, '../../components/Chat/helpers/uiMetrics.ts')
+const commonUiMetricsPath = path.resolve(currentDir, '../../components/common/helpers/uiMetrics.ts')
 const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
 const chatPlaceholderPath = path.resolve(currentDir, '../../components/Chat/ChatPlaceholder.vue')
 const chatStylesPath = path.resolve(currentDir, '../../assets/styles/components/_chat.scss')
 const themeMixinsPath = path.resolve(currentDir, '../../assets/styles/themes/adamant/_mixins.scss')
+const chatMenuPath = path.resolve(currentDir, '../../components/Chat/ChatMenu.vue')
+const chatEmojisPath = path.resolve(currentDir, '../../components/Chat/ChatEmojis.vue')
 
 describe('Chats UI style contract', () => {
   it('stores shared chat toolbar and chats sizing metrics in helper constants', () => {
     const content = readFileSync(chatUiMetricsPath, 'utf8')
+    const commonMetricsContent = readFileSync(commonUiMetricsPath, 'utf8')
 
     expect(content).toContain('CHAT_TOOLBAR_UNREAD_COUNTER_MAX')
     expect(content).toContain('CHAT_CONNECTION_SPINNER_SIZE')
     expect(content).toContain('CHATS_CONNECTION_SPINNER_SIZE')
     expect(content).toContain('CHATS_SCROLL_OFFSET')
+    expect(commonMetricsContent).toContain('COMMON_TRIGGER_ICON_SIZE = 28')
   })
 
   it('defines shared typography tokens for chat toolbar and list', () => {
@@ -153,7 +158,7 @@ describe('Chats UI style contract', () => {
     expect(placeholderContent).toContain('p {')
     expect(placeholderContent).toContain('margin: 0;')
     expect(placeholderContent).toContain("@use '@/assets/styles/generic/_variables.scss';")
-    expect(placeholderContent).toContain('padding-bottom: var(--a-space-4);')
+    expect(placeholderContent).toContain('padding-bottom: var(--a-space-6);')
     expect(placeholderContent).toContain('padding-inline: var(--a-screen-padding-inline);')
     expect(placeholderContent).toContain(
       "background-color: map.get(colors.$adm-colors, 'light-gray');"
@@ -183,5 +188,16 @@ describe('Chats UI style contract', () => {
     expect(content).toContain(':size="CHAT_CONNECTION_SPINNER_SIZE"')
     expect(content).toContain('margin-right: var(--a-space-1);')
     expect(content).not.toMatch(/\.chat-avatar\s*\{[^}]*margin-right:\s*var\(--a-space-3\);/s)
+  })
+
+  it('uses shared trigger icon metrics in attach and emoji menus', () => {
+    const menuContent = readFileSync(chatMenuPath, 'utf8')
+    const emojisContent = readFileSync(chatEmojisPath, 'utf8')
+
+    expect(menuContent).toContain('COMMON_TRIGGER_ICON_SIZE')
+    expect(menuContent).not.toContain('size="28"')
+
+    expect(emojisContent).toContain('COMMON_TRIGGER_ICON_SIZE')
+    expect(emojisContent).not.toContain('size="28"')
   })
 })

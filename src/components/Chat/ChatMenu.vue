@@ -2,7 +2,12 @@
   <div>
     <v-menu eager v-model="isChatMenuOpen" :open-on-hover="isDesktop">
       <template #activator="{ props }">
-        <v-icon class="chat-menu__icon" v-bind="props" :icon="mdiPlusCircleOutline" size="28" />
+        <v-icon
+          class="chat-menu__icon"
+          v-bind="props"
+          :icon="mdiPlusCircleOutline"
+          :size="COMMON_TRIGGER_ICON_SIZE"
+        />
       </template>
 
       <UploadFile
@@ -66,6 +71,7 @@ import type { FileData } from '@/lib/files'
 import { CoinSymbol } from '@/store/modules/wallets/types'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import { COMMON_TRIGGER_ICON_SIZE } from '@/components/common/helpers/uiMetrics'
 
 const fetchingErrors = {
   noAddress: 'No crypto wallet address',

@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest'
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const uiMetricsPath = path.resolve(currentDir, '../../components/AChat/helpers/uiMetrics.ts')
+const commonUiMetricsPath = path.resolve(currentDir, '../../components/common/helpers/uiMetrics.ts')
 const themeMixinsPath = path.resolve(currentDir, '../../assets/styles/themes/adamant/_mixins.scss')
 const messagePath = path.resolve(currentDir, '../../components/AChat/AChatMessage.vue')
 const attachmentPath = path.resolve(
@@ -53,6 +54,15 @@ const actionsOverlayPath = path.resolve(
   currentDir,
   '../../components/AChat/AChatActionsOverlay.vue'
 )
+const reactionSelectPath = path.resolve(
+  currentDir,
+  '../../components/AChat/AChatReactionSelect/AChatReactionSelect.vue'
+)
+const replyPreviewPath = path.resolve(currentDir, '../../components/AChat/AChatReplyPreview.vue')
+const filesPreviewPath = path.resolve(
+  currentDir,
+  '../../components/AChat/FilesPreview/FilesPreview.vue'
+)
 const reactionsPath = path.resolve(
   currentDir,
   '../../components/AChat/AChatReactions/AChatReactions.vue'
@@ -63,6 +73,7 @@ const chatStylesPath = path.resolve(currentDir, '../../assets/styles/components/
 describe('AChat UI style contract', () => {
   it('stores shared icon and dropdown sizing in chat ui metrics helper', () => {
     const content = readFileSync(uiMetricsPath, 'utf8')
+    const commonMetricsContent = readFileSync(commonUiMetricsPath, 'utf8')
 
     expect(content).toContain('CHAT_STATUS_ICON_SIZE')
     expect(content).toContain('CHAT_STATUS_ICON_ERROR_SIZE')
@@ -71,6 +82,9 @@ describe('AChat UI style contract', () => {
     expect(content).toContain('CHAT_ACTIONS_DROPDOWN_BUTTON_SIZE')
     expect(content).toContain('CHAT_ACTIONS_DROPDOWN_ICON_SIZE')
     expect(content).toContain('CHAT_ATTACHMENT_PREVIEW_SIZE')
+    expect(commonMetricsContent).toContain('COMMON_ICON_SIZE = 24')
+    expect(commonMetricsContent).toContain('COMMON_TRIGGER_ICON_SIZE = 28')
+    expect(commonMetricsContent).toContain('COMMON_REACTION_MORE_BUTTON_SIZE = 32')
   })
 
   it('uses the shared chat connection spinner size for initial message loading', () => {
@@ -116,6 +130,23 @@ describe('AChat UI style contract', () => {
     expect(overlayContent).toContain('--a-chat-actions-overlay-reaction-height')
     expect(overlayContent).toContain('--a-chat-actions-overlay-reaction-gap')
     expect(overlayContent).toContain('--a-chat-actions-overlay-transition-duration')
+  })
+
+  it('uses shared utility icon metrics in reaction select, reply preview and files preview', () => {
+    const reactionSelectContent = readFileSync(reactionSelectPath, 'utf8')
+    const replyPreviewContent = readFileSync(replyPreviewPath, 'utf8')
+    const filesPreviewContent = readFileSync(filesPreviewPath, 'utf8')
+
+    expect(reactionSelectContent).toContain('COMMON_REACTION_MORE_BUTTON_SIZE')
+    expect(reactionSelectContent).toContain('COMMON_ICON_SIZE')
+    expect(reactionSelectContent).not.toContain(':size="32"')
+    expect(reactionSelectContent).not.toContain(':size="24"')
+
+    expect(replyPreviewContent).toContain('COMMON_ICON_SIZE')
+    expect(replyPreviewContent).not.toContain('size="24"')
+
+    expect(filesPreviewContent).toContain('COMMON_ICON_SIZE')
+    expect(filesPreviewContent).not.toContain('size="24"')
   })
 
   it('uses sender-vs-current-user direction for reactions and overlays, including self-chat', () => {

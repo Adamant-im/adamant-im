@@ -14,7 +14,7 @@
         @click="$emit('cancel')"
         :class="classes.closeButton"
         :icon="mdiClose"
-        size="24"
+        :size="COMMON_ICON_SIZE"
         variant="plain"
       />
     </div>
@@ -32,6 +32,7 @@ import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { formatChatPreviewMessage } from '@/lib/markdown'
 import { mdiClose } from '@mdi/js'
 import type { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { COMMON_ICON_SIZE } from '@/components/common/helpers/uiMetrics'
 
 const className = 'a-chat-reply-preview'
 const classes = {
