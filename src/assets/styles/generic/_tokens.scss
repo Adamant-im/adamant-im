@@ -199,6 +199,9 @@
   --a-dev-screen-section-gap: var(--a-space-8);
   --a-dev-screen-section-title-gap: var(--a-space-4);
   --a-dev-screen-section-title-padding-bottom: var(--a-space-2);
+  --a-dev-screen-title-padding-top: calc(var(--a-space-4) - var(--a-border-width-thin));
+  --a-dev-screen-bleed-inline: var(--a-screen-padding-inline);
+  --a-dev-screen-item-padding-inline: var(--a-screen-padding-inline);
   --a-dev-screen-code-font-size: var(--a-font-size-xs);
   --a-dev-screen-code-font-size-md: 11px;
   --a-dev-screen-code-font-size-sm: var(--a-font-size-2xs);

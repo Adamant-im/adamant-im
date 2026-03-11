@@ -8,6 +8,8 @@ const tokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens
 const inlineSpinnerPath = path.resolve(currentDir, '../../components/InlineSpinner.vue')
 const chatSpinnerPath = path.resolve(currentDir, '../../components/ChatSpinner.vue')
 const qrcodeRendererPath = path.resolve(currentDir, '../../components/QrcodeRenderer.vue')
+const qrcodeUiMetricsPath = path.resolve(currentDir, '../../components/Qrcode/helpers/uiMetrics.ts')
+const qrcodeCapturePath = path.resolve(currentDir, '../../components/QrcodeCapture.vue')
 const qrcodeScannerDialogPath = path.resolve(currentDir, '../../components/QrcodeScannerDialog.vue')
 const chatPlaceholderPath = path.resolve(currentDir, '../../components/Chat/ChatPlaceholder.vue')
 
@@ -48,6 +50,8 @@ describe('QR and loading UI contract', () => {
 
   it('keeps qr renderer and scanner layout tokenized', () => {
     const rendererContent = readFileSync(qrcodeRendererPath, 'utf8')
+    const metricsContent = readFileSync(qrcodeUiMetricsPath, 'utf8')
+    const captureContent = readFileSync(qrcodeCapturePath, 'utf8')
     const scannerContent = readFileSync(qrcodeScannerDialogPath, 'utf8')
 
     expect(rendererContent).toContain('QRCODE_RENDERER_SPINNER_SIZE')
@@ -56,6 +60,10 @@ describe('QR and loading UI contract', () => {
     expect(rendererContent).toContain('var(--a-qrcode-renderer-max-width)')
     expect(rendererContent).not.toContain('<InlineSpinner :size="152" />')
     expect(rendererContent).not.toContain('max-width: 250px;')
+
+    expect(metricsContent).toContain('QRCODE_CAPTURE_IMAGE_MAX_SIZE = 400')
+    expect(captureContent).toContain('QRCODE_CAPTURE_IMAGE_MAX_SIZE')
+    expect(captureContent).not.toContain('const IMG_MAX_SIZE = 400')
 
     expect(scannerContent).toContain('QRCODE_SCANNER_WAITING_SPINNER_SIZE')
     expect(scannerContent).toContain('`${classes.root}__waiting-spinner`')

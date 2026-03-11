@@ -5,6 +5,11 @@ import { describe, expect, it } from 'vitest'
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
+const switcherMenuMixinPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_switcher-menu.scss'
+)
+const devScreensPath = path.resolve(currentDir, '../devScreens/DevScreens.vue')
 const devVibrationsPath = path.resolve(currentDir, '../devScreens/DevVibrations.vue')
 const devAdamantWalletsPath = path.resolve(currentDir, '../devScreens/DevAdamantWallets.vue')
 const iconFilePath = path.resolve(currentDir, '../../components/icons/common/IconFile.vue')
@@ -18,6 +23,9 @@ describe('Dev screens UI style contract', () => {
     expect(tokensContent).toContain('--a-dev-screen-section-gap')
     expect(tokensContent).toContain('--a-dev-screen-section-title-gap')
     expect(tokensContent).toContain('--a-dev-screen-section-title-padding-bottom')
+    expect(tokensContent).toContain('--a-dev-screen-title-padding-top')
+    expect(tokensContent).toContain('--a-dev-screen-bleed-inline')
+    expect(tokensContent).toContain('--a-dev-screen-item-padding-inline')
     expect(tokensContent).toContain('--a-dev-screen-code-font-size')
     expect(tokensContent).toContain('--a-dev-screen-code-font-size-md')
     expect(tokensContent).toContain('--a-dev-screen-code-font-size-sm')
@@ -29,6 +37,31 @@ describe('Dev screens UI style contract', () => {
     expect(tokensContent).toContain('--a-dev-screen-card-text-max-height')
     expect(tokensContent).toContain('--a-dev-screen-code-max-height')
     expect(tokensContent).toContain('--a-icon-file-text-font-size')
+  })
+
+  it('uses shared screen-padding and switcher-menu pattern in dev screens index', () => {
+    const content = readFileSync(devScreensPath, 'utf8')
+    const switcherMenuContent = readFileSync(switcherMenuMixinPath, 'utf8')
+
+    expect(switcherMenuContent).toContain('@mixin a-switcher-menu()')
+    expect(content).toContain('switcherMenu.a-switcher-menu()')
+    expect(content).toContain('var(--a-dev-screen-title-padding-top)')
+    expect(content).toContain('var(--a-dev-screen-bleed-inline)')
+    expect(content).toContain('var(--a-dev-screen-item-padding-inline)')
+    expect(content).toContain('`${className}__menu-list`')
+    expect(content).toContain('`${className}__menu-item`')
+    expect(content).toContain('`${className}__menu-item-title`')
+    expect(content).toContain('`${className}__logging-button`')
+    expect(content).not.toContain('class="mt-4 mb-4"')
+    expect(content).not.toContain('margin-left: -24px;')
+    expect(content).not.toContain('margin-right: -24px;')
+    expect(content).not.toContain('padding-left: 24px;')
+    expect(content).not.toContain('padding-right: 24px;')
+    expect(content).not.toContain('margin-left: -16px;')
+    expect(content).not.toContain('margin-right: -16px;')
+    expect(content).not.toContain('padding-left: 16px;')
+    expect(content).not.toContain('padding-right: 16px;')
+    expect(content).not.toContain('class="ma-0 btn"')
   })
 
   it('uses shared tokens across the vibrations and wallet dev screens', () => {

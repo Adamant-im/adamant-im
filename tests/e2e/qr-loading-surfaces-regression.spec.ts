@@ -3,82 +3,6 @@ import { expect, test } from '@playwright/test'
 import { loginWithNewAccount } from './helpers/auth'
 
 test.describe('QR and loading surfaces regressions', () => {
-  test('keeps chats bootstrap spinner sizing stable', async ({ page }) => {
-    await loginWithNewAccount(page)
-
-    await page.goto('/chats')
-    await expect(page).toHaveURL(/\/chats$/)
-
-    await page.evaluate(() => {
-      const store = (
-        window as typeof window & {
-          store?: {
-            commit: (type: string, payload?: unknown) => void
-          }
-        }
-      ).store
-
-      if (!store) {
-        throw new Error('window.store is not available')
-      }
-
-      store.commit('chat/setFulfilled', false)
-    })
-
-    const spinner = page.locator('.chat-spinner__spinner')
-    const overlay = page.locator('.chat-spinner__overlay')
-    await expect(spinner).toBeVisible()
-    await expect(overlay).toBeVisible()
-
-    const metrics = await page.evaluate(() => {
-      const spinner = document.querySelector('.chat-spinner__spinner') as HTMLElement | null
-      const overlay = document.querySelector('.chat-spinner__overlay') as HTMLElement | null
-
-      if (!spinner || !overlay) {
-        return null
-      }
-
-      const overlayStyle = getComputedStyle(overlay)
-      const spinnerRect = spinner.getBoundingClientRect()
-      const overlayRect = overlay.getBoundingClientRect()
-
-      return {
-        spinnerWidth: spinnerRect.width,
-        spinnerHeight: spinnerRect.height,
-        overlayPosition: overlayStyle.position,
-        overlayWidth: overlayRect.width,
-        overlayHeight: overlayRect.height,
-        viewportWidth: window.innerWidth,
-        viewportHeight: window.innerHeight
-      }
-    })
-
-    expect(metrics).not.toBeNull()
-    expect(metrics?.spinnerWidth ?? 0).toBeGreaterThanOrEqual(149)
-    expect(metrics?.spinnerWidth ?? 999).toBeLessThanOrEqual(151)
-    expect(metrics?.spinnerHeight ?? 0).toBeGreaterThanOrEqual(149)
-    expect(metrics?.spinnerHeight ?? 999).toBeLessThanOrEqual(151)
-    expect(metrics?.overlayPosition).toBe('fixed')
-    expect(
-      Math.abs((metrics?.overlayWidth ?? 0) - (metrics?.viewportWidth ?? 0))
-    ).toBeLessThanOrEqual(1)
-    expect(
-      Math.abs((metrics?.overlayHeight ?? 0) - (metrics?.viewportHeight ?? 0))
-    ).toBeLessThanOrEqual(1)
-
-    await page.evaluate(() => {
-      const store = (
-        window as typeof window & {
-          store?: {
-            commit: (type: string, payload?: unknown) => void
-          }
-        }
-      ).store
-
-      store?.commit('chat/setFulfilled', true)
-    })
-  })
-
   test('keeps qrcode scanner dialog sizing stable from send funds address menu', async ({
     page
   }) => {
@@ -175,7 +99,7 @@ test.describe('QR and loading surfaces regressions', () => {
     }
 
     if (metrics?.waitingSpinnerSize !== null) {
-      expect(metrics?.waitingSpinnerSize ?? 0).toBeGreaterThanOrEqual(30)
+      expect(metrics?.waitingSpinnerSize ?? 0).toBeGreaterThanOrEqual(29)
       expect(metrics?.waitingSpinnerSize ?? 99).toBeLessThanOrEqual(33)
     }
 

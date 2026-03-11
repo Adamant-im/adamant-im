@@ -126,11 +126,15 @@ describe('Secondary dialogs UI contract', () => {
     expect(chatStartContent).not.toContain('margin-bottom: 15px;')
 
     expect(walletResetContent).toContain("const className = 'wallet-reset-dialog'")
+    expect(walletResetContent).toContain('`${classes.root}__trigger-wrap`')
+    expect(walletResetContent).toContain('`${classes.root}__trigger`')
     expect(walletResetContent).toContain('`${classes.root}__dialog-body`')
     expect(walletResetContent).toContain('`${classes.root}__dialog-actions`')
     expect(walletResetContent).toContain('width="var(--a-secondary-dialog-width)"')
     expect(walletResetContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
     expect(walletResetContent).not.toContain('class="pa-4"')
+    expect(walletResetContent).not.toContain('class="text-right"')
+    expect(walletResetContent).not.toContain('class="a-btn-primary ma-2"')
     expect(walletResetContent).not.toContain("const className = 'wallets-view'")
     expect(walletResetContent).not.toContain('width="500"')
 

@@ -1,0 +1,1 @@
+export const QRCODE_CAPTURE_IMAGE_MAX_SIZE = 400

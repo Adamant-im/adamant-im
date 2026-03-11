@@ -1,11 +1,11 @@
 <template>
-  <h3 :class="`${className}__title a-text-caption`" class="mt-4 mb-4">
+  <h3 :class="[`${className}__title`, 'a-text-caption']">
     {{ t('dev_screens.title') }}
   </h3>
 
   <v-row gap="0">
     <v-col cols="12">
-      <v-list class="dev-list">
+      <v-list :class="`${className}__list`">
         <v-list-item
           :title="t('dev_screens.vibrations')"
           :append-icon="mdiChevronRight"
@@ -18,23 +18,30 @@
           @click="router.push({ name: 'DevAdamantWallets' })"
         />
       </v-list>
-      <v-list-item>
+      <v-list-item :class="`${className}__logging`">
         <v-row gap="0">
-          <v-col class="mt-3">
-            <span class="dev-list">
+          <v-col :class="`${className}__logging-label-column`">
+            <span :class="`${className}__logging-label`">
               {{ t('dev_screens.logging') }}
             </span>
           </v-col>
-          <v-col cols="6" class="text-right mt-1">
+          <v-col cols="6" :class="`${className}__logging-control-column`">
             <v-menu offset-y>
               <template #activator="{ props }">
-                <v-btn class="ma-0 btn" variant="text" v-bind="props">
+                <v-btn :class="`${className}__logging-button`" variant="text" v-bind="props">
                   {{ levelCurrent }}
                 </v-btn>
               </template>
-              <v-list>
-                <v-list-item :key="level" @click="onSelectLevel(level)" v-for="level in levelAll">
-                  <v-list-item-title>{{ level }}</v-list-item-title>
+              <v-list :class="`${className}__menu-list`">
+                <v-list-item
+                  v-for="level in levelAll"
+                  :key="level"
+                  :class="`${className}__menu-item`"
+                  @click="onSelectLevel(level)"
+                >
+                  <v-list-item-title :class="`${className}__menu-item-title`">
+                    {{ level }}
+                  </v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -82,43 +89,48 @@ const onSelectLevel = (level: LogLevel) => {
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_switcher-menu.scss' as switcherMenu;
 @use '@/assets/styles/settings/_colors.scss';
-@use 'vuetify/settings';
 
 .dev-screens-view {
-  &__title {
-    padding-top: 15px;
-    margin-left: -24px;
-    margin-right: -24px;
-    padding-left: 24px;
-    padding-right: 24px;
+  @include switcherMenu.a-switcher-menu();
 
-    @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-      margin-left: -16px;
-      margin-right: -16px;
-      padding-left: 16px;
-      padding-right: 16px;
+  &__title {
+    margin-block: var(--a-space-4);
+    padding-top: var(--a-dev-screen-title-padding-top);
+    margin-inline: calc(var(--a-dev-screen-bleed-inline) * -1);
+    padding-inline: var(--a-dev-screen-item-padding-inline);
+  }
+
+  &__list {
+    margin-inline: calc(var(--a-dev-screen-bleed-inline) * -1);
+
+    :deep(.v-list-item) {
+      padding-inline-start: var(--a-dev-screen-item-padding-inline);
+      padding-inline-end: var(--a-dev-screen-item-padding-inline);
     }
   }
 
-  .dev-list {
-    margin-left: -24px;
-    margin-right: -24px;
+  &__logging {
+    margin-inline: calc(var(--a-dev-screen-bleed-inline) * -1);
+    padding-inline: var(--a-dev-screen-item-padding-inline);
+  }
 
-    :deep(.v-list-item) {
-      padding-inline-start: 24px;
-      padding-inline-end: 24px;
+  &__logging-label-column {
+    margin-top: var(--a-space-3);
+  }
 
-      @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-        padding-inline-start: 16px;
-        padding-inline-end: 16px;
-      }
-    }
+  &__logging-label {
+    display: inline-block;
+  }
 
-    @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-      margin-left: -16px;
-      margin-right: -16px;
-    }
+  &__logging-control-column {
+    text-align: end;
+    margin-top: var(--a-space-1);
+  }
+
+  &__logging-button {
+    margin: 0;
   }
 }
 

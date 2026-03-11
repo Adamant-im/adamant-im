@@ -1,6 +1,10 @@
 <template>
-  <div class="text-right">
-    <v-btn class="a-btn-primary ma-2" color="primary" @click="isDialogVisible = true">
+  <div :class="`${classes.root}__trigger-wrap`">
+    <v-btn
+      :class="[`${classes.root}__trigger`, 'a-btn-primary']"
+      color="primary"
+      @click="isDialogVisible = true"
+    >
       {{ t('wallets.reset') }}
     </v-btn>
 
@@ -78,6 +82,15 @@ export default defineComponent({
 
 .wallet-reset-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  &__trigger-wrap {
+    text-align: end;
+  }
+
+  &__trigger {
+    margin: var(--a-space-2);
+  }
+
   &__dialog-summary {
     @include mixins.a-text-regular-enlarged();
   }
