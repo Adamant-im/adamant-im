@@ -70,7 +70,7 @@ onMounted(async () => {
 @use 'vuetify/settings';
 
 .emoji-picker {
-  border-radius: 8px;
+  border-radius: var(--a-emoji-picker-radius);
 
   &--position-absolute {
     // Fix for Chrome on iOS. Don't touch it
@@ -79,10 +79,10 @@ onMounted(async () => {
   }
 
   em-emoji-picker {
-    width: 264px;
-    height: 264px;
-    border-radius: 8px;
-    border-width: 1px;
+    width: var(--a-emoji-picker-size);
+    height: var(--a-emoji-picker-size);
+    border-radius: var(--a-emoji-picker-radius);
+    border-width: var(--a-emoji-picker-border-width);
     border-style: solid;
 
     #root {

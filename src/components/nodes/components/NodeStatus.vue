@@ -17,8 +17,8 @@
         v-if="nodeStatusUpdating"
         :class="classes.spinner"
         indeterminate
-        size="12"
-        width="2"
+        :size="NODE_STATUS_SPINNER_SIZE"
+        :width="NODE_STATUS_SPINNER_WIDTH"
       />
 
       <v-icon
@@ -41,7 +41,7 @@
       :class="classes.statusText"
     >
       <span v-if="nodeStatusDetail.icon" :class="classes.statusTextValueNoWrap">
-        <v-icon :icon="nodeStatusDetail.icon" :size="12" />
+        <v-icon :icon="nodeStatusDetail.icon" :size="NODE_STATUS_DETAIL_ICON_SIZE" />
         <span>&nbsp;{{ nodeStatusDetail.text }}</span>
       </span>
       <span v-else-if="!node.hasSupportedProtocol" :class="classes.statusTextValueNoWrap">
@@ -66,6 +66,11 @@ import { useI18n } from 'vue-i18n'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { useNodeStatus } from '@/components/nodes/hooks'
 import { mdiCheckboxBlankCircle, mdiHelpCircleOutline } from '@mdi/js'
+import {
+  NODE_STATUS_DETAIL_ICON_SIZE,
+  NODE_STATUS_SPINNER_SIZE,
+  NODE_STATUS_SPINNER_WIDTH
+} from '@/components/nodes/helpers/uiMetrics'
 
 const className = 'node-status'
 const classes = {
@@ -107,7 +112,10 @@ export default defineComponent({
       nodeStatusUpdating,
       classes,
       mdiCheckboxBlankCircle,
-      mdiHelpCircleOutline
+      mdiHelpCircleOutline,
+      NODE_STATUS_DETAIL_ICON_SIZE,
+      NODE_STATUS_SPINNER_SIZE,
+      NODE_STATUS_SPINNER_WIDTH
     }
   }
 })
@@ -119,9 +127,6 @@ export default defineComponent({
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .node-status {
-  --a-node-status-width: 76px;
-  --a-node-status-max-width: 80px;
-  --a-node-status-detail-offset-block-start: 2px;
   --a-node-status-detail-font-size: var(--a-font-size-xs);
   --a-node-status-detail-font-weight: var(--a-font-weight-light);
   --a-node-status-indicator-offset-inline-start: var(--a-space-1);

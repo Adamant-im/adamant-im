@@ -74,6 +74,8 @@ const reactionsPath = path.resolve(
 )
 const quotedMessagePath = path.resolve(currentDir, '../../components/AChat/QuotedMessage.vue')
 const chatStylesPath = path.resolve(currentDir, '../../assets/styles/components/_chat.scss')
+const emojiPickerPath = path.resolve(currentDir, '../../components/EmojiPicker.vue')
+const iconBoxPath = path.resolve(currentDir, '../../components/icons/IconBox.vue')
 
 describe('AChat UI style contract', () => {
   it('stores shared icon and dropdown sizing in chat ui metrics helper', () => {
@@ -349,5 +351,27 @@ describe('AChat UI style contract', () => {
     )
     expect(content).not.toContain("background-color: map.get(colors.$adm-colors, 'muted');")
     expect(content).not.toContain("classList?.contains('v-window-item')")
+  })
+
+  it('uses shared emoji picker and icon box sizing tokens', () => {
+    const emojiPickerContent = readFileSync(emojiPickerPath, 'utf8')
+    const iconBoxContent = readFileSync(iconBoxPath, 'utf8')
+    const tokensContent = readFileSync(genericTokensPath, 'utf8')
+
+    expect(tokensContent).toContain('--a-emoji-picker-radius')
+    expect(tokensContent).toContain('--a-emoji-picker-size')
+    expect(tokensContent).toContain('--a-emoji-picker-border-width')
+    expect(iconBoxContent).toContain('var(--a-icon-box-centered-size)')
+
+    expect(emojiPickerContent).toContain('var(--a-emoji-picker-radius)')
+    expect(emojiPickerContent).toContain('var(--a-emoji-picker-size)')
+    expect(emojiPickerContent).toContain('var(--a-emoji-picker-border-width)')
+    expect(emojiPickerContent).not.toContain('border-radius: 8px;')
+    expect(emojiPickerContent).not.toContain('width: 264px;')
+    expect(emojiPickerContent).not.toContain('height: 264px;')
+    expect(emojiPickerContent).not.toContain('border-width: 1px;')
+
+    expect(iconBoxContent).not.toContain('width: 40px;')
+    expect(iconBoxContent).not.toContain('height: 40px;')
   })
 })

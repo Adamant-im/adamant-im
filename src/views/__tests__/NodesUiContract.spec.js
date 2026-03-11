@@ -20,6 +20,11 @@ const nodeStatusCheckboxPath = path.resolve(
   currentDir,
   '../../components/nodes/components/NodeStatusCheckbox.vue'
 )
+const nodeStatusUiMetricsPath = path.resolve(
+  currentDir,
+  '../../components/nodes/helpers/uiMetrics.ts'
+)
+const nodeLabelPath = path.resolve(currentDir, '../../components/nodes/components/NodeLabel.vue')
 const nodeUrlPath = path.resolve(currentDir, '../../components/nodes/components/NodeUrl.vue')
 const nodeVersionPath = path.resolve(
   currentDir,
@@ -67,6 +72,8 @@ describe('Nodes UI style contract', () => {
     const columnContent = readFileSync(nodeColumnPath, 'utf8')
     const statusContent = readFileSync(nodeStatusPath, 'utf8')
     const checkboxContent = readFileSync(nodeStatusCheckboxPath, 'utf8')
+    const metricsContent = readFileSync(nodeStatusUiMetricsPath, 'utf8')
+    const labelContent = readFileSync(nodeLabelPath, 'utf8')
     const dataTableContent = readFileSync(settingsDataTablePath, 'utf8')
 
     expect(dataTableContent).toContain('--a-settings-data-table-line-height')
@@ -83,13 +90,27 @@ describe('Nodes UI style contract', () => {
     expect(statusContent).toContain('--a-node-status-detail-font-size')
     expect(statusContent).toContain('--a-node-status-detail-font-weight')
     expect(statusContent).toContain('--a-node-status-text-color-dark')
+    expect(statusContent).toContain(':size="NODE_STATUS_SPINNER_SIZE"')
+    expect(statusContent).toContain(':width="NODE_STATUS_SPINNER_WIDTH"')
+    expect(statusContent).toContain(':size="NODE_STATUS_DETAIL_ICON_SIZE"')
     expect(statusContent).toContain('root: className')
     expect(statusContent).toContain('var(--a-font-size-xs)')
     expect(statusContent).toContain('var(--a-font-weight-light)')
     expect(statusContent).toContain('var(--a-color-text-muted-dark)')
+    expect(statusContent).not.toContain('size="12"')
+    expect(statusContent).not.toContain('width="2"')
     expect(statusContent).not.toContain('font-size: 12px;')
     expect(statusContent).not.toContain('font-weight: 300;')
     expect(statusContent).not.toContain('opacity: 0.7;')
+
+    expect(metricsContent).toContain('NODE_STATUS_SPINNER_SIZE = 12')
+    expect(metricsContent).toContain('NODE_STATUS_SPINNER_WIDTH = 2')
+    expect(metricsContent).toContain('NODE_STATUS_DETAIL_ICON_SIZE = 12')
+
+    expect(labelContent).toContain('var(--a-node-label-height)')
+    expect(labelContent).toContain('var(--a-node-label-padding-inline)')
+    expect(labelContent).not.toContain('--v-chip-height: 18px;')
+    expect(labelContent).not.toContain('padding: 0 4px;')
 
     expect(checkboxContent).toContain('--a-node-toggle-checkbox-font-size')
     expect(checkboxContent).toContain('--a-node-toggle-checkbox-offset-inline-start')

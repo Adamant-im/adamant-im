@@ -23,8 +23,8 @@ export default {
 
 <style lang="scss" scoped>
 .icon-box {
-  width: 40px;
-  height: 40px;
+  width: var(--a-icon-box-centered-size);
+  height: var(--a-icon-box-centered-size);
   display: flex;
   align-items: center;
   justify-content: center;
