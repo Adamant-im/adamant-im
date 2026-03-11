@@ -12,6 +12,8 @@ const port = ref<MessagePort | null>(null)
 const isSecureChannelReady = ref(false)
 const messageQueue: Array<{ type: string; payload?: any }> = []
 const isSyncing = ref(false)
+let isConnecting = false
+let listenersRegistered = false
 
 export function useWebPushNotifications() {
   const generateNonce = () => Math.random().toString(36).substring(2, 15)
@@ -47,11 +49,15 @@ export function useWebPushNotifications() {
 
   const initSecureChannel = async () => {
     if (!('serviceWorker' in navigator)) return
+    if (isConnecting) return
+
+    isConnecting = true
+    isSecureChannelReady.value = false
+    port.value = null
 
     try {
       const registrations = await navigator.serviceWorker.getRegistrations()
       const firebaseReg = registrations.find((reg) => reg.scope.includes('/firebase/'))
-
       if (!firebaseReg) {
         console.warn('[Web Push] Firebase Service Worker registration not found')
         return
@@ -62,7 +68,6 @@ export function useWebPushNotifications() {
 
       const channel = new MessageChannel()
       const port1 = channel.port1
-      const port2 = channel.port2
 
       port1.onmessage = (event) => {
         if (event.data?.type === SW_SECURE_COMMANDS.CONFIRM_CHANNEL) {
@@ -75,18 +80,27 @@ export function useWebPushNotifications() {
         }
       }
 
-      worker.postMessage({ type: SW_SECURE_COMMANDS.INIT_SECURE_CHANNEL }, [port2])
-
-      // Re-establish channel on SW update
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        console.log('[Web Push] Service Worker changed, re-initializing channel')
-        isSecureChannelReady.value = false
-        port.value = null
-        setTimeout(() => initSecureChannel(), 500)
-      })
+      worker.postMessage({ type: SW_SECURE_COMMANDS.INIT_SECURE_CHANNEL }, [channel.port2])
     } catch (error) {
       console.error('[Web Push] Failed to initialize secure channel:', error)
+    } finally {
+      isConnecting = false
     }
+  }
+
+  const setupSWListeners = () => {
+    if (listenersRegistered) return
+    listenersRegistered = true
+
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      setTimeout(() => initSecureChannel(), 500)
+    })
+
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (event.data?.type === 'SW_RESTARTED') {
+        initSecureChannel()
+      }
+    })
   }
 
   const sendSecureMessage = (type: string, payload?: any): boolean => {
@@ -142,6 +156,33 @@ export function useWebPushNotifications() {
     })
   }
 
+  const startHeartbeat = () => {
+    setInterval(() => {
+      if (!port.value || !isSecureChannelReady.value) return
+
+      const timeout = setTimeout(() => {
+        console.warn('[Web Push] Heartbeat timeout — re-establishing channel')
+        isSecureChannelReady.value = false
+        port.value = null
+        initSecureChannel()
+      }, 5000)
+
+      // Temporarily intercept onmessage to catch PONG
+      const prevHandler = port.value.onmessage
+      port.value.onmessage = (event) => {
+        if (event.data?.type === 'PONG') {
+          clearTimeout(timeout)
+          port.value!.onmessage = prevHandler
+        } else {
+          const currentPort = port.value
+          if (currentPort) prevHandler?.call(currentPort, event)
+        }
+      }
+
+      sendSecureMessage(SW_SECURE_COMMANDS.PING)
+    }, 30_000)
+  }
+
   // Watch for channel readiness and flush queue
   watch(isSecureChannelReady, (ready) => {
     if (ready) {
@@ -155,6 +196,8 @@ export function useWebPushNotifications() {
     initSecureChannel,
     setPrivateKey,
     clearPrivateKey,
-    syncNotificationSettings
+    syncNotificationSettings,
+    setupSWListeners,
+    startHeartbeat
   }
 }

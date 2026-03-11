@@ -209,7 +209,6 @@ async function handleSecureMessage(data) {
     case 'CLEAR_PRIVATE_KEY':
       privateKey = ''
       currentUserAddress = ''
-      notificationSettings.type = NOTIFICATION_TYPES.NO_NOTIFICATIONS
       await deleteFromStorage('privateKey')
       await saveToStorage('currentUserAddress', '')
       break
@@ -232,6 +231,9 @@ async function handleSecureMessage(data) {
         encryptionPassword = payload.encryptionPassword
       }
       console.log('[SW] Settings synced:', { currentUserAddress, type: notificationSettings.type })
+      break
+    case 'PING':
+      securePort?.postMessage({ type: 'PONG' })
       break
     default:
       console.warn('[SW] Unknown secure command:', type)
@@ -297,6 +299,10 @@ function parseTransactionPayload(payload) {
 }
 
 messaging.onBackgroundMessage(async (payload) => {
+  if (!securePort) {
+    const windowClients = await self.clients.matchAll({ type: 'window' })
+    windowClients.forEach((c) => c.postMessage({ type: 'SW_RESTARTED' }))
+  }
   if (!notificationSettings.initialized) {
     await loadStateFromDB()
   }

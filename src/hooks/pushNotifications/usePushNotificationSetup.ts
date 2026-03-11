@@ -146,9 +146,10 @@ export function usePushNotificationSetup() {
   }
 
   const initialize = async () => {
-    if (webPush && !webPush.isSecureChannelReady.value) {
-      console.log('[PushSetup] Initializing secure channel')
+    if (webPush) {
+      webPush.setupSWListeners()
       await webPush.initSecureChannel()
+      webPush.startHeartbeat()
     }
     setupWatchers()
   }
