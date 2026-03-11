@@ -483,8 +483,8 @@ test.describe('Chats layout regressions', () => {
 
     expect(metrics).not.toBeNull()
     expect(metrics?.dialogInlineWidth).toBe('var(--a-secondary-dialog-width)')
-    expect(metrics?.dialogWidth ?? 0).toBeGreaterThanOrEqual(330)
-    expect(metrics?.dialogWidth ?? 999).toBeLessThanOrEqual(500)
+    expect(metrics?.dialogWidth ?? 0).toBeGreaterThanOrEqual(300)
+    expect(metrics?.dialogWidth ?? 999).toBeLessThanOrEqual(320)
     expect(metrics?.titlePaddingInlineStart ?? 0).toBeGreaterThanOrEqual(23)
     expect(metrics?.titlePaddingInlineStart ?? 99).toBeLessThanOrEqual(25)
     expect(metrics?.titlePaddingInlineEnd ?? 0).toBeGreaterThanOrEqual(23)

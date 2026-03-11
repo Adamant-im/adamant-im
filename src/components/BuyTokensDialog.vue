@@ -7,7 +7,7 @@
 
       <v-divider class="a-divider" />
 
-      <v-card-text class="pa-0">
+      <v-card-text :class="classes.dialogBody">
         <v-list bg-color="transparent" :class="`${classes.root}__list`">
           <v-list-item :class="classes.listItem" avatar @click="openLink('U5149447931090026688')">
             <template #prepend>
@@ -79,6 +79,7 @@ import Icon from '@/components/icons/BaseIcon.vue'
 const className = 'buy-tokens-dialog'
 const classes = {
   root: className,
+  dialogBody: `${className}__dialog-body`,
   listItem: `${className}__list-item`,
   listItemTitle: `${className}__list-item-title`
 }
@@ -145,6 +146,10 @@ const openLink = (link: string) => {
 
 .buy-tokens-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  &__dialog-body {
+    padding: 0 !important;
+  }
 
   &__list {
     background: inherit;

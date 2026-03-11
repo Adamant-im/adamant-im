@@ -10,7 +10,7 @@
         {{ t('home.share_uri', { crypto }) }}
       </v-card-title>
       <v-divider class="a-divider" />
-      <v-card-text class="pa-0">
+      <v-card-text :class="classes.dialogBody">
         <v-list bg-color="transparent" :class="classes.list">
           <v-list-item :class="classes.listItem" @click="copyAddress">
             <v-list-item-title :class="classes.listItemTitle">
@@ -55,6 +55,7 @@ const className = 'share-uri-dialog'
 const classes = {
   root: className,
   dialogTitle: `${className}__dialog-title`,
+  dialogBody: `${className}__dialog-body`,
   list: `${className}__list`,
   listItem: `${className}__list-item`,
   listItemTitle: `${className}__list-item-title`
@@ -146,6 +147,10 @@ export default defineComponent({
 
 .share-uri-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  &__dialog-body {
+    padding: 0 !important;
+  }
 
   &__list {
     background: inherit;

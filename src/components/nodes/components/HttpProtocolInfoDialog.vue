@@ -8,29 +8,29 @@
       <v-divider class="a-divider" />
 
       <v-card-text :class="`${className}__dialog-body a-text-regular-enlarged`">
-        <p class="mb-4">
+        <p :class="`${className}__paragraph`">
           {{ t('nodes.popup.http_restriction_intro') }}
         </p>
 
-        <h3 class="a-text-regular-enlarged-bold mb-2">
+        <h3 :class="`${className}__section-title a-text-regular-enlarged-bold`">
           {{ t('nodes.popup.http_vs_https_title') }}
         </h3>
-        <p class="mb-4">
+        <p :class="`${className}__paragraph`">
           {{ t('nodes.popup.http_vs_https_http') }}<br />
           {{ t('nodes.popup.http_vs_https_https') }}
         </p>
 
-        <h3 class="a-text-regular-enlarged-bold mb-2">
+        <h3 :class="`${className}__section-title a-text-regular-enlarged-bold`">
           {{ t('nodes.popup.adamant_encryption_title') }}
         </h3>
-        <p class="mb-4">
+        <p :class="`${className}__paragraph`">
           {{ t('nodes.popup.adamant_encryption_text') }}
         </p>
 
-        <h3 class="a-text-regular-enlarged-bold mb-2">
+        <h3 :class="`${className}__section-title a-text-regular-enlarged-bold`">
           {{ t('nodes.popup.how_to_allow_title') }}
         </h3>
-        <ul class="ml-4">
+        <ul :class="`${className}__list`">
           <li>{{ t('nodes.popup.how_to_allow_browser') }}</li>
           <li>{{ t('nodes.popup.how_to_allow_http_app') }}</li>
         </ul>
@@ -80,5 +80,17 @@ export default defineComponent({
 
 .http-protocol-info-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  &__paragraph {
+    margin-bottom: var(--a-space-4);
+  }
+
+  &__section-title {
+    margin-bottom: var(--a-space-2);
+  }
+
+  &__list {
+    padding-inline-start: var(--a-space-4);
+  }
 }
 </style>

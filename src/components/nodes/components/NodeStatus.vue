@@ -49,7 +49,7 @@
         <v-icon
           :icon="mdiHelpCircleOutline"
           size="small"
-          class="ml-1 cursor-pointer mb-0"
+          :class="classes.detailHelpIcon"
           @click="$emit('showHttpInfo')"
         />
       </span>
@@ -81,6 +81,7 @@ const classes = {
   statusTitleTextMuted: `${className}__status-title-text--muted`,
   statusText: `${className}__status-text`,
   statusTextValueNoWrap: `${className}__status-text-value--nowrap`,
+  detailHelpIcon: `${className}__detail-help-icon`,
   spinner: `${className}__spinner`,
   icon: `${className}__icon`,
   iconGreen: `${className}__icon--green`,
@@ -169,6 +170,12 @@ export default defineComponent({
       animation-duration: 2.2s !important;
     }
   }
+  &__detail-help-icon {
+    margin-inline-start: var(--a-space-1);
+    margin-bottom: 0;
+    cursor: pointer;
+  }
+
   &__text-ms {
     @include mixins.a-text-explanation-small();
   }

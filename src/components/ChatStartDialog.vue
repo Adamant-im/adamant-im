@@ -51,7 +51,7 @@
           </template>
         </v-text-field>
 
-        <v-col cols="12" class="text-center">
+        <v-col cols="12" :class="`${className}__actions`">
           <v-btn :class="[`${className}__btn-start-chat`, 'a-btn-primary']" @click="startChat">
             {{ $t('chats.start_chat') }}
           </v-btn>
@@ -252,6 +252,10 @@ export default {
 .chat-start-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
   @include inputActionMenu.a-input-action-menu();
+
+  &__actions {
+    text-align: center;
+  }
 
   &__btn-start-chat {
     margin-top: var(--a-secondary-dialog-action-margin-top);
