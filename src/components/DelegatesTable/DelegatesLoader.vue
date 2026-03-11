@@ -2,7 +2,12 @@
   <tr :class="classes.root">
     <td colspan="3">
       <v-row :class="classes.content" align="center" justify="center">
-        <v-progress-circular :class="classes.spinner" indeterminate color="primary" size="24" />
+        <v-progress-circular
+          :class="classes.spinner"
+          indeterminate
+          color="primary"
+          :size="COMMON_INLINE_SPINNER_SIZE"
+        />
         <div :class="classes.text" class="a-text-regular">
           {{
             waitingForConfirmation
@@ -17,6 +22,7 @@
 
 <script>
 import { defineComponent } from 'vue'
+import { COMMON_INLINE_SPINNER_SIZE } from '@/components/common/helpers/uiMetrics'
 
 export default defineComponent({
   props: {
@@ -35,7 +41,8 @@ export default defineComponent({
     }
 
     return {
-      classes
+      classes,
+      COMMON_INLINE_SPINNER_SIZE
     }
   }
 })

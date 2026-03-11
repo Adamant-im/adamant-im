@@ -271,7 +271,7 @@ watch(isIDBReady, (newVal) => {
 
     &--recent {
       position: absolute;
-      top: 20px;
+      top: var(--a-transactions-loading-item-offset-top);
     }
   }
 }

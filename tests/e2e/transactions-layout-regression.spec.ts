@@ -9,6 +9,24 @@ const testDetailsCrypto = 'DOGE'
 const testListCrypto = 'ADM'
 const testTransactionId = '723a8f9d1f0083b5da91c2aae1df6434d854828d8e9fac5f11b30f021af3ba86'
 
+const openTransactionListFromHome = async (page: Page, crypto: string) => {
+  await page.goto('/home', { waitUntil: 'domcontentloaded' })
+  await expect(page).toHaveURL(/\/home(?:\/)?$/)
+
+  const activeWalletTab = page.locator('[role="tab"][aria-selected="true"]').first()
+  const activeTabText = (await activeWalletTab.textContent())?.trim() ?? ''
+
+  if (!activeTabText.includes(crypto)) {
+    await page.getByRole('tab', { name: new RegExp(crypto, 'i') }).click()
+  }
+
+  const activeWalletCard = page.locator('.v-window-item--active .wallet-card').first()
+  await expect(activeWalletCard).toBeVisible()
+
+  await activeWalletCard.locator('.wallet-card__tile').nth(1).click()
+  await expect(page).toHaveURL(new RegExp(`/transactions/${crypto}$`))
+}
+
 const assertTransactionDetailsScreenGutter = async (page: Page) => {
   const firstRow = page.locator('.transaction-view__list .transaction-list-item').first()
   await expect(firstRow).toBeVisible()
@@ -99,11 +117,7 @@ test.describe('Transactions layout regressions', () => {
     await page.setViewportSize({ width: 1366, height: 900 })
     await loginWithPassphrase(page, testPassphrase!)
 
-    await page.goto(`/transactions/${testListCrypto}`, { waitUntil: 'domcontentloaded' })
-    test.skip(
-      !new RegExp(`/transactions/${testListCrypto}$`).test(page.url()),
-      'The configured test account redirects ADM list route to a different screen'
-    )
+    await openTransactionListFromHome(page, testListCrypto)
 
     const transactions = page.locator('.transaction-item__tile')
     const emptyState = page.getByText(/no transactions/i)
@@ -134,7 +148,7 @@ test.describe('Transactions layout regressions', () => {
     await expect(firstRow).toBeVisible()
 
     const metrics = await page.evaluate(() => {
-      const list = document.querySelector('.v-list') as HTMLElement | null
+      const list = document.querySelector('.transactions-view__list') as HTMLElement | null
       const row = document.querySelector('.transaction-item__tile') as HTMLElement | null
       const title = row?.querySelector('.v-list-item-title') as HTMLElement | null
       if (!list || !row || !title) {

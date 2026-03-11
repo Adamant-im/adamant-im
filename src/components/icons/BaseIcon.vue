@@ -77,7 +77,7 @@ export default {
   -ms-flex-align: center;
   align-items: center;
   display: inline-flex;
-  font-size: 24px;
+  font-size: var(--a-icon-base-font-size);
   justify-content: center;
   letter-spacing: normal;
   line-height: 1;
@@ -95,8 +95,8 @@ export default {
 }
 
 .icon--box-centered {
-  width: 40px;
-  height: 40px;
+  width: var(--a-icon-box-centered-size);
+  height: var(--a-icon-box-centered-size);
   display: flex;
   align-items: center;
   justify-content: center;

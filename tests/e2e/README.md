@@ -44,3 +44,5 @@ npm run test:e2e:report
 - Every run is stored under `playwright-report/YYYY-MM-DD HH:MM/`
 - If the same minute is reused, a numeric suffix is appended: `YYYY-MM-DD HH:MM (2)`
 - Default mode keeps only failure artifacts, detailed mode keeps artifacts for all tests
+- For transaction list routes like `/transactions/ADM` or `/transactions/DOGE`, open them through `Home -> Balance` for the target wallet
+- Do not use direct `page.goto('/transactions/:crypto')` for transaction list e2e flows because those routes can redirect to `/home`

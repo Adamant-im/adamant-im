@@ -250,6 +250,12 @@ For any non-trivial change, report exactly what was run.
 - `npm run typecheck`
 - `npm run test -- --run`
 
+### Playwright route notes
+
+- For transaction list screens like `/transactions/ADM` and `/transactions/DOGE`, do not navigate by direct URL in e2e tests
+- Open transaction lists through the user flow `Home -> Balance` for the target wallet, because direct `/transactions/:crypto` navigation may redirect to `/home`
+- Direct transaction details URLs like `/transactions/:crypto/:txId` are still valid when the details route is the thing being tested
+
 ### Build validation
 
 - Web PWA: `npm run build`

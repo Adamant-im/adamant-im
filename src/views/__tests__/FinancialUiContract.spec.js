@@ -26,6 +26,9 @@ const splitDisplayByNamePath = path.resolve(
 )
 const walletActionsPath = path.resolve(currentDir, '../../components/WalletCardListActions.vue')
 const commonUiMetricsPath = path.resolve(currentDir, '../../components/common/helpers/uiMetrics.ts')
+const transactionsViewPath = path.resolve(currentDir, '../Transactions.vue')
+const baseIconPath = path.resolve(currentDir, '../../components/icons/BaseIcon.vue')
+const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
 
 describe('Financial UI style contract', () => {
   it('uses tokenized spacing and typography in send funds form', () => {
@@ -160,5 +163,25 @@ describe('Financial UI style contract', () => {
     expect(content).not.toContain('min-height: 56px;')
     expect(content).not.toContain('padding-top: 8px;')
     expect(content).not.toContain('padding-bottom: 8px;')
+  })
+
+  it('uses shared tokens for transactions loading row offset and base icon sizing', () => {
+    const transactionsContent = readFileSync(transactionsViewPath, 'utf8')
+    const iconContent = readFileSync(baseIconPath, 'utf8')
+    const tokensContent = readFileSync(genericTokensPath, 'utf8')
+
+    expect(tokensContent).toContain('--a-transactions-loading-item-offset-top')
+    expect(tokensContent).toContain('--a-icon-base-font-size')
+    expect(tokensContent).toContain('--a-icon-box-centered-size')
+
+    expect(transactionsContent).toContain('top: var(--a-transactions-loading-item-offset-top);')
+    expect(transactionsContent).not.toContain('top: 20px;')
+
+    expect(iconContent).toContain('font-size: var(--a-icon-base-font-size);')
+    expect(iconContent).toContain('width: var(--a-icon-box-centered-size);')
+    expect(iconContent).toContain('height: var(--a-icon-box-centered-size);')
+    expect(iconContent).not.toContain('font-size: 24px;')
+    expect(iconContent).not.toContain('width: 40px;')
+    expect(iconContent).not.toContain('height: 40px;')
   })
 })

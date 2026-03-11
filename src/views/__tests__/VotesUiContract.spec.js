@@ -43,6 +43,7 @@ const delegatesNotFoundPath = path.resolve(
   '../../components/DelegatesTable/DelegatesNotFound.vue'
 )
 const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
+const commonUiMetricsPath = path.resolve(currentDir, '../../components/common/helpers/uiMetrics.ts')
 
 describe('Votes UI style contract', () => {
   it('uses shared settings table shell for delegates screen layout', () => {
@@ -125,6 +126,7 @@ describe('Votes UI style contract', () => {
     const tokensContent = readFileSync(genericTokensPath, 'utf8')
     const checkboxContent = readFileSync(delegateVoteCheckboxPath, 'utf8')
     const loaderContent = readFileSync(delegatesLoaderPath, 'utf8')
+    const metricsContent = readFileSync(commonUiMetricsPath, 'utf8')
 
     expect(tokensContent).toContain('--a-delegate-vote-checkbox-icon-size')
     expect(tokensContent).toContain('--a-delegates-loader-gap')
@@ -141,11 +143,14 @@ describe('Votes UI style contract', () => {
 
     expect(loaderContent).toContain('classes.content')
     expect(loaderContent).toContain('classes.spinner')
+    expect(loaderContent).toContain('COMMON_INLINE_SPINNER_SIZE')
     expect(loaderContent).toContain('gap: var(--a-delegates-loader-gap);')
     expect(loaderContent).toContain('padding-block: var(--a-delegates-loader-padding-block);')
     expect(loaderContent).toContain('line-height: var(--a-delegates-loader-line-height);')
+    expect(metricsContent).toContain('COMMON_INLINE_SPINNER_SIZE = 24')
     expect(loaderContent).not.toContain('class="mr-3"')
     expect(loaderContent).not.toContain('line-height: 1;')
+    expect(loaderContent).not.toContain('size="24"')
   })
 
   it('uses shared tokens for votes dialog width and delegates not-found spacing', () => {
