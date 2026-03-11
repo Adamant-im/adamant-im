@@ -3,7 +3,7 @@
     <v-card>
       <v-card-text :class="`${className}__body`">
         <div :class="`${className}__content`">
-          <div :style="{ cursor: 'pointer' }" @click="saveQrcode">
+          <div :class="`${className}__preview-action`" @click="saveQrcode">
             <QrcodeRenderer ref="qrcode" :text="text" :logo="logoURL" :opts="opts" />
           </div>
 
@@ -83,6 +83,10 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  &__preview-action {
+    cursor: pointer;
   }
 
   &__button {

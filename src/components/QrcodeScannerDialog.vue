@@ -45,7 +45,7 @@
           </div>
         </v-col>
         <v-col cols="12" :class="`${classes.root}__hint`">
-          <h3 class="a-text-regular text-center">
+          <h3 :class="['a-text-regular', `${classes.root}__hint-title`]">
             {{ t('scan.hold_your_device') }}
           </h3>
         </v-col>
@@ -58,32 +58,32 @@
         "
         justify="center"
         align="center"
-        :class="['text-center', `${classes.root}__state`]"
+        :class="`${classes.root}__state`"
         gap="0"
       >
         <v-col cols="12">
           <template v-if="cameraStatus === 'nocamera'">
-            <h3 class="a-text-header">
+            <h3 :class="`${classes.root}__state-title a-text-header`">
               {{ t('scan.no_camera_found') }}
             </h3>
-            <p class="a-text-regular mt-1 mb-0">
+            <p :class="`${classes.root}__state-message a-text-regular`">
               {{ t('scan.connect_camera') }}
             </p>
           </template>
           <template v-else-if="cameraStatus === 'noaccess'">
-            <h3 class="a-text-header">
+            <h3 :class="`${classes.root}__state-title a-text-header`">
               {{ t('scan.no_camera_access') }}
             </h3>
-            <p class="a-text-regular mt-1 mb-0">
+            <p :class="`${classes.root}__state-message a-text-regular`">
               {{ t('scan.grant_camera_permissions') }}
             </p>
           </template>
           <template v-else-if="cameraStatus === 'nostream'">
-            <h3 class="a-text-header">
+            <h3 :class="`${classes.root}__state-title a-text-header`">
               {{ t('scan.no_camera_stream') }}
             </h3>
             <p
-              class="a-text-regular mt-1 mb-0"
+              :class="`${classes.root}__state-message a-text-regular`"
               v-html="t('scan.no_stream_details', { noStreamDetails })"
             />
           </template>
@@ -256,6 +256,20 @@ export default defineComponent({
 
   &__hint {
     padding: var(--a-space-6);
+  }
+
+  &__hint-title,
+  &__state {
+    text-align: center;
+  }
+
+  &__state-title {
+    margin: 0;
+  }
+
+  &__state-message {
+    margin-top: var(--a-space-1);
+    margin-bottom: 0;
   }
 
   &__camera {

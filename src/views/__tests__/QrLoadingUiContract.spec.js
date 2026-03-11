@@ -67,11 +67,17 @@ describe('QR and loading UI contract', () => {
 
     expect(scannerContent).toContain('QRCODE_SCANNER_WAITING_SPINNER_SIZE')
     expect(scannerContent).toContain('`${classes.root}__waiting-spinner`')
+    expect(scannerContent).toContain('`${classes.root}__hint-title`')
+    expect(scannerContent).toContain('`${classes.root}__state-title')
+    expect(scannerContent).toContain('`${classes.root}__state-message')
     expect(scannerContent).toContain('var(--a-qrcode-scanner-camera-height)')
     expect(scannerContent).toContain('var(--a-qrcode-scanner-camera-select-padding-inline)')
     expect(scannerContent).not.toContain('size="32" class="ml-4"')
     expect(scannerContent).not.toContain('height: 300px;')
     expect(scannerContent).not.toContain('padding: 0 8px;')
+    expect(scannerContent).not.toContain('class="a-text-regular text-center"')
+    expect(scannerContent).not.toContain("['text-center', `${classes.root}__state`]")
+    expect(scannerContent).not.toContain('class="a-text-regular mt-1 mb-0"')
   })
 
   it('keeps chat placeholder logo and public-key spinner tokenized', () => {

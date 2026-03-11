@@ -90,6 +90,15 @@ describe('Secondary dialogs UI contract', () => {
       expect(content).not.toContain('margin-right: 8px;')
     }
 
+    expect(warningAddressesContent).toContain('`${className}__btn-block`')
+    expect(warningAddressesContent).not.toContain('class="text-center pa-0"')
+    expect(warningPartnerContent).toContain('`${className}__btn-block`')
+    expect(warningPartnerContent).not.toContain('class="text-center"')
+    expect(freeTokensContent).toContain('`${className}__btn-block`')
+    expect(freeTokensContent).not.toContain('class="text-center pa-0"')
+    expect(nodesOfflineContent).toContain('`${className}__btn-block`')
+    expect(nodesOfflineContent).not.toContain("[`${className}__btn-block`, 'text-center']")
+
     expect(warningAddressesContent).not.toContain('margin-top: 15px;')
     expect(warningAddressesContent).not.toContain('margin-bottom: 20px;')
     expect(warningAddressesContent).not.toContain('padding: 0 0 30px 0;')
@@ -199,10 +208,10 @@ describe('Secondary dialogs UI contract', () => {
     expect(qrcodeRendererContent).toContain('width="var(--a-secondary-dialog-width-qrcode)"')
     expect(qrcodeRendererContent).toContain('`${className}__body`')
     expect(qrcodeRendererContent).toContain('`${className}__content`')
+    expect(qrcodeRendererContent).toContain('`${className}__preview-action`')
     expect(qrcodeRendererContent).toContain('`${className}__button`')
     expect(qrcodeRendererContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
-    expect(qrcodeRendererContent).not.toContain('class="py-3"')
-    expect(qrcodeRendererContent).not.toContain('class="a-btn-primary mt-4 mb-2"')
+    expect(qrcodeRendererContent).not.toContain(':style="{ cursor: \'pointer\' }"')
     expect(qrcodeRendererContent).not.toContain('width="250"')
 
     expect(qrcodeScannerContent).toContain("const className = 'qrcode-scanner-dialog'")

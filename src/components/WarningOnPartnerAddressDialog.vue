@@ -30,7 +30,7 @@
         </div>
       </v-card-text>
 
-      <v-col cols="12" class="text-center">
+      <v-col cols="12" :class="`${className}__btn-block`">
         <v-btn :class="[`${className}__btn-hide`, 'a-btn-primary']" @click="hide()">
           <v-icon :class="`${className}__btn-icon`" :icon="mdiAlert" />
           <div :class="`${className}__btn-text`">
@@ -118,6 +118,11 @@ export default {
   &__highlight {
     background-color: rgba(map.get(colors.$adm-colors, 'attention'), 0.6);
   }
+
+  &__btn-block {
+    text-align: center;
+  }
+
   &__btn-hide {
     margin-top: var(--a-secondary-dialog-action-margin-top);
     margin-bottom: var(--a-secondary-dialog-action-margin-bottom);

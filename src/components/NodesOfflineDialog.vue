@@ -14,7 +14,7 @@
         ></div>
       </v-card-text>
 
-      <v-col cols="12" :class="[`${className}__btn-block`, 'text-center']">
+      <v-col cols="12" :class="`${className}__btn-block`">
         <v-btn
           @click="showDialog = false"
           :class="[`${className}__btn-free-tokens`, 'a-btn-primary']"

@@ -18,7 +18,7 @@
         </div>
       </v-card-text>
 
-      <v-col cols="12" class="text-center pa-0">
+      <v-col cols="12" :class="`${className}__btn-block`">
         <v-btn :class="[`${className}__btn-free-tokens`, 'a-btn-primary']" @click="getFreeTokens()">
           <v-icon :class="`${className}__btn-icon`" :icon="mdiGift" />
           <div :class="`${className}__btn-text`">
@@ -104,6 +104,11 @@ export default {
 
 .free-tokens-dialog {
   @include secondaryDialog.a-secondary-dialog-warning-frame();
+
+  &__btn-block {
+    padding: 0;
+    text-align: center;
+  }
 
   &__btn-free-tokens {
     margin-top: var(--a-secondary-dialog-action-margin-top);
