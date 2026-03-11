@@ -73,6 +73,10 @@ const reactionsPath = path.resolve(
   '../../components/AChat/AChatReactions/AChatReactions.vue'
 )
 const quotedMessagePath = path.resolve(currentDir, '../../components/AChat/QuotedMessage.vue')
+const filesPreviewItemPath = path.resolve(
+  currentDir,
+  '../../components/AChat/FilesPreview/FilesPreviewItem.vue'
+)
 const chatStylesPath = path.resolve(currentDir, '../../assets/styles/components/_chat.scss')
 const emojiPickerPath = path.resolve(currentDir, '../../components/EmojiPicker.vue')
 const iconBoxPath = path.resolve(currentDir, '../../components/icons/IconBox.vue')
@@ -92,6 +96,9 @@ describe('AChat UI style contract', () => {
     expect(content).toContain('CHAT_MODAL_FILE_MAX_WIDTH')
     expect(content).toContain('CHAT_MODAL_FILE_MAX_HEIGHT')
     expect(content).toContain('CHAT_MODAL_FILE_ICON_SIZE')
+    expect(content).toContain('CHAT_FILES_PREVIEW_REMOVE_ICON_SIZE')
+    expect(content).toContain('CHAT_REACTION_AVATAR_SIZE')
+    expect(content).toContain('QUOTED_MESSAGE_LOADING_SPINNER_SIZE')
     expect(commonMetricsContent).toContain('COMMON_ICON_SIZE = 24')
     expect(commonMetricsContent).toContain('COMMON_TRIGGER_ICON_SIZE = 28')
     expect(commonMetricsContent).toContain('COMMON_REACTION_MORE_BUTTON_SIZE = 32')
@@ -191,9 +198,11 @@ describe('AChat UI style contract', () => {
     expect(reactionsContent).toContain(
       'isIncomingMessage(props.transaction.senderId, store.state.address)'
     )
+    expect(reactionsContent).toContain('CHAT_REACTION_AVATAR_SIZE')
     expect(reactionsContent).toContain('[classes.left]: incomingMessage')
     expect(reactionsContent).toContain('isSelfChat.value')
     expect(reactionsContent).not.toContain('[classes.left]: transaction.senderId === partnerId')
+    expect(reactionsContent).not.toContain(':size="16"')
 
     expect(overlayContent).toContain(
       'resolveIncomingMessage(props.transaction.senderId, store.state.address)'
@@ -231,6 +240,7 @@ describe('AChat UI style contract', () => {
   it('tokenizes quoted message sizing and accent border styles', () => {
     const content = readFileSync(quotedMessagePath, 'utf8')
 
+    expect(content).toContain('QUOTED_MESSAGE_LOADING_SPINNER_SIZE')
     expect(content).toContain('--a-quoted-message-height')
     expect(content).toContain('--a-quoted-message-radius')
     expect(content).toContain('--a-quoted-message-padding-block')
@@ -242,6 +252,7 @@ describe('AChat UI style contract', () => {
     )
 
     expect(content).not.toContain('border-left: 3px solid')
+    expect(content).not.toContain('size="16"')
     expect(content).not.toMatch(/&__invalid-message\s*\{[^}]*font-style:\s*italic;/s)
     expect(content).not.toMatch(/&__message-not-found\s*\{[^}]*font-style:\s*italic;/s)
   })
@@ -275,11 +286,15 @@ describe('AChat UI style contract', () => {
     const metricsContent = readFileSync(uiMetricsPath, 'utf8')
     const modalFileContent = readFileSync(modalFilePath, 'utf8')
     const replyPreviewContent = readFileSync(replyPreviewPath, 'utf8')
+    const filesPreviewItemContent = readFileSync(filesPreviewItemPath, 'utf8')
     const tokensContent = readFileSync(genericTokensPath, 'utf8')
 
     expect(metricsContent).toContain('CHAT_MODAL_FILE_MAX_WIDTH = 500')
     expect(metricsContent).toContain('CHAT_MODAL_FILE_MAX_HEIGHT = 250')
     expect(metricsContent).toContain('CHAT_MODAL_FILE_ICON_SIZE = 128')
+    expect(metricsContent).toContain('CHAT_FILES_PREVIEW_REMOVE_ICON_SIZE = 18')
+    expect(metricsContent).toContain('QUOTED_MESSAGE_LOADING_SPINNER_SIZE = 16')
+    expect(metricsContent).toContain('CHAT_REACTION_AVATAR_SIZE = 16')
 
     expect(modalFileContent).toContain('CHAT_MODAL_FILE_MAX_WIDTH')
     expect(modalFileContent).toContain('CHAT_MODAL_FILE_MAX_HEIGHT')
@@ -291,7 +306,14 @@ describe('AChat UI style contract', () => {
     expect(modalFileContent).not.toContain('max-width: 220px;')
 
     expect(tokensContent).toContain('--a-chat-reply-preview-line-height')
+    expect(tokensContent).toContain('--a-chat-files-preview-file-name-font-size')
     expect(replyPreviewContent).toContain('line-height: var(--a-chat-reply-preview-line-height);')
+    expect(filesPreviewItemContent).toContain('CHAT_FILES_PREVIEW_REMOVE_ICON_SIZE')
+    expect(filesPreviewItemContent).toContain(
+      'font-size: var(--a-chat-files-preview-file-name-font-size);'
+    )
+    expect(filesPreviewItemContent).not.toContain('size="18"')
+    expect(filesPreviewItemContent).not.toContain('font-size: 14px;')
     expect(replyPreviewContent).not.toContain('line-height: 20px;')
   })
 

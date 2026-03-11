@@ -203,7 +203,7 @@ function fetchCryptoAddress(selectedCrypto: string): Promise<any> {
   }
 
   &__list {
-    min-width: 200px;
+    min-width: calc((var(--a-control-size-lg) * 4) + var(--a-space-2));
     max-height: 100vh;
 
     :deep(.v-list-item-title) {

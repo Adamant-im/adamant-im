@@ -200,7 +200,11 @@ describe('Chats UI style contract', () => {
     const actionsContent = readFileSync(chatMessageActionsPath, 'utf8')
 
     expect(menuContent).toContain('COMMON_TRIGGER_ICON_SIZE')
+    expect(menuContent).toContain(
+      'min-width: calc((var(--a-control-size-lg) * 4) + var(--a-space-2));'
+    )
     expect(menuContent).not.toContain('size="28"')
+    expect(menuContent).not.toContain('min-width: 200px;')
 
     expect(emojisContent).toContain('COMMON_TRIGGER_ICON_SIZE')
     expect(emojisContent).not.toContain('position="absolute"')

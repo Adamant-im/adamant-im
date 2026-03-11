@@ -128,20 +128,20 @@ const doubleShort = () => vibrate.doubleShort()
 @use 'vuetify/settings';
 
 .dev-vibrations-view {
-  padding: 24px;
+  padding: var(--a-dev-screen-padding-inline);
 
   @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-    padding: 16px;
+    padding: var(--a-dev-screen-padding-inline-mobile);
   }
 
   &__section {
-    margin-bottom: 32px;
+    margin-bottom: var(--a-dev-screen-section-gap);
   }
 
   &__section-title {
     @include mixins.a-text-regular-enlarged();
-    margin-bottom: 16px;
-    padding-bottom: 8px;
+    margin-bottom: var(--a-dev-screen-section-title-gap);
+    padding-bottom: var(--a-dev-screen-section-title-padding-bottom);
     border-bottom: 1px solid;
   }
 

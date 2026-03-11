@@ -10,7 +10,12 @@
         v-else
       />
 
-      <v-icon size="18" :icon="mdiClose" @click="$emit('remove')" :class="classes.removeIcon" />
+      <v-icon
+        :size="CHAT_FILES_PREVIEW_REMOVE_ICON_SIZE"
+        :icon="mdiClose"
+        @click="$emit('remove')"
+        :class="classes.removeIcon"
+      />
     </div>
 
     <p :class="classes.fileName">{{ file.name }}</p>
@@ -20,6 +25,7 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 
+import { CHAT_FILES_PREVIEW_REMOVE_ICON_SIZE } from '@/components/AChat/helpers/uiMetrics'
 import { extractFileExtension, formatFileExtension, FileData } from '@/lib/files'
 import IconFile from '@/components/icons/common/IconFile.vue'
 import { mdiClose } from '@mdi/js'
@@ -56,6 +62,7 @@ export default defineComponent({
       classes,
       extension,
       previewSize,
+      CHAT_FILES_PREVIEW_REMOVE_ICON_SIZE,
       mdiClose
     }
   }
@@ -83,7 +90,7 @@ export default defineComponent({
   }
 
   &__file-name {
-    font-size: 14px;
+    font-size: var(--a-chat-files-preview-file-name-font-size);
     font-weight: 400;
     white-space: nowrap;
     overflow: hidden;

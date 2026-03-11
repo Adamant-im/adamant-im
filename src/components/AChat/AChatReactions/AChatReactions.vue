@@ -15,7 +15,7 @@
       :partner-id="partnerId"
     >
       <template #avatar v-if="showPartnerReactionAvatar && reaction.senderId === partnerId">
-        <chat-avatar :user-id="partnerId" :size="16" />
+        <chat-avatar :user-id="partnerId" :size="CHAT_REACTION_AVATAR_SIZE" />
       </template>
     </a-chat-reaction>
   </div>
@@ -29,6 +29,7 @@ import { computed, PropType, watch } from 'vue'
 import { useStore } from 'vuex'
 import { vibrate } from '@/lib/vibrate'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import { CHAT_REACTION_AVATAR_SIZE } from '@/components/AChat/helpers/uiMetrics'
 import AChatReaction from './AChatReaction.vue'
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 

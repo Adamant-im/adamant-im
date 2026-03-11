@@ -5,7 +5,7 @@
       [classes.nonClickable]: !!errorCode
     }"
   >
-    <v-progress-circular v-if="loading" indeterminate size="16" />
+    <v-progress-circular v-if="loading" indeterminate :size="QUOTED_MESSAGE_LOADING_SPINNER_SIZE" />
 
     <div v-else-if="errorCode === ErrorCodes.INVALID_MESSAGE" :class="classes.invalidMessage">
       {{ '{ ' + t('chats.invalid_message') + ' }' }}
@@ -46,6 +46,7 @@ import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { formatChatPreviewMessage } from '@/lib/markdown'
 import { ChatMessageTransaction } from '@/lib/schema/client/api'
 import { logger } from '@/utils/devTools/logger'
+import { QUOTED_MESSAGE_LOADING_SPINNER_SIZE } from '@/components/AChat/helpers/uiMetrics'
 
 const className = 'quoted-message'
 const classes = {
@@ -176,6 +177,7 @@ export default defineComponent({
       currencyFormatter,
       errorCode,
       ErrorCodes,
+      QUOTED_MESSAGE_LOADING_SPINNER_SIZE,
       cryptoTransferLabel,
       messageLabel
     }

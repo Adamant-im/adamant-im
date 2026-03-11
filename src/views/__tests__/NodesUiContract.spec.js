@@ -149,8 +149,10 @@ describe('Nodes UI style contract', () => {
     expect(versionContent).not.toContain('opacity: 0.7;')
 
     expect(admRowContent).toContain('line-height: var(--a-font-size-sm);')
+    expect(admRowContent).toContain('max-width: var(--a-node-compact-status-column-max-width);')
     expect(ipfsRowContent).toContain('line-height: var(--a-font-size-sm);')
     expect(admRowContent).not.toContain('line-height: 14px;')
+    expect(admRowContent).not.toContain('max-width: 84px;')
     expect(ipfsRowContent).not.toContain('line-height: 14px;')
   })
 })

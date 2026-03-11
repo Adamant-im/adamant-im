@@ -201,13 +201,13 @@ const mobileMenuProps = computed(() => {
 
 .dev-wallets-view {
   &__section {
-    margin-bottom: 32px;
+    margin-bottom: var(--a-dev-screen-section-gap);
   }
 
   &__section-title {
     @include mixins.a-text-regular-enlarged();
-    margin-bottom: 16px;
-    padding-bottom: 8px;
+    margin-bottom: var(--a-dev-screen-section-title-gap);
+    padding-bottom: var(--a-dev-screen-section-title-padding-bottom);
     border-bottom: 1px solid;
   }
 
@@ -219,13 +219,13 @@ const mobileMenuProps = computed(() => {
     width: 100%;
 
     :deep(.v-card-title) {
-      padding-bottom: 8px;
+      padding-bottom: var(--a-dev-screen-card-title-padding-bottom);
       word-break: break-word;
     }
 
     :deep(.v-card-text) {
-      padding-top: 8px;
-      max-height: 400px;
+      padding-top: var(--a-dev-screen-card-text-padding-top);
+      max-height: var(--a-dev-screen-card-text-max-height);
       overflow-y: auto;
     }
   }
@@ -233,24 +233,24 @@ const mobileMenuProps = computed(() => {
   &__json-output {
     background: transparent;
     font-family: 'Courier New', monospace;
-    font-size: 12px;
+    font-size: var(--a-dev-screen-code-font-size);
     line-height: 1.4;
     white-space: pre-wrap;
     word-break: break-word;
     margin: 0;
-    padding: 12px;
-    border-radius: 4px;
+    padding: var(--a-dev-screen-code-padding);
+    border-radius: var(--a-dev-screen-code-border-radius);
     border: 1px solid;
-    max-height: 300px;
+    max-height: var(--a-dev-screen-code-max-height);
     overflow-y: auto;
 
     @media #{map.get(settings.$display-breakpoints, 'md-and-down')} {
-      font-size: 11px;
+      font-size: var(--a-dev-screen-code-font-size-md);
     }
 
     @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-      font-size: 10px;
-      padding: 8px;
+      font-size: var(--a-dev-screen-code-font-size-sm);
+      padding: var(--a-dev-screen-code-padding-mobile);
     }
   }
 
