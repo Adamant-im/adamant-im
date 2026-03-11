@@ -141,7 +141,7 @@ export default defineComponent({
 .a-chat-actions-overlay {
   --a-chat-actions-overlay-transition-duration: 50ms;
   --a-chat-actions-overlay-transition-ease: var(--a-ease-standard);
-  --a-chat-actions-overlay-reaction-gap: var(--a-space-4);
+  --a-chat-actions-overlay-reaction-gap: var(--a-space-1);
   --a-chat-actions-overlay-reaction-height: 46px;
   position: absolute;
   top: 0;

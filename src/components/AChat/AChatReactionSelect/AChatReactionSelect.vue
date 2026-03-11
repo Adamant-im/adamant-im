@@ -112,6 +112,8 @@ export default defineComponent({
   border-radius: var(--a-radius-md);
   cursor: pointer;
   user-select: none;
+  background-color: rgb(var(--v-theme-surface));
+  border: var(--a-border-width-thin) solid rgba(var(--v-border-color), var(--v-border-opacity));
 
   &__predefined-reactions {
     display: flex;
@@ -120,27 +122,23 @@ export default defineComponent({
   }
 
   &__more-button {
+    color: inherit;
+    background-color: transparent !important;
   }
 }
 
 .v-theme--light {
   .a-chat-reaction-select {
-    background-color: map.get(settings.$shades, 'white');
-    border: 1px solid map.get(colors.$adm-colors, 'secondary2');
-
     &__more-button {
       color: map.get(settings.$shades, 'black');
-      background-color: map.get(colors.$adm-colors, 'grey-transparent');
     }
   }
 }
 
 .v-theme--dark {
   .a-chat-reaction-select {
-    background-color: map.get(colors.$adm-colors, 'regular');
-
     &__more-button {
-      background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
+      color: map.get(settings.$shades, 'white');
     }
   }
 }

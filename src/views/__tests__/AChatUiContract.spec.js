@@ -133,13 +133,24 @@ describe('AChat UI style contract', () => {
     expect(dropdownContent).toContain(':max-width="CHAT_ACTIONS_DROPDOWN_MAX_WIDTH"')
     expect(dropdownContent).toContain(':size="CHAT_ACTIONS_DROPDOWN_BUTTON_SIZE"')
     expect(dropdownContent).toContain(':size="CHAT_ACTIONS_DROPDOWN_ICON_SIZE"')
+    expect(dropdownContent).toContain(':class="classes.root"')
+    expect(dropdownContent).toContain('transition="fade-transition"')
     expect(dropdownContent).toContain('--a-chat-message-actions-dropdown-top-gap')
+    expect(dropdownContent).toContain('position: relative;')
+    expect(dropdownContent).toContain('align-items: flex-end;')
+    expect(dropdownContent).toContain('overflow: visible;')
+    expect(dropdownContent).toContain('justify-content: flex-end;')
+    expect(dropdownContent).not.toContain(
+      '--a-chat-message-actions-dropdown-top-gap: var(--a-space-2);'
+    )
 
     expect(listContent).toContain('--a-chat-message-actions-list-offset-top')
     expect(menuContent).toContain('--a-chat-message-actions-menu-overlay-inset-inline')
     expect(overlayContent).toContain('--a-chat-actions-overlay-reaction-height')
     expect(overlayContent).toContain('--a-chat-actions-overlay-reaction-gap')
     expect(overlayContent).toContain('--a-chat-actions-overlay-transition-duration')
+    expect(overlayContent).not.toContain('--a-chat-actions-overlay-reaction-gap: var(--a-space-4);')
+    expect(overlayContent).not.toContain('--a-chat-actions-overlay-reaction-gap: var(--a-space-2);')
   })
 
   it('uses shared utility icon metrics in reaction select, reply preview and files preview', () => {
@@ -149,8 +160,16 @@ describe('AChat UI style contract', () => {
 
     expect(reactionSelectContent).toContain('COMMON_REACTION_MORE_BUTTON_SIZE')
     expect(reactionSelectContent).toContain('COMMON_ICON_SIZE')
+    expect(reactionSelectContent).toContain('background-color: rgb(var(--v-theme-surface));')
+    expect(reactionSelectContent).toContain(
+      'border: var(--a-border-width-thin) solid rgba(var(--v-border-color), var(--v-border-opacity));'
+    )
+    expect(reactionSelectContent).toContain('background-color: transparent !important;')
     expect(reactionSelectContent).not.toContain(':size="32"')
     expect(reactionSelectContent).not.toContain(':size="24"')
+    expect(reactionSelectContent).not.toContain(
+      "background-color: map.get(colors.$adm-colors, 'regular');"
+    )
 
     expect(replyPreviewContent).toContain('COMMON_ICON_SIZE')
     expect(replyPreviewContent).not.toContain('size="24"')
@@ -366,6 +385,24 @@ describe('AChat UI style contract', () => {
     expect(emojiPickerContent).toContain('var(--a-emoji-picker-radius)')
     expect(emojiPickerContent).toContain('var(--a-emoji-picker-size)')
     expect(emojiPickerContent).toContain('var(--a-emoji-picker-border-width)')
+    expect(emojiPickerContent).toContain('ref="root"')
+    expect(emojiPickerContent).toContain("alignment = ref<'start' | 'end'>('start')")
+    expect(emojiPickerContent).toContain('const updateAlignment = async () => {')
+    expect(emojiPickerContent).toContain('startRect.right > window.innerWidth - VIEWPORT_PADDING')
+    expect(emojiPickerContent).toContain("verticalAlignment = ref<'up' | 'down'>('up')")
+    expect(emojiPickerContent).toContain("isPlacementResolved = ref(props.position !== 'absolute')")
+    expect(emojiPickerContent).toContain('upperRect.top < VIEWPORT_PADDING')
+    expect(emojiPickerContent).toContain("window.addEventListener('resize', updateAlignment)")
+    expect(emojiPickerContent).toContain("window.removeEventListener('resize', updateAlignment)")
+    expect(emojiPickerContent).toContain(
+      "[classes.positionPending]: position === 'absolute' && !isPlacementResolved"
+    )
+    expect(emojiPickerContent).toContain("[classes.alignEnd]: alignment === 'end'")
+    expect(emojiPickerContent).toContain("[classes.dropDown]: verticalAlignment === 'down'")
+    expect(emojiPickerContent).not.toContain('if (!overflowsRight) {\n    return\n  }')
+    expect(emojiPickerContent).toContain('&--position-pending {')
+    expect(emojiPickerContent).toContain('&--align-end {')
+    expect(emojiPickerContent).toContain('&--drop-down {')
     expect(emojiPickerContent).not.toContain('border-radius: 8px;')
     expect(emojiPickerContent).not.toContain('width: 264px;')
     expect(emojiPickerContent).not.toContain('height: 264px;')

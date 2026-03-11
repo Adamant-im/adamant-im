@@ -4,6 +4,7 @@
     :max-width="CHAT_ACTIONS_DROPDOWN_MAX_WIDTH"
     :close-on-content-click="false"
     :model-value="open"
+    transition="fade-transition"
     @update:model-value="toggleMenu"
   >
     <template #activator="{ props }">
@@ -20,7 +21,7 @@
       </v-btn>
     </template>
 
-    <div>
+    <div :class="classes.root">
       <div :class="classes.top">
         <slot name="top" />
       </div>
@@ -83,9 +84,18 @@ export default defineComponent({
 
 <style lang="scss">
 .message-actions-dropdown {
-  --a-chat-message-actions-dropdown-top-gap: var(--a-space-2);
+  --a-chat-message-actions-dropdown-top-gap: 0px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  overflow: visible;
 
   &__top {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
     margin-top: var(--a-chat-message-actions-dropdown-top-gap);
   }
 }

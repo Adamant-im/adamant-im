@@ -1,8 +1,13 @@
 <template>
   <div
+    ref="root"
     :class="{
       [classes.root]: true,
       [classes.positionAbsolute]: position === 'absolute',
+      [classes.positionPending]: position === 'absolute' && !isPlacementResolved,
+      [classes.alignStart]: alignment === 'start',
+      [classes.alignEnd]: alignment === 'end',
+      [classes.dropDown]: verticalAlignment === 'down',
       'elevation-9': elevation
     }"
   >
@@ -12,7 +17,7 @@
 
 <script setup lang="ts">
 import { useTheme } from '@/hooks/useTheme'
-import { ref, onMounted, PropType } from 'vue'
+import { ref, onBeforeUnmount, onMounted, nextTick, PropType } from 'vue'
 import axios from 'axios'
 import { Picker } from 'emoji-mart'
 import { useIsMobile } from '@/hooks/useIsMobile'
@@ -21,10 +26,14 @@ import { logger } from '@/utils/devTools/logger'
 const className = 'emoji-picker'
 const classes = {
   root: className,
-  positionAbsolute: `${className}--position-absolute`
+  positionAbsolute: `${className}--position-absolute`,
+  positionPending: `${className}--position-pending`,
+  alignStart: `${className}--align-start`,
+  alignEnd: `${className}--align-end`,
+  dropDown: `${className}--drop-down`
 }
 
-defineProps({
+const props = defineProps({
   elevation: {
     type: Boolean
   },
@@ -39,8 +48,63 @@ const emit = defineEmits<{
 
 const isMobile = useIsMobile()
 const { isDarkTheme } = useTheme()
+const root = ref<HTMLElement | null>(null)
 const container = ref<HTMLElement>()
 const picker = ref<Picker>()
+const alignment = ref<'start' | 'end'>('start')
+const verticalAlignment = ref<'up' | 'down'>('up')
+const isPlacementResolved = ref(props.position !== 'absolute')
+const VIEWPORT_PADDING = 8
+
+const waitForLayoutFrame = async () => {
+  await nextTick()
+  await new Promise((resolve) => requestAnimationFrame(() => resolve(undefined)))
+}
+
+const updateAlignment = async () => {
+  if (props.position !== 'absolute' || !root.value) {
+    alignment.value = 'start'
+    verticalAlignment.value = 'up'
+    isPlacementResolved.value = true
+    return
+  }
+
+  isPlacementResolved.value = false
+  alignment.value = 'start'
+  verticalAlignment.value = 'up'
+  await waitForLayoutFrame()
+
+  const startRect = root.value.getBoundingClientRect()
+  const overflowsRight = startRect.right > window.innerWidth - VIEWPORT_PADDING
+
+  if (overflowsRight) {
+    alignment.value = 'end'
+    await waitForLayoutFrame()
+
+    const endRect = root.value.getBoundingClientRect()
+    if (endRect.left < VIEWPORT_PADDING && startRect.left >= VIEWPORT_PADDING) {
+      alignment.value = 'start'
+    }
+  }
+
+  await waitForLayoutFrame()
+
+  const upperRect = root.value.getBoundingClientRect()
+  if (upperRect.top < VIEWPORT_PADDING) {
+    verticalAlignment.value = 'down'
+    await waitForLayoutFrame()
+
+    const lowerRect = root.value.getBoundingClientRect()
+    if (
+      lowerRect.bottom > window.innerHeight - VIEWPORT_PADDING &&
+      upperRect.bottom <= window.innerHeight - VIEWPORT_PADDING
+    ) {
+      verticalAlignment.value = 'up'
+    }
+  }
+
+  isPlacementResolved.value = true
+}
 
 onMounted(async () => {
   const { data } = await axios.get(`${import.meta.env.BASE_URL}emojis/data.json`)
@@ -59,9 +123,16 @@ onMounted(async () => {
 
   if (container.value && picker.value) {
     container.value.appendChild(picker.value as unknown as Node)
+    await updateAlignment()
   } else {
     logger.log('EmojiPicker', 'warn', 'Element not found')
   }
+
+  window.addEventListener('resize', updateAlignment)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateAlignment)
 })
 </script>
 
@@ -76,6 +147,29 @@ onMounted(async () => {
     // Fix for Chrome on iOS. Don't touch it
     position: absolute;
     bottom: 0;
+    left: 0;
+    transform-origin: bottom left;
+  }
+
+  &--position-pending {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &--align-end {
+    left: auto;
+    right: 0;
+    transform-origin: bottom right;
+  }
+
+  &--drop-down {
+    top: 0;
+    bottom: auto;
+    transform-origin: top left;
+  }
+
+  &--align-end#{&}--drop-down {
+    transform-origin: top right;
   }
 
   em-emoji-picker {
