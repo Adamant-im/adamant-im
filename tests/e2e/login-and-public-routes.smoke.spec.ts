@@ -65,8 +65,8 @@ test.describe('Public UI smoke checks', () => {
   test('renders public Vibro route', async ({ page }, testInfo) => {
     await page.goto('/vibro')
 
-    await expect(page.locator('input.input')).toBeVisible()
-    await expect(page.getByRole('button', { name: /very short/i })).toBeVisible()
+    await expect(page.locator('.vibro-view__custom-input')).toBeVisible()
+    await expect(page.locator('.vibro-view__preset-button').first()).toBeVisible()
 
     await attachPageScreenshot(page, testInfo, 'vibro-page')
   })
