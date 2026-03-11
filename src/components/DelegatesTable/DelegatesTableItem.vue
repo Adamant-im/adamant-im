@@ -20,7 +20,7 @@
 
   <!-- eslint-disable vue/no-multiple-template-root -->
   <tr v-if="detailsExpanded" :class="classes.details">
-    <td colspan="3" class="pa-0">
+    <td colspan="3" :class="classes.detailsCell">
       <delegate-details-expander :delegate="delegate" />
     </td>
   </tr>
@@ -64,6 +64,7 @@ export default {
     const classes = {
       item: className,
       details: `${className}__details`,
+      detailsCell: `${className}__details-cell`,
       td: `${className}__td`,
       tdUsername: `${className}__td-username`
     }
@@ -113,6 +114,10 @@ export default {
 
   &__td-username {
     cursor: pointer;
+  }
+
+  &__details-cell {
+    padding: 0 !important;
   }
 }
 

@@ -41,7 +41,7 @@
         </v-list-item>
       </v-list>
 
-      <h3 v-else class="a-text-caption text-center mt-6">
+      <h3 v-else :class="`${className}__empty-state a-text-caption`">
         {{ t('transaction.no_transactions') }}
       </h3>
     </template>
@@ -265,6 +265,7 @@ watch(isIDBReady, (newVal) => {
 <style lang="scss" scoped>
 .transactions-view {
   --a-transactions-loading-item-padding-inline: var(--a-screen-padding-inline);
+  --a-transactions-empty-state-margin-top: var(--a-space-6);
 
   &__loading-item {
     padding-inline: var(--a-transactions-loading-item-padding-inline);
@@ -273,6 +274,11 @@ watch(isIDBReady, (newVal) => {
       position: absolute;
       top: var(--a-transactions-loading-item-offset-top);
     }
+  }
+
+  &__empty-state {
+    margin-top: var(--a-transactions-empty-state-margin-top);
+    text-align: center;
   }
 }
 </style>

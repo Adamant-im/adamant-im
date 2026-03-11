@@ -38,7 +38,7 @@
 
           <v-btn
             :disabled="reviewButtonDisabled"
-            class="a-btn-primary ma-2"
+            class="a-btn-primary"
             :class="`${className}__review-button`"
             @click="showConfirmationDialog"
           >
@@ -220,6 +220,7 @@ const showConfirmationDialog = () => {
 
 .delegates-view {
   position: relative;
+  --a-delegates-review-button-margin: var(--a-space-2);
 
   &__info {
     padding: var(--a-space-5) 0;
@@ -236,6 +237,7 @@ const showConfirmationDialog = () => {
   }
   &__review-button {
     margin-left: auto !important;
+    margin: var(--a-delegates-review-button-margin);
   }
   &__pagination {
     margin-inline-start: calc(var(--a-space-4) * -1);

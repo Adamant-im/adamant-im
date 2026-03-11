@@ -175,7 +175,10 @@ describe('Financial UI style contract', () => {
     expect(tokensContent).toContain('--a-icon-box-centered-size')
 
     expect(transactionsContent).toContain('top: var(--a-transactions-loading-item-offset-top);')
+    expect(transactionsContent).toContain('--a-transactions-empty-state-margin-top')
+    expect(transactionsContent).toContain('&__empty-state')
     expect(transactionsContent).not.toContain('top: 20px;')
+    expect(transactionsContent).not.toContain('class="a-text-caption text-center mt-6"')
 
     expect(iconContent).toContain('font-size: var(--a-icon-base-font-size);')
     expect(iconContent).toContain('width: var(--a-icon-box-centered-size);')

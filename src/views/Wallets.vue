@@ -23,7 +23,7 @@
         <v-list-item
           v-if="!filteredWallets.length"
           :title="t('wallets.coins_not_found_title')"
-          class="text-center"
+          :class="classes.emptyState"
         ></v-list-item>
       </div>
 
@@ -57,7 +57,8 @@ const className = 'wallets-view'
 const classes = {
   root: className,
   layout: `${className}__layout`,
-  draggableList: `${className}__draggable-list`
+  draggableList: `${className}__draggable-list`,
+  emptyState: `${className}__empty-state`
 }
 
 const dragOptions = {
@@ -171,6 +172,10 @@ onBeforeUnmount(() => {
   &__review {
     padding-top: var(--a-wallets-review-padding-block) !important;
     padding-bottom: var(--a-wallets-review-padding-block) !important;
+  }
+
+  &__empty-state {
+    text-align: center;
   }
 }
 

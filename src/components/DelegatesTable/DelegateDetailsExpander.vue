@@ -17,7 +17,7 @@
         </template>
 
         <template #append>
-          <v-list-item-title class="a-text-explanation text-right">
+          <v-list-item-title class="a-text-explanation" :class="classes.value">
             {{ item.value }}
           </v-list-item-title>
         </template>
@@ -47,7 +47,8 @@ export default defineComponent({
       root: className,
       list: `${className}__list`,
       listItem: `${className}__list-item`,
-      address: `${className}__address`
+      address: `${className}__address`,
+      value: `${className}__value`
     }
 
     const { t } = useI18n()
@@ -99,6 +100,10 @@ export default defineComponent({
     a {
       @include mixins.a-text-active();
     }
+  }
+
+  &__value {
+    text-align: right;
   }
 }
 
