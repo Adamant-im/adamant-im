@@ -50,7 +50,7 @@ export default defineComponent({
 .message-actions-list {
   --a-chat-message-actions-list-padding-block: 0;
   --a-chat-message-actions-list-radius: var(--a-radius-sm);
-  --a-chat-message-actions-list-offset-top: var(--a-space-4);
+  --a-chat-message-actions-list-offset-top: var(--a-space-2);
   padding-top: var(--a-chat-message-actions-list-padding-block);
   padding-bottom: var(--a-chat-message-actions-list-padding-block);
   border-radius: var(--a-chat-message-actions-list-radius);
