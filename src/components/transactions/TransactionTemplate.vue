@@ -30,7 +30,7 @@
             v-if="statusUpdatable || rotateAnimation"
             :class="{ [`${className}__update-status-icon--rotate`]: rotateAnimation }"
             :icon="mdiRefresh"
-            size="20"
+            :size="COMMON_COMPACT_ICON_SIZE"
             @click="updateStatus()"
           />
         </v-list-item-title>
@@ -44,7 +44,7 @@
         <v-icon
           v-if="transactionStatus === 'INVALID'"
           :icon="mdiAlertOutline"
-          size="20"
+          :size="COMMON_COMPACT_ICON_SIZE"
           style="color: #f8a061 !important"
         />
         {{ formattedTransactionStatus
@@ -133,7 +133,7 @@
       :title="t('transaction.explorer')"
       @click="openInExplorer"
     >
-      <v-icon :icon="mdiChevronRight" size="20" />
+      <v-icon :icon="mdiChevronRight" :size="COMMON_COMPACT_ICON_SIZE" />
     </TransactionListItem>
 
     <v-divider v-if="partner && !ifComeFromChat" />
@@ -143,7 +143,10 @@
       :title="hasMessages ? t('transaction.continueChat') : t('transaction.startChat')"
       @click="openChat"
     >
-      <v-icon :icon="hasMessages ? mdiComment : mdiCommentOutline" size="20" />
+      <v-icon
+        :icon="hasMessages ? mdiComment : mdiCommentOutline"
+        :size="COMMON_COMPACT_ICON_SIZE"
+      />
     </TransactionListItem>
   </v-list>
 </template>
@@ -183,6 +186,7 @@ import {
   splitDisplayValueByName,
   type SplitDisplayValue
 } from '@/components/transactions/utils/splitDisplayValueByName'
+import { COMMON_COMPACT_ICON_SIZE } from '@/components/common/helpers/uiMetrics'
 
 const className = 'transaction-view'
 

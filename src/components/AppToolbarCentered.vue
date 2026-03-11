@@ -14,7 +14,7 @@
             class="spinner"
             v-show="consideredOffline && hasSpinner"
             indeterminate
-            :size="24"
+            :size="COMMON_INLINE_SPINNER_SIZE"
           />
         </v-toolbar>
       </container>
@@ -28,6 +28,7 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useConsiderOffline } from '@/hooks/useConsiderOffline'
 import { filterRouteParams } from '@/router/filterRouteParams'
+import { COMMON_INLINE_SPINNER_SIZE } from '@/components/common/helpers/uiMetrics'
 
 type Props = {
   title?: string

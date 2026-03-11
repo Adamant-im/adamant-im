@@ -25,23 +25,28 @@ const splitDisplayByNamePath = path.resolve(
   '../../components/transactions/utils/splitDisplayValueByName.ts'
 )
 const walletActionsPath = path.resolve(currentDir, '../../components/WalletCardListActions.vue')
+const commonUiMetricsPath = path.resolve(currentDir, '../../components/common/helpers/uiMetrics.ts')
 
 describe('Financial UI style contract', () => {
   it('uses tokenized spacing and typography in send funds form', () => {
     const content = readFileSync(sendFundsFormPath, 'utf8')
     const fakeInputContent = readFileSync(inputStylesPath, 'utf8')
     const menuMixinContent = readFileSync(inputActionMenuMixinPath, 'utf8')
+    const metricsContent = readFileSync(commonUiMetricsPath, 'utf8')
 
     expect(content).toContain('--a-send-funds-button-margin-top')
     expect(content).toContain('--a-send-funds-amount-label-size')
     expect(content).toContain('--a-send-funds-confirm-spinner-gap')
+    expect(content).toContain('COMMON_INLINE_SPINNER_SIZE')
     expect(content).toContain('inputActionMenu.a-input-action-menu()')
     expect(content).toContain('__menu-list')
     expect(content).toContain('__menu-item')
     expect(content).toContain('__menu-item-title')
     expect(content).toContain('var(--a-space-4)')
     expect(content).toContain('var(--a-font-size-sm)')
+    expect(metricsContent).toContain('COMMON_INLINE_SPINNER_SIZE = 24')
     expect(content).not.toContain('class="mr-4"')
+    expect(content).not.toContain('size="24"')
     expect(content).not.toContain('margin-top: 15px;')
 
     expect(menuMixinContent).toContain('@mixin a-input-action-menu()')
@@ -69,8 +74,10 @@ describe('Financial UI style contract', () => {
 
   it('keeps stable row sizing in transaction template screens', () => {
     const content = readFileSync(transactionTemplatePath, 'utf8')
+    const metricsContent = readFileSync(commonUiMetricsPath, 'utf8')
 
     expect(content).toContain(':class="[className, `${className}__list`]"')
+    expect(content).toContain('COMMON_COMPACT_ICON_SIZE')
     expect(content).toContain('--a-transaction-view-row-min-height')
     expect(content).toContain('--a-transaction-view-row-padding-block')
     expect(content).toContain('--a-transaction-view-row-padding-inline')
@@ -82,11 +89,13 @@ describe('Financial UI style contract', () => {
     expect(content).toContain('padding-bottom: var(--a-transaction-view-row-padding-block);')
     expect(content).toContain('padding-inline: var(--a-transaction-view-row-padding-inline);')
     expect(content).toContain('font-size: var(--a-transaction-view-status-font-size);')
+    expect(metricsContent).toContain('COMMON_COMPACT_ICON_SIZE = 20')
     expect(content).not.toContain('min-height: 56px;')
     expect(content).not.toContain('padding-top: 8px;')
     expect(content).not.toContain('padding-bottom: 8px;')
     expect(content).not.toContain('padding-inline: 24px;')
     expect(content).not.toContain('font-size: 14px;')
+    expect(content).not.toContain('size="20"')
   })
 
   it('keeps transaction list item text styling in stylesheet, not inline attributes', () => {

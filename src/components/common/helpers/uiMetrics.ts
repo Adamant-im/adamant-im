@@ -1,0 +1,4 @@
+export const COMMON_ICON_SIZE = 24
+export const COMMON_COMPACT_ICON_SIZE = 20
+export const COMMON_ICON_BUTTON_SIZE = 36
+export const COMMON_INLINE_SPINNER_SIZE = 24

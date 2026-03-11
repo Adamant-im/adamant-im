@@ -9,6 +9,7 @@ const appNavigationPath = path.resolve(currentDir, '../../components/AppNavigati
 const backButtonPath = path.resolve(currentDir, '../../components/common/BackButton/BackButton.vue')
 const appSidebarPath = path.resolve(currentDir, '../AppSidebar.vue')
 const filterRouteParamsPath = path.resolve(currentDir, '../../router/filterRouteParams.ts')
+const commonUiMetricsPath = path.resolve(currentDir, '../../components/common/helpers/uiMetrics.ts')
 const languageSwitcherPath = path.resolve(currentDir, '../../components/LanguageSwitcher.vue')
 const currencySwitcherPath = path.resolve(currentDir, '../../components/CurrencySwitcher.vue')
 const switcherMenuMixinPath = path.resolve(
@@ -20,10 +21,14 @@ const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/
 describe('Navigation UI style contract', () => {
   it('uses shared title letter-spacing token in app toolbar', () => {
     const content = readFileSync(appToolbarPath, 'utf8')
+    const metricsContent = readFileSync(commonUiMetricsPath, 'utf8')
 
     expect(content).toContain('--a-app-toolbar-title-letter-spacing')
     expect(content).toContain('var(--a-letter-spacing-caps-subtle)')
+    expect(content).toContain('COMMON_INLINE_SPINNER_SIZE')
+    expect(metricsContent).toContain('COMMON_INLINE_SPINNER_SIZE = 24')
     expect(content).not.toContain('letter-spacing: 0.02em;')
+    expect(content).not.toContain(':size="24"')
   })
 
   it('uses tokenized size, spacing and hover states for back button', () => {

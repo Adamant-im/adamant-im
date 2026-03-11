@@ -178,7 +178,7 @@
               v-show="showSpinner"
               indeterminate
               color="primary"
-              size="24"
+              :size="COMMON_INLINE_SPINNER_SIZE"
               class="send-funds-confirm-dialog__spinner"
             />
             {{ $t('transfer.confirm_approve') }}
@@ -237,6 +237,7 @@ import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressD
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { formatSendTxError } from '@/lib/txVerify'
 import { AllCryptos } from '@/lib/constants/cryptos'
+import { COMMON_INLINE_SPINNER_SIZE } from '@/components/common/helpers/uiMetrics'
 
 import { mdiDotsVertical, mdiMenuDown } from '@mdi/js'
 import { useStore } from 'vuex'
@@ -300,6 +301,7 @@ export default {
 
     return {
       checkIsOnline,
+      COMMON_INLINE_SPINNER_SIZE,
       mdiDotsVertical,
       mdiMenuDown
     }

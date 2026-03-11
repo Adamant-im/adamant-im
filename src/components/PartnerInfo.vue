@@ -4,8 +4,14 @@
       <v-card-title :class="`${className}__dialog-title`" class="a-text-header">
         {{ isMe ? t('chats.my_qr_code') : t('chats.partner_info') }}
         <v-spacer />
-        <v-btn variant="text" icon class="close-icon" :size="36" @click="show = false">
-          <v-icon :icon="mdiClose" :size="24" />
+        <v-btn
+          variant="text"
+          icon
+          class="close-icon"
+          :size="COMMON_ICON_BUTTON_SIZE"
+          @click="show = false"
+        >
+          <v-icon :icon="mdiClose" :size="COMMON_ICON_SIZE" />
         </v-btn>
       </v-card-title>
       <v-divider class="a-divider" />
@@ -43,6 +49,7 @@ import { mdiClose } from '@mdi/js'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { joinUrl } from '@/lib/urlFormatter'
+import { COMMON_ICON_BUTTON_SIZE, COMMON_ICON_SIZE } from '@/components/common/helpers/uiMetrics'
 
 const props = defineProps({
   address: {
