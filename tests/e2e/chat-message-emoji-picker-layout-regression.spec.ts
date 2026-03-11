@@ -1,5 +1,5 @@
 import { config as loadEnv } from 'dotenv'
-import { expect, test, type Locator, type Page } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 import { loginWithPassphrase } from './helpers/auth'
 
 loadEnv({ path: '.env.local' })
@@ -32,23 +32,39 @@ test.describe('Chat message emoji picker regressions', () => {
     await expect(page.locator('.a-chat__body-messages').first()).toBeVisible()
   }
 
-  const readPickerBounds = async (picker: Locator) => {
-    return picker.evaluate((element) => {
-      if (!(element instanceof HTMLElement)) {
+  const readVisiblePickerBounds = async (page: Page) =>
+    page.evaluate(() => {
+      const candidates = Array.from(document.querySelectorAll('.emoji-picker'))
+        .filter((element): element is HTMLElement => element instanceof HTMLElement)
+        .map((element) => ({
+          element,
+          rect: element.getBoundingClientRect(),
+          style: window.getComputedStyle(element)
+        }))
+        .filter(({ rect, style }) => {
+          return (
+            rect.width > 0 &&
+            rect.height > 0 &&
+            style.display !== 'none' &&
+            style.visibility !== 'hidden' &&
+            Number.parseFloat(style.opacity || '1') > 0
+          )
+        })
+
+      const target = candidates.at(-1)
+      if (!target) {
         return null
       }
 
-      const rect = element.getBoundingClientRect()
       return {
-        top: rect.top,
-        left: rect.left,
-        right: rect.right,
-        bottom: rect.bottom,
+        top: target.rect.top,
+        left: target.rect.left,
+        right: target.rect.right,
+        bottom: target.rect.bottom,
         viewportWidth: window.innerWidth,
         viewportHeight: window.innerHeight
       }
     })
-  }
 
   test('keeps the message emoji picker inside the viewport near the right edge', async ({
     page
@@ -72,16 +88,24 @@ test.describe('Chat message emoji picker regressions', () => {
     await expect(moreButton).toBeVisible()
     await moreButton.click()
 
-    const picker = page.locator('.emoji-picker').last()
-    await expect(picker).toBeVisible()
+    await expect(page.locator('.emoji-picker').last()).toBeVisible()
 
-    const bounds = await readPickerBounds(picker)
+    await expect
+      .poll(async () => {
+        const bounds = await readVisiblePickerBounds(page)
+        if (!bounds) {
+          return null
+        }
 
-    expect(bounds).not.toBeNull()
-    expect(bounds!.top).toBeGreaterThanOrEqual(7)
-    expect(bounds!.left).toBeGreaterThanOrEqual(7)
-    expect(bounds!.right).toBeLessThanOrEqual(bounds!.viewportWidth - 7)
-    expect(bounds!.bottom).toBeLessThanOrEqual(bounds!.viewportHeight - 7)
+        return {
+          withinHorizontalBounds: bounds.left >= 7 && bounds.right <= bounds.viewportWidth - 7,
+          withinVerticalBounds: bounds.top >= 7 && bounds.bottom <= bounds.viewportHeight - 7
+        }
+      })
+      .toEqual({
+        withinHorizontalBounds: true,
+        withinVerticalBounds: true
+      })
   })
 
   test('keeps the message emoji picker inside the viewport near the top edge', async ({ page }) => {
@@ -109,15 +133,23 @@ test.describe('Chat message emoji picker regressions', () => {
     await expect(moreButton).toBeVisible()
     await moreButton.click()
 
-    const picker = page.locator('.emoji-picker').last()
-    await expect(picker).toBeVisible()
+    await expect(page.locator('.emoji-picker').last()).toBeVisible()
 
-    const bounds = await readPickerBounds(picker)
+    await expect
+      .poll(async () => {
+        const bounds = await readVisiblePickerBounds(page)
+        if (!bounds) {
+          return null
+        }
 
-    expect(bounds).not.toBeNull()
-    expect(bounds!.top).toBeGreaterThanOrEqual(7)
-    expect(bounds!.left).toBeGreaterThanOrEqual(7)
-    expect(bounds!.right).toBeLessThanOrEqual(bounds!.viewportWidth - 7)
-    expect(bounds!.bottom).toBeLessThanOrEqual(bounds!.viewportHeight - 7)
+        return {
+          withinHorizontalBounds: bounds.left >= 7 && bounds.right <= bounds.viewportWidth - 7,
+          withinVerticalBounds: bounds.top >= 7 && bounds.bottom <= bounds.viewportHeight - 7
+        }
+      })
+      .toEqual({
+        withinHorizontalBounds: true,
+        withinVerticalBounds: true
+      })
   })
 })

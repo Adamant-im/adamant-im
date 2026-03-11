@@ -16,6 +16,10 @@ const chatStylesPath = path.resolve(currentDir, '../../assets/styles/components/
 const themeMixinsPath = path.resolve(currentDir, '../../assets/styles/themes/adamant/_mixins.scss')
 const chatMenuPath = path.resolve(currentDir, '../../components/Chat/ChatMenu.vue')
 const chatEmojisPath = path.resolve(currentDir, '../../components/Chat/ChatEmojis.vue')
+const chatMessageActionsPath = path.resolve(
+  currentDir,
+  '../../components/Chat/ChatMessageActions.vue'
+)
 
 describe('Chats UI style contract', () => {
   it('stores shared chat toolbar and chats sizing metrics in helper constants', () => {
@@ -193,11 +197,15 @@ describe('Chats UI style contract', () => {
   it('uses shared trigger icon metrics in attach and emoji menus', () => {
     const menuContent = readFileSync(chatMenuPath, 'utf8')
     const emojisContent = readFileSync(chatEmojisPath, 'utf8')
+    const actionsContent = readFileSync(chatMessageActionsPath, 'utf8')
 
     expect(menuContent).toContain('COMMON_TRIGGER_ICON_SIZE')
     expect(menuContent).not.toContain('size="28"')
 
     expect(emojisContent).toContain('COMMON_TRIGGER_ICON_SIZE')
+    expect(emojisContent).not.toContain('position="absolute"')
     expect(emojisContent).not.toContain('size="28"')
+
+    expect(actionsContent).toContain('<transition name="slide-y-reverse-transition" mode="out-in">')
   })
 })

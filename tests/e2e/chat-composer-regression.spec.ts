@@ -412,6 +412,36 @@ test.describe('Chat composer regressions', () => {
       'composer-one-line-height-stable-after-three-lines-collapse'
     )
   })
+
+  test('keeps composer emoji picker inside the viewport above the input', async ({ page }) => {
+    const textarea = await openChatWithEditableComposer(page)
+
+    await expect(textarea).toBeVisible()
+
+    const emojiTrigger = page.locator('.chat-emojis__icon').first()
+    await expect(emojiTrigger).toBeVisible()
+    await emojiTrigger.click()
+
+    const picker = page.locator('.emoji-picker').last()
+    await expect(picker).toBeVisible()
+
+    const bounds = await picker.evaluate((element) => {
+      if (!(element instanceof HTMLElement)) {
+        return null
+      }
+
+      const rect = element.getBoundingClientRect()
+      return {
+        top: rect.top,
+        bottom: rect.bottom,
+        viewportHeight: window.innerHeight
+      }
+    })
+
+    expect(bounds).not.toBeNull()
+    expect(bounds!.top).toBeGreaterThanOrEqual(7)
+    expect(bounds!.bottom).toBeLessThanOrEqual(bounds!.viewportHeight - 7)
+  })
 })
 
 test.describe('Chat composer mobile scrolling regressions', () => {

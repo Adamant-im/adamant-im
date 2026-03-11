@@ -4,7 +4,7 @@
     :max-width="CHAT_ACTIONS_DROPDOWN_MAX_WIDTH"
     :close-on-content-click="false"
     :model-value="open"
-    transition="fade-transition"
+    transition="a-chat-message-actions-fade-transition"
     @update:model-value="toggleMenu"
   >
     <template #activator="{ props }">
@@ -85,6 +85,8 @@ export default defineComponent({
 <style lang="scss">
 .message-actions-dropdown {
   --a-chat-message-actions-dropdown-top-gap: 0px;
+  --a-chat-message-actions-dropdown-transition-duration: var(--a-motion-slow);
+  --a-chat-message-actions-dropdown-transition-scale-from: 0.94;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -98,5 +100,24 @@ export default defineComponent({
     justify-content: flex-end;
     margin-top: var(--a-chat-message-actions-dropdown-top-gap);
   }
+}
+
+.a-chat-message-actions-fade-transition-enter-active,
+.a-chat-message-actions-fade-transition-leave-active {
+  transition:
+    opacity var(--a-chat-message-actions-dropdown-transition-duration) var(--a-ease-standard),
+    transform var(--a-chat-message-actions-dropdown-transition-duration) var(--a-ease-standard);
+}
+
+.a-chat-message-actions-fade-transition-enter-from,
+.a-chat-message-actions-fade-transition-leave-to {
+  opacity: 0;
+  transform: scale(var(--a-chat-message-actions-dropdown-transition-scale-from));
+}
+
+.a-chat-message-actions-fade-transition-enter-to,
+.a-chat-message-actions-fade-transition-leave-from {
+  opacity: 1;
+  transform: scale(1);
 }
 </style>

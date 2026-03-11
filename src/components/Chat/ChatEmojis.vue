@@ -17,7 +17,7 @@
       />
     </template>
 
-    <emoji-picker @emoji:select="getEmoji" position="absolute"></emoji-picker>
+    <emoji-picker @emoji:select="getEmoji"></emoji-picker>
   </v-menu>
 </template>
 <script>
