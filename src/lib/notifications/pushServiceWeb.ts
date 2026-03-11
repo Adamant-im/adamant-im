@@ -75,11 +75,12 @@ export class WebPushService extends BasePushService {
 
   async unregisterDevice(): Promise<boolean> {
     if (!this.token || !this.deviceId) return false
+    const signalData = signalAsset(this.deviceId, this.token, 'FCM', 'remove')
 
     try {
       await sendSpecialMessage(
         ADAMANT_NOTIFICATION_SERVICE_ADDRESS,
-        signalAsset(this.deviceId, this.token, 'FCM', 'remove'),
+        signalData,
         MessageType.SIGNAL_MESSAGE
       )
 

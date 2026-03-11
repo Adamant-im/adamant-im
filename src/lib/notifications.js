@@ -14,7 +14,12 @@ let _this
 class Notification {
   constructor(ctx) {
     _this = ctx
-    this.i18n = ctx.$i18n
+    this.i18n = ctx.$i18n?.global || ctx.$i18n || {}
+
+    if (typeof this.i18n.t !== 'function') {
+      this.i18n.t = (ctx.$t || ctx.$i18n?.t || ((k) => k)).bind(this.i18n)
+    }
+
     this.router = ctx.$router
     this.store = ctx.$store
     this.interval = null

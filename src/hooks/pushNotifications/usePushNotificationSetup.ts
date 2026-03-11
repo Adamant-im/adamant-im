@@ -1,6 +1,5 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useStore } from 'vuex'
-import { useI18n } from 'vue-i18n'
 import { Capacitor } from '@capacitor/core'
 import { NotificationType, PUSH_REGISTRATION_RETRY_DELAY } from '@/lib/constants'
 import { usePrivateKeyManager } from './usePrivateKeyManager'
@@ -9,22 +8,21 @@ import { useWebPushNotifications } from './useWebPushNotifications'
 
 export function usePushNotificationSetup() {
   const store = useStore()
-  const { t } = useI18n()
   const platform = Capacitor.getPlatform()
   const registrationInProgress = ref(false)
 
   usePushEventHandlers()
+
   const { clearPrivateKey, getPrivateKey, sendPrivateKey, syncNotificationSettings } =
     usePrivateKeyManager()
   const webPush = platform === 'web' ? useWebPushNotifications() : null
+
   const currentNotificationType = store.state.options.allowNotificationType
+
   const isPushNotification = computed(() => {
     return currentNotificationType === NotificationType['Push']
   })
 
-  /**
-   * Sends current settings to Service Worker
-   */
   const sendCurrentSettings = async () => {
     const privateKey = store.state.passphrase ? await getPrivateKey() : undefined
     const currentUserAddress = store.state.address
@@ -36,16 +34,16 @@ export function usePushNotificationSetup() {
     }
 
     if (webPush) {
+      console.log('[PushSetup] Sending current settings to SW')
       webPush.syncNotificationSettings(settings)
+      if (privateKey) {
+        await sendPrivateKey()
+      }
     }
   }
 
-  /**
-   * Registers push notifications with retry logic
-   */
   const registerWithRetry = async (maxRetries = 2) => {
     if (registrationInProgress.value) return
-
     registrationInProgress.value = true
 
     for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -55,35 +53,27 @@ export function usePushNotificationSetup() {
         return
       } catch (error) {
         console.warn(`Push registration attempt ${attempt + 1} failed:`, error)
-
         if (attempt === maxRetries - 1) {
           registrationInProgress.value = false
-
-          store.dispatch('snackbar/show', {
-            message: t('options.push_register_retry_failed'),
-            timeout: 5000
-          })
           return
         }
-
         await new Promise((resolve) => setTimeout(resolve, PUSH_REGISTRATION_RETRY_DELAY))
       }
     }
   }
 
-  /**
-   * Registers push notifications on login
-   */
-
   const registerPushNotificationsOnLogin = async () => {
     if (!isPushNotification.value) return
 
     const privateKey = await getPrivateKey()
-    if (!privateKey) return
+    if (!privateKey) {
+      console.warn('[PushSetup] Cannot register: no private key')
+      return
+    }
 
     const { pushService } = await import('@/lib/notifications/pushServiceFactory')
-
     pushService.setPrivateKey(privateKey)
+
     await pushService.initialize()
     await pushService.registerDevice()
 
@@ -91,38 +81,41 @@ export function usePushNotificationSetup() {
     await sendPrivateKey()
   }
 
-  /**
-   * Sets up watchers for automatic registration and settings sync
-   */
   const setupWatchers = () => {
     if (webPush) {
+      // Sync when channel becomes ready
       watch(
         () => webPush.isSecureChannelReady.value,
         async (isReady) => {
-          if (isReady) {
+          if (isReady && store.state.passphrase) {
+            console.log('[PushSetup] Channel ready, syncing state')
             await sendCurrentSettings()
           }
         }
       )
     }
 
-    // Auto-register on login
+    // Login: send key
     watch(
       () => store.state.passphrase,
       async (encodedPassphrase, oldPassphrase) => {
         if (encodedPassphrase && !oldPassphrase) {
-          await registerWithRetry()
+          if (store.state.options.allowNotificationType === NotificationType['Push']) {
+            console.log('[PushSetup] User logged in, registering for Push')
+            await sendCurrentSettings()
+            await registerWithRetry()
+          }
         }
       }
     )
 
-    // Sync settings when notification type changes
+    // Notification type change
     watch(
       () => store.state.options.allowNotificationType,
       async (newType) => {
+        console.log('[PushSetup] Notification type changed:', newType)
         syncNotificationSettings(newType)
-
-        if (newType == NotificationType['Push']) {
+        if (newType === NotificationType['Push']) {
           await sendPrivateKey()
         } else {
           await clearPrivateKey()
@@ -130,22 +123,31 @@ export function usePushNotificationSetup() {
       }
     )
 
-    // Clear key on logout
+    // Logout: clear key
     watch(
       () => store.state.passphrase,
       async (newPassphrase, oldPassphrase) => {
         if (!newPassphrase && oldPassphrase) {
+          console.log('[PushSetup] User logged out')
           await clearPrivateKey()
+        }
+      }
+    )
+
+    // Address change (account switch)
+    watch(
+      () => store.state.address,
+      async (newAddress) => {
+        if (newAddress) {
+          await sendCurrentSettings()
         }
       }
     )
   }
 
-  /**
-   * Initialize the composable
-   */
   const initialize = async () => {
-    if (webPush && !webPush?.isSecureChannelReady.value) {
+    if (webPush && !webPush.isSecureChannelReady.value) {
+      console.log('[PushSetup] Initializing secure channel')
       await webPush.initSecureChannel()
     }
     setupWatchers()
