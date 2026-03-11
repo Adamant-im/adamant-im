@@ -104,6 +104,12 @@
   --a-chat-spinner-stroke: 1;
   --a-chat-placeholder-logo-size: 100px;
   --a-chat-placeholder-public-key-spinner-size: var(--a-space-5);
+  --a-chat-attachments-max-width: 500px;
+  --a-chat-attachments-file-container-max-width: 420px;
+  --a-chat-attachments-grid-max-width: 200px;
+  --a-chat-attachments-grid-min-column-width: 98px;
+  --a-chat-reply-preview-line-height: var(--a-line-height-sm);
+  --a-chat-modal-file-name-max-width: 220px;
   --a-chat-preview-avatar-size: 52px;
   --a-chat-preview-item-padding-inline-start: var(--a-space-5);
   --a-chat-preview-item-padding-inline-end: var(--a-space-6);

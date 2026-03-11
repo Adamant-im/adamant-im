@@ -251,11 +251,7 @@ export default defineComponent({
 @use 'vuetify/settings';
 
 .a-chat__attachments {
-  --a-chat-attachments-max-width: 500px;
   --a-chat-attachments-offset-top: var(--a-space-1);
-  --a-chat-attachments-file-container-max-width: 420px;
-  --a-chat-attachments-grid-max-width: 200px;
-  --a-chat-attachments-grid-min-column-width: 98px;
   --a-chat-attachments-grid-width: 80vw;
   width: var(--a-chat-attachments-max-width);
   max-width: 100%;

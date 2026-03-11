@@ -21,6 +21,11 @@ import { computed, defineComponent, PropType } from 'vue'
 import IconFile from '@/components/icons/common/IconFile.vue'
 import { FileAsset } from '@/lib/adamant-api/asset'
 import { formatBytes, formatFileExtension } from '@/lib/files'
+import {
+  CHAT_MODAL_FILE_ICON_SIZE,
+  CHAT_MODAL_FILE_MAX_HEIGHT,
+  CHAT_MODAL_FILE_MAX_WIDTH
+} from '@/components/AChat/helpers/uiMetrics'
 
 const className = 'a-chat-modal-file'
 const classes = {
@@ -30,10 +35,6 @@ const classes = {
   fileName: `${className}__file-name`,
   fileSize: `${className}__file-size`
 }
-const fileMaxWidth = 500
-const fileMaxHeight = 250
-const iconSize = 128
-
 export default defineComponent({
   components: { IconFile },
   props: {
@@ -65,9 +66,9 @@ export default defineComponent({
       fileExtension,
       fileSize,
       formatBytes,
-      fileMaxWidth,
-      fileMaxHeight,
-      iconSize
+      fileMaxWidth: CHAT_MODAL_FILE_MAX_WIDTH,
+      fileMaxHeight: CHAT_MODAL_FILE_MAX_HEIGHT,
+      iconSize: CHAT_MODAL_FILE_ICON_SIZE
     }
   }
 })
@@ -108,7 +109,7 @@ export default defineComponent({
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 220px;
+    max-width: var(--a-chat-modal-file-name-max-width);
   }
 
   &__file-size {

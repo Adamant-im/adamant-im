@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest'
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const uiMetricsPath = path.resolve(currentDir, '../../components/AChat/helpers/uiMetrics.ts')
 const commonUiMetricsPath = path.resolve(currentDir, '../../components/common/helpers/uiMetrics.ts')
+const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
 const themeMixinsPath = path.resolve(currentDir, '../../assets/styles/themes/adamant/_mixins.scss')
 const messagePath = path.resolve(currentDir, '../../components/AChat/AChatMessage.vue')
 const attachmentPath = path.resolve(
@@ -35,6 +36,10 @@ const attachmentImagePath = path.resolve(
 const attachmentImageModalPath = path.resolve(
   currentDir,
   '../../components/AChat/AChatAttachment/AChatImageModal.vue'
+)
+const modalFilePath = path.resolve(
+  currentDir,
+  '../../components/AChat/AChatAttachment/AChatModalFile.vue'
 )
 const transactionPath = path.resolve(currentDir, '../../components/AChat/AChatTransaction.vue')
 const chatContainerPath = path.resolve(currentDir, '../../components/AChat/AChat.vue')
@@ -82,6 +87,9 @@ describe('AChat UI style contract', () => {
     expect(content).toContain('CHAT_ACTIONS_DROPDOWN_BUTTON_SIZE')
     expect(content).toContain('CHAT_ACTIONS_DROPDOWN_ICON_SIZE')
     expect(content).toContain('CHAT_ATTACHMENT_PREVIEW_SIZE')
+    expect(content).toContain('CHAT_MODAL_FILE_MAX_WIDTH')
+    expect(content).toContain('CHAT_MODAL_FILE_MAX_HEIGHT')
+    expect(content).toContain('CHAT_MODAL_FILE_ICON_SIZE')
     expect(commonMetricsContent).toContain('COMMON_ICON_SIZE = 24')
     expect(commonMetricsContent).toContain('COMMON_TRIGGER_ICON_SIZE = 28')
     expect(commonMetricsContent).toContain('COMMON_REACTION_MORE_BUTTON_SIZE = 32')
@@ -216,7 +224,12 @@ describe('AChat UI style contract', () => {
 
   it('tokenizes attachment layout widths and avoids hardcoded dark text color', () => {
     const content = readFileSync(attachmentPath, 'utf8')
+    const tokensContent = readFileSync(genericTokensPath, 'utf8')
 
+    expect(tokensContent).toContain('--a-chat-attachments-max-width')
+    expect(tokensContent).toContain('--a-chat-attachments-file-container-max-width')
+    expect(tokensContent).toContain('--a-chat-attachments-grid-max-width')
+    expect(tokensContent).toContain('--a-chat-attachments-grid-min-column-width')
     expect(content).toContain('--a-chat-attachments-max-width')
     expect(content).toContain('--a-chat-attachments-offset-top')
     expect(content).toContain('--a-chat-attachments-file-container-max-width')
@@ -232,6 +245,30 @@ describe('AChat UI style contract', () => {
     expect(content).not.toContain('$file-grid-max-width: 200px;')
     expect(content).not.toContain('$file-grid-min-column-width: 98px;')
     expect(content).not.toContain('color: #fff;')
+  })
+
+  it('uses shared modal file metrics and reply preview typography tokens', () => {
+    const metricsContent = readFileSync(uiMetricsPath, 'utf8')
+    const modalFileContent = readFileSync(modalFilePath, 'utf8')
+    const replyPreviewContent = readFileSync(replyPreviewPath, 'utf8')
+    const tokensContent = readFileSync(genericTokensPath, 'utf8')
+
+    expect(metricsContent).toContain('CHAT_MODAL_FILE_MAX_WIDTH = 500')
+    expect(metricsContent).toContain('CHAT_MODAL_FILE_MAX_HEIGHT = 250')
+    expect(metricsContent).toContain('CHAT_MODAL_FILE_ICON_SIZE = 128')
+
+    expect(modalFileContent).toContain('CHAT_MODAL_FILE_MAX_WIDTH')
+    expect(modalFileContent).toContain('CHAT_MODAL_FILE_MAX_HEIGHT')
+    expect(modalFileContent).toContain('CHAT_MODAL_FILE_ICON_SIZE')
+    expect(modalFileContent).toContain('var(--a-chat-modal-file-name-max-width)')
+    expect(modalFileContent).not.toContain('const fileMaxWidth = 500')
+    expect(modalFileContent).not.toContain('const fileMaxHeight = 250')
+    expect(modalFileContent).not.toContain('const iconSize = 128')
+    expect(modalFileContent).not.toContain('max-width: 220px;')
+
+    expect(tokensContent).toContain('--a-chat-reply-preview-line-height')
+    expect(replyPreviewContent).toContain('line-height: var(--a-chat-reply-preview-line-height);')
+    expect(replyPreviewContent).not.toContain('line-height: 20px;')
   })
 
   it('shares attachment placeholder and error tokens between file and image components', () => {

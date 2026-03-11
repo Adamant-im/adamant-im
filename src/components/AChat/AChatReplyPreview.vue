@@ -99,7 +99,7 @@ $message-max-lines: 2;
 
   &__message {
     @include mixins.a-text-regular-enlarged();
-    line-height: 20px; // half of <ChatAvatar/> height
+    line-height: var(--a-chat-reply-preview-line-height);
 
     margin-left: var(--a-space-2);
     margin-right: var(--a-space-2);
