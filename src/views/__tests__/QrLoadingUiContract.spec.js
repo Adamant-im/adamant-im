@@ -89,8 +89,10 @@ describe('QR and loading UI contract', () => {
 
     expect(content).toContain('CHAT_PLACEHOLDER_PUBLIC_KEY_SPINNER_SIZE')
     expect(content).toContain('var(--a-chat-placeholder-logo-size)')
+    expect(content).toContain('border: var(--a-border-width-thin) solid transparent;')
     expect(content).not.toContain(':size="20"')
     expect(content).not.toContain('width: 100px;')
     expect(content).not.toContain('height: 100px;')
+    expect(content).not.toContain('border: 1px solid transparent;')
   })
 })

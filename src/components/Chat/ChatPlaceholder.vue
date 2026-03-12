@@ -84,7 +84,7 @@ function openLink() {
     row-gap: var(--a-space-1);
     padding: var(--a-space-4);
     padding-bottom: var(--a-space-6);
-    border: 1px solid transparent;
+    border: var(--a-border-width-thin) solid transparent;
     border-radius: var(--a-radius-sm);
     @include mixins.a-surface-elevation-soft();
 

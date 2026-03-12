@@ -345,7 +345,7 @@
 .logo {
   width: var(--a-logo-size);
   height: var(--a-logo-size);
-  border: 1px solid #f1f1f1;
+  border: var(--a-border-width-thin) solid #f1f1f1;
   border-radius: 50% !important;
   background-color: map.get(settings.$shades, 'white');
   .st9 {

@@ -143,6 +143,7 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('--a-chat-brief-subtitle-line-height')
     expect(content).toContain('--a-chat-brief-loading-separator-shift')
     expect(content).toContain('--a-chat-brief-loading-separator-duration')
+    expect(content).toContain('--a-chat-brief-border-width: var(--a-border-width-thin);')
     expect(content).toContain('--a-chat-brief-icon-fill-light')
     expect(content).toContain('margin-bottom: var(--a-chat-brief-heading-gap);')
     expect(content).toContain('line-height: var(--a-chat-brief-subtitle-line-height);')
@@ -150,6 +151,7 @@ describe('Chats UI style contract', () => {
     expect(content).not.toContain('size="15"')
     expect(content).not.toContain('const CHAT_PREVIEW_AVATAR_SIZE = 48')
     expect(content).not.toMatch(/&__subtitle\s*\{[^}]*line-height:\s*1\.5;/s)
+    expect(content).not.toContain('--a-chat-brief-border-width: 1px;')
     expect(content).not.toContain('fill: #bdbdbd;')
   })
 

@@ -257,7 +257,7 @@ const mobileMenuProps = computed(() => {
     margin: 0;
     padding: var(--a-dev-screen-code-padding);
     border-radius: var(--a-dev-screen-code-border-radius);
-    border: 1px solid;
+    border: var(--a-border-width-thin) solid;
     max-height: var(--a-dev-screen-code-max-height);
     overflow-y: auto;
 
