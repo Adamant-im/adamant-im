@@ -3,9 +3,14 @@
     <v-card>
       <v-card-text :class="`${className}__body`">
         <div :class="`${className}__content`">
-          <div :class="`${className}__preview-action`" @click="saveQrcode">
+          <button
+            type="button"
+            :class="`${className}__preview-action`"
+            @click="saveQrcode"
+            :aria-label="$t('login.save_qr_code_to_images')"
+          >
             <QrcodeRenderer ref="qrcode" :text="text" :logo="logoURL" :opts="opts" />
-          </div>
+          </button>
 
           <v-btn :class="[`${className}__button`, 'a-btn-primary']" @click="saveQrcode">
             {{ $t('login.save_qr_code_to_images') }}
@@ -86,7 +91,10 @@ export default {
   }
 
   &__preview-action {
-    cursor: pointer;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    line-height: 0;
   }
 
   &__button {

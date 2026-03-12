@@ -398,8 +398,8 @@ onBeforeUnmount(() => {
   .sidebar {
     &__with-aside {
       @media (min-width: variables.$layout-split-frame-breakpoint) {
-        border-right: 2px solid map.get(colors.$adm-colors, 'secondary2');
-        border-left: 2px solid map.get(colors.$adm-colors, 'secondary2');
+        border-right: var(--a-border-width-strong) solid map.get(colors.$adm-colors, 'secondary2');
+        border-left: var(--a-border-width-strong) solid map.get(colors.$adm-colors, 'secondary2');
       }
     }
 

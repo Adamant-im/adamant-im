@@ -2,7 +2,7 @@
   <input
     :accept="accept"
     ref="fileInput"
-    style="display: none"
+    :class="classes.input"
     multiple
     type="file"
     @change="uploadFile"
@@ -52,6 +52,10 @@ export default defineComponent({
   },
   emits: ['file'],
   setup(props, { emit }) {
+    const className = 'upload-file'
+    const classes = {
+      input: `${className}__input`
+    }
     const store = useStore()
 
     const uploadFile = async (event: Event) => {
@@ -123,8 +127,17 @@ export default defineComponent({
     }
 
     return {
+      classes,
       uploadFile
     }
   }
 })
 </script>
+
+<style lang="scss" scoped>
+.upload-file {
+  &__input {
+    display: none;
+  }
+}
+</style>

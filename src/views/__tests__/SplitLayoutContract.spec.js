@@ -75,6 +75,8 @@ describe('Split layout style contract', () => {
     expect(content).not.toContain('width: 10px;')
     expect(content).not.toContain('max-width: 512px;')
     expect(content).not.toContain('min-width: 1513px')
+    expect(content).not.toContain('border-right: 2px solid')
+    expect(content).not.toContain('border-left: 2px solid')
   })
 
   it('uses shared split-pane utility in chats list pane', () => {

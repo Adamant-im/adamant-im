@@ -1,7 +1,7 @@
 <template>
   <v-form ref="form" :class="classes.root" @submit.prevent="submit">
     <!-- Hidden input with username to prevent Chrome warning in console -->
-    <input type="text" name="username" autocomplete="username" style="display: none" />
+    <input type="text" name="username" autocomplete="username" :class="classes.usernameInput" />
     <v-row gap="0">
       <slot>
         <!--     Todo: check src/components/PasswordSetDialog.vue component and consider the possibility to move common code to new component  -->
@@ -79,7 +79,8 @@ const className = 'login-form'
 const classes = {
   root: className,
   textField: `${className}__textfield`,
-  textFieldCentered: `${className}__textfield--centered`
+  textFieldCentered: `${className}__textfield--centered`,
+  usernameInput: `${className}__username-input`
 }
 
 type Props = {
@@ -197,6 +198,10 @@ defineExpose({
 
   &__submit-spinner {
     margin-inline-end: var(--a-login-form-submit-spinner-gap);
+  }
+
+  &__username-input {
+    display: none;
   }
 }
 

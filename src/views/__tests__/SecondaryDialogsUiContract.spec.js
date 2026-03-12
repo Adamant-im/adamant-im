@@ -218,9 +218,12 @@ describe('Secondary dialogs UI contract', () => {
     expect(qrcodeRendererContent).toContain('`${className}__body`')
     expect(qrcodeRendererContent).toContain('`${className}__content`')
     expect(qrcodeRendererContent).toContain('`${className}__preview-action`')
+    expect(qrcodeRendererContent).toContain('<button')
+    expect(qrcodeRendererContent).toContain('type="button"')
+    expect(qrcodeRendererContent).toContain(':aria-label="$t(\'login.save_qr_code_to_images\')"')
     expect(qrcodeRendererContent).toContain('`${className}__button`')
     expect(qrcodeRendererContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
-    expect(qrcodeRendererContent).not.toContain(':style="{ cursor: \'pointer\' }"')
+    expect(qrcodeRendererContent).not.toContain('cursor: pointer;')
     expect(qrcodeRendererContent).not.toContain('width="250"')
 
     expect(qrcodeScannerContent).toContain("const className = 'qrcode-scanner-dialog'")

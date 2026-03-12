@@ -8,9 +8,9 @@ exports[`LoginForm.vue > renders the correct markup 1`] = `
   <!-- Hidden input with username to prevent Chrome warning in console -->
   <input
     autocomplete="username"
+    class="login-form__username-input"
     data-v-ba684ca4=""
     name="username"
-    style="display: none;"
     type="text"
   />
   <v-row
@@ -21,7 +21,7 @@ exports[`LoginForm.vue > renders the correct markup 1`] = `
     <!--     Todo: check src/components/PasswordSetDialog.vue component and consider the possibility to move common code to new component  -->
     <v-text-field
       autocomplete="current-password"
-      class="login-form__textfield text-center"
+      class="login-form__textfield login-form__textfield--centered"
       data-v-ba684ca4=""
       label="Passphrase"
       modelvalue=""
