@@ -45,7 +45,7 @@
           v-if="transactionStatus === 'INVALID'"
           :icon="mdiAlertOutline"
           :size="COMMON_COMPACT_ICON_SIZE"
-          style="color: #f8a061 !important"
+          :class="`${className}__invalid-status-icon`"
         />
         {{ formattedTransactionStatus
         }}<span v-if="inconsistentStatus">{{
@@ -464,6 +464,10 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
 
   &__value-muted {
     white-space: pre;
+  }
+
+  &__invalid-status-icon {
+    color: var(--a-color-status-attention) !important;
   }
 }
 

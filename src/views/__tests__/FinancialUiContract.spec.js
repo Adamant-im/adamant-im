@@ -80,9 +80,13 @@ describe('Financial UI style contract', () => {
   it('keeps stable row sizing in transaction template screens', () => {
     const content = readFileSync(transactionTemplatePath, 'utf8')
     const metricsContent = readFileSync(commonUiMetricsPath, 'utf8')
+    const tokensContent = readFileSync(genericTokensPath, 'utf8')
 
+    expect(tokensContent).toContain('--a-color-status-attention')
     expect(content).toContain(':class="[className, `${className}__list`]"')
     expect(content).toContain('COMMON_COMPACT_ICON_SIZE')
+    expect(content).toContain('__invalid-status-icon')
+    expect(content).toContain('var(--a-color-status-attention)')
     expect(content).toContain('--a-transaction-view-row-min-height')
     expect(content).toContain('--a-transaction-view-row-padding-block')
     expect(content).toContain('--a-transaction-view-row-padding-inline')
@@ -101,6 +105,7 @@ describe('Financial UI style contract', () => {
     expect(content).not.toContain('padding-inline: 24px;')
     expect(content).not.toContain('font-size: 14px;')
     expect(content).not.toContain('size="20"')
+    expect(content).not.toContain('style="color: #f8a061 !important"')
   })
 
   it('keeps transaction list item text styling in stylesheet, not inline attributes', () => {
@@ -175,6 +180,7 @@ describe('Financial UI style contract', () => {
     expect(tokensContent).toContain('--a-transactions-loading-item-offset-top')
     expect(tokensContent).toContain('--a-icon-base-font-size')
     expect(tokensContent).toContain('--a-icon-box-centered-size')
+    expect(tokensContent).toContain('--a-color-text-muted-light')
 
     expect(transactionsContent).toContain('top: var(--a-transactions-loading-item-offset-top);')
     expect(transactionsContent).toContain('&__empty-state')
@@ -185,8 +191,12 @@ describe('Financial UI style contract', () => {
     expect(iconContent).toContain('font-size: var(--a-icon-base-font-size);')
     expect(iconContent).toContain('width: var(--a-icon-box-centered-size);')
     expect(iconContent).toContain('height: var(--a-icon-box-centered-size);')
+    expect(iconContent).toContain('fill: var(--a-color-text-muted-light);')
+    expect(iconContent).toContain('stroke: var(--a-color-text-muted-light);')
     expect(iconContent).not.toContain('font-size: 24px;')
     expect(iconContent).not.toContain('width: 40px;')
     expect(iconContent).not.toContain('height: 40px;')
+    expect(iconContent).not.toContain('fill: rgba(0, 0, 0, 0.54);')
+    expect(iconContent).not.toContain('stroke: rgba(0, 0, 0, 0.54);')
   })
 })

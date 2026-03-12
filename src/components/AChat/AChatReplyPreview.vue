@@ -128,8 +128,8 @@ $message-max-lines: 2;
 
 .v-theme--dark {
   .a-chat-reply-preview {
-    background-color: rgba(245, 245, 245, 0.1); // @todo const
-    color: #fff;
+    background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
+    color: var(--a-color-text-inverse);
   }
 }
 </style>

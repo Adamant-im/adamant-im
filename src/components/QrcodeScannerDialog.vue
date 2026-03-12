@@ -275,7 +275,7 @@ export default defineComponent({
   &__camera {
     width: 100%;
     height: var(--a-qrcode-scanner-camera-height);
-    background-color: #000;
+    background-color: var(--a-color-surface-camera);
     position: relative;
 
     video {

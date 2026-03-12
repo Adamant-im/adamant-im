@@ -105,8 +105,8 @@ export default {
 /* Themes */
 .v-theme--light {
   .svg-icon {
-    fill: rgba(0, 0, 0, 0.54);
-    stroke: rgba(0, 0, 0, 0.54);
+    fill: var(--a-color-text-muted-light);
+    stroke: var(--a-color-text-muted-light);
   }
 }
 .v-theme--dark {

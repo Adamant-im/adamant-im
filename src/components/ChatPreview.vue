@@ -272,7 +272,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
   --a-chat-brief-item-padding-inline-end: var(--a-chat-preview-item-padding-inline-end);
   --a-chat-brief-subtitle-line-height: 1.5;
   --a-chat-brief-border-width: var(--a-border-width-thin);
-  --a-chat-brief-icon-fill-light: #bdbdbd;
+  --a-chat-brief-icon-fill-light: var(--a-color-icon-subtle-light);
   position: relative;
   padding-inline-start: var(--a-chat-brief-item-padding-inline-start);
   padding-inline-end: var(--a-chat-brief-item-padding-inline-end);

@@ -188,11 +188,18 @@ describe('AChat UI style contract', () => {
 
     expect(replyPreviewContent).toContain('COMMON_ICON_SIZE')
     expect(tokensContent).toContain('--a-chat-accent-border-width')
+    expect(tokensContent).toContain('--a-color-text-inverse')
     expect(replyPreviewContent).toContain(
       "border-left: var(--a-chat-accent-border-width) solid map.get(colors.$adm-colors, 'attention');"
     )
+    expect(replyPreviewContent).toContain(
+      "background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');"
+    )
+    expect(replyPreviewContent).toContain('color: var(--a-color-text-inverse);')
     expect(replyPreviewContent).not.toContain('size="24"')
     expect(replyPreviewContent).not.toContain('border-left: 3px solid')
+    expect(replyPreviewContent).not.toContain('background-color: rgba(245, 245, 245, 0.1);')
+    expect(replyPreviewContent).not.toContain('color: #fff;')
 
     expect(filesPreviewContent).toContain('COMMON_ICON_SIZE')
     expect(filesPreviewContent).toContain('var(--a-chat-accent-border-width)')
