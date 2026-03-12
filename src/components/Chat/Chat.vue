@@ -1008,8 +1008,29 @@ const scrollBehavior = () => {
     markAsRead()
   })
 }
+
+const hasFocusedEditableElement = () => {
+  const activeElement = document.activeElement
+
+  if (!(activeElement instanceof HTMLElement)) {
+    return false
+  }
+
+  if (activeElement instanceof HTMLTextAreaElement) {
+    return !activeElement.readOnly && !activeElement.disabled
+  }
+
+  if (activeElement instanceof HTMLInputElement) {
+    return !activeElement.readOnly && !activeElement.disabled
+  }
+
+  return activeElement.isContentEditable
+}
+
 const onKeyPress = (e: KeyboardEvent) => {
-  if (e.code === 'Enter' && !isShowFreeTokensDialog.value) {
+  if (e.code === 'Enter' && !isShowFreeTokensDialog.value && !hasFocusedEditableElement()) {
+    e.preventDefault()
+    e.stopPropagation()
     chatFormRef.value.focus()
   }
 }

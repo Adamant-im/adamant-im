@@ -195,6 +195,15 @@ describe('Chats UI style contract', () => {
     expect(content).not.toMatch(/\.chat-avatar\s*\{[^}]*margin-right:\s*var\(--a-space-3\);/s)
   })
 
+  it('only uses global Enter to focus composer when no editable element is already focused', () => {
+    const content = readFileSync(chatPath, 'utf8')
+
+    expect(content).toContain('const hasFocusedEditableElement = () => {')
+    expect(content).toContain('!hasFocusedEditableElement()')
+    expect(content).toContain('e.preventDefault()')
+    expect(content).toContain('e.stopPropagation()')
+  })
+
   it('uses shared trigger icon metrics in attach and emoji menus', () => {
     const menuContent = readFileSync(chatMenuPath, 'utf8')
     const emojisContent = readFileSync(chatEmojisPath, 'utf8')

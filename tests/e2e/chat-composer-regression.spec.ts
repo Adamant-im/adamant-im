@@ -1,5 +1,10 @@
+import { config as loadEnv } from 'dotenv'
 import { expect, test, type Locator, type Page, type TestInfo } from '@playwright/test'
-import { loginWithNewAccount } from './helpers/auth'
+import { loginWithNewAccount, loginWithPassphrase } from './helpers/auth'
+
+loadEnv({ path: '.env.local' })
+
+const testPassphrase = process.env.ADM_TEST_ACCOUNT_PK?.trim()
 
 const attachPageScreenshot = async (page: Page, testInfo: TestInfo, name: string) => {
   const body = await page.screenshot({ fullPage: true })
@@ -88,7 +93,69 @@ const openChatWithEditableComposer = async (page: Page): Promise<Locator> => {
   throw new Error('No chats with editable composer were found')
 }
 
+const openSelfChatWithEditableComposer = async (page: Page): Promise<Locator> => {
+  test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
+
+  await loginWithPassphrase(page, testPassphrase!)
+
+  await page.goto('/chats')
+  await expect(page).toHaveURL(/\/chats$/)
+
+  const chatItems = page.locator('.chats-view__messages--chat .v-list-item')
+  const selfChatItem = chatItems
+    .filter({
+      has: page.locator('.chat-brief__title', {
+        hasText: /^You$/
+      })
+    })
+    .first()
+
+  if (await selfChatItem.count()) {
+    await selfChatItem.click()
+  } else {
+    await chatItems.nth(1).click()
+  }
+
+  await page.waitForURL(/\/chats\/[^/?#]+$/, { timeout: 90_000 })
+
+  const textarea = page.locator('.a-chat__form textarea').first()
+  await expect(textarea).toBeEditable()
+
+  return textarea
+}
+
 test.describe('Chat composer regressions', () => {
+  test('focuses composer on first Enter after Escape and sends only on second Enter', async ({
+    page
+  }) => {
+    const textarea = await openSelfChatWithEditableComposer(page)
+
+    const initialMessageCount = await page.locator('.a-chat__message-container').count()
+    const draftMessage = `enter-focus-${Date.now()}`
+
+    await textarea.fill(draftMessage)
+    await textarea.focus()
+    await expect(textarea).toBeFocused()
+
+    await page.keyboard.press('Escape')
+
+    await expect(textarea).not.toBeFocused()
+
+    await page.keyboard.press('Enter')
+
+    await expect(textarea).toBeFocused()
+    await expect(textarea).toHaveValue(draftMessage)
+    await expect(page.locator('.a-chat__message-container')).toHaveCount(initialMessageCount)
+
+    await page.keyboard.press('Enter')
+
+    await expect
+      .poll(() => page.locator('.a-chat__message-container').count(), { timeout: 15_000 })
+      .toBeGreaterThan(initialMessageCount)
+
+    await expect(textarea).toHaveValue('')
+  })
+
   test('blurs composer on first Escape and leaves chat on second Escape', async ({ page }) => {
     const textarea = await openChatWithEditableComposer(page)
 
