@@ -114,8 +114,8 @@ export default defineComponent({
 
   &__avatar {
     position: absolute;
-    bottom: -9px;
-    right: -9px;
+    bottom: calc(var(--a-chat-reaction-avatar-offset) * -1);
+    right: calc(var(--a-chat-reaction-avatar-offset) * -1);
   }
 }
 

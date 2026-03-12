@@ -144,7 +144,7 @@ const doubleShort = () => vibrate.doubleShort()
     @include mixins.a-text-regular-enlarged();
     margin-bottom: var(--a-dev-screen-section-title-gap);
     padding-bottom: var(--a-dev-screen-section-title-padding-bottom);
-    border-bottom: 1px solid;
+    border-bottom: var(--a-border-width-thin) solid;
   }
 
   &__play-column {

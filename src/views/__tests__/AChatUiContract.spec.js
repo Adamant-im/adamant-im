@@ -78,6 +78,10 @@ const filesPreviewItemPath = path.resolve(
   currentDir,
   '../../components/AChat/FilesPreview/FilesPreviewItem.vue'
 )
+const reactionPath = path.resolve(
+  currentDir,
+  '../../components/AChat/AChatReactions/AChatReaction.vue'
+)
 const chatStylesPath = path.resolve(currentDir, '../../assets/styles/components/_chat.scss')
 const emojiPickerPath = path.resolve(currentDir, '../../components/EmojiPicker.vue')
 const iconBoxPath = path.resolve(currentDir, '../../components/icons/IconBox.vue')
@@ -169,6 +173,7 @@ describe('AChat UI style contract', () => {
 
   it('uses shared utility icon metrics in reaction select, reply preview and files preview', () => {
     const reactionSelectContent = readFileSync(reactionSelectPath, 'utf8')
+    const reactionContent = readFileSync(reactionPath, 'utf8')
     const replyPreviewContent = readFileSync(replyPreviewPath, 'utf8')
     const filesPreviewContent = readFileSync(filesPreviewPath, 'utf8')
     const tokensContent = readFileSync(genericTokensPath, 'utf8')
@@ -185,6 +190,12 @@ describe('AChat UI style contract', () => {
     expect(reactionSelectContent).not.toContain(
       "background-color: map.get(colors.$adm-colors, 'regular');"
     )
+
+    expect(tokensContent).toContain('--a-chat-reaction-avatar-offset')
+    expect(reactionContent).toContain('bottom: calc(var(--a-chat-reaction-avatar-offset) * -1);')
+    expect(reactionContent).toContain('right: calc(var(--a-chat-reaction-avatar-offset) * -1);')
+    expect(reactionContent).not.toContain('bottom: -9px;')
+    expect(reactionContent).not.toContain('right: -9px;')
 
     expect(replyPreviewContent).toContain('COMMON_ICON_SIZE')
     expect(tokensContent).toContain('--a-chat-accent-border-width')
@@ -205,6 +216,19 @@ describe('AChat UI style contract', () => {
     expect(filesPreviewContent).toContain('var(--a-chat-accent-border-width)')
     expect(filesPreviewContent).not.toContain('size="24"')
     expect(filesPreviewContent).not.toContain('border-left: 3px solid')
+  })
+
+  it('keeps transaction status icon interactivity in classes instead of inline style', () => {
+    const transactionContent = readFileSync(transactionPath, 'utf8')
+
+    expect(transactionContent).toContain(
+      "'a-chat__status-icon--clickable': checkStatusUpdatable(status)"
+    )
+    expect(transactionContent).toContain('.a-chat__status-icon--clickable {')
+    expect(transactionContent).toContain('cursor: pointer;')
+    expect(transactionContent).not.toContain(
+      ":style=\"checkStatusUpdatable(status) ? 'cursor: pointer;' : 'cursor: default;'\""
+    )
   })
 
   it('uses sender-vs-current-user direction for reactions and overlays, including self-chat', () => {

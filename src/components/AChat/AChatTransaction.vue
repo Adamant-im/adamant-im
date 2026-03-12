@@ -36,11 +36,13 @@
             <TransactionProvider :transaction="transaction">
               <template #default="{ status, refetch }">
                 <v-icon
+                  :class="{
+                    'a-chat__status-icon--clickable': checkStatusUpdatable(status)
+                  }"
                   :size="CHAT_STATUS_ICON_SIZE"
                   :icon="tsIcon(status)"
                   :title="t(`chats.transaction_statuses.${status}`)"
                   :color="tsColor(status)"
-                  :style="checkStatusUpdatable(status) ? 'cursor: pointer;' : 'cursor: default;'"
                   @click="checkStatusUpdatable(status) ? refetch() : undefined"
                 />
               </template>
@@ -223,3 +225,9 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="scss" scoped>
+.a-chat__status-icon--clickable {
+  cursor: pointer;
+}
+</style>

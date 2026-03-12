@@ -75,6 +75,7 @@ describe('Dev screens UI style contract', () => {
     expect(vibrationsContent).toContain(
       'padding-bottom: var(--a-dev-screen-section-title-padding-bottom);'
     )
+    expect(vibrationsContent).toContain('border-bottom: var(--a-border-width-thin) solid;')
     expect(vibrationsContent).toContain('playColumn')
     expect(vibrationsContent).toContain('presetColumn')
     expect(vibrationsContent).toContain('&__play-column')
@@ -84,6 +85,7 @@ describe('Dev screens UI style contract', () => {
     expect(vibrationsContent).not.toContain('margin-bottom: 32px;')
     expect(vibrationsContent).not.toContain('margin-bottom: 16px;')
     expect(vibrationsContent).not.toContain('padding-bottom: 8px;')
+    expect(vibrationsContent).not.toContain('border-bottom: 1px solid;')
     expect(vibrationsContent).not.toContain('class="pl-3"')
     expect(vibrationsContent).not.toContain('class="mb-3"')
 
@@ -92,6 +94,7 @@ describe('Dev screens UI style contract', () => {
     expect(walletsContent).toContain(
       'padding-bottom: var(--a-dev-screen-section-title-padding-bottom);'
     )
+    expect(walletsContent).toContain('border-bottom: var(--a-border-width-thin) solid;')
     expect(walletsContent).toContain(
       'padding-bottom: var(--a-dev-screen-card-title-padding-bottom);'
     )
@@ -115,6 +118,7 @@ describe('Dev screens UI style contract', () => {
     expect(walletsContent).not.toContain('padding: 12px;')
     expect(walletsContent).not.toContain('padding: 8px;')
     expect(walletsContent).not.toContain('border: 1px solid;')
+    expect(walletsContent).not.toContain('border-bottom: 1px solid;')
     expect(walletsContent).not.toContain('border-radius: 4px;')
     expect(walletsContent).not.toContain('max-height: 400px;')
     expect(walletsContent).not.toContain('max-height: 300px;')

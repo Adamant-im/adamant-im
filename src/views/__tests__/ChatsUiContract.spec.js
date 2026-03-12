@@ -114,6 +114,8 @@ describe('Chats UI style contract', () => {
     expect(content).toContain(':size="CHATS_CONNECTION_SPINNER_SIZE"')
     expect(content).toContain('const scrollOffset = CHATS_SCROLL_OFFSET')
     expect(content).toContain('transition: transform var(--a-chats-messages-move-duration);')
+    expect(content).toContain('<v-row :class="`${className}__chats-actions`">')
+    expect(content).toContain('margin: 0;')
 
     expect(content).not.toContain('height: 56px;')
     expect(content).not.toContain(':size="24"')
@@ -121,6 +123,7 @@ describe('Chats UI style contract', () => {
     expect(content).not.toContain('transition: transform 0.5s;')
     expect(content).not.toContain('--a-chats-title-font-weight: 300;')
     expect(content).not.toContain('--a-chats-connection-spinner-offset-inline-start: 34px;')
+    expect(content).not.toContain('class="v-row--no-gutters"')
   })
 
   it('keeps chat preview spacing, line-height and icon sizes tokenized', () => {
