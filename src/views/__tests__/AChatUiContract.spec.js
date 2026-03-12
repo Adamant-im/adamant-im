@@ -73,6 +73,7 @@ const reactionsPath = path.resolve(
   '../../components/AChat/AChatReactions/AChatReactions.vue'
 )
 const quotedMessagePath = path.resolve(currentDir, '../../components/AChat/QuotedMessage.vue')
+const formPath = path.resolve(currentDir, '../../components/AChat/AChatForm.vue')
 const filesPreviewItemPath = path.resolve(
   currentDir,
   '../../components/AChat/FilesPreview/FilesPreviewItem.vue'
@@ -135,6 +136,7 @@ describe('AChat UI style contract', () => {
     const listContent = readFileSync(actionsListPath, 'utf8')
     const menuContent = readFileSync(actionsMenuPath, 'utf8')
     const overlayContent = readFileSync(actionsOverlayPath, 'utf8')
+    const tokensContent = readFileSync(genericTokensPath, 'utf8')
 
     expect(dropdownContent).toContain(':min-width="CHAT_ACTIONS_DROPDOWN_MIN_WIDTH"')
     expect(dropdownContent).toContain(':max-width="CHAT_ACTIONS_DROPDOWN_MAX_WIDTH"')
@@ -156,17 +158,20 @@ describe('AChat UI style contract', () => {
 
     expect(listContent).toContain('--a-chat-message-actions-list-offset-top')
     expect(menuContent).toContain('--a-chat-message-actions-menu-overlay-inset-inline')
+    expect(tokensContent).toContain('--a-chat-actions-overlay-reaction-height')
     expect(overlayContent).toContain('--a-chat-actions-overlay-reaction-height')
     expect(overlayContent).toContain('--a-chat-actions-overlay-reaction-gap')
     expect(overlayContent).toContain('--a-chat-actions-overlay-transition-duration')
     expect(overlayContent).not.toContain('--a-chat-actions-overlay-reaction-gap: var(--a-space-4);')
     expect(overlayContent).not.toContain('--a-chat-actions-overlay-reaction-gap: var(--a-space-2);')
+    expect(overlayContent).not.toContain('--a-chat-actions-overlay-reaction-height: 46px;')
   })
 
   it('uses shared utility icon metrics in reaction select, reply preview and files preview', () => {
     const reactionSelectContent = readFileSync(reactionSelectPath, 'utf8')
     const replyPreviewContent = readFileSync(replyPreviewPath, 'utf8')
     const filesPreviewContent = readFileSync(filesPreviewPath, 'utf8')
+    const tokensContent = readFileSync(genericTokensPath, 'utf8')
 
     expect(reactionSelectContent).toContain('COMMON_REACTION_MORE_BUTTON_SIZE')
     expect(reactionSelectContent).toContain('COMMON_ICON_SIZE')
@@ -182,10 +187,17 @@ describe('AChat UI style contract', () => {
     )
 
     expect(replyPreviewContent).toContain('COMMON_ICON_SIZE')
+    expect(tokensContent).toContain('--a-chat-accent-border-width')
+    expect(replyPreviewContent).toContain(
+      "border-left: var(--a-chat-accent-border-width) solid map.get(colors.$adm-colors, 'attention');"
+    )
     expect(replyPreviewContent).not.toContain('size="24"')
+    expect(replyPreviewContent).not.toContain('border-left: 3px solid')
 
     expect(filesPreviewContent).toContain('COMMON_ICON_SIZE')
+    expect(filesPreviewContent).toContain('var(--a-chat-accent-border-width)')
     expect(filesPreviewContent).not.toContain('size="24"')
+    expect(filesPreviewContent).not.toContain('border-left: 3px solid')
   })
 
   it('uses sender-vs-current-user direction for reactions and overlays, including self-chat', () => {
@@ -239,8 +251,13 @@ describe('AChat UI style contract', () => {
 
   it('tokenizes quoted message sizing and accent border styles', () => {
     const content = readFileSync(quotedMessagePath, 'utf8')
+    const formContent = readFileSync(formPath, 'utf8')
+    const tokensContent = readFileSync(genericTokensPath, 'utf8')
 
     expect(content).toContain('QUOTED_MESSAGE_LOADING_SPINNER_SIZE')
+    expect(tokensContent).toContain('--a-chat-form-max-height')
+    expect(tokensContent).toContain('--a-chat-accent-border-width')
+    expect(formContent).toContain('max-height: var(--a-chat-form-max-height);')
     expect(content).toContain('--a-quoted-message-height')
     expect(content).toContain('--a-quoted-message-radius')
     expect(content).toContain('--a-quoted-message-padding-block')
@@ -251,8 +268,10 @@ describe('AChat UI style contract', () => {
       "border-left: var(--a-quoted-message-border-width) solid map.get(colors.$adm-colors, 'attention');"
     )
 
+    expect(formContent).not.toContain('--a-chat-form-max-height: 230px;')
     expect(content).not.toContain('border-left: 3px solid')
     expect(content).not.toContain('size="16"')
+    expect(content).not.toContain('--a-quoted-message-border-width: 3px;')
     expect(content).not.toMatch(/&__invalid-message\s*\{[^}]*font-style:\s*italic;/s)
     expect(content).not.toMatch(/&__message-not-found\s*\{[^}]*font-style:\s*italic;/s)
   })

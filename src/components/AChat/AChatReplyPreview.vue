@@ -87,7 +87,7 @@ const messageLabel = computed(() => {
 $message-max-lines: 2;
 
 .a-chat-reply-preview {
-  border-left: 3px solid map.get(colors.$adm-colors, 'attention');
+  border-left: var(--a-chat-accent-border-width) solid map.get(colors.$adm-colors, 'attention');
   border-radius: var(--a-radius-sm);
   margin: var(--a-space-2);
 

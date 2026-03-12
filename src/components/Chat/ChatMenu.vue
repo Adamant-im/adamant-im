@@ -189,7 +189,7 @@ function fetchCryptoAddress(selectedCrypto: string): Promise<any> {
     &::before {
       content: '';
       position: absolute;
-      inset: -3px;
+      inset: calc(var(--a-chat-trigger-hover-inset) * -1);
       border-radius: 50%;
       background: currentColor;
       opacity: 0;

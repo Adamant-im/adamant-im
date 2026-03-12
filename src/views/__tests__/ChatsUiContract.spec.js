@@ -45,6 +45,7 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('--a-chat-preview-item-padding-inline-start')
     expect(content).toContain('--a-chat-preview-item-padding-inline-end')
     expect(content).toContain('--a-chat-preview-heading-gap')
+    expect(content).toContain('--a-chat-trigger-hover-inset')
   })
 
   it('uses tokenized toolbar typography, spacing and floating label transforms', () => {
@@ -203,12 +204,16 @@ describe('Chats UI style contract', () => {
     expect(menuContent).toContain(
       'min-width: calc((var(--a-control-size-lg) * 4) + var(--a-space-2));'
     )
+    expect(menuContent).toContain('inset: calc(var(--a-chat-trigger-hover-inset) * -1);')
     expect(menuContent).not.toContain('size="28"')
     expect(menuContent).not.toContain('min-width: 200px;')
+    expect(menuContent).not.toContain('inset: -3px;')
 
     expect(emojisContent).toContain('COMMON_TRIGGER_ICON_SIZE')
+    expect(emojisContent).toContain('inset: calc(var(--a-chat-trigger-hover-inset) * -1);')
     expect(emojisContent).not.toContain('position="absolute"')
     expect(emojisContent).not.toContain('size="28"')
+    expect(emojisContent).not.toContain('inset: -3px;')
 
     expect(actionsContent).toContain('<transition name="slide-y-reverse-transition" mode="out-in">')
   })

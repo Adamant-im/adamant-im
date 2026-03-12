@@ -195,7 +195,7 @@ export default defineComponent({
   --a-quoted-message-radius: var(--a-radius-sm);
   --a-quoted-message-padding-block: var(--a-space-1);
   --a-quoted-message-padding-inline: var(--a-space-2);
-  --a-quoted-message-border-width: 3px;
+  --a-quoted-message-border-width: var(--a-chat-accent-border-width);
   --a-quoted-message-error-font-style: italic;
   height: var(--a-quoted-message-height);
   border-radius: var(--a-quoted-message-radius);

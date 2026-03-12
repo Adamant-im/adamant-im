@@ -86,7 +86,7 @@ export default defineComponent({
   .files-preview {
     background-color: map.get(colors.$adm-colors, 'secondary');
     color: map.get(colors.$adm-colors, 'regular');
-    border-left: 3px solid map.get(colors.$adm-colors, 'attention');
+    border-left: var(--a-chat-accent-border-width) solid map.get(colors.$adm-colors, 'attention');
   }
 }
 
@@ -94,7 +94,7 @@ export default defineComponent({
   .files-preview {
     background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent2');
     color: #fff;
-    border-left: 3px solid map.get(colors.$adm-colors, 'attention');
+    border-left: var(--a-chat-accent-border-width) solid map.get(colors.$adm-colors, 'attention');
   }
 }
 </style>

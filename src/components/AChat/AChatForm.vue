@@ -423,7 +423,6 @@ defineExpose({
 .a-chat__form {
   --a-chat-send-color: #{map.get(settings.$shades, 'white')};
   --a-chat-send-color-disabled: #{map.get(colors.$adm-colors, 'muted')};
-  --a-chat-form-max-height: 230px;
   --a-chat-form-prepend-offset-y: calc(var(--a-space-1) / 2);
   --a-chat-form-prepend-offset-inline: calc(var(--a-space-2) + 1px);
   --a-chat-form-send-hit-size: calc(var(--a-control-size-sm) + 2px);
