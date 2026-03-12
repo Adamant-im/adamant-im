@@ -2,6 +2,7 @@
   <navigation-wrapper
     :class="{
       [`${className}--empty`]: !hasView && !hasTransactions,
+      [`${className}--list-loading`]: !hasView && hasTransactions && isRecentLoading,
       [`${className}--detail-loading`]: hasView && isRecentLoading
     }"
     :content-padding="false"
@@ -287,6 +288,12 @@ watch(isIDBReady, (newVal) => {
   &--empty {
     :deep(.navigation-wrapper__container--loader) {
       margin-top: var(--a-space-12);
+    }
+  }
+
+  &--list-loading {
+    .transactions-view__loading-item--recent {
+      top: var(--a-space-12);
     }
   }
 

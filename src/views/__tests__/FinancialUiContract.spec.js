@@ -178,12 +178,16 @@ describe('Financial UI style contract', () => {
     const tokensContent = readFileSync(genericTokensPath, 'utf8')
 
     expect(tokensContent).toContain('--a-transactions-loading-item-offset-top')
+    expect(tokensContent).toContain('--a-transactions-loading-item-offset-top: 0;')
     expect(tokensContent).toContain('--a-icon-base-font-size')
     expect(tokensContent).toContain('--a-icon-box-centered-size')
     expect(tokensContent).toContain('--a-color-text-muted-light')
 
     expect(transactionsContent).toContain('top: var(--a-transactions-loading-item-offset-top);')
     expect(transactionsContent).toContain('&__empty-state')
+    expect(transactionsContent).toContain('`${className}--list-loading`')
+    expect(transactionsContent).toContain('!hasView && hasTransactions && isRecentLoading')
+    expect(transactionsContent).toContain('&--list-loading')
     expect(transactionsContent).toContain('`${className}--detail-loading`')
     expect(transactionsContent).toContain('hasView && isRecentLoading')
     expect(transactionsContent).toContain('&--detail-loading')
