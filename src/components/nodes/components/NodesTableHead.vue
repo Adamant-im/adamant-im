@@ -90,22 +90,22 @@ export default {
   --a-nodes-table-head-font-size: var(--a-font-size-xs);
   --a-nodes-table-head-padding-inline-end: var(--a-space-2);
 
-  &__th {
+  th.nodes-table-head__th {
     font-size: var(--a-nodes-table-head-font-size);
-    padding-left: 0 !important;
-    padding-right: var(--a-nodes-table-head-padding-inline-end) !important;
+    padding-left: 0;
+    padding-right: var(--a-nodes-table-head-padding-inline-end);
   }
 
-  &__checkbox {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+  th.nodes-table-head__checkbox {
+    padding-left: 0;
+    padding-right: 0;
   }
 
-  &__label {
+  th.nodes-table-head__label {
     font-size: var(--a-nodes-table-head-font-size);
     width: var(--a-nodes-table-head-label-width);
-    padding-left: 0 !important;
-    padding-right: var(--a-nodes-table-head-padding-inline-end) !important;
+    padding-left: 0;
+    padding-right: var(--a-nodes-table-head-padding-inline-end);
   }
 }
 

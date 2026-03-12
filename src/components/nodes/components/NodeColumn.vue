@@ -57,16 +57,16 @@ export default defineComponent({
   --a-node-column-padding-inline-end: var(--a-space-2);
 
   font-size: var(--a-node-column-font-size);
-  padding-left: 0 !important;
-  padding-right: var(--a-node-column-padding-inline-end) !important;
+  padding-left: 0;
+  padding-right: var(--a-node-column-padding-inline-end);
 
   &--checkbox {
     width: var(--a-node-column-checkbox-width);
     max-width: var(--a-node-column-checkbox-width);
-    padding-right: 0 !important;
+    padding-right: 0;
   }
   &--ping {
-    padding-right: var(--a-node-column-padding-inline-end) !important;
+    padding-right: var(--a-node-column-padding-inline-end);
   }
 
   &--align-right {

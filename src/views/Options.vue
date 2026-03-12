@@ -188,13 +188,14 @@
         </v-col>
       </v-row>
       <v-row gap="0">
-        <div
+        <button
+          type="button"
           :class="`${className}__version_info`"
           @click="onVersionClick"
           data-test-id="version-info"
         >
           {{ t('options.version') }} {{ appVersion }}
-        </div>
+        </button>
       </v-row>
     </template>
   </navigation-wrapper>
@@ -479,7 +480,9 @@ onBeforeUnmount(() => {
     margin-left: auto;
     margin-top: var(--a-space-6);
     margin-bottom: var(--a-space-4);
-    cursor: pointer;
+    padding: 0;
+    border: 0;
+    background: transparent;
     user-select: none;
 
     &:hover {

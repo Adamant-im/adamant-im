@@ -1,5 +1,5 @@
 <template>
-  <tr :class="classes.item" @click="handleClick">
+  <tr :class="[classes.item, classes.itemInteractive]" @click="handleClick">
     <td
       :class="{
         [classes.td]: true,
@@ -63,6 +63,7 @@ export default {
     const className = 'delegates-table-item'
     const classes = {
       item: className,
+      itemInteractive: `${className}--interactive`,
       details: `${className}__details`,
       detailsCell: `${className}__details-cell`,
       td: `${className}__td`,
@@ -102,22 +103,22 @@ export default {
   --a-delegates-table-item-padding-inline-end: var(--a-space-2);
   --a-delegates-table-item-padding-inline-start-primary: var(--a-space-4);
 
-  &__td {
-    font-size: var(--a-delegates-table-item-font-size);
-    padding-left: 0 !important;
-    padding-right: var(--a-delegates-table-item-padding-inline-end) !important;
-  }
-
-  td:first-child {
-    padding-left: var(--a-delegates-table-item-padding-inline-start-primary) !important;
-  }
-
-  &__td-username {
+  &--interactive {
     cursor: pointer;
   }
 
-  &__details-cell {
-    padding: 0 !important;
+  td.delegates-table-item__td {
+    font-size: var(--a-delegates-table-item-font-size);
+    padding-left: 0;
+    padding-right: var(--a-delegates-table-item-padding-inline-end);
+  }
+
+  td.delegates-table-item__td-username {
+    padding-left: var(--a-delegates-table-item-padding-inline-start-primary);
+  }
+
+  td.delegates-table-item__details-cell {
+    padding: 0;
   }
 }
 

@@ -45,14 +45,14 @@ export default {
   --a-delegates-table-head-padding-inline-end: var(--a-space-2);
   --a-delegates-table-head-padding-inline-start-primary: var(--a-space-4);
 
-  &__td {
+  th.delegates-table-head__td {
     font-size: var(--a-delegates-table-head-font-size);
-    padding-left: 0 !important;
-    padding-right: var(--a-delegates-table-head-padding-inline-end) !important;
+    padding-left: 0;
+    padding-right: var(--a-delegates-table-head-padding-inline-end);
   }
 
-  &__td--primary {
-    padding-left: var(--a-delegates-table-head-padding-inline-start-primary) !important;
+  th.delegates-table-head__td--primary {
+    padding-left: var(--a-delegates-table-head-padding-inline-start-primary);
   }
 }
 

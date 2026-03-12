@@ -46,12 +46,9 @@
       </span>
       <span v-else-if="!node.hasSupportedProtocol" :class="classes.statusTextValueNoWrap">
         {{ nodeStatusDetail.text }}
-        <v-icon
-          :icon="mdiHelpCircleOutline"
-          size="small"
-          :class="classes.detailHelpIcon"
-          @click="$emit('showHttpInfo')"
-        />
+        <button type="button" :class="classes.detailHelpButton" @click="$emit('showHttpInfo')">
+          <v-icon :icon="mdiHelpCircleOutline" size="small" :class="classes.detailHelpIcon" />
+        </button>
       </span>
       <template v-else>
         {{ nodeStatusDetail.text }}
@@ -81,6 +78,7 @@ const classes = {
   statusTitleTextMuted: `${className}__status-title-text--muted`,
   statusText: `${className}__status-text`,
   statusTextValueNoWrap: `${className}__status-text-value--nowrap`,
+  detailHelpButton: `${className}__detail-help-button`,
   detailHelpIcon: `${className}__detail-help-icon`,
   spinner: `${className}__spinner`,
   icon: `${className}__icon`,
@@ -141,7 +139,7 @@ export default defineComponent({
   }
 
   &__status-title-text {
-    line-height: 1;
+    line-height: var(--a-node-status-title-line-height);
   }
 
   &__status-text {
@@ -163,17 +161,22 @@ export default defineComponent({
     margin-inline-start: var(--a-node-status-indicator-offset-inline-start);
 
     :deep(svg) {
-      animation-duration: 2.2s !important;
+      animation-duration: var(--a-node-status-spinner-animation-duration) !important;
     }
 
     :deep(.v-progress-circular__overlay) {
-      animation-duration: 2.2s !important;
+      animation-duration: var(--a-node-status-spinner-animation-duration) !important;
     }
   }
-  &__detail-help-icon {
+  &__detail-help-button {
     margin-inline-start: var(--a-space-1);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    line-height: 0;
+  }
+  &__detail-help-icon {
     margin-bottom: 0;
-    cursor: pointer;
   }
 
   &__text-ms {

@@ -100,12 +100,17 @@ describe('Votes UI style contract', () => {
     expect(itemContent).toContain('var(--a-font-size-sm)')
     expect(itemContent).toContain('var(--a-space-2)')
     expect(itemContent).toContain('var(--a-space-4)')
+    expect(itemContent).toContain('itemInteractive')
+    expect(itemContent).toContain('&--interactive')
+    expect(itemContent).toContain('cursor: pointer;')
     expect(itemContent).toContain('detailsCell')
-    expect(itemContent).toContain('&__details-cell')
+    expect(itemContent).toContain('td.delegates-table-item__details-cell')
     expect(itemContent).not.toContain('class="pl-4 pr-2"')
     expect(itemContent).not.toContain('class="pl-0 pr-2"')
     expect(itemContent).not.toContain('class="pa-0"')
     expect(itemContent).not.toContain('font-size: 14px;')
+    expect(itemContent).not.toContain('padding-left: 0 !important;')
+    expect(itemContent).not.toContain('padding: 0 !important;')
   })
 
   it('uses shared compact spacing tokens in delegate details expander', () => {
