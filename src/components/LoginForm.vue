@@ -11,8 +11,7 @@
           @keydown.enter.prevent="submit"
           :label="t('login.password_label')"
           autocomplete="current-password"
-          :class="classes.textField"
-          class="text-center"
+          :class="[classes.textField, classes.textFieldCentered]"
           :type="showPassphrase ? 'text' : 'password'"
           variant="underlined"
         >
@@ -79,7 +78,8 @@ import {
 const className = 'login-form'
 const classes = {
   root: className,
-  textField: `${className}__textfield`
+  textField: `${className}__textfield`,
+  textFieldCentered: `${className}__textfield--centered`
 }
 
 type Props = {
@@ -185,6 +185,10 @@ defineExpose({
       padding-right: var(--a-login-form-passphrase-input-padding-inline);
       padding-left: var(--a-login-form-passphrase-input-padding-inline);
     }
+  }
+
+  &__textfield--centered {
+    text-align: center;
   }
 
   &__submit-row {

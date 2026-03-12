@@ -109,7 +109,7 @@
       </template>
     </v-text-field>
 
-    <div class="text-center">
+    <div :class="`${className}__actions`">
       <v-btn :class="`${className}__export_keys_button`" class="a-btn-primary" type="submit">
         {{ t('options.export_keys.button') }}
       </v-btn>
@@ -288,6 +288,10 @@ export default defineComponent({
   &__export_keys_button {
     margin-top: var(--a-export-keys-button-margin-top);
     margin-bottom: var(--a-export-keys-button-margin-bottom);
+  }
+
+  &__actions {
+    text-align: center;
   }
   &__copy_all_button {
     padding-inline-end: 0;

@@ -49,6 +49,8 @@ describe('Nodes UI style contract', () => {
     const shellContent = readFileSync(settingsTableShellPath, 'utf8')
 
     expect(content).toContain('<SettingsTableShell :class="classes.root">')
+    expect(content).toContain('checkboxSection')
+    expect(content).toContain('description')
     expect(shellContent).toContain('--a-settings-table-shell-bleed-inline-start')
     expect(shellContent).toContain('--a-settings-table-shell-bleed-inline-end')
     expect(shellContent).toContain('--a-settings-table-shell-section-inline-start: 0px;')
@@ -66,6 +68,8 @@ describe('Nodes UI style contract', () => {
     expect(shellContent).not.toContain('margin-right: -24px;')
     expect(shellContent).not.toContain('margin-left: -16px;')
     expect(shellContent).not.toContain('margin-right: -16px;')
+    expect(content).not.toContain('class="mt-4"')
+    expect(content).not.toContain('class="a-text-explanation-enlarged mt-6"')
   })
 
   it('uses tokenized typography and spacing in node cells and status widgets', () => {

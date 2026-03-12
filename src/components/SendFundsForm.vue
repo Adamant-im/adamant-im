@@ -142,7 +142,7 @@
       />
       <v-checkbox v-if="debug" v-model="dryRun" label="Dry run" color="grey darken-1" />
 
-      <div class="text-center">
+      <div :class="`${className}__actions`">
         <v-btn :class="`${className}__button`" class="a-btn-primary" @click="confirm">
           {{ $t('transfer.send_button') }}
         </v-btn>
@@ -1005,6 +1005,10 @@ export default {
 
   &__button {
     margin-top: var(--a-send-funds-button-margin-top);
+  }
+
+  &__actions {
+    text-align: center;
   }
   &__amount-input {
     :deep(.v-field__field) {

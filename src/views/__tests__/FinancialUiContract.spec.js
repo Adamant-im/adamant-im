@@ -40,6 +40,7 @@ describe('Financial UI style contract', () => {
     expect(content).toContain('--a-send-funds-button-margin-top')
     expect(content).toContain('--a-send-funds-amount-label-size')
     expect(content).toContain('--a-send-funds-confirm-spinner-gap')
+    expect(content).toContain('__actions')
     expect(content).toContain('COMMON_INLINE_SPINNER_SIZE')
     expect(content).toContain('inputActionMenu.a-input-action-menu()')
     expect(content).toContain('__menu-list')
@@ -49,6 +50,7 @@ describe('Financial UI style contract', () => {
     expect(content).toContain('var(--a-font-size-sm)')
     expect(metricsContent).toContain('COMMON_INLINE_SPINNER_SIZE = 24')
     expect(content).not.toContain('class="mr-4"')
+    expect(content).not.toContain('class="text-center"')
     expect(content).not.toContain('size="24"')
     expect(content).not.toContain('margin-top: 15px;')
 
@@ -175,8 +177,8 @@ describe('Financial UI style contract', () => {
     expect(tokensContent).toContain('--a-icon-box-centered-size')
 
     expect(transactionsContent).toContain('top: var(--a-transactions-loading-item-offset-top);')
-    expect(transactionsContent).toContain('--a-transactions-empty-state-margin-top')
     expect(transactionsContent).toContain('&__empty-state')
+    expect(transactionsContent).toContain('margin-top: var(--a-space-6);')
     expect(transactionsContent).not.toContain('top: 20px;')
     expect(transactionsContent).not.toContain('class="a-text-caption text-center mt-6"')
 

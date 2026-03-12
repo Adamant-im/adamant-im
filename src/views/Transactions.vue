@@ -1,5 +1,6 @@
 <template>
   <navigation-wrapper
+    :class="{ [`${className}--empty`]: !hasView && !hasTransactions }"
     :content-padding="false"
     :ready-to-show="isFulfilled"
     @scroll-content="onScroll"
@@ -265,7 +266,6 @@ watch(isIDBReady, (newVal) => {
 <style lang="scss" scoped>
 .transactions-view {
   --a-transactions-loading-item-padding-inline: var(--a-screen-padding-inline);
-  --a-transactions-empty-state-margin-top: var(--a-space-6);
 
   &__loading-item {
     padding-inline: var(--a-transactions-loading-item-padding-inline);
@@ -277,8 +277,14 @@ watch(isIDBReady, (newVal) => {
   }
 
   &__empty-state {
-    margin-top: var(--a-transactions-empty-state-margin-top);
+    margin: 0;
     text-align: center;
+  }
+
+  &--empty {
+    :deep(.navigation-wrapper__container--loader) {
+      margin-top: var(--a-space-12);
+    }
   }
 }
 </style>

@@ -5,7 +5,7 @@
         <h4 :class="classes.sectionTitle">{{ t('dev_wallets.configuration') }}</h4>
 
         <v-row gap="0">
-          <v-col cols="12" md="4" class="pr-0 pr-md-2 mb-3">
+          <v-col cols="12" md="4" :class="classes.fieldColumn">
             <v-autocomplete
               v-model="selectedCoin"
               :items="coinOptions"
@@ -19,7 +19,7 @@
             />
           </v-col>
 
-          <v-col cols="12" md="4" class="pr-0 pr-md-2 mb-3">
+          <v-col cols="12" md="4" :class="classes.fieldColumn">
             <v-autocomplete
               v-model="selectedBlockchain"
               :items="blockchainOptions"
@@ -35,7 +35,7 @@
             />
           </v-col>
 
-          <v-col cols="12" md="4" class="mb-3">
+          <v-col cols="12" md="4" :class="[classes.fieldColumn, classes.fieldColumnLast]">
             <v-autocomplete
               v-model="selectedProperty"
               :items="propertyOptions"
@@ -91,6 +91,8 @@ const className = 'dev-wallets-view'
 const classes = {
   section: `${className}__section`,
   sectionTitle: `${className}__section-title`,
+  fieldColumn: `${className}__field-column`,
+  fieldColumnLast: `${className}__field-column--last`,
   resultContainer: `${className}__result-container`,
   resultCard: `${className}__result-card`,
   jsonOutput: `${className}__json-output`
@@ -209,6 +211,21 @@ const mobileMenuProps = computed(() => {
     margin-bottom: var(--a-dev-screen-section-title-gap);
     padding-bottom: var(--a-dev-screen-section-title-padding-bottom);
     border-bottom: 1px solid;
+  }
+
+  &__field-column {
+    margin-bottom: var(--a-space-3);
+    padding-inline-end: 0;
+
+    @media #{map.get(settings.$display-breakpoints, 'md-and-up')} {
+      padding-inline-end: var(--a-space-2);
+    }
+  }
+
+  &__field-column--last {
+    @media #{map.get(settings.$display-breakpoints, 'md-and-up')} {
+      padding-inline-end: 0;
+    }
   }
 
   &__result-container {

@@ -100,6 +100,8 @@ describe('Login UI style contract', () => {
     expect(content).toContain('AUTH_FORM_SUBMIT_SPINNER_SIZE')
     expect(content).toContain('login-form__submit-spinner')
     expect(content).toContain('login-form__submit-row')
+    expect(content).toContain('textFieldCentered')
+    expect(content).toContain('&__textfield--centered')
     expect(content).toContain('var(--a-control-size-sm)')
     expect(content).toContain('var(--a-auth-control-button-size)')
 
@@ -108,6 +110,7 @@ describe('Login UI style contract', () => {
     expect(content).not.toContain('padding-left: 32px;')
     expect(content).not.toContain('const passphraseToggleSize = 28')
     expect(content).not.toContain('class="mr-4"')
+    expect(content).not.toContain('class="text-center"')
     expect(content).not.toContain('size="24"')
   })
 

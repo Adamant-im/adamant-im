@@ -28,12 +28,11 @@
         <v-checkbox
           v-model="preferFastestCoinNodeOption"
           :label="t('nodes.fastest_title')"
-          :class="classes.checkbox"
-          class="mt-4"
+          :class="[classes.checkbox, classes.checkboxSection]"
           color="grey darken-1"
           hide-details
         />
-        <div class="a-text-explanation-enlarged">
+        <div :class="['a-text-explanation-enlarged', classes.description]">
           {{ t('nodes.fastest_tooltip') }}
         </div>
         <div>&nbsp;<br />&nbsp;</div>
@@ -42,12 +41,11 @@
         <v-checkbox
           v-model="preferFasterServiceNodeOption"
           :label="t('nodes.fastest_title')"
-          :class="classes.checkbox"
-          class="mt-4"
+          :class="[classes.checkbox, classes.checkboxSection]"
           color="grey darken-1"
           hide-details
         />
-        <div class="a-text-explanation-enlarged">
+        <div :class="['a-text-explanation-enlarged', classes.description]">
           {{ t('nodes.fastest_tooltip') }}
         </div>
         <div>&nbsp;<br />&nbsp;</div>
@@ -56,30 +54,27 @@
         <v-checkbox
           v-model="preferFastestAdmNodeOption"
           :label="t('nodes.fastest_title')"
-          :class="classes.checkbox"
-          class="mt-4"
+          :class="[classes.checkbox, classes.checkboxSection]"
           color="grey darken-1"
           hide-details
         />
-        <div class="a-text-explanation-enlarged">
+        <div :class="['a-text-explanation-enlarged', classes.description]">
           {{ t('nodes.fastest_tooltip') }}
         </div>
         <v-checkbox
           v-model="useSocketConnection"
           :label="t('nodes.use_socket_connection')"
-          :class="classes.checkbox"
-          class="mt-4"
+          :class="[classes.checkbox, classes.checkboxSection]"
           color="grey darken-1"
           hide-details
         />
-        <div class="a-text-explanation-enlarged">
+        <div :class="['a-text-explanation-enlarged', classes.description]">
           {{ t('nodes.use_socket_connection_tooltip') }}
         </div>
 
         <!-- eslint-disable vue/no-v-html -- Safe internal content -->
         <div
-          :class="classes.info"
-          class="a-text-explanation-enlarged mt-6"
+          :class="['a-text-explanation-enlarged', classes.info]"
           v-html="t('nodes.nodeLabelDescription')"
         />
         <!-- eslint-enable vue/no-v-html -->
@@ -106,7 +101,9 @@ const className = 'nodes-table'
 const classes = {
   root: className,
   info: `${className}__info`,
-  checkbox: `${className}__checkbox`
+  checkbox: `${className}__checkbox`,
+  checkboxSection: `${className}__checkbox-section`,
+  description: `${className}__description`
 }
 
 const { t } = useI18n()
@@ -167,6 +164,14 @@ const preferFasterServiceNodeOption = computed<boolean>({
 @use '@/assets/styles/settings/_colors.scss';
 
 .nodes-table {
+  &__checkbox-section {
+    margin-top: var(--a-space-4);
+  }
+
+  &__description {
+    margin-top: var(--a-space-2);
+  }
+
   :deep(.v-tab) {
     text-transform: uppercase;
   }

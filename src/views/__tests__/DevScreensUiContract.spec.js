@@ -75,11 +75,17 @@ describe('Dev screens UI style contract', () => {
     expect(vibrationsContent).toContain(
       'padding-bottom: var(--a-dev-screen-section-title-padding-bottom);'
     )
+    expect(vibrationsContent).toContain('playColumn')
+    expect(vibrationsContent).toContain('presetColumn')
+    expect(vibrationsContent).toContain('&__play-column')
+    expect(vibrationsContent).toContain('&__preset-column')
     expect(vibrationsContent).not.toContain('padding: 24px;')
     expect(vibrationsContent).not.toContain('padding: 16px;')
     expect(vibrationsContent).not.toContain('margin-bottom: 32px;')
     expect(vibrationsContent).not.toContain('margin-bottom: 16px;')
     expect(vibrationsContent).not.toContain('padding-bottom: 8px;')
+    expect(vibrationsContent).not.toContain('class="pl-3"')
+    expect(vibrationsContent).not.toContain('class="mb-3"')
 
     expect(walletsContent).toContain('margin-bottom: var(--a-dev-screen-section-gap);')
     expect(walletsContent).toContain('margin-bottom: var(--a-dev-screen-section-title-gap);')
@@ -98,6 +104,10 @@ describe('Dev screens UI style contract', () => {
     expect(walletsContent).toContain('padding: var(--a-dev-screen-code-padding-mobile);')
     expect(walletsContent).toContain('border-radius: var(--a-dev-screen-code-border-radius);')
     expect(walletsContent).toContain('max-height: var(--a-dev-screen-code-max-height);')
+    expect(walletsContent).toContain('fieldColumn')
+    expect(walletsContent).toContain('fieldColumnLast')
+    expect(walletsContent).toContain('&__field-column')
+    expect(walletsContent).toContain('&__field-column--last')
     expect(walletsContent).not.toContain('font-size: 12px;')
     expect(walletsContent).not.toContain('font-size: 11px;')
     expect(walletsContent).not.toContain('font-size: 10px;')
@@ -106,6 +116,8 @@ describe('Dev screens UI style contract', () => {
     expect(walletsContent).not.toContain('border-radius: 4px;')
     expect(walletsContent).not.toContain('max-height: 400px;')
     expect(walletsContent).not.toContain('max-height: 300px;')
+    expect(walletsContent).not.toContain('class="pr-0 pr-md-2 mb-3"')
+    expect(walletsContent).not.toContain('class="mb-3"')
   })
 
   it('uses shared tokenized typography in icon file glyphs', () => {
