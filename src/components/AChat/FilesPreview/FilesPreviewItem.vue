@@ -25,7 +25,10 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 
-import { CHAT_FILES_PREVIEW_REMOVE_ICON_SIZE } from '@/components/AChat/helpers/uiMetrics'
+import {
+  CHAT_FILES_PREVIEW_REMOVE_ICON_SIZE,
+  CHAT_FILES_PREVIEW_SIZE
+} from '@/components/AChat/helpers/uiMetrics'
 import { extractFileExtension, formatFileExtension, FileData } from '@/lib/files'
 import IconFile from '@/components/icons/common/IconFile.vue'
 import { mdiClose } from '@mdi/js'
@@ -39,7 +42,7 @@ const classes = {
   removeIcon: `${className}__remove-icon`,
   fileName: `${className}__file-name`
 }
-const previewSize = 80
+const previewSize = CHAT_FILES_PREVIEW_SIZE
 
 export default defineComponent({
   components: {
@@ -75,11 +78,11 @@ export default defineComponent({
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .preview-file {
-  width: calc(var(--a-space-10) * 2);
+  width: var(--a-chat-files-preview-size);
 
   &__preview {
-    width: calc(var(--a-space-10) * 2);
-    height: calc(var(--a-space-10) * 2);
+    width: var(--a-chat-files-preview-size);
+    height: var(--a-chat-files-preview-size);
     position: relative;
   }
 
@@ -99,8 +102,8 @@ export default defineComponent({
 
   &__remove-icon {
     position: absolute;
-    top: calc(var(--a-space-1) / 2);
-    right: calc(var(--a-space-1) / 2);
+    top: var(--a-chat-files-preview-remove-offset);
+    right: var(--a-chat-files-preview-remove-offset);
     border-radius: 50%;
   }
 }

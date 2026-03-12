@@ -84,7 +84,7 @@ export default defineComponent({
 
 <style lang="scss">
 .message-actions-dropdown {
-  --a-chat-message-actions-dropdown-top-gap: 0px;
+  --a-chat-message-actions-dropdown-top-gap: var(--a-chat-message-actions-dropdown-top-gap);
   --a-chat-message-actions-dropdown-transition-duration: var(--a-motion-slow);
   --a-chat-message-actions-dropdown-transition-scale-from: 0.94;
   position: relative;

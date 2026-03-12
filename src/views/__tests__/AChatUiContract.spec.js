@@ -101,7 +101,9 @@ describe('AChat UI style contract', () => {
     expect(content).toContain('CHAT_MODAL_FILE_MAX_WIDTH')
     expect(content).toContain('CHAT_MODAL_FILE_MAX_HEIGHT')
     expect(content).toContain('CHAT_MODAL_FILE_ICON_SIZE')
+    expect(content).toContain('CHAT_FILES_PREVIEW_SIZE')
     expect(content).toContain('CHAT_FILES_PREVIEW_REMOVE_ICON_SIZE')
+    expect(content).toContain('CHAT_FORM_SEND_ICON_SIZE')
     expect(content).toContain('CHAT_REACTION_AVATAR_SIZE')
     expect(content).toContain('QUOTED_MESSAGE_LOADING_SPINNER_SIZE')
     expect(commonMetricsContent).toContain('COMMON_ICON_SIZE = 24')
@@ -162,6 +164,7 @@ describe('AChat UI style contract', () => {
 
     expect(listContent).toContain('--a-chat-message-actions-list-offset-top')
     expect(menuContent).toContain('--a-chat-message-actions-menu-overlay-inset-inline')
+    expect(tokensContent).toContain('--a-chat-message-actions-dropdown-top-gap')
     expect(tokensContent).toContain('--a-chat-actions-overlay-reaction-height')
     expect(overlayContent).toContain('--a-chat-actions-overlay-reaction-height')
     expect(overlayContent).toContain('--a-chat-actions-overlay-reaction-gap')
@@ -191,7 +194,16 @@ describe('AChat UI style contract', () => {
       "background-color: map.get(colors.$adm-colors, 'regular');"
     )
 
+    expect(tokensContent).toContain('--a-chat-reaction-size')
+    expect(tokensContent).toContain('--a-chat-reaction-emoji-size')
+    expect(tokensContent).toContain('--a-chat-reaction-animation-duration')
     expect(tokensContent).toContain('--a-chat-reaction-avatar-offset')
+    expect(reactionContent).toContain('width: var(--a-chat-reaction-size);')
+    expect(reactionContent).toContain('height: var(--a-chat-reaction-size);')
+    expect(reactionContent).toContain('font-size: var(--a-chat-reaction-emoji-size);')
+    expect(reactionContent).toContain(
+      'animation: animate__heartBeat var(--a-chat-reaction-animation-duration) ease-in-out;'
+    )
     expect(reactionContent).toContain('bottom: calc(var(--a-chat-reaction-avatar-offset) * -1);')
     expect(reactionContent).toContain('right: calc(var(--a-chat-reaction-avatar-offset) * -1);')
     expect(reactionContent).not.toContain('bottom: -9px;')
@@ -229,6 +241,21 @@ describe('AChat UI style contract', () => {
     expect(transactionContent).not.toContain(
       ":style=\"checkStatusUpdatable(status) ? 'cursor: pointer;' : 'cursor: default;'\""
     )
+  })
+
+  it('uses shared preview sizing tokens in files preview items', () => {
+    const filesPreviewItemContent = readFileSync(filesPreviewItemPath, 'utf8')
+    const tokensContent = readFileSync(genericTokensPath, 'utf8')
+
+    expect(filesPreviewItemContent).toContain('CHAT_FILES_PREVIEW_SIZE')
+    expect(filesPreviewItemContent).toContain('width: var(--a-chat-files-preview-size);')
+    expect(filesPreviewItemContent).toContain('height: var(--a-chat-files-preview-size);')
+    expect(filesPreviewItemContent).toContain('top: var(--a-chat-files-preview-remove-offset);')
+    expect(filesPreviewItemContent).toContain('right: var(--a-chat-files-preview-remove-offset);')
+    expect(tokensContent).toContain('--a-chat-files-preview-size')
+    expect(tokensContent).toContain('--a-chat-files-preview-remove-offset')
+    expect(filesPreviewItemContent).not.toContain('const previewSize = 80')
+    expect(filesPreviewItemContent).not.toContain('width: calc(var(--a-space-10) * 2);')
   })
 
   it('uses sender-vs-current-user direction for reactions and overlays, including self-chat', () => {
@@ -287,8 +314,19 @@ describe('AChat UI style contract', () => {
 
     expect(content).toContain('QUOTED_MESSAGE_LOADING_SPINNER_SIZE')
     expect(tokensContent).toContain('--a-chat-form-max-height')
+    expect(tokensContent).toContain('--a-chat-form-prepend-offset-y')
+    expect(tokensContent).toContain('--a-chat-form-prepend-offset-inline')
+    expect(tokensContent).toContain('--a-chat-form-send-hit-size')
     expect(tokensContent).toContain('--a-chat-accent-border-width')
+    expect(formContent).toContain('const sendIconSize = CHAT_FORM_SEND_ICON_SIZE')
     expect(formContent).toContain('max-height: var(--a-chat-form-max-height);')
+    expect(formContent).toContain(
+      '--a-chat-form-prepend-offset-y: var(--a-chat-form-prepend-offset-y);'
+    )
+    expect(formContent).toContain(
+      '--a-chat-form-prepend-offset-inline: var(--a-chat-form-prepend-offset-inline);'
+    )
+    expect(formContent).toContain('--a-chat-form-send-hit-size: var(--a-chat-form-send-hit-size);')
     expect(content).toContain('--a-quoted-message-height')
     expect(content).toContain('--a-quoted-message-radius')
     expect(content).toContain('--a-quoted-message-padding-block')
@@ -342,7 +380,9 @@ describe('AChat UI style contract', () => {
     expect(metricsContent).toContain('CHAT_MODAL_FILE_MAX_WIDTH = 500')
     expect(metricsContent).toContain('CHAT_MODAL_FILE_MAX_HEIGHT = 250')
     expect(metricsContent).toContain('CHAT_MODAL_FILE_ICON_SIZE = 128')
+    expect(metricsContent).toContain('CHAT_FILES_PREVIEW_SIZE = 80')
     expect(metricsContent).toContain('CHAT_FILES_PREVIEW_REMOVE_ICON_SIZE = 18')
+    expect(metricsContent).toContain('CHAT_FORM_SEND_ICON_SIZE = 22')
     expect(metricsContent).toContain('QUOTED_MESSAGE_LOADING_SPINNER_SIZE = 16')
     expect(metricsContent).toContain('CHAT_REACTION_AVATAR_SIZE = 16')
 
@@ -360,6 +400,7 @@ describe('AChat UI style contract', () => {
     expect(tokensContent).toContain('--a-chat-reply-preview-line-height')
     expect(tokensContent).toContain('--a-chat-files-preview-file-name-font-size')
     expect(replyPreviewContent).toContain('line-height: var(--a-chat-reply-preview-line-height);')
+    expect(filesPreviewItemContent).toContain('CHAT_FILES_PREVIEW_SIZE')
     expect(filesPreviewItemContent).toContain('CHAT_FILES_PREVIEW_REMOVE_ICON_SIZE')
     expect(filesPreviewItemContent).toContain(
       'font-size: var(--a-chat-files-preview-file-name-font-size);'

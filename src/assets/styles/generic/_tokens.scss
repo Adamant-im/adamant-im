@@ -134,10 +134,19 @@
   --a-chat-preview-item-padding-inline-end: var(--a-space-6);
   --a-chat-preview-heading-gap: calc(var(--a-space-1) / 2);
   --a-chat-form-max-height: 230px;
+  --a-chat-form-prepend-offset-y: calc(var(--a-space-1) / 2);
+  --a-chat-form-prepend-offset-inline: calc(var(--a-space-2) + var(--a-border-width-thin));
+  --a-chat-form-send-hit-size: calc(var(--a-control-size-sm) + var(--a-border-width-strong));
   --a-chat-actions-overlay-reaction-height: 46px;
   --a-chat-accent-border-width: 3px;
   --a-chat-trigger-hover-inset: 3px;
-  --a-chat-reaction-avatar-offset: calc(var(--a-space-2) + 1px);
+  --a-chat-reaction-size: var(--a-space-6);
+  --a-chat-reaction-emoji-size: var(--a-space-4);
+  --a-chat-reaction-animation-duration: 1500ms;
+  --a-chat-reaction-avatar-offset: calc(var(--a-space-2) + var(--a-border-width-thin));
+  --a-chat-files-preview-size: calc(var(--a-space-10) * 2);
+  --a-chat-files-preview-remove-offset: calc(var(--a-space-1) / 2);
+  --a-chat-message-actions-dropdown-top-gap: 0px;
   --a-logo-size: 213px;
   --a-logo-size-lg: 300px;
   --a-emoji-picker-radius: var(--a-radius-sm);
@@ -229,6 +238,7 @@
   --a-dev-screen-card-text-padding-top: var(--a-space-2);
   --a-dev-screen-card-text-max-height: 400px;
   --a-dev-screen-code-max-height: 300px;
+  --a-dev-screen-mobile-menu-max-height: calc(100vh - 100px);
   --a-layout-max-width: 1300px;
   --a-layout-content-max-width: 800px;
   --a-layout-split-max-width: 1512px;

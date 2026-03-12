@@ -188,7 +188,7 @@ const copyValue = () => {
 const mobileMenuProps = computed(() => {
   if (window.innerWidth < 768) {
     return {
-      maxHeight: 'calc(100vh - 100px)'
+      maxHeight: 'var(--a-dev-screen-mobile-menu-max-height)'
     }
   }
   return {}

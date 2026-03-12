@@ -60,6 +60,7 @@ import { useI18n } from 'vue-i18n'
 import { VALIDATION_ERRORS } from '@/lib/constants'
 import { getMessageSubmitAction } from '@/components/AChat/helpers/messageInputKeypress'
 import { resetTextareaAutogrow } from '@/components/AChat/helpers/resetTextareaAutogrow'
+import { CHAT_FORM_SEND_ICON_SIZE } from '@/components/AChat/helpers/uiMetrics'
 
 const store = useStore()
 const chatStateStore = useChatStateStore()
@@ -103,7 +104,7 @@ const latestInputType = ref('')
 const messageInputRoot = useTemplateRef<HTMLElement | null>('messageInputRoot')
 
 const className = 'a-chat'
-const sendIconSize = 22
+const sendIconSize = CHAT_FORM_SEND_ICON_SIZE
 const maxTextareaRows = 10
 const getMessageLineCount = (value: string) => value.split('\n').length
 const classList = computed(() => [
@@ -423,9 +424,9 @@ defineExpose({
 .a-chat__form {
   --a-chat-send-color: #{map.get(settings.$shades, 'white')};
   --a-chat-send-color-disabled: #{map.get(colors.$adm-colors, 'muted')};
-  --a-chat-form-prepend-offset-y: calc(var(--a-space-1) / 2);
-  --a-chat-form-prepend-offset-inline: calc(var(--a-space-2) + 1px);
-  --a-chat-form-send-hit-size: calc(var(--a-control-size-sm) + 2px);
+  --a-chat-form-prepend-offset-y: var(--a-chat-form-prepend-offset-y);
+  --a-chat-form-prepend-offset-inline: var(--a-chat-form-prepend-offset-inline);
+  --a-chat-form-send-hit-size: var(--a-chat-form-send-hit-size);
 
   :deep(.v-text-field__slot) textarea {
     max-height: var(--a-chat-form-max-height);

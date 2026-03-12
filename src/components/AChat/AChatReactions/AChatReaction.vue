@@ -97,19 +97,19 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: space-around;
-  width: var(--a-space-6);
-  height: var(--a-space-6);
+  width: var(--a-chat-reaction-size);
+  height: var(--a-chat-reaction-size);
   position: relative;
 
   &__emoji {
     text-align: center;
     vertical-align: middle;
     line-height: 1;
-    font-size: var(--a-space-4);
+    font-size: var(--a-chat-reaction-emoji-size);
   }
 
   &__emoji--animate {
-    animation: animate__heartBeat 1.5s ease-in-out;
+    animation: animate__heartBeat var(--a-chat-reaction-animation-duration) ease-in-out;
   }
 
   &__avatar {

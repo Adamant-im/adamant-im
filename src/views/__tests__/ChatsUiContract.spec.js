@@ -20,6 +20,7 @@ const chatMessageActionsPath = path.resolve(
   currentDir,
   '../../components/Chat/ChatMessageActions.vue'
 )
+const chatAvatarPath = path.resolve(currentDir, '../../components/Chat/ChatAvatar.vue')
 
 describe('Chats UI style contract', () => {
   it('stores shared chat toolbar and chats sizing metrics in helper constants', () => {
@@ -199,6 +200,20 @@ describe('Chats UI style contract', () => {
     expect(content).toContain(':size="CHAT_CONNECTION_SPINNER_SIZE"')
     expect(content).toContain('margin-right: var(--a-space-1);')
     expect(content).not.toMatch(/\.chat-avatar\s*\{[^}]*margin-right:\s*var\(--a-space-3\);/s)
+  })
+
+  it('uses semantic avatar sizing styles and hidden canvas class in chat avatar', () => {
+    const content = readFileSync(chatAvatarPath, 'utf8')
+
+    expect(content).toContain(':style="avatarSizeStyles"')
+    expect(content).toContain("'--a-chat-avatar-size': `${this.size}px`")
+    expect(content).toContain(':class="`${className}__canvas`"')
+    expect(content).toContain('width: var(--a-chat-avatar-size);')
+    expect(content).toContain('height: var(--a-chat-avatar-size);')
+    expect(content).toContain('&__canvas {')
+    expect(content).toContain('display: none;')
+    expect(content).not.toContain(':style="styles"')
+    expect(content).not.toContain(`:style="{ display: 'none' }"`)
   })
 
   it('only uses global Enter to focus composer when no editable element is already focused', () => {

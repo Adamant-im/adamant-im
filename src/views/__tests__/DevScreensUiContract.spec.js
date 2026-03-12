@@ -36,6 +36,7 @@ describe('Dev screens UI style contract', () => {
     expect(tokensContent).toContain('--a-dev-screen-card-text-padding-top')
     expect(tokensContent).toContain('--a-dev-screen-card-text-max-height')
     expect(tokensContent).toContain('--a-dev-screen-code-max-height')
+    expect(tokensContent).toContain('--a-dev-screen-mobile-menu-max-height')
     expect(tokensContent).toContain('--a-icon-file-text-font-size')
   })
 
@@ -100,6 +101,7 @@ describe('Dev screens UI style contract', () => {
     )
     expect(walletsContent).toContain('padding-top: var(--a-dev-screen-card-text-padding-top);')
     expect(walletsContent).toContain('max-height: var(--a-dev-screen-card-text-max-height);')
+    expect(walletsContent).toContain("maxHeight: 'var(--a-dev-screen-mobile-menu-max-height)'")
     expect(walletsContent).toContain('font-size: var(--a-dev-screen-code-font-size);')
     expect(walletsContent).toContain('font-size: var(--a-dev-screen-code-font-size-md);')
     expect(walletsContent).toContain('font-size: var(--a-dev-screen-code-font-size-sm);')
@@ -113,6 +115,7 @@ describe('Dev screens UI style contract', () => {
     expect(walletsContent).toContain('&__field-column')
     expect(walletsContent).toContain('&__field-column--last')
     expect(walletsContent).not.toContain('font-size: 12px;')
+    expect(walletsContent).not.toContain("maxHeight: 'calc(100vh - 100px)'")
     expect(walletsContent).not.toContain('font-size: 11px;')
     expect(walletsContent).not.toContain('font-size: 10px;')
     expect(walletsContent).not.toContain('padding: 12px;')
