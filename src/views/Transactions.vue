@@ -1,6 +1,9 @@
 <template>
   <navigation-wrapper
-    :class="{ [`${className}--empty`]: !hasView && !hasTransactions }"
+    :class="{
+      [`${className}--empty`]: !hasView && !hasTransactions,
+      [`${className}--detail-loading`]: hasView && isRecentLoading
+    }"
     :content-padding="false"
     :ready-to-show="isFulfilled"
     @scroll-content="onScroll"
@@ -284,6 +287,16 @@ watch(isIDBReady, (newVal) => {
   &--empty {
     :deep(.navigation-wrapper__container--loader) {
       margin-top: var(--a-space-12);
+    }
+  }
+
+  &--detail-loading {
+    :deep(.navigation-wrapper__container--loader) {
+      margin-top: var(--a-space-12);
+    }
+
+    .transactions-view__loading-item--recent {
+      top: 0;
     }
   }
 }

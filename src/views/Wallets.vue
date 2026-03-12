@@ -28,7 +28,7 @@
       </div>
 
       <template #after>
-        <v-row align="center" no-gutters :class="`${classes.root}__review`">
+        <v-row align="center" :class="`${classes.root}__review`">
           <v-spacer />
           <WalletResetDialog></WalletResetDialog>
         </v-row>
@@ -170,6 +170,7 @@ onBeforeUnmount(() => {
   }
 
   &__review {
+    margin: 0;
     padding-top: var(--a-wallets-review-padding-block) !important;
     padding-bottom: var(--a-wallets-review-padding-block) !important;
   }

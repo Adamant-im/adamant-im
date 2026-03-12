@@ -27,7 +27,7 @@
       />
 
       <template #after>
-        <v-row align="center" no-gutters :class="`${className}__review`">
+        <v-row align="center" :class="`${className}__review`">
           <pagination-component
             v-if="showPagination"
             v-model="pagination.page"
@@ -232,6 +232,7 @@ const showConfirmationDialog = () => {
     }
   }
   &__review {
+    margin: 0;
     padding-top: var(--a-space-4) !important;
     padding-bottom: var(--a-space-4) !important;
   }

@@ -50,14 +50,14 @@ describe('Wallets UI style contract', () => {
   it('uses shared spacing variable for wallets footer review row', () => {
     const content = readFileSync(walletsViewPath, 'utf8')
 
-    expect(content).toContain(
-      '<v-row align="center" no-gutters :class="`${classes.root}__review`">'
-    )
+    expect(content).toContain('<v-row align="center" :class="`${classes.root}__review`">')
     expect(content).toContain('--a-wallets-review-padding-block')
     expect(content).toContain('var(--a-wallets-review-padding-block)')
     expect(content).toContain('var(--a-space-4)')
+    expect(content).toContain('margin: 0;')
     expect(content).toContain('&__empty-state')
     expect(content).not.toContain('class="text-center"')
+    expect(content).not.toContain('no-gutters')
     expect(content).not.toContain('class="align-center v-row--no-gutters"')
     expect(content).not.toContain('padding-top: 15px !important;')
     expect(content).not.toContain('padding-bottom: 15px !important;')

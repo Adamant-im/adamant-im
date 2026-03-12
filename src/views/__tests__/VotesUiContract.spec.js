@@ -42,6 +42,7 @@ const delegatesNotFoundPath = path.resolve(
   currentDir,
   '../../components/DelegatesTable/DelegatesNotFound.vue'
 )
+const useChatNamePath = path.resolve(currentDir, '../../components/AChat/hooks/useChatName.ts')
 const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
 const commonUiMetricsPath = path.resolve(currentDir, '../../components/common/helpers/uiMetrics.ts')
 
@@ -53,12 +54,11 @@ describe('Votes UI style contract', () => {
     expect(votesContent).toContain('<SettingsTableShell :class="`${className}__layout`">')
     expect(votesContent).toContain('<template #before>')
     expect(votesContent).toContain('<template #after>')
-    expect(votesContent).toContain(
-      '<v-row align="center" no-gutters :class="`${className}__review`">'
-    )
+    expect(votesContent).toContain('<v-row align="center" :class="`${className}__review`">')
     expect(votesContent).toContain('`${className}__pagination`')
     expect(votesContent).toContain('<v-spacer />')
     expect(votesContent).toContain("['a-text-explanation-enlarged', `${className}__info`]")
+    expect(votesContent).toContain('margin: 0;')
     expect(votesContent).toContain('padding: var(--a-space-5) 0;')
     expect(votesContent).toContain('padding-top: var(--a-space-4) !important;')
     expect(votesContent).toContain('padding-bottom: var(--a-space-4) !important;')
@@ -66,6 +66,7 @@ describe('Votes UI style contract', () => {
     expect(votesContent).toContain('&__review-button')
     expect(votesContent).toContain('&__pagination')
     expect(votesContent).not.toContain('class="a-btn-primary ma-2"')
+    expect(votesContent).not.toContain('no-gutters')
     expect(votesContent).not.toContain('class="align-center v-row--no-gutters"')
     expect(votesContent).not.toContain('padding: 20px 16px !important;')
     expect(votesContent).not.toContain('padding-top: 15px !important;')
@@ -182,5 +183,15 @@ describe('Votes UI style contract', () => {
     expect(notFoundContent).not.toContain('color="rgba(0, 0, 0, 0.54)"')
     expect(notFoundContent).not.toContain('margin-top: 4px;')
     expect(notFoundContent).not.toContain('margin-bottom: 4px;')
+  })
+
+  it('translates built-in Adamant chat labels only when a locale key exists', () => {
+    const content = readFileSync(useChatNamePath, 'utf8')
+
+    expect(content).toContain('const { t, te } = useI18n()')
+    expect(content).toContain(
+      'return te(chatName.value) ? t(chatName.value) : chatName.value || addressValue'
+    )
+    expect(content).not.toContain('return t(chatName.value)')
   })
 })
