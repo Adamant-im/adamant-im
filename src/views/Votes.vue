@@ -27,7 +27,7 @@
       />
 
       <template #after>
-        <v-row class="align-center v-row--no-gutters" :class="`${className}__review`">
+        <v-row align="center" no-gutters :class="`${className}__review`">
           <pagination-component
             v-if="showPagination"
             v-model="pagination.page"

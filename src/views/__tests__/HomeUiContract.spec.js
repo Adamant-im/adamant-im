@@ -36,6 +36,7 @@ describe('Home UI style contract', () => {
     const tokensContent = readFileSync(genericTokensPath, 'utf8')
     const content = readFileSync(homePath, 'utf8')
 
+    expect(content).toContain('<v-row justify="center" no-gutters :class="className">')
     expect(tokensContent).toContain('--a-account-tabs-slider-height')
     expect(tokensContent).toContain('--a-account-tabs-padding-top')
     expect(tokensContent).toContain('--a-account-tabs-padding-bottom')
@@ -76,6 +77,7 @@ describe('Home UI style contract', () => {
     expect(content).not.toContain('padding-top: 10px;')
     expect(content).not.toContain('margin-bottom: 10px;')
     expect(content).not.toContain('min-width: 84px;')
+    expect(content).not.toContain('class="justify-center v-row--no-gutters"')
   })
 
   it('uses shared wallet card spacing and typography tokens', () => {

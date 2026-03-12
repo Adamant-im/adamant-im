@@ -28,7 +28,7 @@
       </div>
 
       <template #after>
-        <v-row class="align-center v-row--no-gutters" :class="`${classes.root}__review`">
+        <v-row align="center" no-gutters :class="`${classes.root}__review`">
           <v-spacer />
           <WalletResetDialog></WalletResetDialog>
         </v-row>

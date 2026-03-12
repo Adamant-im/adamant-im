@@ -53,6 +53,9 @@ describe('Votes UI style contract', () => {
     expect(votesContent).toContain('<SettingsTableShell :class="`${className}__layout`">')
     expect(votesContent).toContain('<template #before>')
     expect(votesContent).toContain('<template #after>')
+    expect(votesContent).toContain(
+      '<v-row align="center" no-gutters :class="`${className}__review`">'
+    )
     expect(votesContent).toContain('`${className}__pagination`')
     expect(votesContent).toContain('<v-spacer />')
     expect(votesContent).toContain("['a-text-explanation-enlarged', `${className}__info`]")
@@ -63,6 +66,7 @@ describe('Votes UI style contract', () => {
     expect(votesContent).toContain('&__review-button')
     expect(votesContent).toContain('&__pagination')
     expect(votesContent).not.toContain('class="a-btn-primary ma-2"')
+    expect(votesContent).not.toContain('class="align-center v-row--no-gutters"')
     expect(votesContent).not.toContain('padding: 20px 16px !important;')
     expect(votesContent).not.toContain('padding-top: 15px !important;')
     expect(shellContent).toContain('--a-settings-table-shell-bleed-inline-start')

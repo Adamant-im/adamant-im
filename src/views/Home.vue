@@ -1,6 +1,6 @@
 <template>
   <pull-down @action="updateBalances" :action-text="t('chats.pull_down_actions.update_balances')">
-    <v-row class="justify-center v-row--no-gutters" :class="className">
+    <v-row justify="center" no-gutters :class="className">
       <container disableMaxWidth>
         <v-sheet class="white--text" color="transparent" :class="`${className}__card`">
           <!-- Wallets -->
