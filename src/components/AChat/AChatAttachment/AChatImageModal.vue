@@ -434,7 +434,6 @@ export default {
 .a-chat-image-modal {
   --a-chat-image-modal-surface: transparent;
   --a-chat-image-modal-backdrop-color: rgb(0 0 0 / 40%);
-  --a-chat-image-modal-backdrop-blur: 3px;
 
   &__container {
     position: relative;

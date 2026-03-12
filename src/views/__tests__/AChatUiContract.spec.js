@@ -319,10 +319,12 @@ describe('AChat UI style contract', () => {
     expect(modalFileContent).toContain('CHAT_MODAL_FILE_MAX_HEIGHT')
     expect(modalFileContent).toContain('CHAT_MODAL_FILE_ICON_SIZE')
     expect(modalFileContent).toContain('var(--a-chat-modal-file-name-max-width)')
+    expect(modalFileContent).toContain('border: var(--a-border-width-thin) solid')
     expect(modalFileContent).not.toContain('const fileMaxWidth = 500')
     expect(modalFileContent).not.toContain('const fileMaxHeight = 250')
     expect(modalFileContent).not.toContain('const iconSize = 128')
     expect(modalFileContent).not.toContain('max-width: 220px;')
+    expect(modalFileContent).not.toContain('border: 1px solid')
 
     expect(tokensContent).toContain('--a-chat-reply-preview-line-height')
     expect(tokensContent).toContain('--a-chat-files-preview-file-name-font-size')
@@ -382,6 +384,7 @@ describe('AChat UI style contract', () => {
     expect(content).toContain('--a-chat-image-modal-surface')
     expect(content).toContain('--a-chat-image-modal-backdrop-color')
     expect(content).toContain('--a-chat-image-modal-backdrop-blur')
+    expect(content).toContain('var(--a-chat-image-modal-backdrop-blur)')
     expect(content).toContain('background-color: var(--a-chat-image-modal-surface) !important;')
     expect(content).toContain(':deep(.v-overlay__scrim) {')
     expect(content).toContain('opacity: 1 !important;')
@@ -408,6 +411,7 @@ describe('AChat UI style contract', () => {
     expect(content).toContain('--a-chat-image-modal-surface: transparent;')
     expect(content).toMatch(/--a-chat-image-modal-backdrop-color:\s*rgb\(0 0 0 \/ \d+%\);/)
     expect(content).toMatch(/--a-chat-image-modal-backdrop-color:\s*rgb\(18 22 30 \/ \d+%\);/)
+    expect(content).not.toContain('--a-chat-image-modal-backdrop-blur: 3px;')
     expect(content).toContain('&__content {')
     expect(content).not.toContain(
       '<v-card :class="classes.container" @click.capture="handleBackgroundClick">'

@@ -111,9 +111,9 @@ import type { IScannerControls } from '@zxing/browser'
 import { Scanner } from '@/lib/zxing'
 import { mdiCamera } from '@mdi/js'
 import { logger } from '@/utils/devTools/logger'
+import { QRCODE_SCANNER_WAITING_SPINNER_SIZE } from '@/components/Qrcode/helpers/uiMetrics'
 
 const className = 'qrcode-scanner-dialog'
-const QRCODE_SCANNER_WAITING_SPINNER_SIZE = 32
 const classes = {
   root: className,
   camera: `${className}__camera`,

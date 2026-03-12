@@ -121,7 +121,8 @@ export default defineComponent({
   .a-chat-modal-file {
     &__card {
       background-color: map.get(colors.$adm-colors, 'black2');
-      border: 1px solid map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
+      border: var(--a-border-width-thin) solid
+        map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
     }
 
     &__file-name {
@@ -138,7 +139,7 @@ export default defineComponent({
   .a-chat-modal-file {
     &__card {
       background-color: map.get(colors.$adm-colors, 'secondary2');
-      border: 1px solid map.get(colors.$adm-colors, 'secondary');
+      border: var(--a-border-width-thin) solid map.get(colors.$adm-colors, 'secondary');
     }
 
     &__file-name {

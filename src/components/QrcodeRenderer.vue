@@ -8,10 +8,10 @@
 <script>
 import InlineSpinner from '@/components/InlineSpinner.vue'
 import { logger } from '@/utils/devTools/logger'
+import { QRCODE_RENDERER_SPINNER_SIZE } from '@/components/Qrcode/helpers/uiMetrics'
 import QRCode from 'qrcode'
 
 const className = 'qrcode-renderer'
-const QRCODE_RENDERER_SPINNER_SIZE = 152
 
 export default {
   props: {
