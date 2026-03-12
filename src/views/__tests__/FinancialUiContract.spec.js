@@ -178,7 +178,7 @@ describe('Financial UI style contract', () => {
 
     expect(transactionsContent).toContain('top: var(--a-transactions-loading-item-offset-top);')
     expect(transactionsContent).toContain('&__empty-state')
-    expect(transactionsContent).toContain('margin-top: var(--a-space-6);')
+    expect(transactionsContent).toContain('margin-top: var(--a-space-12);')
     expect(transactionsContent).not.toContain('top: 20px;')
     expect(transactionsContent).not.toContain('class="a-text-caption text-center mt-6"')
 
