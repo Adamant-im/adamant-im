@@ -30,7 +30,7 @@
           </v-list-item-subtitle>
         </v-list-item>
       </v-list>
-      <v-row align="center" justify="center" class="pb-6" gap="0">
+      <v-row align="center" justify="center" :class="`${className}__qrcode-row`" gap="0">
         <QrcodeRenderer :logo="logo" :opts="opts" :text="text" />
       </v-row>
     </v-card>
@@ -110,6 +110,10 @@ const text = computed(() =>
 
   &__list {
     background: inherit;
+  }
+
+  &__qrcode-row {
+    padding-bottom: var(--a-space-6);
   }
 }
 

@@ -343,8 +343,8 @@
 }
 
 .logo {
-  width: 213px;
-  height: 213px;
+  width: var(--a-logo-size);
+  height: var(--a-logo-size);
   border: 1px solid #f1f1f1;
   border-radius: 50% !important;
   background-color: map.get(settings.$shades, 'white');
@@ -358,8 +358,8 @@
 }
 @media #{map.get(settings.$display-breakpoints, 'sm-and-up')} {
   .logo {
-    width: 300px;
-    height: 300px;
+    width: var(--a-logo-size-lg);
+    height: var(--a-logo-size-lg);
   }
 }
 </style>

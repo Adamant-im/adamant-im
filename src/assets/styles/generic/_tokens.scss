@@ -127,6 +127,8 @@
   --a-chat-preview-item-padding-inline-start: var(--a-space-5);
   --a-chat-preview-item-padding-inline-end: var(--a-space-6);
   --a-chat-preview-heading-gap: calc(var(--a-space-1) / 2);
+  --a-logo-size: 213px;
+  --a-logo-size-lg: 300px;
   --a-emoji-picker-radius: var(--a-radius-sm);
   --a-emoji-picker-size: 264px;
   --a-emoji-picker-border-width: var(--a-border-width-thin);
@@ -192,6 +194,9 @@
   --a-node-status-max-width: 80px;
   --a-node-status-detail-offset-block-start: calc(var(--a-space-1) / 2);
   --a-node-compact-status-column-max-width: 84px;
+  --a-node-column-checkbox-width: 64px;
+  --a-node-column-checkbox-width-mobile: 56px;
+  --a-nodes-table-head-label-width: 104px;
   --a-node-label-height: 18px;
   --a-node-label-padding-inline: var(--a-space-1);
   --a-icon-file-text-font-size: 112px;

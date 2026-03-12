@@ -55,8 +55,6 @@ export default defineComponent({
 .node-column {
   --a-node-column-font-size: var(--a-font-size-sm);
   --a-node-column-padding-inline-end: var(--a-space-2);
-  --a-node-column-checkbox-width: 64px;
-  --a-node-column-checkbox-width-mobile: 56px;
 
   font-size: var(--a-node-column-font-size);
   padding-left: 0 !important;

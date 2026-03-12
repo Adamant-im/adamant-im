@@ -205,10 +205,13 @@ describe('Secondary dialogs UI contract', () => {
     expect(partnerInfoContent).toContain('COMMON_ICON_SIZE')
     expect(partnerInfoContent).toContain('bg-color="transparent"')
     expect(partnerInfoContent).toContain('background: inherit;')
+    expect(partnerInfoContent).toContain('`${className}__qrcode-row`')
+    expect(partnerInfoContent).toContain('padding-bottom: var(--a-space-6);')
     expect(partnerInfoContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
     expect(partnerInfoContent).not.toContain('max-width="360"')
     expect(partnerInfoContent).not.toContain(':size="36"')
     expect(partnerInfoContent).not.toContain(':size="24"')
+    expect(partnerInfoContent).not.toContain('class="pb-6"')
 
     expect(qrcodeRendererContent).toContain("className: () => 'qrcode-renderer-dialog'")
     expect(qrcodeRendererContent).toContain('width="var(--a-secondary-dialog-width-qrcode)"')

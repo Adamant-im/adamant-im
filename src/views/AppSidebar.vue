@@ -1,9 +1,9 @@
 <template>
   <div
-    class="d-flex justify-center ma-auto"
     :class="{
       [classes.root]: true,
-      [classes.rootWithAside]: needAside
+      [classes.rootWithAside]: needAside,
+      [classes.frame]: true
     }"
     :style="{
       '--asideWidth': asideWidth,
@@ -24,8 +24,8 @@
     <div :class="[classes.layout, 'a-scroll-pane']" ref="sidebarLayout">
       <component :is="layout">
         <div
-          class="d-flex justify-center"
           :class="{
+            [classes.routerViewHost]: true,
             [classes.routerView]: true,
             [classes.routerViewNoAside]: !needAside,
             [classes.routerViewLogo]: showLogo
@@ -67,9 +67,11 @@ const className = 'sidebar'
 
 const classes = {
   root: className,
+  frame: `${className}__frame`,
   rootWithAside: `${className}__with-aside`,
   aside: `${className}__aside`,
   asideHasView: `${className}__aside--has-view`,
+  routerViewHost: `${className}__router-view-host`,
   routerView: `${className}__router-view`,
   routerViewNoAside: `${className}__router-view--no-aside`,
   routerViewLogo: `${className}__router-view--logo`,
@@ -280,9 +282,14 @@ onBeforeUnmount(() => {
   max-width: var(--a-layout-content-max-width);
   width: 100%;
 
+  &__frame {
+    justify-content: center;
+    margin: 0 auto;
+  }
+
   &__with-aside {
     max-width: var(--a-layout-split-max-width);
-    @media (min-width: 1513px) {
+    @media (min-width: variables.$layout-split-frame-breakpoint) {
       border-right: var(--a-border-width-strong) solid black;
       border-left: var(--a-border-width-strong) solid black;
     }
@@ -369,6 +376,11 @@ onBeforeUnmount(() => {
       max-width: unset;
     }
   }
+
+  &__router-view-host {
+    display: flex;
+    justify-content: center;
+  }
 }
 
 .v-theme--dark {
@@ -385,7 +397,7 @@ onBeforeUnmount(() => {
 .v-theme--light {
   .sidebar {
     &__with-aside {
-      @media (min-width: 1513px) {
+      @media (min-width: variables.$layout-split-frame-breakpoint) {
         border-right: 2px solid map.get(colors.$adm-colors, 'secondary2');
         border-left: 2px solid map.get(colors.$adm-colors, 'secondary2');
       }

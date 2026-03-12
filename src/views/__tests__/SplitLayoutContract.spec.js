@@ -54,6 +54,10 @@ describe('Split layout style contract', () => {
     expect(tokensContent).toContain('--a-layout-logo-max-width')
     expect(content).toContain('const ASIDE_RESIZE_HANDLE_WIDTH = 10')
     expect(content).toContain("'--asideResizeHandleWidth': `${ASIDE_RESIZE_HANDLE_WIDTH}px`")
+    expect(content).toContain('[classes.frame]: true')
+    expect(content).toContain('[classes.routerViewHost]: true')
+    expect(content).toContain('&__frame')
+    expect(content).toContain('&__router-view-host')
     expect(content).toContain('max-width: var(--a-layout-content-max-width);')
     expect(content).toContain('max-width: var(--a-layout-split-max-width);')
     expect(content).toContain('max-width: var(--a-layout-split-pane-max-width-ratio);')
@@ -62,11 +66,15 @@ describe('Split layout style contract', () => {
     expect(content).toContain('height: var(--a-layout-height);')
     expect(content).toContain('height: var(--a-layout-height-safe);')
     expect(content).toContain("'a-scroll-pane'")
+    expect(content).toContain('variables.$layout-split-frame-breakpoint')
+    expect(content).not.toContain('class="d-flex justify-center ma-auto"')
+    expect(content).not.toContain('class="d-flex justify-center"')
     expect(content).not.toContain('max-width: 800px;')
     expect(content).not.toContain('max-width: 1512px;')
     expect(content).not.toContain('max-width: 75%;')
     expect(content).not.toContain('width: 10px;')
     expect(content).not.toContain('max-width: 512px;')
+    expect(content).not.toContain('min-width: 1513px')
   })
 
   it('uses shared split-pane utility in chats list pane', () => {
@@ -89,6 +97,9 @@ describe('Split layout style contract', () => {
     const legacyHeightExpression = 'calc(100vh - var(--v-layout-bottom) - var(--toolbar-height))'
 
     expect(sendFundsContent).not.toContain('&__content')
+    expect(sendFundsContent).toContain('__form')
+    expect(sendFundsContent).toContain('padding-top: var(--a-space-5);')
+    expect(sendFundsContent).not.toContain('class="pt-5"')
     expect(transactionTemplateContent).not.toContain('&__content')
     expect(sendFundsContent).not.toContain(legacyHeightExpression)
     expect(transactionTemplateContent).not.toContain(legacyHeightExpression)

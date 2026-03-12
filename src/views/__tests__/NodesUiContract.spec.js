@@ -42,6 +42,7 @@ const ipfsNodesTableItemPath = path.resolve(
   currentDir,
   '../../components/nodes/ipfs/IpfsNodesTableItem.vue'
 )
+const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
 
 describe('Nodes UI style contract', () => {
   it('uses shared settings table shell with shared mobile bleed gutters', () => {
@@ -79,6 +80,7 @@ describe('Nodes UI style contract', () => {
     const metricsContent = readFileSync(nodeStatusUiMetricsPath, 'utf8')
     const labelContent = readFileSync(nodeLabelPath, 'utf8')
     const dataTableContent = readFileSync(settingsDataTablePath, 'utf8')
+    const tokensContent = readFileSync(genericTokensPath, 'utf8')
 
     expect(dataTableContent).toContain('--a-settings-data-table-line-height')
     expect(dataTableContent).toContain('var(--a-font-size-sm)')
@@ -86,10 +88,16 @@ describe('Nodes UI style contract', () => {
 
     expect(columnContent).toContain('--a-node-column-font-size')
     expect(columnContent).toContain('--a-node-column-padding-inline-end')
+    expect(tokensContent).toContain('--a-node-column-checkbox-width')
+    expect(tokensContent).toContain('--a-node-column-checkbox-width-mobile')
     expect(columnContent).toContain('var(--a-font-size-sm)')
     expect(columnContent).toContain('var(--a-space-2)')
+    expect(columnContent).toContain('var(--a-node-column-checkbox-width)')
+    expect(columnContent).toContain('var(--a-node-column-checkbox-width-mobile)')
     expect(columnContent).not.toContain('font-size: 14px;')
     expect(columnContent).not.toContain('padding-right: 8px !important;')
+    expect(columnContent).not.toContain('--a-node-column-checkbox-width: 64px;')
+    expect(columnContent).not.toContain('--a-node-column-checkbox-width-mobile: 56px;')
 
     expect(statusContent).toContain('--a-node-status-detail-font-size')
     expect(statusContent).toContain('--a-node-status-detail-font-weight')
@@ -130,13 +138,17 @@ describe('Nodes UI style contract', () => {
 
   it('uses tokenized head cells and removes utility padding classes from template', () => {
     const content = readFileSync(nodesTableHeadPath, 'utf8')
+    const tokensContent = readFileSync(genericTokensPath, 'utf8')
 
     expect(content).toContain('--a-nodes-table-head-font-size')
     expect(content).toContain('--a-nodes-table-head-padding-inline-end')
+    expect(tokensContent).toContain('--a-nodes-table-head-label-width')
     expect(content).toContain('var(--a-font-size-xs)')
     expect(content).toContain('var(--a-space-2)')
+    expect(content).toContain('width: var(--a-nodes-table-head-label-width);')
     expect(content).not.toContain('class="pl-0 pr-2"')
     expect(content).not.toContain('font-size: 12px;')
+    expect(content).not.toContain('--a-nodes-table-head-label-width: 104px;')
   })
 
   it('uses muted dark text token for node meta rows and avoids hardcoded opacity', () => {

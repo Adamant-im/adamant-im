@@ -10,6 +10,7 @@ const passphraseGeneratorPath = path.resolve(currentDir, '../../components/Passp
 const loginPasswordFormPath = path.resolve(currentDir, '../../components/LoginPasswordForm.vue')
 const loginUiMetricsPath = path.resolve(currentDir, '../../components/Login/helpers/uiMetrics.ts')
 const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
+const logoPath = path.resolve(currentDir, '../../components/icons/common/Logo.vue')
 const buttonsThemePath = path.resolve(
   currentDir,
   '../../assets/styles/themes/adamant/_buttons.scss'
@@ -50,6 +51,7 @@ describe('Login UI style contract', () => {
 
   it('uses tokenized hero spacing and removes inline logo styling', () => {
     const content = readFileSync(loginPath, 'utf8')
+    const logoContent = readFileSync(logoPath, 'utf8')
 
     expect(content).toContain('--a-login-settings-offset-inline')
     expect(content).toContain('--a-login-settings-hover-overlay-opacity')
@@ -75,8 +77,16 @@ describe('Login UI style contract', () => {
     expect(content).toContain('${className}__qr-actions-row')
     expect(content).toContain('${className}__qr-action-button')
     expect(content).toContain('${className}__logo')
+    expect(logoContent).toContain('width: var(--a-logo-size);')
+    expect(logoContent).toContain('height: var(--a-logo-size);')
+    expect(logoContent).toContain('width: var(--a-logo-size-lg);')
+    expect(logoContent).toContain('height: var(--a-logo-size-lg);')
 
     expect(content).not.toContain('style="width: 300px"')
+    expect(logoContent).not.toContain('width: 213px;')
+    expect(logoContent).not.toContain('height: 213px;')
+    expect(logoContent).not.toContain('width: 300px;')
+    expect(logoContent).not.toContain('height: 300px;')
     expect(content).not.toContain('class="hidden-sm-and-down mt-4"')
     expect(content).not.toContain('hidden-sm-and-down')
     expect(content).not.toContain('class="text-right"')

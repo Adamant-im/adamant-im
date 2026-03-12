@@ -2,7 +2,7 @@
   <navigation-wrapper :class="className">
     <send-funds-form
       ref="sendFundsFormRef"
-      class="pt-5"
+      :class="`${className}__form`"
       :crypto-currency="cryptoCurrency"
       :recipient-address="recipientAddress"
       :amount-to-send="amountToSend"
@@ -130,5 +130,9 @@ const onError = (message: string) => {
 <style scoped lang="scss">
 .send-funds {
   position: relative;
+
+  &__form {
+    padding-top: var(--a-space-5);
+  }
 }
 </style>

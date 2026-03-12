@@ -2,6 +2,8 @@ $breakpoints: (
   'mobile': 768px
 );
 
+$layout-split-frame-breakpoint: 1513px;
+
 :root {
   --toolbar-height: 56px;
   --a-safe-area-top: env(safe-area-inset-top, 0px);

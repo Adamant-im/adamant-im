@@ -89,7 +89,6 @@ export default {
 .nodes-table-head {
   --a-nodes-table-head-font-size: var(--a-font-size-xs);
   --a-nodes-table-head-padding-inline-end: var(--a-space-2);
-  --a-nodes-table-head-label-width: 104px;
 
   &__th {
     font-size: var(--a-nodes-table-head-font-size);
