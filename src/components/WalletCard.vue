@@ -131,12 +131,21 @@ const isADM = computed(() => {
 @use 'vuetify/settings';
 
 .wallet-card {
+  --a-wallet-card-surface: var(--a-color-surface-transparent);
+  --a-wallet-card-title-color: var(--a-color-text-regular);
+  --a-wallet-card-subtitle-color: var(--a-color-text-muted-light);
+  --a-wallet-card-action-color: var(--a-color-text-muted-light);
+
+  background-color: var(--a-wallet-card-surface);
+
   &__title {
     @include mixins.a-text-caption();
+    color: var(--a-wallet-card-title-color);
   }
   &__subtitle {
     @include mixins.a-text-regular-enlarged();
     line-height: var(--a-wallet-card-subtitle-line-height);
+    color: var(--a-wallet-card-subtitle-color);
     word-break: break-word;
     display: block;
     white-space: nowrap;
@@ -149,8 +158,13 @@ const isADM = computed(() => {
     }
   }
   &__list {
+    background: inherit;
     padding-block-start: var(--a-wallet-card-list-padding-top);
     padding-block-end: 0;
+  }
+
+  &__action {
+    color: var(--a-wallet-card-action-color);
   }
 }
 
@@ -162,33 +176,16 @@ const isADM = computed(() => {
 /** Themes **/
 .v-theme--light {
   .wallet-card {
-    background-color: transparent;
-    &__list {
-      background: inherit;
-    }
-    &__title {
-      color: map.get(colors.$adm-colors, 'regular');
-    }
-    &__subtitle {
-      color: map.get(colors.$adm-colors, 'muted');
-    }
-    &__action {
-      color: map.get(colors.$adm-colors, 'muted');
-    }
+    --a-wallet-card-title-color: var(--a-color-text-regular);
+    --a-wallet-card-subtitle-color: var(--a-color-text-muted-light);
+    --a-wallet-card-action-color: var(--a-color-text-muted-light);
   }
 }
 .v-theme--dark {
   .wallet-card {
-    background-color: transparent;
-    &__list {
-      background: inherit;
-    }
-    &__title {
-      color: map.get(settings.$shades, 'white');
-    }
-    &__subtitle {
-      color: var(--a-color-text-muted-dark);
-    }
+    --a-wallet-card-title-color: var(--a-color-text-inverse);
+    --a-wallet-card-subtitle-color: var(--a-color-text-muted-dark);
+    --a-wallet-card-action-color: var(--a-color-text-inverse);
   }
 }
 </style>

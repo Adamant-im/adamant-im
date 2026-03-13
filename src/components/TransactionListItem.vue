@@ -286,11 +286,16 @@ export default {
   --a-transaction-item-padding-inline: var(--a-screen-padding-inline);
   --a-transaction-item-note-weight: 100;
   --a-transaction-item-note-prefix-style: var(--a-font-style-emphasis);
-  --a-transaction-item-rates-color-dark: var(--a-color-text-muted-dark);
   --a-transaction-item-rates-style: var(--a-font-style-emphasis);
+  --a-transaction-item-amount-color: var(--a-color-text-regular);
+  --a-transaction-item-rates-color: var(--a-color-text-muted-light);
+  --a-transaction-item-icon-color: var(--a-color-text-muted-light);
+  --a-transaction-item-status-attention-color: var(--a-color-status-attention);
+  --a-transaction-item-status-danger-color: var(--a-color-status-danger);
+  --a-transaction-item-status-success-color: var(--a-color-status-success);
 
   &__rates {
-    color: var(--a-transaction-item-rates-color-dark);
+    color: var(--a-transaction-item-rates-color);
     font-style: var(--a-transaction-item-rates-style);
     @include mixins.a-text-regular();
     margin-left: var(--a-transaction-item-rates-gap);
@@ -319,10 +324,10 @@ export default {
     font-weight: var(--a-transaction-item-note-weight);
   }
   &__status {
-    color: map.get(colors.$adm-colors, 'attention');
+    color: var(--a-transaction-item-status-attention-color);
 
     &--REJECTED {
-      color: map.get(colors.$adm-colors, 'danger');
+      color: var(--a-transaction-item-status-danger-color);
     }
   }
   // Do not break computed length of v-divider
@@ -338,40 +343,36 @@ export default {
 /** Themes **/
 .v-theme--light.v-list {
   .transaction-item {
-    &__amount,
-    &__prependIcon {
-      color: map.get(colors.$adm-colors, 'regular');
+    --a-transaction-item-amount-color: var(--a-color-text-regular);
+    --a-transaction-item-rates-color: var(--a-color-text-muted-light);
+    --a-transaction-item-icon-color: var(--a-color-text-muted-light);
+
+    &__amount {
+      color: var(--a-transaction-item-amount-color);
       &--is-incoming {
-        color: map.get(colors.$adm-colors, 'good');
+        color: var(--a-transaction-item-status-success-color);
       }
       &--is-outgoing {
-        color: map.get(colors.$adm-colors, 'danger');
-      }
-    }
-    &__rates {
-      color: map.get(colors.$adm-colors, 'muted');
-      &--is-incoming {
-        color: map.get(colors.$adm-colors, 'good');
-      }
-      &--is-outgoing {
-        color: map.get(colors.$adm-colors, 'danger');
+        color: var(--a-transaction-item-status-danger-color);
       }
     }
     &__icon {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-transaction-item-icon-color);
     }
   }
 }
 .v-theme--dark.v-list {
   .transaction-item {
-    &__amount,
-    &__prependIcon {
-      color: map.get(colors.$adm-colors, 'grey-transparent');
+    --a-transaction-item-amount-color: var(--a-color-text-muted-dark);
+    --a-transaction-item-rates-color: var(--a-color-text-muted-dark);
+
+    &__amount {
+      color: var(--a-transaction-item-amount-color);
       &--is-incoming {
-        color: map.get(colors.$adm-colors, 'good');
+        color: var(--a-transaction-item-status-success-color);
       }
       &--is-outgoing {
-        color: map.get(colors.$adm-colors, 'danger');
+        color: var(--a-transaction-item-status-danger-color);
       }
     }
   }

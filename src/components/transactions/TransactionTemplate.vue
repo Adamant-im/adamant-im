@@ -418,7 +418,11 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
   --a-transaction-view-row-padding-inline: var(--a-screen-padding-inline);
   --a-transaction-view-status-font-size: var(--a-financial-text-font-size);
   --a-transaction-view-status-font-weight: var(--a-financial-text-font-weight);
+  --a-transaction-view-value-muted-color: var(--a-color-text-muted-light);
   --a-transaction-view-value-muted-color-dark: var(--a-color-text-muted-dark);
+  --a-transaction-view-status-danger-color: var(--a-color-status-danger);
+  --a-transaction-view-status-success-color: var(--a-color-status-success);
+  --a-transaction-view-status-attention-color: var(--a-color-status-attention);
 
   &__list {
     :deep(.v-list-item--density-default.v-list-item--one-line) {
@@ -467,14 +471,14 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
   }
 
   &__invalid-status-icon {
-    color: var(--a-color-status-attention);
+    color: var(--a-transaction-view-status-attention-color);
   }
 }
 
 .v-theme--light {
   .transaction-view {
     &__value-muted {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-transaction-view-value-muted-color);
     }
   }
 }
@@ -491,22 +495,22 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
 .v-theme--dark {
   .transaction-view {
     &__inconsistent-status--REJECTED {
-      color: map.get(colors.$adm-colors, 'danger');
+      color: var(--a-transaction-view-status-danger-color);
     }
     &__inconsistent-status--PENDING {
-      color: map.get(colors.$adm-colors, 'attention');
+      color: var(--a-transaction-view-status-attention-color);
     }
     &__inconsistent-status--REGISTERED {
-      color: map.get(colors.$adm-colors, 'attention');
+      color: var(--a-transaction-view-status-attention-color);
     }
     &__inconsistent-status--CONFIRMED {
-      color: map.get(colors.$adm-colors, 'good');
+      color: var(--a-transaction-view-status-success-color);
     }
     &__inconsistent-status--INVALID {
-      color: map.get(colors.$adm-colors, 'attention');
+      color: var(--a-transaction-view-status-attention-color);
     }
     &__inconsistent-status--UNKNOWN {
-      color: map.get(colors.$adm-colors, 'attention');
+      color: var(--a-transaction-view-status-attention-color);
     }
   }
 }

@@ -95,7 +95,7 @@ watch(currentBalance, (newBalance, oldBalance) => {
 @use 'vuetify/settings';
 
 .wallet-tab {
-  --a-wallet-tab-rates-color-dark: var(--a-color-text-muted-dark);
+  --a-wallet-tab-rates-color: var(--a-color-text-muted-light);
 
   display: flex;
   flex-direction: column;
@@ -153,18 +153,18 @@ watch(currentBalance, (newBalance, oldBalance) => {
 
 .v-theme--light {
   .wallet-tab {
-    &__rates {
-      color: map.get(colors.$adm-colors, 'muted');
-    }
+    --a-wallet-tab-rates-color: var(--a-color-text-muted-light);
   }
 }
 
 .v-theme--dark {
   .wallet-tab {
-    &__rates {
-      color: var(--a-wallet-tab-rates-color-dark);
-    }
+    --a-wallet-tab-rates-color: var(--a-color-text-muted-dark);
   }
+}
+
+.wallet-tab__rates {
+  color: var(--a-wallet-tab-rates-color);
 }
 
 .v-tab--selected {

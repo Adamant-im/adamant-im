@@ -115,13 +115,21 @@ const getFreeTokens = () => {
   --a-wallet-actions-item-padding-inline: var(--a-wallet-card-item-padding-inline-start);
   --a-wallet-actions-row-min-height: var(--a-list-row-min-height);
   --a-wallet-actions-row-padding-block: var(--a-list-row-padding-block);
+  --a-wallet-actions-title-color: var(--a-color-text-regular);
+  --a-wallet-actions-icon-color: var(--a-color-text-regular);
+  --a-wallet-actions-icon-opacity: 1;
 
   &__title {
     @include mixins.a-text-caption-light();
+    color: var(--a-wallet-actions-title-color);
+  }
+  &__icon {
+    color: var(--a-wallet-actions-icon-color);
   }
   :deep(.v-list-item__prepend) {
     > .v-icon {
       margin-inline-end: var(--a-wallet-actions-icon-gap);
+      opacity: var(--a-wallet-actions-icon-opacity);
     }
   }
   :deep(.v-list-item) {
@@ -134,12 +142,12 @@ const getFreeTokens = () => {
   }
   :deep(.v-list-item__prepend) {
     > .v-icon {
-      opacity: unset;
+      opacity: var(--a-wallet-actions-icon-opacity);
     }
   }
   :deep(.v-list-item__append) {
     > .v-icon {
-      opacity: unset;
+      opacity: var(--a-wallet-actions-icon-opacity);
     }
   }
 }
@@ -147,19 +155,15 @@ const getFreeTokens = () => {
 /** Themes **/
 .v-theme--light {
   .wallet-actions {
-    &__title,
-    &__icon {
-      color: map.get(colors.$adm-colors, 'regular');
-    }
+    --a-wallet-actions-title-color: var(--a-color-text-regular);
+    --a-wallet-actions-icon-color: var(--a-color-text-regular);
   }
 }
 
 .v-theme--dark {
   .wallet-actions {
-    &__title,
-    &__icon {
-      color: map.get(settings.$shades, 'white');
-    }
+    --a-wallet-actions-title-color: var(--a-color-text-inverse);
+    --a-wallet-actions-icon-color: var(--a-color-text-inverse);
   }
 }
 </style>
