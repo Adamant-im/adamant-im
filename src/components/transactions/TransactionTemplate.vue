@@ -467,7 +467,7 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
   }
 
   &__invalid-status-icon {
-    color: var(--a-color-status-attention) !important;
+    color: var(--a-color-status-attention);
   }
 }
 
@@ -491,22 +491,22 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
 .v-theme--dark {
   .transaction-view {
     &__inconsistent-status--REJECTED {
-      color: map.get(colors.$adm-colors, 'danger') !important;
+      color: map.get(colors.$adm-colors, 'danger');
     }
     &__inconsistent-status--PENDING {
-      color: map.get(colors.$adm-colors, 'attention') !important;
+      color: map.get(colors.$adm-colors, 'attention');
     }
     &__inconsistent-status--REGISTERED {
-      color: map.get(colors.$adm-colors, 'attention') !important;
+      color: map.get(colors.$adm-colors, 'attention');
     }
     &__inconsistent-status--CONFIRMED {
-      color: map.get(colors.$adm-colors, 'good') !important;
+      color: map.get(colors.$adm-colors, 'good');
     }
     &__inconsistent-status--INVALID {
-      color: map.get(colors.$adm-colors, 'attention') !important;
+      color: map.get(colors.$adm-colors, 'attention');
     }
     &__inconsistent-status--UNKNOWN {
-      color: map.get(colors.$adm-colors, 'attention') !important;
+      color: map.get(colors.$adm-colors, 'attention');
     }
   }
 }

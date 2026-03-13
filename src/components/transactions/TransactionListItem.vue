@@ -70,7 +70,7 @@ export default defineComponent({
       color: map.get(colors.$adm-colors, 'regular');
     }
     &__value {
-      color: map.get(colors.$adm-colors, 'regular') !important;
+      color: map.get(colors.$adm-colors, 'regular');
     }
   }
 }

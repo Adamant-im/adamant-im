@@ -319,7 +319,7 @@ watch(currentWallet, (value) => {
         background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
       }
       :deep(.v-tabs-slider) {
-        background-color: map.get(colors.$adm-colors, 'primary') !important;
+        background-color: map.get(colors.$adm-colors, 'primary');
       }
       :deep(.v-tab) {
         &:not(.v-tab--selected) {
@@ -361,7 +361,7 @@ watch(currentWallet, (value) => {
         background-color: transparent;
       }
       :deep(.v-tabs-slider) {
-        background-color: map.get(colors.$adm-colors, 'primary') !important;
+        background-color: map.get(colors.$adm-colors, 'primary');
       }
       :deep(.v-tabs .v-slide-group__prev .v-icon),
       :deep(.v-tabs .v-slide-group__next .v-icon) {

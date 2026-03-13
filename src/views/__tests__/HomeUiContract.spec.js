@@ -67,6 +67,9 @@ describe('Home UI style contract', () => {
     expect(content).toContain('var(--a-account-tab-affix-width)')
     expect(content).toContain('var(--a-account-tab-icon-offset)')
     expect(content).toContain('var(--a-radius-round)')
+    expect(content).not.toContain(
+      "background-color: map.get(colors.$adm-colors, 'primary') !important;"
+    )
 
     expect(content).not.toContain('font-size: 16px;')
     expect(content).not.toContain('flex-basis: 32px;')

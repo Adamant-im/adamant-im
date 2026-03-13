@@ -169,10 +169,10 @@ onBeforeUnmount(() => {
     margin: 0;
   }
 
-  &__review {
+  &__review.v-row {
     margin: 0;
-    padding-top: var(--a-wallets-review-padding-block) !important;
-    padding-bottom: var(--a-wallets-review-padding-block) !important;
+    padding-top: var(--a-wallets-review-padding-block);
+    padding-bottom: var(--a-wallets-review-padding-block);
   }
 
   &__empty-state {

@@ -55,12 +55,15 @@ describe('Wallets UI style contract', () => {
     expect(content).toContain('var(--a-wallets-review-padding-block)')
     expect(content).toContain('var(--a-space-4)')
     expect(content).toContain('margin: 0;')
+    expect(content).toContain('&__review.v-row')
     expect(content).toContain('&__empty-state')
     expect(content).not.toContain('class="text-center"')
     expect(content).not.toContain('no-gutters')
     expect(content).not.toContain('class="align-center v-row--no-gutters"')
-    expect(content).not.toContain('padding-top: 15px !important;')
-    expect(content).not.toContain('padding-bottom: 15px !important;')
+    expect(content).not.toContain('padding-top: var(--a-wallets-review-padding-block) !important;')
+    expect(content).not.toContain(
+      'padding-bottom: var(--a-wallets-review-padding-block) !important;'
+    )
   })
 
   it('uses tokenized paddings in wallets search input', () => {

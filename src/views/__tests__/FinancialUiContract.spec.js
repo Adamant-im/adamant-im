@@ -109,6 +109,9 @@ describe('Financial UI style contract', () => {
     expect(content).not.toContain('size="20"')
     expect(content).not.toContain('transition-duration: 1s;')
     expect(content).not.toContain('style="color: #f8a061 !important"')
+    expect(content).not.toContain('color: var(--a-color-status-attention) !important;')
+    expect(content).not.toContain("color: map.get(colors.$adm-colors, 'danger') !important;")
+    expect(content).not.toContain("color: map.get(colors.$adm-colors, 'good') !important;")
   })
 
   it('keeps transaction list item text styling in stylesheet, not inline attributes', () => {
@@ -127,6 +130,7 @@ describe('Financial UI style contract', () => {
     expect(content).not.toContain('style="font-style: italic"')
     expect(content).not.toContain('style="font-weight: 100"')
     expect(content).not.toContain('font-style: italic;')
+    expect(content).not.toContain("color: map.get(colors.$adm-colors, 'regular') !important;")
     expect(content).not.toContain('padding-inline: 24px;')
     expect(content).not.toContain('hsla(0, 0%, 100%, 0.7)')
   })
@@ -141,7 +145,7 @@ describe('Financial UI style contract', () => {
     expect(content).toContain('var(--a-financial-text-font-weight)')
     expect(content).toContain('font-size: var(--a-transaction-list-item-font-size);')
     expect(content).toContain('font-weight: var(--a-transaction-list-item-font-weight);')
-    expect(content).toContain("color: map.get(colors.$adm-colors, 'regular') !important;")
+    expect(content).toContain("color: map.get(colors.$adm-colors, 'regular');")
     expect(content).not.toContain('--a-transaction-list-item-value-color-dark')
     expect(content).not.toContain('font-size: 14px;')
     expect(content).not.toContain('font-weight: 300;')
