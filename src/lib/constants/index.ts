@@ -258,3 +258,61 @@ export const VALIDATION_ERRORS = {
 } as const
 
 export const sidebarLayoutKey = Symbol('sidebarLayout')
+
+/**
+ * Native Push notifications for Web/Android, Desktop
+ * @see https://github.com/Adamant-im/adamant-im/issues/881
+ */
+
+export const ADAMANT_NOTIFICATION_SERVICE_ADDRESS = 'U922832474468487910'
+export const ADAMANT_NOTIFICATION_SERVICE_PUBLIC_KEY =
+  'e62976484f30862e26765ad98a5835fbccc43a50de59c56bd2e0b4989ee2e0af'
+export const VAPID_KEY =
+  'BOUaH-qBAFhcEzR3sETwqJDDP-WjWShYr3NAXFQwHTXT0ZIQirLuTTgL7U20kAzsFD5FE4nvTWbF1iSiAMGnyiY'
+
+/** * Time to wait (in ms) before retrying push notification registration
+ */
+export const PUSH_REGISTRATION_RETRY_DELAY = 2000
+
+/**
+ * Types of notification delivery services available in the app.
+ * Used in settings to toggle between different update mechanisms.
+ */
+export const NotificationType = {
+  /** Notifications are completely disabled */
+  NoNotifications: 0,
+  /** * Local notifications using Background Fetch.
+   * Works only when the app is running or minimized.
+   */
+  BackgroundFetch: 1,
+  /** * Remote push notifications via Firebase Cloud Messaging (ANS).
+   * Works even if the app is not running.
+   */
+  Push: 2
+} as const
+
+/**
+ * Types of messages sent between Main Thread and Service Worker
+ */
+export const SW_SECURE_COMMANDS = {
+  INIT_SECURE_CHANNEL: 'INIT_SECURE_CHANNEL',
+
+  SET_PRIVATE_KEY: 'SET_PRIVATE_KEY',
+  CLEAR_PRIVATE_KEY: 'CLEAR_PRIVATE_KEY',
+  SYNC_SETTINGS: 'SYNC_SETTINGS',
+
+  CONFIRM_CHANNEL: 'CONFIRM_CHANNEL',
+  PING: 'PING'
+} as const
+
+export type SwSecureCommand = (typeof SW_SECURE_COMMANDS)[keyof typeof SW_SECURE_COMMANDS]
+
+/**
+ * Structure of the secure message
+ */
+export interface SecureMessage {
+  type: SwSecureCommand
+  payload?: any
+  timestamp: number
+  nonce: string // Unique ID for each message to prevent replay attacks
+}

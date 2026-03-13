@@ -544,6 +544,34 @@ watchImmediate(messages, (updatedMessages) => {
   }
 })
 
+// Watch for query changes when chat is already open (handles notification clicks)
+watch(
+  () => router.currentRoute.value.query,
+  async (query) => {
+    if (query.scrollToMessage || query.scrollToBottom) {
+      await handleScrollFromQuery()
+    }
+  }
+)
+
+const handleScrollFromQuery = async () => {
+  const query = router.currentRoute.value.query
+  if (query.scrollToMessage) {
+    const transactionId = query.scrollToMessage as string
+    await nextTick()
+    const transactionIndex = store.getters['chat/indexOfMessage'](props.partnerId, transactionId)
+    if (transactionIndex !== -1) {
+      await chatRef.value.scrollToMessageEasy(transactionIndex)
+      highlightMessage(transactionId)
+    }
+    router.replace({ query: { ...query, scrollToMessage: undefined, scrollToBottom: undefined } })
+  } else if (query.scrollToBottom === 'true') {
+    await nextTick()
+    chatRef.value.scrollToBottom()
+    router.replace({ query: { ...query, scrollToBottom: undefined } })
+  }
+}
+
 onBeforeMount(() => {
   const cachedMessages: NormalizedChatMessageTransaction[] = store.getters['chat/messages'](
     props.partnerId
@@ -596,6 +624,9 @@ onMounted(async () => {
   if (draftMessage) {
     replyMessageId.value = draftMessage
   }
+
+  // Handle scroll from push notification
+  await handleScrollFromQuery()
 })
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeyPress)
