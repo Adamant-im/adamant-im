@@ -23,7 +23,7 @@ test.describe('Wallets layout regressions', () => {
 
     await page.goto('/options/wallets')
     await expect(page).toHaveURL(/\/options\/wallets$/)
-    await expect(page.locator('div.wallets-view.w-100')).toBeVisible()
+    await expect(page.locator('div.wallets-view-page')).toBeVisible()
     await expect(page.locator('.wallets-view__list')).toBeVisible()
 
     const metrics = await page.evaluate(() => {
@@ -99,7 +99,7 @@ test.describe('Wallets layout regressions', () => {
 
     await page.goto('/options/wallets')
     await expect(page).toHaveURL(/\/options\/wallets$/)
-    await expect(page.locator('div.wallets-view.w-100')).toBeVisible()
+    await expect(page.locator('div.wallets-view-page')).toBeVisible()
     await expect(page.locator('.sidebar__layout.a-scroll-pane')).toBeVisible()
 
     const sidebarPane = page.locator('.sidebar__layout.a-scroll-pane')

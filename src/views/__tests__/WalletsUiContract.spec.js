@@ -33,6 +33,8 @@ describe('Wallets UI style contract', () => {
     const shellContent = readFileSync(settingsTableShellPath, 'utf8')
 
     expect(content).toContain('<SettingsTableShell :class="classes.layout">')
+    expect(content).toContain('page: `${className}-page`')
+    expect(content).toContain('<div :class="[classes.root, classes.page]">')
     expect(content).toContain('<template #before>')
     expect(content).toContain('<template #after>')
     expect(content).toContain('`${classes.root}__list`')

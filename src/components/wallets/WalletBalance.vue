@@ -1,15 +1,11 @@
 <template>
   <div
-    class="px-0"
     :class="{
       [classes.root]: true,
       [classes.singleLine]: Number(balance) === 0
     }"
   >
-    <p
-      :class="{ [classes.statusTitle]: true, 'a-text-explanation': balance === 0 }"
-      class="text-end"
-    >
+    <p :class="{ [classes.statusTitle]: true, 'a-text-explanation': balance === 0 }">
       {{ xs ? calculatedBalance : calculatedFullBalance }}
       <v-tooltip
         v-if="xs && calculatedFullBalance.toString().length > SIGNIFICANT_DIGITS"
@@ -20,7 +16,7 @@
       </v-tooltip>
     </p>
 
-    <p v-if="Number(balance) !== 0" :class="classes.statusText" class="text-end">
+    <p v-if="Number(balance) !== 0" :class="classes.statusText">
       {{ currentFiatCurrency }} {{ rate }}
     </p>
   </div>
@@ -129,10 +125,12 @@ export default defineComponent({
   }
 
   &__status-title {
+    text-align: end;
     line-height: var(--a-wallet-compact-title-line-height);
   }
 
   &__status-text {
+    text-align: end;
     font-size: var(--a-wallet-balance-fiat-size);
     font-weight: var(--a-wallet-balance-status-font-weight);
     line-height: var(--a-wallet-compact-title-line-height);

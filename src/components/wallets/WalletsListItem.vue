@@ -40,7 +40,7 @@
       ></v-checkbox>
       <v-btn
         color="grey-lighten-1"
-        class="handle"
+        :class="classes.sortableHandle"
         density="comfortable"
         :icon="mdiMenu"
         :disabled="!localWallet.isVisible || !!search"
@@ -79,7 +79,8 @@ const classes = {
   cryptoSubtitleBold: `${className}__crypto-subtitle-bold`,
   cryptoTitle: `${className}__crypto-title`,
   checkbox: `${className}__checkbox`,
-  checkboxControl: `${className}__checkbox-control`
+  checkboxControl: `${className}__checkbox-control`,
+  sortableHandle: `${className}__sortable-handle`
 }
 
 export default defineComponent({
@@ -176,7 +177,7 @@ export default defineComponent({
   }
 
   :deep(.sortable-chosen) {
-    box-shadow: var(--a-wallets-list-item-sortable-shadow) !important;
+    box-shadow: var(--a-wallets-list-item-sortable-shadow);
   }
 }
 /** Themes **/
@@ -188,8 +189,8 @@ export default defineComponent({
       }
       :deep(.v-input--selection-controls__ripple),
       :deep(.v-input--selection-controls__input) i {
-        color: map.get(colors.$adm-colors, 'regular') !important;
-        caret-color: map.get(colors.$adm-colors, 'regular') !important;
+        color: map.get(colors.$adm-colors, 'regular');
+        caret-color: map.get(colors.$adm-colors, 'regular');
       }
     }
     &__crypto-subtitle-muted {

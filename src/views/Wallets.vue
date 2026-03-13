@@ -1,5 +1,5 @@
 <template>
-  <div :class="classes.root" class="w-100">
+  <div :class="[classes.root, classes.page]">
     <SettingsTableShell :class="classes.layout">
       <template #before>
         <WalletsSearchInput @change="searchChanged" />
@@ -13,7 +13,7 @@
           :class="classes.draggableList"
           v-model="filteredWallets"
           v-bind="dragOptions"
-          handle=".handle"
+          handle=".wallets-view__sortable-handle"
           item-key="cryptoName"
         >
           <template #item="{ element }">
@@ -56,6 +56,7 @@ const BALANCE_UPDATE_INTERVAL_MS = 30000
 const className = 'wallets-view'
 const classes = {
   root: className,
+  page: `${className}-page`,
   layout: `${className}__layout`,
   draggableList: `${className}__draggable-list`,
   emptyState: `${className}__empty-state`
@@ -159,6 +160,8 @@ onBeforeUnmount(() => {
 
 .wallets-view {
   --a-wallets-review-padding-block: var(--a-space-4);
+
+  width: 100%;
 
   &__draggable-list {
     display: flex;
