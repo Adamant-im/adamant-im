@@ -2,7 +2,6 @@ import { useStore } from 'vuex'
 import { Capacitor } from '@capacitor/core'
 import { useWebPushNotifications } from './useWebPushNotifications'
 import { useAndroidPushNotifications } from './useAndroidPushNotifications'
-import { Base64 } from 'js-base64'
 
 /**
  * Composable for managing private key across platforms
@@ -54,26 +53,9 @@ export function usePrivateKeyManager() {
     return false
   }
 
-  const syncNotificationSettings = (type: number) => {
-    if (webPush) {
-      const currentUserAddress = store.state.address
-      // hex-encode passphrase so SW's deriveEncryptionKey (which does hexToBytes) handles both paths uniformly
-      const toHex = (s: string) =>
-        Array.from(new TextEncoder().encode(s))
-          .map((b) => b.toString(16).padStart(2, '0'))
-          .join('')
-      const encryptionPassword =
-        store.state.password || toHex(Base64.decode(store.state.passphrase))
-
-      webPush.syncNotificationSettings({ type, currentUserAddress, encryptionPassword })
-    }
-    // Android settings are managed through pushService directly
-  }
-
   return {
     getPrivateKey,
     sendPrivateKey,
-    clearPrivateKey,
-    syncNotificationSettings
+    clearPrivateKey
   }
 }

@@ -1,5 +1,5 @@
 import { SW_SECURE_COMMANDS } from '@/lib/constants'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 
 export interface WebNotificationSettings {
   type: number
@@ -14,6 +14,8 @@ const messageQueue: Array<{ type: string; payload?: any }> = []
 const isSyncing = ref(false)
 let isConnecting = false
 let listenersRegistered = false
+let heartbeatIntervalId: ReturnType<typeof setInterval> | null = null
+let waitingForPong = false
 
 export function useWebPushNotifications() {
   const generateNonce = () => Math.random().toString(36).substring(2, 15)
@@ -75,6 +77,8 @@ export function useWebPushNotifications() {
           port.value = port1
           port1.start()
           flushMessageQueue()
+        } else if (event.data?.type === 'PONG') {
+          waitingForPong = false
         } else if (event.data?.type === 'STATE_SYNC') {
           console.log('[Web Push] State synced from SW:', event.data.payload)
         }
@@ -106,7 +110,7 @@ export function useWebPushNotifications() {
   const sendSecureMessage = (type: string, payload?: any): boolean => {
     if (!isSecureChannelReady.value) {
       queueMessage(type, payload)
-      return true // Queued successfully
+      return true
     }
 
     try {
@@ -149,46 +153,39 @@ export function useWebPushNotifications() {
     return result
   }
 
-  const syncNotificationSettings = (settings: WebNotificationSettings): boolean => {
+  const syncNotificationSettings = ({
+    type,
+    currentUserAddress,
+    encryptionPassword
+  }: WebNotificationSettings): boolean => {
     return sendSecureMessage(SW_SECURE_COMMANDS.SYNC_SETTINGS, {
-      type: settings.type,
-      currentUserAddress: settings.currentUserAddress
+      type,
+      currentUserAddress,
+      encryptionPassword
     })
   }
 
   const startHeartbeat = () => {
-    setInterval(() => {
-      if (!port.value || !isSecureChannelReady.value) return
+    if (heartbeatIntervalId) return
 
-      const timeout = setTimeout(() => {
+    heartbeatIntervalId = setInterval(() => {
+      if (!port.value || !isSecureChannelReady.value) return
+      if (waitingForPong) {
+        // Previous PING went unanswered
         console.warn('[Web Push] Heartbeat timeout — re-establishing channel')
         isSecureChannelReady.value = false
         port.value = null
+        waitingForPong = false
         initSecureChannel()
-      }, 5000)
-
-      // Temporarily intercept onmessage to catch PONG
-      const prevHandler = port.value.onmessage
-      port.value.onmessage = (event) => {
-        if (event.data?.type === 'PONG') {
-          clearTimeout(timeout)
-          port.value!.onmessage = prevHandler
-        } else {
-          const currentPort = port.value
-          if (currentPort) prevHandler?.call(currentPort, event)
-        }
+        return
       }
-
+      waitingForPong = true
       sendSecureMessage(SW_SECURE_COMMANDS.PING)
+      setTimeout(() => {
+        waitingForPong = false
+      }, 5000)
     }, 30_000)
   }
-
-  // Watch for channel readiness and flush queue
-  watch(isSecureChannelReady, (ready) => {
-    if (ready) {
-      flushMessageQueue()
-    }
-  })
 
   return {
     isSupported: 'MessageChannel' in window,

@@ -150,7 +150,6 @@ export class AndroidPushService extends BasePushService {
 
   reset(): void {
     super.reset()
-    this.token = null
     this.privateKey = null
   }
 }
