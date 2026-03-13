@@ -20,6 +20,7 @@
   --a-font-weight-regular: 400;
   --a-font-weight-light: 300;
   --a-font-weight-medium: 500;
+  --a-font-style-emphasis: italic;
   --a-letter-spacing-normal: normal;
   --a-letter-spacing-caps-subtle: 0.02em;
   --a-field-floating-label-scale: 0.6875;
@@ -66,6 +67,10 @@
   --a-wallet-card-item-padding-inline-start: calc(var(--a-space-6) + var(--a-space-1));
   --a-wallet-card-item-padding-inline-end: var(--a-space-4);
   --a-wallet-card-subtitle-line-height: var(--a-line-height-md);
+  --a-wallets-list-item-sortable-shadow:
+    0 8px 9px -5px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
+    0 15px 22px 2px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)),
+    0 6px 28px 5px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.12));
   --a-delegate-details-expander-margin-block: calc(var(--a-space-5) / 2);
   --a-delegate-details-expander-margin-inline: calc(
     var(--a-space-6) + (var(--a-space-1) / 2)
@@ -79,6 +84,7 @@
   --a-icon-base-font-size: var(--a-font-size-md);
   --a-icon-box-centered-size: var(--a-control-size-md);
   --a-transactions-loading-item-offset-top: 0;
+  --a-transaction-status-rotate-duration: 1s;
   --a-delegates-not-found-margin-block: var(--a-space-1);
   --a-input-action-menu-list-padding-block: var(--a-space-2);
   --a-input-action-menu-item-padding-inline: var(--a-screen-padding-inline);

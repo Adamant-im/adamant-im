@@ -144,7 +144,7 @@ const isADM = computed(() => {
     text-overflow: ellipsis;
 
     span {
-      font-style: italic;
+      font-style: var(--a-font-style-emphasis);
       color: inherit;
     }
   }
@@ -187,7 +187,7 @@ const isADM = computed(() => {
       color: map.get(settings.$shades, 'white');
     }
     &__subtitle {
-      color: rgba(map.get(settings.$shades, 'white'), 70%);
+      color: var(--a-color-text-muted-dark);
     }
   }
 }

@@ -285,12 +285,13 @@ export default {
   --a-transaction-item-action-width: var(--a-control-size-sm);
   --a-transaction-item-padding-inline: var(--a-screen-padding-inline);
   --a-transaction-item-note-weight: 100;
-  --a-transaction-item-note-prefix-style: italic;
+  --a-transaction-item-note-prefix-style: var(--a-font-style-emphasis);
   --a-transaction-item-rates-color-dark: var(--a-color-text-muted-dark);
+  --a-transaction-item-rates-style: var(--a-font-style-emphasis);
 
   &__rates {
     color: var(--a-transaction-item-rates-color-dark);
-    font-style: italic;
+    font-style: var(--a-transaction-item-rates-style);
     @include mixins.a-text-regular();
     margin-left: var(--a-transaction-item-rates-gap);
   }

@@ -176,10 +176,7 @@ export default defineComponent({
   }
 
   :deep(.sortable-chosen) {
-    box-shadow:
-      0 8px 9px -5px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
-      0 15px 22px 2px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)),
-      0 6px 28px 5px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.12)) !important;
+    box-shadow: var(--a-wallets-list-item-sortable-shadow) !important;
   }
 }
 /** Themes **/

@@ -87,14 +87,18 @@ describe('Home UI style contract', () => {
     expect(content).toContain('walletCardActions: `${className}__actions`')
     expect(content).toContain('<WalletCardListActions :class="classes.walletCardActions"')
     expect(content).toContain('var(--a-wallet-card-subtitle-line-height)')
+    expect(content).toContain('var(--a-font-style-emphasis)')
+    expect(content).toContain('var(--a-color-text-muted-dark)')
     expect(content).toContain('var(--a-wallet-card-list-padding-top)')
     expect(content).toContain('var(--a-wallet-card-item-padding-inline-start)')
     expect(content).toContain('var(--a-wallet-card-item-padding-inline-end)')
     expect(content).not.toContain('<WalletCardListActions :class="classes.walletCardList"')
     expect(content).not.toContain('line-height: 24px;')
+    expect(content).not.toContain('font-style: italic;')
     expect(content).not.toContain('padding: 8px 0 0;')
     expect(content).not.toContain('padding-inline: 16px;')
     expect(content).not.toContain('padding-left: 28px;')
+    expect(content).not.toContain("rgba(map.get(settings.$shades, 'white'), 70%)")
   })
 
   it('shares wallet action row spacing with wallet card tokens', () => {

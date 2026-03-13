@@ -449,7 +449,7 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
   &__update-status-icon {
     &--rotate {
       transform: rotate(400grad);
-      transition-duration: 1s;
+      transition-duration: var(--a-transaction-status-rotate-duration);
     }
   }
   &__inconsistent-status {
