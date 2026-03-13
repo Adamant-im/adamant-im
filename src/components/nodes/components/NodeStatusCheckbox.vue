@@ -54,13 +54,13 @@ export default defineComponent({
 
 .v-theme--light {
   .node-toggle-status-checkbox {
-    color: map.get(colors.$adm-colors, 'grey') !important;
+    color: map.get(colors.$adm-colors, 'grey');
   }
 }
 
 .v-theme--dark {
   .node-toggle-status-checkbox {
-    color: map.get(colors.$adm-colors, 'grey') !important;
+    color: map.get(colors.$adm-colors, 'grey');
   }
 }
 </style>

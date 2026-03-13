@@ -66,9 +66,9 @@ export default {
 
 .v-theme--dark {
   .delegates-table-head {
-    &__td {
+    th.delegates-table-head__td {
       color: map.get(colors.$adm-colors, 'white');
-      border-bottom: none !important;
+      border-bottom: none;
     }
   }
 }

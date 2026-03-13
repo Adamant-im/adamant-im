@@ -74,6 +74,7 @@ describe('Nodes UI style contract', () => {
   })
 
   it('uses tokenized typography and spacing in node cells and status widgets', () => {
+    const nodesTableContent = readFileSync(nodesTablePath, 'utf8')
     const columnContent = readFileSync(nodeColumnPath, 'utf8')
     const statusContent = readFileSync(nodeStatusPath, 'utf8')
     const checkboxContent = readFileSync(nodeStatusCheckboxPath, 'utf8')
@@ -122,6 +123,9 @@ describe('Nodes UI style contract', () => {
     expect(statusContent).not.toContain('font-size: 12px;')
     expect(statusContent).not.toContain('font-weight: 300;')
     expect(statusContent).not.toContain('opacity: 0.7;')
+    expect(statusContent).not.toContain(
+      'animation-duration: var(--a-node-status-spinner-animation-duration) !important;'
+    )
 
     expect(metricsContent).toContain('NODE_STATUS_SPINNER_SIZE = 12')
     expect(metricsContent).toContain('NODE_STATUS_SPINNER_WIDTH = 2')
@@ -140,6 +144,8 @@ describe('Nodes UI style contract', () => {
     expect(checkboxContent).not.toContain('font-size: 16px;')
     expect(checkboxContent).not.toContain('margin-left: 16px;')
     expect(checkboxContent).not.toContain('margin-left: 8px;')
+    expect(checkboxContent).not.toContain("color: map.get(colors.$adm-colors, 'grey') !important;")
+    expect(nodesTableContent).toContain(':deep(.v-selection-control__input .v-icon)')
   })
 
   it('uses tokenized head cells and removes utility padding classes from template', () => {

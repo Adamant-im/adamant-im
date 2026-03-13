@@ -161,11 +161,11 @@ export default defineComponent({
     margin-inline-start: var(--a-node-status-indicator-offset-inline-start);
 
     :deep(svg) {
-      animation-duration: var(--a-node-status-spinner-animation-duration) !important;
+      animation-duration: var(--a-node-status-spinner-animation-duration);
     }
 
     :deep(.v-progress-circular__overlay) {
-      animation-duration: var(--a-node-status-spinner-animation-duration) !important;
+      animation-duration: var(--a-node-status-spinner-animation-duration);
     }
   }
   &__detail-help-button {
@@ -201,16 +201,16 @@ export default defineComponent({
 
     &__icon {
       &--green {
-        color: map.get(colors.$adm-colors, 'good') !important;
+        color: map.get(colors.$adm-colors, 'good');
       }
       &--red {
-        color: map.get(colors.$adm-colors, 'danger') !important;
+        color: map.get(colors.$adm-colors, 'danger');
       }
       &--grey {
-        color: map.get(colors.$adm-colors, 'grey') !important;
+        color: map.get(colors.$adm-colors, 'grey');
       }
       &--orange {
-        color: map.get(colors.$adm-colors, 'attention') !important;
+        color: map.get(colors.$adm-colors, 'attention');
       }
     }
   }
@@ -232,16 +232,16 @@ export default defineComponent({
     }
     &__icon {
       &--green {
-        color: map.get(colors.$adm-colors, 'good') !important;
+        color: map.get(colors.$adm-colors, 'good');
       }
       &--red {
-        color: map.get(colors.$adm-colors, 'danger') !important;
+        color: map.get(colors.$adm-colors, 'danger');
       }
       &--grey {
-        color: map.get(colors.$adm-colors, 'grey') !important;
+        color: map.get(colors.$adm-colors, 'grey');
       }
       &--orange {
-        color: map.get(colors.$adm-colors, 'attention') !important;
+        color: map.get(colors.$adm-colors, 'attention');
       }
     }
   }

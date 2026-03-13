@@ -132,8 +132,8 @@ export default {
 
 .v-theme--dark {
   .delegates-table-item {
-    &__td {
-      border-bottom: none !important;
+    td.delegates-table-item__td {
+      border-bottom: none;
       border-top: thin solid map.get(colors.$adm-colors, 'regular');
     }
   }

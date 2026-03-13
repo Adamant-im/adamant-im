@@ -1,5 +1,5 @@
 <template>
-  <div :class="className" class="w-100">
+  <div :class="className">
     <SettingsTableShell :class="`${className}__layout`">
       <template #before>
         <v-text-field
@@ -221,6 +221,7 @@ const showConfirmationDialog = () => {
 .delegates-view {
   position: relative;
   --a-delegates-review-button-margin: var(--a-space-2);
+  width: 100%;
 
   &__info {
     padding: var(--a-space-5) 0;
@@ -231,13 +232,12 @@ const showConfirmationDialog = () => {
       }
     }
   }
-  &__review {
+  &__review.v-row {
     margin: 0;
-    padding-top: var(--a-space-4) !important;
-    padding-bottom: var(--a-space-4) !important;
+    padding-top: var(--a-space-4);
+    padding-bottom: var(--a-space-4);
   }
   &__review-button {
-    margin-left: auto !important;
     margin: var(--a-delegates-review-button-margin);
   }
   &__pagination {

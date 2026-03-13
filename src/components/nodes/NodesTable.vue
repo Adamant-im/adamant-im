@@ -192,10 +192,10 @@ const preferFasterServiceNodeOption = computed<boolean>({
       :deep(.v-label) {
         color: map.get(colors.$adm-colors, 'regular');
       }
-      :deep(.v-input--selection-controls__ripple),
-      :deep(.v-input--selection-controls__input) i {
-        color: map.get(colors.$adm-colors, 'regular') !important;
-        caret-color: map.get(colors.$adm-colors, 'regular') !important;
+      :deep(.v-selection-control__input .v-icon),
+      :deep(.v-selection-control__input input) {
+        color: map.get(colors.$adm-colors, 'regular');
+        caret-color: map.get(colors.$adm-colors, 'regular');
       }
     }
   }

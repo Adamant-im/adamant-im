@@ -54,10 +54,10 @@ export default defineComponent({
 .v-theme--light {
   .socket-support {
     &--supported {
-      color: map.get(colors.$adm-colors, 'good') !important;
+      color: map.get(colors.$adm-colors, 'good');
     }
     &--unsupported {
-      color: map.get(colors.$adm-colors, 'danger') !important;
+      color: map.get(colors.$adm-colors, 'danger');
     }
   }
 }
@@ -65,10 +65,10 @@ export default defineComponent({
 .v-theme--dark {
   .socket-support {
     &--supported {
-      color: map.get(colors.$adm-colors, 'good') !important;
+      color: map.get(colors.$adm-colors, 'good');
     }
     &--unsupported {
-      color: map.get(colors.$adm-colors, 'danger') !important;
+      color: map.get(colors.$adm-colors, 'danger');
     }
   }
 }
