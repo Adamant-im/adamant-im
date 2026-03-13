@@ -46,7 +46,7 @@
         </v-list-item>
       </v-list>
 
-      <h3 v-else :class="`${className}__empty-state a-text-caption`">
+      <h3 v-else :class="`${className}__empty-state`">
         {{ t('transaction.no_transactions') }}
       </h3>
     </template>
@@ -268,6 +268,8 @@ watch(isIDBReady, (newVal) => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
+
 .transactions-view {
   --a-transactions-loading-item-padding-inline: var(--a-screen-padding-inline);
 
@@ -281,6 +283,7 @@ watch(isIDBReady, (newVal) => {
   }
 
   &__empty-state {
+    @include mixins.a-text-caption();
     margin: 0;
     text-align: center;
   }

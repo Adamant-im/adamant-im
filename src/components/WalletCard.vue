@@ -23,7 +23,7 @@
         <v-list-item-subtitle :class="classes.walletCardSubtitle">
           <p v-if="!allCoinNodesDisabled">
             {{ xs ? calculatedBalance : calculatedFullBalance }} {{ crypto }}
-            <span v-if="$store.state.rate.isLoaded" class="a-text-regular">
+            <span v-if="$store.state.rate.isLoaded" :class="classes.walletCardRate">
               ~{{ rate }} {{ currentCurrency }}
             </span>
             <v-tooltip
@@ -86,6 +86,7 @@ const classes = {
   walletCardActions: `${className}__actions`,
   walletCardIcon: `${className}__icon`,
   walletCardList: `${className}__list`,
+  walletCardRate: `${className}__rate`,
   walletCardSubtitle: `${className}__subtitle`,
   walletCardTile: `${className}__tile`,
   walletCardTitle: `${className}__title`
@@ -151,14 +152,14 @@ const isADM = computed(() => {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-
-    span {
-      font-style: var(--a-font-style-emphasis);
-      color: inherit;
-    }
+  }
+  &__rate {
+    @include mixins.a-text-regular();
+    font-style: var(--a-font-style-emphasis);
+    color: inherit;
   }
   &__list {
-    background: inherit;
+    background: var(--a-wallet-card-surface);
     padding-block-start: var(--a-wallet-card-list-padding-top);
     padding-block-end: 0;
   }

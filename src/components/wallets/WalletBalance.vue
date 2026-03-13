@@ -5,7 +5,7 @@
       [classes.singleLine]: Number(balance) === 0
     }"
   >
-    <p :class="{ [classes.statusTitle]: true, 'a-text-explanation': balance === 0 }">
+    <p :class="[classes.statusTitle, { [classes.statusTitleEmpty]: balance === 0 }]">
       {{ xs ? calculatedBalance : calculatedFullBalance }}
       <v-tooltip
         v-if="xs && calculatedFullBalance.toString().length > SIGNIFICANT_DIGITS"
@@ -37,6 +37,7 @@ const classes = {
   root: className,
   singleLine: `${className}--single-line`,
   statusTitle: `${className}__status-title`,
+  statusTitleEmpty: `${className}__status-title--empty`,
   statusText: `${className}__status-text`
 }
 
@@ -100,6 +101,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .wallet-balance {
   --a-wallet-balance-height: var(--a-control-size-md);
@@ -125,8 +127,13 @@ export default defineComponent({
   }
 
   &__status-title {
+    @include mixins.a-text-regular-enlarged();
     text-align: end;
     line-height: var(--a-wallet-compact-title-line-height);
+  }
+
+  &__status-title--empty {
+    @include mixins.a-text-explanation();
   }
 
   &__status-text {

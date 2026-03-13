@@ -10,11 +10,11 @@
       </template>
 
       <v-list-item-title v-if="partnerName">
-        <span class="a-text-regular-enlarged">{{ partnerName }}</span>
-        <span class="a-text-explanation-enlarged"> ({{ partnerId }})</span>
+        <span :class="`${className}__partner-primary`">{{ partnerName }}</span>
+        <span :class="`${className}__partner-secondary`"> ({{ partnerId }})</span>
       </v-list-item-title>
       <v-list-item-title v-else>
-        <span class="a-text-regular-enlarged">{{ partnerId }}</span>
+        <span :class="`${className}__partner-primary`">{{ partnerId }}</span>
       </v-list-item-title>
 
       <v-list-item-title>
@@ -24,25 +24,21 @@
         <span :class="`${className}__rates`">{{ historyRate }}</span>
         <span
           v-if="comment"
-          :class="`${className}__note-prefix ${className}__note-prefix--comment a-text-regular-enlarged-bold`"
+          :class="`${className}__note-prefix ${className}__note-prefix--comment`"
         >
           "</span
         >
-        <span v-if="comment" :class="`${className}__note-text a-text-explanation`">{{
-          comment
-        }}</span>
+        <span v-if="comment" :class="`${className}__note-text`">{{ comment }}</span>
         <span
           v-if="textData"
-          :class="`${className}__note-prefix ${className}__note-prefix--text-data a-text-regular-enlarged-bold`"
+          :class="`${className}__note-prefix ${className}__note-prefix--text-data`"
         >
           #</span
         >
-        <span v-if="textData" :class="`${className}__note-text a-text-explanation`">{{
-          textData
-        }}</span>
+        <span v-if="textData" :class="`${className}__note-text`">{{ textData }}</span>
       </v-list-item-title>
 
-      <v-list-item-subtitle :class="`${className}__date`" class="a-text-explanation-small">
+      <v-list-item-subtitle :class="`${className}__date`">
         <span v-if="!isStatusVisibleTransaction">{{ formatDate(createdAt) }}</span>
         <span v-else-if="status" :class="`${className}__status ${className}__status--${status}`">{{
           $t(`transaction.statuses.${status}`)
@@ -303,7 +299,14 @@ export default {
   &__amount {
     @include mixins.a-text-regular-enlarged-bold();
   }
+  &__partner-primary {
+    @include mixins.a-text-regular-enlarged();
+  }
+  &__partner-secondary {
+    @include mixins.a-text-explanation-enlarged();
+  }
   &__date {
+    @include mixins.a-text-explanation-small();
     margin-top: var(--a-transaction-item-subtitle-margin-top);
   }
   &__prepend-icon {
@@ -318,9 +321,11 @@ export default {
     min-width: var(--a-transaction-item-action-width);
   }
   &__note-prefix {
+    @include mixins.a-text-regular-enlarged-bold();
     font-style: var(--a-transaction-item-note-prefix-style);
   }
   &__note-text {
+    @include mixins.a-text-explanation();
     font-weight: var(--a-transaction-item-note-weight);
   }
   &__status {
