@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="show" :class="className" width="var(--a-secondary-dialog-width)">
     <v-card>
-      <v-card-title :class="`${className}__card-title a-text-header`">
+      <v-card-title :class="`${className}__card-title`">
         {{ t('login_via_password.popup_title') }}
       </v-card-title>
 
@@ -37,9 +37,11 @@
           </template>
         </v-text-field>
 
-        <div class="a-text-regular-enlarged">
+        <div :class="`${className}__article-hint`">
           {{ t('login_via_password.article_hint') }}
-          <a @click="openLink(userPasswordAgreementLink)">{{ t('login_via_password.article') }}</a
+          <a :class="`${className}__article-link`" @click="openLink(userPasswordAgreementLink)">{{
+            t('login_via_password.article')
+          }}</a
           >.
         </div>
       </v-card-text>
@@ -150,9 +152,22 @@ const submit = () => {
 
 <style lang="scss" scoped>
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .password-set-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  &__card-title {
+    @include mixins.a-text-header();
+  }
+
+  &__article-hint {
+    @include mixins.a-text-regular-enlarged();
+  }
+
+  &__article-link {
+    @include mixins.a-text-active();
+  }
 
   &__submit-spinner {
     margin-inline-end: var(--a-auth-control-inline-gap);

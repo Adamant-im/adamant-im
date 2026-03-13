@@ -48,7 +48,7 @@
       </div>
     </div>
 
-    <div :class="`${className}__disclaimer a-text-explanation-enlarged`">
+    <div :class="`${className}__disclaimer`">
       {{ t('options.export_keys.disclaimer') }}
     </div>
 
@@ -252,6 +252,7 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 @use '@/assets/styles/components/_input-action-menu.scss' as inputActionMenu;
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .export-keys-form {
   --a-export-keys-section-spacing: var(--a-space-6);
@@ -276,6 +277,7 @@ export default defineComponent({
     justify-content: flex-end;
   }
   &__disclaimer {
+    @include mixins.a-text-explanation-enlarged();
     margin-top: var(--a-export-keys-section-spacing);
     margin-bottom: var(--a-export-keys-section-spacing);
   }
@@ -291,7 +293,8 @@ export default defineComponent({
   }
 
   &__actions {
-    text-align: center;
+    display: flex;
+    justify-content: center;
   }
   &__copy_all_button {
     padding-inline-end: 0;

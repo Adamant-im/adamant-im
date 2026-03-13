@@ -6,26 +6,26 @@
     @keydown.enter="onEnter"
   >
     <v-card>
-      <v-card-title :class="`${className}__card-title a-text-header`">
+      <v-card-title :class="`${className}__card-title`">
         {{ header }}
       </v-card-title>
 
       <v-divider class="a-divider" />
 
       <v-card-text :class="`${className}__card-text`">
-        <div :class="`${className}__disclaimer a-text-regular-enlarged`">
+        <div :class="`${className}__disclaimer`">
           {{ about }}
         </div>
 
-        <div :class="`${className}__disclaimer ${className}__highlight a-text-regular-enlarged`">
+        <div :class="`${className}__disclaimer ${className}__highlight`">
           {{ details }}
         </div>
 
-        <div :class="`${className}__disclaimer a-text-regular-enlarged`">
+        <div :class="`${className}__disclaimer`">
           {{ reasons }}
         </div>
 
-        <div :class="`${className}__disclaimer a-text-regular-enlarged`">
+        <div :class="`${className}__disclaimer`">
           {{ action }}
         </div>
       </v-card-text>
@@ -40,7 +40,7 @@
       </v-col>
 
       <v-col cols="12" :class="`${className}__btn-forget`">
-        <a class="a-text-active" @click="forget()">
+        <a :class="`${className}__action-link`" @click="forget()">
           {{ $t('warning_on_addresses.forget_button') }}
         </a>
       </v-col>
@@ -154,10 +154,23 @@ export default {
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 @use 'vuetify/_settings.scss';
 
 .warning-on-addresses-dialog {
   @include secondaryDialog.a-secondary-dialog-warning-frame();
+
+  &__card-title {
+    @include mixins.a-text-header();
+  }
+
+  &__disclaimer {
+    @include mixins.a-text-regular-enlarged();
+  }
+
+  &__action-link {
+    @include mixins.a-text-active();
+  }
 
   &__highlight {
     background-color: var(--a-color-surface-warning-soft);

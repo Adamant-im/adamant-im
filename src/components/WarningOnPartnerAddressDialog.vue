@@ -6,26 +6,26 @@
     @keydown.enter="onEnter"
   >
     <v-card>
-      <v-card-title :class="`${className}__card-title a-text-header`">
+      <v-card-title :class="`${className}__card-title`">
         {{ header() }}
       </v-card-title>
 
       <v-divider class="a-divider" />
 
       <v-card-text :class="`${className}__card-text`">
-        <div :class="`${className}__disclaimer a-text-regular-enlarged`">
+        <div :class="`${className}__disclaimer`">
           {{ about() }}
         </div>
 
-        <div :class="`${className}__disclaimer ${className}__highlight a-text-regular-enlarged`">
+        <div :class="`${className}__disclaimer ${className}__highlight`">
           {{ details() }}
         </div>
 
-        <div :class="`${className}__disclaimer a-text-regular-enlarged`">
+        <div :class="`${className}__disclaimer`">
           {{ reasons() }}
         </div>
 
-        <div :class="`${className}__disclaimer a-text-regular-enlarged`">
+        <div :class="`${className}__disclaimer`">
           {{ action() }}
         </div>
       </v-card-text>
@@ -110,10 +110,19 @@ export default {
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 @use 'vuetify/_settings.scss';
 
 .warning-on-partner-address-dialog {
   @include secondaryDialog.a-secondary-dialog-warning-frame();
+
+  &__card-title {
+    @include mixins.a-text-header();
+  }
+
+  &__disclaimer {
+    @include mixins.a-text-regular-enlarged();
+  }
 
   &__highlight {
     background-color: var(--a-color-surface-warning-soft);

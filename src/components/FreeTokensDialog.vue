@@ -6,14 +6,14 @@
     @keydown.enter="onEnter"
   >
     <v-card>
-      <v-card-title :class="`${className}__card-title a-text-header`">
+      <v-card-title :class="`${className}__card-title`">
         {{ $t('chats.free_adm_title') }}
       </v-card-title>
 
       <v-divider class="a-divider" />
 
       <v-card-text :class="`${className}__card-text`">
-        <div :class="`${className}__disclaimer a-text-regular-enlarged`">
+        <div :class="`${className}__disclaimer`">
           {{ $t('chats.free_adm_disclaimer') }}
         </div>
       </v-card-text>
@@ -28,7 +28,7 @@
       </v-col>
 
       <v-col cols="12" :class="`${className}__btn-show-article`">
-        <a class="a-text-active" @click="showArticle()">
+        <a :class="`${className}__article-link`" @click="showArticle()">
           {{ $t('chats.how_to_use_messenger') }}
         </a>
       </v-col>
@@ -100,10 +100,23 @@ export default {
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 @use 'vuetify/_settings.scss';
 
 .free-tokens-dialog {
   @include secondaryDialog.a-secondary-dialog-warning-frame();
+
+  &__card-title {
+    @include mixins.a-text-header();
+  }
+
+  &__disclaimer {
+    @include mixins.a-text-regular-enlarged();
+  }
+
+  &__article-link {
+    @include mixins.a-text-active();
+  }
 
   &__btn-block {
     padding: 0;

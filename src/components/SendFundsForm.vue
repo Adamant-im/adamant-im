@@ -155,7 +155,7 @@
       class="send-funds-confirm-dialog"
     >
       <v-card>
-        <v-card-title class="send-funds-confirm-dialog__dialog-title a-text-header">
+        <v-card-title class="send-funds-confirm-dialog__dialog-title">
           {{ $t('transfer.confirm_title') }}
         </v-card-title>
 
@@ -163,7 +163,7 @@
 
         <v-card-text class="send-funds-confirm-dialog__dialog-body">
           <!-- eslint-disable-next-line vue/no-v-html -- Safe internal content -->
-          <div class="a-text-regular-enlarged" v-html="confirmMessage" />
+          <div class="send-funds-confirm-dialog__message" v-html="confirmMessage" />
         </v-card-text>
 
         <v-card-actions class="send-funds-confirm-dialog__dialog-actions">
@@ -976,6 +976,7 @@ export default {
 <style lang="scss" scoped>
 @use '@/assets/styles/components/_input-action-menu.scss' as inputActionMenu;
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .a-input :deep(input[type='number']) {
   -moz-appearance: textfield;
@@ -989,6 +990,14 @@ export default {
   @include secondaryDialog.a-secondary-dialog-card-frame();
 
   --a-send-funds-confirm-spinner-gap: var(--a-space-4);
+
+  &__dialog-title {
+    @include mixins.a-text-header();
+  }
+
+  &__message {
+    @include mixins.a-text-regular-enlarged();
+  }
 
   &__spinner {
     margin-inline-end: var(--a-send-funds-confirm-spinner-gap);
@@ -1007,7 +1016,8 @@ export default {
   }
 
   &__actions {
-    text-align: center;
+    display: flex;
+    justify-content: center;
   }
   &__amount-input {
     :deep(.v-field__field) {

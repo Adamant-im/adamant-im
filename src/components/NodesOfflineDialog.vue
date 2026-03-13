@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="showDialog" width="var(--a-secondary-dialog-width)" :class="className">
     <v-card>
-      <v-card-title :class="`${className}__card-title a-text-header`">
+      <v-card-title :class="`${className}__card-title`">
         {{ t('chats.nodes_offline_dialog.title', { coin: nodeType.toUpperCase() }) }}
       </v-card-title>
 
@@ -9,7 +9,7 @@
 
       <v-card-text :class="`${className}__card-text`">
         <div
-          :class="`${className}__disclaimer a-text-regular-enlarged`"
+          :class="`${className}__disclaimer`"
           v-html="t('chats.nodes_offline_dialog.text', { coin: nodeType.toUpperCase() })"
         ></div>
       </v-card-text>
@@ -78,10 +78,19 @@ export default {
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 @use 'vuetify/_settings.scss';
 
 .all-nodes-disabled-dialog {
   @include secondaryDialog.a-secondary-dialog-warning-frame();
+
+  &__card-title {
+    @include mixins.a-text-header();
+  }
+
+  &__disclaimer {
+    @include mixins.a-text-regular-enlarged();
+  }
 
   &__btn-block {
     padding: var(--a-secondary-dialog-button-block-padding-top) 0

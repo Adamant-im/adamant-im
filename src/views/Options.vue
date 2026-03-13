@@ -3,7 +3,7 @@
     <router-view v-if="hasView" />
     <template v-else>
       <!-- General -->
-      <h3 :class="[`${className}__title`, `${className}__title--first`, 'a-text-caption']">
+      <h3 :class="[`${className}__title`, `${className}__title--first`]">
         {{ t('options.general_title') }}
       </h3>
       <v-row align="center" gap="0">
@@ -35,7 +35,7 @@
       </v-row>
 
       <!-- Security -->
-      <h3 :class="[`${className}__title`, `${className}__title--section`, 'a-text-caption']">
+      <h3 :class="[`${className}__title`, `${className}__title--section`]">
         {{ t('options.security_title') }}
       </h3>
       <v-row align="center" gap="0">
@@ -49,7 +49,7 @@
             @click.prevent="onCheckStayLoggedIn"
           />
 
-          <div class="a-text-explanation-enlarged">
+          <div :class="`${className}__explanation`">
             {{ t('options.stay_logged_in_tooltip') }}
           </div>
 
@@ -58,7 +58,7 @@
       </v-row>
 
       <!-- Chats -->
-      <h3 :class="[`${className}__title`, `${className}__title--section`, 'a-text-caption']">
+      <h3 :class="[`${className}__title`, `${className}__title--section`]">
         {{ t('options.chats_title') }}
       </h3>
       <v-row align="center" gap="0">
@@ -71,7 +71,7 @@
             hide-details
           />
 
-          <div class="a-text-explanation-enlarged">
+          <div :class="`${className}__explanation`">
             {{ t('options.send_on_enter_tooltip') }}
           </div>
         </v-col>
@@ -85,7 +85,7 @@
             hide-details
           />
 
-          <div class="a-text-explanation-enlarged">
+          <div :class="`${className}__explanation`">
             {{ t('options.format_messages_tooltip') }}
           </div>
         </v-col>
@@ -99,14 +99,14 @@
             hide-details
           />
 
-          <div class="a-text-explanation-enlarged">
+          <div :class="`${className}__explanation`">
             {{ t('options.use_full_date_tooltip') }}
           </div>
         </v-col>
       </v-row>
 
       <!-- Notifications -->
-      <h3 :class="[`${className}__title`, `${className}__title--section`, 'a-text-caption']">
+      <h3 :class="[`${className}__title`, `${className}__title--section`]">
         {{ t('options.notification_title') }}
       </h3>
       <v-row align="center" gap="0">
@@ -119,7 +119,7 @@
             hide-details
           />
 
-          <div class="a-text-explanation-enlarged">
+          <div :class="`${className}__explanation`">
             {{ t('options.enable_sound_tooltip') }}
           </div>
         </v-col>
@@ -132,14 +132,14 @@
             hide-details
           />
 
-          <div class="a-text-explanation-enlarged">
+          <div :class="`${className}__explanation`">
             {{ t('options.enable_push_tooltip') }}
           </div>
         </v-col>
       </v-row>
 
       <!-- Actions -->
-      <h3 :class="[`${className}__title`, `${className}__title--section`, 'a-text-caption']">
+      <h3 :class="[`${className}__title`, `${className}__title--section`]">
         {{ t('options.actions') }}
       </h3>
       <v-row gap="0">
@@ -450,6 +450,7 @@ onBeforeUnmount(() => {
   --a-settings-version-info-active-opacity: var(--a-opacity-interactive-pressed);
 
   &__title {
+    @include mixins.a-text-caption();
     padding-top: var(--a-settings-title-padding-top);
     margin-top: 0;
     margin-left: calc(var(--a-settings-gutter) * -1);
@@ -469,6 +470,10 @@ onBeforeUnmount(() => {
 
   &__control-col {
     text-align: end;
+  }
+
+  &__explanation {
+    @include mixins.a-text-explanation-enlarged();
   }
 
   &__option-offset {
@@ -558,11 +563,7 @@ onBeforeUnmount(() => {
 }
 .v-theme--dark {
   .settings-view {
-    :deep(.a-text-explanation),
-    :deep(.a-text-explanation-small),
-    :deep(.a-text-explanation-bold),
-    :deep(.a-text-explanation-enlarged),
-    :deep(.a-text-explanation-enlarged-bold) {
+    &__explanation {
       color: var(--a-color-text-muted-dark);
     }
 
