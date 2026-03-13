@@ -56,6 +56,10 @@ describe('Secondary dialogs UI contract', () => {
     expect(tokensContent).toContain('--a-secondary-dialog-width-compact')
     expect(tokensContent).toContain('--a-secondary-dialog-width-info')
     expect(tokensContent).toContain('--a-secondary-dialog-width-qrcode')
+    expect(tokensContent).toContain('--a-secondary-dialog-content-padding-reset')
+    expect(tokensContent).toContain('--a-secondary-dialog-list-padding-block')
+    expect(tokensContent).toContain('--a-secondary-dialog-list-background')
+    expect(tokensContent).toContain('--a-color-surface-warning-soft')
     expect(tokensContent).toContain('--a-secondary-dialog-disclaimer-gap')
     expect(tokensContent).toContain('--a-secondary-dialog-action-margin-top')
     expect(tokensContent).toContain('--a-secondary-dialog-footer-padding-bottom')
@@ -107,6 +111,8 @@ describe('Secondary dialogs UI contract', () => {
   })
 
   it('uses semantic dialog body classes and shared tokens in secondary dialog forms', () => {
+    const warningAddressesContent = readFileSync(warningOnAddressesDialogPath, 'utf8')
+    const warningPartnerContent = readFileSync(warningOnPartnerAddressDialogPath, 'utf8')
     const chatStartContent = readFileSync(chatStartDialogPath, 'utf8')
     const walletResetContent = readFileSync(walletResetDialogPath, 'utf8')
     const passwordSetContent = readFileSync(passwordSetDialogPath, 'utf8')
@@ -169,7 +175,13 @@ describe('Secondary dialogs UI contract', () => {
     expect(shareUriContent).toContain('classes.list')
     expect(shareUriContent).toContain('classes.listItem')
     expect(shareUriContent).toContain('bg-color="transparent"')
-    expect(shareUriContent).toContain('background: inherit;')
+    expect(shareUriContent).toContain('background: var(--a-secondary-dialog-list-background);')
+    expect(shareUriContent).toContain(
+      'padding-block: var(--a-secondary-dialog-list-padding-block) !important;'
+    )
+    expect(shareUriContent).toContain(
+      'padding: var(--a-secondary-dialog-content-padding-reset) !important;'
+    )
     expect(shareUriContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
     expect(shareUriContent).not.toContain('class="pa-0"')
     expect(shareUriContent).toContain("map.get(colors.$adm-colors, 'regular')")
@@ -183,7 +195,13 @@ describe('Secondary dialogs UI contract', () => {
     expect(buyTokensContent).toContain('classes.listItem')
     expect(buyTokensContent).toContain('classes.listItemTitle')
     expect(buyTokensContent).toContain('bg-color="transparent"')
-    expect(buyTokensContent).toContain('background: inherit;')
+    expect(buyTokensContent).toContain('background: var(--a-secondary-dialog-list-background);')
+    expect(buyTokensContent).toContain(
+      'padding-block: var(--a-secondary-dialog-list-padding-block) !important;'
+    )
+    expect(buyTokensContent).toContain(
+      'padding: var(--a-secondary-dialog-content-padding-reset) !important;'
+    )
     expect(buyTokensContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
     expect(buyTokensContent).not.toContain('class="pa-0"')
     expect(buyTokensContent).toContain("map.get(colors.$adm-colors, 'regular')")
@@ -267,6 +285,8 @@ describe('Secondary dialogs UI contract', () => {
     expect(votesViewContent).toContain('width="var(--a-secondary-dialog-width)"')
     expect(votesViewContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
     expect(votesViewContent).not.toContain('class="pa-4 v-row--no-gutters"')
+    expect(warningAddressesContent).toContain('var(--a-color-surface-warning-soft)')
+    expect(warningPartnerContent).toContain('var(--a-color-surface-warning-soft)')
   })
 
   it('uses shared dev-screen spacing pattern in vibro public utility screen', () => {

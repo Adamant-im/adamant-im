@@ -33,6 +33,7 @@
   --a-color-text-inverse: #fff;
   --a-color-icon-subtle-light: #bdbdbd;
   --a-color-surface-transparent: transparent;
+  --a-color-surface-warning-soft: rgba(248, 160, 97, 0.6);
   --a-color-status-success: rgb(61, 209, 151);
   --a-color-status-danger: rgb(237, 82, 112);
   --a-color-status-attention: #f8a061;
@@ -112,6 +113,7 @@
   --a-fake-input-box-divider-top: calc(var(--a-space-8) - 1px);
   --a-fake-input-value-line-height: var(--a-space-8);
   --a-fake-input-rate-padding-inline-start: calc(var(--a-space-1) - 1px);
+  --a-send-funds-amount-label-line-height: 1;
   --a-auth-control-button-size: 28px;
   --a-auth-control-icon-size: 24px;
   --a-auth-control-icon-size-compact: 20px;
@@ -198,6 +200,9 @@
   --a-secondary-dialog-title-padding: var(--a-space-4) var(--a-secondary-dialog-padding-inline);
   --a-secondary-dialog-content-padding: var(--a-space-4) var(--a-secondary-dialog-padding-inline);
   --a-secondary-dialog-actions-padding: var(--a-space-3) var(--a-secondary-dialog-padding-inline);
+  --a-secondary-dialog-content-padding-reset: 0px;
+  --a-secondary-dialog-list-padding-block: var(--a-space-2);
+  --a-secondary-dialog-list-background: inherit;
   --a-secondary-dialog-disclaimer-gap: 10px;
   --a-secondary-dialog-highlight-padding: 10px;
   --a-secondary-dialog-action-icon-gap: var(--a-space-2);

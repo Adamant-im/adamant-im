@@ -999,7 +999,6 @@ export default {
   --a-send-funds-button-margin-top: var(--a-space-4);
   --a-send-funds-amount-label-size: var(--a-font-size-sm);
   --a-send-funds-amount-label-floating-scale: 0.75;
-  --a-send-funds-amount-label-line-height: 1;
 
   @include inputActionMenu.a-input-action-menu();
 

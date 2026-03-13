@@ -148,11 +148,12 @@ const openLink = (link: string) => {
   @include secondaryDialog.a-secondary-dialog-card-frame();
 
   &__dialog-body {
-    padding: 0 !important;
+    padding: var(--a-secondary-dialog-content-padding-reset) !important;
   }
 
   &__list {
-    background: inherit;
+    background: var(--a-secondary-dialog-list-background);
+    padding-block: var(--a-secondary-dialog-list-padding-block) !important;
   }
 }
 

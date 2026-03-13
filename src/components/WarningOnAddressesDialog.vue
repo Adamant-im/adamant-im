@@ -160,7 +160,7 @@ export default {
   @include secondaryDialog.a-secondary-dialog-warning-frame();
 
   &__highlight {
-    background-color: rgba(map.get(colors.$adm-colors, 'attention'), 0.6);
+    background-color: var(--a-color-surface-warning-soft);
   }
 
   &__btn-block {
