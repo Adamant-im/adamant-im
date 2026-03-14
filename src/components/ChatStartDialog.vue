@@ -6,7 +6,7 @@
     @keydown.enter="onEnter"
   >
     <v-card>
-      <v-card-title :class="`${className}__card-title a-text-header`">
+      <v-card-title :class="`${className}__card-title`">
         {{ $t('chats.new_chat') }}
       </v-card-title>
 
@@ -58,7 +58,7 @@
         </v-col>
 
         <v-col cols="12" :class="`${className}__btn-show-qrcode`">
-          <a class="a-text-active" @click="showQrcodeRendererDialog = true">
+          <a :class="`${className}__link`" @click="showQrcodeRendererDialog = true">
             {{ $t('chats.show_my_qr_code') }}
           </a>
         </v-col>
@@ -248,10 +248,19 @@ export default {
 @use '@/assets/styles/components/_input-action-menu.scss' as inputActionMenu;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .chat-start-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
   @include inputActionMenu.a-input-action-menu();
+
+  &__card-title {
+    @include mixins.a-text-header();
+  }
+
+  &__link {
+    @include mixins.a-text-active();
+  }
 
   &__actions {
     text-align: center;

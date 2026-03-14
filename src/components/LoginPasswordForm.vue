@@ -42,7 +42,7 @@
         </slot>
       </v-col>
       <div :class="classes.passwordHint">
-        <h3 :class="['a-text-regular', classes.passwordHintTitle]">
+        <h3 :class="classes.passwordHintTitle">
           {{ t('login_via_password.remove_password_hint') }}
         </h3>
         <v-btn
@@ -171,6 +171,8 @@ const removePassword = () => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
+
 .login-form {
   --a-login-form-passphrase-toggle-size: var(--a-auth-control-button-size);
   --a-login-form-submit-spinner-gap: var(--a-auth-control-inline-gap);
@@ -213,6 +215,7 @@ const removePassword = () => {
   }
 
   &__password-hint-title {
+    @include mixins.a-text-regular();
     margin-top: 0;
     margin-bottom: var(--a-login-password-hint-title-gap);
   }

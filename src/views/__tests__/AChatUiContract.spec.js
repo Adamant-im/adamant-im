@@ -132,9 +132,19 @@ describe('AChat UI style contract', () => {
 
     expect(messageContent).not.toContain('size="15"')
     expect(messageContent).not.toContain('size="13"')
+    expect(messageContent).toContain('@include mixins.a-text-regular-enlarged();')
+    expect(messageContent).not.toContain('class="a-chat__message-text a-text-regular-enlarged"')
     expect(attachmentContent).not.toContain('size="15"')
     expect(attachmentContent).not.toContain('size="13"')
+    expect(attachmentContent).toContain('@include mixins.a-text-regular-enlarged();')
+    expect(attachmentContent).not.toContain('class="a-chat__message-text a-text-regular-enlarged"')
     expect(transactionContent).not.toContain('size="13"')
+    expect(transactionContent).toContain('@include mixins.a-text-regular-bold();')
+    expect(transactionContent).toContain('@include mixins.a-text-regular-enlarged();')
+    expect(transactionContent).not.toContain('class="a-chat__direction a-text-regular-bold"')
+    expect(transactionContent).not.toContain(
+      'class="a-chat__message-text a-chat__transaction-note a-text-regular-enlarged"'
+    )
   })
 
   it('tokenizes chat message actions dropdown, list, menu and overlay offsets', () => {

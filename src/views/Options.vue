@@ -39,7 +39,7 @@
         {{ t('options.security_title') }}
       </h3>
       <v-row align="center" gap="0">
-        <v-col cols="12" a-text-regular-enlarged>
+        <v-col cols="12" :class="`${className}__security-block`">
           <v-checkbox
             :label="t('options.stay_logged_in')"
             color="grey darken-1"
@@ -439,6 +439,7 @@ onBeforeUnmount(() => {
 .settings-view {
   --a-settings-gutter: var(--a-space-6);
   --a-settings-title-padding-top: var(--a-space-4);
+  --a-settings-title-margin-top-first: var(--a-space-6);
   --a-settings-title-margin-top-section: var(--a-space-6);
   --a-settings-title-margin-bottom-first: var(--a-space-4);
   --a-settings-title-margin-bottom-section: var(--a-space-6);
@@ -460,6 +461,7 @@ onBeforeUnmount(() => {
   }
 
   &__title--first {
+    margin-top: var(--a-settings-title-margin-top-first);
     margin-bottom: var(--a-settings-title-margin-bottom-first);
   }
 
@@ -470,6 +472,10 @@ onBeforeUnmount(() => {
 
   &__control-col {
     text-align: end;
+  }
+
+  &__security-block {
+    @include mixins.a-text-regular-enlarged();
   }
 
   &__explanation {

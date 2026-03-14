@@ -20,7 +20,7 @@
       </div>
       <div v-else>
         <p>{{ t('chats.placeholder.can_not_message') }}</p>
-        <a class="a-text-active" @click="openLink">
+        <a :class="classes.link" @click="openLink">
           {{ t('chats.placeholder.what_does_it_mean.text') }}
         </a>
       </div>
@@ -49,7 +49,8 @@ const classes = {
   row: `${className}__row`,
   container: `${className}__container`,
   spinner: `${className}__spinner`,
-  logo: `${className}__logo`
+  logo: `${className}__logo`,
+  link: `${className}__link`
 }
 const keys = ['encrypted', 'ipfs', 'anonymous', 'censorship']
 
@@ -116,6 +117,10 @@ function openLink() {
   &__logo {
     width: var(--a-chat-placeholder-logo-size);
     height: var(--a-chat-placeholder-logo-size);
+  }
+
+  &__link {
+    @include mixins.a-text-active();
   }
 }
 

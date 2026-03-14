@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="show" width="var(--a-secondary-dialog-width)" :class="className">
     <v-card>
-      <v-card-title :class="`${className}__card-title a-text-header`">
+      <v-card-title :class="`${className}__card-title`">
         {{ title }}
       </v-card-title>
 
@@ -53,8 +53,13 @@ export default {
 
 <style lang="scss" scoped>
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .chat-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  &__card-title {
+    @include mixins.a-text-header();
+  }
 }
 </style>

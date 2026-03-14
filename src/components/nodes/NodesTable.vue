@@ -32,7 +32,7 @@
           color="grey darken-1"
           hide-details
         />
-        <div :class="['a-text-explanation-enlarged', classes.description]">
+        <div :class="classes.description">
           {{ t('nodes.fastest_tooltip') }}
         </div>
         <div>&nbsp;<br />&nbsp;</div>
@@ -45,7 +45,7 @@
           color="grey darken-1"
           hide-details
         />
-        <div :class="['a-text-explanation-enlarged', classes.description]">
+        <div :class="classes.description">
           {{ t('nodes.fastest_tooltip') }}
         </div>
         <div>&nbsp;<br />&nbsp;</div>
@@ -58,7 +58,7 @@
           color="grey darken-1"
           hide-details
         />
-        <div :class="['a-text-explanation-enlarged', classes.description]">
+        <div :class="classes.description">
           {{ t('nodes.fastest_tooltip') }}
         </div>
         <v-checkbox
@@ -68,15 +68,12 @@
           color="grey darken-1"
           hide-details
         />
-        <div :class="['a-text-explanation-enlarged', classes.description]">
+        <div :class="classes.description">
           {{ t('nodes.use_socket_connection_tooltip') }}
         </div>
 
         <!-- eslint-disable vue/no-v-html -- Safe internal content -->
-        <div
-          :class="['a-text-explanation-enlarged', classes.info]"
-          v-html="t('nodes.nodeLabelDescription')"
-        />
+        <div :class="classes.info" v-html="t('nodes.nodeLabelDescription')" />
         <!-- eslint-enable vue/no-v-html -->
 
         <div>&nbsp;<br />&nbsp;</div>
@@ -162,6 +159,7 @@ const preferFasterServiceNodeOption = computed<boolean>({
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .nodes-table {
   &__checkbox-section {
@@ -169,20 +167,23 @@ const preferFasterServiceNodeOption = computed<boolean>({
   }
 
   &__description {
+    @include mixins.a-text-explanation-enlarged();
     margin-top: var(--a-space-2);
   }
 
-  :deep(.v-tab) {
-    text-transform: uppercase;
-  }
-
   &__info {
+    @include mixins.a-text-explanation-enlarged();
+
     :deep(a) {
       text-decoration-line: none;
       &:hover {
         text-decoration-line: underline;
       }
     }
+  }
+
+  :deep(.v-tab) {
+    text-transform: uppercase;
   }
 }
 /** Themes **/

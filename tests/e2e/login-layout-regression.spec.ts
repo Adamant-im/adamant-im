@@ -30,7 +30,7 @@ test.describe('Login layout regressions', () => {
       ) as HTMLElement | null
       const loginForm = document.querySelector('.login-form') as HTMLElement | null
       const createTitle = document.querySelector(
-        '.passphrase-generator h3.a-text-regular'
+        '.passphrase-generator__create-title'
       ) as HTMLElement | null
       const createButton = document.querySelector(
         '.passphrase-generator .a-btn-link'

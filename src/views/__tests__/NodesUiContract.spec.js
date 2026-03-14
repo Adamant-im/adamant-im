@@ -59,6 +59,7 @@ describe('Nodes UI style contract', () => {
     expect(shellContent).toContain('--a-settings-table-shell-checkbox-offset')
     expect(shellContent).toContain('var(--a-color-text-muted-dark)')
     expect(shellContent).toContain('var(--a-space-6)')
+    expect(content).toContain('@include mixins.a-text-explanation-enlarged();')
     expect(shellContent).toContain(
       'margin-inline-start: calc(var(--a-settings-table-shell-bleed-inline-start) * -1);'
     )
@@ -71,6 +72,8 @@ describe('Nodes UI style contract', () => {
     expect(shellContent).not.toContain('margin-right: -16px;')
     expect(content).not.toContain('class="mt-4"')
     expect(content).not.toContain('class="a-text-explanation-enlarged mt-6"')
+    expect(content).not.toContain("['a-text-explanation-enlarged', classes.description]")
+    expect(content).not.toContain("['a-text-explanation-enlarged', classes.info]")
   })
 
   it('uses tokenized typography and spacing in node cells and status widgets', () => {

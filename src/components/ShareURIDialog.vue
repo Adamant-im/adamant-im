@@ -6,7 +6,7 @@
     :class="classes.root"
   >
     <v-card>
-      <v-card-title :class="classes.dialogTitle" class="a-text-header">
+      <v-card-title :class="classes.dialogTitle">
         {{ t('home.share_uri', { crypto }) }}
       </v-card-title>
       <v-divider class="a-divider" />
@@ -143,10 +143,15 @@ export default defineComponent({
 @use 'sass:map';
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 @use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 @use 'vuetify/_settings.scss';
 
 .share-uri-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  &__dialog-title {
+    @include mixins.a-text-header();
+  }
 
   &__dialog-body {
     padding: var(--a-secondary-dialog-content-padding-reset) !important;

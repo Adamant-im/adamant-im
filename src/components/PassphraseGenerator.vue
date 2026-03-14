@@ -1,7 +1,7 @@
 <template>
   <div :class="classes.root">
     <div :class="classes.createSection">
-      <h3 :class="['a-text-regular', classes.createTitle]">
+      <h3 :class="classes.createTitle">
         {{ t('login.create_address_label') }}
       </h3>
       <v-btn
@@ -216,6 +216,7 @@ const togglePassphraseVisibility = () => {
   }
 
   &__create-title {
+    @include mixins.a-text-regular();
     margin-top: 0;
     margin-bottom: var(--a-passphrase-create-title-gap);
   }

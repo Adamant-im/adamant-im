@@ -58,17 +58,9 @@
         <div class="a-chat__message-card-body">
           <!-- eslint-disable vue/no-v-html -- Safe with DOMPurify.sanitize() content -->
           <!-- AChatMessage :message <- Chat.vue :message="formatMessage(message)" <- formatMessage <- DOMPurify.sanitize() -->
-          <div
-            v-if="html"
-            class="a-chat__message-text a-text-regular-enlarged"
-            v-html="formattedMessage"
-          />
+          <div v-if="html" class="a-chat__message-text" v-html="formattedMessage" />
           <!-- eslint-enable vue/no-v-html -->
-          <div
-            v-else
-            class="a-chat__message-text a-text-regular-enlarged"
-            v-text="formattedMessage"
-          />
+          <div v-else class="a-chat__message-text" v-text="formattedMessage" />
         </div>
       </div>
     </div>
@@ -260,6 +252,10 @@ export default defineComponent({
   &--inline {
     width: auto;
   }
+}
+
+.a-chat__message-text {
+  @include mixins.a-text-regular-enlarged();
 }
 
 .a-chat_file-container {

@@ -13,10 +13,7 @@
           class="a-input"
           color="primary"
         />
-        <div
-          :class="['a-text-explanation-enlarged', `${className}__info`]"
-          v-html="t('votes.stake_info')"
-        />
+        <div :class="`${className}__info`" v-html="t('votes.stake_info')" />
       </template>
 
       <delegates-table
@@ -224,6 +221,7 @@ const showConfirmationDialog = () => {
   width: 100%;
 
   &__info {
+    @include mixins.a-text-explanation-enlarged();
     padding: var(--a-space-5) 0;
     :deep(a) {
       text-decoration-line: none;

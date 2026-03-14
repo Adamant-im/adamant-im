@@ -58,7 +58,7 @@
         </div>
 
         <div>
-          <div class="a-chat__direction a-text-regular-bold">
+          <div class="a-chat__direction">
             {{
               isStringEqualCI(transaction.senderId, userId)
                 ? t('chats.sent_label')
@@ -83,7 +83,7 @@
         </div>
 
         <div class="a-chat__message-card-body">
-          <div class="a-chat__message-text a-chat__transaction-note a-text-regular-enlarged">
+          <div class="a-chat__message-text a-chat__transaction-note">
             {{ transaction.message }}
           </div>
         </div>
@@ -227,6 +227,16 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
+
+.a-chat__direction {
+  @include mixins.a-text-regular-bold();
+}
+
+.a-chat__transaction-note {
+  @include mixins.a-text-regular-enlarged();
+}
+
 .a-chat__status-icon--clickable {
   cursor: pointer;
 }

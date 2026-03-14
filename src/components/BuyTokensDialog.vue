@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="show" width="var(--a-secondary-dialog-width-compact)" :class="classes.root">
     <v-card>
-      <v-card-title :class="`${classes.root}__dialog-title a-text-header`">
+      <v-card-title :class="`${classes.root}__dialog-title`">
         {{ t('home.buy_tokens_btn') }}
       </v-card-title>
 
@@ -142,10 +142,15 @@ const openLink = (link: string) => {
 @use 'sass:map';
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 @use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 @use 'vuetify/_settings.scss';
 
 .buy-tokens-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  &__dialog-title {
+    @include mixins.a-text-header();
+  }
 
   &__dialog-body {
     padding: var(--a-secondary-dialog-content-padding-reset) !important;

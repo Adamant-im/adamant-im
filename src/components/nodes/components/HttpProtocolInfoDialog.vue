@@ -1,18 +1,18 @@
 <template>
   <v-dialog v-model="show" width="var(--a-secondary-dialog-width)" :class="className">
     <v-card>
-      <v-card-title :class="`${className}__dialog-title a-text-header`">
+      <v-card-title :class="`${className}__dialog-title`">
         {{ t('nodes.popup.http_restriction_title') }}
       </v-card-title>
 
       <v-divider class="a-divider" />
 
-      <v-card-text :class="`${className}__dialog-body a-text-regular-enlarged`">
+      <v-card-text :class="`${className}__dialog-body`">
         <p :class="`${className}__paragraph`">
           {{ t('nodes.popup.http_restriction_intro') }}
         </p>
 
-        <h3 :class="`${className}__section-title a-text-regular-enlarged-bold`">
+        <h3 :class="`${className}__section-title`">
           {{ t('nodes.popup.http_vs_https_title') }}
         </h3>
         <p :class="`${className}__paragraph`">
@@ -20,14 +20,14 @@
           {{ t('nodes.popup.http_vs_https_https') }}
         </p>
 
-        <h3 :class="`${className}__section-title a-text-regular-enlarged-bold`">
+        <h3 :class="`${className}__section-title`">
           {{ t('nodes.popup.adamant_encryption_title') }}
         </h3>
         <p :class="`${className}__paragraph`">
           {{ t('nodes.popup.adamant_encryption_text') }}
         </p>
 
-        <h3 :class="`${className}__section-title a-text-regular-enlarged-bold`">
+        <h3 :class="`${className}__section-title`">
           {{ t('nodes.popup.how_to_allow_title') }}
         </h3>
         <ul :class="`${className}__list`">
@@ -77,15 +77,25 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .http-protocol-info-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  &__dialog-title {
+    @include mixins.a-text-header();
+  }
+
+  &__dialog-body {
+    @include mixins.a-text-regular-enlarged();
+  }
 
   &__paragraph {
     margin-bottom: var(--a-space-4);
   }
 
   &__section-title {
+    @include mixins.a-text-regular-enlarged-bold();
     margin-bottom: var(--a-space-2);
   }
 

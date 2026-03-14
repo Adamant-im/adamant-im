@@ -9,7 +9,7 @@
         :class="`${classes.root}__status`"
         gap="0"
       >
-        <div class="a-text-header">
+        <div :class="`${classes.root}__status-title`">
           {{ t('scan.waiting_camera') }}
         </div>
         <v-progress-circular
@@ -45,7 +45,7 @@
           </div>
         </v-col>
         <v-col cols="12" :class="`${classes.root}__hint`">
-          <h3 :class="['a-text-regular', `${classes.root}__hint-title`]">
+          <h3 :class="`${classes.root}__hint-title`">
             {{ t('scan.hold_your_device') }}
           </h3>
         </v-col>
@@ -63,27 +63,27 @@
       >
         <v-col cols="12">
           <template v-if="cameraStatus === 'nocamera'">
-            <h3 :class="`${classes.root}__state-title a-text-header`">
+            <h3 :class="`${classes.root}__state-title`">
               {{ t('scan.no_camera_found') }}
             </h3>
-            <p :class="`${classes.root}__state-message a-text-regular`">
+            <p :class="`${classes.root}__state-message`">
               {{ t('scan.connect_camera') }}
             </p>
           </template>
           <template v-else-if="cameraStatus === 'noaccess'">
-            <h3 :class="`${classes.root}__state-title a-text-header`">
+            <h3 :class="`${classes.root}__state-title`">
               {{ t('scan.no_camera_access') }}
             </h3>
-            <p :class="`${classes.root}__state-message a-text-regular`">
+            <p :class="`${classes.root}__state-message`">
               {{ t('scan.grant_camera_permissions') }}
             </p>
           </template>
           <template v-else-if="cameraStatus === 'nostream'">
-            <h3 :class="`${classes.root}__state-title a-text-header`">
+            <h3 :class="`${classes.root}__state-title`">
               {{ t('scan.no_camera_stream') }}
             </h3>
             <p
-              :class="`${classes.root}__state-message a-text-regular`"
+              :class="`${classes.root}__state-message`"
               v-html="t('scan.no_stream_details', { noStreamDetails })"
             />
           </template>
@@ -241,6 +241,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .qrcode-scanner-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
@@ -263,11 +264,18 @@ export default defineComponent({
     text-align: center;
   }
 
+  &__hint-title {
+    @include mixins.a-text-regular();
+  }
+
+  &__status-title,
   &__state-title {
+    @include mixins.a-text-header();
     margin: 0;
   }
 
   &__state-message {
+    @include mixins.a-text-regular();
     margin-top: var(--a-space-1);
     margin-bottom: 0;
   }
