@@ -47,6 +47,9 @@ describe('Financial UI style contract', () => {
     expect(content).toContain('__field-label')
     expect(content).toContain('COMMON_INLINE_SPINNER_SIZE')
     expect(content).toContain('inputActionMenu.a-input-action-menu()')
+    expect(content).toContain('formatDisplayAmount(amount, currency)')
+    expect(content).toContain('cryptoTransferDecimals')
+    expect(content).toContain('.toFixed()')
     expect(content).toContain('__menu-list')
     expect(content).toContain('__menu-item')
     expect(content).toContain('__menu-item-title')
@@ -58,6 +61,7 @@ describe('Financial UI style contract', () => {
     expect(content).not.toContain('class="text-center"')
     expect(content).not.toContain('class="font-weight-medium"')
     expect(content).not.toContain('fake-input__value fake-input__value--rate a-text-regular')
+    expect(content).not.toContain('.decimalPlaces(decimals).toString()')
     expect(content).not.toContain('size="24"')
     expect(content).not.toContain('margin-top: 15px;')
 

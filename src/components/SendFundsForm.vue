@@ -374,10 +374,8 @@ export default {
      */
     transferFeeFixed() {
       const feeCurrency = isErc20(this.currency) ? 'ETH' : this.currency
-      const decimals = CryptosInfo[feeCurrency].cryptoTransferDecimals
-      const formatted = BigNumber(this.transferFee).decimalPlaces(decimals).toString()
 
-      return trimTrailingZeros(formatted)
+      return this.formatDisplayAmount(this.transferFee, feeCurrency)
     },
 
     /**
@@ -412,10 +410,7 @@ export default {
      * @returns {string}
      */
     finalAmountFixed() {
-      const decimals = CryptosInfo[this.currency].cryptoTransferDecimals
-      const formatted = BigNumber(this.finalAmount).decimalPlaces(decimals).toString()
-
-      return trimTrailingZeros(formatted)
+      return this.formatDisplayAmount(this.finalAmount, this.currency)
     },
 
     /**
@@ -649,6 +644,12 @@ export default {
     this.fetchUserCryptoAddress()
   },
   methods: {
+    formatDisplayAmount(amount, currency) {
+      const decimals = CryptosInfo[currency].cryptoTransferDecimals
+      const formatted = BigNumber(amount).decimalPlaces(decimals, BigNumber.ROUND_DOWN).toFixed()
+
+      return trimTrailingZeros(formatted)
+    },
     checkIsNewAccount(cryptoAddress) {
       this.account.isNew = false
 
