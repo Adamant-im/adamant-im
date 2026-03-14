@@ -20,7 +20,7 @@ exports[`QrcodeScannerDialog.vue > renders the correct markup 1`] = `
       justify="center"
     >
       <div
-        class="a-text-header"
+        class="qrcode-scanner-dialog__status-title"
         data-v-c5e2af2c=""
       >
         Waiting for camera…
@@ -59,7 +59,7 @@ exports[`QrcodeScannerDialog.vue > renders the correct markup 1`] = `
         data-v-c5e2af2c=""
       >
         <h3
-          class="a-text-regular text-center"
+          class="qrcode-scanner-dialog__hint-title"
           data-v-c5e2af2c=""
         >
           Hold steady for 2—3 seconds to scan QR code

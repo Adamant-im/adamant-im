@@ -10,7 +10,7 @@ exports[`PassphraseGenerator.vue > renders the correct markup 1`] = `
     data-v-f3fe94d6=""
   >
     <h3
-      class="a-text-regular passphrase-generator__create-title"
+      class="passphrase-generator__create-title"
       data-v-f3fe94d6=""
     >
       Or create new anonymous address:

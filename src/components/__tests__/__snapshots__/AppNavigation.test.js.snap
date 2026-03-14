@@ -7,6 +7,7 @@ exports[`AppNavigation.vue > renders the correct markup 1`] = `
   class="app-navigation"
   data-v-5e3203dd=""
   elevation="0"
+  height="50"
   modelvalue="0"
 >
   <!-- Wallet -->

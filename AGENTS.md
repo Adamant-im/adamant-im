@@ -51,13 +51,13 @@ This repository is a client application, so agent decisions must:
 Use these sources when implementing or reviewing changes:
 
 - This repository: `README.md`, current code, and passing tests
-- ADAMANT Node guidelines baseline: https://github.com/Adamant-im/adamant/blob/dev/AGENTS.md
-- Org-wide issue/label governance: https://github.com/Adamant-im/.github
-- Recommended issue title prefixes: https://github.com/orgs/Adamant-im/discussions/5
-- Recommended labels for issues/discussions: https://github.com/orgs/Adamant-im/discussions/1
-- ADAMANT docs: https://docs.adamant.im
-- Node/API schema: https://schema.adamant.im and https://github.com/Adamant-im/adamant-schema
-- AIPs: https://aips.adamant.im and https://github.com/Adamant-im/AIPs
+- ADAMANT Node guidelines baseline: <https://github.com/Adamant-im/adamant/blob/dev/AGENTS.md>
+- Org-wide issue/label governance: <https://github.com/Adamant-im/.github>
+- Recommended issue title prefixes: <https://github.com/orgs/Adamant-im/discussions/5>
+- Recommended labels for issues/discussions: <https://github.com/orgs/Adamant-im/discussions/1>
+- ADAMANT docs: <https://docs.adamant.im>
+- Node/API schema: <https://schema.adamant.im> and <https://github.com/Adamant-im/adamant-schema>
+- AIPs: <https://aips.adamant.im> and <https://github.com/Adamant-im/AIPs>
 - Wallet OpenAPI source used here: `adamant-wallets/specification/openapi.json`
 
 If sources disagree:
@@ -69,9 +69,9 @@ If sources disagree:
 
 Follow the organization-wide conventions:
 
-- Governance repository: https://github.com/Adamant-im/.github
-- Prefix guidance: https://github.com/orgs/Adamant-im/discussions/5
-- Label guidance: https://github.com/orgs/Adamant-im/discussions/1
+- Governance repository: <https://github.com/Adamant-im/.github>
+- Prefix guidance: <https://github.com/orgs/Adamant-im/discussions/5>
+- Label guidance: <https://github.com/orgs/Adamant-im/discussions/1>
 
 ### Issue workflow
 
@@ -124,7 +124,7 @@ Idea-level prefixes (usually better in Discussions than Issues):
 - Use Conventional Commits style for PR titles: `Type: Short summary` (for example: `Docs: Update AGENTS.md`)
 - Do not use issue-style square-bracket prefixes in PR titles (`[Docs]`, `[Bug]`, etc. are for Issues)
 - Keep PR title type aligned with issue intent (`Docs:`, `Fix:`, `Feat:`, `Refactor:`, `Test:`, `Chore:`)
-- Follow https://www.conventionalcommits.org
+- Follow <https://www.conventionalcommits.org>
 - Include testing/verification steps and mention risk areas (security, privacy, protocol, storage)
 
 ## Architecture and Key Modules
@@ -193,6 +193,24 @@ Build and platform targets:
 - Build and runtime modes: `vite-pwa.config.ts`, `src/config/*.json`
 - Electron: `electron-vite.config.ts`, `src/electron/main.js`
 - Android (Capacitor): `capacitor.config.ts`, `scripts/capacitor/*`, `android/*`
+
+## UI Implementation Rules
+
+- Prefer semantic component classes over template utility classes for new UI work
+- Do not add new template-level typography helpers such as `a-text-*` in Vue templates; apply the corresponding mixins inside component styles instead
+- Prefer shared tokens and mixins from `src/assets/styles/generic/_tokens.scss` and shared component styles before introducing local raw spacing, sizes, colors, or motion values
+- Reuse existing dialog, menu, navigation, and feedback patterns before creating one-off variants
+- Keep visual behavior stable across light and dark themes by changing component variables or tokens, not duplicating unrelated selectors
+- Avoid widening selector scope with `!important` unless the framework layer makes it strictly necessary and there is no safer selector-based alternative
+- Do not modify SVG assets for routine UI cleanup unless the task explicitly requires SVG-level changes
+
+## UI Validation Rules
+
+- For UI-affecting changes, prefer updating or adding contract tests in `src/views/__tests__/*UiContract.spec.js`
+- Prefer targeted Playwright layout checks for high-value surfaces instead of broad pixel-perfect snapshots
+- Keep Playwright assertions resilient: assert stable geometry, visibility, spacing, and route behavior rather than brittle incidental DOM details
+- For transaction list routes such as `/transactions/ADM` or `/transactions/DOGE`, open them through `Home -> Balance` for the target wallet instead of direct navigation, because direct route loads can redirect to `/home`
+- When a browser check is flaky, rerun the isolated scenario before treating it as a product regression and document the flake separately if the isolated rerun passes
 
 ## Non-Negotiable Security Rules
 

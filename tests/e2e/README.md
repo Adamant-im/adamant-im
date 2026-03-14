@@ -46,3 +46,10 @@ npm run test:e2e:report
 - Default mode keeps only failure artifacts, detailed mode keeps artifacts for all tests
 - For transaction list routes like `/transactions/ADM` or `/transactions/DOGE`, open them through `Home -> Balance` for the target wallet
 - Do not use direct `page.goto('/transactions/:crypto')` for transaction list e2e flows because those routes can redirect to `/home`
+
+## Stable UI Test Practices
+
+- Prefer route and interaction flows that match real user behavior instead of shortcut URLs when those URLs have redirects or auth side effects
+- Prefer assertions on stable layout contracts such as spacing, viewport fit, row height, control visibility, and route persistence
+- Avoid brittle thresholds when component width depends on shared dialog constraints or runtime viewport rounding; use realistic bounds that reflect the actual shared tokens
+- If a combined Playwright run fails but the isolated scenario passes, treat it as a flake first and record that distinction in the change summary

@@ -11,7 +11,7 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
     data-v-50a3fb39=""
   >
     <v-card-title
-      class="chat-start-dialog__card-title a-text-header"
+      class="chat-start-dialog__card-title"
       data-v-50a3fb39=""
     >
       New chat
@@ -38,7 +38,7 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
         variant="underlined"
       />
       <v-col
-        class="text-center"
+        class="chat-start-dialog__actions"
         cols="12"
         data-v-50a3fb39=""
       >
@@ -55,7 +55,7 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
         data-v-50a3fb39=""
       >
         <a
-          class="a-text-active"
+          class="chat-start-dialog__link"
           data-v-50a3fb39=""
         >
           Show my QR code
@@ -82,9 +82,11 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
           class="qrcode-renderer-dialog__content"
           data-v-426ca6ff=""
         >
-          <div
+          <button
+            aria-label="Save to images"
+            class="qrcode-renderer-dialog__preview-action"
             data-v-426ca6ff=""
-            style="cursor: pointer;"
+            type="button"
           >
             <div
               class="qrcode-renderer__spinner-container"
@@ -105,7 +107,7 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
                 />
               </v-row>
             </div>
-          </div>
+          </button>
           <v-btn
             class="qrcode-renderer-dialog__button a-btn-primary"
             data-v-426ca6ff=""
