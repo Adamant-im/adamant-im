@@ -7,6 +7,7 @@
           <v-sheet color="transparent" :class="`${className}__wallets`">
             <v-tabs
               v-model="currentWallet"
+              :key="walletOrderKey"
               :class="`${className}__tabs`"
               grow
               stacked
@@ -31,6 +32,7 @@
 
             <v-window
               v-model="currentWallet"
+              :key="walletOrderKey"
               :touch="{
                 start: () => {
                   // Due to `stopPropagation` the `<PullDown/>` component cannot
@@ -148,6 +150,10 @@ const wallets = computed<Wallet[]>(() => {
 
 const allWalletBalancesZero = computed(() => {
   return wallets.value.every((wallet) => Number(wallet.balance) === 0)
+})
+
+const walletOrderKey = computed(() => {
+  return orderedVisibleWalletSymbols.value.map((wallet: CoinSymbol) => wallet.symbol).join(',')
 })
 
 const areNodesDisabled = (crypto: CryptoSymbol) => {

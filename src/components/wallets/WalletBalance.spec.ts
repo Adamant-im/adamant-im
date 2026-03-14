@@ -10,17 +10,22 @@ vi.mock('vuetify', () => ({
   })
 }))
 
-const createMockStore = (balance = 0) => {
+const createMockStore = ({
+  admBalance = 0,
+  admBalanceActualUntil = Date.now() + 60_000,
+  rates = {
+    'ADM/USD': 1
+  }
+} = {}) => {
   return createStore({
     state: {
-      balance,
+      balance: admBalance,
+      balanceActualUntil: admBalanceActualUntil,
       options: {
         currentRate: 'USD'
       },
       rate: {
-        rates: {
-          'ADM/USD': 1
-        }
+        rates
       }
     }
   })
@@ -33,7 +38,7 @@ describe('WalletBalance', () => {
         symbol: 'ADM'
       },
       global: {
-        plugins: [createMockStore(0)]
+        plugins: [createMockStore()]
       }
     })
 
@@ -41,5 +46,26 @@ describe('WalletBalance', () => {
     expect(wrapper.find('.wallet-balance__status-title').exists()).toBe(true)
     expect(wrapper.find('.wallet-balance--single-line').exists()).toBe(true)
     expect(wrapper.find('.wallet-balance__status-text').exists()).toBe(false)
+  })
+
+  it('renders loading dots instead of zero before the wallet balance becomes valid', () => {
+    const wrapper = shallowMount(WalletBalance, {
+      props: {
+        symbol: 'ADM'
+      },
+      global: {
+        plugins: [
+          createMockStore({
+            admBalance: 0,
+            admBalanceActualUntil: Date.now() - 60_000
+          })
+        ]
+      }
+    })
+
+    expect(wrapper.find('.wallet-balance__status-loading').exists()).toBe(true)
+    expect(wrapper.find('.wallet-balance__status-title').exists()).toBe(false)
+    expect(wrapper.find('.wallet-balance__status-text').exists()).toBe(false)
+    expect(wrapper.text()).not.toContain('USD 0')
   })
 })

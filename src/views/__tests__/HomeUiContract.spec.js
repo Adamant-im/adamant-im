@@ -37,7 +37,12 @@ describe('Home UI style contract', () => {
     const content = readFileSync(homePath, 'utf8')
 
     expect(content).toContain('<v-row justify="center" :class="className">')
+    expect(content).toContain(':key="walletOrderKey"')
     expect(content).toContain(':hide-fiat-rates="allWalletBalancesZero"')
+    expect(content).toContain('const walletOrderKey = computed(() => {')
+    expect(content).toContain(
+      "orderedVisibleWalletSymbols.value.map((wallet: CoinSymbol) => wallet.symbol).join(',')"
+    )
     expect(tokensContent).toContain('--a-account-tabs-slider-height')
     expect(tokensContent).toContain('--a-account-tabs-padding-top')
     expect(tokensContent).toContain('--a-account-tabs-padding-bottom')

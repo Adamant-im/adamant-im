@@ -2,10 +2,14 @@
   <div
     :class="{
       [classes.root]: true,
-      [classes.singleLine]: Number(balance) === 0
+      [classes.singleLine]: !isBalanceValid || Number(balance) === 0
     }"
   >
-    <p :class="[classes.statusTitle, { [classes.statusTitleEmpty]: balance === 0 }]">
+    <div v-if="!isBalanceValid" :class="classes.statusLoading">
+      <v-icon :icon="mdiDotsHorizontal" :size="WALLET_TAB_LOADING_ICON_SIZE" />
+    </div>
+
+    <p v-else :class="[classes.statusTitle, { [classes.statusTitleEmpty]: balance === 0 }]">
       {{ xs ? calculatedBalance : calculatedFullBalance }}
       <v-tooltip
         v-if="xs && calculatedFullBalance.toString().length > SIGNIFICANT_DIGITS"
@@ -16,9 +20,7 @@
       </v-tooltip>
     </p>
 
-    <p v-if="Number(balance) !== 0" :class="classes.statusText">
-      {{ currentFiatCurrency }} {{ rate }}
-    </p>
+    <p v-if="showFiatRate" :class="classes.statusText">{{ currentFiatCurrency }} {{ rate }}</p>
   </div>
 </template>
 
@@ -29,6 +31,9 @@ import { Cryptos } from '@/lib/constants'
 import { useStore } from 'vuex'
 import smartNumber from '@/lib/smartNumber'
 import { useDisplay } from 'vuetify'
+import { useNow } from '@vueuse/core'
+import { mdiDotsHorizontal } from '@mdi/js'
+import { WALLET_TAB_LOADING_ICON_SIZE } from '@/components/wallets/helpers/uiMetrics'
 
 const SIGNIFICANT_DIGITS = 7
 const className = 'wallet-balance'
@@ -36,6 +41,7 @@ const className = 'wallet-balance'
 const classes = {
   root: className,
   singleLine: `${className}--single-line`,
+  statusLoading: `${className}__status-loading`,
   statusTitle: `${className}__status-title`,
   statusTitleEmpty: `${className}__status-title--empty`,
   statusText: `${className}__status-text`
@@ -50,9 +56,11 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore()
+    const now = useNow({ interval: 500 })
     const { xs } = useDisplay()
     const { symbol } = toRefs(props)
     const key = symbol.value.toLowerCase()
+    const currentTime = computed(() => now.value.getTime())
 
     const balance = computed(() => {
       return symbol.value === Cryptos.ADM
@@ -60,6 +68,18 @@ export default defineComponent({
         : store.state[key]
           ? store.state[key].balance
           : 0
+    })
+
+    const balanceActualUntil = computed(() => {
+      return symbol.value === Cryptos.ADM
+        ? store.state.balanceActualUntil
+        : store.state[key]
+          ? store.state[key].balanceActualUntil
+          : 0
+    })
+
+    const isBalanceValid = computed(() => {
+      return balanceActualUntil.value > currentTime.value
     })
 
     const calculatedBalance = computed(() => {
@@ -84,14 +104,22 @@ export default defineComponent({
         : 0
     })
 
+    const showFiatRate = computed(() => {
+      return isBalanceValid.value && Number(balance.value) !== 0 && currentRate.value !== undefined
+    })
+
     return {
       SIGNIFICANT_DIGITS,
+      WALLET_TAB_LOADING_ICON_SIZE,
       balance,
+      isBalanceValid,
       classes,
       calculatedBalance,
       calculatedFullBalance,
       currentFiatCurrency,
+      mdiDotsHorizontal,
       rate,
+      showFiatRate,
       xs
     }
   }
@@ -130,6 +158,13 @@ export default defineComponent({
     @include mixins.a-text-regular-enlarged();
     text-align: end;
     line-height: var(--a-wallet-compact-title-line-height);
+  }
+
+  &__status-loading {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    line-height: var(--a-wallet-compact-line-height);
   }
 
   &__status-title--empty {
