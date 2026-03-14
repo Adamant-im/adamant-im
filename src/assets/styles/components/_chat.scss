@@ -529,11 +529,11 @@ $scroll-bar-width: 4px;
       }
 
       .v-text-field > .v-input__control > .v-input__slot:before {
-        border-color: rgba(0, 0, 0, 0.12);
+        border-color: var(--a-color-border-neutral-light);
       }
 
       .v-text-field:not(.v-input--has-state) > .v-input__control > .v-input__slot:hover:before {
-        border-color: rgba(0, 0, 0, 0.12);
+        border-color: var(--a-color-border-neutral-light);
       }
 
       .v-text-field.v-input--is-focused > .v-input__control > .v-input__slot:after {

@@ -333,10 +333,12 @@ describe('AChat UI style contract', () => {
       'padding: var(--a-chat-message-padding-block) var(--a-chat-message-padding-inline);'
     )
     expect(content).toContain('min-height: var(--a-chat-message-header-min-height);')
+    expect(content).toContain('var(--a-color-border-neutral-light)')
 
     expect(content).not.toContain('margin-bottom: var(--a-space-4);')
     expect(content).not.toContain('padding: var(--a-space-2) var(--a-space-4);')
     expect(content).not.toContain('transition: left 0.4s;')
+    expect(content).not.toContain('border-color: rgba(0, 0, 0, 0.12);')
   })
 
   it('tokenizes quoted message sizing and accent border styles', () => {

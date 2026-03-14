@@ -74,7 +74,7 @@
           transparent 4px
         )
         1 repeat;
-      border-color: rgba(255, 255, 255, 0.7);
+      border-color: map.get(colors.$adm-colors, 'grey-transparent');
       border-style: solid;
       border-width: thin 0 0 0;
       border-top-width: 1px;
@@ -133,7 +133,7 @@
     }
 
     .v-input__control > .v-input__slot:before {
-      border-color: rgba(0, 0, 0, 0.12);
+      border-color: var(--a-color-border-neutral-light);
     }
 
     &:not(.v-input--has-state) > .v-input__control > .v-input__slot:hover:before {
@@ -147,7 +147,7 @@
   }
 
   .fake-input {
-    color: rgba(0, 0, 0, 0.54);
+    color: var(--a-color-text-muted-light);
   }
 
   .fake-input__box:before {

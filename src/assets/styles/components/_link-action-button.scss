@@ -1,6 +1,5 @@
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
-@use 'vuetify/settings';
 
 @mixin a-link-action-button() {
   font-size: var(--a-link-action-font-size);
@@ -36,11 +35,11 @@
 }
 
 @mixin a-link-action-button-dark() {
-  color: map.get(settings.$shades, 'white');
+  color: var(--a-color-text-inverse);
 
   &.v-btn:not(.v-btn--disabled):hover,
   &.v-btn:not(.v-btn--disabled):focus-visible {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--a-color-overlay-inverse-soft);
   }
 
   &.v-btn:not(.v-btn--disabled):hover > .v-btn__overlay,

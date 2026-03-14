@@ -66,8 +66,8 @@ html {
 // Change default dialog background color
 .v-card {
   &.v-theme--dark:not(.bg-transparent) {
-    background-color: #424242; // secondary
-    border-color: #424242; // secondary
+    background-color: var(--a-color-surface-secondary-dark);
+    border-color: var(--a-color-surface-secondary-dark);
   }
 }
 
@@ -79,7 +79,7 @@ html {
 .v-menu .v-overlay__content > .v-sheet,
 .v-menu .v-overlay__content > .v-list {
   &.v-theme--dark {
-    background-color: #424242; // secondary
+    background-color: var(--a-color-surface-secondary-dark);
   }
 }
 
@@ -98,7 +98,7 @@ html {
 
 .v-theme--dark.v-card {
   > .v-card__text {
-    color: #fff;
+    color: var(--a-color-text-inverse);
   }
 
   > .v-card-title {
@@ -106,7 +106,7 @@ html {
   }
 
   > .v-card__subtitle {
-    color: #fff;
+    color: var(--a-color-text-inverse);
   }
 }
 
@@ -115,7 +115,7 @@ html {
 }
 
 .v-theme--dark.v-data-table {
-  background-color: #424242;
+  background-color: var(--a-color-surface-secondary-dark);
 }
 
 .v-snackbar__content {

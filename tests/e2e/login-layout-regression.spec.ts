@@ -33,7 +33,7 @@ test.describe('Login layout regressions', () => {
         '.passphrase-generator__create-title'
       ) as HTMLElement | null
       const createButton = document.querySelector(
-        '.passphrase-generator .a-btn-link'
+        '.passphrase-generator__create-button'
       ) as HTMLElement | null
       const fieldInput = document.querySelector('.login-form .v-field__input') as HTMLElement | null
       const fieldAppendInner = document.querySelector(
@@ -122,7 +122,7 @@ test.describe('Login layout regressions', () => {
     expect(metrics?.fieldAppendInnerMarginLeft ?? 0).toBeLessThanOrEqual(-27)
     expect(metrics?.fieldAppendInnerMarginLeft ?? -999).toBeGreaterThanOrEqual(-29)
 
-    const createButton = page.locator('.passphrase-generator .a-btn-link').first()
+    const createButton = page.locator('.passphrase-generator__create-button').first()
     await createButton.click()
     const passphraseBox = page.locator('.passphrase-generator__box')
     await expect(passphraseBox).toBeVisible()
