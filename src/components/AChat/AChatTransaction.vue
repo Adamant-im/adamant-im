@@ -227,6 +227,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/components/_chat-message-content.scss' as chatMessageContent;
 @use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .a-chat__direction {
@@ -234,7 +235,7 @@ export default defineComponent({
 }
 
 .a-chat__transaction-note {
-  @include mixins.a-text-regular-enlarged();
+  @include chatMessageContent.a-chat-message-body-copy();
 }
 
 .a-chat__status-icon--clickable {

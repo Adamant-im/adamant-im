@@ -81,6 +81,7 @@ const messageLabel = computed(() => {
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_chat-message-content.scss' as chatMessageContent;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
@@ -98,7 +99,7 @@ $message-max-lines: 2;
   }
 
   &__message {
-    @include mixins.a-text-regular-enlarged();
+    @include chatMessageContent.a-chat-message-body-copy();
     line-height: var(--a-chat-reply-preview-line-height);
 
     margin-left: var(--a-space-2);

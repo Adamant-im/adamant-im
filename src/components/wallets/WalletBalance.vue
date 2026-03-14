@@ -128,6 +128,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_wallet-compact-content.scss' as walletCompactContent;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
@@ -140,7 +141,7 @@ export default defineComponent({
 
   height: var(--a-wallet-balance-height);
   display: flex;
-  line-height: var(--a-wallet-compact-line-height);
+  @include walletCompactContent.a-wallet-compact-line-copy();
   flex-direction: column;
   justify-content: center;
   gap: var(--a-wallet-balance-gap);
@@ -156,15 +157,11 @@ export default defineComponent({
 
   &__status-title {
     @include mixins.a-text-regular-enlarged();
-    text-align: end;
-    line-height: var(--a-wallet-compact-title-line-height);
+    @include walletCompactContent.a-wallet-compact-trailing-copy();
   }
 
   &__status-loading {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    line-height: var(--a-wallet-compact-line-height);
+    @include walletCompactContent.a-wallet-compact-trailing-loading();
   }
 
   &__status-title--empty {
@@ -172,10 +169,9 @@ export default defineComponent({
   }
 
   &__status-text {
-    text-align: end;
+    @include walletCompactContent.a-wallet-compact-trailing-copy();
     font-size: var(--a-wallet-balance-fiat-size);
     font-weight: var(--a-wallet-balance-status-font-weight);
-    line-height: var(--a-wallet-compact-title-line-height);
   }
 }
 

@@ -93,6 +93,7 @@ watch(currentBalance, (newBalance, oldBalance) => {
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_wallet-compact-content.scss' as walletCompactContent;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 @use 'vuetify/settings';
@@ -117,7 +118,7 @@ watch(currentBalance, (newBalance, oldBalance) => {
   }
 
   &__network-row {
-    line-height: var(--a-wallet-compact-line-height);
+    @include walletCompactContent.a-wallet-compact-line-copy();
     margin-top: var(--a-wallet-tab-balance-to-ticker-offset);
   }
 
@@ -126,16 +127,16 @@ watch(currentBalance, (newBalance, oldBalance) => {
   }
 
   &__balance-loading {
-    line-height: var(--a-wallet-compact-line-height);
+    @include walletCompactContent.a-wallet-compact-line-copy();
   }
 
   &__balance-error {
-    line-height: var(--a-wallet-compact-line-height);
+    @include walletCompactContent.a-wallet-compact-line-copy();
   }
 
   &__network-label {
     font-size: var(--a-wallet-tab-network-label-size);
-    line-height: var(--a-wallet-compact-line-height);
+    @include walletCompactContent.a-wallet-compact-line-copy();
     position: relative;
     transform: translate(
       var(--a-wallet-tab-network-label-shift-x),

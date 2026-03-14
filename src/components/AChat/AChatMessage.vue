@@ -166,9 +166,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
+@use '@/assets/styles/components/_chat-message-content.scss' as chatMessageContent;
 
 .a-chat__message-text {
-  @include mixins.a-text-regular-enlarged();
+  @include chatMessageContent.a-chat-message-body-copy();
 }
 </style>

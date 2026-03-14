@@ -116,6 +116,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
 @use 'sass:map';
+@use '@/assets/styles/components/_wallet-compact-content.scss' as walletCompactContent;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
@@ -132,18 +133,18 @@ export default defineComponent({
     flex-direction: column;
     justify-content: center;
     gap: var(--a-wallets-list-item-content-gap);
-    line-height: var(--a-wallet-compact-line-height);
+    @include walletCompactContent.a-wallet-compact-line-copy();
   }
   &__crypto-subtitle-wrap {
     opacity: 1;
-    line-height: var(--a-wallet-compact-line-height);
+    @include walletCompactContent.a-wallet-compact-line-copy();
   }
   &__crypto-subtitle {
     display: flex;
     align-items: baseline;
     gap: var(--a-space-1);
     font-weight: var(--a-wallets-list-item-subtitle-weight);
-    line-height: var(--a-wallet-compact-line-height);
+    @include walletCompactContent.a-wallet-compact-line-copy();
   }
   &__crypto-subtitle-muted {
     color: var(--a-wallets-list-item-subtitle-muted-dark);
@@ -152,7 +153,7 @@ export default defineComponent({
     font-weight: 600;
   }
   &__crypto-title {
-    line-height: var(--a-wallet-compact-title-line-height);
+    @include walletCompactContent.a-wallet-compact-title-line();
   }
   &__balance {
     margin-inline-end: var(--a-wallets-list-item-balance-offset-inline-end);

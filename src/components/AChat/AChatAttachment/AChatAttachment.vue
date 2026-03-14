@@ -238,8 +238,8 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_chat-message-content.scss' as chatMessageContent;
 @use '@/assets/styles/settings/_colors.scss';
-@use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
 
 .a-chat__attachments {
@@ -255,7 +255,7 @@ export default defineComponent({
 }
 
 .a-chat__message-text {
-  @include mixins.a-text-regular-enlarged();
+  @include chatMessageContent.a-chat-message-body-copy();
 }
 
 .a-chat_file-container {

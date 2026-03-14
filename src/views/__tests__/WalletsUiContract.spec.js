@@ -21,6 +21,10 @@ const walletResetDialogPath = path.resolve(
   currentDir,
   '../../components/wallets/WalletResetDialog.vue'
 )
+const walletCompactContentPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_wallet-compact-content.scss'
+)
 const walletUiMetricsPath = path.resolve(
   currentDir,
   '../../components/wallets/helpers/uiMetrics.ts'
@@ -81,6 +85,7 @@ describe('Wallets UI style contract', () => {
     const tokensContent = readFileSync(genericTokensPath, 'utf8')
     const content = readFileSync(walletTabPath, 'utf8')
     const metricsContent = readFileSync(walletUiMetricsPath, 'utf8')
+    const walletCompactContent = readFileSync(walletCompactContentPath, 'utf8')
 
     expect(tokensContent).toContain('--a-font-size-2xs')
     expect(tokensContent).toContain('--a-wallet-compact-line-height')
@@ -92,6 +97,10 @@ describe('Wallets UI style contract', () => {
     expect(tokensContent).toContain('--a-wallet-tab-network-label-size')
     expect(tokensContent).toContain('--a-wallet-tab-network-label-shift-x')
     expect(tokensContent).toContain('--a-wallet-tab-network-label-shift-y')
+    expect(walletCompactContent).toContain('@mixin a-wallet-compact-line-copy()')
+    expect(walletCompactContent).toContain('@mixin a-wallet-compact-title-line()')
+    expect(walletCompactContent).toContain('@mixin a-wallet-compact-trailing-copy()')
+    expect(walletCompactContent).toContain('@mixin a-wallet-compact-trailing-loading()')
     expect(content).toContain('networkLabel')
     expect(content).toContain('networkRow')
     expect(content).toContain('ratesPlaceholder')
@@ -112,7 +121,8 @@ describe('Wallets UI style contract', () => {
     expect(content).toContain('--a-wallet-tab-rates-color')
     expect(content).toContain('var(--a-color-text-muted-light)')
     expect(content).toContain('var(--a-color-text-muted-dark)')
-    expect(content).toContain('var(--a-wallet-compact-line-height)')
+    expect(content).toContain("@use '@/assets/styles/components/_wallet-compact-content.scss'")
+    expect(content).toContain('@include walletCompactContent.a-wallet-compact-line-copy();')
     expect(content).toContain('var(--a-color-text-muted-dark)')
     expect(content).toContain('WALLET_TAB_LOADING_ICON_SIZE')
     expect(metricsContent).toContain('WALLET_TAB_LOADING_ICON_SIZE = 18')
@@ -130,10 +140,13 @@ describe('Wallets UI style contract', () => {
     const balanceContent = readFileSync(walletBalancePath, 'utf8')
     const resetDialogContent = readFileSync(walletResetDialogPath, 'utf8')
     const metricsContent = readFileSync(walletUiMetricsPath, 'utf8')
+    const walletCompactContent = readFileSync(walletCompactContentPath, 'utf8')
 
     expect(tokensContent).toContain('--a-secondary-dialog-width')
     expect(tokensContent).toContain('--a-wallets-list-item-balance-offset-inline-end')
     expect(tokensContent).toContain('--a-wallets-list-item-checkbox-padding')
+    expect(walletCompactContent).toContain('@include a-wallet-compact-title-line();')
+    expect(walletCompactContent).toContain('justify-content: flex-end;')
     expect(listItemContent).toContain('--a-wallets-list-item-content-height')
     expect(listItemContent).toContain('<v-list-item :class="classes.root">')
     expect(listItemContent).toContain('--a-wallets-list-item-content-gap')
@@ -148,8 +161,13 @@ describe('Wallets UI style contract', () => {
     expect(listItemContent).toContain('var(--a-wallets-list-item-balance-offset-inline-end)')
     expect(listItemContent).toContain('var(--a-wallets-list-item-checkbox-padding)')
     expect(listItemContent).toContain('var(--a-wallets-list-item-sortable-shadow)')
-    expect(listItemContent).toContain('var(--a-wallet-compact-line-height)')
-    expect(listItemContent).toContain('var(--a-wallet-compact-title-line-height)')
+    expect(listItemContent).toContain(
+      "@use '@/assets/styles/components/_wallet-compact-content.scss'"
+    )
+    expect(listItemContent).toContain('@include walletCompactContent.a-wallet-compact-line-copy();')
+    expect(listItemContent).toContain(
+      '@include walletCompactContent.a-wallet-compact-title-line();'
+    )
     expect(listItemContent).toContain('justify-content: center;')
     expect(listItemContent).toContain('gap: var(--a-wallets-list-item-content-gap);')
     expect(listItemContent).toContain('opacity: 1;')
@@ -170,8 +188,15 @@ describe('Wallets UI style contract', () => {
     expect(balanceContent).toContain('WALLET_TAB_LOADING_ICON_SIZE')
     expect(balanceContent).toContain('mdiDotsHorizontal')
     expect(balanceContent).toContain('&__status-loading')
-    expect(balanceContent).toContain('var(--a-wallet-compact-line-height)')
-    expect(balanceContent).toContain('var(--a-wallet-compact-title-line-height)')
+    expect(balanceContent).toContain(
+      "@use '@/assets/styles/components/_wallet-compact-content.scss'"
+    )
+    expect(balanceContent).toContain(
+      '@include walletCompactContent.a-wallet-compact-trailing-copy();'
+    )
+    expect(balanceContent).toContain(
+      '@include walletCompactContent.a-wallet-compact-trailing-loading();'
+    )
     expect(balanceContent).toContain('var(--a-financial-stack-gap)')
     expect(balanceContent).toContain('var(--a-financial-text-font-weight)')
     expect(balanceContent).toContain('var(--a-color-text-muted-dark)')

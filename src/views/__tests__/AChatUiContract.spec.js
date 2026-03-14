@@ -83,6 +83,10 @@ const reactionPath = path.resolve(
   '../../components/AChat/AChatReactions/AChatReaction.vue'
 )
 const chatStylesPath = path.resolve(currentDir, '../../assets/styles/components/_chat.scss')
+const chatMessageContentPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_chat-message-content.scss'
+)
 const emojiPickerPath = path.resolve(currentDir, '../../components/EmojiPicker.vue')
 const iconBoxPath = path.resolve(currentDir, '../../components/icons/IconBox.vue')
 
@@ -123,6 +127,7 @@ describe('AChat UI style contract', () => {
     const messageContent = readFileSync(messagePath, 'utf8')
     const attachmentContent = readFileSync(attachmentPath, 'utf8')
     const transactionContent = readFileSync(transactionPath, 'utf8')
+    const chatMessageContent = readFileSync(chatMessageContentPath, 'utf8')
 
     expect(messageContent).toContain(':size="CHAT_STATUS_ICON_ERROR_SIZE"')
     expect(messageContent).toContain(':size="CHAT_STATUS_ICON_SIZE"')
@@ -130,17 +135,26 @@ describe('AChat UI style contract', () => {
     expect(attachmentContent).toContain(':size="CHAT_STATUS_ICON_SIZE"')
     expect(transactionContent).toContain(':size="CHAT_STATUS_ICON_SIZE"')
 
+    expect(chatMessageContent).toContain('@mixin a-chat-message-body-copy()')
+    expect(chatMessageContent).toContain('@include mixins.a-text-regular-enlarged();')
     expect(messageContent).not.toContain('size="15"')
     expect(messageContent).not.toContain('size="13"')
-    expect(messageContent).toContain('@include mixins.a-text-regular-enlarged();')
+    expect(messageContent).toContain("@use '@/assets/styles/components/_chat-message-content.scss'")
+    expect(messageContent).toContain('@include chatMessageContent.a-chat-message-body-copy();')
     expect(messageContent).not.toContain('class="a-chat__message-text a-text-regular-enlarged"')
     expect(attachmentContent).not.toContain('size="15"')
     expect(attachmentContent).not.toContain('size="13"')
-    expect(attachmentContent).toContain('@include mixins.a-text-regular-enlarged();')
+    expect(attachmentContent).toContain(
+      "@use '@/assets/styles/components/_chat-message-content.scss'"
+    )
+    expect(attachmentContent).toContain('@include chatMessageContent.a-chat-message-body-copy();')
     expect(attachmentContent).not.toContain('class="a-chat__message-text a-text-regular-enlarged"')
     expect(transactionContent).not.toContain('size="13"')
     expect(transactionContent).toContain('@include mixins.a-text-regular-bold();')
-    expect(transactionContent).toContain('@include mixins.a-text-regular-enlarged();')
+    expect(transactionContent).toContain(
+      "@use '@/assets/styles/components/_chat-message-content.scss'"
+    )
+    expect(transactionContent).toContain('@include chatMessageContent.a-chat-message-body-copy();')
     expect(transactionContent).not.toContain('class="a-chat__direction a-text-regular-bold"')
     expect(transactionContent).not.toContain(
       'class="a-chat__message-text a-chat__transaction-note a-text-regular-enlarged"'
@@ -220,6 +234,10 @@ describe('AChat UI style contract', () => {
     expect(reactionContent).not.toContain('right: -9px;')
 
     expect(replyPreviewContent).toContain('COMMON_ICON_SIZE')
+    expect(replyPreviewContent).toContain(
+      "@use '@/assets/styles/components/_chat-message-content.scss'"
+    )
+    expect(replyPreviewContent).toContain('@include chatMessageContent.a-chat-message-body-copy();')
     expect(tokensContent).toContain('--a-chat-accent-border-width')
     expect(tokensContent).toContain('--a-color-text-inverse')
     expect(replyPreviewContent).toContain(
