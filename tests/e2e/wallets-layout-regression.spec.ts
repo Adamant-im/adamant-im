@@ -18,6 +18,53 @@ const assertNoDocumentScrollLeak = async (page: Page) => {
 }
 
 test.describe('Wallets layout regressions', () => {
+  test('shows loading dots instead of zero and hides fiat until wallet balances are valid', async ({
+    page
+  }) => {
+    await loginWithNewAccount(page)
+
+    await page.goto('/options/wallets')
+    await expect(page).toHaveURL(/\/options\/wallets$/)
+    await expect(page.locator('.wallets-view__list')).toBeVisible()
+
+    await page.evaluate(() => {
+      const runtime = window as typeof window & {
+        store?: {
+          getters: Record<string, unknown>
+          state: Record<string, unknown>
+        }
+      }
+
+      const store = runtime.store
+
+      if (!store) {
+        throw new Error('window.store is not available')
+      }
+
+      const allWallets = store.getters['wallets/getAllOrderedWalletSymbols'] as Array<{
+        symbol: string
+      }>
+
+      ;(store.state as Record<string, unknown>).balanceActualUntil = 0
+
+      allWallets.forEach(({ symbol }) => {
+        const key = symbol.toLowerCase()
+        const walletState = (store.state as Record<string, unknown>)[key] as
+          | Record<string, unknown>
+          | undefined
+
+        if (walletState) {
+          walletState.balanceActualUntil = 0
+        }
+      })
+    })
+
+    const firstBalance = page.locator('.wallet-balance').first()
+    await expect(firstBalance.locator('.wallet-balance__status-loading')).toBeVisible()
+    await expect(firstBalance.locator('.wallet-balance__status-title')).toHaveCount(0)
+    await expect(firstBalance.locator('.wallet-balance__status-text')).toHaveCount(0)
+  })
+
   test('keeps wallets shell aligned to settings content on desktop', async ({ page }) => {
     await loginWithNewAccount(page)
 
