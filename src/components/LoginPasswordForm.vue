@@ -46,7 +46,7 @@
           {{ t('login_via_password.remove_password_hint') }}
         </h3>
         <v-btn
-          :class="['a-btn-link', classes.passwordHintAction]"
+          :class="classes.passwordHintAction"
           variant="text"
           size="small"
           @click="removePassword"
@@ -171,6 +171,7 @@ const removePassword = () => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/components/_link-action-button.scss' as linkActionButton;
 @use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .login-form {
@@ -221,7 +222,24 @@ const removePassword = () => {
   }
 
   &__password-hint-action {
+    @include linkActionButton.a-link-action-button();
     margin-top: var(--a-login-password-hint-button-margin-top);
+  }
+}
+
+.v-theme--light {
+  .login-form {
+    &__password-hint-action {
+      @include linkActionButton.a-link-action-button-light();
+    }
+  }
+}
+
+.v-theme--dark {
+  .login-form {
+    &__password-hint-action {
+      @include linkActionButton.a-link-action-button-dark();
+    }
   }
 }
 </style>

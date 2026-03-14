@@ -1,0 +1,50 @@
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
+
+@mixin a-link-action-button() {
+  font-size: var(--a-link-action-font-size);
+  font-weight: var(--a-link-action-font-weight);
+  text-decoration: underline;
+  text-transform: unset;
+
+  &.v-btn {
+    border-radius: var(--a-radius-sm);
+    transition:
+      background-color var(--a-motion-base) linear,
+      color var(--a-motion-base) linear,
+      opacity var(--a-motion-base) linear;
+  }
+
+  &.v-btn:focus-visible {
+    box-shadow: var(--a-focus-ring);
+  }
+}
+
+@mixin a-link-action-button-light() {
+  color: inherit;
+
+  &.v-btn:not(.v-btn--disabled):hover,
+  &.v-btn:not(.v-btn--disabled):focus-visible {
+    background-color: map.get(colors.$adm-colors, 'secondary2');
+  }
+
+  &.v-btn:not(.v-btn--disabled):hover > .v-btn__overlay,
+  &.v-btn:not(.v-btn--disabled):focus-visible > .v-btn__overlay {
+    opacity: var(--a-link-action-overlay-opacity-light);
+  }
+}
+
+@mixin a-link-action-button-dark() {
+  color: map.get(settings.$shades, 'white');
+
+  &.v-btn:not(.v-btn--disabled):hover,
+  &.v-btn:not(.v-btn--disabled):focus-visible {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  &.v-btn:not(.v-btn--disabled):hover > .v-btn__overlay,
+  &.v-btn:not(.v-btn--disabled):focus-visible > .v-btn__overlay {
+    opacity: var(--a-link-action-overlay-opacity-dark);
+  }
+}

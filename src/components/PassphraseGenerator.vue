@@ -4,12 +4,7 @@
       <h3 :class="classes.createTitle">
         {{ t('login.create_address_label') }}
       </h3>
-      <v-btn
-        :class="['a-btn-link', classes.createButton]"
-        variant="text"
-        size="small"
-        @click="generatePassphrase"
-      >
+      <v-btn :class="classes.createButton" variant="text" size="small" @click="generatePassphrase">
         {{ t('login.new_button') }}
       </v-btn>
     </div>
@@ -182,6 +177,7 @@ const togglePassphraseVisibility = () => {
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_link-action-button.scss' as linkActionButton;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
@@ -222,6 +218,7 @@ const togglePassphraseVisibility = () => {
   }
 
   &__create-button {
+    @include linkActionButton.a-link-action-button();
     margin-top: var(--a-passphrase-create-button-margin-top);
   }
 
@@ -290,6 +287,22 @@ const togglePassphraseVisibility = () => {
   :deep(.v-input--is-focused) {
     .v-icon .svg-icon {
       fill: map.get(colors.$adm-colors, 'regular');
+    }
+  }
+}
+
+.v-theme--light {
+  .passphrase-generator {
+    &__create-button {
+      @include linkActionButton.a-link-action-button-light();
+    }
+  }
+}
+
+.v-theme--dark {
+  .passphrase-generator {
+    &__create-button {
+      @include linkActionButton.a-link-action-button-dark();
     }
   }
 }

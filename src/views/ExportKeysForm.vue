@@ -37,7 +37,6 @@
       <div :class="`${className}__copy-all-row`">
         <v-btn
           :class="`${className}__copy_all_button`"
-          class="a-btn-link"
           variant="text"
           size="small"
           type="button"
@@ -252,6 +251,7 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 @use '@/assets/styles/components/_input-action-menu.scss' as inputActionMenu;
+@use '@/assets/styles/components/_link-action-button.scss' as linkActionButton;
 @use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .export-keys-form {
@@ -301,9 +301,26 @@ export default defineComponent({
     justify-content: center;
   }
   &__copy_all_button {
+    @include linkActionButton.a-link-action-button();
     padding-inline-end: 0;
     margin-inline-end: 0;
     margin-bottom: var(--a-export-keys-copy-all-margin-bottom);
+  }
+}
+
+.v-theme--light {
+  .export-keys-form {
+    &__copy_all_button {
+      @include linkActionButton.a-link-action-button-light();
+    }
+  }
+}
+
+.v-theme--dark {
+  .export-keys-form {
+    &__copy_all_button {
+      @include linkActionButton.a-link-action-button-dark();
+    }
   }
 }
 </style>

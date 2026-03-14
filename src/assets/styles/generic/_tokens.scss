@@ -20,6 +20,10 @@
   --a-font-weight-regular: 400;
   --a-font-weight-light: 300;
   --a-font-weight-medium: 500;
+  --a-link-action-font-size: var(--a-font-size-md);
+  --a-link-action-font-weight: var(--a-font-weight-medium);
+  --a-link-action-overlay-opacity-light: 0.18;
+  --a-link-action-overlay-opacity-dark: 0.24;
   --a-font-style-emphasis: italic;
   --a-letter-spacing-normal: normal;
   --a-letter-spacing-caps-subtle: 0.02em;
