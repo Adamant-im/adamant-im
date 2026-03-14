@@ -18,6 +18,22 @@ const assertNoDocumentScrollLeak = async (page: Page) => {
 }
 
 test.describe('Home layout regressions', () => {
+  test('hides fiat placeholders across the home carousel when every wallet balance is zero', async ({
+    page
+  }) => {
+    await loginWithNewAccount(page)
+
+    await page.goto('/home')
+    await expect(page).toHaveURL(/\/home$/)
+    await expect(page.locator('.wallet-card')).toBeVisible()
+
+    await expect(page.locator('.wallet-tab__rates')).toHaveCount(0)
+    await expect(page.locator('.wallet-tab__rates-placeholder')).toHaveCount(0)
+    await expect(page.locator('.wallet-card__rate')).toHaveCount(0)
+
+    await assertNoDocumentScrollLeak(page)
+  })
+
   test('keeps wallet card spacing and typography stable on desktop', async ({ page }) => {
     await loginWithNewAccount(page)
 

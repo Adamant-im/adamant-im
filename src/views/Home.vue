@@ -22,6 +22,7 @@
                 <wallet-tab
                   :wallet="wallet"
                   :fiat-currency="currentCurrency"
+                  :hide-fiat-rates="allWalletBalancesZero"
                   :is-balance-valid="balances[index]"
                   :is-refreshing="isRefreshing"
                 />
@@ -53,6 +54,7 @@
                   :all-coin-nodes-disabled="areNodesDisabled(wallet.cryptoCurrency)"
                   :crypto="wallet.cryptoCurrency"
                   :crypto-name="wallet.cryptoName"
+                  :hide-fiat-rates="allWalletBalancesZero"
                   :rate="wallet.rate"
                   :current-currency="currentCurrency"
                   @click:balance="handleBalanceClick"
@@ -142,6 +144,10 @@ const wallets = computed<Wallet[]>(() => {
       cryptoCurrency: crypto.symbol
     }
   })
+})
+
+const allWalletBalancesZero = computed(() => {
+  return wallets.value.every((wallet) => Number(wallet.balance) === 0)
 })
 
 const areNodesDisabled = (crypto: CryptoSymbol) => {

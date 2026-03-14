@@ -37,6 +37,7 @@ describe('Home UI style contract', () => {
     const content = readFileSync(homePath, 'utf8')
 
     expect(content).toContain('<v-row justify="center" :class="className">')
+    expect(content).toContain(':hide-fiat-rates="allWalletBalancesZero"')
     expect(tokensContent).toContain('--a-account-tabs-slider-height')
     expect(tokensContent).toContain('--a-account-tabs-padding-top')
     expect(tokensContent).toContain('--a-account-tabs-padding-bottom')
@@ -89,6 +90,9 @@ describe('Home UI style contract', () => {
 
     expect(content).toContain('walletCardActions: `${className}__actions`')
     expect(content).toContain('<WalletCardListActions :class="classes.walletCardActions"')
+    expect(content).toContain('hideFiatRates?: boolean')
+    expect(content).toContain('const showFiatRate = computed(() => {')
+    expect(content).toContain('!props.hideFiatRates && store.state.rate.isLoaded')
     expect(content).toContain('--a-wallet-card-title-color')
     expect(content).toContain('--a-wallet-card-subtitle-color')
     expect(content).toContain('--a-wallet-card-action-color')

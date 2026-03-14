@@ -341,29 +341,26 @@ test.describe('Wallets layout regressions', () => {
       const placeholder = document.querySelector(
         '.wallet-tab__rates-placeholder'
       ) as HTMLElement | null
-      const content =
-        (placeholder?.closest('.wallet-tab__content') as HTMLElement | null) ??
-        (document.querySelector('.wallet-tab__content') as HTMLElement | null)
+      const rates = document.querySelector('.wallet-tab__rates') as HTMLElement | null
+      const content = document.querySelector('.wallet-tab__content') as HTMLElement | null
       const networkLabel = content?.querySelector(
         '.wallet-tab__network-label'
       ) as HTMLElement | null
-      const rates = content?.querySelector('.wallet-tab__rates') as HTMLElement | null
 
-      if (!content || !rates) {
+      if (!content) {
         return null
       }
 
       const contentStyle = getComputedStyle(content)
-      const placeholderStyle = placeholder ? getComputedStyle(placeholder) : null
       const networkLabelStyle = networkLabel ? getComputedStyle(networkLabel) : null
-      const ratesStyle = getComputedStyle(rates)
+      const ratesStyle = rates ? getComputedStyle(rates) : null
 
       return {
         contentJustify: contentStyle.justifyContent,
         contentMinHeight: Number.parseFloat(contentStyle.minHeight),
         hasPlaceholder: Boolean(placeholder),
-        placeholderVisibility: placeholderStyle?.visibility ?? null,
-        ratesMarginTop: Number.parseFloat(ratesStyle.marginTop),
+        hasRates: Boolean(rates),
+        ratesMarginTop: ratesStyle ? Number.parseFloat(ratesStyle.marginTop) : null,
         networkLabelFontSize: networkLabelStyle
           ? Number.parseFloat(networkLabelStyle.fontSize)
           : null
@@ -373,13 +370,9 @@ test.describe('Wallets layout regressions', () => {
     expect(metrics).not.toBeNull()
     expect(metrics?.contentJustify).toBe('flex-start')
     expect(metrics?.contentMinHeight ?? 0).toBeGreaterThanOrEqual(40)
-
-    if (metrics?.hasPlaceholder) {
-      expect(metrics?.placeholderVisibility).toBe('hidden')
-    }
-
-    expect(metrics?.ratesMarginTop ?? 0).toBeGreaterThanOrEqual(3)
-    expect(metrics?.ratesMarginTop ?? 999).toBeLessThanOrEqual(5)
+    expect(metrics?.hasPlaceholder).toBe(false)
+    expect(metrics?.hasRates).toBe(false)
+    expect(metrics?.ratesMarginTop).toBeNull()
 
     if (metrics?.networkLabelFontSize !== null) {
       expect(metrics?.networkLabelFontSize ?? 0).toBeGreaterThanOrEqual(9)

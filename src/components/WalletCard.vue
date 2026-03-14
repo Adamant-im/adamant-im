@@ -23,7 +23,7 @@
         <v-list-item-subtitle :class="classes.walletCardSubtitle">
           <p v-if="!allCoinNodesDisabled">
             {{ xs ? calculatedBalance : calculatedFullBalance }} {{ crypto }}
-            <span v-if="$store.state.rate.isLoaded" :class="classes.walletCardRate">
+            <span v-if="showFiatRate" :class="classes.walletCardRate">
               ~{{ rate }} {{ currentCurrency }}
             </span>
             <v-tooltip
@@ -76,6 +76,7 @@ type Props = {
   crypto: CryptoSymbol
   cryptoName: string
   currentCurrency: string
+  hideFiatRates?: boolean
   allCoinNodesDisabled: boolean
   rate: number
 }
@@ -122,6 +123,10 @@ const calculatedFullBalance = computed(() => {
 
 const isADM = computed(() => {
   return props.crypto === Cryptos.ADM
+})
+
+const showFiatRate = computed(() => {
+  return !props.hideFiatRates && store.state.rate.isLoaded
 })
 </script>
 

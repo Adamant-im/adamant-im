@@ -16,6 +16,7 @@
       </div>
 
       <div
+        v-if="showFiatRates"
         :class="[
           classes.rates,
           {
@@ -67,6 +68,7 @@ export type Wallet = {
 type Props = {
   wallet: Wallet
   fiatCurrency: string
+  hideFiatRates?: boolean
   isBalanceValid: boolean
   isRefreshing: boolean
 }
@@ -78,6 +80,7 @@ const store = useStore()
 const currentBalance = computed(() => props.wallet.balance)
 
 const isRateLoaded = computed(() => store.state.rate.isLoaded && props.wallet.rate)
+const showFiatRates = computed(() => !props.hideFiatRates)
 
 const formattedBalance = computed(() => numberFormat(props.wallet.balance, 4))
 
