@@ -71,37 +71,18 @@ export default {
 }
 </script>
 <style lang="scss">
-@use 'sass:map';
-@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/components/_color-roles.scss' as colorRoles;
 
 .node-url {
   --a-node-url-meta-font-size: var(--a-font-size-xs);
+  @include colorRoles.a-color-role-subtle-var('--a-node-url-meta-color');
 
   &__domain,
   &__protocol,
   &__port {
     font-size: var(--a-node-url-meta-font-size);
     display: inline-block;
-  }
-}
-
-.v-theme--light {
-  .node-url {
-    &__domain,
-    &__protocol,
-    &__port {
-      color: map.get(colors.$adm-colors, 'muted');
-    }
-  }
-}
-
-.v-theme--dark {
-  .node-url {
-    &__domain,
-    &__protocol,
-    &__port {
-      color: map.get(colors.$adm-colors, 'grey-transparent');
-    }
+    color: var(--a-node-url-meta-color);
   }
 }
 </style>

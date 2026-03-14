@@ -70,6 +70,7 @@ describe('Theme layer contract', () => {
     )
     expect(vuetifyContent).toContain('var(--a-color-surface-secondary-dark)')
     expect(vuetifyContent).toContain('var(--a-color-text-inverse)')
+    expect(vuetifyContent).toContain('var(--a-color-text-muted-dark)')
     expect(vuetifyContent).toContain('box-shadow: none;')
     expect(vuetifyContent).toContain('opacity: 1;')
     expect(vuetifyContent).not.toContain('box-shadow: none !important;')
@@ -77,6 +78,7 @@ describe('Theme layer contract', () => {
     expect(vuetifyContent).not.toContain('opacity: unset;')
     expect(vuetifyContent).not.toContain('background-color: #424242;')
     expect(vuetifyContent).not.toContain('color: #fff;')
+    expect(vuetifyContent).not.toContain("color: map.get(colors.$adm-colors, 'grey-transparent');")
   })
 
   it('keeps shared semantic color roles centralized for repeated surface text patterns', () => {

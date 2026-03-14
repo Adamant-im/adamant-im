@@ -133,7 +133,7 @@ const text = computed(() =>
     }
 
     &__username {
-      color: map.get(colors.$adm-colors, 'grey-transparent');
+      color: var(--a-color-text-muted-dark);
     }
   }
 }

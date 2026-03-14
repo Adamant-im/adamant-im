@@ -316,7 +316,7 @@ const onScanQrcode = (value: string) => {
 .v-theme--dark {
   .login-page {
     &__icon {
-      color: map.get(colors.$adm-colors, 'grey-transparent');
+      color: var(--a-color-text-muted-dark);
 
       &:hover {
         color: map.get(colors.$adm-colors, 'secondary');

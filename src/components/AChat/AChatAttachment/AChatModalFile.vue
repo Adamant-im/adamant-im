@@ -129,7 +129,7 @@ export default defineComponent({
     }
 
     &__file-size {
-      color: map.get(colors.$adm-colors, 'grey-transparent');
+      color: var(--a-color-text-muted-dark);
     }
   }
 }

@@ -182,10 +182,10 @@ onMounted(() => {
       background-color: map.get(colors.$adm-colors, 'black');
     }
     :deep(.v-btn.v-btn--active) {
-      color: map.get(settings.$shades, 'white');
+      color: var(--a-color-text-inverse);
     }
     :deep(.v-btn:not(.v-btn--active)) {
-      color: map.get(colors.$adm-colors, 'grey-transparent');
+      color: var(--a-color-text-muted-dark);
     }
   }
 }

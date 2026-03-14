@@ -132,6 +132,7 @@ export default defineComponent({
   --a-node-status-detail-font-weight: var(--a-font-weight-light);
   --a-node-status-indicator-offset-inline-start: var(--a-space-1);
   @include colorRoles.a-color-role-supporting-var('--a-node-status-text-color');
+  @include colorRoles.a-color-role-subtle-var('--a-node-status-meta-color');
 
   &__status-title {
     width: var(--a-node-status-width);
@@ -191,13 +192,13 @@ export default defineComponent({
       color: var(--a-node-status-text-color);
     }
     &__text-ms {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-node-status-meta-color);
     }
     &__status-title-text--muted {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-node-status-meta-color);
     }
     &__spinner {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-node-status-meta-color);
     }
 
     &__icon {
@@ -223,13 +224,13 @@ export default defineComponent({
       color: var(--a-node-status-text-color);
     }
     &__text-ms {
-      color: map.get(colors.$adm-colors, 'grey-transparent');
+      color: var(--a-node-status-meta-color);
     }
     &__status-title-text--muted {
-      color: map.get(colors.$adm-colors, 'grey-transparent');
+      color: var(--a-node-status-meta-color);
     }
     &__spinner {
-      color: map.get(colors.$adm-colors, 'grey-transparent');
+      color: var(--a-node-status-meta-color);
     }
     &__icon {
       &--green {

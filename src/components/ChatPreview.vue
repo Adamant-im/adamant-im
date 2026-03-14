@@ -229,6 +229,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_color-roles.scss' as colorRoles;
 @use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
@@ -266,6 +267,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
   --a-chat-brief-subtitle-line-height: 1.5;
   --a-chat-brief-border-width: var(--a-border-width-thin);
   --a-chat-brief-icon-fill-light: var(--a-color-icon-subtle-light);
+  @include colorRoles.a-color-role-subtle-var('--a-chat-brief-meta-color');
   position: relative;
   padding-inline-start: var(--a-chat-brief-item-padding-inline-start);
   padding-inline-end: var(--a-chat-brief-item-padding-inline-end);
@@ -336,7 +338,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
     border-bottom: var(--a-chat-brief-border-width) solid map.get(colors.$adm-colors, 'secondary2');
 
     &__date {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-chat-brief-meta-color);
     }
 
     &__icon {
@@ -348,7 +350,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
     }
 
     :deep(.v-list-item-subtitle) {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-chat-brief-meta-color);
     }
   }
 }
@@ -359,7 +361,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
     }
 
     :deep(.v-list-item-subtitle) {
-      color: map.get(colors.$adm-colors, 'grey-transparent');
+      color: var(--a-chat-brief-meta-color);
     }
   }
 }

@@ -78,6 +78,8 @@ describe('Navigation UI style contract', () => {
     expect(content).toContain('width: var(--a-app-navigation-badge-size);')
     expect(content).toContain('height: var(--a-app-navigation-badge-size);')
     expect(content).toContain(':deep(.v-btn.v-btn:not(.v-btn--active))')
+    expect(content).toContain('var(--a-color-text-inverse)')
+    expect(content).toContain('var(--a-color-text-muted-dark)')
     expect(content).not.toContain('height="50"')
     expect(content).not.toContain('font-weight: 300;')
     expect(content).not.toContain('font-size: 14px;')
@@ -85,6 +87,7 @@ describe('Navigation UI style contract', () => {
     expect(content).not.toContain('height: 22px;')
     expect(content).not.toContain('calc(0px +  env(safe-area-inset-bottom))')
     expect(content).not.toContain("color: map.get(colors.$adm-colors, 'muted') !important;")
+    expect(content).not.toContain("color: map.get(colors.$adm-colors, 'grey-transparent');")
   })
 
   it('lets active overlays consume Escape before sidebar navigation', () => {

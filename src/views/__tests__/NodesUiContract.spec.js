@@ -123,6 +123,7 @@ describe('Nodes UI style contract', () => {
     expect(statusContent).toContain('--a-node-status-detail-font-size')
     expect(statusContent).toContain('--a-node-status-detail-font-weight')
     expect(statusContent).toContain('--a-node-status-text-color')
+    expect(statusContent).toContain('--a-node-status-meta-color')
     expect(statusContent).toContain('--a-node-status-title-line-height')
     expect(statusContent).toContain('--a-node-status-spinner-animation-duration')
     expect(statusContent).toContain('detailHelpButton')
@@ -137,6 +138,9 @@ describe('Nodes UI style contract', () => {
     expect(statusContent).toContain(
       "@include colorRoles.a-color-role-supporting-var('--a-node-status-text-color');"
     )
+    expect(statusContent).toContain(
+      "@include colorRoles.a-color-role-subtle-var('--a-node-status-meta-color');"
+    )
     expect(layoutPrimitives).toContain('@mixin a-flex-align-center()')
     expect(statusContent).toContain("@use '@/assets/styles/components/_layout-primitives.scss'")
     expect(statusContent).toContain('@include layoutPrimitives.a-flex-align-center();')
@@ -150,6 +154,7 @@ describe('Nodes UI style contract', () => {
     expect(statusContent).not.toContain(
       'animation-duration: var(--a-node-status-spinner-animation-duration) !important;'
     )
+    expect(statusContent).not.toContain("color: map.get(colors.$adm-colors, 'grey-transparent');")
     expect(colorRolesContent).toContain('@mixin a-color-role-supporting-var($var-name)')
 
     expect(metricsContent).toContain('NODE_STATUS_SPINNER_SIZE = 12')
@@ -197,9 +202,15 @@ describe('Nodes UI style contract', () => {
     const ipfsRowContent = readFileSync(ipfsNodesTableItemPath, 'utf8')
 
     expect(urlContent).toContain('--a-node-url-meta-font-size')
+    expect(urlContent).toContain('--a-node-url-meta-color')
+    expect(urlContent).toContain("@use '@/assets/styles/components/_color-roles.scss'")
+    expect(urlContent).toContain(
+      "@include colorRoles.a-color-role-subtle-var('--a-node-url-meta-color');"
+    )
     expect(urlContent).toContain('root: className')
     expect(urlContent).toContain('var(--a-font-size-xs)')
     expect(urlContent).not.toContain('font-size: 12px;')
+    expect(urlContent).not.toContain("color: map.get(colors.$adm-colors, 'grey-transparent');")
 
     expect(versionContent).toContain('--a-node-version-color')
     expect(versionContent).toContain("@use '@/assets/styles/components/_color-roles.scss'")

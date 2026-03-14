@@ -25,6 +25,7 @@ const layoutPrimitivesPath = path.resolve(
   currentDir,
   '../../assets/styles/components/_layout-primitives.scss'
 )
+const colorRolesPath = path.resolve(currentDir, '../../assets/styles/components/_color-roles.scss')
 
 describe('Chats UI style contract', () => {
   it('stores shared chat toolbar and chats sizing metrics in helper constants', () => {
@@ -138,6 +139,7 @@ describe('Chats UI style contract', () => {
   it('keeps chat preview spacing, line-height and icon sizes tokenized', () => {
     const content = readFileSync(chatPreviewPath, 'utf8')
     const layoutPrimitives = readFileSync(layoutPrimitivesPath, 'utf8')
+    const colorRolesContent = readFileSync(colorRolesPath, 'utf8')
 
     expect(content).toContain('CHAT_PREVIEW_AVATAR_SIZE')
     expect(content).toContain('CHAT_PREVIEW_STATUS_ICON_SIZE')
@@ -157,9 +159,14 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('--a-chat-brief-loading-separator-shift')
     expect(content).toContain('--a-chat-brief-loading-separator-duration')
     expect(content).toContain('--a-chat-brief-border-width: var(--a-border-width-thin);')
+    expect(content).toContain('--a-chat-brief-meta-color')
     expect(layoutPrimitives).toContain('@mixin a-flex-space-between-center()')
     expect(content).toContain("@use '@/assets/styles/components/_layout-primitives.scss'")
+    expect(content).toContain("@use '@/assets/styles/components/_color-roles.scss'")
     expect(content).toContain('@include layoutPrimitives.a-flex-space-between-center();')
+    expect(content).toContain(
+      "@include colorRoles.a-color-role-subtle-var('--a-chat-brief-meta-color');"
+    )
     expect(content).toContain('--a-chat-brief-icon-fill-light')
     expect(content).toContain('var(--a-color-icon-subtle-light)')
     expect(content).toContain('@include mixins.a-text-regular-enlarged-bold();')
@@ -174,6 +181,8 @@ describe('Chats UI style contract', () => {
     expect(content).not.toMatch(/&__subtitle\s*\{[^}]*line-height:\s*1\.5;/s)
     expect(content).not.toContain('--a-chat-brief-border-width: 1px;')
     expect(content).not.toContain('--a-chat-brief-icon-fill-light: #bdbdbd;')
+    expect(content).not.toContain("color: map.get(colors.$adm-colors, 'grey-transparent');")
+    expect(colorRolesContent).toContain('@mixin a-color-role-subtle-var($var-name)')
   })
 
   it('shares soft surface elevation mixin across chat placeholder and message bubbles', () => {
