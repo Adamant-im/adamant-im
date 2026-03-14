@@ -25,6 +25,7 @@ const walletCompactContentPath = path.resolve(
   currentDir,
   '../../assets/styles/components/_wallet-compact-content.scss'
 )
+const colorRolesPath = path.resolve(currentDir, '../../assets/styles/components/_color-roles.scss')
 const walletUiMetricsPath = path.resolve(
   currentDir,
   '../../components/wallets/helpers/uiMetrics.ts'
@@ -86,6 +87,7 @@ describe('Wallets UI style contract', () => {
     const content = readFileSync(walletTabPath, 'utf8')
     const metricsContent = readFileSync(walletUiMetricsPath, 'utf8')
     const walletCompactContent = readFileSync(walletCompactContentPath, 'utf8')
+    const colorRolesContent = readFileSync(colorRolesPath, 'utf8')
 
     expect(tokensContent).toContain('--a-font-size-2xs')
     expect(tokensContent).toContain('--a-wallet-compact-line-height')
@@ -119,11 +121,12 @@ describe('Wallets UI style contract', () => {
     expect(content).toContain('var(--a-wallet-tab-network-label-shift-x)')
     expect(content).toContain('var(--a-wallet-tab-network-label-shift-y)')
     expect(content).toContain('--a-wallet-tab-rates-color')
-    expect(content).toContain('var(--a-color-text-muted-light)')
-    expect(content).toContain('var(--a-color-text-muted-dark)')
+    expect(content).toContain("@use '@/assets/styles/components/_color-roles.scss'")
+    expect(content).toContain(
+      "@include colorRoles.a-color-role-subtle-var('--a-wallet-tab-rates-color');"
+    )
     expect(content).toContain("@use '@/assets/styles/components/_wallet-compact-content.scss'")
     expect(content).toContain('@include walletCompactContent.a-wallet-compact-line-copy();')
-    expect(content).toContain('var(--a-color-text-muted-dark)')
     expect(content).toContain('WALLET_TAB_LOADING_ICON_SIZE')
     expect(metricsContent).toContain('WALLET_TAB_LOADING_ICON_SIZE = 18')
     expect(content).toContain('<sub>ERC20</sub>')
@@ -132,6 +135,7 @@ describe('Wallets UI style contract', () => {
     expect(content).not.toContain('--a-wallet-tab-content-min-height: 44px;')
     expect(content).not.toContain('hsla(0, 0%, 100%, 0.7)')
     expect(content).not.toContain('size="18"')
+    expect(colorRolesContent).toContain('@mixin a-color-role-subtle-var($var-name)')
   })
 
   it('uses normalized size variables in wallets list item and balance row', () => {
@@ -141,6 +145,7 @@ describe('Wallets UI style contract', () => {
     const resetDialogContent = readFileSync(walletResetDialogPath, 'utf8')
     const metricsContent = readFileSync(walletUiMetricsPath, 'utf8')
     const walletCompactContent = readFileSync(walletCompactContentPath, 'utf8')
+    const colorRolesContent = readFileSync(colorRolesPath, 'utf8')
 
     expect(tokensContent).toContain('--a-secondary-dialog-width')
     expect(tokensContent).toContain('--a-wallets-list-item-balance-offset-inline-end')
@@ -156,7 +161,7 @@ describe('Wallets UI style contract', () => {
     expect(listItemContent).toContain('var(--a-control-size-md)')
     expect(listItemContent).toContain('var(--a-financial-stack-gap)')
     expect(listItemContent).toContain('--a-wallets-list-item-subtitle-weight')
-    expect(listItemContent).toContain('--a-wallets-list-item-subtitle-muted-dark')
+    expect(listItemContent).toContain('--a-wallets-list-item-subtitle-muted-color')
     expect(listItemContent).toContain('__crypto-subtitle-wrap')
     expect(listItemContent).toContain('var(--a-wallets-list-item-balance-offset-inline-end)')
     expect(listItemContent).toContain('var(--a-wallets-list-item-checkbox-padding)')
@@ -172,7 +177,10 @@ describe('Wallets UI style contract', () => {
     expect(listItemContent).toContain('gap: var(--a-wallets-list-item-content-gap);')
     expect(listItemContent).toContain('opacity: 1;')
     expect(listItemContent).toContain('var(--a-financial-text-font-weight)')
-    expect(listItemContent).toContain('var(--a-color-text-muted-dark)')
+    expect(listItemContent).toContain("@use '@/assets/styles/components/_color-roles.scss'")
+    expect(listItemContent).toContain(
+      "@include colorRoles.a-color-role-subtle-var('--a-wallets-list-item-subtitle-muted-color');"
+    )
     expect(listItemContent).not.toContain('justify-content: space-between;')
     expect(listItemContent).not.toContain('const iconSize = 32')
     expect(listItemContent).not.toContain('class="mr-2"')
@@ -182,7 +190,7 @@ describe('Wallets UI style contract', () => {
     expect(balanceContent).toContain('--a-wallet-balance-height')
     expect(balanceContent).toContain('--a-wallet-balance-gap')
     expect(balanceContent).toContain('--a-wallet-balance-status-font-weight')
-    expect(balanceContent).toContain('--a-wallet-balance-status-color-dark')
+    expect(balanceContent).toContain('--a-wallet-balance-status-color')
     expect(balanceContent).toContain('const isBalanceValid = computed(() => {')
     expect(balanceContent).toContain('const showFiatRate = computed(() => {')
     expect(balanceContent).toContain('WALLET_TAB_LOADING_ICON_SIZE')
@@ -199,8 +207,11 @@ describe('Wallets UI style contract', () => {
     )
     expect(balanceContent).toContain('var(--a-financial-stack-gap)')
     expect(balanceContent).toContain('var(--a-financial-text-font-weight)')
-    expect(balanceContent).toContain('var(--a-color-text-muted-dark)')
     expect(balanceContent).toContain('var(--a-control-size-md)')
+    expect(balanceContent).toContain("@use '@/assets/styles/components/_color-roles.scss'")
+    expect(balanceContent).toContain(
+      "@include colorRoles.a-color-role-supporting-var('--a-wallet-balance-status-color');"
+    )
     expect(balanceContent).toContain('justify-content: center;')
     expect(balanceContent).not.toContain('v-if="Number(balance) !== 0"')
     expect(balanceContent).not.toContain('height: 40px;')
@@ -211,5 +222,6 @@ describe('Wallets UI style contract', () => {
     expect(metricsContent).toContain('WALLET_LIST_ICON_SIZE = 32')
     expect(resetDialogContent).toContain('width="var(--a-secondary-dialog-width)"')
     expect(resetDialogContent).not.toContain('width="500"')
+    expect(colorRolesContent).toContain('@mixin a-color-role-supporting-var($var-name)')
   })
 })

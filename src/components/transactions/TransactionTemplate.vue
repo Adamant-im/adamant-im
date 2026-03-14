@@ -409,8 +409,7 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
 </script>
 
 <style lang="scss" scoped>
-@use 'sass:map';
-@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/components/_color-roles.scss' as colorRoles;
 
 .transaction-view {
   --a-transaction-view-row-min-height: var(--a-list-row-min-height);
@@ -418,8 +417,7 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
   --a-transaction-view-row-padding-inline: var(--a-screen-padding-inline);
   --a-transaction-view-status-font-size: var(--a-financial-text-font-size);
   --a-transaction-view-status-font-weight: var(--a-financial-text-font-weight);
-  --a-transaction-view-value-muted-color: var(--a-color-text-muted-light);
-  --a-transaction-view-value-muted-color-dark: var(--a-color-text-muted-dark);
+  @include colorRoles.a-color-role-subtle-var('--a-transaction-view-value-muted-color');
   --a-transaction-view-status-danger-color: var(--a-color-status-danger);
   --a-transaction-view-status-success-color: var(--a-color-status-success);
   --a-transaction-view-status-attention-color: var(--a-color-status-attention);
@@ -486,7 +484,7 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
 .v-theme--dark {
   .transaction-view {
     &__value-muted {
-      color: var(--a-transaction-view-value-muted-color-dark);
+      color: var(--a-transaction-view-value-muted-color);
     }
   }
 }

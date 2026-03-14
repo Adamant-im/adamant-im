@@ -105,19 +105,17 @@ const getFreeTokens = () => {
 </script>
 
 <style lang="scss" scoped>
-@use 'sass:map';
-@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/components/_color-roles.scss' as colorRoles;
 @use '@/assets/styles/themes/adamant/_mixins.scss';
-@use 'vuetify/settings';
 
 .wallet-actions {
   --a-wallet-actions-icon-gap: var(--a-space-4);
   --a-wallet-actions-item-padding-inline: var(--a-wallet-card-item-padding-inline-start);
   --a-wallet-actions-row-min-height: var(--a-list-row-min-height);
   --a-wallet-actions-row-padding-block: var(--a-list-row-padding-block);
-  --a-wallet-actions-title-color: var(--a-color-text-regular);
-  --a-wallet-actions-icon-color: var(--a-color-text-regular);
   --a-wallet-actions-icon-opacity: 1;
+  @include colorRoles.a-color-role-primary-surface-var('--a-wallet-actions-title-color');
+  @include colorRoles.a-color-role-primary-surface-var('--a-wallet-actions-icon-color');
 
   &__title {
     @include mixins.a-text-caption-light();
@@ -149,21 +147,6 @@ const getFreeTokens = () => {
     > .v-icon {
       opacity: var(--a-wallet-actions-icon-opacity);
     }
-  }
-}
-
-/** Themes **/
-.v-theme--light {
-  .wallet-actions {
-    --a-wallet-actions-title-color: var(--a-color-text-regular);
-    --a-wallet-actions-icon-color: var(--a-color-text-regular);
-  }
-}
-
-.v-theme--dark {
-  .wallet-actions {
-    --a-wallet-actions-title-color: var(--a-color-text-inverse);
-    --a-wallet-actions-icon-color: var(--a-color-text-inverse);
   }
 }
 </style>

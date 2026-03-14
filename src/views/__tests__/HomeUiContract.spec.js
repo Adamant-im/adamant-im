@@ -12,6 +12,7 @@ const walletUiMetricsPath = path.resolve(
   currentDir,
   '../../components/wallets/helpers/uiMetrics.ts'
 )
+const colorRolesPath = path.resolve(currentDir, '../../assets/styles/components/_color-roles.scss')
 
 describe('Home UI style contract', () => {
   it('defines a shared token for default letter spacing', () => {
@@ -97,6 +98,7 @@ describe('Home UI style contract', () => {
 
   it('uses shared wallet card spacing and typography tokens', () => {
     const content = readFileSync(walletCardPath, 'utf8')
+    const colorRolesContent = readFileSync(colorRolesPath, 'utf8')
 
     expect(content).toContain('walletCardActions: `${className}__actions`')
     expect(content).toContain('<WalletCardListActions :class="classes.walletCardActions"')
@@ -106,13 +108,16 @@ describe('Home UI style contract', () => {
     expect(content).toContain('--a-wallet-card-title-color')
     expect(content).toContain('--a-wallet-card-subtitle-color')
     expect(content).toContain('--a-wallet-card-action-color')
-    expect(content).toContain('var(--a-color-text-regular)')
-    expect(content).toContain('var(--a-color-text-muted-light)')
-    expect(content).toContain('var(--a-color-text-inverse)')
     expect(content).toContain('var(--a-color-surface-transparent)')
     expect(content).toContain('var(--a-wallet-card-subtitle-line-height)')
     expect(content).toContain('var(--a-font-style-emphasis)')
-    expect(content).toContain('var(--a-color-text-muted-dark)')
+    expect(content).toContain("@use '@/assets/styles/components/_color-roles.scss'")
+    expect(content).toContain(
+      "@include colorRoles.a-color-role-primary-surface-var('--a-wallet-card-title-color');"
+    )
+    expect(content).toContain(
+      "@include colorRoles.a-color-role-subtle-var('--a-wallet-card-subtitle-color');"
+    )
     expect(content).toContain('var(--a-wallet-card-list-padding-top)')
     expect(content).toContain('var(--a-wallet-card-item-padding-inline-start)')
     expect(content).toContain('var(--a-wallet-card-item-padding-inline-end)')
@@ -123,6 +128,11 @@ describe('Home UI style contract', () => {
     expect(content).not.toContain('padding-inline: 16px;')
     expect(content).not.toContain('padding-left: 28px;')
     expect(content).not.toContain("rgba(map.get(settings.$shades, 'white'), 70%)")
+    expect(colorRolesContent).toContain('@mixin a-color-role-primary-surface-var($var-name)')
+    expect(colorRolesContent).toContain('var(--a-color-text-regular)')
+    expect(colorRolesContent).toContain('var(--a-color-text-muted-light)')
+    expect(colorRolesContent).toContain('var(--a-color-text-inverse)')
+    expect(colorRolesContent).toContain('var(--a-color-text-muted-dark)')
   })
 
   it('shares wallet action row spacing with wallet card tokens', () => {
@@ -136,8 +146,13 @@ describe('Home UI style contract', () => {
     expect(content).toContain('WALLET_ACTION_STAKE_ICON_SIZE')
     expect(content).toContain('var(--a-wallet-card-item-padding-inline-start)')
     expect(content).toContain('opacity: var(--a-wallet-actions-icon-opacity);')
-    expect(content).toContain('var(--a-color-text-regular)')
-    expect(content).toContain('var(--a-color-text-inverse)')
+    expect(content).toContain("@use '@/assets/styles/components/_color-roles.scss'")
+    expect(content).toContain(
+      "@include colorRoles.a-color-role-primary-surface-var('--a-wallet-actions-title-color');"
+    )
+    expect(content).toContain(
+      "@include colorRoles.a-color-role-primary-surface-var('--a-wallet-actions-icon-color');"
+    )
     expect(metricsContent).toContain('WALLET_ACTION_STAKE_ICON_SIZE = 24')
     expect(content).not.toContain('--a-wallet-actions-item-padding-inline: 28px;')
     expect(content).not.toContain('<icon :width="24" :height="24">')

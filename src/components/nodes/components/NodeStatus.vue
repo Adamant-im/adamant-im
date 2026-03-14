@@ -122,6 +122,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_color-roles.scss' as colorRoles;
 @use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
@@ -130,7 +131,7 @@ export default defineComponent({
   --a-node-status-detail-font-size: var(--a-font-size-xs);
   --a-node-status-detail-font-weight: var(--a-font-weight-light);
   --a-node-status-indicator-offset-inline-start: var(--a-space-1);
-  --a-node-status-text-color-dark: var(--a-color-text-muted-dark);
+  @include colorRoles.a-color-role-supporting-var('--a-node-status-text-color');
 
   &__status-title {
     width: var(--a-node-status-width);
@@ -187,7 +188,7 @@ export default defineComponent({
 .v-theme--light {
   .node-status {
     &__status-text {
-      color: map.get(colors.$adm-colors, 'regular');
+      color: var(--a-node-status-text-color);
     }
     &__text-ms {
       color: map.get(colors.$adm-colors, 'muted');
@@ -219,7 +220,7 @@ export default defineComponent({
 .v-theme--dark {
   .node-status {
     &__status-text {
-      color: var(--a-node-status-text-color-dark);
+      color: var(--a-node-status-text-color);
     }
     &__text-ms {
       color: map.get(colors.$adm-colors, 'grey-transparent');

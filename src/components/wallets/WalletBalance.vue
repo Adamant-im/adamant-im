@@ -127,9 +127,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@use 'sass:map';
+@use '@/assets/styles/components/_color-roles.scss' as colorRoles;
 @use '@/assets/styles/components/_wallet-compact-content.scss' as walletCompactContent;
-@use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .wallet-balance {
@@ -137,7 +136,7 @@ export default defineComponent({
   --a-wallet-balance-gap: var(--a-financial-stack-gap);
   --a-wallet-balance-fiat-size: var(--a-font-size-xs);
   --a-wallet-balance-status-font-weight: var(--a-financial-text-font-weight);
-  --a-wallet-balance-status-color-dark: var(--a-color-text-muted-dark);
+  @include colorRoles.a-color-role-supporting-var('--a-wallet-balance-status-color');
 
   height: var(--a-wallet-balance-height);
   display: flex;
@@ -178,7 +177,7 @@ export default defineComponent({
 .v-theme--light {
   .wallet-balance {
     &__status-text {
-      color: map.get(colors.$adm-colors, 'regular');
+      color: var(--a-wallet-balance-status-color);
     }
   }
 }
@@ -186,7 +185,7 @@ export default defineComponent({
 .v-theme--dark {
   .wallet-balance {
     &__status-text {
-      color: var(--a-wallet-balance-status-color-dark);
+      color: var(--a-wallet-balance-status-color);
     }
   }
 }

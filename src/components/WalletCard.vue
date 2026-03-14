@@ -131,16 +131,14 @@ const showFiatRate = computed(() => {
 </script>
 
 <style lang="scss" scoped>
-@use 'sass:map';
-@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/components/_color-roles.scss' as colorRoles;
 @use '@/assets/styles/themes/adamant/_mixins.scss';
-@use 'vuetify/settings';
 
 .wallet-card {
   --a-wallet-card-surface: var(--a-color-surface-transparent);
-  --a-wallet-card-title-color: var(--a-color-text-regular);
-  --a-wallet-card-subtitle-color: var(--a-color-text-muted-light);
   --a-wallet-card-action-color: var(--a-color-text-muted-light);
+  @include colorRoles.a-color-role-primary-surface-var('--a-wallet-card-title-color');
+  @include colorRoles.a-color-role-subtle-var('--a-wallet-card-subtitle-color');
 
   background-color: var(--a-wallet-card-surface);
 
@@ -179,18 +177,8 @@ const showFiatRate = computed(() => {
   padding-inline-end: var(--a-wallet-card-item-padding-inline-end);
 }
 
-/** Themes **/
-.v-theme--light {
-  .wallet-card {
-    --a-wallet-card-title-color: var(--a-color-text-regular);
-    --a-wallet-card-subtitle-color: var(--a-color-text-muted-light);
-    --a-wallet-card-action-color: var(--a-color-text-muted-light);
-  }
-}
 .v-theme--dark {
   .wallet-card {
-    --a-wallet-card-title-color: var(--a-color-text-inverse);
-    --a-wallet-card-subtitle-color: var(--a-color-text-muted-dark);
     --a-wallet-card-action-color: var(--a-color-text-inverse);
   }
 }

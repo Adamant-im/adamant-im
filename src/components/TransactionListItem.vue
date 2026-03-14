@@ -269,6 +269,7 @@ export default {
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_color-roles.scss' as colorRoles;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
@@ -283,8 +284,8 @@ export default {
   --a-transaction-item-note-weight: 100;
   --a-transaction-item-note-prefix-style: var(--a-font-style-emphasis);
   --a-transaction-item-rates-style: var(--a-font-style-emphasis);
-  --a-transaction-item-amount-color: var(--a-color-text-regular);
-  --a-transaction-item-rates-color: var(--a-color-text-muted-light);
+  @include colorRoles.a-color-role-supporting-var('--a-transaction-item-amount-color');
+  @include colorRoles.a-color-role-subtle-var('--a-transaction-item-rates-color');
   --a-transaction-item-icon-color: var(--a-color-text-muted-light);
   --a-transaction-item-status-attention-color: var(--a-color-status-attention);
   --a-transaction-item-status-danger-color: var(--a-color-status-danger);
@@ -348,8 +349,6 @@ export default {
 /** Themes **/
 .v-theme--light.v-list {
   .transaction-item {
-    --a-transaction-item-amount-color: var(--a-color-text-regular);
-    --a-transaction-item-rates-color: var(--a-color-text-muted-light);
     --a-transaction-item-icon-color: var(--a-color-text-muted-light);
 
     &__amount {
@@ -368,9 +367,6 @@ export default {
 }
 .v-theme--dark.v-list {
   .transaction-item {
-    --a-transaction-item-amount-color: var(--a-color-text-muted-dark);
-    --a-transaction-item-rates-color: var(--a-color-text-muted-dark);
-
     &__amount {
       color: var(--a-transaction-item-amount-color);
       &--is-incoming {

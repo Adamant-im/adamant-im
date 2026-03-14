@@ -51,6 +51,7 @@ const textContentPath = path.resolve(
   currentDir,
   '../../assets/styles/components/_text-content.scss'
 )
+const colorRolesPath = path.resolve(currentDir, '../../assets/styles/components/_color-roles.scss')
 
 describe('Nodes UI style contract', () => {
   it('uses shared settings table shell with shared mobile bleed gutters', () => {
@@ -98,6 +99,7 @@ describe('Nodes UI style contract', () => {
     const dataTableContent = readFileSync(settingsDataTablePath, 'utf8')
     const tokensContent = readFileSync(genericTokensPath, 'utf8')
     const layoutPrimitives = readFileSync(layoutPrimitivesPath, 'utf8')
+    const colorRolesContent = readFileSync(colorRolesPath, 'utf8')
 
     expect(dataTableContent).toContain('--a-settings-data-table-line-height')
     expect(dataTableContent).toContain('var(--a-font-size-sm)')
@@ -120,7 +122,7 @@ describe('Nodes UI style contract', () => {
 
     expect(statusContent).toContain('--a-node-status-detail-font-size')
     expect(statusContent).toContain('--a-node-status-detail-font-weight')
-    expect(statusContent).toContain('--a-node-status-text-color-dark')
+    expect(statusContent).toContain('--a-node-status-text-color')
     expect(statusContent).toContain('--a-node-status-title-line-height')
     expect(statusContent).toContain('--a-node-status-spinner-animation-duration')
     expect(statusContent).toContain('detailHelpButton')
@@ -131,7 +133,10 @@ describe('Nodes UI style contract', () => {
     expect(statusContent).toContain('root: className')
     expect(statusContent).toContain('var(--a-font-size-xs)')
     expect(statusContent).toContain('var(--a-font-weight-light)')
-    expect(statusContent).toContain('var(--a-color-text-muted-dark)')
+    expect(statusContent).toContain("@use '@/assets/styles/components/_color-roles.scss'")
+    expect(statusContent).toContain(
+      "@include colorRoles.a-color-role-supporting-var('--a-node-status-text-color');"
+    )
     expect(layoutPrimitives).toContain('@mixin a-flex-align-center()')
     expect(statusContent).toContain("@use '@/assets/styles/components/_layout-primitives.scss'")
     expect(statusContent).toContain('@include layoutPrimitives.a-flex-align-center();')
@@ -145,6 +150,7 @@ describe('Nodes UI style contract', () => {
     expect(statusContent).not.toContain(
       'animation-duration: var(--a-node-status-spinner-animation-duration) !important;'
     )
+    expect(colorRolesContent).toContain('@mixin a-color-role-supporting-var($var-name)')
 
     expect(metricsContent).toContain('NODE_STATUS_SPINNER_SIZE = 12')
     expect(metricsContent).toContain('NODE_STATUS_SPINNER_WIDTH = 2')
@@ -195,8 +201,11 @@ describe('Nodes UI style contract', () => {
     expect(urlContent).toContain('var(--a-font-size-xs)')
     expect(urlContent).not.toContain('font-size: 12px;')
 
-    expect(versionContent).toContain('--a-node-version-color-dark')
-    expect(versionContent).toContain('var(--a-color-text-muted-dark)')
+    expect(versionContent).toContain('--a-node-version-color')
+    expect(versionContent).toContain("@use '@/assets/styles/components/_color-roles.scss'")
+    expect(versionContent).toContain(
+      "@include colorRoles.a-color-role-supporting-var('--a-node-version-color');"
+    )
     expect(versionContent).not.toContain('opacity: 0.7;')
 
     expect(admRowContent).toContain('line-height: var(--a-font-size-sm);')

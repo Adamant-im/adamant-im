@@ -41,6 +41,7 @@ const textContentPath = path.resolve(
   currentDir,
   '../../assets/styles/components/_text-content.scss'
 )
+const colorRolesPath = path.resolve(currentDir, '../../assets/styles/components/_color-roles.scss')
 
 describe('Financial UI style contract', () => {
   it('uses tokenized spacing and typography in send funds form', () => {
@@ -111,6 +112,7 @@ describe('Financial UI style contract', () => {
     const content = readFileSync(transactionTemplatePath, 'utf8')
     const metricsContent = readFileSync(commonUiMetricsPath, 'utf8')
     const tokensContent = readFileSync(genericTokensPath, 'utf8')
+    const colorRolesContent = readFileSync(colorRolesPath, 'utf8')
 
     expect(tokensContent).toContain('--a-color-status-attention')
     expect(tokensContent).toContain('--a-color-status-success')
@@ -121,6 +123,10 @@ describe('Financial UI style contract', () => {
     expect(content).toContain('COMMON_COMPACT_ICON_SIZE')
     expect(content).toContain('__invalid-status-icon')
     expect(content).toContain('var(--a-color-status-attention)')
+    expect(content).toContain("@use '@/assets/styles/components/_color-roles.scss'")
+    expect(content).toContain(
+      "@include colorRoles.a-color-role-subtle-var('--a-transaction-view-value-muted-color');"
+    )
     expect(content).toContain('--a-transaction-view-status-danger-color')
     expect(content).toContain('--a-transaction-view-status-success-color')
     expect(content).toContain('--a-transaction-view-status-attention-color')
@@ -148,6 +154,7 @@ describe('Financial UI style contract', () => {
     expect(content).not.toContain('color: var(--a-color-status-attention) !important;')
     expect(content).not.toContain("color: map.get(colors.$adm-colors, 'danger') !important;")
     expect(content).not.toContain("color: map.get(colors.$adm-colors, 'good') !important;")
+    expect(colorRolesContent).toContain('@mixin a-color-role-subtle-var($var-name)')
   })
 
   it('keeps transaction list item text styling in stylesheet, not inline attributes', () => {
@@ -164,12 +171,16 @@ describe('Financial UI style contract', () => {
     expect(content).toContain('--a-transaction-item-padding-inline')
     expect(content).toContain('--a-transaction-item-rates-style')
     expect(content).toContain('var(--a-font-style-emphasis)')
-    expect(content).toContain('var(--a-color-text-regular)')
-    expect(content).toContain('var(--a-color-text-muted-light)')
     expect(content).toContain('--a-transaction-item-rates-color')
     expect(content).toContain('var(--a-screen-padding-inline)')
+    expect(content).toContain("@use '@/assets/styles/components/_color-roles.scss'")
+    expect(content).toContain(
+      "@include colorRoles.a-color-role-supporting-var('--a-transaction-item-amount-color');"
+    )
+    expect(content).toContain(
+      "@include colorRoles.a-color-role-subtle-var('--a-transaction-item-rates-color');"
+    )
     expect(content).toContain('padding-inline: var(--a-transaction-item-padding-inline);')
-    expect(content).toContain('var(--a-color-text-muted-dark)')
     expect(content).not.toContain('style="font-style: italic"')
     expect(content).not.toContain('style="font-weight: 100"')
     expect(content).not.toContain('font-style: italic;')
@@ -204,7 +215,6 @@ describe('Financial UI style contract', () => {
     expect(content).toContain('__value-muted')
     expect(content).toContain('splitDisplayValueByName')
     expect(splitContent).toContain('main !== rawAddress || bracketAddress === rawAddress')
-    expect(content).toContain('var(--a-color-text-muted-dark)')
   })
 
   it('uses shared list row tokens in wallet actions list', () => {

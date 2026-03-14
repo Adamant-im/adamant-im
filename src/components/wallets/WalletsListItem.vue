@@ -116,6 +116,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
 @use 'sass:map';
+@use '@/assets/styles/components/_color-roles.scss' as colorRoles;
 @use '@/assets/styles/components/_wallet-compact-content.scss' as walletCompactContent;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
@@ -125,7 +126,7 @@ export default defineComponent({
   --a-wallets-list-item-content-gap: var(--a-financial-stack-gap);
   --a-wallets-list-item-checkbox-offset: calc(var(--a-space-2) * -1);
   --a-wallets-list-item-subtitle-weight: var(--a-financial-text-font-weight);
-  --a-wallets-list-item-subtitle-muted-dark: var(--a-color-text-muted-dark);
+  @include colorRoles.a-color-role-subtle-var('--a-wallets-list-item-subtitle-muted-color');
 
   &__crypto-content {
     height: var(--a-wallets-list-item-content-height);
@@ -147,7 +148,7 @@ export default defineComponent({
     @include walletCompactContent.a-wallet-compact-line-copy();
   }
   &__crypto-subtitle-muted {
-    color: var(--a-wallets-list-item-subtitle-muted-dark);
+    color: var(--a-wallets-list-item-subtitle-muted-color);
   }
   &__crypto-subtitle-bold {
     font-weight: 600;
@@ -195,7 +196,7 @@ export default defineComponent({
       }
     }
     &__crypto-subtitle-muted {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-wallets-list-item-subtitle-muted-color);
     }
     &__crypto-subtitle-bold {
       color: map.get(colors.$adm-colors, 'regular');

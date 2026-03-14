@@ -12,6 +12,7 @@ const buttonsThemePath = path.resolve(
 )
 const inputsThemePath = path.resolve(currentDir, '../../assets/styles/themes/adamant/_inputs.scss')
 const vuetifyGlobalsPath = path.resolve(currentDir, '../../assets/styles/generic/_vuetify.scss')
+const colorRolesPath = path.resolve(currentDir, '../../assets/styles/components/_color-roles.scss')
 
 describe('Theme layer contract', () => {
   it('keeps link-action button styles tokenized without forceful overrides', () => {
@@ -55,5 +56,17 @@ describe('Theme layer contract', () => {
     expect(vuetifyContent).not.toContain('box-shadow: none !important;')
     expect(vuetifyContent).not.toContain('opacity: 0 !important;')
     expect(vuetifyContent).not.toContain('opacity: unset;')
+  })
+
+  it('keeps shared semantic color roles centralized for repeated surface text patterns', () => {
+    const colorRolesContent = readFileSync(colorRolesPath, 'utf8')
+
+    expect(colorRolesContent).toContain('@mixin a-color-role-primary-surface-var($var-name)')
+    expect(colorRolesContent).toContain('@mixin a-color-role-supporting-var($var-name)')
+    expect(colorRolesContent).toContain('@mixin a-color-role-subtle-var($var-name)')
+    expect(colorRolesContent).toContain('var(--a-color-text-regular)')
+    expect(colorRolesContent).toContain('var(--a-color-text-inverse)')
+    expect(colorRolesContent).toContain('var(--a-color-text-muted-light)')
+    expect(colorRolesContent).toContain('var(--a-color-text-muted-dark)')
   })
 })

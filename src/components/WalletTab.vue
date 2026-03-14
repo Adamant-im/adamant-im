@@ -92,14 +92,12 @@ watch(currentBalance, (newBalance, oldBalance) => {
 </script>
 
 <style lang="scss" scoped>
-@use 'sass:map';
+@use '@/assets/styles/components/_color-roles.scss' as colorRoles;
 @use '@/assets/styles/components/_wallet-compact-content.scss' as walletCompactContent;
-@use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
-@use 'vuetify/settings';
 
 .wallet-tab {
-  --a-wallet-tab-rates-color: var(--a-color-text-muted-light);
+  @include colorRoles.a-color-role-subtle-var('--a-wallet-tab-rates-color');
 
   display: flex;
   flex-direction: column;
@@ -156,18 +154,6 @@ watch(currentBalance, (newBalance, oldBalance) => {
 
   &__rates-placeholder {
     visibility: hidden;
-  }
-}
-
-.v-theme--light {
-  .wallet-tab {
-    --a-wallet-tab-rates-color: var(--a-color-text-muted-light);
-  }
-}
-
-.v-theme--dark {
-  .wallet-tab {
-    --a-wallet-tab-rates-color: var(--a-color-text-muted-dark);
   }
 }
 
