@@ -87,6 +87,10 @@ const chatMessageContentPath = path.resolve(
   currentDir,
   '../../assets/styles/components/_chat-message-content.scss'
 )
+const layoutPrimitivesPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_layout-primitives.scss'
+)
 const emojiPickerPath = path.resolve(currentDir, '../../components/EmojiPicker.vue')
 const iconBoxPath = path.resolve(currentDir, '../../components/icons/IconBox.vue')
 
@@ -524,11 +528,15 @@ describe('AChat UI style contract', () => {
     const emojiPickerContent = readFileSync(emojiPickerPath, 'utf8')
     const iconBoxContent = readFileSync(iconBoxPath, 'utf8')
     const tokensContent = readFileSync(genericTokensPath, 'utf8')
+    const layoutPrimitivesContent = readFileSync(layoutPrimitivesPath, 'utf8')
 
     expect(tokensContent).toContain('--a-emoji-picker-radius')
     expect(tokensContent).toContain('--a-emoji-picker-size')
     expect(tokensContent).toContain('--a-emoji-picker-border-width')
     expect(iconBoxContent).toContain('var(--a-icon-box-centered-size)')
+    expect(layoutPrimitivesContent).toContain('@mixin a-flex-center()')
+    expect(iconBoxContent).toContain("@use '@/assets/styles/components/_layout-primitives.scss'")
+    expect(iconBoxContent).toContain('@include layoutPrimitives.a-flex-center();')
 
     expect(emojiPickerContent).toContain('var(--a-emoji-picker-radius)')
     expect(emojiPickerContent).toContain('var(--a-emoji-picker-size)')
@@ -558,5 +566,36 @@ describe('AChat UI style contract', () => {
 
     expect(iconBoxContent).not.toContain('width: 40px;')
     expect(iconBoxContent).not.toContain('height: 40px;')
+  })
+
+  it('uses shared flex-center primitive in chat attachment placeholders and modal file content', () => {
+    const attachmentFileContent = readFileSync(attachmentFilePath, 'utf8')
+    const attachmentImageContent = readFileSync(attachmentImagePath, 'utf8')
+    const modalFileContent = readFileSync(modalFilePath, 'utf8')
+    const layoutPrimitivesContent = readFileSync(layoutPrimitivesPath, 'utf8')
+
+    expect(layoutPrimitivesContent).toContain('@mixin a-flex-center()')
+
+    expect(attachmentImageContent).toContain(
+      "@use '@/assets/styles/components/_layout-primitives.scss'"
+    )
+    expect(attachmentImageContent).toContain('@include layoutPrimitives.a-flex-center();')
+    expect(attachmentImageContent).not.toContain(
+      'display: flex;\n    align-items: center;\n    justify-content: center;'
+    )
+
+    expect(attachmentFileContent).toContain(
+      "@use '@/assets/styles/components/_layout-primitives.scss'"
+    )
+    expect(attachmentFileContent).toContain('@include layoutPrimitives.a-flex-center();')
+    expect(attachmentFileContent).not.toContain(
+      'display: flex;\n    align-items: center;\n    justify-content: center;'
+    )
+
+    expect(modalFileContent).toContain("@use '@/assets/styles/components/_layout-primitives.scss'")
+    expect(modalFileContent).toContain('@include layoutPrimitives.a-flex-center();')
+    expect(modalFileContent).not.toContain(
+      'display: flex;\n    justify-content: center;\n    align-items: center;'
+    )
   })
 })

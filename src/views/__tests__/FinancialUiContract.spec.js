@@ -28,6 +28,10 @@ const walletActionsPath = path.resolve(currentDir, '../../components/WalletCardL
 const commonUiMetricsPath = path.resolve(currentDir, '../../components/common/helpers/uiMetrics.ts')
 const transactionsViewPath = path.resolve(currentDir, '../Transactions.vue')
 const baseIconPath = path.resolve(currentDir, '../../components/icons/BaseIcon.vue')
+const layoutPrimitivesPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_layout-primitives.scss'
+)
 const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
 const formActionLayoutPath = path.resolve(
   currentDir,
@@ -225,6 +229,7 @@ describe('Financial UI style contract', () => {
     const transactionsContent = readFileSync(transactionsViewPath, 'utf8')
     const iconContent = readFileSync(baseIconPath, 'utf8')
     const tokensContent = readFileSync(genericTokensPath, 'utf8')
+    const layoutPrimitivesContent = readFileSync(layoutPrimitivesPath, 'utf8')
 
     expect(tokensContent).toContain('--a-transactions-loading-item-offset-top')
     expect(tokensContent).toContain('--a-transactions-loading-item-offset-top: 0;')
@@ -249,6 +254,10 @@ describe('Financial UI style contract', () => {
     expect(iconContent).toContain('font-size: var(--a-icon-base-font-size);')
     expect(iconContent).toContain('width: var(--a-icon-box-centered-size);')
     expect(iconContent).toContain('height: var(--a-icon-box-centered-size);')
+    expect(layoutPrimitivesContent).toContain('@mixin a-flex-center()')
+    expect(layoutPrimitivesContent).toContain('justify-content: center;')
+    expect(iconContent).toContain("@use '@/assets/styles/components/_layout-primitives.scss'")
+    expect(iconContent).toContain('@include layoutPrimitives.a-flex-center();')
     expect(iconContent).toContain('fill: var(--a-color-text-muted-light);')
     expect(iconContent).toContain('stroke: var(--a-color-text-muted-light);')
     expect(iconContent).not.toContain('font-size: 24px;')

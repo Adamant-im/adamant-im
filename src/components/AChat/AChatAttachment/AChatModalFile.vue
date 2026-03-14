@@ -76,6 +76,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
@@ -98,9 +99,7 @@ export default defineComponent({
 
   &__container {
     height: inherit;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    @include layoutPrimitives.a-flex-center();
     gap: var(--a-space-2);
   }
 

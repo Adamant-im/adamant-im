@@ -70,6 +70,7 @@ export default {
 
 <style lang="scss">
 @use 'sass:map';
+@use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use 'vuetify/settings';
 
 .icon {
@@ -97,9 +98,7 @@ export default {
 .icon--box-centered {
   width: var(--a-icon-box-centered-size);
   height: var(--a-icon-box-centered-size);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include layoutPrimitives.a-flex-center();
 }
 
 /* Themes */
