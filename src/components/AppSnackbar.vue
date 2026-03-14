@@ -58,13 +58,14 @@ const timeout = computed(() =>
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_text-content.scss' as textContent;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
 
 .app-snackbar {
   :deep(.v-snackbar__wrapper) {
-    @include mixins.a-text-regular-enlarged();
+    @include textContent.a-content-body-copy();
 
     margin: 0 auto;
     border-radius: 0;

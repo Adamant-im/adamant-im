@@ -253,6 +253,7 @@ export default defineComponent({
 @use '@/assets/styles/components/_form-action-layout.scss' as formActionLayout;
 @use '@/assets/styles/components/_input-action-menu.scss' as inputActionMenu;
 @use '@/assets/styles/components/_link-action-button.scss' as linkActionButton;
+@use '@/assets/styles/components/_text-content.scss' as textContent;
 @use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .export-keys-form {
@@ -279,7 +280,7 @@ export default defineComponent({
     justify-content: flex-end;
   }
   &__disclaimer {
-    @include mixins.a-text-explanation-enlarged();
+    @include textContent.a-content-explanatory-copy();
     margin-top: var(--a-export-keys-section-spacing);
     margin-bottom: var(--a-export-keys-section-spacing);
   }

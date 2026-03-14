@@ -9,6 +9,10 @@ const vuetifyPath = path.resolve(currentDir, '../../assets/styles/generic/_vueti
 const appSnackbarPath = path.resolve(currentDir, '../../components/AppSnackbar.vue')
 const progressIndicatorPath = path.resolve(currentDir, '../../components/ProgressIndicator.vue')
 const pullDownPath = path.resolve(currentDir, '../../components/common/PullDown/PullDown.vue')
+const textContentPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_text-content.scss'
+)
 
 describe('Feedback UI style contract', () => {
   it('stores shared snackbar and progress indicator tokens in the generic tokens layer', () => {
@@ -36,6 +40,7 @@ describe('Feedback UI style contract', () => {
   it('uses the shared snackbar tokens in both Vuetify globals and AppSnackbar component styles', () => {
     const vuetifyContent = readFileSync(vuetifyPath, 'utf8')
     const snackbarContent = readFileSync(appSnackbarPath, 'utf8')
+    const textContent = readFileSync(textContentPath, 'utf8')
 
     expect(vuetifyContent).toContain('.v-snackbar__content {')
     expect(vuetifyContent).toContain('font-size: var(--a-snackbar-content-font-size);')
@@ -46,6 +51,7 @@ describe('Feedback UI style contract', () => {
 
     expect(snackbarContent).toContain('`${className}__message`')
     expect(snackbarContent).toContain('`${className}__close-button`')
+    expect(snackbarContent).toContain('textContent.a-content-body-copy()')
     expect(snackbarContent).toContain('var(--a-snackbar-max-width)')
     expect(snackbarContent).toContain('var(--a-snackbar-content-font-size)')
     expect(snackbarContent).toContain('var(--a-snackbar-content-line-height)')
@@ -59,6 +65,7 @@ describe('Feedback UI style contract', () => {
     expect(snackbarContent).not.toContain('min-height: 64px;')
     expect(snackbarContent).not.toContain('width: 36px;')
     expect(snackbarContent).not.toContain('width: var(--a-snackbar-close-button-size) !important;')
+    expect(textContent).toContain('@mixin a-content-body-copy()')
   })
 
   it('keeps progress indicator centered through layout styles instead of negative-margin offsets', () => {

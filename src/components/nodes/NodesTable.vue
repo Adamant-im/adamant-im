@@ -158,6 +158,7 @@ const preferFasterServiceNodeOption = computed<boolean>({
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_text-content.scss' as textContent;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
@@ -167,19 +168,13 @@ const preferFasterServiceNodeOption = computed<boolean>({
   }
 
   &__description {
-    @include mixins.a-text-explanation-enlarged();
+    @include textContent.a-content-explanatory-copy();
     margin-top: var(--a-space-2);
   }
 
   &__info {
-    @include mixins.a-text-explanation-enlarged();
-
-    :deep(a) {
-      text-decoration-line: none;
-      &:hover {
-        text-decoration-line: underline;
-      }
-    }
+    @include textContent.a-content-explanatory-copy();
+    @include textContent.a-content-inline-links();
   }
 
   :deep(.v-tab) {

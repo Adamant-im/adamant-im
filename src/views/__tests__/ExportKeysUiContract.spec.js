@@ -10,15 +10,20 @@ const formActionLayoutPath = path.resolve(
   currentDir,
   '../../assets/styles/components/_form-action-layout.scss'
 )
+const textContentPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_text-content.scss'
+)
 
 describe('Export keys UI style contract', () => {
   it('uses tokenized spacing and semantic form actions on export keys screen', () => {
     const content = readFileSync(exportKeysPath, 'utf8')
     const formActionLayoutContent = readFileSync(formActionLayoutPath, 'utf8')
+    const textContent = readFileSync(textContentPath, 'utf8')
 
     expect(content).toContain('<v-form :class="className" @submit.prevent="revealKeys">')
     expect(content).toContain('inputActionMenu.a-input-action-menu()')
-    expect(content).toContain('a-text-explanation-enlarged')
+    expect(content).toContain('textContent.a-content-explanatory-copy()')
     expect(content).toContain('type="submit"')
     expect(content).toContain('type="button"')
     expect(content).toContain('--a-export-keys-section-spacing')
@@ -37,6 +42,7 @@ describe('Export keys UI style contract', () => {
     expect(content).toContain('--a-export-keys-field-label-font-weight')
     expect(content).toContain('a-link-action-button()')
     expect(content).toContain('formActionLayout.a-form-actions-center()')
+    expect(content).toContain('textContent.a-content-explanatory-copy()')
     expect(content).toContain('__menu-list')
     expect(content).toContain('__menu-item')
     expect(content).toContain('__menu-item-title')
@@ -63,5 +69,6 @@ describe('Export keys UI style contract', () => {
     expect(formActionLayoutContent).toContain('display: flex;')
     expect(formActionLayoutContent).toContain('justify-content: center;')
     expect(formActionLayoutContent).toContain('text-align: center;')
+    expect(textContent).toContain('@mixin a-content-explanatory-copy()')
   })
 })

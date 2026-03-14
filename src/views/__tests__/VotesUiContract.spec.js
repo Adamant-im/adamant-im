@@ -45,11 +45,16 @@ const delegatesNotFoundPath = path.resolve(
 const useChatNamePath = path.resolve(currentDir, '../../components/AChat/hooks/useChatName.ts')
 const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
 const commonUiMetricsPath = path.resolve(currentDir, '../../components/common/helpers/uiMetrics.ts')
+const textContentPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_text-content.scss'
+)
 
 describe('Votes UI style contract', () => {
   it('uses shared settings table shell for delegates screen layout', () => {
     const votesContent = readFileSync(votesPath, 'utf8')
     const shellContent = readFileSync(settingsTableShellPath, 'utf8')
+    const textContent = readFileSync(textContentPath, 'utf8')
 
     expect(votesContent).toContain('<SettingsTableShell :class="`${className}__layout`">')
     expect(votesContent).toContain('<template #before>')
@@ -60,7 +65,8 @@ describe('Votes UI style contract', () => {
     expect(votesContent).toContain('<div :class="`${className}__info`"')
     expect(votesContent).toContain('margin: 0;')
     expect(votesContent).toContain('width: 100%;')
-    expect(votesContent).toContain('@include mixins.a-text-explanation-enlarged();')
+    expect(votesContent).toContain('textContent.a-content-explanatory-copy()')
+    expect(votesContent).toContain('textContent.a-content-inline-links()')
     expect(votesContent).toContain('padding: var(--a-space-5) 0;')
     expect(votesContent).toContain('&__review.v-row')
     expect(votesContent).toContain('padding-top: var(--a-space-4);')
@@ -77,6 +83,7 @@ describe('Votes UI style contract', () => {
     expect(votesContent).not.toContain('padding-top: 15px !important;')
     expect(shellContent).toContain('--a-settings-table-shell-bleed-inline-start')
     expect(shellContent).toContain('--a-settings-table-shell-bleed-inline-end')
+    expect(textContent).toContain('@mixin a-content-inline-links()')
   })
 
   it('uses shared data table surface and tokenized delegates table cells', () => {
@@ -195,6 +202,7 @@ describe('Votes UI style contract', () => {
     expect(tokensContent).toContain('--a-delegates-not-found-margin-block')
     expect(tokensContent).toContain('--a-color-text-muted-light')
     expect(votesContent).toContain('width="var(--a-secondary-dialog-width)"')
+    expect(votesContent).toContain('textContent.a-content-body-copy()')
     expect(votesContent).toContain('var(--a-border-width-thin) solid')
     expect(votesContent).not.toContain('width="500"')
     expect(votesContent).not.toContain('1px solid')

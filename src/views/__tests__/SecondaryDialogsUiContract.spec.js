@@ -42,6 +42,10 @@ const httpProtocolInfoDialogPath = path.resolve(
 )
 const votesViewPath = path.resolve(currentDir, '../Votes.vue')
 const vibroViewPath = path.resolve(currentDir, '../Vibro.vue')
+const textContentPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_text-content.scss'
+)
 
 describe('Secondary dialogs UI contract', () => {
   it('defines shared secondary-dialog tokens and mixin', () => {
@@ -154,6 +158,7 @@ describe('Secondary dialogs UI contract', () => {
     const sendFundsFormContent = readFileSync(sendFundsFormPath, 'utf8')
     const httpProtocolInfoContent = readFileSync(httpProtocolInfoDialogPath, 'utf8')
     const votesViewContent = readFileSync(votesViewPath, 'utf8')
+    const textContent = readFileSync(textContentPath, 'utf8')
 
     expect(chatStartContent).toContain('`${className}__body`')
     expect(chatStartContent).toContain('`${className}__card-title')
@@ -311,7 +316,7 @@ describe('Secondary dialogs UI contract', () => {
     expect(httpProtocolInfoContent).toContain('`${className}__dialog-actions')
     expect(httpProtocolInfoContent).toContain('width="var(--a-secondary-dialog-width)"')
     expect(httpProtocolInfoContent).toContain('@include mixins.a-text-header();')
-    expect(httpProtocolInfoContent).toContain('@include mixins.a-text-regular-enlarged();')
+    expect(httpProtocolInfoContent).toContain('textContent.a-content-body-copy()')
     expect(httpProtocolInfoContent).toContain('@include mixins.a-text-regular-enlarged-bold();')
     expect(httpProtocolInfoContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
     expect(httpProtocolInfoContent).not.toContain('class="pa-4 a-text-regular-enlarged"')
@@ -319,6 +324,7 @@ describe('Secondary dialogs UI contract', () => {
     expect(httpProtocolInfoContent).not.toContain('class="mb-4"')
     expect(httpProtocolInfoContent).not.toContain('class="a-text-regular-enlarged-bold mb-2"')
     expect(httpProtocolInfoContent).not.toContain('class="ml-4"')
+    expect(textContent).toContain('@mixin a-content-body-copy()')
 
     expect(votesViewContent).toContain("const summaryDialogClass = 'delegates-summary-dialog'")
     expect(votesViewContent).toContain('`${summaryDialogClass}__dialog-title`')

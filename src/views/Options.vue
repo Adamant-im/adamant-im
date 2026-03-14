@@ -432,6 +432,7 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_text-content.scss' as textContent;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
@@ -479,7 +480,7 @@ onBeforeUnmount(() => {
   }
 
   &__explanation {
-    @include mixins.a-text-explanation-enlarged();
+    @include textContent.a-content-explanatory-copy();
   }
 
   &__option-offset {

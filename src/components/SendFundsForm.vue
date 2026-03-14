@@ -974,6 +974,7 @@ export default {
 @use '@/assets/styles/components/_form-action-layout.scss' as formActionLayout;
 @use '@/assets/styles/components/_input-action-menu.scss' as inputActionMenu;
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+@use '@/assets/styles/components/_text-content.scss' as textContent;
 @use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .a-input :deep(input[type='number']) {
@@ -994,7 +995,7 @@ export default {
   }
 
   &__message {
-    @include mixins.a-text-regular-enlarged();
+    @include textContent.a-content-body-copy();
   }
 
   &__spinner {

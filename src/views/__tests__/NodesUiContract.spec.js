@@ -43,11 +43,16 @@ const ipfsNodesTableItemPath = path.resolve(
   '../../components/nodes/ipfs/IpfsNodesTableItem.vue'
 )
 const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
+const textContentPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_text-content.scss'
+)
 
 describe('Nodes UI style contract', () => {
   it('uses shared settings table shell with shared mobile bleed gutters', () => {
     const content = readFileSync(nodesTablePath, 'utf8')
     const shellContent = readFileSync(settingsTableShellPath, 'utf8')
+    const textContent = readFileSync(textContentPath, 'utf8')
 
     expect(content).toContain('<SettingsTableShell :class="classes.root">')
     expect(content).toContain('checkboxSection')
@@ -58,7 +63,8 @@ describe('Nodes UI style contract', () => {
     expect(shellContent).toContain('--a-settings-table-shell-section-inline-end: 0px;')
     expect(shellContent).toContain('--a-settings-table-shell-checkbox-offset')
     expect(shellContent).toContain('var(--a-space-6)')
-    expect(content).toContain('@include mixins.a-text-explanation-enlarged();')
+    expect(content).toContain('textContent.a-content-explanatory-copy()')
+    expect(content).toContain('textContent.a-content-inline-links()')
     expect(shellContent).toContain(
       'margin-inline-start: calc(var(--a-settings-table-shell-bleed-inline-start) * -1);'
     )
@@ -75,6 +81,7 @@ describe('Nodes UI style contract', () => {
     expect(content).not.toContain('class="a-text-explanation-enlarged mt-6"')
     expect(content).not.toContain("['a-text-explanation-enlarged', classes.description]")
     expect(content).not.toContain("['a-text-explanation-enlarged', classes.info]")
+    expect(textContent).toContain('@mixin a-content-explanatory-copy()')
   })
 
   it('uses tokenized typography and spacing in node cells and status widgets', () => {

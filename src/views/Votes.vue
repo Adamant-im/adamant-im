@@ -212,6 +212,7 @@ const showConfirmationDialog = () => {
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+@use '@/assets/styles/components/_text-content.scss' as textContent;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
@@ -221,14 +222,9 @@ const showConfirmationDialog = () => {
   width: 100%;
 
   &__info {
-    @include mixins.a-text-explanation-enlarged();
+    @include textContent.a-content-explanatory-copy();
     padding: var(--a-space-5) 0;
-    :deep(a) {
-      text-decoration-line: none;
-      &:hover {
-        text-decoration-line: underline;
-      }
-    }
+    @include textContent.a-content-inline-links();
   }
   &__review.v-row {
     margin: 0;
@@ -257,20 +253,13 @@ const showConfirmationDialog = () => {
   }
 
   &__dialog-summary {
-    @include mixins.a-text-regular-enlarged();
+    @include textContent.a-content-body-copy();
   }
 
   &__dialog-info {
-    @include mixins.a-text-regular-enlarged();
+    @include textContent.a-content-body-copy();
     margin-top: var(--a-space-4);
-
-    :deep(a) {
-      text-decoration-line: none;
-
-      &:hover {
-        text-decoration-line: underline;
-      }
-    }
+    @include textContent.a-content-inline-links();
   }
 }
 

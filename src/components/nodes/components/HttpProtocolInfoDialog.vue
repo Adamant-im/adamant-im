@@ -77,6 +77,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+@use '@/assets/styles/components/_text-content.scss' as textContent;
 @use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .http-protocol-info-dialog {
@@ -87,7 +88,7 @@ export default defineComponent({
   }
 
   &__dialog-body {
-    @include mixins.a-text-regular-enlarged();
+    @include textContent.a-content-body-copy();
   }
 
   &__paragraph {

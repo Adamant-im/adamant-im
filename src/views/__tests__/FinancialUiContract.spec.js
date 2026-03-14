@@ -33,6 +33,10 @@ const formActionLayoutPath = path.resolve(
   currentDir,
   '../../assets/styles/components/_form-action-layout.scss'
 )
+const textContentPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_text-content.scss'
+)
 
 describe('Financial UI style contract', () => {
   it('uses tokenized spacing and typography in send funds form', () => {
@@ -42,6 +46,7 @@ describe('Financial UI style contract', () => {
     const metricsContent = readFileSync(commonUiMetricsPath, 'utf8')
     const tokensContent = readFileSync(genericTokensPath, 'utf8')
     const formActionLayoutContent = readFileSync(formActionLayoutPath, 'utf8')
+    const textContent = readFileSync(textContentPath, 'utf8')
 
     expect(content).toContain('--a-send-funds-button-margin-top')
     expect(content).toContain('--a-send-funds-amount-label-size')
@@ -51,6 +56,7 @@ describe('Financial UI style contract', () => {
     expect(content).toContain('__actions')
     expect(content).toContain('__field-label')
     expect(content).toContain('formActionLayout.a-form-actions-center()')
+    expect(content).toContain('textContent.a-content-body-copy()')
     expect(content).toContain('COMMON_INLINE_SPINNER_SIZE')
     expect(content).toContain('inputActionMenu.a-input-action-menu()')
     expect(content).toContain('formatDisplayAmount(amount, currency)')
@@ -94,6 +100,7 @@ describe('Financial UI style contract', () => {
     expect(fakeInputContent).not.toContain('padding-left: 3px;')
 
     expect(formActionLayoutContent).toContain('@mixin a-form-actions-center()')
+    expect(textContent).toContain('@mixin a-content-body-copy()')
   })
 
   it('keeps stable row sizing in transaction template screens', () => {

@@ -6,6 +6,10 @@ import { describe, expect, it } from 'vitest'
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const optionsPath = path.resolve(currentDir, '../Options.vue')
 const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
+const textContentPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_text-content.scss'
+)
 
 describe('Options UI style contract', () => {
   it('uses shared interactive opacity tokens', () => {
@@ -17,6 +21,7 @@ describe('Options UI style contract', () => {
 
   it('uses tokenized settings spacing and typography variables', () => {
     const content = readFileSync(optionsPath, 'utf8')
+    const textContent = readFileSync(textContentPath, 'utf8')
 
     expect(content).toContain('--a-settings-gutter')
     expect(content).toContain('--a-settings-title-padding-top')
@@ -38,6 +43,7 @@ describe('Options UI style contract', () => {
     expect(content).toContain('&__logout')
     expect(content).toContain('&__control-col')
     expect(content).toContain('&__option-offset')
+    expect(content).toContain('textContent.a-content-explanatory-copy()')
     expect(content).toContain('&__title--first')
     expect(content).toContain('&__title--section')
     expect(content).toContain('<button')
@@ -60,5 +66,6 @@ describe('Options UI style contract', () => {
     expect(content).not.toContain('--a-settings-gutter: var(--a-space-4);')
     expect(content).not.toContain('opacity: 0.8;')
     expect(content).not.toContain('opacity: 0.6;')
+    expect(textContent).toContain('@mixin a-content-explanatory-copy()')
   })
 })
