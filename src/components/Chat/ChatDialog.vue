@@ -53,13 +53,11 @@ export default {
 
 <style lang="scss" scoped>
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
-@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
-
 .chat-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
 
   &__card-title {
-    @include mixins.a-text-header();
+    @include secondaryDialog.a-secondary-dialog-title();
   }
 }
 </style>

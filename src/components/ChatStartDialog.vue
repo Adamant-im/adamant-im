@@ -248,18 +248,16 @@ export default {
 @use '@/assets/styles/components/_input-action-menu.scss' as inputActionMenu;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
-@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
-
 .chat-start-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
   @include inputActionMenu.a-input-action-menu();
 
   &__card-title {
-    @include mixins.a-text-header();
+    @include secondaryDialog.a-secondary-dialog-title();
   }
 
   &__link {
-    @include mixins.a-text-active();
+    @include secondaryDialog.a-secondary-dialog-link-action();
   }
 
   &__actions {

@@ -110,18 +110,17 @@ export default {
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
-@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 @use 'vuetify/_settings.scss';
 
 .warning-on-partner-address-dialog {
   @include secondaryDialog.a-secondary-dialog-warning-frame();
 
   &__card-title {
-    @include mixins.a-text-header();
+    @include secondaryDialog.a-secondary-dialog-title();
   }
 
   &__disclaimer {
-    @include mixins.a-text-regular-enlarged();
+    @include secondaryDialog.a-secondary-dialog-body-copy();
   }
 
   &__highlight {

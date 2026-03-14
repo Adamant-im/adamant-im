@@ -98,14 +98,13 @@ const text = computed(() =>
 @use 'sass:map';
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 @use '@/assets/styles/settings/_colors.scss';
-@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 @use 'vuetify/_settings.scss';
 
 .partner-info-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
 
   &__dialog-title {
-    @include mixins.a-text-header();
+    @include secondaryDialog.a-secondary-dialog-title();
     display: flex;
     align-items: center;
   }

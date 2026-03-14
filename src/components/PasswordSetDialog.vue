@@ -152,21 +152,19 @@ const submit = () => {
 
 <style lang="scss" scoped>
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
-@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
-
 .password-set-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
 
   &__card-title {
-    @include mixins.a-text-header();
+    @include secondaryDialog.a-secondary-dialog-title();
   }
 
   &__article-hint {
-    @include mixins.a-text-regular-enlarged();
+    @include secondaryDialog.a-secondary-dialog-body-copy();
   }
 
   &__article-link {
-    @include mixins.a-text-active();
+    @include secondaryDialog.a-secondary-dialog-link-action();
   }
 
   &__submit-spinner {

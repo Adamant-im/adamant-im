@@ -1,3 +1,17 @@
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
+
+@mixin a-secondary-dialog-title() {
+  @include mixins.a-text-header();
+}
+
+@mixin a-secondary-dialog-body-copy() {
+  @include mixins.a-text-regular-enlarged();
+}
+
+@mixin a-secondary-dialog-link-action() {
+  @include mixins.a-text-active();
+}
+
 @mixin a-secondary-dialog-card-frame() {
   &__card-title,
   &__dialog-title {
