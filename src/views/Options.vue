@@ -330,7 +330,7 @@ const darkTheme = computed({
       value: isDarkTheme
     })
 
-    theme.global.name.value = isDarkTheme ? 'dark' : 'light'
+    theme.change(isDarkTheme ? 'dark' : 'light')
   }
 })
 
