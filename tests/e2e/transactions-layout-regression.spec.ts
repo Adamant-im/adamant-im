@@ -109,6 +109,49 @@ test.describe('Transactions layout regressions', () => {
     await assertTransactionDetailsScreenGutter(page)
   })
 
+  test('keeps transaction details stable when recent loader appears on top', async ({ page }) => {
+    test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
+
+    await page.setViewportSize({ width: 1366, height: 900 })
+    await loginWithPassphrase(page, testPassphrase!)
+
+    await page.goto(`/transactions/${testDetailsCrypto}/${testTransactionId}`, {
+      waitUntil: 'domcontentloaded'
+    })
+    await expect(page).toHaveURL(
+      new RegExp(`/transactions/${testDetailsCrypto}/${testTransactionId}$`)
+    )
+
+    const firstRow = page.locator('.transaction-view__list .transaction-list-item').first()
+    await expect(firstRow).toBeVisible()
+
+    const before = await firstRow.boundingBox()
+    expect(before).not.toBeNull()
+
+    await page.evaluate(() => {
+      const store = (
+        window as Window & { store?: { commit: (type: string, payload: boolean) => void } }
+      ).store
+
+      if (!store) {
+        throw new Error('window.store is not available')
+      }
+
+      store.commit('doge/areRecentLoading', true)
+    })
+
+    const recentLoader = page.locator('.transactions-view__loading-item--recent')
+    await expect(recentLoader).toBeVisible()
+
+    const after = await firstRow.boundingBox()
+    expect(after).not.toBeNull()
+    expect(Math.abs((after?.y ?? 0) - (before?.y ?? 0))).toBeLessThanOrEqual(1)
+
+    const loaderBox = await recentLoader.boundingBox()
+    expect(loaderBox).not.toBeNull()
+    expect(loaderBox?.y ?? 0).toBeGreaterThan((before?.y ?? 0) - 40)
+  })
+
   test('keeps ADM transaction rows aligned to the shared screen gutter on desktop when route is available', async ({
     page
   }) => {

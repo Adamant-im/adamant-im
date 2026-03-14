@@ -279,6 +279,7 @@ watch(isIDBReady, (newVal) => {
     &--recent {
       position: absolute;
       top: var(--a-transactions-loading-item-offset-top);
+      z-index: 1;
     }
   }
 
@@ -301,12 +302,8 @@ watch(isIDBReady, (newVal) => {
   }
 
   &--detail-loading {
-    :deep(.navigation-wrapper__container--loader) {
-      margin-top: var(--a-space-12);
-    }
-
     .transactions-view__loading-item--recent {
-      top: 0;
+      top: var(--a-space-12);
     }
   }
 }
