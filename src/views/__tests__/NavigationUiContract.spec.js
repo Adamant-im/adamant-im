@@ -77,12 +77,14 @@ describe('Navigation UI style contract', () => {
     expect(content).toContain('font-size: var(--a-app-navigation-badge-font-size);')
     expect(content).toContain('width: var(--a-app-navigation-badge-size);')
     expect(content).toContain('height: var(--a-app-navigation-badge-size);')
+    expect(content).toContain(':deep(.v-btn.v-btn:not(.v-btn--active))')
     expect(content).not.toContain('height="50"')
     expect(content).not.toContain('font-weight: 300;')
     expect(content).not.toContain('font-size: 14px;')
     expect(content).not.toContain('width: 22px;')
     expect(content).not.toContain('height: 22px;')
     expect(content).not.toContain('calc(0px +  env(safe-area-inset-bottom))')
+    expect(content).not.toContain("color: map.get(colors.$adm-colors, 'muted') !important;")
   })
 
   it('lets active overlays consume Escape before sidebar navigation', () => {

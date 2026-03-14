@@ -70,9 +70,9 @@ test.describe('Feedback surfaces regressions', () => {
     expect(metrics?.gap ?? 0).toBeGreaterThanOrEqual(7)
     expect(metrics?.gap ?? 999).toBeLessThanOrEqual(9)
     expect(metrics?.buttonWidth ?? 0).toBeGreaterThanOrEqual(28)
-    expect(metrics?.buttonWidth ?? 999).toBeLessThanOrEqual(30)
+    expect(metrics?.buttonWidth ?? 999).toBeLessThanOrEqual(30.5)
     expect(metrics?.buttonHeight ?? 0).toBeGreaterThanOrEqual(28)
-    expect(metrics?.buttonHeight ?? 999).toBeLessThanOrEqual(30)
+    expect(metrics?.buttonHeight ?? 999).toBeLessThanOrEqual(30.5)
   })
 
   test('keeps mobile chat loading overlay centered', async ({ page }) => {

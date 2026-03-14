@@ -7,6 +7,7 @@ const currentDir = path.dirname(fileURLToPath(import.meta.url))
 
 const containerPath = path.resolve(currentDir, '../../components/Container.vue')
 const chatLayoutPath = path.resolve(currentDir, '../../layouts/chat.vue')
+const defaultLayoutPath = path.resolve(currentDir, '../../layouts/default.vue')
 const toolbarLayoutPath = path.resolve(currentDir, '../../layouts/toolbar.vue')
 const settingsTableShellPath = path.resolve(
   currentDir,
@@ -30,13 +31,20 @@ describe('Navigation layout contract', () => {
   it('uses semantic layout classes instead of padding utility classes in chat and toolbar layouts', () => {
     const tokensContent = readFileSync(genericTokensPath, 'utf8')
     const chatContent = readFileSync(chatLayoutPath, 'utf8')
+    const defaultContent = readFileSync(defaultLayoutPath, 'utf8')
     const toolbarContent = readFileSync(toolbarLayoutPath, 'utf8')
 
     expect(tokensContent).toContain('--a-toolbar-layout-padding')
+    expect(tokensContent).toContain('--a-default-layout-padding')
     expect(chatContent).toContain("const className = 'chat-layout'")
     expect(chatContent).toContain(':class="`${className}__container`"')
     expect(chatContent).toContain('padding: 0;')
     expect(chatContent).not.toContain('class="pa-0"')
+
+    expect(defaultContent).toContain("const className = 'default-layout'")
+    expect(defaultContent).toContain(':class="`${className}__container`"')
+    expect(defaultContent).toContain('padding: var(--a-default-layout-padding);')
+    expect(defaultContent).not.toContain('class="pa-4"')
 
     expect(toolbarContent).toContain("const className = 'toolbar-layout'")
     expect(toolbarContent).toContain(

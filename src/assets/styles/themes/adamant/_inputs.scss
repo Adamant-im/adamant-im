@@ -24,7 +24,7 @@
 
   .v-label.v-field-label--floating {
     .a-label-secondary {
-      font-size: 10.5px !important;
+      font-size: 10.5px;
     }
   }
 }
@@ -95,7 +95,7 @@
     &--rate {
       font-style: italic;
       padding-inline-start: var(--a-fake-input-rate-padding-inline-start);
-      color: inherit !important;
+      color: inherit;
     }
   }
 }
@@ -106,7 +106,7 @@
     }
 
     .v-label.v-label--active {
-      color: map.get(colors.$adm-colors, 'muted') !important;
+      color: map.get(colors.$adm-colors, 'muted');
     }
 
     .v-label--is-disabled {
