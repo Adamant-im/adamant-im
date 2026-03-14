@@ -46,6 +46,10 @@ const textContentPath = path.resolve(
   currentDir,
   '../../assets/styles/components/_text-content.scss'
 )
+const layoutPrimitivesPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_layout-primitives.scss'
+)
 
 describe('Secondary dialogs UI contract', () => {
   it('defines shared secondary-dialog tokens and mixin', () => {
@@ -358,5 +362,24 @@ describe('Secondary dialogs UI contract', () => {
     expect(content).not.toContain('margin-right: var(--a-space-4);')
     expect(content).not.toContain('margin-top: 12px;')
     expect(content).not.toContain('background-color: rgba(205, 144, 31, 0.93);')
+  })
+
+  it('uses shared layout primitives in secondary dialog content shells', () => {
+    const partnerInfoContent = readFileSync(partnerInfoDialogPath, 'utf8')
+    const qrcodeRendererContent = readFileSync(qrcodeRendererDialogPath, 'utf8')
+    const layoutPrimitives = readFileSync(layoutPrimitivesPath, 'utf8')
+
+    expect(layoutPrimitives).toContain('@mixin a-flex-align-center()')
+    expect(layoutPrimitives).toContain('@mixin a-flex-column-align-center()')
+    expect(partnerInfoContent).toContain(
+      "@use '@/assets/styles/components/_layout-primitives.scss'"
+    )
+    expect(partnerInfoContent).toContain('@include layoutPrimitives.a-flex-align-center();')
+    expect(qrcodeRendererContent).toContain(
+      "@use '@/assets/styles/components/_layout-primitives.scss'"
+    )
+    expect(qrcodeRendererContent).toContain(
+      '@include layoutPrimitives.a-flex-column-align-center();'
+    )
   })
 })

@@ -414,6 +414,7 @@ defineExpose({
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use '@/assets/styles/settings/_colors.scss';
 @use 'vuetify/settings';
 
@@ -470,8 +471,7 @@ defineExpose({
 
 .a-chat__form {
   :deep(.v-field__append-inner) {
-    display: flex;
-    align-items: center;
+    @include layoutPrimitives.a-flex-align-center();
   }
 }
 

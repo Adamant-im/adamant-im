@@ -122,6 +122,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
@@ -134,8 +135,7 @@ export default defineComponent({
   &__status-title {
     width: var(--a-node-status-width);
     max-width: var(--a-node-status-max-width);
-    display: flex;
-    align-items: center;
+    @include layoutPrimitives.a-flex-align-center();
   }
 
   &__status-title-text {

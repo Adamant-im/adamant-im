@@ -58,6 +58,7 @@ const timeout = computed(() =>
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use '@/assets/styles/components/_text-content.scss' as textContent;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
@@ -80,9 +81,7 @@ const timeout = computed(() =>
   }
 
   &__container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    @include layoutPrimitives.a-flex-space-between-center();
     gap: var(--a-snackbar-content-gap);
   }
 

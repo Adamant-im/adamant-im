@@ -13,6 +13,10 @@ const textContentPath = path.resolve(
   currentDir,
   '../../assets/styles/components/_text-content.scss'
 )
+const layoutPrimitivesPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_layout-primitives.scss'
+)
 
 describe('Feedback UI style contract', () => {
   it('stores shared snackbar and progress indicator tokens in the generic tokens layer', () => {
@@ -41,6 +45,7 @@ describe('Feedback UI style contract', () => {
     const vuetifyContent = readFileSync(vuetifyPath, 'utf8')
     const snackbarContent = readFileSync(appSnackbarPath, 'utf8')
     const textContent = readFileSync(textContentPath, 'utf8')
+    const layoutPrimitives = readFileSync(layoutPrimitivesPath, 'utf8')
 
     expect(vuetifyContent).toContain('.v-snackbar__content {')
     expect(vuetifyContent).toContain('font-size: var(--a-snackbar-content-font-size);')
@@ -52,6 +57,9 @@ describe('Feedback UI style contract', () => {
     expect(snackbarContent).toContain('`${className}__message`')
     expect(snackbarContent).toContain('`${className}__close-button`')
     expect(snackbarContent).toContain('textContent.a-content-body-copy()')
+    expect(layoutPrimitives).toContain('@mixin a-flex-space-between-center()')
+    expect(snackbarContent).toContain("@use '@/assets/styles/components/_layout-primitives.scss'")
+    expect(snackbarContent).toContain('@include layoutPrimitives.a-flex-space-between-center();')
     expect(snackbarContent).toContain('var(--a-snackbar-max-width)')
     expect(snackbarContent).toContain('var(--a-snackbar-content-font-size)')
     expect(snackbarContent).toContain('var(--a-snackbar-content-line-height)')

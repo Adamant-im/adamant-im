@@ -38,6 +38,10 @@ const admNodesTableItemPath = path.resolve(
   currentDir,
   '../../components/nodes/adm/AdmNodesTableItem.vue'
 )
+const layoutPrimitivesPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_layout-primitives.scss'
+)
 const ipfsNodesTableItemPath = path.resolve(
   currentDir,
   '../../components/nodes/ipfs/IpfsNodesTableItem.vue'
@@ -93,6 +97,7 @@ describe('Nodes UI style contract', () => {
     const labelContent = readFileSync(nodeLabelPath, 'utf8')
     const dataTableContent = readFileSync(settingsDataTablePath, 'utf8')
     const tokensContent = readFileSync(genericTokensPath, 'utf8')
+    const layoutPrimitives = readFileSync(layoutPrimitivesPath, 'utf8')
 
     expect(dataTableContent).toContain('--a-settings-data-table-line-height')
     expect(dataTableContent).toContain('var(--a-font-size-sm)')
@@ -127,6 +132,9 @@ describe('Nodes UI style contract', () => {
     expect(statusContent).toContain('var(--a-font-size-xs)')
     expect(statusContent).toContain('var(--a-font-weight-light)')
     expect(statusContent).toContain('var(--a-color-text-muted-dark)')
+    expect(layoutPrimitives).toContain('@mixin a-flex-align-center()')
+    expect(statusContent).toContain("@use '@/assets/styles/components/_layout-primitives.scss'")
+    expect(statusContent).toContain('@include layoutPrimitives.a-flex-align-center();')
     expect(statusContent).not.toContain('size="12"')
     expect(statusContent).not.toContain('width="2"')
     expect(statusContent).not.toContain('class="ml-1 cursor-pointer mb-0"')

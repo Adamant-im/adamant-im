@@ -21,6 +21,10 @@ const chatMessageActionsPath = path.resolve(
   '../../components/Chat/ChatMessageActions.vue'
 )
 const chatAvatarPath = path.resolve(currentDir, '../../components/Chat/ChatAvatar.vue')
+const layoutPrimitivesPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_layout-primitives.scss'
+)
 
 describe('Chats UI style contract', () => {
   it('stores shared chat toolbar and chats sizing metrics in helper constants', () => {
@@ -87,6 +91,7 @@ describe('Chats UI style contract', () => {
 
   it('keeps chats list action row sizing tokenized', () => {
     const content = readFileSync(chatsPath, 'utf8')
+    const layoutPrimitives = readFileSync(layoutPrimitivesPath, 'utf8')
 
     expect(content).toContain('CHATS_CONNECTION_SPINNER_SIZE')
     expect(content).toContain('CHATS_SCROLL_OFFSET')
@@ -109,6 +114,9 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('var(--a-font-weight-light)')
     expect(content).toContain('height: var(--a-chats-actions-height);')
     expect(content).toContain('column-gap: var(--a-chats-actions-gap);')
+    expect(layoutPrimitives).toContain('@mixin a-flex-center()')
+    expect(content).toContain("@use '@/assets/styles/components/_layout-primitives.scss'")
+    expect(content).toContain('@include layoutPrimitives.a-flex-center();')
     expect(content).toContain(
       'margin-inline-start: var(--a-chats-connection-spinner-offset-inline-start);'
     )
@@ -129,6 +137,7 @@ describe('Chats UI style contract', () => {
 
   it('keeps chat preview spacing, line-height and icon sizes tokenized', () => {
     const content = readFileSync(chatPreviewPath, 'utf8')
+    const layoutPrimitives = readFileSync(layoutPrimitivesPath, 'utf8')
 
     expect(content).toContain('CHAT_PREVIEW_AVATAR_SIZE')
     expect(content).toContain('CHAT_PREVIEW_STATUS_ICON_SIZE')
@@ -148,6 +157,9 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('--a-chat-brief-loading-separator-shift')
     expect(content).toContain('--a-chat-brief-loading-separator-duration')
     expect(content).toContain('--a-chat-brief-border-width: var(--a-border-width-thin);')
+    expect(layoutPrimitives).toContain('@mixin a-flex-space-between-center()')
+    expect(content).toContain("@use '@/assets/styles/components/_layout-primitives.scss'")
+    expect(content).toContain('@include layoutPrimitives.a-flex-space-between-center();')
     expect(content).toContain('--a-chat-brief-icon-fill-light')
     expect(content).toContain('var(--a-color-icon-subtle-light)')
     expect(content).toContain('@include mixins.a-text-regular-enlarged-bold();')

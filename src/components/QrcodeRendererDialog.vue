@@ -79,15 +79,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 
 .qrcode-renderer-dialog {
   @include secondaryDialog.a-secondary-dialog-card-frame();
 
   &__content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    @include layoutPrimitives.a-flex-column-align-center();
   }
 
   &__preview-action {

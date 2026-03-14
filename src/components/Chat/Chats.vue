@@ -310,6 +310,7 @@ const checkDate = () => {
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use '@/assets/styles/settings/_colors.scss';
 @use 'vuetify/settings';
 @use '@/assets/styles/generic/_variables.scss';
@@ -402,9 +403,7 @@ const checkDate = () => {
   &__chat-spinner-wrapper {
     position: relative;
     height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    @include layoutPrimitives.a-flex-center();
   }
 }
 

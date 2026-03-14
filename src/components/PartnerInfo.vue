@@ -96,6 +96,7 @@ const text = computed(() =>
 </script>
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 @use '@/assets/styles/settings/_colors.scss';
 @use 'vuetify/_settings.scss';
@@ -105,8 +106,7 @@ const text = computed(() =>
 
   &__dialog-title {
     @include secondaryDialog.a-secondary-dialog-title();
-    display: flex;
-    align-items: center;
+    @include layoutPrimitives.a-flex-align-center();
   }
 
   &__list {

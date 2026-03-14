@@ -229,6 +229,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
@@ -290,9 +291,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
   }
 
   &__heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    @include layoutPrimitives.a-flex-space-between-center();
     margin-bottom: var(--a-chat-brief-heading-gap);
   }
 

@@ -81,6 +81,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
+
 /**
  * 1. Should not be inline to avoid empty element with line-height.
  */
@@ -89,8 +91,7 @@ export default {
   max-width: 100%;
 }
 .qrcode-renderer__spinner-container {
-  display: flex;
-  align-items: center;
+  @include layoutPrimitives.a-flex-align-center();
   max-width: var(--a-qrcode-renderer-max-width);
   overflow: hidden;
 }
