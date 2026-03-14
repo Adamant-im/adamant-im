@@ -250,6 +250,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
+@use '@/assets/styles/components/_form-action-layout.scss' as formActionLayout;
 @use '@/assets/styles/components/_input-action-menu.scss' as inputActionMenu;
 @use '@/assets/styles/components/_link-action-button.scss' as linkActionButton;
 @use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
@@ -297,8 +298,7 @@ export default defineComponent({
   }
 
   &__actions {
-    display: flex;
-    justify-content: center;
+    @include formActionLayout.a-form-actions-center();
   }
   &__copy_all_button {
     @include linkActionButton.a-link-action-button();

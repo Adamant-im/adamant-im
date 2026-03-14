@@ -971,6 +971,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/components/_form-action-layout.scss' as formActionLayout;
 @use '@/assets/styles/components/_input-action-menu.scss' as inputActionMenu;
 @use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 @use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
@@ -1018,8 +1019,7 @@ export default {
   }
 
   &__actions {
-    display: flex;
-    justify-content: center;
+    @include formActionLayout.a-form-actions-center();
   }
   &__amount-input {
     :deep(.v-field__field) {

@@ -171,6 +171,7 @@ const removePassword = () => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/components/_form-action-layout.scss' as formActionLayout;
 @use '@/assets/styles/components/_link-action-button.scss' as linkActionButton;
 @use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
@@ -212,7 +213,7 @@ const removePassword = () => {
 
   &__password-hint {
     margin-top: var(--a-login-password-hint-block-gap);
-    text-align: center;
+    @include formActionLayout.a-form-helper-section-center();
   }
 
   &__password-hint-title {

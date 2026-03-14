@@ -6,10 +6,15 @@ import { describe, expect, it } from 'vitest'
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 
 const exportKeysPath = path.resolve(currentDir, '../ExportKeysForm.vue')
+const formActionLayoutPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_form-action-layout.scss'
+)
 
 describe('Export keys UI style contract', () => {
   it('uses tokenized spacing and semantic form actions on export keys screen', () => {
     const content = readFileSync(exportKeysPath, 'utf8')
+    const formActionLayoutContent = readFileSync(formActionLayoutPath, 'utf8')
 
     expect(content).toContain('<v-form :class="className" @submit.prevent="revealKeys">')
     expect(content).toContain('inputActionMenu.a-input-action-menu()')
@@ -31,6 +36,7 @@ describe('Export keys UI style contract', () => {
     expect(content).toContain('__copy_all_button')
     expect(content).toContain('--a-export-keys-field-label-font-weight')
     expect(content).toContain('a-link-action-button()')
+    expect(content).toContain('formActionLayout.a-form-actions-center()')
     expect(content).toContain('__menu-list')
     expect(content).toContain('__menu-item')
     expect(content).toContain('__menu-item-title')
@@ -51,5 +57,11 @@ describe('Export keys UI style contract', () => {
     expect(content).not.toContain('size="28"')
     expect(content).not.toContain('size="24"')
     expect(content).not.toContain('size="20"')
+
+    expect(formActionLayoutContent).toContain('@mixin a-form-actions-center()')
+    expect(formActionLayoutContent).toContain('@mixin a-form-helper-section-center()')
+    expect(formActionLayoutContent).toContain('display: flex;')
+    expect(formActionLayoutContent).toContain('justify-content: center;')
+    expect(formActionLayoutContent).toContain('text-align: center;')
   })
 })

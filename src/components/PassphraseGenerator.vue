@@ -177,6 +177,7 @@ const togglePassphraseVisibility = () => {
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_form-action-layout.scss' as formActionLayout;
 @use '@/assets/styles/components/_link-action-button.scss' as linkActionButton;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
@@ -208,7 +209,7 @@ const togglePassphraseVisibility = () => {
   --a-passphrase-label-line-height: var(--a-auth-control-label-line-height);
 
   &__create-section {
-    text-align: center;
+    @include formActionLayout.a-form-helper-section-center();
   }
 
   &__create-title {

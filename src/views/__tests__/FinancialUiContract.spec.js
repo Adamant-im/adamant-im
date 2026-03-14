@@ -29,6 +29,10 @@ const commonUiMetricsPath = path.resolve(currentDir, '../../components/common/he
 const transactionsViewPath = path.resolve(currentDir, '../Transactions.vue')
 const baseIconPath = path.resolve(currentDir, '../../components/icons/BaseIcon.vue')
 const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
+const formActionLayoutPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_form-action-layout.scss'
+)
 
 describe('Financial UI style contract', () => {
   it('uses tokenized spacing and typography in send funds form', () => {
@@ -37,6 +41,7 @@ describe('Financial UI style contract', () => {
     const menuMixinContent = readFileSync(inputActionMenuMixinPath, 'utf8')
     const metricsContent = readFileSync(commonUiMetricsPath, 'utf8')
     const tokensContent = readFileSync(genericTokensPath, 'utf8')
+    const formActionLayoutContent = readFileSync(formActionLayoutPath, 'utf8')
 
     expect(content).toContain('--a-send-funds-button-margin-top')
     expect(content).toContain('--a-send-funds-amount-label-size')
@@ -45,6 +50,7 @@ describe('Financial UI style contract', () => {
     expect(content).toContain('--a-send-funds-confirm-spinner-gap')
     expect(content).toContain('__actions')
     expect(content).toContain('__field-label')
+    expect(content).toContain('formActionLayout.a-form-actions-center()')
     expect(content).toContain('COMMON_INLINE_SPINNER_SIZE')
     expect(content).toContain('inputActionMenu.a-input-action-menu()')
     expect(content).toContain('formatDisplayAmount(amount, currency)')
@@ -86,6 +92,8 @@ describe('Financial UI style contract', () => {
     expect(fakeInputContent).not.toContain('padding-bottom: 20px;')
     expect(fakeInputContent).not.toContain('line-height: 32px;')
     expect(fakeInputContent).not.toContain('padding-left: 3px;')
+
+    expect(formActionLayoutContent).toContain('@mixin a-form-actions-center()')
   })
 
   it('keeps stable row sizing in transaction template screens', () => {

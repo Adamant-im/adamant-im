@@ -11,6 +11,10 @@ const loginPasswordFormPath = path.resolve(currentDir, '../../components/LoginPa
 const loginUiMetricsPath = path.resolve(currentDir, '../../components/Login/helpers/uiMetrics.ts')
 const genericTokensPath = path.resolve(currentDir, '../../assets/styles/generic/_tokens.scss')
 const logoPath = path.resolve(currentDir, '../../components/icons/common/Logo.vue')
+const formActionLayoutPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_form-action-layout.scss'
+)
 const buttonsThemePath = path.resolve(
   currentDir,
   '../../assets/styles/themes/adamant/_buttons.scss'
@@ -132,6 +136,7 @@ describe('Login UI style contract', () => {
   it('uses semantic auth classes and tokenized spacing around create-new and password hint blocks', () => {
     const passphraseContent = readFileSync(passphraseGeneratorPath, 'utf8')
     const loginPasswordContent = readFileSync(loginPasswordFormPath, 'utf8')
+    const formActionLayoutContent = readFileSync(formActionLayoutPath, 'utf8')
 
     expect(passphraseContent).toContain('--a-passphrase-create-title-gap')
     expect(passphraseContent).toContain('--a-passphrase-create-button-margin-top')
@@ -142,6 +147,7 @@ describe('Login UI style contract', () => {
     expect(passphraseContent).toContain('createSection')
     expect(passphraseContent).toContain('createTitle')
     expect(passphraseContent).toContain('createButton')
+    expect(passphraseContent).toContain('formActionLayout.a-form-helper-section-center()')
     expect(passphraseContent).toContain('a-link-action-button()')
     expect(passphraseContent).toContain('textarea')
     expect(passphraseContent).toContain('AUTH_FORM_TOGGLE_ICON_SIZE')
@@ -172,6 +178,7 @@ describe('Login UI style contract', () => {
     expect(loginPasswordContent).toContain('classes.passwordHint')
     expect(loginPasswordContent).toContain('classes.passwordHintTitle')
     expect(loginPasswordContent).toContain('classes.passwordHintAction')
+    expect(loginPasswordContent).toContain('formActionLayout.a-form-helper-section-center()')
     expect(loginPasswordContent).toContain('a-link-action-button()')
     expect(loginPasswordContent).toContain('&__password-hint')
     expect(loginPasswordContent).toContain('&__password-hint-title')
@@ -193,6 +200,9 @@ describe('Login UI style contract', () => {
     expect(loginPasswordContent).not.toContain("['a-btn-link', classes.passwordHintAction]")
     expect(loginPasswordContent).not.toContain('class="mr-4"')
     expect(loginPasswordContent).not.toContain('size="24"')
+
+    expect(formActionLayoutContent).toContain('@mixin a-form-actions-center()')
+    expect(formActionLayoutContent).toContain('@mixin a-form-helper-section-center()')
   })
 
   it('defines stronger hover/focus feedback for link-like action buttons globally', () => {
