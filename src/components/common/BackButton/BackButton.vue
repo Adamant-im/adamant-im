@@ -13,10 +13,10 @@ const className = 'back-button'
 
 <style lang="scss">
 .back-button {
-  &:first-child {
+  &.v-btn:first-child {
     width: var(--a-back-button-size);
     height: var(--a-back-button-size);
-    margin: 0 var(--a-back-button-margin-inline) !important;
+    margin: 0 var(--a-back-button-margin-inline);
     border-radius: var(--a-radius-round);
   }
 

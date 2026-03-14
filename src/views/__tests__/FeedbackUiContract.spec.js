@@ -52,11 +52,13 @@ describe('Feedback UI style contract', () => {
     expect(snackbarContent).toContain('var(--a-snackbar-content-gap)')
     expect(snackbarContent).toContain('var(--a-snackbar-multiline-min-height)')
     expect(snackbarContent).toContain('var(--a-snackbar-close-button-size)')
+    expect(snackbarContent).toContain('&.v-btn {')
     expect(snackbarContent).not.toContain('max-width: 300px;')
     expect(snackbarContent).not.toContain('font-size: 16px;')
     expect(snackbarContent).not.toContain('gap: 8px;')
     expect(snackbarContent).not.toContain('min-height: 64px;')
     expect(snackbarContent).not.toContain('width: 36px;')
+    expect(snackbarContent).not.toContain('width: var(--a-snackbar-close-button-size) !important;')
   })
 
   it('keeps progress indicator centered through layout styles instead of negative-margin offsets', () => {

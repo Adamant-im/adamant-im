@@ -51,6 +51,7 @@ describe('Navigation UI style contract', () => {
     expect(content).toContain('var(--a-back-button-hover-overlay-opacity)')
     expect(content).toContain('var(--a-back-button-hover-transition-duration)')
     expect(content).toContain('var(--a-radius-round)')
+    expect(content).toContain('&.v-btn:first-child')
 
     expect(content).not.toContain('margin: 0 12px !important;')
     expect(content).not.toMatch(/(^|\n)\s*opacity:\s*0\.2;/)

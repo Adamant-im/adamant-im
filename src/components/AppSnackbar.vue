@@ -101,10 +101,13 @@ const timeout = computed(() =>
   }
 
   &__close-button {
-    min-width: var(--a-snackbar-close-button-size) !important;
-    padding: 0 !important;
-    width: var(--a-snackbar-close-button-size) !important;
-    height: var(--a-snackbar-close-button-size) !important;
+    &.v-btn {
+      min-width: var(--a-snackbar-close-button-size);
+      padding: 0;
+      width: var(--a-snackbar-close-button-size);
+      height: var(--a-snackbar-close-button-size);
+    }
+
     flex: 0 0 auto;
   }
 
