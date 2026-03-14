@@ -128,12 +128,11 @@ export default {
   }
 
   &__btn-block {
-    text-align: center;
+    @include secondaryDialog.a-secondary-dialog-action-block();
   }
 
   &__btn-hide {
-    margin-top: var(--a-secondary-dialog-action-margin-top);
-    margin-bottom: var(--a-secondary-dialog-action-margin-bottom);
+    @include secondaryDialog.a-secondary-dialog-primary-action-button();
   }
 }
 </style>

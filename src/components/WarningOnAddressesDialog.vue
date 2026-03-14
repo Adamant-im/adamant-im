@@ -176,17 +176,15 @@ export default {
   }
 
   &__btn-block {
-    padding: 0;
-    text-align: center;
+    @include secondaryDialog.a-secondary-dialog-action-block();
   }
 
   &__btn-hide {
-    margin-top: var(--a-secondary-dialog-action-margin-top);
-    margin-bottom: var(--a-secondary-dialog-action-margin-bottom);
+    @include secondaryDialog.a-secondary-dialog-primary-action-button();
   }
+
   &__btn-forget {
-    padding: 0 0 var(--a-secondary-dialog-footer-padding-bottom) 0;
-    text-align: center;
+    @include secondaryDialog.a-secondary-dialog-footer-link-block();
   }
 }
 </style>

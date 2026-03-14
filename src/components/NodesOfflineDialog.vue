@@ -92,9 +92,10 @@ export default {
   }
 
   &__btn-block {
-    padding: var(--a-secondary-dialog-button-block-padding-top) 0
-      var(--a-secondary-dialog-button-block-padding-bottom) 0;
-    text-align: center;
+    @include secondaryDialog.a-secondary-dialog-action-block(
+      var(--a-secondary-dialog-button-block-padding-top) 0
+        var(--a-secondary-dialog-button-block-padding-bottom) 0
+    );
   }
 }
 

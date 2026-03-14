@@ -66,11 +66,18 @@ describe('Secondary dialogs UI contract', () => {
     expect(mixinContent).toContain('@mixin a-secondary-dialog-title()')
     expect(mixinContent).toContain('@mixin a-secondary-dialog-body-copy()')
     expect(mixinContent).toContain('@mixin a-secondary-dialog-link-action()')
+    expect(mixinContent).toContain('@mixin a-secondary-dialog-action-block($padding: 0)')
+    expect(mixinContent).toContain('@mixin a-secondary-dialog-primary-action-button()')
+    expect(mixinContent).toContain('@mixin a-secondary-dialog-footer-link-block()')
     expect(mixinContent).toContain('@mixin a-secondary-dialog-card-frame()')
     expect(mixinContent).toContain('@mixin a-secondary-dialog-warning-frame()')
     expect(mixinContent).toContain('@include mixins.a-text-header();')
     expect(mixinContent).toContain('@include mixins.a-text-regular-enlarged();')
     expect(mixinContent).toContain('@include mixins.a-text-active();')
+    expect(mixinContent).toContain('margin-top: var(--a-secondary-dialog-action-margin-top);')
+    expect(mixinContent).toContain(
+      'padding: 0 0 var(--a-secondary-dialog-footer-padding-bottom) 0;'
+    )
     expect(mixinContent).toContain('var(--a-secondary-dialog-title-padding)')
     expect(mixinContent).toContain('var(--a-secondary-dialog-content-padding)')
     expect(mixinContent).toContain('var(--a-secondary-dialog-actions-padding)')
@@ -94,6 +101,7 @@ describe('Secondary dialogs UI contract', () => {
       expect(content).toContain('secondaryDialog.a-secondary-dialog-warning-frame()')
       expect(content).toContain('secondaryDialog.a-secondary-dialog-title()')
       expect(content).toContain('secondaryDialog.a-secondary-dialog-body-copy()')
+      expect(content).toContain('secondaryDialog.a-secondary-dialog-action-block(')
       expect(content).toContain('width="var(--a-secondary-dialog-width)"')
       expect(content).toContain('__card-title')
       expect(content).not.toContain('padding: 16px !important;')
@@ -116,6 +124,19 @@ describe('Secondary dialogs UI contract', () => {
     expect(warningAddressesContent).not.toContain('padding: 0 0 30px 0;')
     expect(freeTokensContent).not.toContain('padding: 0 0 30px 0;')
     expect(nodesOfflineContent).not.toContain('padding: 12px 0 24px 0;')
+    expect(freeTokensContent).toContain(
+      'secondaryDialog.a-secondary-dialog-primary-action-button()'
+    )
+    expect(freeTokensContent).toContain('secondaryDialog.a-secondary-dialog-footer-link-block()')
+    expect(warningAddressesContent).toContain(
+      'secondaryDialog.a-secondary-dialog-primary-action-button()'
+    )
+    expect(warningAddressesContent).toContain(
+      'secondaryDialog.a-secondary-dialog-footer-link-block()'
+    )
+    expect(warningPartnerContent).toContain(
+      'secondaryDialog.a-secondary-dialog-primary-action-button()'
+    )
   })
 
   it('uses semantic dialog body classes and shared tokens in secondary dialog forms', () => {
