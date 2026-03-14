@@ -25,10 +25,10 @@
         @paste="onPasteURIAddress"
       >
         <template #label>
-          <span v-if="recipientName && addressReadonly" class="font-weight-medium">
+          <span v-if="recipientName && addressReadonly" :class="`${className}__field-label`">
             {{ $t('transfer.to_name_label', { name: recipientName }) }}
           </span>
-          <span v-else class="font-weight-medium">
+          <span v-else :class="`${className}__field-label`">
             {{ $t('transfer.to_address_label') }}
           </span>
         </template>
@@ -71,7 +71,7 @@
         color="primary"
       >
         <template #label>
-          <span class="font-weight-medium">{{ $t('transfer.amount_label') }}</span>
+          <span :class="`${className}__field-label`">{{ $t('transfer.amount_label') }}</span>
           <span class="max-amount-label">
             &nbsp;{{ `(max: ${maxToTransferFixed} ${currency})` }}
           </span>
@@ -1004,8 +1004,13 @@ export default {
   --a-send-funds-button-margin-top: var(--a-space-4);
   --a-send-funds-amount-label-size: var(--a-font-size-sm);
   --a-send-funds-amount-label-floating-scale: 0.75;
+  --a-send-funds-field-label-font-weight: var(--a-font-weight-medium);
 
   @include inputActionMenu.a-input-action-menu();
+
+  &__field-label {
+    font-weight: var(--a-send-funds-field-label-font-weight);
+  }
 
   &__button {
     margin-top: var(--a-send-funds-button-margin-top);

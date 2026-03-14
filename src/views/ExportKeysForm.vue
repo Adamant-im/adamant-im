@@ -11,7 +11,7 @@
           color="primary"
         >
           <template #label>
-            <span class="font-weight-medium">
+            <span :class="`${className}__field-label`">
               {{ key.cryptoName }}
             </span>
           </template>
@@ -60,7 +60,7 @@
       :type="showPassphrase ? 'text' : 'password'"
     >
       <template #label>
-        <span class="font-weight-medium">
+        <span :class="`${className}__field-label`">
           {{ t('options.export_keys.passphrase') }}
         </span>
       </template>
@@ -260,6 +260,7 @@ export default defineComponent({
   --a-export-keys-copy-all-margin-bottom: var(--a-space-3);
   --a-export-keys-button-margin-top: var(--a-space-4);
   --a-export-keys-button-margin-bottom: var(--a-space-6);
+  --a-export-keys-field-label-font-weight: var(--a-font-weight-medium);
 
   @include inputActionMenu.a-input-action-menu();
 
@@ -286,6 +287,9 @@ export default defineComponent({
   }
   &__field-action {
     margin: 0;
+  }
+  &__field-label {
+    font-weight: var(--a-export-keys-field-label-font-weight);
   }
   &__export_keys_button {
     margin-top: var(--a-export-keys-button-margin-top);

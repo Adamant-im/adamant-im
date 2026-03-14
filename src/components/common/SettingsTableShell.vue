@@ -56,16 +56,4 @@ const classes = {
     margin-inline-start: var(--a-settings-table-shell-checkbox-offset);
   }
 }
-
-.v-theme--dark {
-  .settings-table-shell {
-    :deep(.a-text-explanation),
-    :deep(.a-text-explanation-small),
-    :deep(.a-text-explanation-bold),
-    :deep(.a-text-explanation-enlarged),
-    :deep(.a-text-explanation-enlarged-bold) {
-      color: var(--a-color-text-muted-dark);
-    }
-  }
-}
 </style>
