@@ -8,7 +8,7 @@
           color="primary"
           :size="COMMON_INLINE_SPINNER_SIZE"
         />
-        <div :class="classes.text" class="a-text-regular">
+        <div :class="classes.text">
           {{
             waitingForConfirmation
               ? $t('votes.waiting_confirmations')
@@ -49,6 +49,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
+
 .delegates-loader {
   &__content {
     gap: var(--a-delegates-loader-gap);
@@ -60,6 +62,7 @@ export default defineComponent({
   }
 
   &__text {
+    @include mixins.a-text-regular();
     line-height: var(--a-delegates-loader-line-height);
   }
 }

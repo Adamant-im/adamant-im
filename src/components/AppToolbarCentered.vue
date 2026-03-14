@@ -4,9 +4,9 @@
       <container :disableMaxWidth="disableMaxWidth">
         <v-toolbar ref="toolbar" :flat="flat" :height="height">
           <back-button v-if="showBack" @click="goBack" />
-          <v-toolbar-title v-if="title" class="a-text-regular-enlarged">
-            <div>{{ title }}</div>
-            <div v-if="subtitle" class="body-1">
+          <v-toolbar-title v-if="title" :class="`${className}__title`">
+            <div :class="`${className}__title-text`">{{ title }}</div>
+            <div v-if="subtitle" :class="`${className}__subtitle`">
               {{ subtitle }}
             </div>
           </v-toolbar-title>
@@ -119,6 +119,7 @@ const goBack = () => {
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 @use 'vuetify/settings';
 
 .app-toolbar-centered {
@@ -128,6 +129,14 @@ const goBack = () => {
 
   :deep(.v-toolbar-title) {
     letter-spacing: var(--a-app-toolbar-title-letter-spacing);
+  }
+
+  &__title-text {
+    @include mixins.a-text-regular-enlarged();
+  }
+
+  &__subtitle {
+    @include mixins.a-text-regular();
   }
 
   .spinner {

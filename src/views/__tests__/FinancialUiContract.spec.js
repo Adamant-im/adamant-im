@@ -54,6 +54,7 @@ describe('Financial UI style contract', () => {
     expect(content).toContain('line-height: var(--a-send-funds-amount-label-line-height);')
     expect(content).not.toContain('class="mr-4"')
     expect(content).not.toContain('class="text-center"')
+    expect(content).not.toContain('fake-input__value fake-input__value--rate a-text-regular')
     expect(content).not.toContain('size="24"')
     expect(content).not.toContain('margin-top: 15px;')
 

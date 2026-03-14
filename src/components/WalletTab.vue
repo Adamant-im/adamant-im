@@ -17,7 +17,6 @@
 
       <div
         :class="[
-          'a-text-explanation',
           classes.rates,
           {
             [classes.ratesPlaceholder]: !isRateLoaded
@@ -92,6 +91,7 @@ watch(currentBalance, (newBalance, oldBalance) => {
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 @use 'vuetify/settings';
 
 .wallet-tab {
@@ -116,6 +116,10 @@ watch(currentBalance, (newBalance, oldBalance) => {
   &__network-row {
     line-height: var(--a-wallet-compact-line-height);
     margin-top: var(--a-wallet-tab-balance-to-ticker-offset);
+  }
+
+  &__rates {
+    @include mixins.a-text-explanation();
   }
 
   &__balance-loading {

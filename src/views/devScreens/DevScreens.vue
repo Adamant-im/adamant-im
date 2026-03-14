@@ -1,5 +1,5 @@
 <template>
-  <h3 :class="[`${className}__title`, 'a-text-caption']">
+  <h3 :class="`${className}__title`">
     {{ t('dev_screens.title') }}
   </h3>
 
@@ -91,11 +91,13 @@ const onSelectLevel = (level: LogLevel) => {
 @use 'sass:map';
 @use '@/assets/styles/components/_switcher-menu.scss' as switcherMenu;
 @use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .dev-screens-view {
   @include switcherMenu.a-switcher-menu();
 
   &__title {
+    @include mixins.a-text-caption();
     margin-block: var(--a-space-4);
     padding-top: var(--a-dev-screen-title-padding-top);
     margin-inline: calc(var(--a-dev-screen-bleed-inline) * -1);

@@ -35,13 +35,7 @@
 
     <div>
       <div :class="`${className}__heading`">
-        <v-list-item-title
-          :class="{
-            'a-text-regular-enlarged-bold': true,
-            [`${className}__title`]: true
-          }"
-          >{{ chatName }}</v-list-item-title
-        >
+        <v-list-item-title :class="`${className}__title`">{{ chatName }}</v-list-item-title>
         <div v-if="!isMessageReadonly" :class="`${className}__date`">
           {{ formatDate(createdAt) }}
         </div>
@@ -87,9 +81,7 @@
 
       <!-- Message -->
       <template v-else>
-        <v-list-item-subtitle
-          :class="['a-text-explanation-enlarged-bold', `${className}__subtitle`]"
-        >
+        <v-list-item-subtitle :class="`${className}__subtitle`">
           <template v-if="isOutgoingTransaction">
             <v-icon
               v-if="transaction.isReply && isConfirmed"
@@ -305,11 +297,13 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
   }
 
   &__title {
+    @include mixins.a-text-regular-enlarged-bold();
     line-height: var(--a-line-height-md);
     margin-bottom: 0;
   }
 
   &__subtitle {
+    @include mixins.a-text-explanation-enlarged-bold();
     line-height: var(--a-chat-brief-subtitle-line-height);
     display: block;
     white-space: nowrap;
@@ -334,10 +328,6 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
       width: var(--a-size-badge-md);
       height: var(--a-size-badge-md);
     }
-  }
-
-  :deep(.v-list-item-subtitle) {
-    @include mixins.a-text-explanation-enlarged-bold();
   }
 }
 

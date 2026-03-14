@@ -11,13 +11,13 @@
 
       <v-list-item v-for="(item, i) in delegateDetails" :key="i" :class="classes.listItem">
         <template #prepend>
-          <v-list-item-title class="a-text-explanation">
+          <v-list-item-title :class="classes.label">
             {{ item.title }}
           </v-list-item-title>
         </template>
 
         <template #append>
-          <v-list-item-title class="a-text-explanation" :class="classes.value">
+          <v-list-item-title :class="[classes.label, classes.value]">
             {{ item.value }}
           </v-list-item-title>
         </template>
@@ -48,6 +48,7 @@ export default defineComponent({
       list: `${className}__list`,
       listItem: `${className}__list-item`,
       address: `${className}__address`,
+      label: `${className}__label`,
       value: `${className}__value`
     }
 
@@ -100,6 +101,10 @@ export default defineComponent({
     a {
       @include mixins.a-text-active();
     }
+  }
+
+  &__label {
+    @include mixins.a-text-explanation();
   }
 
   &__value {

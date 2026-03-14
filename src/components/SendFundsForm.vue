@@ -106,9 +106,7 @@
         </div>
         <div class="fake-input__box">
           <span class="fake-input__value"> {{ transferFeeFixed }} {{ transferFeeCurrency }} </span>
-          <span class="fake-input__value fake-input__value--rate a-text-regular">
-            ~{{ transferFeeRate }}
-          </span>
+          <span class="fake-input__value fake-input__value--rate"> ~{{ transferFeeRate }} </span>
         </div>
       </div>
       <div v-if="!hideFinalAmount" class="fake-input">
@@ -117,9 +115,7 @@
         </div>
         <div class="fake-input__box">
           <span class="fake-input__value"> {{ finalAmountFixed }} {{ currency }} </span>
-          <span class="fake-input__value fake-input__value--rate a-text-regular">
-            ~{{ finalAmountRate }}
-          </span>
+          <span class="fake-input__value fake-input__value--rate"> ~{{ finalAmountRate }} </span>
         </div>
       </div>
       <v-text-field
