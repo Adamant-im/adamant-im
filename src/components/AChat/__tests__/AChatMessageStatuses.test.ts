@@ -8,7 +8,6 @@ import AChatMessage from '../AChatMessage.vue'
 import AChatAttachment from '../AChatAttachment/AChatAttachment.vue'
 import AChatTransaction from '../AChatTransaction.vue'
 import { TransactionStatus } from '@/lib/constants'
-
 ;(globalThis as any).config = new Proxy(
   {},
   {
@@ -326,17 +325,17 @@ describe('AChat sending status UI', () => {
       global: globalMountOptions(store)
     })
 
-    expect(wrapper.find('.a-chat__inline-pending-status').exists()).toBe(false)
+    expect(wrapper.find('.a-chat__inline-status--pending').exists()).toBe(false)
 
     await vi.advanceTimersByTimeAsync(999)
     await nextTick()
 
-    expect(wrapper.find('.a-chat__inline-pending-status').exists()).toBe(false)
+    expect(wrapper.find('.a-chat__inline-status--pending').exists()).toBe(false)
 
     await vi.advanceTimersByTimeAsync(1)
     await nextTick()
 
-    expect(wrapper.find('.a-chat__inline-pending-status').exists()).toBe(true)
+    expect(wrapper.find('.a-chat__inline-status--pending').exists()).toBe(true)
     expect(wrapper.find('.a-chat__message-card-header').exists()).toBe(false)
 
     store.state.chat.pendingMessages = {}
@@ -347,7 +346,7 @@ describe('AChat sending status UI', () => {
     })
     await nextTick()
 
-    expect(wrapper.find('.a-chat__inline-pending-status').exists()).toBe(false)
+    expect(wrapper.find('.a-chat__inline-status--pending').exists()).toBe(false)
   })
 
   it('does not show inline pending status for grouped text messages outside the retry queue', async () => {
@@ -364,7 +363,7 @@ describe('AChat sending status UI', () => {
     await vi.advanceTimersByTimeAsync(1_100)
     await nextTick()
 
-    expect(wrapper.find('.a-chat__inline-pending-status').exists()).toBe(false)
+    expect(wrapper.find('.a-chat__inline-status--pending').exists()).toBe(false)
   })
 
   it('keeps header status visible for ungrouped outgoing text messages across pending and rejected states', async () => {
@@ -393,6 +392,29 @@ describe('AChat sending status UI', () => {
 
     expect(wrapper.find('.a-chat__message-card-header').exists()).toBe(true)
     expect(wrapper.find('.a-chat__status .v-icon').exists()).toBe(true)
+
+    await wrapper.find('.a-chat__status .v-icon').trigger('click')
+
+    expect(wrapper.emitted('click:status')).toHaveLength(1)
+  })
+
+  it('shows inline rejected status for grouped outgoing text messages and opens status actions on click', async () => {
+    const store = createTestStore()
+    const wrapper = mount(AChatMessage, {
+      props: {
+        transaction: createTextTransaction({
+          status: TransactionStatus.REJECTED
+        })
+      },
+      global: globalMountOptions(store)
+    })
+
+    expect(wrapper.find('.a-chat__message-card-header').exists()).toBe(false)
+    expect(wrapper.find('.a-chat__inline-status--rejected .v-icon').exists()).toBe(true)
+
+    await wrapper.find('.a-chat__inline-status--rejected .v-icon').trigger('click')
+
+    expect(wrapper.emitted('click:status')).toHaveLength(1)
   })
 
   it('keeps grouped attachment messages showing header status and timestamp', () => {

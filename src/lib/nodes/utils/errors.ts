@@ -54,7 +54,7 @@ export class AllNodesDisabledError extends Error {
   nodeLabel: NodeType
 
   constructor(label: NodeType) {
-    super(`${label}: All nodes are disabled`)
+    super(`${String(label).toUpperCase()}: All nodes are disabled`)
 
     this.nodeLabel = label
   }
@@ -66,6 +66,6 @@ export function isAllNodesDisabledError(error: Error): error is AllNodesDisabled
 
 export class NoInternetConnectionError extends Error {
   constructor() {
-    super();
+    super()
   }
 }

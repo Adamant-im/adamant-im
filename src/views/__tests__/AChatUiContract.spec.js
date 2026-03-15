@@ -138,6 +138,7 @@ describe('AChat UI style contract', () => {
     expect(messageContent).toContain(':size="CHAT_STATUS_ICON_ERROR_SIZE"')
     expect(messageContent).toContain(':size="CHAT_STATUS_ICON_SIZE"')
     expect(messageContent).toContain('showInlinePendingStatus')
+    expect(messageContent).toContain('showInlineRejectedStatus')
     expect(messageContent).toContain('CHAT_INLINE_PENDING_STATUS_ICON_SIZE')
     expect(messageContent).toContain('CHAT_INLINE_PENDING_STATUS_DELAY_MS')
     expect(messageContent).toContain('pendingStatusDelayElapsed')
@@ -147,9 +148,16 @@ describe('AChat UI style contract', () => {
     expect(messageContent).toContain(
       'store.state.chat.pendingMessages[String(props.transaction.id)]'
     )
-    expect(messageContent).toContain('class="a-chat__inline-pending-status"')
+    expect(messageContent).toContain('class="a-chat__inline-status a-chat__inline-status--pending"')
+    expect(messageContent).toContain(
+      'class="a-chat__inline-status a-chat__inline-status--rejected"'
+    )
+    expect(messageContent).toContain('@click="$emit(\'click:status\')"')
     expect(messageContent).toContain('right: calc(100% + var(--a-space-2));')
+    expect(messageContent).toContain('&--pending {')
+    expect(messageContent).toContain('&--rejected {')
     expect(messageContent).toContain('pointer-events: none;')
+    expect(messageContent).not.toContain(':title="t(\'chats.retry_message\')"')
     expect(attachmentContent).toContain(':size="CHAT_STATUS_ICON_ERROR_SIZE"')
     expect(attachmentContent).toContain(':size="CHAT_STATUS_ICON_SIZE"')
     expect(transactionContent).toContain(':size="CHAT_STATUS_ICON_SIZE"')
@@ -206,6 +214,8 @@ describe('AChat UI style contract', () => {
     )
 
     expect(listContent).toContain('--a-chat-message-actions-list-offset-top')
+    expect(listContent).toContain("t('chats.chat_actions.retry')")
+    expect(menuContent).toContain("t('chats.chat_actions.retry')")
     expect(menuContent).toContain('--a-chat-message-actions-menu-overlay-inset-inline')
     expect(tokensContent).toContain('--a-chat-message-actions-dropdown-top-gap')
     expect(tokensContent).toContain('--a-chat-actions-overlay-reaction-height')

@@ -1,10 +1,10 @@
 <template>
   <v-list density="compact" variant="text" :class="classes.vList" elevation="9">
-    <v-list-item @click="onClickReply">
-      <v-list-item-title>{{ t('chats.chat_actions.reply') }}</v-list-item-title>
+    <v-list-item @click="onClickPrimaryAction">
+      <v-list-item-title>{{ primaryActionLabel }}</v-list-item-title>
 
       <template #append>
-        <v-icon :icon="mdiReply" />
+        <v-icon :icon="primaryActionIcon" />
       </template>
     </v-list-item>
 
@@ -21,9 +21,12 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { mdiContentCopy, mdiReply } from '@mdi/js'
+import { mdiContentCopy, mdiRefresh, mdiReply } from '@mdi/js'
+import { useStore } from 'vuex'
+import { TransactionStatus } from '@/lib/constants'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 const className = 'message-actions-menu'
 const classes = {
@@ -35,18 +38,44 @@ const classes = {
 }
 
 export default defineComponent({
-  emits: ['update:modelValue', 'click:reply', 'click:copy'],
+  props: {
+    transaction: {
+      type: Object,
+      required: true
+    }
+  },
+  emits: ['update:modelValue', 'click:reply', 'click:copy', 'click:retry'],
   setup(props, { emit }) {
     const { t } = useI18n()
+    const store = useStore()
 
-    const onClickReply = () => emit('click:reply')
+    const isRejectedOutgoingMessage = computed(
+      () =>
+        props.transaction.type === 'message' &&
+        props.transaction.status === TransactionStatus.REJECTED &&
+        isStringEqualCI(props.transaction.senderId, store.state.address)
+    )
+    const primaryActionLabel = computed(() =>
+      isRejectedOutgoingMessage.value
+        ? t('chats.chat_actions.retry')
+        : t('chats.chat_actions.reply')
+    )
+    const primaryActionIcon = computed(() =>
+      isRejectedOutgoingMessage.value ? mdiRefresh : mdiReply
+    )
+
+    const onClickPrimaryAction = () => {
+      emit(isRejectedOutgoingMessage.value ? 'click:retry' : 'click:reply')
+    }
     const onClickCopy = () => emit('click:copy')
 
     return {
       classes,
       t,
-      onClickReply,
+      onClickPrimaryAction,
       onClickCopy,
+      primaryActionLabel,
+      primaryActionIcon,
       mdiContentCopy,
       mdiReply
     }

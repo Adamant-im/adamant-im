@@ -126,6 +126,11 @@ const setChatScenario = async (
       chatState.isFulfilled = true
       store.state.options.useSocketConnection = false
       store.state.publicKeys[partnerId] = store.state.publicKeys[partnerId] || 'test-public-key'
+      if (store.state.snackbar) {
+        store.state.snackbar.show = false
+        store.state.snackbar.message = ''
+        store.state.snackbar.timeout = 0
+      }
 
       store.state.nodes.adm = {
         'https://adm-e2e.local': {
@@ -235,7 +240,7 @@ test.describe('Chat send status regressions', () => {
     ).toHaveCount(0)
     await expect(
       page.locator(
-        '.a-chat__message-container:has(.a-chat__message[data-id="text-pending-grouped"]) .a-chat__inline-pending-status .v-icon'
+        '.a-chat__message-container:has(.a-chat__message[data-id="text-pending-grouped"]) .a-chat__inline-status--pending .v-icon'
       )
     ).toBeVisible()
 
@@ -288,9 +293,119 @@ test.describe('Chat send status regressions', () => {
     ).toHaveCount(0)
     await expect(
       page.locator(
-        '.a-chat__message-container:has(.a-chat__message[data-id="text-fast-pending"]) .a-chat__inline-pending-status .v-icon'
+        '.a-chat__message-container:has(.a-chat__message[data-id="text-fast-pending"]) .a-chat__inline-status--pending .v-icon'
       )
     ).toHaveCount(0)
+  })
+
+  test('opens rejected-message actions from both inline and header status icons without forcing snackbar', async ({
+    page
+  }, testInfo) => {
+    const partnerId = await openControllableChat(page)
+    const userId = await page.evaluate(() => (window as any).store.state.address as string)
+    const base = Date.now() - 180_000
+
+    await setChatScenario(page, {
+      partnerId,
+      messages: [
+        {
+          id: 'text-rejected-head',
+          senderId: userId,
+          recipientId: partnerId,
+          message: 'Rejected head',
+          status: 'REGISTERED',
+          timestamp: base,
+          type: 'message',
+          isReply: false,
+          i18n: false
+        },
+        {
+          id: 'text-rejected-grouped',
+          senderId: userId,
+          recipientId: partnerId,
+          message: 'Rejected grouped',
+          status: 'REJECTED',
+          timestamp: base + 1_000,
+          type: 'message',
+          isReply: false,
+          i18n: false
+        },
+        {
+          id: 'text-rejected-single',
+          senderId: userId,
+          recipientId: partnerId,
+          message: 'Rejected single',
+          status: 'REJECTED',
+          timestamp: base + 90_000,
+          type: 'message',
+          isReply: false,
+          i18n: false
+        }
+      ],
+      pendingMessageIds: [],
+      admOnline: false,
+      ipfsOnline: false
+    })
+
+    await page.evaluate(() => {
+      const runtime = window as typeof window & {
+        store: {
+          dispatch: (type: string, payload?: unknown) => unknown
+        }
+        __sendStatusSnackbarCalls?: unknown[]
+      }
+
+      runtime.__sendStatusSnackbarCalls = []
+
+      const originalDispatch = runtime.store.dispatch.bind(runtime.store)
+
+      runtime.store.dispatch = ((type: string, payload?: unknown) => {
+        if (type === 'snackbar/show') {
+          runtime.__sendStatusSnackbarCalls?.push(payload)
+        }
+
+        return originalDispatch(type, payload)
+      }) as typeof runtime.store.dispatch
+    })
+
+    const getSnackbarCallCount = async () =>
+      page.evaluate(() => ((window as any).__sendStatusSnackbarCalls as unknown[]).length)
+
+    await expect(
+      page.locator('.a-chat__message[data-id="text-rejected-grouped"] .a-chat__message-card-header')
+    ).toHaveCount(0)
+    await expect(
+      page.locator(
+        '.a-chat__message-container:has(.a-chat__message[data-id="text-rejected-grouped"]) .a-chat__inline-status--rejected .v-icon'
+      )
+    ).toBeVisible()
+    await expect.poll(getSnackbarCallCount).toBe(0)
+
+    await page
+      .locator(
+        '.a-chat__message-container:has(.a-chat__message[data-id="text-rejected-grouped"]) .a-chat__inline-status--rejected .v-icon'
+      )
+      .click()
+
+    await expect(page.locator('.a-chat-message-status-note')).toBeVisible()
+    await expect(page.locator('.message-actions-list')).toContainText('Retry')
+    await expect(page.locator('.message-actions-list')).not.toContainText('Reply')
+    await expect(page.locator('.a-chat-reaction-select')).toHaveCount(0)
+    await expect.poll(getSnackbarCallCount).toBe(0)
+
+    await page.keyboard.press('Escape')
+
+    await page
+      .locator('.a-chat__message[data-id="text-rejected-single"] .a-chat__status .v-icon')
+      .click()
+
+    await expect(page.locator('.a-chat-message-status-note')).toBeVisible()
+    await expect(page.locator('.message-actions-list')).toContainText('Retry')
+    await expect(page.locator('.message-actions-list')).not.toContainText('Reply')
+    await expect(page.locator('.a-chat-reaction-select')).toHaveCount(0)
+    await expect.poll(getSnackbarCallCount).toBe(0)
+
+    await attachPageScreenshot(page, testInfo, 'chat-send-status-rejected-actions')
   })
 
   test('keeps grouped attachment messages showing header status and timestamp', async ({
@@ -508,7 +623,7 @@ test.describe('Chat send status regressions', () => {
     await expect(page.locator('.a-chat__message[data-id="matrix-crypto"]')).toBeVisible()
     await expect(
       page.locator(
-        '.a-chat__message-container:has(.a-chat__message[data-id="matrix-text-pending"]) .a-chat__inline-pending-status .v-icon'
+        '.a-chat__message-container:has(.a-chat__message[data-id="matrix-text-pending"]) .a-chat__inline-status--pending .v-icon'
       )
     ).toBeVisible()
 

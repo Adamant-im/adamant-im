@@ -26,6 +26,7 @@
     "me": "Me",
     "message": "Message",
     "message_rejected": "Message rejected",
+    "message_not_sent_status": "Message not sent",
     "my_qr_code": "My QR code",
     "new_chat": "New chat",
     "no_connection": "No Internet connection",
@@ -48,7 +49,7 @@
     "received_label": "Received",
     "recipient": "Partner address",
     "recipient_tooltip": "Partner ADM address like U1234567890987654321 or Share link",
-    "retry_message": "Could not send: Weak connection. Tap to retry",
+    "retry_message": "Could not send: Weak connection",
     "send_button": "Send",
     "send_crypto": "Send {crypto}",
     "sent_label": "Sent",
@@ -89,6 +90,7 @@
     },
     "you": "You",
     "chat_actions": {
+      "retry": "Retry",
       "reply": "Reply",
       "copy": "Copy"
     },

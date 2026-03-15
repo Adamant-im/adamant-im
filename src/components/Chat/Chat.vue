@@ -29,6 +29,7 @@
             html
             disable-max-width
             elevation
+            @click:status="openStatusActions(actionMessage)"
           >
             <template #avatar>
               <ChatAvatar :user-id="partnerId" use-public-key @click="onClickAvatar(partnerId)" />
@@ -49,8 +50,13 @@
 
           <template #top>
             <transition name="slide-y-reverse-transition" mode="out-in">
+              <AChatMessageStatusNote
+                v-if="isRejectedOutgoingMessage(actionMessage)"
+                key="rejected-status-note"
+              />
+
               <EmojiPicker
-                v-if="showEmojiPicker"
+                v-else-if="showEmojiPicker"
                 key="emoji-picker"
                 @emoji:select="(emoji) => onEmojiSelect(actionMessage.id, emoji)"
                 elevation
@@ -71,8 +77,10 @@
           <template #bottom>
             <AChatMessageActionsMenu
               v-if="!showEmojiPicker"
+              :transaction="actionMessage"
               @click:reply="openReplyPreview(actionMessage)"
               @click:copy="copyMessageToClipboard(actionMessage)"
+              @click:retry="retryRejectedMessage(actionMessage)"
             />
           </template>
         </a-chat-actions-overlay>
@@ -114,7 +122,7 @@
           :flashing="flashingMessageId === message.id"
           :data-id="message.id"
           :swipe-disabled="isWelcomeMessage(message)"
-          @resend="resendMessage(partnerId, message.id)"
+          @click:status="openStatusActions(message)"
           @click:quoted-message="onQuotedMessageClick"
           @swipe:left="onSwipeLeft(message)"
           @longpress="onMessageLongPress(message)"
@@ -129,6 +137,7 @@
               @open:change="toggleActionsDropdown"
               @click:reply="openReplyPreview"
               @click:copy="copyMessageToClipboard"
+              @click:retry="retryRejectedMessage"
               @reaction:add="sendReaction"
               @reaction:remove="removeReaction"
               @emoji:select="onEmojiSelect"
@@ -279,6 +288,7 @@ import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, wat
 import Visibility from 'visibilityjs'
 import copyToClipboard from 'copy-to-clipboard'
 import { logger } from '@/utils/devTools/logger'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 import {
   Cryptos,
@@ -300,6 +310,7 @@ import {
   AChatMessageActionsMenu,
   AChatActionsOverlay,
   AChatReactionSelect,
+  AChatMessageStatusNote,
   FilesPreview
 } from '@/components/AChat'
 import ChatMessageActions from './ChatMessageActions.vue'
@@ -748,6 +759,13 @@ const resendMessage = (recipientId: string, messageId: string) => {
   })
 }
 
+const retryRejectedMessage = (message: NormalizedChatMessageTransaction) => {
+  closeActionsMenu()
+  closeActionsDropdown()
+
+  return resendMessage(props.partnerId, message.id)
+}
+
 const sendReaction = (reactToId: string, emoji: string) => {
   closeActionsMenu()
   closeActionsDropdown()
@@ -841,7 +859,13 @@ const onSwipeLeft = (message: NormalizedChatMessageTransaction) => {
   vibrate.veryShort()
 }
 
+const isRejectedOutgoingMessage = (transaction: NormalizedChatMessageTransaction) =>
+  transaction.type === 'message' &&
+  transaction.status === 'REJECTED' &&
+  isStringEqualCI(transaction.senderId, store.state.address)
+
 const openActionsMenu = (transaction: NormalizedChatMessageTransaction) => {
+  showEmojiPicker.value = false
   actionsMenuMessageId.value = transaction.id
 }
 
@@ -851,6 +875,7 @@ const closeActionsMenu = () => {
 }
 
 const openActionsDropdown = (transaction: NormalizedChatMessageTransaction) => {
+  showEmojiPicker.value = false
   actionsDropdownMessageId.value = transaction.id
 }
 
@@ -868,6 +893,14 @@ const toggleActionsDropdown = (open: boolean, transaction: NormalizedChatMessage
 }
 
 const handleClickReactions = (transaction: NormalizedChatMessageTransaction) => {
+  if (isMobile()) {
+    openActionsMenu(transaction)
+  } else {
+    toggleActionsDropdown(true, transaction)
+  }
+}
+
+const openStatusActions = (transaction: NormalizedChatMessageTransaction) => {
   if (isMobile()) {
     openActionsMenu(transaction)
   } else {

@@ -19,8 +19,22 @@
     }"
     v-longpress="onLongPress"
   >
-    <div v-if="showInlinePendingStatus" class="a-chat__inline-pending-status">
+    <div
+      v-if="showInlinePendingStatus"
+      class="a-chat__inline-status a-chat__inline-status--pending"
+    >
       <v-icon :icon="statusIcon" :size="CHAT_INLINE_PENDING_STATUS_ICON_SIZE" />
+    </div>
+    <div
+      v-else-if="showInlineRejectedStatus"
+      class="a-chat__inline-status a-chat__inline-status--rejected"
+    >
+      <v-icon
+        :icon="statusIcon"
+        :size="CHAT_INLINE_PENDING_STATUS_ICON_SIZE"
+        color="red"
+        @click="$emit('click:status')"
+      />
     </div>
 
     <div
@@ -43,10 +57,9 @@
             <v-icon
               v-if="transaction.status === 'REJECTED'"
               :icon="statusIcon"
-              :title="t('chats.retry_message')"
               :size="CHAT_STATUS_ICON_ERROR_SIZE"
               color="red"
-              @click="$emit('resend')"
+              @click="$emit('click:status')"
             />
             <v-icon v-else :icon="statusIcon" :size="CHAT_STATUS_ICON_SIZE" />
           </div>
@@ -128,7 +141,7 @@ export default defineComponent({
       type: Boolean
     }
   },
-  emits: ['resend', 'click:quotedMessage', 'swipe:left', 'longpress'],
+  emits: ['click:status', 'click:quotedMessage', 'swipe:left', 'longpress'],
   setup(props, { emit }) {
     const { t } = useI18n()
     const store = useStore()
@@ -184,6 +197,12 @@ export default defineComponent({
         isQueuedPendingMessage.value &&
         props.transaction.status === TransactionStatus.PENDING
     )
+    const showInlineRejectedStatus = computed(
+      () =>
+        isOutgoingMessage.value &&
+        !props.transaction.showTime &&
+        props.transaction.status === TransactionStatus.REJECTED
+    )
 
     const { onMove, onSwipeEnd, elementLeftOffset } = useSwipeLeft(() => {
       emit('swipe:left')
@@ -225,6 +244,7 @@ export default defineComponent({
       formatDate,
       time,
       showInlinePendingStatus,
+      showInlineRejectedStatus,
       CHAT_INLINE_PENDING_STATUS_ICON_SIZE,
       CHAT_STATUS_ICON_SIZE,
       CHAT_STATUS_ICON_ERROR_SIZE
@@ -236,15 +256,27 @@ export default defineComponent({
 <style lang="scss" scoped>
 @use '@/assets/styles/components/_chat-message-content.scss' as chatMessageContent;
 
-.a-chat__inline-pending-status {
+.a-chat__inline-status {
   position: absolute;
   top: 50%;
   right: calc(100% + var(--a-space-2));
   transform: translateY(-50%);
   display: flex;
   align-items: center;
-  color: rgba(var(--v-theme-on-surface), 0.72);
-  pointer-events: none;
+
+  &--pending {
+    color: rgba(var(--v-theme-on-surface), 0.72);
+    pointer-events: none;
+  }
+
+  &--rejected {
+    color: rgb(var(--v-theme-error));
+
+    :deep(.v-icon) {
+      cursor: pointer;
+      pointer-events: auto;
+    }
+  }
 }
 
 .a-chat__message-text {
