@@ -45,6 +45,7 @@ describe('Options UI style contract', () => {
     expect(content).toContain("const SETTINGS_STATE_RESET_KEY = 'resetSettingsView'")
     expect(content).toContain("const SETTINGS_STATE_FORCE_RESET_KEY = 'forceResetSettingsView'")
     expect(content).toContain("const SETTINGS_PATH_PREFIX = '/options'")
+    expect(content).toContain('const isLoggingOut = ref(false)')
     expect(content).toContain(
       'const isSettingsPath = (path: string) => path.startsWith(SETTINGS_PATH_PREFIX)'
     )
@@ -55,8 +56,11 @@ describe('Options UI style contract', () => {
     expect(content).toContain('const finalizeRestore = (restoredTop: number) => {')
     expect(content).toContain('new ResizeObserver(() => {')
     expect(content).toContain('const navigateToSettingsChild = (path: string) => {')
+    expect(content).toContain('isLoggingOut.value = true')
     expect(content).toContain('resetSettingsView: savedTop <= 0')
     expect(content).toContain('window.history.state?.[SETTINGS_STATE_FORCE_RESET_KEY]')
+    expect(content).toContain('if (isRestoringSettingsScroll.value || isLoggingOut.value)')
+    expect(content).toContain('if (!isRestoringSettingsScroll.value && !isLoggingOut.value)')
     expect(content).toContain('@click="navigateToSettingsChild(\'/options/nodes\')"')
     expect(content).toContain('@click="navigateToSettingsChild(\'/options/wallets\')"')
     expect(content).toContain('window.history.state?.[SETTINGS_STATE_RESET_KEY]')

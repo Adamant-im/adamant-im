@@ -238,6 +238,7 @@ const SETTINGS_STATE_FORCE_RESET_KEY = 'forceResetSettingsView'
 const SETTINGS_PATH_PREFIX = '/options'
 const activeSettingsScrollPath = ref(route.path)
 const isRestoringSettingsScroll = ref(false)
+const isLoggingOut = ref(false)
 let settingsRestoreFrame = 0
 let settingsRestoreObserver: ResizeObserver | null = null
 
@@ -276,7 +277,7 @@ const waitForSettingsViewFrame = async () => {
   await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
 }
 const onSidebarScroll = () => {
-  if (isRestoringSettingsScroll.value) {
+  if (isRestoringSettingsScroll.value || isLoggingOut.value) {
     return
   }
 
@@ -507,6 +508,7 @@ const onCheckStayLoggedIn = () => {
 }
 
 const logout = () => {
+  isLoggingOut.value = true
   resetPinia()
   store.dispatch('stopInterval')
   store.dispatch('logout')
@@ -562,7 +564,7 @@ onBeforeUnmount(() => {
   stopSettingsRestore()
   sidebarLayoutRef?.value?.removeEventListener('scroll', onSidebarScroll)
 
-  if (!isRestoringSettingsScroll.value) {
+  if (!isRestoringSettingsScroll.value && !isLoggingOut.value) {
     saveSettingsViewState(activeSettingsScrollPath.value)
   }
 })

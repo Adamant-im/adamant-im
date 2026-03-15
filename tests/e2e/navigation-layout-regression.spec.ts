@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { loginWithNewAccount } from './helpers/auth'
+import { loginWithNewAccount, loginWithPassphrase } from './helpers/auth'
 
 test.describe('Navigation layout regressions', () => {
   test('keeps bottom navigation sizing stable on mobile', async ({ page }) => {
@@ -314,5 +314,58 @@ test.describe('Navigation layout regressions', () => {
 
     expect(restoredChildScrollTop).not.toBeNull()
     expect(Math.abs((restoredChildScrollTop ?? 0) - (childScrollTop ?? 0))).toBeLessThanOrEqual(1)
+  })
+
+  test('resets settings scroll state after logout and starts from the top on relogin', async ({
+    page
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    const passphrase = await loginWithNewAccount(page)
+
+    await page.goto('/options')
+    await expect(page).toHaveURL(/\/options$/)
+    await expect(page.locator('.settings-view')).toBeVisible()
+
+    const beforeLogoutTop = await page.evaluate(async () => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+
+      if (!scrollPane) {
+        return null
+      }
+
+      scrollPane.scrollTo({ top: scrollPane.scrollHeight })
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+
+      return Math.ceil(scrollPane.scrollTop)
+    })
+
+    expect(beforeLogoutTop).not.toBeNull()
+    expect(beforeLogoutTop ?? 0).toBeGreaterThan(100)
+
+    await page.locator('.settings-view__logout').click()
+    await expect(page).toHaveURL(/\/$/)
+
+    await loginWithPassphrase(page, passphrase)
+
+    await page.goto('/options')
+    await expect(page).toHaveURL(/\/options$/)
+    await expect(page.locator('.settings-view')).toBeVisible()
+
+    const afterReloginTop = await page.evaluate(async () => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+
+      if (!scrollPane) {
+        return null
+      }
+
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+
+      return Math.ceil(scrollPane.scrollTop)
+    })
+
+    expect(afterReloginTop).not.toBeNull()
+    expect(afterReloginTop ?? 999).toBeLessThanOrEqual(1)
   })
 })
