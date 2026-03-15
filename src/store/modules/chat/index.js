@@ -878,15 +878,6 @@ const actions = {
         // if the error is caused by connection we keep the message in PENDING status
         // and try to resend it after the connection is restored
 
-        dispatch(
-          'snackbar/show',
-          {
-            message: i18n.global.t(`connection.offline`),
-            timeout: 3000
-          },
-          { root: true }
-        )
-
         // timeout for self deleting out of pending messages
         const timeout = setTimeout(() => {
           dispatch('rejectPendingMessage', {
@@ -1057,15 +1048,6 @@ const actions = {
         } else {
           // if the error is caused by connection we keep the message in PENDING status
           // and try to resend it after the connection is restored
-
-          dispatch(
-            'snackbar/show',
-            {
-              message: i18n.global.t(`connection.offline`),
-              timeout: 3000
-            },
-            { root: true }
-          )
 
           // timeout for self deleting out of pending messages
           const timeout = setTimeout(() => {

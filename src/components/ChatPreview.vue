@@ -323,7 +323,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
   &__status-icon {
     display: inline-flex;
     vertical-align: middle;
-    transform: translateY(-1px);
+    transform: translateY(var(--a-chat-preview-status-icon-shift-y));
     margin-inline-end: var(--a-space-1);
   }
 

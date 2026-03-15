@@ -153,6 +153,7 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('--a-chat-brief-avatar-gap')
     expect(content).toContain('--a-chat-brief-date-gap')
     expect(content).toContain('--a-chat-brief-heading-gap')
+    expect(content).toContain('--a-chat-preview-status-icon-shift-y')
     expect(content).toContain('--a-chat-brief-item-padding-inline-start')
     expect(content).toContain('--a-chat-brief-item-padding-inline-end')
     expect(content).toContain('var(--a-chat-preview-avatar-size)')
@@ -182,7 +183,7 @@ describe('Chats UI style contract', () => {
     expect(content).toContain(':class="`${className}__status-icon`"')
     expect(content).toContain('display: inline-flex;')
     expect(content).toContain('vertical-align: middle;')
-    expect(content).toContain('transform: translateY(-1px);')
+    expect(content).toContain('transform: translateY(var(--a-chat-preview-status-icon-shift-y));')
 
     expect(content).not.toContain('size="15"')
     expect(content).not.toContain('const CHAT_PREVIEW_AVATAR_SIZE = 48')

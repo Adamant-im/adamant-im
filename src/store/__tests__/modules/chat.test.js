@@ -1646,6 +1646,63 @@ describe('Store: chat.js', () => {
         ])
       })
 
+      it('keeps offline sends pending without forcing an extra connection snackbar', async () => {
+        const messageObject = {
+          id: '1',
+          message: 'hello world',
+          status: TS.PENDING
+        }
+
+        chatModule.__Rewire__('admApi', {
+          signChatMessageTransaction: () => ({ signature: 'mock-signature' })
+        })
+        vi.spyOn(adamant, 'getTransactionId').mockReturnValue(messageObject.id)
+        chatModule.__Rewire__('createMessage', () => messageObject)
+        chatModule.__Rewire__('queueSignedMessage', () =>
+          Promise.reject(new AllNodesOfflineError('adm'))
+        )
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+        const rootState = {
+          address: userId
+        }
+        const getters = {
+          isNoNodesDialogAllowed: () => false
+        }
+
+        const promise = actions.sendMessage(
+          { commit, rootState, dispatch, getters },
+          { message, recipientId }
+        )
+        await expect(promise).rejects.toEqual(new AllNodesOfflineError('adm'))
+
+        expect(commit.args).toEqual([
+          ['pushMessage', { message: messageObject, userId }],
+          [
+            'addPendingMessage',
+            expect.objectContaining({
+              messageId: messageObject.id,
+              recipientId
+            })
+          ],
+          [
+            'updateMessage',
+            {
+              id: messageObject.id,
+              status: TS.PENDING,
+              partnerId: recipientId
+            }
+          ]
+        ])
+        expect(
+          dispatch.args.some(
+            ([type, payload]) =>
+              type === 'snackbar/show' && payload?.message === 'connection.offline'
+          )
+        ).toBe(false)
+      })
+
       it('should update message status to `REGISTERED`', async () => {
         const messageObject = {
           id: '1',
