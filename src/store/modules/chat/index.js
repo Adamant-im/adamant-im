@@ -357,12 +357,20 @@ const getters = {
     return (chat && chat.page) || 0
   },
 
-  isNoNodesDialogAllowed: (state, getters, rootState, rootGetters) => (err) => {
-    const isOnline = rootState.isOnline
+  hasDisabledAdmNodes: (state, getters, rootState, rootGetters) => {
     const admNodes = rootGetters['nodes/adm']
-    const areAdmNodesDisabled = admNodes.some((node) => node.status === 'disabled')
 
-    return isOnline && areAdmNodesDisabled && isAllNodesOfflineError(err)
+    return admNodes.some((node) => node.status === 'disabled')
+  },
+
+  isNoNodesDialogAllowed: (state, getters, rootState) => (err) => {
+    const isOnline = rootState.isOnline
+
+    return (
+      isOnline &&
+      getters.hasDisabledAdmNodes &&
+      (isAllNodesOfflineError(err) || isAllNodesDisabledError(err))
+    )
   },
 
   /**
@@ -624,7 +632,7 @@ const actions = {
    *
    * @returns {Promise}
    */
-  loadChats({ commit, dispatch, rootState }, { perPage = 25 } = {}) {
+  loadChats({ commit, dispatch, rootState, getters }, { perPage = 25 } = {}) {
     commit('setFulfilled', false)
 
     return admApi
@@ -642,7 +650,7 @@ const actions = {
         commit('setFulfilled', true)
       })
       .catch((err) => {
-        if (isAllNodesDisabledError(err) || getters.isNoNodesDialogAllowed(err)) {
+        if (getters.isNoNodesDialogAllowed(err)) {
           commit('setNoActiveNodesDialog', { value: true })
           setTimeout(() => dispatch('loadChats'), 5000) // retry in 5 seconds
         }
@@ -699,7 +707,7 @@ const actions = {
         }
       })
       .catch((err) => {
-        if (isAllNodesDisabledError(err) || getters.isNoNodesDialogAllowed(err)) {
+        if (getters.isNoNodesDialogAllowed(err)) {
           commit('setNoActiveNodesDialog', { value: true })
         }
         throw err
@@ -819,7 +827,7 @@ const actions = {
    * @param {string} replyToId Optional
    * @returns {Promise}
    */
-  async sendMessage({ commit, rootState, dispatch }, { message, recipientId, replyToId }) {
+  async sendMessage({ commit, rootState, dispatch, getters }, { message, recipientId, replyToId }) {
     let id
     try {
       const type = replyToId
@@ -901,7 +909,7 @@ const actions = {
           partnerId: recipientId
         })
       } else {
-        if (isAllNodesDisabledError(error)) {
+        if (getters.isNoNodesDialogAllowed(error)) {
           commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
         }
 
@@ -928,7 +936,7 @@ const actions = {
    * @returns {Promise}
    */
   async sendAttachment(
-    { commit, rootState, dispatch, rootGetters },
+    { commit, rootState, dispatch, rootGetters, getters },
     { files, message, recipientId, replyToId }
   ) {
     const recipientPublicKey = await getPublicKey(recipientId)
@@ -991,7 +999,7 @@ const actions = {
 
     if (uploadData.error) {
       if (!isAllNodesOfflineError(uploadData.error)) {
-        if (isAllNodesDisabledError(uploadData.error)) {
+        if (getters.isNoNodesDialogAllowed(uploadData.error)) {
           commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
         }
 
@@ -1037,7 +1045,7 @@ const actions = {
       .catch((err) => {
         // update `message.status` to 'REJECTED' if the error is not caused by connection
         if (!isAllNodesOfflineError(err)) {
-          if (isAllNodesDisabledError(err)) {
+          if (getters.isNoNodesDialogAllowed(err)) {
             commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
           }
 

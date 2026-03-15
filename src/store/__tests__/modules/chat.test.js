@@ -26,6 +26,7 @@ import sinon from 'sinon'
 import * as admApi from '@/lib/adamant-api'
 import * as chatHelpers from '@/lib/chat/helpers'
 import adamant from '@/lib/adamant'
+import { AllNodesDisabledError, AllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
 import { TransactionStatus as TS } from '@/lib/constants'
 
@@ -126,6 +127,68 @@ describe('Store: chat.js', () => {
         }
 
         expect(getters.messages(state)('U123456')).toEqual([{}, {}])
+      })
+    })
+
+    describe('getters.hasDisabledAdmNodes', () => {
+      it('returns true when at least one ADM node is manually disabled', () => {
+        const rootGetters = {
+          'nodes/adm': [{ status: 'online' }, { status: 'disabled' }]
+        }
+
+        expect(getters.hasDisabledAdmNodes(state, {}, {}, rootGetters)).toBe(true)
+      })
+
+      it('returns false when no ADM nodes are disabled', () => {
+        const rootGetters = {
+          'nodes/adm': [{ status: 'online' }, { status: 'offline' }]
+        }
+
+        expect(getters.hasDisabledAdmNodes(state, {}, {}, rootGetters)).toBe(false)
+      })
+    })
+
+    describe('getters.isNoNodesDialogAllowed', () => {
+      it('allows the dialog only when the app is online and at least one ADM node was manually disabled', () => {
+        const rootState = { isOnline: true }
+        const localGetters = { hasDisabledAdmNodes: true }
+
+        expect(
+          getters.isNoNodesDialogAllowed(
+            state,
+            localGetters,
+            rootState
+          )(new AllNodesOfflineError('adm'))
+        ).toBe(true)
+
+        expect(
+          getters.isNoNodesDialogAllowed(
+            state,
+            localGetters,
+            rootState
+          )(new AllNodesDisabledError('adm'))
+        ).toBe(true)
+      })
+
+      it('does not allow the dialog when the user did not disable any ADM nodes', () => {
+        const rootState = { isOnline: true }
+        const localGetters = { hasDisabledAdmNodes: false }
+
+        expect(
+          getters.isNoNodesDialogAllowed(
+            state,
+            localGetters,
+            rootState
+          )(new AllNodesOfflineError('adm'))
+        ).toBe(false)
+
+        expect(
+          getters.isNoNodesDialogAllowed(
+            state,
+            localGetters,
+            rootState
+          )(new AllNodesDisabledError('adm'))
+        ).toBe(false)
       })
     })
 
@@ -1060,6 +1123,31 @@ describe('Store: chat.js', () => {
         })
       })
     })
+
+    describe('mutations.setNoActiveNodesDialog', () => {
+      it('does not reopen the dialog after it was already closed in the same session', () => {
+        const state = {
+          noActiveNodesDialog: false
+        }
+
+        mutations.setNoActiveNodesDialog(state, { value: true })
+
+        expect(state.noActiveNodesDialog).toBe(false)
+      })
+
+      it('reopens the dialog after sending when ADM nodes were manually disabled', () => {
+        const state = {
+          noActiveNodesDialog: false
+        }
+
+        mutations.setNoActiveNodesDialog(state, {
+          value: true,
+          afterSendingMessage: true
+        })
+
+        expect(state.noActiveNodesDialog).toBe(true)
+      })
+    })
   })
 
   /**
@@ -1100,6 +1188,55 @@ describe('Store: chat.js', () => {
         ])
 
         expect(dispatch.args).toEqual([['pushMessages', []]])
+      })
+
+      it('shows the no-active-nodes dialog only when the user manually disabled at least one ADM node', async () => {
+        chatModule.__Rewire__('admApi', {
+          getChatRooms: () => Promise.reject(new AllNodesDisabledError('adm'))
+        })
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+
+        await actions.loadChats(
+          {
+            commit,
+            dispatch,
+            rootState: { address: 'U123456' },
+            getters: {
+              isNoNodesDialogAllowed: () => false
+            }
+          },
+          { perPage: 50 }
+        )
+
+        expect(commit.args).toEqual([['setFulfilled', false]])
+      })
+
+      it('shows the no-active-nodes dialog once when the condition is satisfied', async () => {
+        chatModule.__Rewire__('admApi', {
+          getChatRooms: () => Promise.reject(new AllNodesDisabledError('adm'))
+        })
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+
+        await actions.loadChats(
+          {
+            commit,
+            dispatch,
+            rootState: { address: 'U123456' },
+            getters: {
+              isNoNodesDialogAllowed: () => true
+            }
+          },
+          { perPage: 50 }
+        )
+
+        expect(commit.args).toEqual([
+          ['setFulfilled', false],
+          ['setNoActiveNodesDialog', { value: true }]
+        ])
       })
     })
 
@@ -1441,15 +1578,63 @@ describe('Store: chat.js', () => {
         const rootState = {
           address: userId
         }
+        const getters = {
+          isNoNodesDialogAllowed: () => false
+        }
 
         const promise = actions.sendMessage(
-          { commit, rootState, dispatch },
+          { commit, rootState, dispatch, getters },
           { message, recipientId }
         )
         await expect(promise).rejects.toEqual(new Error('Message rejected'))
 
         expect(commit.args).toEqual([
           ['pushMessage', { message: messageObject, userId }],
+          [
+            'updateMessage',
+            {
+              id: messageObject.id,
+              status: TS.REJECTED,
+              partnerId: recipientId
+            }
+          ]
+        ])
+      })
+
+      it('reopens the no-active-nodes dialog when sending fails after it was already shown earlier in the session', async () => {
+        const messageObject = {
+          id: '1',
+          message: 'hello world',
+          status: TS.PENDING
+        }
+
+        chatModule.__Rewire__('admApi', {
+          signChatMessageTransaction: () => ({ signature: 'mock-signature' })
+        })
+        vi.spyOn(adamant, 'getTransactionId').mockReturnValue(messageObject.id)
+        chatModule.__Rewire__('createMessage', () => messageObject)
+        chatModule.__Rewire__('queueSignedMessage', () =>
+          Promise.reject(new AllNodesDisabledError('adm'))
+        )
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+        const rootState = {
+          address: userId
+        }
+        const getters = {
+          isNoNodesDialogAllowed: () => true
+        }
+
+        const promise = actions.sendMessage(
+          { commit, rootState, dispatch, getters },
+          { message, recipientId }
+        )
+        await expect(promise).rejects.toEqual(new AllNodesDisabledError('adm'))
+
+        expect(commit.args).toEqual([
+          ['pushMessage', { message: messageObject, userId }],
+          ['setNoActiveNodesDialog', { value: true, afterSendingMessage: true }],
           [
             'updateMessage',
             {
@@ -1484,9 +1669,12 @@ describe('Store: chat.js', () => {
         const rootState = {
           address: userId
         }
+        const getters = {
+          isNoNodesDialogAllowed: () => false
+        }
 
         const promise = actions.sendMessage(
-          { commit, rootState, dispatch },
+          { commit, rootState, dispatch, getters },
           { message, recipientId }
         )
         await expect(promise).resolves.toEqual(undefined)
