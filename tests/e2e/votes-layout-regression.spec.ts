@@ -239,4 +239,118 @@ test.describe('Votes layout regressions', () => {
 
     await assertNoDocumentScrollLeak(page)
   })
+
+  test('opens votes from stake at the top but restores its own scroll from settings entry', async ({
+    page
+  }) => {
+    await page.setViewportSize({ width: 390, height: 600 })
+    await loginWithNewAccount(page)
+
+    await page.goto('/options')
+    await expect(page).toHaveURL(/\/options$/)
+    await expect(page.locator('.settings-view')).toBeVisible()
+
+    await page.getByText(/vote for delegates/i).click()
+    await expect(page).toHaveURL(/\/votes$/)
+    await expect(page.locator('.delegates-table-item').first()).toBeVisible()
+
+    const firstSettingsVotesTop = await page.evaluate(async () => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+
+      if (!scrollPane) {
+        return null
+      }
+
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+
+      return Math.ceil(scrollPane.scrollTop)
+    })
+
+    const savedVotesTop = await page.evaluate(async () => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+
+      if (!scrollPane) {
+        return null
+      }
+
+      scrollPane.scrollTo({ top: 180 })
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+
+      return Math.ceil(scrollPane.scrollTop)
+    })
+
+    expect(firstSettingsVotesTop).not.toBeNull()
+    expect(firstSettingsVotesTop ?? 999).toBeLessThanOrEqual(1)
+    expect(savedVotesTop).not.toBeNull()
+    expect(savedVotesTop ?? 0).toBeGreaterThan(100)
+
+    await page.locator('.back-button').click()
+    await expect(page).toHaveURL(/\/options$/)
+
+    await page.goto('/home')
+    await expect(page).toHaveURL(/\/home$/)
+    await page.getByText(/stake and earn/i).click()
+    await expect(page).toHaveURL(/\/votes$/)
+    await expect(page.locator('.delegates-table-item').first()).toBeVisible()
+
+    const stakeVotesTop = await page.evaluate(async () => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+
+      if (!scrollPane) {
+        return null
+      }
+
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+
+      return Math.ceil(scrollPane.scrollTop)
+    })
+
+    expect(stakeVotesTop).not.toBeNull()
+    expect(stakeVotesTop ?? 999).toBeLessThanOrEqual(1)
+
+    const updatedVotesTop = await page.evaluate(async () => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+
+      if (!scrollPane) {
+        return null
+      }
+
+      scrollPane.scrollTo({ top: 140 })
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+
+      return Math.ceil(scrollPane.scrollTop)
+    })
+
+    expect(updatedVotesTop).not.toBeNull()
+    expect(updatedVotesTop ?? 0).toBeGreaterThan(80)
+
+    await page.locator('.back-button').click()
+    await expect(page).toHaveURL(/\/options$/)
+    await expect(page.locator('.settings-view')).toBeVisible()
+
+    await page.getByText(/vote for delegates/i).click()
+    await expect(page).toHaveURL(/\/votes$/)
+
+    const restoredVotesTop = await page.evaluate(async () => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+
+      if (!scrollPane) {
+        return null
+      }
+
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+
+      return Math.ceil(scrollPane.scrollTop)
+    })
+
+    expect(restoredVotesTop).not.toBeNull()
+    expect(Math.abs((restoredVotesTop ?? 0) - (updatedVotesTop ?? 0))).toBeLessThanOrEqual(1)
+  })
 })

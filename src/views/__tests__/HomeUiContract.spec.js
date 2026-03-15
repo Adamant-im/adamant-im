@@ -161,6 +161,9 @@ describe('Home UI style contract', () => {
     expect(content).toContain(
       "@include colorRoles.a-color-role-primary-surface-var('--a-wallet-actions-icon-color');"
     )
+    expect(content).toContain("store.commit('options/setSettingsLastRoute', '/votes')")
+    expect(content).toContain("path: '/votes'")
+    expect(content).toContain('forceResetSettingsView: true')
     expect(metricsContent).toContain('WALLET_ACTION_STAKE_ICON_SIZE = 24')
     expect(content).not.toContain('--a-wallet-actions-item-padding-inline: 28px;')
     expect(content).not.toContain('<icon :width="24" :height="24">')

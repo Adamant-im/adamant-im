@@ -45,9 +45,10 @@ describe('Options UI style contract', () => {
     expect(content).toContain("const SETTINGS_STATE_RESET_KEY = 'resetSettingsView'")
     expect(content).toContain("const SETTINGS_STATE_FORCE_RESET_KEY = 'forceResetSettingsView'")
     expect(content).toContain("const SETTINGS_PATH_PREFIX = '/options'")
+    expect(content).toContain("const SETTINGS_ROUTE_PATHS = ['/votes']")
     expect(content).toContain('const isLoggingOut = ref(false)')
     expect(content).toContain(
-      'const isSettingsPath = (path: string) => path.startsWith(SETTINGS_PATH_PREFIX)'
+      'path.startsWith(SETTINGS_PATH_PREFIX) || SETTINGS_ROUTE_PATHS.includes(path)'
     )
     expect(content).toContain("store.commit('options/setSettingsLastRoute', path)")
     expect(content).toContain("store.getters['options/settingsScrollPosition'](path)")

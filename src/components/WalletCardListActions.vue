@@ -91,7 +91,18 @@ const sendFunds = () => {
 }
 
 const stakeAndEarn = () => {
-  router.push('/votes')
+  store.commit('options/setSettingsLastRoute', '/votes')
+  store.commit('options/setSettingsScrollPosition', {
+    path: '/votes',
+    top: 0
+  })
+
+  router.push({
+    path: '/votes',
+    state: {
+      forceResetSettingsView: true
+    }
+  })
 }
 
 const buyTokens = () => {

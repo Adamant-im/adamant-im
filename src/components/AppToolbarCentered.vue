@@ -67,9 +67,10 @@ const className = 'app-toolbar-centered'
 
 const { consideredOffline } = useConsiderOffline()
 const SETTINGS_PATH_PREFIX = '/options'
+const SETTINGS_ROUTE_PATHS = ['/votes']
 
 const isSettingsPath = (path?: string) => {
-  return !!path?.startsWith(SETTINGS_PATH_PREFIX)
+  return !!path && (path.startsWith(SETTINGS_PATH_PREFIX) || SETTINGS_ROUTE_PATHS.includes(path))
 }
 
 const classes = computed(() => {

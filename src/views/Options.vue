@@ -236,13 +236,16 @@ const tapCount = ref(0)
 const SETTINGS_STATE_RESET_KEY = 'resetSettingsView'
 const SETTINGS_STATE_FORCE_RESET_KEY = 'forceResetSettingsView'
 const SETTINGS_PATH_PREFIX = '/options'
+const SETTINGS_ROUTE_PATHS = ['/votes']
 const activeSettingsScrollPath = ref(route.path)
 const isRestoringSettingsScroll = ref(false)
 const isLoggingOut = ref(false)
 let settingsRestoreFrame = 0
 let settingsRestoreObserver: ResizeObserver | null = null
 
-const isSettingsPath = (path: string) => path.startsWith(SETTINGS_PATH_PREFIX)
+const isSettingsPath = (path: string) => {
+  return path.startsWith(SETTINGS_PATH_PREFIX) || SETTINGS_ROUTE_PATHS.includes(path)
+}
 const getCurrentScrollTop = () => sidebarLayoutRef?.value?.scrollTop || 0
 const applySettingsScrollTop = (top: number) => {
   if (!sidebarLayoutRef?.value) {
