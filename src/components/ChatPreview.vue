@@ -55,12 +55,14 @@
                 v-if="!isIncomingTransaction"
                 :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
                 :icon="tsIcon(status)"
+                :class="`${className}__status-icon`"
               />
               {{ transactionDirection }} {{ currency(transaction.amount, transaction.type) }}
               <v-icon
                 v-if="isIncomingTransaction"
                 :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
                 :icon="tsIcon(status)"
+                :class="`${className}__status-icon`"
               />
             </v-list-item-subtitle>
           </template>
@@ -319,6 +321,9 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
   }
 
   &__status-icon {
+    display: inline-flex;
+    vertical-align: middle;
+    transform: translateY(-1px);
     margin-inline-end: var(--a-space-1);
   }
 

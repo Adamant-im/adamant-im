@@ -179,6 +179,10 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('@include mixins.a-text-explanation-enlarged-bold();')
     expect(content).toContain('margin-bottom: var(--a-chat-brief-heading-gap);')
     expect(content).toContain('line-height: var(--a-chat-brief-subtitle-line-height);')
+    expect(content).toContain(':class="`${className}__status-icon`"')
+    expect(content).toContain('display: inline-flex;')
+    expect(content).toContain('vertical-align: middle;')
+    expect(content).toContain('transform: translateY(-1px);')
 
     expect(content).not.toContain('size="15"')
     expect(content).not.toContain('const CHAT_PREVIEW_AVATAR_SIZE = 48')

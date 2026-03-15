@@ -101,6 +101,8 @@ describe('AChat UI style contract', () => {
 
     expect(content).toContain('CHAT_STATUS_ICON_SIZE')
     expect(content).toContain('CHAT_STATUS_ICON_ERROR_SIZE')
+    expect(content).toContain('CHAT_INLINE_PENDING_STATUS_ICON_SIZE')
+    expect(content).toContain('CHAT_INLINE_PENDING_STATUS_DELAY_MS')
     expect(content).toContain('CHAT_ACTIONS_DROPDOWN_MIN_WIDTH')
     expect(content).toContain('CHAT_ACTIONS_DROPDOWN_MAX_WIDTH')
     expect(content).toContain('CHAT_ACTIONS_DROPDOWN_BUTTON_SIZE')
@@ -135,6 +137,19 @@ describe('AChat UI style contract', () => {
 
     expect(messageContent).toContain(':size="CHAT_STATUS_ICON_ERROR_SIZE"')
     expect(messageContent).toContain(':size="CHAT_STATUS_ICON_SIZE"')
+    expect(messageContent).toContain('showInlinePendingStatus')
+    expect(messageContent).toContain('CHAT_INLINE_PENDING_STATUS_ICON_SIZE')
+    expect(messageContent).toContain('CHAT_INLINE_PENDING_STATUS_DELAY_MS')
+    expect(messageContent).toContain('pendingStatusDelayElapsed')
+    expect(messageContent).toContain('isQueuedPendingMessage')
+    expect(messageContent).toContain('props.transaction.status !== TransactionStatus.PENDING')
+    expect(messageContent).toContain('props.transaction.status === TransactionStatus.PENDING')
+    expect(messageContent).toContain(
+      'store.state.chat.pendingMessages[String(props.transaction.id)]'
+    )
+    expect(messageContent).toContain('class="a-chat__inline-pending-status"')
+    expect(messageContent).toContain('right: calc(100% + var(--a-space-2));')
+    expect(messageContent).toContain('pointer-events: none;')
     expect(attachmentContent).toContain(':size="CHAT_STATUS_ICON_ERROR_SIZE"')
     expect(attachmentContent).toContain(':size="CHAT_STATUS_ICON_SIZE"')
     expect(transactionContent).toContain(':size="CHAT_STATUS_ICON_SIZE"')

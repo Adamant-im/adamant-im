@@ -19,6 +19,10 @@
     }"
     v-longpress="onLongPress"
   >
+    <div v-if="showInlinePendingStatus" class="a-chat__inline-pending-status">
+      <v-icon :icon="statusIcon" :size="CHAT_INLINE_PENDING_STATUS_ICON_SIZE" />
+    </div>
+
     <div
       class="a-chat__message"
       :class="{
@@ -70,7 +74,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+import { computed, defineComponent, onBeforeUnmount, PropType, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
@@ -79,12 +83,17 @@ import { usePartnerId } from './hooks/usePartnerId'
 import { useTransactionTime } from './hooks/useTransactionTime'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import { tsIcon } from '@/lib/constants'
+import { TransactionStatus, tsIcon } from '@/lib/constants'
 import QuotedMessage from './QuotedMessage.vue'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
 import formatDate from '@/filters/date'
 import { isWelcomeChat } from '@/lib/chat/meta/utils'
-import { CHAT_STATUS_ICON_ERROR_SIZE, CHAT_STATUS_ICON_SIZE } from './helpers/uiMetrics'
+import {
+  CHAT_INLINE_PENDING_STATUS_DELAY_MS,
+  CHAT_INLINE_PENDING_STATUS_ICON_SIZE,
+  CHAT_STATUS_ICON_ERROR_SIZE,
+  CHAT_STATUS_ICON_SIZE
+} from './helpers/uiMetrics'
 
 export default defineComponent({
   components: {
@@ -133,8 +142,48 @@ export default defineComponent({
     const isOutgoingMessage = computed(() =>
       isStringEqualCI(props.transaction.senderId, userId.value)
     )
+    const isQueuedPendingMessage = computed(() =>
+      Boolean(store.state.chat.pendingMessages[String(props.transaction.id)])
+    )
     const formattedMessage = useFormatMessage(props.transaction)
     const time = useTransactionTime(props.transaction)
+    const pendingStatusDelayElapsed = ref(false)
+
+    let pendingStatusTimer: ReturnType<typeof setTimeout> | undefined
+
+    const clearInlinePendingStatusTimer = () => {
+      if (pendingStatusTimer) {
+        clearTimeout(pendingStatusTimer)
+        pendingStatusTimer = undefined
+      }
+    }
+
+    const syncInlinePendingStatus = () => {
+      clearInlinePendingStatusTimer()
+      pendingStatusDelayElapsed.value = false
+
+      if (
+        !isOutgoingMessage.value ||
+        props.transaction.showTime ||
+        props.transaction.status !== TransactionStatus.PENDING ||
+        !isQueuedPendingMessage.value
+      ) {
+        return
+      }
+
+      pendingStatusTimer = setTimeout(() => {
+        pendingStatusDelayElapsed.value = true
+      }, CHAT_INLINE_PENDING_STATUS_DELAY_MS)
+    }
+
+    const showInlinePendingStatus = computed(
+      () =>
+        pendingStatusDelayElapsed.value &&
+        isOutgoingMessage.value &&
+        !props.transaction.showTime &&
+        isQueuedPendingMessage.value &&
+        props.transaction.status === TransactionStatus.PENDING
+    )
 
     const { onMove, onSwipeEnd, elementLeftOffset } = useSwipeLeft(() => {
       emit('swipe:left')
@@ -143,6 +192,23 @@ export default defineComponent({
     const onLongPress = () => {
       emit('longpress')
     }
+
+    watch(
+      () => [
+        props.transaction.id,
+        props.transaction.status,
+        props.transaction.showTime,
+        isQueuedPendingMessage.value
+      ],
+      syncInlinePendingStatus,
+      { immediate: true }
+    )
+
+    watch(isOutgoingMessage, syncInlinePendingStatus)
+
+    onBeforeUnmount(() => {
+      clearInlinePendingStatusTimer()
+    })
 
     return {
       t,
@@ -158,6 +224,8 @@ export default defineComponent({
       onLongPress,
       formatDate,
       time,
+      showInlinePendingStatus,
+      CHAT_INLINE_PENDING_STATUS_ICON_SIZE,
       CHAT_STATUS_ICON_SIZE,
       CHAT_STATUS_ICON_ERROR_SIZE
     }
@@ -167,6 +235,17 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @use '@/assets/styles/components/_chat-message-content.scss' as chatMessageContent;
+
+.a-chat__inline-pending-status {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + var(--a-space-2));
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  color: rgba(var(--v-theme-on-surface), 0.72);
+  pointer-events: none;
+}
 
 .a-chat__message-text {
   @include chatMessageContent.a-chat-message-body-copy();
