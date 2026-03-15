@@ -23,8 +23,7 @@ const { t } = useI18n()
   padding: var(--a-space-2) var(--a-space-3);
   border-radius: var(--a-radius-md);
   background-color: rgb(var(--v-theme-surface));
-  border: var(--a-border-width-thin) solid rgba(var(--v-border-color), var(--v-border-opacity));
-  color: rgba(var(--v-theme-on-surface), 0.72);
+  border: var(--a-border-width-thin) solid rgb(var(--v-theme-error));
   min-height: var(--a-chat-actions-overlay-reaction-height);
 }
 </style>

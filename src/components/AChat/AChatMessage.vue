@@ -270,7 +270,7 @@ export default defineComponent({
   }
 
   &--rejected {
-    color: rgb(var(--v-theme-error));
+    color: rgba(var(--v-theme-on-surface), 0.72);
 
     :deep(.v-icon) {
       cursor: pointer;
