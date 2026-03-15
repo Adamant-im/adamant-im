@@ -40,7 +40,15 @@ const rewireDependency = (name, value) => {
     return
   }
 
-  if (['getChats', 'createMessage', 'queueMessage', 'queueSignedMessage'].includes(name)) {
+  if (
+    [
+      'getChats',
+      'createMessage',
+      'createAttachment',
+      'queueMessage',
+      'queueSignedMessage'
+    ].includes(name)
+  ) {
     vi.spyOn(chatHelpers, name).mockImplementation(value)
     return
   }
@@ -1857,6 +1865,322 @@ describe('Store: chat.js', () => {
     })
 
     /**
+     * actions.sendAttachment
+     */
+    describe('actions.sendAttachment', () => {
+      const userId = 'U111111'
+      const recipientId = 'U222222'
+      const files = [
+        {
+          cid: 'cid-1',
+          encoded: {
+            nonce: 'nonce-1',
+            binary: 'encoded'
+          },
+          file: {
+            cid: 'cid-1',
+            isImage: false,
+            name: 'report.pdf',
+            size: 128,
+            type: 'application/pdf'
+          }
+        }
+      ]
+
+      it('should register attachment message when upload and send succeed', async () => {
+        const messageObject = {
+          id: 'attachment-1',
+          message: 'hello file',
+          status: TS.PENDING,
+          asset: { files: [] }
+        }
+
+        vi.spyOn(admApi, 'getPublicKey').mockResolvedValue('public-key')
+        chatModule.__Rewire__('createAttachment', () => messageObject)
+        chatModule.__Rewire__('queueMessage', () =>
+          Promise.resolve({ success: true, transactionId: 'tx-attachment-1' })
+        )
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy(async (type) => {
+          if (type === 'uploadConsistently') {
+            return {
+              newCids: [['uploaded-cid-1', undefined]]
+            }
+          }
+
+          throw new Error(`Unexpected dispatch: ${type}`)
+        })
+
+        await expect(
+          actions.sendAttachment(
+            {
+              commit,
+              dispatch,
+              rootState: { address: userId },
+              rootGetters: {
+                'nodes/adm': [{ status: 'online' }]
+              },
+              getters: {
+                isNoNodesDialogAllowed: () => false
+              }
+            },
+            {
+              files,
+              message: 'hello file',
+              recipientId
+            }
+          )
+        ).resolves.toEqual({ success: true, transactionId: 'tx-attachment-1' })
+
+        expect(commit.args[0]).toEqual(['pushMessage', { message: messageObject, userId }])
+        expect(commit.args).toContainEqual([
+          'updateMessage',
+          expect.objectContaining({
+            id: messageObject.id,
+            partnerId: recipientId
+          })
+        ])
+        expect(commit.args).toContainEqual([
+          'updateMessage',
+          {
+            id: messageObject.id,
+            realId: 'tx-attachment-1',
+            status: TS.REGISTERED,
+            partnerId: recipientId
+          }
+        ])
+      })
+
+      it('keeps attachment message pending without forcing snackbar when sending fails offline', async () => {
+        const messageObject = {
+          id: 'attachment-2',
+          message: 'offline file',
+          status: TS.PENDING,
+          asset: { files: [] }
+        }
+
+        vi.spyOn(admApi, 'getPublicKey').mockResolvedValue('public-key')
+        chatModule.__Rewire__('createAttachment', () => messageObject)
+        chatModule.__Rewire__('queueMessage', () => Promise.reject(new AllNodesOfflineError('adm')))
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy(async (type) => {
+          if (type === 'uploadConsistently') {
+            return {
+              newCids: [['uploaded-cid-2', undefined]]
+            }
+          }
+
+          throw new Error(`Unexpected dispatch: ${type}`)
+        })
+
+        await expect(
+          actions.sendAttachment(
+            {
+              commit,
+              dispatch,
+              rootState: { address: userId },
+              rootGetters: {
+                'nodes/adm': [{ status: 'online' }]
+              },
+              getters: {
+                isNoNodesDialogAllowed: () => false
+              }
+            },
+            {
+              files,
+              message: 'offline file',
+              recipientId
+            }
+          )
+        ).rejects.toEqual(new AllNodesOfflineError('adm'))
+
+        expect(commit.args).toContainEqual([
+          'addPendingMessage',
+          expect.objectContaining({
+            messageId: messageObject.id,
+            recipientId,
+            files
+          })
+        ])
+        expect(commit.args).toContainEqual([
+          'updateMessage',
+          {
+            id: messageObject.id,
+            status: TS.PENDING,
+            partnerId: recipientId
+          }
+        ])
+        expect(
+          dispatch.args.some(
+            ([type, payload]) =>
+              type === 'snackbar/show' && payload?.message === 'connection.offline'
+          )
+        ).toBe(false)
+      })
+    })
+
+    /**
+     * actions.resendAttachment
+     */
+    describe('actions.resendAttachment', () => {
+      const recipientId = 'U222222'
+      const messageId = 'attachment-1'
+      const files = [
+        {
+          cid: 'cid-1',
+          encoded: {
+            nonce: 'nonce-1',
+            binary: 'encoded'
+          },
+          file: {
+            cid: 'cid-1',
+            isImage: false,
+            name: 'report.pdf',
+            size: 128,
+            type: 'application/pdf'
+          }
+        }
+      ]
+
+      it('should resend attachment successfully', async () => {
+        chatModule.__Rewire__('queueMessage', () =>
+          Promise.resolve({ success: true, transactionId: 'tx-attachment-2' })
+        )
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy(async (type, payload) => {
+          if (type === 'uploadConsistently') {
+            return {
+              newCids: [['uploaded-cid-3', undefined]]
+            }
+          }
+
+          if (type === 'registerPendingMessage') {
+            return
+          }
+
+          throw new Error(`Unexpected dispatch: ${type} ${JSON.stringify(payload)}`)
+        })
+        const getters = {
+          partnerMessageById: () => ({
+            id: messageId,
+            message: 'hello file',
+            recipientId,
+            isReply: false,
+            asset: {
+              files: []
+            }
+          })
+        }
+
+        await expect(
+          actions.resendAttachment(
+            {
+              commit,
+              dispatch,
+              getters
+            },
+            {
+              recipientId,
+              messageId,
+              files,
+              cids: [['cid-1', undefined]]
+            }
+          )
+        ).resolves.toEqual({ success: true, transactionId: 'tx-attachment-2' })
+
+        expect(commit.args).toEqual([
+          [
+            'updateMessage',
+            {
+              id: messageId,
+              status: TS.PENDING,
+              partnerId: recipientId
+            }
+          ],
+          [
+            'updateMessage',
+            expect.objectContaining({
+              id: messageId,
+              partnerId: recipientId
+            })
+          ],
+          [
+            'updatePendingMessage',
+            {
+              cids: [['uploaded-cid-3', undefined]],
+              messageId
+            }
+          ]
+        ])
+        expect(dispatch.args).toContainEqual([
+          'registerPendingMessage',
+          {
+            transactionId: 'tx-attachment-2',
+            messageId,
+            recipientId
+          }
+        ])
+      })
+
+      it('rejects pending attachment when resend fails with a non-offline error', async () => {
+        chatModule.__Rewire__('queueMessage', () => Promise.reject(new Error('Upload rejected')))
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy(async (type) => {
+          if (type === 'uploadConsistently') {
+            return {
+              newCids: [['uploaded-cid-4', undefined]]
+            }
+          }
+
+          if (type === 'rejectPendingMessage') {
+            return
+          }
+
+          throw new Error(`Unexpected dispatch: ${type}`)
+        })
+        const getters = {
+          partnerMessageById: () => ({
+            id: messageId,
+            message: 'hello file',
+            recipientId,
+            isReply: false,
+            asset: {
+              files: []
+            }
+          })
+        }
+
+        await expect(
+          actions.resendAttachment(
+            {
+              commit,
+              dispatch,
+              getters
+            },
+            {
+              recipientId,
+              messageId,
+              files,
+              cids: [['cid-1', undefined]]
+            }
+          )
+        ).rejects.toEqual(new Error('Upload rejected'))
+
+        expect(dispatch.args).toContainEqual([
+          'rejectPendingMessage',
+          {
+            messageId,
+            recipientId
+          }
+        ])
+      })
+    })
+
+    /**
      * actions.pushTransaction
      */
     describe('actions.pushTransaction', () => {
@@ -1903,6 +2227,51 @@ describe('Store: chat.js', () => {
               scrollPosition: undefined
             }
           ]
+        ])
+      })
+    })
+
+    /**
+     * actions.registerPendingMessage / actions.rejectPendingMessage
+     */
+    describe('actions.pending message status transitions', () => {
+      it('should register pending message and remove it from retry queue', () => {
+        const commit = sinon.spy()
+
+        actions.registerPendingMessage(
+          { commit },
+          { messageId: '1', recipientId: 'U222222', transactionId: 'tx-1' }
+        )
+
+        expect(commit.args).toEqual([
+          [
+            'updateMessage',
+            {
+              id: '1',
+              realId: 'tx-1',
+              status: TS.REGISTERED,
+              partnerId: 'U222222'
+            }
+          ],
+          ['deletePendingMessage', '1']
+        ])
+      })
+
+      it('should reject pending message and remove it from retry queue', () => {
+        const commit = sinon.spy()
+
+        actions.rejectPendingMessage({ commit }, { messageId: '1', recipientId: 'U222222' })
+
+        expect(commit.args).toEqual([
+          [
+            'updateMessage',
+            {
+              id: '1',
+              status: TS.REJECTED,
+              partnerId: 'U222222'
+            }
+          ],
+          ['deletePendingMessage', '1']
         ])
       })
     })
