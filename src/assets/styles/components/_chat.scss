@@ -476,11 +476,11 @@ $scroll-bar-width: 4px;
     }
 
     &__timestamp {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-color-text-muted-light);
     }
 
     &__blockchain-status {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-color-text-muted-light);
     }
 
     &__amount {
@@ -488,7 +488,7 @@ $scroll-bar-width: 4px;
     }
 
     &__rates {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-color-text-muted-light);
     }
 
     &__direction {
@@ -519,7 +519,7 @@ $scroll-bar-width: 4px;
 
       .v-text-field__slot {
         .v-label {
-          color: map.get(colors.$adm-colors, 'muted');
+          color: var(--a-color-text-muted-light);
         }
 
         textarea {
@@ -546,7 +546,7 @@ $scroll-bar-width: 4px;
       }
 
       .v-input--is-focused .v-input__slot .v-icon {
-        color: map.get(colors.$adm-colors, 'muted') !important;
+        color: var(--a-color-text-muted-light) !important;
       }
 
       &--is-active .v-input--is-focused .v-input__slot .v-icon {
@@ -593,7 +593,7 @@ $scroll-bar-width: 4px;
     &__message-actions-icon {
       background-image: linear-gradient(
         45deg,
-        map.get(colors.$adm-colors, 'muted'),
+        var(--a-color-text-muted-light),
         map.get(settings.$shades, 'black') 40%
       );
     }

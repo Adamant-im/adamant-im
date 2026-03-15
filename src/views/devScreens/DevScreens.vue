@@ -140,12 +140,12 @@ const onSelectLevel = (level: LogLevel) => {
 .v-theme--light {
   .dev-screens-view {
     &__title {
-      background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
+      background-color: var(--a-color-surface-soft-light);
       color: map.get(colors.$adm-colors, 'regular');
     }
 
     .v-divider {
-      border-color: map.get(colors.$adm-colors, 'secondary2');
+      border-color: var(--a-color-border-soft-light);
     }
   }
 }

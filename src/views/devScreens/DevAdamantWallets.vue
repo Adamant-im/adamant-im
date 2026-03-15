@@ -286,12 +286,12 @@ const mobileMenuProps = computed(() => {
   .dev-wallets-view {
     &__section-title {
       color: map.get(colors.$adm-colors, 'regular');
-      border-color: map.get(colors.$adm-colors, 'secondary2');
+      border-color: var(--a-color-border-soft-light);
     }
 
     &__json-output {
-      background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
-      border-color: map.get(colors.$adm-colors, 'secondary2');
+      background-color: var(--a-color-surface-soft-light);
+      border-color: var(--a-color-border-soft-light);
       color: map.get(colors.$adm-colors, 'regular');
     }
   }

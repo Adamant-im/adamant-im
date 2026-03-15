@@ -45,7 +45,7 @@
 
     &.v-btn--disabled:not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline) {
       background-color: map.get(settings.$shades, 'white');
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-color-text-muted-light);
     }
   }
 
@@ -60,7 +60,7 @@
     }
 
     &.v-btn.v-btn--disabled {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-color-text-muted-light);
     }
   }
 

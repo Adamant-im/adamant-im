@@ -424,7 +424,7 @@ defineExpose({
  */
 .a-chat__form {
   --a-chat-send-color: #{map.get(settings.$shades, 'white')};
-  --a-chat-send-color-disabled: #{map.get(colors.$adm-colors, 'muted')};
+  --a-chat-send-color-disabled: var(--a-color-text-muted-light);
   --a-chat-form-prepend-offset-y: var(--a-chat-form-prepend-offset-y);
   --a-chat-form-prepend-offset-inline: var(--a-chat-form-prepend-offset-inline);
   --a-chat-form-send-hit-size: var(--a-chat-form-send-hit-size);
@@ -515,7 +515,7 @@ defineExpose({
 .v-theme--light {
   .a-chat__form {
     --a-chat-send-color: #{map.get(settings.$shades, 'black')};
-    --a-chat-send-color-disabled: #{map.get(colors.$adm-colors, 'muted')};
+    --a-chat-send-color-disabled: var(--a-color-text-muted-light);
   }
 
   .a-chat__form {
@@ -524,7 +524,7 @@ defineExpose({
         caret-color: map.get(colors.$adm-colors, 'primary');
 
         &::placeholder {
-          color: map.get(colors.$adm-colors, 'muted');
+          color: var(--a-color-text-muted-light);
         }
       }
     }

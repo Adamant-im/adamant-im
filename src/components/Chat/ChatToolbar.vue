@@ -205,7 +205,7 @@ const goBack = () => {
 /** Themes **/
 .v-theme--light {
   .chat-toolbar {
-    background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
+    background-color: var(--a-color-surface-soft-light);
 
     :deep(.v-text-field) {
       .primary--text {

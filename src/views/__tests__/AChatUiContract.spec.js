@@ -352,6 +352,7 @@ describe('AChat UI style contract', () => {
     expect(tokensContent).toContain('--a-chat-form-prepend-offset-inline')
     expect(tokensContent).toContain('--a-chat-form-send-hit-size')
     expect(tokensContent).toContain('--a-chat-accent-border-width')
+    expect(tokensContent).toContain('--a-color-text-muted-light')
     expect(formContent).toContain('const sendIconSize = CHAT_FORM_SEND_ICON_SIZE')
     expect(formContent).toContain('max-height: var(--a-chat-form-max-height);')
     expect(formContent).toContain(
@@ -361,6 +362,8 @@ describe('AChat UI style contract', () => {
       '--a-chat-form-prepend-offset-inline: var(--a-chat-form-prepend-offset-inline);'
     )
     expect(formContent).toContain('--a-chat-form-send-hit-size: var(--a-chat-form-send-hit-size);')
+    expect(formContent).toContain('--a-chat-send-color-disabled: var(--a-color-text-muted-light);')
+    expect(formContent).toContain('color: var(--a-color-text-muted-light);')
     expect(content).toContain('--a-quoted-message-height')
     expect(content).toContain('--a-quoted-message-radius')
     expect(content).toContain('--a-quoted-message-padding-block')
@@ -425,11 +428,13 @@ describe('AChat UI style contract', () => {
     expect(modalFileContent).toContain('CHAT_MODAL_FILE_ICON_SIZE')
     expect(modalFileContent).toContain('var(--a-chat-modal-file-name-max-width)')
     expect(modalFileContent).toContain('border: var(--a-border-width-thin) solid')
+    expect(modalFileContent).toContain('var(--a-color-text-muted-light);')
     expect(modalFileContent).not.toContain('const fileMaxWidth = 500')
     expect(modalFileContent).not.toContain('const fileMaxHeight = 250')
     expect(modalFileContent).not.toContain('const iconSize = 128')
     expect(modalFileContent).not.toContain('max-width: 220px;')
     expect(modalFileContent).not.toContain('border: 1px solid')
+    expect(modalFileContent).not.toContain("color: map.get(colors.$adm-colors, 'muted');")
 
     expect(tokensContent).toContain('--a-chat-reply-preview-line-height')
     expect(tokensContent).toContain('--a-chat-files-preview-file-name-font-size')

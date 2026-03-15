@@ -193,13 +193,13 @@ html {
   opacity: 1;
 }
 .v-theme--light .v-field__outline {
-  color: map.get(colors.$adm-colors, 'muted');
+  color: var(--a-color-text-muted-light);
 }
 .v-theme--dark .v-field__outline {
   color: var(--a-color-text-muted-dark);
 }
 .v-theme--light .v-field__field .v-label {
-  color: map.get(colors.$adm-colors, 'muted');
+  color: var(--a-color-text-muted-light);
 }
 .v-theme--dark .v-field__field .v-label {
   color: var(--a-color-text-muted-dark);

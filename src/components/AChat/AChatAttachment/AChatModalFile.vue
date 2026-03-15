@@ -146,7 +146,7 @@ export default defineComponent({
     }
 
     &__file-size {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-color-text-muted-light);
     }
   }
 }

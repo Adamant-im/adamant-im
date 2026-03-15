@@ -32,6 +32,7 @@ describe('Theme layer contract', () => {
     expect(buttonsContent).toContain('.a-btn-link')
     expect(buttonsContent).toContain('font-size: var(--a-link-action-font-size);')
     expect(buttonsContent).toContain('font-weight: var(--a-link-action-font-weight);')
+    expect(buttonsContent).toContain('var(--a-color-text-muted-light)')
     expect(buttonsContent).toContain('color: var(--a-color-text-inverse);')
     expect(buttonsContent).toContain('background-color: var(--a-color-overlay-inverse-soft);')
     expect(linkActionContent).toContain('@mixin a-link-action-button-dark()')
@@ -70,6 +71,7 @@ describe('Theme layer contract', () => {
     )
     expect(vuetifyContent).toContain('var(--a-color-surface-secondary-dark)')
     expect(vuetifyContent).toContain('var(--a-color-text-inverse)')
+    expect(vuetifyContent).toContain('var(--a-color-text-muted-light)')
     expect(vuetifyContent).toContain('var(--a-color-text-muted-dark)')
     expect(vuetifyContent).toContain('box-shadow: none;')
     expect(vuetifyContent).toContain('opacity: 1;')
@@ -78,6 +80,7 @@ describe('Theme layer contract', () => {
     expect(vuetifyContent).not.toContain('opacity: unset;')
     expect(vuetifyContent).not.toContain('background-color: #424242;')
     expect(vuetifyContent).not.toContain('color: #fff;')
+    expect(vuetifyContent).not.toContain("color: map.get(colors.$adm-colors, 'muted');")
     expect(vuetifyContent).not.toContain("color: map.get(colors.$adm-colors, 'grey-transparent');")
   })
 

@@ -173,11 +173,13 @@ describe('Votes UI style contract', () => {
 
     expect(checkboxContent).toContain('classes.root')
     expect(checkboxContent).toContain('var(--a-delegate-vote-checkbox-icon-size)')
+    expect(checkboxContent).toContain('var(--a-color-text-muted-light);')
     expect(checkboxContent).toContain('inline-size: var(--a-delegate-vote-checkbox-icon-size);')
     expect(checkboxContent).toContain('block-size: var(--a-delegate-vote-checkbox-icon-size);')
     expect(checkboxContent).not.toContain('font-size: 24px !important;')
     expect(checkboxContent).not.toContain('height: 24px !important;')
     expect(checkboxContent).not.toContain('size="large"')
+    expect(checkboxContent).not.toContain("color: map.get(colors.$adm-colors, 'muted');")
 
     expect(loaderContent).toContain('classes.content')
     expect(loaderContent).toContain('classes.spinner')

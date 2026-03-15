@@ -414,10 +414,10 @@ const checkDate = () => {
       color: map.get(colors.$adm-colors, 'grey');
     }
     &__item {
-      background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
+      background-color: var(--a-color-surface-soft-light);
     }
     &__title {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-color-text-muted-light);
     }
     &__icon {
       color: map.get(colors.$adm-colors, 'regular');

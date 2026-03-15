@@ -551,10 +551,10 @@ onBeforeUnmount(() => {
 .v-theme--light {
   .settings-view {
     &__version_info {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-color-text-muted-light);
     }
     &__title {
-      background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
+      background-color: var(--a-color-surface-soft-light);
       color: map.get(colors.$adm-colors, 'regular');
     }
     :deep(.a-switcher-button),
@@ -564,7 +564,7 @@ onBeforeUnmount(() => {
       color: map.get(colors.$adm-colors, 'regular');
     }
     .v-divider {
-      border-color: map.get(colors.$adm-colors, 'secondary2');
+      border-color: var(--a-color-border-soft-light);
     }
   }
 }

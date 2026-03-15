@@ -130,7 +130,7 @@ export default defineComponent({
       color: map.get(colors.$adm-colors, 'grey');
 
       &--activated {
-        color: map.get(colors.$adm-colors, 'muted');
+        color: var(--a-color-text-muted-light);
       }
     }
 
@@ -138,7 +138,7 @@ export default defineComponent({
       color: map.get(colors.$adm-colors, 'grey');
 
       &--activated {
-        color: map.get(colors.$adm-colors, 'muted');
+        color: var(--a-color-text-muted-light);
       }
     }
   }

@@ -48,10 +48,12 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('--a-field-floating-label-scale')
     expect(content).toContain('--a-chat-connection-spinner-size')
     expect(content).toContain('--a-chat-preview-avatar-size')
+    expect(content).toContain('--a-color-text-muted-light')
     expect(content).toContain('--a-chat-preview-item-padding-inline-start')
     expect(content).toContain('--a-chat-preview-item-padding-inline-end')
     expect(content).toContain('--a-chat-preview-heading-gap')
     expect(content).toContain('--a-chat-trigger-hover-inset')
+    expect(content).toContain('--a-color-surface-soft-light')
   })
 
   it('uses tokenized toolbar typography, spacing and floating label transforms', () => {
@@ -76,6 +78,7 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('scale(var(--a-chat-toolbar-floating-label-scale))')
     expect(content).toContain('padding-inline-start: var(--a-chat-toolbar-padding-inline-start);')
     expect(content).toContain('gap: var(--a-chat-toolbar-content-gap-mobile);')
+    expect(content).toContain('background-color: var(--a-color-surface-soft-light);')
     expect(content).toContain(
       'margin-inline-end: var(--a-chat-toolbar-back-button-margin-inline-end-mobile) !important;'
     )
@@ -126,6 +129,8 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('transition: transform var(--a-chats-messages-move-duration);')
     expect(content).toContain('<v-row :class="`${className}__chats-actions`">')
     expect(content).toContain('margin: 0;')
+    expect(content).toContain('background-color: var(--a-color-surface-soft-light);')
+    expect(content).toContain('color: var(--a-color-text-muted-light);')
 
     expect(content).not.toContain('height: 56px;')
     expect(content).not.toContain(':size="24"')
@@ -134,6 +139,7 @@ describe('Chats UI style contract', () => {
     expect(content).not.toContain('--a-chats-title-font-weight: 300;')
     expect(content).not.toContain('--a-chats-connection-spinner-offset-inline-start: 34px;')
     expect(content).not.toContain('class="v-row--no-gutters"')
+    expect(content).not.toContain("color: map.get(colors.$adm-colors, 'muted');")
   })
 
   it('keeps chat preview spacing, line-height and icon sizes tokenized', () => {

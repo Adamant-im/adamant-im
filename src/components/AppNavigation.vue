@@ -168,7 +168,7 @@ onMounted(() => {
       color: map.get(colors.$adm-colors, 'regular');
     }
     :deep(.v-btn.v-btn:not(.v-btn--active)) {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-color-text-muted-light);
     }
     :deep(.v-bottom-navigation__content) {
       border-top: var(--a-app-navigation-border-width) solid map.get(settings.$grey, 'lighten-2');

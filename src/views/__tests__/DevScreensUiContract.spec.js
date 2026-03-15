@@ -38,6 +38,8 @@ describe('Dev screens UI style contract', () => {
     expect(tokensContent).toContain('--a-dev-screen-code-max-height')
     expect(tokensContent).toContain('--a-dev-screen-mobile-menu-max-height')
     expect(tokensContent).toContain('--a-icon-file-text-font-size')
+    expect(tokensContent).toContain('--a-color-surface-soft-light')
+    expect(tokensContent).toContain('--a-color-border-soft-light')
   })
 
   it('uses shared screen-padding and switcher-menu pattern in dev screens index', () => {
@@ -49,6 +51,8 @@ describe('Dev screens UI style contract', () => {
     expect(content).toContain('var(--a-dev-screen-title-padding-top)')
     expect(content).toContain('var(--a-dev-screen-bleed-inline)')
     expect(content).toContain('var(--a-dev-screen-item-padding-inline)')
+    expect(content).toContain('var(--a-color-surface-soft-light)')
+    expect(content).toContain('var(--a-color-border-soft-light)')
     expect(content).toContain('@include mixins.a-text-caption();')
     expect(content).toContain('`${className}__menu-list`')
     expect(content).toContain('`${className}__menu-item`')
@@ -112,6 +116,8 @@ describe('Dev screens UI style contract', () => {
     expect(walletsContent).toContain('border-radius: var(--a-dev-screen-code-border-radius);')
     expect(walletsContent).toContain('border: var(--a-border-width-thin) solid;')
     expect(walletsContent).toContain('max-height: var(--a-dev-screen-code-max-height);')
+    expect(walletsContent).toContain('var(--a-color-surface-soft-light)')
+    expect(walletsContent).toContain('var(--a-color-border-soft-light)')
     expect(walletsContent).toContain('fieldColumn')
     expect(walletsContent).toContain('fieldColumnLast')
     expect(walletsContent).toContain('&__field-column')

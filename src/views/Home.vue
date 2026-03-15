@@ -336,7 +336,7 @@ watch(currentWallet, (value) => {
   .account-view {
     &__wallets {
       :deep(.v-tabs-bar) {
-        background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
+        background-color: var(--a-color-surface-soft-light);
       }
       :deep(.v-tabs-slider) {
         background-color: map.get(colors.$adm-colors, 'primary');

@@ -28,6 +28,8 @@ describe('Home UI style contract', () => {
     expect(content).toContain('--a-wallet-card-item-padding-inline-start')
     expect(content).toContain('--a-wallet-card-item-padding-inline-end')
     expect(content).toContain('--a-wallet-card-subtitle-line-height')
+    expect(content).toContain('--a-color-surface-soft-light')
+    expect(content).toContain('--a-color-border-soft-light')
     expect(content).toContain('calc(var(--a-space-6) + var(--a-space-1))')
     expect(content).toContain('var(--a-space-4)')
     expect(content).toContain('var(--a-line-height-md)')
@@ -78,6 +80,7 @@ describe('Home UI style contract', () => {
     expect(content).toContain('var(--a-account-tab-min-width)')
     expect(content).toContain('var(--a-account-tab-affix-width)')
     expect(content).toContain('var(--a-account-tab-icon-offset)')
+    expect(content).toContain('var(--a-color-surface-soft-light)')
     expect(content).toContain('var(--a-radius-round)')
     expect(content).not.toContain(
       "background-color: map.get(colors.$adm-colors, 'primary') !important;"
