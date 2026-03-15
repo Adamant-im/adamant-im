@@ -127,7 +127,7 @@ describe('Secondary dialogs UI contract', () => {
     expect(nodesOfflineContent).toContain('`${className}__btn-block`')
     expect(nodesOfflineContent).not.toContain("[`${className}__btn-block`, 'text-center']")
     expect(nodesOfflineContent).toContain("name: 'Nodes'")
-    expect(nodesOfflineContent).toContain('resetSettingsView: true')
+    expect(nodesOfflineContent).toContain('forceResetSettingsView: true')
     expect(nodesOfflineContent).not.toContain('to="/options/nodes"')
 
     expect(warningAddressesContent).not.toContain('margin-top: 15px;')

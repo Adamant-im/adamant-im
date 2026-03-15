@@ -67,10 +67,16 @@ export default {
 
     const openNodesScreen = () => {
       showDialog.value = false
+      store.commit('options/setSettingsLastRoute', '/options/nodes')
+      store.commit('options/setSettingsScrollPosition', {
+        path: '/options/nodes',
+        top: 0
+      })
+
       router.push({
         name: 'Nodes',
         state: {
-          resetSettingsView: true
+          forceResetSettingsView: true
         }
       })
     }

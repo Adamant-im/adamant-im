@@ -129,8 +129,9 @@ const wallets = computed<Wallet[]>(() => {
   const state = store.state
   return orderedVisibleWalletSymbols.value.map((crypto: CoinSymbol) => {
     const key = crypto.symbol.toLowerCase()
-    const address = crypto.symbol === Cryptos.ADM ? state.address : state[key].address
-    const balance = crypto.symbol === Cryptos.ADM ? state.balance : state[key].balance
+    const walletState = crypto.symbol === Cryptos.ADM ? null : state[key]
+    const address = crypto.symbol === Cryptos.ADM ? state.address : walletState?.address || ''
+    const balance = crypto.symbol === Cryptos.ADM ? state.balance : walletState?.balance || 0
     const erc20 = isErc20(crypto.symbol.toUpperCase() as CryptoSymbol)
     const currentRate = state.rate.rates[`${crypto.symbol}/${currentCurrency.value}`]
     const rate = currentRate !== undefined ? Number((balance * currentRate).toFixed(2)) : 0

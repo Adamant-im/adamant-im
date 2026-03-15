@@ -24,11 +24,13 @@
 
 <script lang="ts" setup>
 import BackButton from '@/components/common/BackButton/BackButton.vue'
-import { computed } from 'vue'
+import { computed, inject, nextTick, Ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 import { useConsiderOffline } from '@/hooks/useConsiderOffline'
 import { filterRouteParams } from '@/router/filterRouteParams'
 import { COMMON_INLINE_SPINNER_SIZE } from '@/components/common/helpers/uiMetrics'
+import { sidebarLayoutKey } from '@/lib/constants'
 
 type Props = {
   title?: string
@@ -56,12 +58,19 @@ const props = withDefaults(defineProps<Props>(), {
   sticky: false
 })
 
+const store = useStore()
 const route = useRoute()
 const router = useRouter()
+const sidebarLayoutRef = inject<Ref>(sidebarLayoutKey)
 
 const className = 'app-toolbar-centered'
 
 const { consideredOffline } = useConsiderOffline()
+const SETTINGS_PATH_PREFIX = '/options'
+
+const isSettingsPath = (path?: string) => {
+  return !!path?.startsWith(SETTINGS_PATH_PREFIX)
+}
 
 const classes = computed(() => {
   return {
@@ -91,11 +100,32 @@ const goBack = () => {
 
   if (parentRoute) {
     const params = filterRouteParams(parentRoute.path, route.params)
-
-    router.push({
+    const targetRoute = {
       name: parentRoute.name,
       ...(Object.keys(params).length > 0 ? { params } : {})
-    })
+    }
+    const targetPath = router.resolve(targetRoute).path
+
+    if (isSettingsPath(route.path) && isSettingsPath(targetPath) && sidebarLayoutRef?.value) {
+      store.commit('options/setSettingsLastRoute', route.path)
+      store.commit('options/setSettingsScrollPosition', {
+        path: route.path,
+        top: sidebarLayoutRef.value.scrollTop
+      })
+
+      const targetTop = store.getters['options/settingsScrollPosition'](targetPath)
+
+      router.push(targetRoute).then(async () => {
+        await nextTick()
+        await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+        sidebarLayoutRef.value?.scrollTo({ top: targetTop })
+        await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+        sidebarLayoutRef.value?.scrollTo({ top: targetTop })
+      })
+      return
+    }
+
+    router.push(targetRoute)
     return
   }
 

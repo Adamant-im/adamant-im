@@ -61,6 +61,10 @@ const mutations = {
       ...state.settingsScrollPositions,
       [path]: top
     }
+  },
+  resetSettingsViewState(state) {
+    state.settingsLastRoute = '/options'
+    state.settingsScrollPositions = {}
   }
 }
 

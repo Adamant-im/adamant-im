@@ -130,6 +130,9 @@ describe('Navigation UI style contract', () => {
     expect(toolbarContent).toContain(
       'const params = filterRouteParams(parentRoute.path, route.params)'
     )
+    expect(toolbarContent).toContain('const store = useStore()')
+    expect(toolbarContent).toContain('const sidebarLayoutRef = inject<Ref>(sidebarLayoutKey)')
+    expect(toolbarContent).toContain("store.commit('options/setSettingsScrollPosition', {")
     expect(sidebarContent).toContain(
       'const params = filterRouteParams(parentRoute.path, route.params)'
     )

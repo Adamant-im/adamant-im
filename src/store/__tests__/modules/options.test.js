@@ -58,4 +58,21 @@ describe('Store: options.js', () => {
     expect(module.getters.settingsScrollPosition(state)('/options/nodes')).toBe(92)
     expect(module.getters.settingsScrollPosition(state)('/options')).toBe(0)
   })
+
+  it('resets saved settings route and scroll positions', () => {
+    module.mutations.setSettingsLastRoute(state, '/options/nodes')
+    module.mutations.setSettingsScrollPosition(state, {
+      path: '/options',
+      top: 260
+    })
+    module.mutations.setSettingsScrollPosition(state, {
+      path: '/options/nodes',
+      top: 120
+    })
+
+    module.mutations.resetSettingsViewState(state)
+
+    expect(state.settingsLastRoute).toBe('/options')
+    expect(state.settingsScrollPositions).toEqual({})
+  })
 })

@@ -193,4 +193,126 @@ test.describe('Navigation layout regressions', () => {
     expect(restoredMetrics).not.toBeNull()
     expect(Math.abs((restoredMetrics ?? 0) - (targetScrollTop ?? 0))).toBeLessThanOrEqual(4)
   })
+
+  test('does not leak parent settings scroll into child settings screens', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await loginWithNewAccount(page)
+
+    await page.goto('/options')
+    await expect(page).toHaveURL(/\/options$/)
+    await expect(page.locator('.settings-view')).toBeVisible()
+
+    await page.evaluate(async () => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+
+      if (!scrollPane) {
+        return
+      }
+
+      scrollPane.scrollTo({ top: 260 })
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+    })
+
+    await page.evaluate(() => {
+      const item = document.querySelector('.actions-list .v-list-item') as HTMLElement | null
+      item?.click()
+    })
+    await expect(page).toHaveURL(/\/options\/nodes$/)
+
+    const childScrollTop = await page.evaluate(() => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+
+      return scrollPane ? Math.ceil(scrollPane.scrollTop) : null
+    })
+
+    expect(childScrollTop).not.toBeNull()
+    expect(childScrollTop ?? 999).toBeLessThanOrEqual(4)
+  })
+
+  test('restores exact root and child settings scroll positions across back navigation', async ({
+    page
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await loginWithNewAccount(page)
+
+    await page.goto('/options')
+    await expect(page).toHaveURL(/\/options$/)
+    await expect(page.locator('.settings-view')).toBeVisible()
+
+    const rootScrollTop = await page.evaluate(async () => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+
+      if (!scrollPane) {
+        return null
+      }
+
+      scrollPane.scrollTo({ top: scrollPane.scrollHeight })
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+
+      return Math.ceil(scrollPane.scrollTop)
+    })
+
+    expect(rootScrollTop).not.toBeNull()
+    expect(rootScrollTop ?? 0).toBeGreaterThan(100)
+
+    await page.evaluate(() => {
+      const item = document.querySelector('.actions-list .v-list-item') as HTMLElement | null
+      item?.click()
+    })
+    await expect(page).toHaveURL(/\/options\/nodes$/)
+    await expect(page.locator('.settings-table-shell')).toBeVisible()
+
+    const childScrollTop = await page.evaluate(async () => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+
+      if (!scrollPane) {
+        return null
+      }
+
+      scrollPane.scrollTo({ top: 120 })
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+
+      return Math.ceil(scrollPane.scrollTop)
+    })
+
+    expect(childScrollTop).not.toBeNull()
+    expect(childScrollTop ?? 0).toBeGreaterThan(40)
+
+    await page.locator('.back-button').click()
+    await expect(page).toHaveURL(/\/options$/)
+
+    const restoredRootScrollTop = await page.evaluate(() => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+
+      return scrollPane ? Math.ceil(scrollPane.scrollTop) : null
+    })
+
+    expect(restoredRootScrollTop).not.toBeNull()
+    expect(Math.abs((restoredRootScrollTop ?? 0) - (rootScrollTop ?? 0))).toBeLessThanOrEqual(1)
+
+    await page.evaluate(() => {
+      const item = document.querySelector('.actions-list .v-list-item') as HTMLElement | null
+      item?.click()
+    })
+    await expect(page).toHaveURL(/\/options\/nodes$/)
+    await expect(page.locator('.settings-table-shell')).toBeVisible()
+
+    const restoredChildScrollTop = await page.evaluate(async () => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+
+      if (!scrollPane) {
+        return null
+      }
+
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+
+      return Math.ceil(scrollPane.scrollTop)
+    })
+
+    expect(restoredChildScrollTop).not.toBeNull()
+    expect(Math.abs((restoredChildScrollTop ?? 0) - (childScrollTop ?? 0))).toBeLessThanOrEqual(1)
+  })
 })

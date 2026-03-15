@@ -148,19 +148,19 @@
             <v-list-item
               :title="t('options.nodes_list')"
               :append-icon="mdiChevronRight"
-              @click="router.push('/options/nodes')"
+              @click="navigateToSettingsChild('/options/nodes')"
             />
 
             <v-list-item
               :title="t('options.wallets_list')"
               :append-icon="mdiChevronRight"
-              @click="router.push('/options/wallets')"
+              @click="navigateToSettingsChild('/options/wallets')"
             />
 
             <v-list-item
               :title="t('options.export_keys.title')"
               :append-icon="mdiChevronRight"
-              @click="router.push('/options/export-keys')"
+              @click="navigateToSettingsChild('/options/export-keys')"
             />
 
             <v-list-item
@@ -173,7 +173,7 @@
               v-if="isDevModeEnabled"
               :title="t('options.dev_screens')"
               :append-icon="mdiChevronRight"
-              @click="router.push('/options/dev-screens')"
+              @click="navigateToSettingsChild('/options/dev-screens')"
             />
 
             <v-divider />
@@ -234,13 +234,53 @@ const sidebarLayoutRef = inject<Ref>(sidebarLayoutKey)
 
 const tapCount = ref(0)
 const SETTINGS_STATE_RESET_KEY = 'resetSettingsView'
+const SETTINGS_STATE_FORCE_RESET_KEY = 'forceResetSettingsView'
 const SETTINGS_PATH_PREFIX = '/options'
+const activeSettingsScrollPath = ref(route.path)
+const isRestoringSettingsScroll = ref(false)
+let settingsRestoreFrame = 0
+let settingsRestoreObserver: ResizeObserver | null = null
 
 const isSettingsPath = (path: string) => path.startsWith(SETTINGS_PATH_PREFIX)
 const getCurrentScrollTop = () => sidebarLayoutRef?.value?.scrollTop || 0
-const shouldResetSettingsViewState = () => Boolean(window.history.state?.[SETTINGS_STATE_RESET_KEY])
+const applySettingsScrollTop = (top: number) => {
+  if (!sidebarLayoutRef?.value) {
+    return
+  }
+
+  sidebarLayoutRef.value.scrollTop = top
+  sidebarLayoutRef.value.scrollTo({ top })
+}
+const shouldResetSettingsViewState = (path: string) => {
+  if (window.history.state?.[SETTINGS_STATE_FORCE_RESET_KEY]) {
+    return true
+  }
+
+  if (!window.history.state?.[SETTINGS_STATE_RESET_KEY]) {
+    return false
+  }
+
+  return store.getters['options/settingsScrollPosition'](path) <= 0
+}
+const stopSettingsRestore = () => {
+  if (settingsRestoreFrame) {
+    window.cancelAnimationFrame(settingsRestoreFrame)
+    settingsRestoreFrame = 0
+  }
+
+  settingsRestoreObserver?.disconnect()
+  settingsRestoreObserver = null
+}
+const waitForSettingsViewFrame = async () => {
+  await nextTick()
+  await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+}
 const onSidebarScroll = () => {
-  saveSettingsViewState(route.path)
+  if (isRestoringSettingsScroll.value) {
+    return
+  }
+
+  saveSettingsViewState(activeSettingsScrollPath.value)
 }
 
 const saveSettingsViewState = (path = route.path) => {
@@ -260,22 +300,78 @@ const restoreSettingsViewState = async (path = route.path) => {
     return
   }
 
-  await nextTick()
+  stopSettingsRestore()
+  isRestoringSettingsScroll.value = true
+  await waitForSettingsViewFrame()
 
-  const top = shouldResetSettingsViewState()
-    ? 0
-    : store.getters['options/settingsScrollPosition'](path)
+  const shouldReset = shouldResetSettingsViewState(path)
+  const top = shouldReset ? 0 : store.getters['options/settingsScrollPosition'](path)
 
-  sidebarLayoutRef.value.scrollTo({ top })
+  applySettingsScrollTop(top)
+  await waitForSettingsViewFrame()
+  applySettingsScrollTop(top)
 
-  if (shouldResetSettingsViewState()) {
+  const finalizeRestore = (restoredTop: number) => {
+    stopSettingsRestore()
+    activeSettingsScrollPath.value = path
     store.commit('options/setSettingsScrollPosition', {
       path,
-      top: 0
+      top: restoredTop
     })
+
+    store.commit('options/setSettingsLastRoute', path)
+    isRestoringSettingsScroll.value = false
   }
 
-  store.commit('options/setSettingsLastRoute', path)
+  if (shouldReset || top <= 0) {
+    finalizeRestore(0)
+    return
+  }
+
+  const restoreDeadline = window.performance.now() + 1500
+  let stableFrames = 0
+  let lastTop = -1
+
+  const continueRestore = () => {
+    if (!sidebarLayoutRef?.value || route.path !== path) {
+      stopSettingsRestore()
+      isRestoringSettingsScroll.value = false
+      return
+    }
+
+    applySettingsScrollTop(top)
+
+    const currentTop = getCurrentScrollTop()
+    const canReachTop =
+      sidebarLayoutRef.value.scrollHeight - sidebarLayoutRef.value.clientHeight >= top - 1
+    const reachedTop = Math.abs(currentTop - top) <= 1 && canReachTop
+
+    if (reachedTop) {
+      stableFrames = currentTop === lastTop ? stableFrames + 1 : 1
+      lastTop = currentTop
+
+      if (stableFrames >= 2) {
+        finalizeRestore(currentTop)
+        return
+      }
+    } else {
+      stableFrames = 0
+      lastTop = currentTop
+    }
+
+    if (window.performance.now() >= restoreDeadline) {
+      finalizeRestore(currentTop)
+      return
+    }
+
+    settingsRestoreFrame = window.requestAnimationFrame(continueRestore)
+  }
+
+  settingsRestoreObserver = new ResizeObserver(() => {
+    applySettingsScrollTop(top)
+  })
+  settingsRestoreObserver.observe(sidebarLayoutRef.value)
+  settingsRestoreFrame = window.requestAnimationFrame(continueRestore)
 }
 
 const isPasswordDialogDisplayed = computed({
@@ -444,23 +540,36 @@ const onVersionClick = () => {
   }
 }
 
+const navigateToSettingsChild = (path: string) => {
+  saveSettingsViewState(route.path)
+
+  const savedTop = store.getters['options/settingsScrollPosition'](path)
+
+  router.push({
+    path,
+    state: {
+      resetSettingsView: savedTop <= 0
+    }
+  })
+}
+
 onMounted(() => {
   sidebarLayoutRef?.value?.addEventListener('scroll', onSidebarScroll, { passive: true })
   restoreSettingsViewState()
 })
 
 onBeforeUnmount(() => {
+  stopSettingsRestore()
   sidebarLayoutRef?.value?.removeEventListener('scroll', onSidebarScroll)
-  saveSettingsViewState()
+
+  if (!isRestoringSettingsScroll.value) {
+    saveSettingsViewState(activeSettingsScrollPath.value)
+  }
 })
 
 watch(
   () => route.path,
-  async (nextPath, previousPath) => {
-    if (previousPath) {
-      saveSettingsViewState(previousPath)
-    }
-
+  async (nextPath) => {
     await restoreSettingsViewState(nextPath)
   }
 )

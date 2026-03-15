@@ -47,6 +47,11 @@ describe('Home UI style contract', () => {
     expect(content).toContain('const walletTabsKey = computed(() => {')
     expect(content).toContain('const walletWindowKey = computed(() => {')
     expect(content).toContain(
+      'const walletState = crypto.symbol === Cryptos.ADM ? null : state[key]'
+    )
+    expect(content).toContain("walletState?.address || ''")
+    expect(content).toContain('walletState?.balance || 0')
+    expect(content).toContain(
       "orderedVisibleWalletSymbols.value.map((wallet: CoinSymbol) => wallet.symbol).join(',')"
     )
     expect(content).toContain('return `tabs-${walletOrderKey.value}`')
