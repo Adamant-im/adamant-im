@@ -80,13 +80,14 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+@use '@/assets/styles/components/_chat-action-surface.scss' as chatActionSurface;
+
 .message-actions-list {
   --a-chat-message-actions-list-padding-block: 0;
-  --a-chat-message-actions-list-radius: var(--a-radius-sm);
   --a-chat-message-actions-list-offset-top: var(--a-space-2);
+  @include chatActionSurface.a-chat-action-surface();
   padding-top: var(--a-chat-message-actions-list-padding-block);
   padding-bottom: var(--a-chat-message-actions-list-padding-block);
-  border-radius: var(--a-chat-message-actions-list-radius);
   margin-top: var(--a-chat-message-actions-list-offset-top);
 }
 </style>

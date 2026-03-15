@@ -265,12 +265,12 @@ export default defineComponent({
   align-items: center;
 
   &--pending {
-    color: rgba(var(--v-theme-on-surface), 0.72);
+    color: var(--a-color-text-on-surface-muted);
     pointer-events: none;
   }
 
   &--rejected {
-    color: rgba(var(--v-theme-on-surface), 0.72);
+    color: var(--a-color-text-on-surface-muted);
 
     :deep(.v-icon) {
       cursor: pointer;

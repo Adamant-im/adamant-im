@@ -202,10 +202,10 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, inject, computed, onBeforeUnmount, onMounted, Ref, ref } from 'vue'
+import { nextTick, inject, computed, onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue'
 import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant } from '@mdi/js'
 import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useTheme } from 'vuetify'
 
@@ -215,25 +215,68 @@ import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import { resetPinia } from '@/plugins/pinia'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
-import { useSavedScroll } from '@/hooks/useSavedScroll'
 import { sidebarLayoutKey } from '@/lib/constants'
 import { useChatStateStore } from '@/stores/modal-state'
 import { logger } from '@/utils/devTools/logger'
 
 const store = useStore()
 const chatStateStore = useChatStateStore()
+const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
 const theme = useTheme()
 
 const className = 'settings-view'
-
-const { hasView } = useSavedScroll()
+const hasView = computed(() => route.matched.length > 2)
 
 const appVersion = inject('appVersion')
 const sidebarLayoutRef = inject<Ref>(sidebarLayoutKey)
 
 const tapCount = ref(0)
+const SETTINGS_STATE_RESET_KEY = 'resetSettingsView'
+const SETTINGS_PATH_PREFIX = '/options'
+
+const isSettingsPath = (path: string) => path.startsWith(SETTINGS_PATH_PREFIX)
+const getCurrentScrollTop = () => sidebarLayoutRef?.value?.scrollTop || 0
+const shouldResetSettingsViewState = () => Boolean(window.history.state?.[SETTINGS_STATE_RESET_KEY])
+const onSidebarScroll = () => {
+  saveSettingsViewState(route.path)
+}
+
+const saveSettingsViewState = (path = route.path) => {
+  if (!isSettingsPath(path) || !sidebarLayoutRef?.value) {
+    return
+  }
+
+  store.commit('options/setSettingsLastRoute', path)
+  store.commit('options/setSettingsScrollPosition', {
+    path,
+    top: getCurrentScrollTop()
+  })
+}
+
+const restoreSettingsViewState = async (path = route.path) => {
+  if (!isSettingsPath(path) || !sidebarLayoutRef?.value) {
+    return
+  }
+
+  await nextTick()
+
+  const top = shouldResetSettingsViewState()
+    ? 0
+    : store.getters['options/settingsScrollPosition'](path)
+
+  sidebarLayoutRef.value.scrollTo({ top })
+
+  if (shouldResetSettingsViewState()) {
+    store.commit('options/setSettingsScrollPosition', {
+      path,
+      top: 0
+    })
+  }
+
+  store.commit('options/setSettingsLastRoute', path)
+}
 
 const isPasswordDialogDisplayed = computed({
   get() {
@@ -246,18 +289,6 @@ const isPasswordDialogDisplayed = computed({
 
 const stayLoggedIn = computed(() => {
   return store.state.options.stayLoggedIn
-})
-
-const scrollTopPosition = computed({
-  get() {
-    return store.state.options.scrollTopPosition
-  },
-  set(value) {
-    store.commit('options/updateOption', {
-      key: 'scrollTopPosition',
-      value
-    })
-  }
 })
 
 const sendMessageOnEnter = computed({
@@ -414,20 +445,25 @@ const onVersionClick = () => {
 }
 
 onMounted(() => {
-  nextTick(() => {
-    if (sidebarLayoutRef && scrollTopPosition.value) {
-      sidebarLayoutRef.value.scrollTo({
-        top: scrollTopPosition.value
-      })
-    }
-  })
+  sidebarLayoutRef?.value?.addEventListener('scroll', onSidebarScroll, { passive: true })
+  restoreSettingsViewState()
 })
 
 onBeforeUnmount(() => {
-  if (sidebarLayoutRef) {
-    scrollTopPosition.value = sidebarLayoutRef.value.scrollTop || 0
-  }
+  sidebarLayoutRef?.value?.removeEventListener('scroll', onSidebarScroll)
+  saveSettingsViewState()
 })
+
+watch(
+  () => route.path,
+  async (nextPath, previousPath) => {
+    if (previousPath) {
+      saveSettingsViewState(previousPath)
+    }
+
+    await restoreSettingsViewState(nextPath)
+  }
+)
 </script>
 
 <style lang="scss" scoped>

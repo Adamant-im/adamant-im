@@ -8,6 +8,8 @@ import AChatMessage from '../AChatMessage.vue'
 import AChatAttachment from '../AChatAttachment/AChatAttachment.vue'
 import AChatTransaction from '../AChatTransaction.vue'
 import { TransactionStatus } from '@/lib/constants'
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 ;(globalThis as any).config = new Proxy(
   {},
   {
@@ -309,8 +311,6 @@ describe('AChat sending status UI', () => {
   })
 
   it('shows inline pending status for grouped queued outgoing text messages only after the delay', async () => {
-    vi.useFakeTimers()
-
     const store = createTestStore({
       pendingMessages: {
         'message-1': {
@@ -327,12 +327,12 @@ describe('AChat sending status UI', () => {
 
     expect(wrapper.find('.a-chat__inline-status--pending').exists()).toBe(false)
 
-    await vi.advanceTimersByTimeAsync(999)
+    await wait(600)
     await nextTick()
 
     expect(wrapper.find('.a-chat__inline-status--pending').exists()).toBe(false)
 
-    await vi.advanceTimersByTimeAsync(1)
+    await wait(500)
     await nextTick()
 
     expect(wrapper.find('.a-chat__inline-status--pending').exists()).toBe(true)
@@ -350,8 +350,6 @@ describe('AChat sending status UI', () => {
   })
 
   it('does not show inline pending status for grouped text messages outside the retry queue', async () => {
-    vi.useFakeTimers()
-
     const store = createTestStore()
     const wrapper = mount(AChatMessage, {
       props: {
@@ -360,7 +358,7 @@ describe('AChat sending status UI', () => {
       global: globalMountOptions(store)
     })
 
-    await vi.advanceTimersByTimeAsync(1_100)
+    await wait(1_100)
     await nextTick()
 
     expect(wrapper.find('.a-chat__inline-status--pending').exists()).toBe(false)

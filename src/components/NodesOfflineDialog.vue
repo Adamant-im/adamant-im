@@ -16,9 +16,8 @@
 
       <v-col cols="12" :class="`${className}__btn-block`">
         <v-btn
-          @click="showDialog = false"
+          @click="openNodesScreen"
           :class="[`${className}__btn-free-tokens`, 'a-btn-primary']"
-          to="/options/nodes"
           variant="text"
           :prepend-icon="mdiOpenInNew"
         >
@@ -35,6 +34,7 @@
 import { computed, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import { NodeType } from '@/lib/nodes/types'
 import { mdiOpenInNew } from '@mdi/js'
 
@@ -54,6 +54,7 @@ export default {
   setup() {
     const { t } = useI18n()
     const store = useStore()
+    const router = useRouter()
 
     const showDialog = computed({
       get() {
@@ -64,12 +65,23 @@ export default {
       }
     })
 
+    const openNodesScreen = () => {
+      showDialog.value = false
+      router.push({
+        name: 'Nodes',
+        state: {
+          resetSettingsView: true
+        }
+      })
+    }
+
     return {
       t,
       classes,
       showDialog,
       className,
-      mdiOpenInNew
+      mdiOpenInNew,
+      openNodesScreen
     }
   }
 }

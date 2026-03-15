@@ -81,6 +81,10 @@ describe('Navigation UI style contract', () => {
     expect(content).toContain('var(--a-color-text-muted-light)')
     expect(content).toContain('var(--a-color-text-inverse)')
     expect(content).toContain('var(--a-color-text-muted-dark)')
+    expect(content).toContain(
+      "const settingsRouteTarget = computed(() => store.getters['options/settingsLastRoute'] || '/options')"
+    )
+    expect(content).toContain(':to="settingsRouteTarget"')
     expect(content).not.toContain('height="50"')
     expect(content).not.toContain('font-weight: 300;')
     expect(content).not.toContain('font-size: 14px;')

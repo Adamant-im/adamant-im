@@ -25,12 +25,16 @@ const state = () => ({
   suppressWarningOnAddressesNotification: false,
   currentRate: Rates.USD,
   scrollTopPosition: 0,
+  settingsLastRoute: '/options',
+  settingsScrollPositions: {},
   devModeEnabled: false // Dev screens access
 })
 
 const getters = {
   isLoginViaPassword: (state) => state.stayLoggedIn,
   scrollTopPosition: (state) => state.scrollTopPosition,
+  settingsLastRoute: (state) => state.settingsLastRoute,
+  settingsScrollPosition: (state) => (path) => state.settingsScrollPositions[path] ?? 0,
   currentNodesTab: (state) => state.currentNodesTab,
   wasSendingFunds: (state) => state.sendFundsData.wasSendingFunds,
   savedCryptoCurrency: (state) => state.sendFundsData.cryptoCurrency,
@@ -47,6 +51,15 @@ const mutations = {
   updateOption(state, { key, value }) {
     if (key in state) {
       state[key] = value
+    }
+  },
+  setSettingsLastRoute(state, path) {
+    state.settingsLastRoute = path
+  },
+  setSettingsScrollPosition(state, { path, top }) {
+    state.settingsScrollPositions = {
+      ...state.settingsScrollPositions,
+      [path]: top
     }
   }
 }

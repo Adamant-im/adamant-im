@@ -59,6 +59,10 @@ const actionsOverlayPath = path.resolve(
   currentDir,
   '../../components/AChat/AChatActionsOverlay.vue'
 )
+const actionSurfaceMixinPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_chat-action-surface.scss'
+)
 const reactionSelectPath = path.resolve(
   currentDir,
   '../../components/AChat/AChatReactionSelect/AChatReactionSelect.vue'
@@ -156,6 +160,7 @@ describe('AChat UI style contract', () => {
     expect(messageContent).toContain('right: calc(100% + var(--a-space-2));')
     expect(messageContent).toContain('&--pending {')
     expect(messageContent).toContain('&--rejected {')
+    expect(messageContent).toContain('var(--a-color-text-on-surface-muted)')
     expect(messageContent).toContain('pointer-events: none;')
     expect(messageContent).not.toContain(':title="t(\'chats.retry_message\')"')
     expect(attachmentContent).toContain(':size="CHAT_STATUS_ICON_ERROR_SIZE"')
@@ -194,6 +199,7 @@ describe('AChat UI style contract', () => {
     const menuContent = readFileSync(actionsMenuPath, 'utf8')
     const overlayContent = readFileSync(actionsOverlayPath, 'utf8')
     const tokensContent = readFileSync(genericTokensPath, 'utf8')
+    const actionSurfaceMixinContent = readFileSync(actionSurfaceMixinPath, 'utf8')
 
     expect(dropdownContent).toContain(':min-width="CHAT_ACTIONS_DROPDOWN_MIN_WIDTH"')
     expect(dropdownContent).toContain(':max-width="CHAT_ACTIONS_DROPDOWN_MAX_WIDTH"')
@@ -215,10 +221,21 @@ describe('AChat UI style contract', () => {
 
     expect(listContent).toContain('--a-chat-message-actions-list-offset-top')
     expect(listContent).toContain("t('chats.chat_actions.retry')")
+    expect(listContent).toContain('chatActionSurface.a-chat-action-surface()')
     expect(menuContent).toContain("t('chats.chat_actions.retry')")
     expect(menuContent).toContain('--a-chat-message-actions-menu-overlay-inset-inline')
+    expect(menuContent).toContain('chatActionSurface.a-chat-action-surface()')
+    expect(actionSurfaceMixinContent).toContain(
+      '@mixin a-chat-action-surface($radius: var(--a-chat-action-surface-radius))'
+    )
+    expect(actionSurfaceMixinContent).toContain('background-color: rgb(var(--v-theme-surface));')
+    expect(actionSurfaceMixinContent).toContain(
+      'border: var(--a-border-width-thin) solid rgba(var(--v-border-color), var(--v-border-opacity));'
+    )
     expect(tokensContent).toContain('--a-chat-message-actions-dropdown-top-gap')
     expect(tokensContent).toContain('--a-chat-actions-overlay-reaction-height')
+    expect(tokensContent).toContain('--a-chat-action-surface-radius')
+    expect(tokensContent).toContain('--a-color-text-on-surface-muted')
     expect(overlayContent).toContain('--a-chat-actions-overlay-reaction-height')
     expect(overlayContent).toContain('--a-chat-actions-overlay-reaction-gap')
     expect(overlayContent).toContain('--a-chat-actions-overlay-transition-duration')
@@ -236,9 +253,8 @@ describe('AChat UI style contract', () => {
 
     expect(reactionSelectContent).toContain('COMMON_REACTION_MORE_BUTTON_SIZE')
     expect(reactionSelectContent).toContain('COMMON_ICON_SIZE')
-    expect(reactionSelectContent).toContain('background-color: rgb(var(--v-theme-surface));')
     expect(reactionSelectContent).toContain(
-      'border: var(--a-border-width-thin) solid rgba(var(--v-border-color), var(--v-border-opacity));'
+      'chatActionSurface.a-chat-action-surface(var(--a-radius-md))'
     )
     expect(reactionSelectContent).toContain('background-color: transparent !important;')
     expect(reactionSelectContent).not.toContain(':size="32"')

@@ -34,6 +34,7 @@
   --a-color-text-muted-light: rgba(0, 0, 0, 0.54);
   --a-color-text-regular: #4a4a4a;
   --a-color-text-muted-dark: hsla(0, 0%, 100%, 0.7);
+  --a-color-text-on-surface-muted: rgba(var(--v-theme-on-surface), 0.72);
   --a-color-text-inverse: #fff;
   --a-color-surface-soft-light: rgba(245, 245, 245, 0.3);
   --a-color-border-soft-light: #f5f5f5;
@@ -171,6 +172,7 @@
   --a-chat-files-preview-size: calc(var(--a-space-10) * 2);
   --a-chat-files-preview-remove-offset: calc(var(--a-space-1) / 2);
   --a-chat-message-actions-dropdown-top-gap: 0px;
+  --a-chat-action-surface-radius: var(--a-radius-sm);
   --a-logo-size: 213px;
   --a-logo-size-lg: 300px;
   --a-emoji-picker-radius: var(--a-radius-sm);

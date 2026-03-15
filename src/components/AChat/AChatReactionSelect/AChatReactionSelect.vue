@@ -105,15 +105,14 @@ export default defineComponent({
 
 <style lang="scss">
 @use 'sass:map';
+@use '@/assets/styles/components/_chat-action-surface.scss' as chatActionSurface;
 @use '@/assets/styles/settings/_colors.scss';
 @use 'vuetify/settings';
 
 .a-chat-reaction-select {
-  border-radius: var(--a-radius-md);
+  @include chatActionSurface.a-chat-action-surface(var(--a-radius-md));
   cursor: pointer;
   user-select: none;
-  background-color: rgb(var(--v-theme-surface));
-  border: var(--a-border-width-thin) solid rgba(var(--v-border-color), var(--v-border-opacity));
 
   &__predefined-reactions {
     display: flex;

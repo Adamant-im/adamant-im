@@ -37,7 +37,7 @@
     </v-btn>
 
     <!-- Settings -->
-    <v-btn :class="`${className}__button`" to="/options" draggable="false">
+    <v-btn :class="`${className}__button`" :to="settingsRouteTarget" draggable="false">
       <v-icon :icon="mdiCog" />
       <span :class="`${className}__label`">{{ t('bottom.settings_button') }}</span>
     </v-btn>
@@ -89,6 +89,7 @@ const numOfNewMessages = computed(() => store.getters['chat/totalNumOfNewMessage
 const walletShouldBeVisible = computed(() => {
   return !!store.getters['wallets/getVisibleSymbolsCount']
 })
+const settingsRouteTarget = computed(() => store.getters['options/settingsLastRoute'] || '/options')
 
 watch(route, () => {
   currentPageIndex.value = getCurrentPageIndex()

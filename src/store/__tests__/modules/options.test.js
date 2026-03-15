@@ -33,4 +33,29 @@ describe('Store: options.js', () => {
 
     expect(state.nonExistentOption).toBe(undefined)
   })
+
+  it('stores the last visited settings route', () => {
+    expect(state.settingsLastRoute).toBe('/options')
+
+    module.mutations.setSettingsLastRoute(state, '/options/wallets')
+
+    expect(state.settingsLastRoute).toBe('/options/wallets')
+  })
+
+  it('stores settings scroll positions per route', () => {
+    expect(module.getters.settingsScrollPosition(state)('/options')).toBe(0)
+
+    module.mutations.setSettingsScrollPosition(state, {
+      path: '/options/wallets',
+      top: 184
+    })
+    module.mutations.setSettingsScrollPosition(state, {
+      path: '/options/nodes',
+      top: 92
+    })
+
+    expect(module.getters.settingsScrollPosition(state)('/options/wallets')).toBe(184)
+    expect(module.getters.settingsScrollPosition(state)('/options/nodes')).toBe(92)
+    expect(module.getters.settingsScrollPosition(state)('/options')).toBe(0)
+  })
 })

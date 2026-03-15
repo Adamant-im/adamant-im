@@ -18,7 +18,8 @@ describe('AppNavigation.vue', () => {
     const store = createStore({
       getters: {
         'chat/totalNumOfNewMessages': () => 5,
-        'wallets/getVisibleSymbolsCount': () => 1
+        'wallets/getVisibleSymbolsCount': () => 1,
+        'options/settingsLastRoute': () => '/options'
       }
     })
 

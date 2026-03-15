@@ -42,6 +42,14 @@ describe('Options UI style contract', () => {
     expect(content).toContain('var(--a-color-surface-soft-light)')
     expect(content).toContain('var(--a-color-border-soft-light)')
     expect(content).toContain('var(--a-color-text-muted-dark)')
+    expect(content).toContain("const SETTINGS_STATE_RESET_KEY = 'resetSettingsView'")
+    expect(content).toContain("const SETTINGS_PATH_PREFIX = '/options'")
+    expect(content).toContain(
+      'const isSettingsPath = (path: string) => path.startsWith(SETTINGS_PATH_PREFIX)'
+    )
+    expect(content).toContain("store.commit('options/setSettingsLastRoute', path)")
+    expect(content).toContain("store.getters['options/settingsScrollPosition'](path)")
+    expect(content).toContain('window.history.state?.[SETTINGS_STATE_RESET_KEY]')
     expect(content).toContain(':deep(.a-switcher-button)')
     expect(content).toContain('&__logout')
     expect(content).toContain('&__control-col')

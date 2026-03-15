@@ -84,17 +84,17 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+@use '@/assets/styles/components/_chat-action-surface.scss' as chatActionSurface;
 @use '@/assets/styles/components/_chat.scss';
 
 .message-actions-menu {
   --a-chat-message-actions-menu-list-padding-block: 0;
-  --a-chat-message-actions-menu-list-radius: var(--a-radius-sm);
   --a-chat-message-actions-menu-overlay-inset-inline: var(--a-space-4);
 
   &__list {
+    @include chatActionSurface.a-chat-action-surface();
     padding-top: var(--a-chat-message-actions-menu-list-padding-block);
     padding-bottom: var(--a-chat-message-actions-menu-list-padding-block);
-    border-radius: var(--a-chat-message-actions-menu-list-radius);
   }
 
   &__overlay-content {

@@ -336,7 +336,7 @@ $scroll-bar-width: 4px;
   }
 
   &__rates {
-    color: hsla(0, 0%, 100%, 0.7);
+    color: var(--a-color-text-muted-dark);
     font-style: italic;
     font-size: 14px;
     font-weight: 300;

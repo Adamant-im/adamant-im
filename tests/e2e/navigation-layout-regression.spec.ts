@@ -151,4 +151,46 @@ test.describe('Navigation layout regressions', () => {
 
     expect(currencyMetrics).toEqual(languageMetrics)
   })
+
+  test('restores the last settings screen and scroll position after switching to chats and back', async ({
+    page
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await loginWithNewAccount(page)
+
+    await page.goto('/options/nodes')
+    await expect(page).toHaveURL(/\/options\/nodes$/)
+    await expect(page.locator('.settings-table-shell')).toBeVisible()
+
+    const targetScrollTop = await page.evaluate(async () => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+
+      if (!scrollPane) {
+        return null
+      }
+
+      scrollPane.scrollTo({ top: 220 })
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+
+      return Math.ceil(scrollPane.scrollTop)
+    })
+
+    expect(targetScrollTop).not.toBeNull()
+    expect(targetScrollTop ?? 0).toBeGreaterThan(100)
+
+    await page.locator('.app-navigation .v-btn').nth(1).click()
+    await expect(page).toHaveURL(/\/chats(?:\/)?$/)
+
+    await page.locator('.app-navigation .v-btn').nth(2).click()
+    await expect(page).toHaveURL(/\/options\/nodes$/)
+
+    const restoredMetrics = await page.evaluate(() => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+
+      return scrollPane ? Math.ceil(scrollPane.scrollTop) : null
+    })
+
+    expect(restoredMetrics).not.toBeNull()
+    expect(Math.abs((restoredMetrics ?? 0) - (targetScrollTop ?? 0))).toBeLessThanOrEqual(4)
+  })
 })
