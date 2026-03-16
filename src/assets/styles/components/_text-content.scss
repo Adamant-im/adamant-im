@@ -1,0 +1,19 @@
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
+
+@mixin a-content-body-copy() {
+  @include mixins.a-text-regular-enlarged();
+}
+
+@mixin a-content-explanatory-copy() {
+  @include mixins.a-text-explanation-enlarged();
+}
+
+@mixin a-content-inline-links() {
+  :deep(a) {
+    text-decoration-line: none;
+
+    &:hover {
+      text-decoration-line: underline;
+    }
+  }
+}

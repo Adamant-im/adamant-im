@@ -86,23 +86,22 @@ export default defineComponent({
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
 
-$gap-size: 4px;
-
 .a-chat-image-layout {
   max-width: 100%;
   width: 100%;
-  border-radius: 8px;
+  border-radius: var(--a-radius-sm);
   overflow: hidden;
-  border-width: $gap-size;
+  border-width: var(--a-space-1);
   border-style: solid;
+  @include mixins.a-surface-elevation-soft();
 
   &__row {
     display: grid;
     max-width: 100%;
-    gap: $gap-size;
+    gap: var(--a-space-1);
 
     & ~ & {
-      margin-top: $gap-size;
+      margin-top: var(--a-space-1);
     }
   }
 }
@@ -111,10 +110,6 @@ $gap-size: 4px;
   .a-chat-image-layout {
     background-color: map.get(colors.$adm-colors, 'black');
     border-color: map.get(colors.$adm-colors, 'black');
-    box-shadow:
-      0 1px 10px hsla(0, 0%, 39.2%, 0.06),
-      0 1px 1px hsla(0, 0%, 39.2%, 0.04),
-      0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
   }
 }
 
@@ -122,10 +117,6 @@ $gap-size: 4px;
   .a-chat-image-layout {
     background-color: map.get(settings.$shades, 'white');
     border-color: map.get(settings.$shades, 'white');
-    box-shadow:
-      0 1px 10px hsla(0, 0%, 39.2%, 0.06),
-      0 1px 1px hsla(0, 0%, 39.2%, 0.04),
-      0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
   }
 }
 </style>

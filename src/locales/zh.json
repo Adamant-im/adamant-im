@@ -19,6 +19,7 @@
     "me": "我",
     "message": "键入消息",
     "message_rejected": "消息被拒绝",
+    "message_not_sent_status": "消息未发送",
     "my_qr_code": "我的二维码",
     "new_chat": "开始新的聊天",
     "no_connection": "没有Internet连接",
@@ -29,7 +30,7 @@
     "received_label": "已接收",
     "recipient": "合作伙伴地址",
     "recipient_tooltip": "合作伙伴的ADM地址，如 U1234567890987654321 或共享链接",
-    "retry_message": "无法发送：弱连接。单击重试",
+    "retry_message": "无法发送：弱连接",
     "send_button": "发送",
     "send_crypto": "发送 {crypto}",
     "sent_label": "已发送",
@@ -69,6 +70,7 @@
     },
     "you": "你",
     "chat_actions": {
+      "retry": "重试",
       "reply": "回复",
       "copy": "副本"
     },

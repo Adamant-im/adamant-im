@@ -50,10 +50,11 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .wallets-view {
+  --a-wallets-search-padding-inline: var(--a-space-4);
+
   &__search {
     :deep(.v-field) {
-      padding-left: 16px;
-      padding-right: 16px;
+      padding-inline: var(--a-wallets-search-padding-inline);
     }
   }
 }

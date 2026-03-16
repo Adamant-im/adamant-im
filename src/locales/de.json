@@ -16,6 +16,7 @@
     "incorrect_address": "Fehlerhafte Empfängeradresse",
     "message": "Gib deine Nachricht ein",
     "message_rejected": "Nachricht zurückgewiesen",
+    "message_not_sent_status": "Nachricht wurde nicht gesendet",
     "new_chat": "Starte neuen Chat",
     "new_chat_tooltip": "Klicke hier um eine neue Konversation zu starten",
     "no_address": "Bitte gib die Empfängeradresse an",
@@ -50,6 +51,7 @@
     "welcome_message_title": "Willkommen in ADAMANT",
     "you": "YOU",
     "chat_actions": {
+      "retry": "Erneut senden",
       "reply": "Reply",
       "copy": "Copy"
     },

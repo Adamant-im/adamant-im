@@ -37,8 +37,15 @@
     "android:build": "node scripts/capacitor/build-android.mjs",
     "android:generate-assets": "npx @capacitor/assets generate --android --assetPath capacitor/assets --iconBackgroundColor '#FFF' --iconBackgroundColorDark '#000' --splashBackgroundColor '#FFF' --splashBackgroundColorDark '#000'",
     "https": "vite preview --https",
-    "test": "vitest",
-    "coverage": "vitest run --coverage",
+    "test": "node scripts/vitest/run-clean.mjs",
+    "test:e2e": "node scripts/playwright/run-clean.mjs",
+    "test:e2e:detailed": "cross-env PLAYWRIGHT_DETAILED=1 node scripts/playwright/run-clean.mjs",
+    "test:e2e:headed": "node scripts/playwright/run-clean.mjs --headed",
+    "test:e2e:detailed:headed": "cross-env PLAYWRIGHT_DETAILED=1 node scripts/playwright/run-clean.mjs --headed",
+    "test:e2e:install": "playwright install chromium",
+    "test:e2e:report": "node scripts/playwright/show-latest-report.mjs",
+    "test:e2e:ui": "playwright test --ui",
+    "coverage": "node scripts/vitest/run-clean.mjs run --coverage",
     "bump-patch": "npm version patch",
     "bump-minor": "npm version minor",
     "bump-major": "npm version major",
@@ -134,6 +141,7 @@
     "@eslint/eslintrc": "^3.3.4",
     "@eslint/js": "^9.39.3",
     "@openapitools/openapi-generator-cli": "^2.29.0",
+    "@playwright/test": "^1.58.2",
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-inject": "^5.0.5",
     "@rushstack/eslint-patch": "^1.16.1",
@@ -190,7 +198,7 @@
   "main": "dist-electron/main.js",
   "lint-staged": {
     "*.(ts|js|vue)": [
-      "eslint --fix",
+      "eslint --fix --no-warn-ignored",
       "prettier --write"
     ]
   },

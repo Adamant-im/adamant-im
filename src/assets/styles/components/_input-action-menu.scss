@@ -1,0 +1,19 @@
+@mixin a-input-action-menu() {
+  &__menu-list {
+    padding-block: var(--a-input-action-menu-list-padding-block);
+  }
+
+  &__menu-item {
+    min-height: var(--a-input-action-menu-row-min-height);
+    padding-top: var(--a-input-action-menu-row-padding-block);
+    padding-bottom: var(--a-input-action-menu-row-padding-block);
+    padding-inline: var(--a-input-action-menu-item-padding-inline);
+  }
+
+  &__menu-item-title {
+    font-size: var(--a-input-action-menu-title-font-size);
+    line-height: var(--a-input-action-menu-title-line-height);
+    font-weight: var(--a-font-weight-light);
+    display: block;
+  }
+}

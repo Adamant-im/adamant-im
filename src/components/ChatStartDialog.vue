@@ -1,13 +1,18 @@
 <template>
-  <v-dialog v-model="show" width="500" :class="className" @keydown.enter="onEnter">
+  <v-dialog
+    v-model="show"
+    width="var(--a-secondary-dialog-width)"
+    :class="className"
+    @keydown.enter="onEnter"
+  >
     <v-card>
-      <v-card-title class="a-text-header">
+      <v-card-title :class="`${className}__card-title`">
         {{ $t('chats.new_chat') }}
       </v-card-title>
 
       <v-divider class="a-divider" />
 
-      <v-row justify="center" align="center" gap="0" class="pa-4">
+      <v-row justify="center" align="center" gap="0" :class="`${className}__body`">
         <v-text-field
           ref="partnerField"
           v-model="recipientAddress"
@@ -22,14 +27,20 @@
           <template #append-inner>
             <v-menu :offset-overflow="true" :offset-y="false" left eager>
               <template #activator="{ props }">
-                <v-icon v-bind="props" :icon="mdiDotsVertical" />
+                <v-icon
+                  v-bind="props"
+                  :class="`${className}__menu-activator`"
+                  :icon="mdiDotsVertical"
+                />
               </template>
-              <v-list>
-                <v-list-item @click="showQrcodeScanner = true">
-                  <v-list-item-title>{{ $t('transfer.decode_from_camera') }}</v-list-item-title>
+              <v-list :class="`${className}__menu-list`">
+                <v-list-item :class="`${className}__menu-item`" @click="showQrcodeScanner = true">
+                  <v-list-item-title :class="`${className}__menu-item-title`">
+                    {{ $t('transfer.decode_from_camera') }}
+                  </v-list-item-title>
                 </v-list-item>
-                <v-list-item link>
-                  <v-list-item-title>
+                <v-list-item :class="`${className}__menu-item`" link>
+                  <v-list-item-title :class="`${className}__menu-item-title`">
                     <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
                       <span>{{ $t('transfer.decode_from_image') }}</span>
                     </qrcode-capture>
@@ -40,14 +51,14 @@
           </template>
         </v-text-field>
 
-        <v-col cols="12" class="text-center">
+        <v-col cols="12" :class="`${className}__actions`">
           <v-btn :class="[`${className}__btn-start-chat`, 'a-btn-primary']" @click="startChat">
             {{ $t('chats.start_chat') }}
           </v-btn>
         </v-col>
 
         <v-col cols="12" :class="`${className}__btn-show-qrcode`">
-          <a class="a-text-active" @click="showQrcodeRendererDialog = true">
+          <a :class="`${className}__link`" @click="showQrcodeRendererDialog = true">
             {{ $t('chats.show_my_qr_code') }}
           </a>
         </v-col>
@@ -234,16 +245,32 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/components/_input-action-menu.scss' as inputActionMenu;
 @use '@/assets/styles/settings/_colors.scss';
-
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 .chat-start-dialog {
+  @include secondaryDialog.a-secondary-dialog-card-frame();
+  @include inputActionMenu.a-input-action-menu();
+
+  &__card-title {
+    @include secondaryDialog.a-secondary-dialog-title();
+  }
+
+  &__link {
+    @include secondaryDialog.a-secondary-dialog-link-action();
+  }
+
+  &__actions {
+    text-align: center;
+  }
+
   &__btn-start-chat {
-    margin-top: 15px;
+    margin-top: var(--a-secondary-dialog-action-margin-top);
   }
 
   &__btn-show-qrcode {
-    margin-top: 15px;
-    margin-bottom: 15px;
+    margin-top: var(--a-secondary-dialog-link-margin-top);
+    margin-bottom: var(--a-secondary-dialog-link-margin-bottom);
     text-align: center;
   }
 }

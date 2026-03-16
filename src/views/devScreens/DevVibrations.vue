@@ -13,7 +13,7 @@
               variant="outlined"
             />
           </v-col>
-          <v-col cols="4" class="pl-3">
+          <v-col cols="4" :class="classes.playColumn">
             <v-btn
               @click="playCustomPattern"
               :disabled="!customPattern"
@@ -29,27 +29,27 @@
       <div :class="classes.section">
         <h4 :class="classes.sectionTitle">{{ t('dev_vibrations.presets') }}</h4>
         <v-row gap="0">
-          <v-col cols="12" class="mb-3">
+          <v-col cols="12" :class="classes.presetColumn">
             <v-btn @click="veryShort" :class="classes.presetButton" :prepend-icon="mdiPlay" block>
               {{ t('dev_vibrations.very_short') }}
             </v-btn>
           </v-col>
-          <v-col cols="12" class="mb-3">
+          <v-col cols="12" :class="classes.presetColumn">
             <v-btn @click="short" :class="classes.presetButton" :prepend-icon="mdiPlay" block>
               {{ t('dev_vibrations.short') }}
             </v-btn>
           </v-col>
-          <v-col cols="12" class="mb-3">
+          <v-col cols="12" :class="classes.presetColumn">
             <v-btn @click="medium" :class="classes.presetButton" :prepend-icon="mdiPlay" block>
               {{ t('dev_vibrations.medium') }}
             </v-btn>
           </v-col>
-          <v-col cols="12" class="mb-3">
+          <v-col cols="12" :class="classes.presetColumn">
             <v-btn @click="long" :class="classes.presetButton" :prepend-icon="mdiPlay" block>
               {{ t('dev_vibrations.long') }}
             </v-btn>
           </v-col>
-          <v-col cols="12" class="mb-3">
+          <v-col cols="12" :class="classes.presetColumn">
             <v-btn
               @click="doubleVeryShort"
               :class="classes.presetButton"
@@ -59,7 +59,7 @@
               {{ t('dev_vibrations.double_very_short') }}
             </v-btn>
           </v-col>
-          <v-col cols="12" class="mb-3">
+          <v-col cols="12" :class="classes.presetColumn">
             <v-btn
               @click="tripleVeryShort"
               :class="classes.presetButton"
@@ -69,7 +69,7 @@
               {{ t('dev_vibrations.triple_very_short') }}
             </v-btn>
           </v-col>
-          <v-col cols="12" class="mb-3">
+          <v-col cols="12" :class="classes.presetColumn">
             <v-btn @click="doubleShort" :class="classes.presetButton" :prepend-icon="mdiPlay" block>
               {{ t('dev_vibrations.double_short') }}
             </v-btn>
@@ -96,6 +96,8 @@ const classes = {
   title: `${className}__title`,
   section: `${className}__section`,
   sectionTitle: `${className}__section-title`,
+  playColumn: `${className}__play-column`,
+  presetColumn: `${className}__preset-column`,
   presetButton: `${className}__preset-button`
 }
 
@@ -128,21 +130,29 @@ const doubleShort = () => vibrate.doubleShort()
 @use 'vuetify/settings';
 
 .dev-vibrations-view {
-  padding: 24px;
+  padding: var(--a-dev-screen-padding-inline);
 
   @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-    padding: 16px;
+    padding: var(--a-dev-screen-padding-inline-mobile);
   }
 
   &__section {
-    margin-bottom: 32px;
+    margin-bottom: var(--a-dev-screen-section-gap);
   }
 
   &__section-title {
     @include mixins.a-text-regular-enlarged();
-    margin-bottom: 16px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid;
+    margin-bottom: var(--a-dev-screen-section-title-gap);
+    padding-bottom: var(--a-dev-screen-section-title-padding-bottom);
+    border-bottom: var(--a-border-width-thin) solid;
+  }
+
+  &__play-column {
+    padding-inline-start: var(--a-space-3);
+  }
+
+  &__preset-column {
+    margin-bottom: var(--a-space-3);
   }
 
   &__preset-button {

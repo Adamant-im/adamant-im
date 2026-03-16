@@ -434,6 +434,59 @@ describe('SendFundsForm', () => {
       expect(wrapper.vm.transferFee).toBe(1)
       expect(wrapper.vm.transferFeeFixed).toBe('1')
     })
+
+    it('should format tiny ETH fee without scientific notation', () => {
+      const modules = mockupStore()
+      const localStore = createStore({
+        state: modules.mainModule().state,
+        modules: {
+          adm: modules.admModule(),
+          eth: {
+            ...modules.ethModule(),
+            getters: {
+              fee: () => () => 0.00000081
+            }
+          },
+          bnb: modules.bnbModule(),
+          partners: modules.partnersModule(),
+          chat: modules.chatModule(),
+          rate: modules.rateModule(),
+          options: modules.optionsModule(),
+          wallets: modules.walletsModule()
+        }
+      })
+
+      wrapper = shallowMount(SendFundsForm, {
+        global: {
+          plugins: [localStore, i18n, vuetify],
+          mocks: {
+            $route: {
+              query: {}
+            }
+          },
+          stubs: {
+            ...DEFAULT_STUBS,
+            'v-form': {
+              template: '<div><slot /></div>',
+              methods: { validate: () => Promise.resolve({ valid: true }) }
+            }
+          }
+        },
+        props: {
+          cryptoCurrency: 'ETH'
+        }
+      })
+
+      wrapper.setData({
+        amount: 0.00000001
+      })
+
+      expect(wrapper.vm.transferFee).toBe(0.00000081)
+      expect(wrapper.vm.transferFeeFixed).toBe('0.00000081')
+      expect(wrapper.vm.finalAmountFixed).toBe('0.00000082')
+      expect(wrapper.vm.transferFeeFixed).not.toContain('e-')
+      expect(wrapper.vm.finalAmountFixed).not.toContain('e-')
+    })
   })
 
   describe('computed.finalAmount', () => {

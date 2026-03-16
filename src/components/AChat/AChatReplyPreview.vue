@@ -14,7 +14,7 @@
         @click="$emit('cancel')"
         :class="classes.closeButton"
         :icon="mdiClose"
-        size="24"
+        :size="COMMON_ICON_SIZE"
         variant="plain"
       />
     </div>
@@ -32,6 +32,7 @@ import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { formatChatPreviewMessage } from '@/lib/markdown'
 import { mdiClose } from '@mdi/js'
 import type { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { COMMON_ICON_SIZE } from '@/components/common/helpers/uiMetrics'
 
 const className = 'a-chat-reply-preview'
 const classes = {
@@ -80,28 +81,29 @@ const messageLabel = computed(() => {
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_chat-message-content.scss' as chatMessageContent;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 $message-max-lines: 2;
 
 .a-chat-reply-preview {
-  border-left: 3px solid map.get(colors.$adm-colors, 'attention');
-  border-radius: 8px;
-  margin: 8px;
+  border-left: var(--a-chat-accent-border-width) solid map.get(colors.$adm-colors, 'attention');
+  border-radius: var(--a-radius-sm);
+  margin: var(--a-space-2);
 
   &__container {
-    padding: 8px 16px;
+    padding: var(--a-space-2) var(--a-space-4);
     position: relative;
     display: flex;
   }
 
   &__message {
-    @include mixins.a-text-regular-enlarged();
-    line-height: 20px; // half of <ChatAvatar/> height
+    @include chatMessageContent.a-chat-message-body-copy();
+    line-height: var(--a-chat-reply-preview-line-height);
 
-    margin-left: 8px;
-    margin-right: 8px;
+    margin-left: var(--a-space-2);
+    margin-right: var(--a-space-2);
 
     overflow: hidden;
     display: -webkit-box;
@@ -113,8 +115,8 @@ $message-max-lines: 2;
     position: absolute;
     right: 0;
     top: 0;
-    margin-right: 4px;
-    margin-top: 4px;
+    margin-right: var(--a-space-1);
+    margin-top: var(--a-space-1);
   }
 }
 
@@ -127,8 +129,8 @@ $message-max-lines: 2;
 
 .v-theme--dark {
   .a-chat-reply-preview {
-    background-color: rgba(245, 245, 245, 0.1); // @todo const
-    color: #fff;
+    background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
+    color: var(--a-color-text-inverse);
   }
 }
 </style>

@@ -5,13 +5,13 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
   class="chat-start-dialog"
   data-v-50a3fb39=""
   modelvalue="true"
-  width="500"
+  width="var(--a-secondary-dialog-width)"
 >
   <v-card
     data-v-50a3fb39=""
   >
     <v-card-title
-      class="a-text-header"
+      class="chat-start-dialog__card-title"
       data-v-50a3fb39=""
     >
       New chat
@@ -22,7 +22,7 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
     />
     <v-row
       align="center"
-      class="pa-4"
+      class="chat-start-dialog__body"
       data-v-50a3fb39=""
       gap="0"
       justify="center"
@@ -38,7 +38,7 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
         variant="underlined"
       />
       <v-col
-        class="text-center"
+        class="chat-start-dialog__actions"
         cols="12"
         data-v-50a3fb39=""
       >
@@ -55,7 +55,7 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
         data-v-50a3fb39=""
       >
         <a
-          class="a-text-active"
+          class="chat-start-dialog__link"
           data-v-50a3fb39=""
         >
           Show my QR code
@@ -65,44 +65,57 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
   </v-card>
   <!--v-if-->
   <v-dialog
+    class="qrcode-renderer-dialog"
+    data-v-426ca6ff=""
     data-v-50a3fb39=""
     modelvalue="false"
-    width="250"
+    width="var(--a-secondary-dialog-width-qrcode)"
   >
-    <v-card>
-      <v-row
-        class="py-3"
-        gap="0"
-        justify="center"
+    <v-card
+      data-v-426ca6ff=""
+    >
+      <v-card-text
+        class="qrcode-renderer-dialog__body"
+        data-v-426ca6ff=""
       >
         <div
-          style="cursor: pointer;"
+          class="qrcode-renderer-dialog__content"
+          data-v-426ca6ff=""
         >
-          <div
-            class="spinner-container"
-            data-v-537400c4=""
+          <button
+            aria-label="Save to images"
+            class="qrcode-renderer-dialog__preview-action"
+            data-v-426ca6ff=""
+            type="button"
           >
-            <v-row
+            <div
+              class="qrcode-renderer__spinner-container"
+              data-v-426ca6ff=""
               data-v-537400c4=""
-              gap="0"
-              justify="center"
             >
-              <v-progress-circular
-                class="progress-circular"
-                color="#4A4A4A"
-                indeterminate=""
-                size="152"
-                stroke="1"
-              />
-            </v-row>
-          </div>
+              <v-row
+                data-v-537400c4=""
+                gap="0"
+                justify="center"
+              >
+                <v-progress-circular
+                  class="progress-circular"
+                  color="var(--a-spinner-neutral-color)"
+                  indeterminate=""
+                  size="152"
+                  stroke="1"
+                />
+              </v-row>
+            </div>
+          </button>
+          <v-btn
+            class="qrcode-renderer-dialog__button a-btn-primary"
+            data-v-426ca6ff=""
+          >
+            Save to images
+          </v-btn>
         </div>
-        <v-btn
-          class="a-btn-primary mt-4 mb-2"
-        >
-          Save to images
-        </v-btn>
-      </v-row>
+      </v-card-text>
     </v-card>
   </v-dialog>
 </v-dialog>

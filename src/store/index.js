@@ -159,8 +159,10 @@ const store = {
         dispatch('afterLogin', account.passphrase)
       })
     },
-    logout({ dispatch }) {
+    logout({ dispatch, commit }) {
       dispatch('reset')
+      commit('options/resetAccountViewState', null, { root: true })
+      commit('options/resetSettingsViewState', null, { root: true })
       dispatch('wallets/initWalletsSymbols')
       dispatch('draftMessage/resetState', null, { root: true })
       PendingTxStore.clear()

@@ -13,14 +13,20 @@
         variant="underlined"
       >
         <template #append-inner>
-          <v-btn @click="togglePasswordVisibility" icon :ripple="false" :size="28" variant="plain">
-            <v-icon :icon="showPassword ? mdiEye : mdiEyeOff" :size="24" />
+          <v-btn
+            @click="togglePasswordVisibility"
+            icon
+            :ripple="false"
+            :size="AUTH_FORM_TOGGLE_BUTTON_SIZE"
+            variant="plain"
+          >
+            <v-icon :icon="showPassword ? mdiEye : mdiEyeOff" :size="AUTH_FORM_TOGGLE_ICON_SIZE" />
           </v-btn>
         </template>
       </v-text-field>
     </v-row>
 
-    <v-row align="center" justify="center" class="mt-2" gap="0">
+    <v-row align="center" justify="center" class="login-form__submit-row" gap="0">
       <v-col cols="12">
         <slot name="button">
           <v-btn class="login-form__button a-btn-primary" type="submit">
@@ -28,18 +34,23 @@
               v-show="showSpinner"
               indeterminate
               color="primary"
-              size="24"
-              class="mr-4"
+              :size="AUTH_FORM_SUBMIT_SPINNER_SIZE"
+              class="login-form__submit-spinner"
             />
             {{ t('login_via_password.user_password_unlock') }}
           </v-btn>
         </slot>
       </v-col>
-      <div class="text-center mt-11">
-        <h3 class="a-text-regular">
+      <div :class="classes.passwordHint">
+        <h3 :class="classes.passwordHintTitle">
           {{ t('login_via_password.remove_password_hint') }}
         </h3>
-        <v-btn class="a-btn-link mt-2" variant="text" size="small" @click="removePassword">
+        <v-btn
+          :class="classes.passwordHintAction"
+          variant="text"
+          size="small"
+          @click="removePassword"
+        >
           {{ t('login_via_password.remove_password') }}
         </v-btn>
       </div>
@@ -61,11 +72,19 @@ import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useSaveCursor } from '@/hooks/useSaveCursor'
 import { useConsiderOffline } from '@/hooks/useConsiderOffline'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import {
+  AUTH_FORM_SUBMIT_SPINNER_SIZE,
+  AUTH_FORM_TOGGLE_BUTTON_SIZE,
+  AUTH_FORM_TOGGLE_ICON_SIZE
+} from '@/components/Login/helpers/uiMetrics'
 
 const className = 'login-form'
 const classes = {
   root: className,
-  textField: `${className}__textfield`
+  textField: `${className}__textfield`,
+  passwordHint: `${className}__password-hint`,
+  passwordHintTitle: `${className}__password-hint-title`,
+  passwordHintAction: `${className}__password-hint-action`
 }
 
 const props = defineProps<{
@@ -152,21 +171,75 @@ const removePassword = () => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/components/_form-action-layout.scss' as formActionLayout;
+@use '@/assets/styles/components/_link-action-button.scss' as linkActionButton;
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
+
 .login-form {
+  --a-login-form-passphrase-toggle-size: var(--a-auth-control-button-size);
+  --a-login-form-submit-spinner-gap: var(--a-auth-control-inline-gap);
+  --a-login-form-passphrase-toggle-offset: calc(var(--a-login-form-passphrase-toggle-size) * -1);
+  --a-login-form-passphrase-input-padding-inline: var(--a-control-size-sm);
+  --a-login-form-passphrase-input-font-size: var(--a-font-size-md);
+  --a-login-form-submit-row-margin-top: var(--a-space-2);
+  --a-login-password-hint-block-gap: var(--a-space-10);
+  --a-login-password-hint-title-gap: var(--a-space-1);
+  --a-login-password-hint-button-margin-top: var(--a-space-2);
+
   &__textfield {
     &:deep(.v-field__append-inner) {
       padding-left: 0;
-      margin-left: -28px; // compensate the append-inner icon
+      margin-left: var(--a-login-form-passphrase-toggle-offset);
     }
 
     &:deep(.v-field__input) {
       width: 100%;
-      padding-right: 32px;
-      padding-left: 32px;
+      padding-right: var(--a-login-form-passphrase-input-padding-inline);
+      padding-left: var(--a-login-form-passphrase-input-padding-inline);
     }
 
     :deep(input) {
-      font-size: 16px !important;
+      font-size: var(--a-login-form-passphrase-input-font-size);
+    }
+  }
+
+  &__submit-row {
+    margin-top: var(--a-login-form-submit-row-margin-top);
+  }
+
+  &__submit-spinner {
+    margin-inline-end: var(--a-login-form-submit-spinner-gap);
+  }
+
+  &__password-hint {
+    margin-top: var(--a-login-password-hint-block-gap);
+    @include formActionLayout.a-form-helper-section-center();
+  }
+
+  &__password-hint-title {
+    @include mixins.a-text-regular();
+    margin-top: 0;
+    margin-bottom: var(--a-login-password-hint-title-gap);
+  }
+
+  &__password-hint-action {
+    @include linkActionButton.a-link-action-button();
+    margin-top: var(--a-login-password-hint-button-margin-top);
+  }
+}
+
+.v-theme--light {
+  .login-form {
+    &__password-hint-action {
+      @include linkActionButton.a-link-action-button-light();
+    }
+  }
+}
+
+.v-theme--dark {
+  .login-form {
+    &__password-hint-action {
+      @include linkActionButton.a-link-action-button-dark();
     }
   }
 }

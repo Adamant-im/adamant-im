@@ -2,7 +2,12 @@
   <div>
     <v-menu eager v-model="isChatMenuOpen" :open-on-hover="isDesktop">
       <template #activator="{ props }">
-        <v-icon class="chat-menu__icon" v-bind="props" :icon="mdiPlusCircleOutline" size="28" />
+        <v-icon
+          class="chat-menu__icon"
+          v-bind="props"
+          :icon="mdiPlusCircleOutline"
+          :size="COMMON_TRIGGER_ICON_SIZE"
+        />
       </template>
 
       <UploadFile
@@ -66,6 +71,7 @@ import type { FileData } from '@/lib/files'
 import { CoinSymbol } from '@/store/modules/wallets/types'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import { COMMON_TRIGGER_ICON_SIZE } from '@/components/common/helpers/uiMetrics'
 
 const fetchingErrors = {
   noAddress: 'No crypto wallet address',
@@ -124,6 +130,7 @@ function sendFunds(selectedCrypto: string) {
           recipientAddress: partnerId || ''
         },
         query: {
+          fromChat: 'true',
           from: `/chats/${partnerId}`,
           replyToId
         }
@@ -183,7 +190,7 @@ function fetchCryptoAddress(selectedCrypto: string): Promise<any> {
     &::before {
       content: '';
       position: absolute;
-      inset: -3px;
+      inset: calc(var(--a-chat-trigger-hover-inset) * -1);
       border-radius: 50%;
       background: currentColor;
       opacity: 0;
@@ -197,11 +204,11 @@ function fetchCryptoAddress(selectedCrypto: string): Promise<any> {
   }
 
   &__list {
-    min-width: 200px;
+    min-width: calc((var(--a-control-size-lg) * 4) + var(--a-space-2));
     max-height: 100vh;
 
     :deep(.v-list-item-title) {
-      font-weight: 400;
+      font-weight: 300;
     }
   }
 }

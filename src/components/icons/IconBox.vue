@@ -22,12 +22,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
+
 .icon-box {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: var(--a-icon-box-centered-size);
+  height: var(--a-icon-box-centered-size);
+  @include layoutPrimitives.a-flex-center();
 
   :deep(.v-icon) {
     display: block;

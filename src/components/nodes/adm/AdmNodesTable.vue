@@ -1,5 +1,5 @@
 <template>
-  <NodesTableContainer>
+  <SettingsDataTable>
     <NodesTableHead v-model="isAllNodesChecked" :indeterminate="isPartiallyChecked" />
 
     <tbody>
@@ -11,7 +11,7 @@
         @show-http-info="showHttpInfo = true"
       />
     </tbody>
-  </NodesTableContainer>
+  </SettingsDataTable>
 
   <HttpProtocolInfoDialog v-model="showHttpInfo" />
 </template>
@@ -19,20 +19,15 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
 import { useStore } from 'vuex'
-import NodesTableContainer from '@/components/nodes/components/NodesTableContainer.vue'
+import SettingsDataTable from '@/components/common/SettingsDataTable.vue'
 import NodesTableHead from '@/components/nodes/components/NodesTableHead.vue'
 import HttpProtocolInfoDialog from '@/components/nodes/components/HttpProtocolInfoDialog.vue'
 import AdmNodesTableItem from './AdmNodesTableItem.vue'
 import { sortNodesFn } from '@/components/nodes/utils/sortNodesFn'
 
-const className = 'adm-nodes-table'
-const classes = {
-  root: className
-}
-
 export default defineComponent({
   components: {
-    NodesTableContainer,
+    SettingsDataTable,
     NodesTableHead,
     HttpProtocolInfoDialog,
     AdmNodesTableItem
@@ -64,7 +59,6 @@ export default defineComponent({
 
     return {
       admNodes,
-      classes,
       isAllNodesChecked,
       showHttpInfo,
       isPartiallyChecked

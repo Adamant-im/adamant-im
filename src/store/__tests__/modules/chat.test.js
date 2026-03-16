@@ -26,6 +26,7 @@ import sinon from 'sinon'
 import * as admApi from '@/lib/adamant-api'
 import * as chatHelpers from '@/lib/chat/helpers'
 import adamant from '@/lib/adamant'
+import { AllNodesDisabledError, AllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
 import { TransactionStatus as TS } from '@/lib/constants'
 
@@ -39,7 +40,15 @@ const rewireDependency = (name, value) => {
     return
   }
 
-  if (['getChats', 'createMessage', 'queueMessage', 'queueSignedMessage'].includes(name)) {
+  if (
+    [
+      'getChats',
+      'createMessage',
+      'createAttachment',
+      'queueMessage',
+      'queueSignedMessage'
+    ].includes(name)
+  ) {
     vi.spyOn(chatHelpers, name).mockImplementation(value)
     return
   }
@@ -126,6 +135,68 @@ describe('Store: chat.js', () => {
         }
 
         expect(getters.messages(state)('U123456')).toEqual([{}, {}])
+      })
+    })
+
+    describe('getters.hasDisabledAdmNodes', () => {
+      it('returns true when at least one ADM node is manually disabled', () => {
+        const rootGetters = {
+          'nodes/adm': [{ status: 'online' }, { status: 'disabled' }]
+        }
+
+        expect(getters.hasDisabledAdmNodes(state, {}, {}, rootGetters)).toBe(true)
+      })
+
+      it('returns false when no ADM nodes are disabled', () => {
+        const rootGetters = {
+          'nodes/adm': [{ status: 'online' }, { status: 'offline' }]
+        }
+
+        expect(getters.hasDisabledAdmNodes(state, {}, {}, rootGetters)).toBe(false)
+      })
+    })
+
+    describe('getters.isNoNodesDialogAllowed', () => {
+      it('allows the dialog only when the app is online and at least one ADM node was manually disabled', () => {
+        const rootState = { isOnline: true }
+        const localGetters = { hasDisabledAdmNodes: true }
+
+        expect(
+          getters.isNoNodesDialogAllowed(
+            state,
+            localGetters,
+            rootState
+          )(new AllNodesOfflineError('adm'))
+        ).toBe(true)
+
+        expect(
+          getters.isNoNodesDialogAllowed(
+            state,
+            localGetters,
+            rootState
+          )(new AllNodesDisabledError('adm'))
+        ).toBe(true)
+      })
+
+      it('does not allow the dialog when the user did not disable any ADM nodes', () => {
+        const rootState = { isOnline: true }
+        const localGetters = { hasDisabledAdmNodes: false }
+
+        expect(
+          getters.isNoNodesDialogAllowed(
+            state,
+            localGetters,
+            rootState
+          )(new AllNodesOfflineError('adm'))
+        ).toBe(false)
+
+        expect(
+          getters.isNoNodesDialogAllowed(
+            state,
+            localGetters,
+            rootState
+          )(new AllNodesDisabledError('adm'))
+        ).toBe(false)
       })
     })
 
@@ -1060,6 +1131,31 @@ describe('Store: chat.js', () => {
         })
       })
     })
+
+    describe('mutations.setNoActiveNodesDialog', () => {
+      it('does not reopen the dialog after it was already closed in the same session', () => {
+        const state = {
+          noActiveNodesDialog: false
+        }
+
+        mutations.setNoActiveNodesDialog(state, { value: true })
+
+        expect(state.noActiveNodesDialog).toBe(false)
+      })
+
+      it('reopens the dialog after sending when ADM nodes were manually disabled', () => {
+        const state = {
+          noActiveNodesDialog: false
+        }
+
+        mutations.setNoActiveNodesDialog(state, {
+          value: true,
+          afterSendingMessage: true
+        })
+
+        expect(state.noActiveNodesDialog).toBe(true)
+      })
+    })
   })
 
   /**
@@ -1100,6 +1196,55 @@ describe('Store: chat.js', () => {
         ])
 
         expect(dispatch.args).toEqual([['pushMessages', []]])
+      })
+
+      it('shows the no-active-nodes dialog only when the user manually disabled at least one ADM node', async () => {
+        chatModule.__Rewire__('admApi', {
+          getChatRooms: () => Promise.reject(new AllNodesDisabledError('adm'))
+        })
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+
+        await actions.loadChats(
+          {
+            commit,
+            dispatch,
+            rootState: { address: 'U123456' },
+            getters: {
+              isNoNodesDialogAllowed: () => false
+            }
+          },
+          { perPage: 50 }
+        )
+
+        expect(commit.args).toEqual([['setFulfilled', false]])
+      })
+
+      it('shows the no-active-nodes dialog once when the condition is satisfied', async () => {
+        chatModule.__Rewire__('admApi', {
+          getChatRooms: () => Promise.reject(new AllNodesDisabledError('adm'))
+        })
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+
+        await actions.loadChats(
+          {
+            commit,
+            dispatch,
+            rootState: { address: 'U123456' },
+            getters: {
+              isNoNodesDialogAllowed: () => true
+            }
+          },
+          { perPage: 50 }
+        )
+
+        expect(commit.args).toEqual([
+          ['setFulfilled', false],
+          ['setNoActiveNodesDialog', { value: true }]
+        ])
       })
     })
 
@@ -1441,9 +1586,12 @@ describe('Store: chat.js', () => {
         const rootState = {
           address: userId
         }
+        const getters = {
+          isNoNodesDialogAllowed: () => false
+        }
 
         const promise = actions.sendMessage(
-          { commit, rootState, dispatch },
+          { commit, rootState, dispatch, getters },
           { message, recipientId }
         )
         await expect(promise).rejects.toEqual(new Error('Message rejected'))
@@ -1459,6 +1607,108 @@ describe('Store: chat.js', () => {
             }
           ]
         ])
+      })
+
+      it('reopens the no-active-nodes dialog when sending fails after it was already shown earlier in the session', async () => {
+        const messageObject = {
+          id: '1',
+          message: 'hello world',
+          status: TS.PENDING
+        }
+
+        chatModule.__Rewire__('admApi', {
+          signChatMessageTransaction: () => ({ signature: 'mock-signature' })
+        })
+        vi.spyOn(adamant, 'getTransactionId').mockReturnValue(messageObject.id)
+        chatModule.__Rewire__('createMessage', () => messageObject)
+        chatModule.__Rewire__('queueSignedMessage', () =>
+          Promise.reject(new AllNodesDisabledError('adm'))
+        )
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+        const rootState = {
+          address: userId
+        }
+        const getters = {
+          isNoNodesDialogAllowed: () => true
+        }
+
+        const promise = actions.sendMessage(
+          { commit, rootState, dispatch, getters },
+          { message, recipientId }
+        )
+        await expect(promise).rejects.toEqual(new AllNodesDisabledError('adm'))
+
+        expect(commit.args).toEqual([
+          ['pushMessage', { message: messageObject, userId }],
+          ['setNoActiveNodesDialog', { value: true, afterSendingMessage: true }],
+          [
+            'updateMessage',
+            {
+              id: messageObject.id,
+              status: TS.REJECTED,
+              partnerId: recipientId
+            }
+          ]
+        ])
+      })
+
+      it('keeps offline sends pending without forcing an extra connection snackbar', async () => {
+        const messageObject = {
+          id: '1',
+          message: 'hello world',
+          status: TS.PENDING
+        }
+
+        chatModule.__Rewire__('admApi', {
+          signChatMessageTransaction: () => ({ signature: 'mock-signature' })
+        })
+        vi.spyOn(adamant, 'getTransactionId').mockReturnValue(messageObject.id)
+        chatModule.__Rewire__('createMessage', () => messageObject)
+        chatModule.__Rewire__('queueSignedMessage', () =>
+          Promise.reject(new AllNodesOfflineError('adm'))
+        )
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+        const rootState = {
+          address: userId
+        }
+        const getters = {
+          isNoNodesDialogAllowed: () => false
+        }
+
+        const promise = actions.sendMessage(
+          { commit, rootState, dispatch, getters },
+          { message, recipientId }
+        )
+        await expect(promise).rejects.toEqual(new AllNodesOfflineError('adm'))
+
+        expect(commit.args).toEqual([
+          ['pushMessage', { message: messageObject, userId }],
+          [
+            'addPendingMessage',
+            expect.objectContaining({
+              messageId: messageObject.id,
+              recipientId
+            })
+          ],
+          [
+            'updateMessage',
+            {
+              id: messageObject.id,
+              status: TS.PENDING,
+              partnerId: recipientId
+            }
+          ]
+        ])
+        expect(
+          dispatch.args.some(
+            ([type, payload]) =>
+              type === 'snackbar/show' && payload?.message === 'connection.offline'
+          )
+        ).toBe(false)
       })
 
       it('should update message status to `REGISTERED`', async () => {
@@ -1484,9 +1734,12 @@ describe('Store: chat.js', () => {
         const rootState = {
           address: userId
         }
+        const getters = {
+          isNoNodesDialogAllowed: () => false
+        }
 
         const promise = actions.sendMessage(
-          { commit, rootState, dispatch },
+          { commit, rootState, dispatch, getters },
           { message, recipientId }
         )
         await expect(promise).resolves.toEqual(undefined)
@@ -1612,6 +1865,322 @@ describe('Store: chat.js', () => {
     })
 
     /**
+     * actions.sendAttachment
+     */
+    describe('actions.sendAttachment', () => {
+      const userId = 'U111111'
+      const recipientId = 'U222222'
+      const files = [
+        {
+          cid: 'cid-1',
+          encoded: {
+            nonce: 'nonce-1',
+            binary: 'encoded'
+          },
+          file: {
+            cid: 'cid-1',
+            isImage: false,
+            name: 'report.pdf',
+            size: 128,
+            type: 'application/pdf'
+          }
+        }
+      ]
+
+      it('should register attachment message when upload and send succeed', async () => {
+        const messageObject = {
+          id: 'attachment-1',
+          message: 'hello file',
+          status: TS.PENDING,
+          asset: { files: [] }
+        }
+
+        vi.spyOn(admApi, 'getPublicKey').mockResolvedValue('public-key')
+        chatModule.__Rewire__('createAttachment', () => messageObject)
+        chatModule.__Rewire__('queueMessage', () =>
+          Promise.resolve({ success: true, transactionId: 'tx-attachment-1' })
+        )
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy(async (type) => {
+          if (type === 'uploadConsistently') {
+            return {
+              newCids: [['uploaded-cid-1', undefined]]
+            }
+          }
+
+          throw new Error(`Unexpected dispatch: ${type}`)
+        })
+
+        await expect(
+          actions.sendAttachment(
+            {
+              commit,
+              dispatch,
+              rootState: { address: userId },
+              rootGetters: {
+                'nodes/adm': [{ status: 'online' }]
+              },
+              getters: {
+                isNoNodesDialogAllowed: () => false
+              }
+            },
+            {
+              files,
+              message: 'hello file',
+              recipientId
+            }
+          )
+        ).resolves.toEqual({ success: true, transactionId: 'tx-attachment-1' })
+
+        expect(commit.args[0]).toEqual(['pushMessage', { message: messageObject, userId }])
+        expect(commit.args).toContainEqual([
+          'updateMessage',
+          expect.objectContaining({
+            id: messageObject.id,
+            partnerId: recipientId
+          })
+        ])
+        expect(commit.args).toContainEqual([
+          'updateMessage',
+          {
+            id: messageObject.id,
+            realId: 'tx-attachment-1',
+            status: TS.REGISTERED,
+            partnerId: recipientId
+          }
+        ])
+      })
+
+      it('keeps attachment message pending without forcing snackbar when sending fails offline', async () => {
+        const messageObject = {
+          id: 'attachment-2',
+          message: 'offline file',
+          status: TS.PENDING,
+          asset: { files: [] }
+        }
+
+        vi.spyOn(admApi, 'getPublicKey').mockResolvedValue('public-key')
+        chatModule.__Rewire__('createAttachment', () => messageObject)
+        chatModule.__Rewire__('queueMessage', () => Promise.reject(new AllNodesOfflineError('adm')))
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy(async (type) => {
+          if (type === 'uploadConsistently') {
+            return {
+              newCids: [['uploaded-cid-2', undefined]]
+            }
+          }
+
+          throw new Error(`Unexpected dispatch: ${type}`)
+        })
+
+        await expect(
+          actions.sendAttachment(
+            {
+              commit,
+              dispatch,
+              rootState: { address: userId },
+              rootGetters: {
+                'nodes/adm': [{ status: 'online' }]
+              },
+              getters: {
+                isNoNodesDialogAllowed: () => false
+              }
+            },
+            {
+              files,
+              message: 'offline file',
+              recipientId
+            }
+          )
+        ).rejects.toEqual(new AllNodesOfflineError('adm'))
+
+        expect(commit.args).toContainEqual([
+          'addPendingMessage',
+          expect.objectContaining({
+            messageId: messageObject.id,
+            recipientId,
+            files
+          })
+        ])
+        expect(commit.args).toContainEqual([
+          'updateMessage',
+          {
+            id: messageObject.id,
+            status: TS.PENDING,
+            partnerId: recipientId
+          }
+        ])
+        expect(
+          dispatch.args.some(
+            ([type, payload]) =>
+              type === 'snackbar/show' && payload?.message === 'connection.offline'
+          )
+        ).toBe(false)
+      })
+    })
+
+    /**
+     * actions.resendAttachment
+     */
+    describe('actions.resendAttachment', () => {
+      const recipientId = 'U222222'
+      const messageId = 'attachment-1'
+      const files = [
+        {
+          cid: 'cid-1',
+          encoded: {
+            nonce: 'nonce-1',
+            binary: 'encoded'
+          },
+          file: {
+            cid: 'cid-1',
+            isImage: false,
+            name: 'report.pdf',
+            size: 128,
+            type: 'application/pdf'
+          }
+        }
+      ]
+
+      it('should resend attachment successfully', async () => {
+        chatModule.__Rewire__('queueMessage', () =>
+          Promise.resolve({ success: true, transactionId: 'tx-attachment-2' })
+        )
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy(async (type, payload) => {
+          if (type === 'uploadConsistently') {
+            return {
+              newCids: [['uploaded-cid-3', undefined]]
+            }
+          }
+
+          if (type === 'registerPendingMessage') {
+            return
+          }
+
+          throw new Error(`Unexpected dispatch: ${type} ${JSON.stringify(payload)}`)
+        })
+        const getters = {
+          partnerMessageById: () => ({
+            id: messageId,
+            message: 'hello file',
+            recipientId,
+            isReply: false,
+            asset: {
+              files: []
+            }
+          })
+        }
+
+        await expect(
+          actions.resendAttachment(
+            {
+              commit,
+              dispatch,
+              getters
+            },
+            {
+              recipientId,
+              messageId,
+              files,
+              cids: [['cid-1', undefined]]
+            }
+          )
+        ).resolves.toEqual({ success: true, transactionId: 'tx-attachment-2' })
+
+        expect(commit.args).toEqual([
+          [
+            'updateMessage',
+            {
+              id: messageId,
+              status: TS.PENDING,
+              partnerId: recipientId
+            }
+          ],
+          [
+            'updateMessage',
+            expect.objectContaining({
+              id: messageId,
+              partnerId: recipientId
+            })
+          ],
+          [
+            'updatePendingMessage',
+            {
+              cids: [['uploaded-cid-3', undefined]],
+              messageId
+            }
+          ]
+        ])
+        expect(dispatch.args).toContainEqual([
+          'registerPendingMessage',
+          {
+            transactionId: 'tx-attachment-2',
+            messageId,
+            recipientId
+          }
+        ])
+      })
+
+      it('rejects pending attachment when resend fails with a non-offline error', async () => {
+        chatModule.__Rewire__('queueMessage', () => Promise.reject(new Error('Upload rejected')))
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy(async (type) => {
+          if (type === 'uploadConsistently') {
+            return {
+              newCids: [['uploaded-cid-4', undefined]]
+            }
+          }
+
+          if (type === 'rejectPendingMessage') {
+            return
+          }
+
+          throw new Error(`Unexpected dispatch: ${type}`)
+        })
+        const getters = {
+          partnerMessageById: () => ({
+            id: messageId,
+            message: 'hello file',
+            recipientId,
+            isReply: false,
+            asset: {
+              files: []
+            }
+          })
+        }
+
+        await expect(
+          actions.resendAttachment(
+            {
+              commit,
+              dispatch,
+              getters
+            },
+            {
+              recipientId,
+              messageId,
+              files,
+              cids: [['cid-1', undefined]]
+            }
+          )
+        ).rejects.toEqual(new Error('Upload rejected'))
+
+        expect(dispatch.args).toContainEqual([
+          'rejectPendingMessage',
+          {
+            messageId,
+            recipientId
+          }
+        ])
+      })
+    })
+
+    /**
      * actions.pushTransaction
      */
     describe('actions.pushTransaction', () => {
@@ -1658,6 +2227,51 @@ describe('Store: chat.js', () => {
               scrollPosition: undefined
             }
           ]
+        ])
+      })
+    })
+
+    /**
+     * actions.registerPendingMessage / actions.rejectPendingMessage
+     */
+    describe('actions.pending message status transitions', () => {
+      it('should register pending message and remove it from retry queue', () => {
+        const commit = sinon.spy()
+
+        actions.registerPendingMessage(
+          { commit },
+          { messageId: '1', recipientId: 'U222222', transactionId: 'tx-1' }
+        )
+
+        expect(commit.args).toEqual([
+          [
+            'updateMessage',
+            {
+              id: '1',
+              realId: 'tx-1',
+              status: TS.REGISTERED,
+              partnerId: 'U222222'
+            }
+          ],
+          ['deletePendingMessage', '1']
+        ])
+      })
+
+      it('should reject pending message and remove it from retry queue', () => {
+        const commit = sinon.spy()
+
+        actions.rejectPendingMessage({ commit }, { messageId: '1', recipientId: 'U222222' })
+
+        expect(commit.args).toEqual([
+          [
+            'updateMessage',
+            {
+              id: '1',
+              status: TS.REJECTED,
+              partnerId: 'U222222'
+            }
+          ],
+          ['deletePendingMessage', '1']
         ])
       })
     })

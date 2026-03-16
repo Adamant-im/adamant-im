@@ -1,0 +1,74 @@
+import { readFileSync } from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { describe, expect, it } from 'vitest'
+
+const currentDir = path.dirname(fileURLToPath(import.meta.url))
+
+const exportKeysPath = path.resolve(currentDir, '../ExportKeysForm.vue')
+const formActionLayoutPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_form-action-layout.scss'
+)
+const textContentPath = path.resolve(
+  currentDir,
+  '../../assets/styles/components/_text-content.scss'
+)
+
+describe('Export keys UI style contract', () => {
+  it('uses tokenized spacing and semantic form actions on export keys screen', () => {
+    const content = readFileSync(exportKeysPath, 'utf8')
+    const formActionLayoutContent = readFileSync(formActionLayoutPath, 'utf8')
+    const textContent = readFileSync(textContentPath, 'utf8')
+
+    expect(content).toContain('<v-form :class="className" @submit.prevent="revealKeys">')
+    expect(content).toContain('inputActionMenu.a-input-action-menu()')
+    expect(content).toContain('textContent.a-content-explanatory-copy()')
+    expect(content).toContain('type="submit"')
+    expect(content).toContain('type="button"')
+    expect(content).toContain('--a-export-keys-section-spacing')
+    expect(content).toContain('--a-export-keys-key-field-gap')
+    expect(content).toContain('--a-export-keys-copy-all-margin-bottom')
+    expect(content).toContain('--a-export-keys-button-margin-top')
+    expect(content).toContain('--a-export-keys-button-margin-bottom')
+    expect(content).toContain('var(--a-space-6)')
+    expect(content).toContain('var(--a-space-4)')
+    expect(content).toContain('var(--a-space-3)')
+    expect(content).toContain('__copy-all-row')
+    expect(content).toContain('__actions')
+    expect(content).toContain('__field-action')
+    expect(content).toContain('__field-label')
+    expect(content).toContain('__copy_all_button')
+    expect(content).toContain('--a-export-keys-field-label-font-weight')
+    expect(content).toContain('a-link-action-button()')
+    expect(content).toContain('formActionLayout.a-form-actions-center()')
+    expect(content).toContain('textContent.a-content-explanatory-copy()')
+    expect(content).toContain('__menu-list')
+    expect(content).toContain('__menu-item')
+    expect(content).toContain('__menu-item-title')
+    expect(content).toContain('AUTH_FORM_COPY_ICON_SIZE')
+    expect(content).toContain('AUTH_FORM_MENU_ICON_SIZE')
+    expect(content).toContain('AUTH_FORM_TOGGLE_BUTTON_SIZE')
+    expect(content).toContain('AUTH_FORM_TOGGLE_ICON_SIZE')
+    expect(content).not.toContain('margin-top: 24px;')
+    expect(content).not.toContain('margin-bottom: 24px;')
+    expect(content).not.toContain('margin-top: 15px;')
+    expect(content).not.toContain('margin-bottom: 12px;')
+    expect(content).not.toContain('padding-right: 0;')
+    expect(content).not.toContain('margin-right: 0;')
+    expect(content).not.toContain('class="text-center"')
+    expect(content).not.toContain('class="font-weight-medium"')
+    expect(content).not.toContain('class="a-btn-link"')
+    expect(content).not.toContain('--a-export-keys-mobile-inline-end-compensation')
+    expect(content).not.toContain('size="28"')
+    expect(content).not.toContain('size="24"')
+    expect(content).not.toContain('size="20"')
+
+    expect(formActionLayoutContent).toContain('@mixin a-form-actions-center()')
+    expect(formActionLayoutContent).toContain('@mixin a-form-helper-section-center()')
+    expect(formActionLayoutContent).toContain('display: flex;')
+    expect(formActionLayoutContent).toContain('justify-content: center;')
+    expect(formActionLayoutContent).toContain('text-align: center;')
+    expect(textContent).toContain('@mixin a-content-explanatory-copy()')
+  })
+})

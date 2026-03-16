@@ -5,7 +5,7 @@
       [classes.nonClickable]: !!errorCode
     }"
   >
-    <v-progress-circular v-if="loading" indeterminate size="16" />
+    <v-progress-circular v-if="loading" indeterminate :size="QUOTED_MESSAGE_LOADING_SPINNER_SIZE" />
 
     <div v-else-if="errorCode === ErrorCodes.INVALID_MESSAGE" :class="classes.invalidMessage">
       {{ '{ ' + t('chats.invalid_message') + ' }' }}
@@ -46,6 +46,7 @@ import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { formatChatPreviewMessage } from '@/lib/markdown'
 import { ChatMessageTransaction } from '@/lib/schema/client/api'
 import { logger } from '@/utils/devTools/logger'
+import { QUOTED_MESSAGE_LOADING_SPINNER_SIZE } from '@/components/AChat/helpers/uiMetrics'
 
 const className = 'quoted-message'
 const classes = {
@@ -176,6 +177,7 @@ export default defineComponent({
       currencyFormatter,
       errorCode,
       ErrorCodes,
+      QUOTED_MESSAGE_LOADING_SPINNER_SIZE,
       cryptoTransferLabel,
       messageLabel
     }
@@ -189,9 +191,15 @@ export default defineComponent({
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .quoted-message {
-  height: 32px;
-  border-radius: 8px;
-  padding: 4px 8px;
+  --a-quoted-message-height: var(--a-control-size-sm);
+  --a-quoted-message-radius: var(--a-radius-sm);
+  --a-quoted-message-padding-block: var(--a-space-1);
+  --a-quoted-message-padding-inline: var(--a-space-2);
+  --a-quoted-message-border-width: var(--a-chat-accent-border-width);
+  --a-quoted-message-error-font-style: italic;
+  height: var(--a-quoted-message-height);
+  border-radius: var(--a-quoted-message-radius);
+  padding: var(--a-quoted-message-padding-block) var(--a-quoted-message-padding-inline);
   cursor: pointer;
 
   &--non-clickable {
@@ -206,17 +214,17 @@ export default defineComponent({
   }
 
   &__invalid-message {
-    font-style: italic;
+    font-style: var(--a-quoted-message-error-font-style);
   }
 
   &__message-not-found {
-    font-style: italic;
+    font-style: var(--a-quoted-message-error-font-style);
   }
 }
 
 .v-theme--light {
   .quoted-message {
-    border-left: 3px solid map.get(colors.$adm-colors, 'attention');
+    border-left: var(--a-quoted-message-border-width) solid map.get(colors.$adm-colors, 'attention');
     background-color: map.get(colors.$adm-colors, 'secondary2');
     color: map.get(colors.$adm-colors, 'regular');
   }
@@ -224,7 +232,7 @@ export default defineComponent({
 
 .v-theme--dark {
   .quoted-message {
-    border-left: 3px solid map.get(colors.$adm-colors, 'attention');
+    border-left: var(--a-quoted-message-border-width) solid map.get(colors.$adm-colors, 'attention');
     background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
     color: map.get(colors.$adm-colors, 'secondary');
   }

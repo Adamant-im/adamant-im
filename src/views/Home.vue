@@ -1,12 +1,13 @@
 <template>
   <pull-down @action="updateBalances" :action-text="t('chats.pull_down_actions.update_balances')">
-    <v-row class="justify-center v-row--no-gutters" :class="className">
+    <v-row justify="center" :class="className">
       <container disableMaxWidth>
-        <v-sheet class="white--text" color="transparent" :class="`${className}__card`">
+        <v-sheet color="transparent" :class="`${className}__card`">
           <!-- Wallets -->
           <v-sheet color="transparent" :class="`${className}__wallets`">
             <v-tabs
               v-model="currentWallet"
+              :key="walletTabsKey"
               :class="`${className}__tabs`"
               grow
               stacked
@@ -22,6 +23,7 @@
                 <wallet-tab
                   :wallet="wallet"
                   :fiat-currency="currentCurrency"
+                  :hide-fiat-rates="allWalletBalancesZero"
                   :is-balance-valid="balances[index]"
                   :is-refreshing="isRefreshing"
                 />
@@ -30,6 +32,7 @@
 
             <v-window
               v-model="currentWallet"
+              :key="walletWindowKey"
               :touch="{
                 start: () => {
                   // Due to `stopPropagation` the `<PullDown/>` component cannot
@@ -53,6 +56,7 @@
                   :all-coin-nodes-disabled="areNodesDisabled(wallet.cryptoCurrency)"
                   :crypto="wallet.cryptoCurrency"
                   :crypto-name="wallet.cryptoName"
+                  :hide-fiat-rates="allWalletBalancesZero"
                   :rate="wallet.rate"
                   :current-currency="currentCurrency"
                   @click:balance="handleBalanceClick"
@@ -125,8 +129,9 @@ const wallets = computed<Wallet[]>(() => {
   const state = store.state
   return orderedVisibleWalletSymbols.value.map((crypto: CoinSymbol) => {
     const key = crypto.symbol.toLowerCase()
-    const address = crypto.symbol === Cryptos.ADM ? state.address : state[key].address
-    const balance = crypto.symbol === Cryptos.ADM ? state.balance : state[key].balance
+    const walletState = crypto.symbol === Cryptos.ADM ? null : state[key]
+    const address = crypto.symbol === Cryptos.ADM ? state.address : walletState?.address || ''
+    const balance = crypto.symbol === Cryptos.ADM ? state.balance : walletState?.balance || 0
     const erc20 = isErc20(crypto.symbol.toUpperCase() as CryptoSymbol)
     const currentRate = state.rate.rates[`${crypto.symbol}/${currentCurrency.value}`]
     const rate = currentRate !== undefined ? Number((balance * currentRate).toFixed(2)) : 0
@@ -142,6 +147,22 @@ const wallets = computed<Wallet[]>(() => {
       cryptoCurrency: crypto.symbol
     }
   })
+})
+
+const allWalletBalancesZero = computed(() => {
+  return wallets.value.every((wallet) => Number(wallet.balance) === 0)
+})
+
+const walletOrderKey = computed(() => {
+  return orderedVisibleWalletSymbols.value.map((wallet: CoinSymbol) => wallet.symbol).join(',')
+})
+
+const walletTabsKey = computed(() => {
+  return `tabs-${walletOrderKey.value}`
+})
+
+const walletWindowKey = computed(() => {
+  return `window-${walletOrderKey.value}`
 })
 
 const areNodesDisabled = (crypto: CryptoSymbol) => {
@@ -171,6 +192,10 @@ const updateBalances = () => {
 }
 
 const goToTransactions = (crypto: string) => {
+  const path = `/transactions/${crypto}`
+  store.commit('options/setAccountScrollPosition', { path, top: 0 })
+  store.commit('options/updateOption', { key: 'forceTransactionsRefresh', value: true })
+
   router.push({
     name: 'Transactions',
     params: {
@@ -219,12 +244,6 @@ watch(currentWallet, (value) => {
   if (route.name === 'Transactions' || route.name === 'Transaction') {
     goToTransactions(value)
   }
-
-  if (route.name === 'SendFunds') {
-    router.push({
-      name: 'Home'
-    })
-  }
 })
 </script>
 
@@ -239,23 +258,27 @@ watch(currentWallet, (value) => {
  * 2. Reset VTabItem opacity.
  */
 .account-view {
+  margin: 0;
+
   &__wallets {
     &.v-card {
       background-color: transparent;
     }
     :deep(.v-tabs-slider) {
-      height: 2px;
+      height: var(--a-account-tabs-slider-height);
     }
     :deep(.v-tabs) {
-      padding: 10px 0 1px 0;
-      margin-bottom: 10px;
+      padding-top: var(--a-account-tabs-padding-top);
+      padding-bottom: var(--a-account-tabs-padding-bottom);
+      margin-bottom: var(--a-account-tabs-margin-bottom);
     }
     :deep(.v-tab) {
-      font-weight: 300;
-      font-size: 16px;
-      padding: 6px 4px;
-      letter-spacing: normal;
-      min-width: 84px;
+      font-weight: var(--a-account-tab-font-weight);
+      font-size: var(--a-account-tab-font-size);
+      padding-block: var(--a-account-tab-padding-block);
+      padding-inline: var(--a-account-tab-padding-inline);
+      letter-spacing: var(--a-account-tab-letter-spacing);
+      min-width: var(--a-account-tab-min-width);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -265,7 +288,7 @@ watch(currentWallet, (value) => {
       justify-content: center;
     }
     :deep(.v-tab--selected) {
-      font-weight: 500;
+      font-weight: var(--a-account-tab-font-weight-selected);
     }
     :deep(.v-tab):not(.v-tab--selected) {
       opacity: 1;
@@ -281,16 +304,16 @@ watch(currentWallet, (value) => {
       top: 0;
       bottom: 0;
       left: 0;
-      flex-basis: 32px;
-      min-width: 32px;
+      flex-basis: var(--a-account-tab-affix-width);
+      min-width: var(--a-account-tab-affix-width);
     }
     :deep(.v-slide-group__next) {
       position: absolute;
       top: 0;
       bottom: 0;
       right: 0;
-      flex-basis: 32px;
-      min-width: 32px;
+      flex-basis: var(--a-account-tab-affix-width);
+      min-width: var(--a-account-tab-affix-width);
     }
     :deep(.v-slide-group__next.v-slide-group__next--disabled) {
       visibility: hidden; // keep affix width so last tab stays centered
@@ -303,7 +326,7 @@ watch(currentWallet, (value) => {
     position: relative;
   }
   &__icon {
-    margin-bottom: 3px;
+    margin-bottom: var(--a-account-tab-icon-offset);
   }
 }
 
@@ -312,10 +335,10 @@ watch(currentWallet, (value) => {
   .account-view {
     &__wallets {
       :deep(.v-tabs-bar) {
-        background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
+        background-color: var(--a-color-surface-soft-light);
       }
       :deep(.v-tabs-slider) {
-        background-color: map.get(colors.$adm-colors, 'primary') !important;
+        background-color: map.get(colors.$adm-colors, 'primary');
       }
       :deep(.v-tab) {
         &:not(.v-tab--selected) {
@@ -326,7 +349,7 @@ watch(currentWallet, (value) => {
       :deep(.v-tabs .v-slide-group__next .v-icon) {
         z-index: 1;
         color: map.get(colors.$adm-colors, 'primary');
-        border-radius: 50%;
+        border-radius: var(--a-radius-round);
         background-color: color.adjust(map.get(colors.$adm-colors, 'primary2'), $alpha: -0.7);
       }
       :deep(.v-tabs .v-slide-group__prev),
@@ -357,13 +380,13 @@ watch(currentWallet, (value) => {
         background-color: transparent;
       }
       :deep(.v-tabs-slider) {
-        background-color: map.get(colors.$adm-colors, 'primary') !important;
+        background-color: map.get(colors.$adm-colors, 'primary');
       }
       :deep(.v-tabs .v-slide-group__prev .v-icon),
       :deep(.v-tabs .v-slide-group__next .v-icon) {
         z-index: 1;
         color: map.get(colors.$adm-colors, 'primary');
-        border-radius: 50%;
+        border-radius: var(--a-radius-round);
         background-color: color.adjust(map.get(colors.$adm-colors, 'primary2'), $alpha: -0.7);
       }
       :deep(.v-tabs .v-slide-group__prev),

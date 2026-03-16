@@ -1,5 +1,5 @@
 <template>
-  <div :class="classes.root" class="w-100" ref="navigationWrapper">
+  <div :class="classes.root" ref="navigationWrapper">
     <app-toolbar-centered
       app
       :title="title"
@@ -12,7 +12,6 @@
 
     <v-container
       fluid
-      class="px-0 py-0"
       :class="{
         [classes.container]: true,
         [classes.containerWithLoader]: hasLoaderSlot
@@ -108,8 +107,11 @@ const onScroll = (event: Event) => {
 .navigation-wrapper {
   position: relative;
   height: max-content;
+  width: 100%;
 
   &__container {
+    padding: 0;
+
     &--loader {
       position: relative;
     }

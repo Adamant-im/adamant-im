@@ -1,11 +1,5 @@
 <template>
-  <v-container
-    fluid
-    :class="{
-      'pa-6': !containerNoPadding,
-      'pa-0': containerNoPadding
-    }"
-  >
+  <v-container fluid :class="[className, { [`${className}--flush`]: containerNoPadding }]">
     <slot />
   </v-container>
   <app-snackbar />
@@ -19,6 +13,8 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import { useScreenSize } from '@/hooks/useScreenSize'
+
+const className = 'toolbar-layout'
 
 const route = useRoute()
 const store = useStore()
@@ -35,3 +31,13 @@ const showNavigation = computed(() => {
 
 const containerNoPadding = computed(() => route.meta.containerNoPadding)
 </script>
+
+<style lang="scss" scoped>
+.toolbar-layout {
+  padding: var(--a-toolbar-layout-padding);
+
+  &--flush {
+    padding: 0;
+  }
+}
+</style>

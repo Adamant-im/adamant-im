@@ -1,14 +1,13 @@
 <template>
-  <v-list-item>
+  <v-list-item :class="classes.root">
     <template v-slot:default>
       <div :class="classes.cryptoContent">
         <v-list-item-title :class="classes.cryptoTitle">{{
           localWallet.cryptoName
         }}</v-list-item-title>
-        <v-list-item-subtitle>
+        <v-list-item-subtitle :class="classes.cryptoSubtitleWrap">
           <p :class="classes.cryptoSubtitle">
             <span :class="classes.cryptoSubtitleMuted">{{ localWallet.type }}</span>
-            {{ ' ' }}
             <span :class="classes.cryptoSubtitleBold">{{ localWallet.symbol }}</span>
           </p>
         </v-list-item-subtitle>
@@ -16,15 +15,18 @@
     </template>
     <template v-slot:prepend>
       <v-avatar>
-        <crypto-icon :crypto="localWallet.symbol" :customSize="iconSize" />
+        <crypto-icon
+          :class="classes.cryptoIcon"
+          :crypto="localWallet.symbol"
+          :customSize="WALLET_LIST_ICON_SIZE"
+        />
       </v-avatar>
     </template>
 
     <template v-slot:append>
-      <WalletBalance :symbol="localWallet.symbol" class="mr-2"></WalletBalance>
+      <WalletBalance :symbol="localWallet.symbol" :class="classes.balance"></WalletBalance>
       <v-checkbox
-        class="pa-1"
-        :class="classes.checkbox"
+        :class="[classes.checkbox, classes.checkboxControl]"
         color="grey darken-1"
         density="comfortable"
         hide-details
@@ -38,7 +40,7 @@
       ></v-checkbox>
       <v-btn
         color="grey-lighten-1"
-        class="handle"
+        :class="classes.sortableHandle"
         density="comfortable"
         :icon="mdiMenu"
         :disabled="!localWallet.isVisible || !!search"
@@ -51,6 +53,7 @@
 <script lang="ts">
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import WalletBalance from '@/components/wallets/WalletBalance.vue'
+import { WALLET_LIST_ICON_SIZE } from '@/components/wallets/helpers/uiMetrics'
 import { defineComponent, PropType, toRef } from 'vue'
 import { useStore } from 'vuex'
 import { CryptoSymbol } from '@/lib/constants'
@@ -67,14 +70,18 @@ type Wallet = {
 const className = 'wallets-view'
 const classes = {
   root: className,
+  balance: `${className}__balance`,
   cryptoContent: `${className}__crypto-content`,
+  cryptoIcon: `${className}__crypto-icon`,
   cryptoSubtitle: `${className}__crypto-subtitle`,
+  cryptoSubtitleWrap: `${className}__crypto-subtitle-wrap`,
   cryptoSubtitleMuted: `${className}__crypto-subtitle-muted`,
   cryptoSubtitleBold: `${className}__crypto-subtitle-bold`,
   cryptoTitle: `${className}__crypto-title`,
-  checkbox: `${className}__checkbox`
+  checkbox: `${className}__checkbox`,
+  checkboxControl: `${className}__checkbox-control`,
+  sortableHandle: `${className}__sortable-handle`
 }
-const iconSize = 32
 
 export default defineComponent({
   components: {
@@ -98,10 +105,10 @@ export default defineComponent({
 
     return {
       classes,
-      iconSize,
       localWallet,
       store,
-      mdiMenu
+      mdiMenu,
+      WALLET_LIST_ICON_SIZE
     }
   }
 })
@@ -109,30 +116,51 @@ export default defineComponent({
 
 <style scoped lang="scss">
 @use 'sass:map';
+@use '@/assets/styles/components/_color-roles.scss' as colorRoles;
+@use '@/assets/styles/components/_wallet-compact-content.scss' as walletCompactContent;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
-@use 'vuetify/settings';
 
 .wallets-view {
+  --a-wallets-list-item-content-height: var(--a-control-size-md);
+  --a-wallets-list-item-content-gap: var(--a-financial-stack-gap);
+  --a-wallets-list-item-checkbox-offset: calc(var(--a-space-2) * -1);
+  --a-wallets-list-item-subtitle-weight: var(--a-financial-text-font-weight);
+  @include colorRoles.a-color-role-subtle-var('--a-wallets-list-item-subtitle-muted-color');
+
   &__crypto-content {
-    height: 40px;
+    height: var(--a-wallets-list-item-content-height);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    line-height: 1;
+    justify-content: center;
+    gap: var(--a-wallets-list-item-content-gap);
+    @include walletCompactContent.a-wallet-compact-line-copy();
+  }
+  &__crypto-subtitle-wrap {
+    opacity: 1;
+    @include walletCompactContent.a-wallet-compact-line-copy();
   }
   &__crypto-subtitle {
-    font-weight: 300;
-    line-height: 1;
+    display: flex;
+    align-items: baseline;
+    gap: var(--a-space-1);
+    font-weight: var(--a-wallets-list-item-subtitle-weight);
+    @include walletCompactContent.a-wallet-compact-line-copy();
   }
   &__crypto-subtitle-muted {
-    color: rgba(map.get(settings.$shades, 'white'), 70%);
+    color: var(--a-wallets-list-item-subtitle-muted-color);
   }
   &__crypto-subtitle-bold {
     font-weight: 600;
   }
   &__crypto-title {
-    line-height: 1.1;
+    @include walletCompactContent.a-wallet-compact-title-line();
+  }
+  &__balance {
+    margin-inline-end: var(--a-wallets-list-item-balance-offset-inline-end);
+  }
+  &__checkbox-control {
+    padding: var(--a-wallets-list-item-checkbox-padding);
   }
   &__info {
     :deep(a) {
@@ -147,14 +175,11 @@ export default defineComponent({
   }
 
   :deep(.v-checkbox) {
-    margin-left: -8px;
+    margin-left: var(--a-wallets-list-item-checkbox-offset);
   }
 
   :deep(.sortable-chosen) {
-    box-shadow:
-      0 8px 9px -5px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
-      0 15px 22px 2px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)),
-      0 6px 28px 5px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.12)) !important;
+    box-shadow: var(--a-wallets-list-item-sortable-shadow);
   }
 }
 /** Themes **/
@@ -166,12 +191,12 @@ export default defineComponent({
       }
       :deep(.v-input--selection-controls__ripple),
       :deep(.v-input--selection-controls__input) i {
-        color: map.get(colors.$adm-colors, 'regular') !important;
-        caret-color: map.get(colors.$adm-colors, 'regular') !important;
+        color: map.get(colors.$adm-colors, 'regular');
+        caret-color: map.get(colors.$adm-colors, 'regular');
       }
     }
     &__crypto-subtitle-muted {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-wallets-list-item-subtitle-muted-color);
     }
     &__crypto-subtitle-bold {
       color: map.get(colors.$adm-colors, 'regular');

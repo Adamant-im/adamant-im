@@ -1,31 +1,36 @@
 <template>
-  <v-dialog v-model="show" width="500" :class="className" @keydown.enter="onEnter">
+  <v-dialog
+    v-model="show"
+    width="var(--a-secondary-dialog-width)"
+    :class="className"
+    @keydown.enter="onEnter"
+  >
     <v-card>
-      <v-card-title class="a-text-header">
+      <v-card-title :class="`${className}__card-title`">
         {{ header }}
       </v-card-title>
 
       <v-divider class="a-divider" />
 
       <v-card-text :class="`${className}__card-text`">
-        <div :class="`${className}__disclaimer a-text-regular-enlarged`">
+        <div :class="`${className}__disclaimer`">
           {{ about }}
         </div>
 
-        <div :class="`${className}__disclaimer ${className}__highlight a-text-regular-enlarged`">
+        <div :class="`${className}__disclaimer ${className}__highlight`">
           {{ details }}
         </div>
 
-        <div :class="`${className}__disclaimer a-text-regular-enlarged`">
+        <div :class="`${className}__disclaimer`">
           {{ reasons }}
         </div>
 
-        <div :class="`${className}__disclaimer a-text-regular-enlarged`">
+        <div :class="`${className}__disclaimer`">
           {{ action }}
         </div>
       </v-card-text>
 
-      <v-col cols="12" class="text-center pa-0">
+      <v-col cols="12" :class="`${className}__btn-block`">
         <v-btn :class="[`${className}__btn-hide`, 'a-btn-primary']" @click="hide()">
           <v-icon :class="`${className}__btn-icon`" :icon="mdiAlert" />
           <div :class="`${className}__btn-text`">
@@ -35,7 +40,7 @@
       </v-col>
 
       <v-col cols="12" :class="`${className}__btn-forget`">
-        <a class="a-text-active" @click="forget()">
+        <a :class="`${className}__action-link`" @click="forget()">
           {{ $t('warning_on_addresses.forget_button') }}
         </a>
       </v-col>
@@ -148,29 +153,38 @@ export default {
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 @use 'vuetify/_settings.scss';
 
 .warning-on-addresses-dialog {
-  &__card-text {
-    padding: 16px !important;
+  @include secondaryDialog.a-secondary-dialog-warning-frame();
+
+  &__card-title {
+    @include secondaryDialog.a-secondary-dialog-title();
   }
+
   &__disclaimer {
-    margin-top: 10px;
+    @include secondaryDialog.a-secondary-dialog-body-copy();
   }
+
+  &__action-link {
+    @include secondaryDialog.a-secondary-dialog-link-action();
+  }
+
   &__highlight {
-    background-color: rgba(map.get(colors.$adm-colors, 'attention'), 0.6);
-    padding: 10px;
+    background-color: var(--a-color-surface-warning-soft);
   }
-  &__btn-icon {
-    margin-right: 8px;
+
+  &__btn-block {
+    @include secondaryDialog.a-secondary-dialog-action-block();
   }
+
   &__btn-hide {
-    margin-top: 15px;
-    margin-bottom: 20px;
+    @include secondaryDialog.a-secondary-dialog-primary-action-button();
   }
+
   &__btn-forget {
-    padding: 0 0 30px 0;
-    text-align: center;
+    @include secondaryDialog.a-secondary-dialog-footer-link-block();
   }
 }
 </style>

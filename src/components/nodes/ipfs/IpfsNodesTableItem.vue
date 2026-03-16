@@ -78,6 +78,6 @@ export default {
 
 <style lang="scss">
 .ipfs-nodes-table-item {
-  line-height: 14px;
+  line-height: var(--a-font-size-sm);
 }
 </style>

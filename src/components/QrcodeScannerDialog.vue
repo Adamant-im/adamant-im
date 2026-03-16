@@ -1,12 +1,23 @@
 <template>
-  <v-dialog v-model="show" :class="classes.root" width="500">
+  <v-dialog v-model="show" :class="classes.root" width="var(--a-secondary-dialog-width)">
     <v-card :class="classes.root">
       <!-- Camera Waiting -->
-      <v-row v-if="cameraStatus === 'waiting'" justify="center" align="center" class="pa-8" gap="0">
-        <div class="a-text-header">
+      <v-row
+        v-if="cameraStatus === 'waiting'"
+        justify="center"
+        align="center"
+        :class="`${classes.root}__status`"
+        gap="0"
+      >
+        <div :class="`${classes.root}__status-title`">
           {{ t('scan.waiting_camera') }}
         </div>
-        <v-progress-circular indeterminate color="primary" size="32" class="ml-4" />
+        <v-progress-circular
+          indeterminate
+          color="primary"
+          :size="QRCODE_SCANNER_WAITING_SPINNER_SIZE"
+          :class="`${classes.root}__waiting-spinner`"
+        />
       </v-row>
 
       <!-- Camera Active -->
@@ -33,8 +44,8 @@
             </v-menu>
           </div>
         </v-col>
-        <v-col cols="12" class="pa-6">
-          <h3 class="a-text-regular text-center">
+        <v-col cols="12" :class="`${classes.root}__hint`">
+          <h3 :class="`${classes.root}__hint-title`">
             {{ t('scan.hold_your_device') }}
           </h3>
         </v-col>
@@ -47,32 +58,32 @@
         "
         justify="center"
         align="center"
-        class="text-center pa-8"
+        :class="`${classes.root}__state`"
         gap="0"
       >
         <v-col cols="12">
           <template v-if="cameraStatus === 'nocamera'">
-            <h3 class="a-text-header">
+            <h3 :class="`${classes.root}__state-title`">
               {{ t('scan.no_camera_found') }}
             </h3>
-            <p class="a-text-regular mt-1 mb-0">
+            <p :class="`${classes.root}__state-message`">
               {{ t('scan.connect_camera') }}
             </p>
           </template>
           <template v-else-if="cameraStatus === 'noaccess'">
-            <h3 class="a-text-header">
+            <h3 :class="`${classes.root}__state-title`">
               {{ t('scan.no_camera_access') }}
             </h3>
-            <p class="a-text-regular mt-1 mb-0">
+            <p :class="`${classes.root}__state-message`">
               {{ t('scan.grant_camera_permissions') }}
             </p>
           </template>
           <template v-else-if="cameraStatus === 'nostream'">
-            <h3 class="a-text-header">
+            <h3 :class="`${classes.root}__state-title`">
               {{ t('scan.no_camera_stream') }}
             </h3>
             <p
-              class="a-text-regular mt-1 mb-0"
+              :class="`${classes.root}__state-message`"
               v-html="t('scan.no_stream_details', { noStreamDetails })"
             />
           </template>
@@ -81,7 +92,7 @@
 
       <v-divider class="a-divider" />
 
-      <v-card-actions>
+      <v-card-actions :class="`${classes.root}__dialog-actions`">
         <v-spacer />
         <v-btn variant="text" class="a-btn-regular" @click="show = false">
           {{ t('scan.close_button') }}
@@ -100,6 +111,7 @@ import type { IScannerControls } from '@zxing/browser'
 import { Scanner } from '@/lib/zxing'
 import { mdiCamera } from '@mdi/js'
 import { logger } from '@/utils/devTools/logger'
+import { QRCODE_SCANNER_WAITING_SPINNER_SIZE } from '@/components/Qrcode/helpers/uiMetrics'
 
 const className = 'qrcode-scanner-dialog'
 const classes = {
@@ -218,6 +230,7 @@ export default defineComponent({
       currentCamera,
       noStreamDetails,
       props,
+      QRCODE_SCANNER_WAITING_SPINNER_SIZE,
       show,
       videoElement,
       mdiCamera
@@ -227,11 +240,50 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
+
 .qrcode-scanner-dialog {
+  @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  &__status,
+  &__state {
+    padding: var(--a-space-8) var(--a-space-6);
+  }
+
+  &__waiting-spinner {
+    margin-inline-start: var(--a-space-4);
+  }
+
+  &__hint {
+    padding: var(--a-space-6);
+  }
+
+  &__hint-title,
+  &__state {
+    text-align: center;
+  }
+
+  &__hint-title {
+    @include mixins.a-text-regular();
+  }
+
+  &__status-title,
+  &__state-title {
+    @include mixins.a-text-header();
+    margin: 0;
+  }
+
+  &__state-message {
+    @include mixins.a-text-regular();
+    margin-top: var(--a-space-1);
+    margin-bottom: 0;
+  }
+
   &__camera {
     width: 100%;
-    height: 300px;
-    background-color: #000;
+    height: var(--a-qrcode-scanner-camera-height);
+    background-color: var(--a-color-surface-camera);
     position: relative;
 
     video {
@@ -249,7 +301,7 @@ export default defineComponent({
     bottom: 0;
     :deep(.v-btn) {
       min-width: auto;
-      padding: 0 8px;
+      padding: 0 var(--a-qrcode-scanner-camera-select-padding-inline);
     }
   }
 }

@@ -25,12 +25,21 @@ const state = () => ({
   suppressWarningOnAddressesNotification: false,
   currentRate: Rates.USD,
   scrollTopPosition: 0,
+  accountLastRoute: '/home',
+  accountScrollPositions: {},
+  settingsLastRoute: '/options',
+  settingsScrollPositions: {},
+  forceTransactionsRefresh: false,
   devModeEnabled: false // Dev screens access
 })
 
 const getters = {
   isLoginViaPassword: (state) => state.stayLoggedIn,
   scrollTopPosition: (state) => state.scrollTopPosition,
+  accountLastRoute: (state) => state.accountLastRoute,
+  accountScrollPosition: (state) => (path) => state.accountScrollPositions[path] ?? 0,
+  settingsLastRoute: (state) => state.settingsLastRoute,
+  settingsScrollPosition: (state) => (path) => state.settingsScrollPositions[path] ?? 0,
   currentNodesTab: (state) => state.currentNodesTab,
   wasSendingFunds: (state) => state.sendFundsData.wasSendingFunds,
   savedCryptoCurrency: (state) => state.sendFundsData.cryptoCurrency,
@@ -48,6 +57,32 @@ const mutations = {
     if (key in state) {
       state[key] = value
     }
+  },
+  setAccountLastRoute(state, path) {
+    state.accountLastRoute = path
+  },
+  setAccountScrollPosition(state, { path, top }) {
+    state.accountScrollPositions = {
+      ...state.accountScrollPositions,
+      [path]: top
+    }
+  },
+  resetAccountViewState(state) {
+    state.accountLastRoute = '/home'
+    state.accountScrollPositions = {}
+  },
+  setSettingsLastRoute(state, path) {
+    state.settingsLastRoute = path
+  },
+  setSettingsScrollPosition(state, { path, top }) {
+    state.settingsScrollPositions = {
+      ...state.settingsScrollPositions,
+      [path]: top
+    }
+  },
+  resetSettingsViewState(state) {
+    state.settingsLastRoute = '/options'
+    state.settingsScrollPositions = {}
   }
 }
 

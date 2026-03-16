@@ -20,6 +20,24 @@
     v-longpress="onLongPress"
   >
     <div
+      v-if="showInlinePendingStatus"
+      class="a-chat__inline-status a-chat__inline-status--pending"
+    >
+      <v-icon :icon="statusIcon" :size="CHAT_INLINE_PENDING_STATUS_ICON_SIZE" />
+    </div>
+    <div
+      v-else-if="showInlineRejectedStatus"
+      class="a-chat__inline-status a-chat__inline-status--rejected"
+    >
+      <v-icon
+        :icon="statusIcon"
+        :size="CHAT_INLINE_PENDING_STATUS_ICON_SIZE"
+        color="red"
+        @click="$emit('click:status')"
+      />
+    </div>
+
+    <div
       class="a-chat__message"
       :class="{
         'a-chat__message--flashing': flashing,
@@ -28,7 +46,7 @@
       :data-id="dataId"
     >
       <div class="a-chat__message-card">
-        <div v-if="transaction.showTime" class="a-chat__message-card-header mt-1">
+        <div v-if="transaction.showTime" class="a-chat__message-card-header">
           <div v-if="transaction.status === 'CONFIRMED'" class="a-chat__blockchain-status">
             &#x26AD;
           </div>
@@ -39,12 +57,11 @@
             <v-icon
               v-if="transaction.status === 'REJECTED'"
               :icon="statusIcon"
-              :title="t('chats.retry_message')"
-              size="15"
+              :size="CHAT_STATUS_ICON_ERROR_SIZE"
               color="red"
-              @click="$emit('resend')"
+              @click="$emit('click:status')"
             />
-            <v-icon v-else :icon="statusIcon" size="13" />
+            <v-icon v-else :icon="statusIcon" :size="CHAT_STATUS_ICON_SIZE" />
           </div>
         </div>
 
@@ -58,17 +75,9 @@
         <div class="a-chat__message-card-body">
           <!-- eslint-disable vue/no-v-html -- Safe with DOMPurify.sanitize() content -->
           <!-- AChatMessage :message <- Chat.vue :message="formatMessage(message)" <- formatMessage <- DOMPurify.sanitize() -->
-          <div
-            v-if="html"
-            class="a-chat__message-text a-text-regular-enlarged"
-            v-html="formattedMessage"
-          />
+          <div v-if="html" class="a-chat__message-text" v-html="formattedMessage" />
           <!-- eslint-enable vue/no-v-html -->
-          <div
-            v-else
-            class="a-chat__message-text a-text-regular-enlarged"
-            v-text="formattedMessage"
-          />
+          <div v-else class="a-chat__message-text" v-text="formattedMessage" />
         </div>
       </div>
     </div>
@@ -78,7 +87,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+import { computed, defineComponent, onBeforeUnmount, PropType, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
@@ -87,11 +96,17 @@ import { usePartnerId } from './hooks/usePartnerId'
 import { useTransactionTime } from './hooks/useTransactionTime'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import { tsIcon } from '@/lib/constants'
+import { TransactionStatus, tsIcon } from '@/lib/constants'
 import QuotedMessage from './QuotedMessage.vue'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
 import formatDate from '@/filters/date'
 import { isWelcomeChat } from '@/lib/chat/meta/utils'
+import {
+  CHAT_INLINE_PENDING_STATUS_DELAY_MS,
+  CHAT_INLINE_PENDING_STATUS_ICON_SIZE,
+  CHAT_STATUS_ICON_ERROR_SIZE,
+  CHAT_STATUS_ICON_SIZE
+} from './helpers/uiMetrics'
 
 export default defineComponent({
   components: {
@@ -126,7 +141,7 @@ export default defineComponent({
       type: Boolean
     }
   },
-  emits: ['resend', 'click:quotedMessage', 'swipe:left', 'longpress'],
+  emits: ['click:status', 'click:quotedMessage', 'swipe:left', 'longpress'],
   setup(props, { emit }) {
     const { t } = useI18n()
     const store = useStore()
@@ -140,8 +155,54 @@ export default defineComponent({
     const isOutgoingMessage = computed(() =>
       isStringEqualCI(props.transaction.senderId, userId.value)
     )
+    const isQueuedPendingMessage = computed(() =>
+      Boolean(store.state.chat.pendingMessages[String(props.transaction.id)])
+    )
     const formattedMessage = useFormatMessage(props.transaction)
     const time = useTransactionTime(props.transaction)
+    const pendingStatusDelayElapsed = ref(false)
+
+    let pendingStatusTimer: ReturnType<typeof setTimeout> | undefined
+
+    const clearInlinePendingStatusTimer = () => {
+      if (pendingStatusTimer) {
+        clearTimeout(pendingStatusTimer)
+        pendingStatusTimer = undefined
+      }
+    }
+
+    const syncInlinePendingStatus = () => {
+      clearInlinePendingStatusTimer()
+      pendingStatusDelayElapsed.value = false
+
+      if (
+        !isOutgoingMessage.value ||
+        props.transaction.showTime ||
+        props.transaction.status !== TransactionStatus.PENDING ||
+        !isQueuedPendingMessage.value
+      ) {
+        return
+      }
+
+      pendingStatusTimer = setTimeout(() => {
+        pendingStatusDelayElapsed.value = true
+      }, CHAT_INLINE_PENDING_STATUS_DELAY_MS)
+    }
+
+    const showInlinePendingStatus = computed(
+      () =>
+        pendingStatusDelayElapsed.value &&
+        isOutgoingMessage.value &&
+        !props.transaction.showTime &&
+        isQueuedPendingMessage.value &&
+        props.transaction.status === TransactionStatus.PENDING
+    )
+    const showInlineRejectedStatus = computed(
+      () =>
+        isOutgoingMessage.value &&
+        !props.transaction.showTime &&
+        props.transaction.status === TransactionStatus.REJECTED
+    )
 
     const { onMove, onSwipeEnd, elementLeftOffset } = useSwipeLeft(() => {
       emit('swipe:left')
@@ -150,6 +211,23 @@ export default defineComponent({
     const onLongPress = () => {
       emit('longpress')
     }
+
+    watch(
+      () => [
+        props.transaction.id,
+        props.transaction.status,
+        props.transaction.showTime,
+        isQueuedPendingMessage.value
+      ],
+      syncInlinePendingStatus,
+      { immediate: true }
+    )
+
+    watch(isOutgoingMessage, syncInlinePendingStatus)
+
+    onBeforeUnmount(() => {
+      clearInlinePendingStatusTimer()
+    })
 
     return {
       t,
@@ -164,8 +242,44 @@ export default defineComponent({
       isStringEqualCI,
       onLongPress,
       formatDate,
-      time
+      time,
+      showInlinePendingStatus,
+      showInlineRejectedStatus,
+      CHAT_INLINE_PENDING_STATUS_ICON_SIZE,
+      CHAT_STATUS_ICON_SIZE,
+      CHAT_STATUS_ICON_ERROR_SIZE
     }
   }
 })
 </script>
+
+<style lang="scss" scoped>
+@use '@/assets/styles/components/_chat-message-content.scss' as chatMessageContent;
+
+.a-chat__inline-status {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + var(--a-space-2));
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+
+  &--pending {
+    color: var(--a-color-text-on-surface-muted);
+    pointer-events: none;
+  }
+
+  &--rejected {
+    color: var(--a-color-text-on-surface-muted);
+
+    :deep(.v-icon) {
+      cursor: pointer;
+      pointer-events: auto;
+    }
+  }
+}
+
+.a-chat__message-text {
+  @include chatMessageContent.a-chat-message-body-copy();
+}
+</style>

@@ -29,6 +29,7 @@
             html
             disable-max-width
             elevation
+            @click:status="openStatusActions(actionMessage)"
           >
             <template #avatar>
               <ChatAvatar :user-id="partnerId" use-public-key @click="onClickAvatar(partnerId)" />
@@ -48,27 +49,38 @@
           </a-chat-transaction>
 
           <template #top>
-            <EmojiPicker
-              v-if="showEmojiPicker"
-              @emoji:select="(emoji) => onEmojiSelect(actionMessage.id, emoji)"
-              elevation
-              position="absolute"
-            />
+            <transition name="slide-y-reverse-transition" mode="out-in">
+              <AChatMessageStatusNote
+                v-if="isRejectedOutgoingMessage(actionMessage)"
+                key="rejected-status-note"
+              />
 
-            <AChatReactionSelect
-              v-else
-              :transaction="actionMessage"
-              @reaction:add="sendReaction"
-              @reaction:remove="removeReaction"
-              @click:emoji-picker="showEmojiPicker = true"
-            />
+              <EmojiPicker
+                v-else-if="showEmojiPicker"
+                key="emoji-picker"
+                @emoji:select="(emoji) => onEmojiSelect(actionMessage.id, emoji)"
+                elevation
+                position="absolute"
+              />
+
+              <AChatReactionSelect
+                v-else
+                key="reaction-select"
+                :transaction="actionMessage"
+                @reaction:add="sendReaction"
+                @reaction:remove="removeReaction"
+                @click:emoji-picker="showEmojiPicker = true"
+              />
+            </transition>
           </template>
 
           <template #bottom>
             <AChatMessageActionsMenu
               v-if="!showEmojiPicker"
+              :transaction="actionMessage"
               @click:reply="openReplyPreview(actionMessage)"
               @click:copy="copyMessageToClipboard(actionMessage)"
+              @click:retry="retryRejectedMessage(actionMessage)"
             />
           </template>
         </a-chat-actions-overlay>
@@ -86,9 +98,9 @@
             />
             <v-progress-circular
               v-else
-              class="connection-spinner ml-1 mr-4"
+              class="connection-spinner chat__connection-spinner"
               indeterminate
-              :size="32"
+              :size="CHAT_CONNECTION_SPINNER_SIZE"
             />
           </template>
         </chat-toolbar>
@@ -110,7 +122,7 @@
           :flashing="flashingMessageId === message.id"
           :data-id="message.id"
           :swipe-disabled="isWelcomeMessage(message)"
-          @resend="resendMessage(partnerId, message.id)"
+          @click:status="openStatusActions(message)"
           @click:quoted-message="onQuotedMessageClick"
           @swipe:left="onSwipeLeft(message)"
           @longpress="onMessageLongPress(message)"
@@ -125,6 +137,7 @@
               @open:change="toggleActionsDropdown"
               @click:reply="openReplyPreview"
               @click:copy="copyMessageToClipboard"
+              @click:retry="retryRejectedMessage"
               @reaction:add="sendReaction"
               @reaction:remove="removeReaction"
               @emoji:select="onEmojiSelect"
@@ -208,7 +221,7 @@
           :send-on-enter="sendMessageOnEnter"
           :show-divider="true"
           :label="t('chats.message')"
-          :should-disable-input="isWelcomeChat(partnerId) || shouldDisableInput"
+          :should-disable-input="isWelcomeChat(partnerId) || publicKeyDisable"
           :message-text="messageText"
           @message="onMessage"
           @error="onMessageError"
@@ -275,6 +288,7 @@ import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, wat
 import Visibility from 'visibilityjs'
 import copyToClipboard from 'copy-to-clipboard'
 import { logger } from '@/utils/devTools/logger'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 import {
   Cryptos,
@@ -296,6 +310,7 @@ import {
   AChatMessageActionsMenu,
   AChatActionsOverlay,
   AChatReactionSelect,
+  AChatMessageStatusNote,
   FilesPreview
 } from '@/components/AChat'
 import ChatMessageActions from './ChatMessageActions.vue'
@@ -314,8 +329,10 @@ import { useChatsSpinner } from '@/hooks/useChatsSpinner'
 import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import { useChatStateStore } from '@/stores/modal-state'
 import ChatPlaceholder from '@/components/Chat/ChatPlaceholder.vue'
+import { CHAT_CONNECTION_SPINNER_SIZE } from '@/components/Chat/helpers/uiMetrics'
 import { watchImmediate } from '@vueuse/core'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import { usePublicKeyFetch } from '@/components/Chat/composables/usePublicKeyFetch'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -335,7 +352,7 @@ const emit = defineEmits(['click:chat-avatar'])
 const route = useRoute()
 const router = useRouter()
 const store = useStore()
-const { t, locale } = useI18n()
+const { t, te, locale } = useI18n()
 const showSpinner = useChatsSpinner()
 const currentLocale = computed(() => String(locale.value))
 
@@ -382,8 +399,12 @@ const flashingMessageId = ref<string | -1>(-1)
 const actionsMenuMessageId = ref<string | -1>(-1)
 const replyMessageId = ref<string | -1>(-1)
 const showEmojiPicker = ref(false)
-const isGettingPublicKey = ref(false)
-const isKeyMissing = ref(false)
+const {
+  isGettingPublicKey,
+  isKeyMissing,
+  shouldDisableInput: publicKeyDisable,
+  createChat
+} = usePublicKeyFetch(props.partnerId)
 
 // to handle loading spinner and allow fetching messages while the spinner is shown
 // in case of connection troubles while first fetching
@@ -411,9 +432,6 @@ const userMessages = computed(() =>
 )
 const userId = computed(() => store.state.address)
 const isNewChat = computed(() => store.getters['chat/isNewChat'](props.partnerId))
-const shouldDisableInput = computed(
-  () => isGettingPublicKey.value || isKeyMissing.value || !store.state.publicKeys[props.partnerId]
-)
 const groupedMessages = computed(() => {
   if (!messages.value.length) return []
 
@@ -452,7 +470,7 @@ const groupedMessages = computed(() => {
 const getPartnerName = (address: string) => {
   const name: string = store.getters['partners/displayName'](address) || ''
 
-  return isAdamantChat(address) ? t(name) : name
+  return isAdamantChat(address) ? (te(name) ? t(name) : name || address) : name
 }
 const getUserMeta = (address: string) => ({
   id: address,
@@ -480,6 +498,7 @@ const actionMessage = computed<NormalizedChatMessageTransaction>(() =>
 )
 const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
 const areAdmNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
+
 const allowPlaceholder = computed(
   () =>
     !isWelcomeChat(props.partnerId) &&
@@ -528,11 +547,6 @@ watch(replyMessageId, (messageId) => {
 watch(areAdmNodesOnline, async (nodesOnline) => {
   if (!nodesOnline) return
 
-  if (isGettingPublicKey.value) {
-    const partnerName = store.getters['chat/getPartnerName'](props.partnerId)
-    await createChat(props.partnerId, partnerName)
-  }
-
   if (loading.value && allowFetchingMessages.value) {
     await fetchChatMessages()
   }
@@ -564,7 +578,7 @@ onBeforeMount(() => {
 })
 
 onMounted(async () => {
-  if (!isNewChat.value && isFulfilled.value && chatPage.value <= 0) {
+  if (isFulfilled.value && chatPage.value <= 0) {
     await fetchChatMessages()
   }
 
@@ -615,30 +629,8 @@ const handleEmptyChat = async () => {
     (!store.state.publicKeys[props.partnerId] && !isWelcomeChat(props.partnerId))
   ) {
     const partnerName = store.getters['chat/getPartnerName'](props.partnerId)
-
-    await createChat(props.partnerId, partnerName)
+    createChat(partnerName)
   }
-}
-
-const createChat = async (partnerId: string, partnerName: string) => {
-  isGettingPublicKey.value = true
-  store
-    .dispatch('chat/createChat', {
-      partnerId,
-      partnerName
-    })
-    .then((key) => {
-      if (key) {
-        isGettingPublicKey.value = false
-      }
-    })
-    .catch((error: unknown) => {
-      vibrate.long()
-      if ((error as Error).message === t('chats.no_public_key')) {
-        isKeyMissing.value = true
-        isGettingPublicKey.value = false
-      }
-    })
 }
 
 /**
@@ -743,6 +735,13 @@ const resendMessage = (recipientId: string, messageId: string) => {
   })
 }
 
+const retryRejectedMessage = (message: NormalizedChatMessageTransaction) => {
+  closeActionsMenu()
+  closeActionsDropdown()
+
+  return resendMessage(props.partnerId, message.id)
+}
+
 const sendReaction = (reactToId: string, emoji: string) => {
   closeActionsMenu()
   closeActionsDropdown()
@@ -836,7 +835,13 @@ const onSwipeLeft = (message: NormalizedChatMessageTransaction) => {
   vibrate.veryShort()
 }
 
+const isRejectedOutgoingMessage = (transaction: NormalizedChatMessageTransaction) =>
+  transaction.type === 'message' &&
+  transaction.status === 'REJECTED' &&
+  isStringEqualCI(transaction.senderId, store.state.address)
+
 const openActionsMenu = (transaction: NormalizedChatMessageTransaction) => {
+  showEmojiPicker.value = false
   actionsMenuMessageId.value = transaction.id
 }
 
@@ -846,6 +851,7 @@ const closeActionsMenu = () => {
 }
 
 const openActionsDropdown = (transaction: NormalizedChatMessageTransaction) => {
+  showEmojiPicker.value = false
   actionsDropdownMessageId.value = transaction.id
 }
 
@@ -863,6 +869,14 @@ const toggleActionsDropdown = (open: boolean, transaction: NormalizedChatMessage
 }
 
 const handleClickReactions = (transaction: NormalizedChatMessageTransaction) => {
+  if (isMobile()) {
+    openActionsMenu(transaction)
+  } else {
+    toggleActionsDropdown(true, transaction)
+  }
+}
+
+const openStatusActions = (transaction: NormalizedChatMessageTransaction) => {
   if (isMobile()) {
     openActionsMenu(transaction)
   } else {
@@ -1003,8 +1017,29 @@ const scrollBehavior = () => {
     markAsRead()
   })
 }
+
+const hasFocusedEditableElement = () => {
+  const activeElement = document.activeElement
+
+  if (!(activeElement instanceof HTMLElement)) {
+    return false
+  }
+
+  if (activeElement instanceof HTMLTextAreaElement) {
+    return !activeElement.readOnly && !activeElement.disabled
+  }
+
+  if (activeElement instanceof HTMLInputElement) {
+    return !activeElement.readOnly && !activeElement.disabled
+  }
+
+  return activeElement.isContentEditable
+}
+
 const onKeyPress = (e: KeyboardEvent) => {
-  if (e.code === 'Enter' && !isShowFreeTokensDialog.value) {
+  if (e.code === 'Enter' && !isShowFreeTokensDialog.value && !hasFocusedEditableElement()) {
+    e.preventDefault()
+    e.stopPropagation()
     chatFormRef.value.focus()
   }
 }
@@ -1016,16 +1051,21 @@ const onKeyPress = (e: KeyboardEvent) => {
 @use '@/assets/styles/settings/_colors.scss';
 
 .chat-menu {
-  margin-right: 12px;
+  margin-right: var(--a-space-3);
 }
 .chat {
-  height: calc(100vh - var(--v-layout-bottom));
+  height: var(--a-layout-height);
   box-shadow: none;
   background-color: transparent !important;
 }
 
 .chat-avatar {
-  margin-right: 12px;
+  margin-right: var(--a-space-1);
+}
+
+.chat__connection-spinner {
+  margin-left: var(--a-space-1);
+  margin-right: var(--a-space-4);
 }
 
 /** Themes **/

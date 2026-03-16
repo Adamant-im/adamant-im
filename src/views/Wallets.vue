@@ -1,7 +1,10 @@
 <template>
-  <div :class="classes.root" class="w-100">
-    <v-card flat color="transparent" :class="`${classes.root}__card`">
-      <WalletsSearchInput @change="searchChanged" />
+  <div :class="[classes.root, classes.page]">
+    <SettingsTableShell :class="classes.layout">
+      <template #before>
+        <WalletsSearchInput @change="searchChanged" />
+      </template>
+
       <div
         class="v-list v-list--density-default v-list--one-line"
         :class="[`${classes.root}__list`, isDarkTheme ? 'v-theme--dark' : 'v-theme--light']"
@@ -10,7 +13,7 @@
           :class="classes.draggableList"
           v-model="filteredWallets"
           v-bind="dragOptions"
-          handle=".handle"
+          handle=".wallets-view__sortable-handle"
           item-key="cryptoName"
         >
           <template #item="{ element }">
@@ -20,17 +23,17 @@
         <v-list-item
           v-if="!filteredWallets.length"
           :title="t('wallets.coins_not_found_title')"
-          class="text-center"
+          :class="classes.emptyState"
         ></v-list-item>
       </div>
-      <v-row
-        class="align-center justify-space-between v-row--no-gutters"
-        :class="`${classes.root}__review`"
-      >
-        <v-spacer></v-spacer>
-        <WalletResetDialog></WalletResetDialog>
-      </v-row>
-    </v-card>
+
+      <template #after>
+        <v-row align="center" :class="`${classes.root}__review`">
+          <v-spacer />
+          <WalletResetDialog></WalletResetDialog>
+        </v-row>
+      </template>
+    </SettingsTableShell>
   </div>
 </template>
 
@@ -43,6 +46,7 @@ import { useStore } from 'vuex'
 import WalletsSearchInput from '@/components/wallets/WalletsSearchInput.vue'
 import WalletsListItem from '@/components/wallets/WalletsListItem.vue'
 import WalletResetDialog from '@/components/wallets/WalletResetDialog.vue'
+import SettingsTableShell from '@/components/common/SettingsTableShell.vue'
 import { CoinSymbol } from '@/store/modules/wallets/types'
 import { useTheme } from '@/hooks/useTheme'
 import { useTimeoutPoll } from '@vueuse/core'
@@ -52,7 +56,10 @@ const BALANCE_UPDATE_INTERVAL_MS = 30000
 const className = 'wallets-view'
 const classes = {
   root: className,
-  draggableList: `${className}__draggable-list`
+  page: `${className}-page`,
+  layout: `${className}__layout`,
+  draggableList: `${className}__draggable-list`,
+  emptyState: `${className}__empty-state`
 }
 
 const dragOptions = {
@@ -152,20 +159,9 @@ onBeforeUnmount(() => {
 @use '@/assets/styles/settings/_colors.scss';
 
 .wallets-view {
-  position: relative;
-  height: calc(100vh - var(--v-layout-bottom) - var(--toolbar-height));
+  --a-wallets-review-padding-block: var(--a-space-4);
 
-  &__card {
-    height: 100%;
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr) auto;
-  }
-
-  &__list {
-    min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
+  width: 100%;
 
   &__draggable-list {
     display: flex;
@@ -176,9 +172,14 @@ onBeforeUnmount(() => {
     margin: 0;
   }
 
-  &__review {
-    padding-top: 15px !important;
-    padding-bottom: 15px !important;
+  &__review.v-row {
+    margin: 0;
+    padding-top: var(--a-wallets-review-padding-block);
+    padding-bottom: var(--a-wallets-review-padding-block);
+  }
+
+  &__empty-state {
+    text-align: center;
   }
 }
 

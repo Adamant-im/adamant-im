@@ -1,9 +1,9 @@
 <template>
   <div :class="className">
-    <v-list subheader class="pa-0" bg-color="transparent" v-if="isFulfilled">
-      <v-row class="v-row--no-gutters" :class="`${className}__chats-actions`">
+    <v-list subheader :class="`${className}__list`" bg-color="transparent" v-if="isFulfilled">
+      <v-row :class="`${className}__chats-actions`">
         <v-btn
-          :class="`${className}__btn mt-2 ml-4`"
+          :class="`${className}__mark-read-btn`"
           @click="markAllAsRead"
           v-if="unreadMessagesCount > 0"
           :icon="mdiCheckAll"
@@ -11,10 +11,10 @@
           variant="text"
         />
         <v-progress-circular
-          :class="`${className}__connection-spinner mt-4 ml-6`"
+          :class="`${className}__connection-spinner`"
           v-show="showSpinner"
           indeterminate
-          :size="24"
+          :size="CHATS_CONNECTION_SPINNER_SIZE"
         />
         <v-spacer />
         <v-btn :class="`${className}__item`" @click="setShowChatStartDialog(true)" variant="plain">
@@ -30,10 +30,12 @@
         </v-btn>
       </v-row>
       <div
+        class="a-scroll-pane"
         :class="{
           [`${className}__messages`]: true,
           [`${className}__messages--chat`]: true
         }"
+        ref="messagesContainer"
         @scroll="onScroll"
       >
         <template v-for="(transaction, index) in lastMessages" :key="transaction.contactId">
@@ -55,11 +57,7 @@
       </div>
     </v-list>
 
-    <div
-      class="d-flex justify-center align-center"
-      :class="`${className}__chat-spinner-wrapper`"
-      v-if="!isFulfilled"
-    >
+    <div :class="`${className}__chat-spinner-wrapper`" v-if="!isFulfilled">
       <ChatSpinner :value="!isFulfilled" />
     </div>
 
@@ -80,9 +78,20 @@ import ChatStartDialog from '@/components/ChatStartDialog.vue'
 import ChatSpinner from '@/components/ChatSpinner.vue'
 import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
+import { shouldDisplayChat } from '@/components/Chat/helpers/chatVisibility'
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
 import { useRoute, useRouter } from 'vue-router'
-import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, watch } from 'vue'
+import {
+  computed,
+  nextTick,
+  onActivated,
+  onBeforeUnmount,
+  onDeactivated,
+  onMounted,
+  ref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import { useChatStateStore } from '@/stores/modal-state'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
@@ -91,8 +100,9 @@ import { computedEager } from '@vueuse/core'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 import Visibility from 'visibilityjs'
+import { CHATS_CONNECTION_SPINNER_SIZE, CHATS_SCROLL_OFFSET } from './helpers/uiMetrics'
 
-const scrollOffset = 64
+const scrollOffset = CHATS_SCROLL_OFFSET
 
 const props = withDefaults(
   defineProps<{
@@ -121,8 +131,10 @@ const isShowChatStartDialog = computed({
   set: (value) => setShowChatStartDialog(value)
 })
 
+const messagesContainer = useTemplateRef('messagesContainer')
 const lastPartnerId = ref<string | null>(null)
 const savedRoute = ref(null)
+const savedScrollTop = ref(0)
 const loading = ref(false)
 const loadingSeparator = ref<InstanceType<typeof ChatPreview>[]>([])
 const allowRetry = ref(false)
@@ -154,10 +166,22 @@ const unreadMessagesCount = computed(() => store.getters['chat/totalNumOfNewMess
 const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
 const areAdmNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
 
+const restoreScrollPosition = () => {
+  if (savedScrollTop.value > 0) {
+    nextTick(() => {
+      requestAnimationFrame(() => {
+        messagesContainer.value?.scrollTo({ top: savedScrollTop.value })
+      })
+    })
+  }
+}
+
 onActivated(() => {
   if (savedRoute.value && !chatPagePartnerId.value) {
     router.push(savedRoute.value)
   }
+
+  restoreScrollPosition()
 })
 
 onDeactivated(() => {
@@ -177,15 +201,20 @@ onBeforeUnmount(() => {
   Visibility.unbind(Number(visibilityId.value))
 })
 
-watch(chatPagePartnerId, (value) => {
-  if (value) {
-    lastPartnerId.value = value
-  }
+watch(
+  chatPagePartnerId,
+  (value) => {
+    if (value) {
+      lastPartnerId.value = value
+    }
 
-  if (!value && route.name === 'Chats') {
-    savedRoute.value = null
-  }
-})
+    if (!value && route.name === 'Chats') {
+      savedRoute.value = null
+      restoreScrollPosition()
+    }
+  },
+  { immediate: true }
+)
 
 watch(areAdmNodesOnline, (nodesOnline) => {
   if (nodesOnline && loading.value) {
@@ -228,6 +257,15 @@ const destroyScrollListener = () => {
 
 const onScroll = (event?: Event) => {
   const target = event?.target
+
+  // Save scroll position during user scrolls (only when element is visible)
+  if (
+    target === messagesContainer.value &&
+    target instanceof HTMLElement &&
+    target.clientHeight > 0
+  ) {
+    savedScrollTop.value = target.scrollTop
+  }
 
   const elem =
     target instanceof HTMLElement
@@ -284,10 +322,11 @@ const messagesCount = (partnerId: string) => {
 }
 
 const displayChat = (partnerId: string) => {
-  const isUserChat = !isAdamantChat(partnerId)
-  const ifChattedBefore = isAdamantChat(partnerId) && messagesCount(partnerId) > 1
-
-  return isUserChat || isStaticChat(partnerId) || ifChattedBefore
+  return shouldDisplayChat({
+    isAdamantChat: isAdamantChat(partnerId),
+    isStaticChat: isStaticChat(partnerId),
+    messagesCount: messagesCount(partnerId)
+  })
 }
 
 const markAllAsRead = () => {
@@ -310,43 +349,79 @@ const checkDate = () => {
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use '@/assets/styles/settings/_colors.scss';
 @use 'vuetify/settings';
 @use '@/assets/styles/generic/_variables.scss';
 
 .chats-view {
-  margin-top: env(safe-area-inset-top);
+  --a-chats-actions-height: var(--toolbar-height);
+  --a-chats-actions-padding-inline-start: var(--a-chat-preview-item-padding-inline-start);
+  --a-chats-actions-padding-inline-end: var(--a-chat-preview-item-padding-inline-end);
+  --a-chats-actions-gap: var(--a-space-2);
+  --a-chats-connection-spinner-size: var(--a-chat-connection-spinner-size);
+  --a-chats-connection-spinner-offset-inline-start: calc(
+    (var(--a-chat-preview-avatar-size) - var(--a-chats-connection-spinner-size)) / 2
+  );
+  --a-chats-item-padding-inline: var(--a-space-2);
+  --a-chats-item-avatar-gap-inline: var(--a-space-1);
+  --a-chats-item-icon-gap-inline: var(--a-space-2);
+  --a-chats-title-font-weight: var(--a-font-weight-light);
+  --a-chats-title-font-size: var(--a-font-size-sm);
+  --a-chats-messages-move-duration: var(--a-motion-slow);
+
+  margin-top: var(--a-safe-area-top);
   height: 100%;
 
   &.a-container,
   :deep(.a-container) {
-    max-width: 1300px;
+    max-width: var(--a-layout-max-width);
+  }
+
+  &__list {
+    padding: 0;
+  }
+
+  &__mark-read-btn {
+    margin: 0;
+  }
+
+  &__connection-spinner {
+    margin: 0;
+    margin-inline-start: var(--a-chats-connection-spinner-offset-inline-start);
   }
 
   &__item {
     justify-content: flex-end;
-    height: 56px;
-    min-height: 56px;
+    height: 100%;
+    min-height: 100%;
+    padding-inline: var(--a-chats-item-padding-inline);
 
     & :deep(.v-list-item__avatar) {
-      margin-right: 4px;
+      margin-right: var(--a-chats-item-avatar-gap-inline);
     }
 
     :deep(.v-list-item__prepend) {
       > .v-icon {
-        margin-inline-end: 8px;
+        margin-inline-end: var(--a-chats-item-icon-gap-inline);
       }
     }
   }
   &__chats-actions {
     margin: 0;
+    min-height: var(--a-chats-actions-height);
+    height: var(--a-chats-actions-height);
+    align-items: center;
+    padding-inline-start: var(--a-chats-actions-padding-inline-start);
+    padding-inline-end: var(--a-chats-actions-padding-inline-end);
+    column-gap: var(--a-chats-actions-gap);
   }
   &__title {
-    font-weight: 300;
-    font-size: 14px;
+    font-weight: var(--a-chats-title-font-weight);
+    font-size: var(--a-chats-title-font-size);
   }
   &__container--chat {
-    max-width: 1300px;
+    max-width: var(--a-layout-max-width);
 
     @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
       display: none;
@@ -354,14 +429,12 @@ const checkDate = () => {
   }
   &__messages {
     &.chats-view__messages--chat {
-      max-height: calc(100vh - 56px - var(--v-layout-bottom));
-      overflow-y: auto;
+      height: calc(var(--a-layout-height) - var(--toolbar-height));
+      max-height: calc(var(--a-layout-height) - var(--toolbar-height));
 
       @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
-        max-height: calc(
-          100vh -
-            56px - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top)
-        );
+        height: calc(var(--a-layout-height-safe) - var(--toolbar-height));
+        max-height: calc(var(--a-layout-height-safe) - var(--toolbar-height));
       }
     }
   }
@@ -369,6 +442,7 @@ const checkDate = () => {
   &__chat-spinner-wrapper {
     position: relative;
     height: 100%;
+    @include layoutPrimitives.a-flex-center();
   }
 }
 
@@ -379,10 +453,10 @@ const checkDate = () => {
       color: map.get(colors.$adm-colors, 'grey');
     }
     &__item {
-      background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
+      background-color: var(--a-color-surface-soft-light);
     }
     &__title {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-color-text-muted-light);
     }
     &__icon {
       color: map.get(colors.$adm-colors, 'regular');
@@ -403,6 +477,6 @@ const checkDate = () => {
 
 /** Animations **/
 .messages-move {
-  transition: transform 0.5s;
+  transition: transform var(--a-chats-messages-move-duration);
 }
 </style>

@@ -66,7 +66,7 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
           0.5 ADM
         </span>
         <span
-          class="fake-input__value fake-input__value--rate a-text-regular"
+          class="fake-input__value fake-input__value--rate"
           data-v-7dc72237=""
         >
            ~0.00 USD
@@ -94,7 +94,7 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
           0.5 ADM
         </span>
         <span
-          class="fake-input__value fake-input__value--rate a-text-regular"
+          class="fake-input__value fake-input__value--rate"
           data-v-7dc72237=""
         >
            ~0.00 USD
@@ -105,7 +105,7 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
     <!--v-if-->
     <!--v-if-->
     <div
-      class="text-center"
+      class="send-funds-form__actions"
       data-v-7dc72237=""
     >
       <v-btn-stub
@@ -116,9 +116,10 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
     
   </div>
   <v-dialog-stub
+    class="send-funds-confirm-dialog"
     data-v-7dc72237=""
     modelvalue="false"
-    width="500"
+    width="var(--a-secondary-dialog-width)"
   />
   <!--v-if-->
 </div>

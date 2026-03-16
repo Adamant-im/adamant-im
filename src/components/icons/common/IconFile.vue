@@ -79,7 +79,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .icon-file {
   &__text {
-    font-size: 112px;
+    font-size: var(--a-icon-file-text-font-size);
     font-weight: 900;
     fill: rgb(0, 63, 158);
   }

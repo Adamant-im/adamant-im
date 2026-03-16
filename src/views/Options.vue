@@ -3,7 +3,7 @@
     <router-view v-if="hasView" />
     <template v-else>
       <!-- General -->
-      <h3 :class="`${className}__title a-text-caption`" class="mt-4 mb-4">
+      <h3 :class="[`${className}__title`, `${className}__title--first`]">
         {{ t('options.general_title') }}
       </h3>
       <v-row align="center" gap="0">
@@ -12,7 +12,7 @@
             {{ t('options.language_label') }}
           </v-list-subheader>
         </v-col>
-        <v-col cols="6" class="text-right">
+        <v-col cols="6" :class="`${className}__control-col`">
           <language-switcher :append-icon="mdiChevronDown" />
         </v-col>
         <v-col cols="6">
@@ -20,7 +20,7 @@
             {{ t('options.currency_label') }}
           </v-list-subheader>
         </v-col>
-        <v-col cols="6" class="text-right">
+        <v-col cols="6" :class="`${className}__control-col`">
           <currency-switcher :append-icon="mdiChevronDown" />
         </v-col>
         <v-col cols="12">
@@ -35,11 +35,11 @@
       </v-row>
 
       <!-- Security -->
-      <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
+      <h3 :class="[`${className}__title`, `${className}__title--section`]">
         {{ t('options.security_title') }}
       </h3>
       <v-row align="center" gap="0">
-        <v-col cols="12" a-text-regular-enlarged>
+        <v-col cols="12" :class="`${className}__security-block`">
           <v-checkbox
             :label="t('options.stay_logged_in')"
             color="grey darken-1"
@@ -49,7 +49,7 @@
             @click.prevent="onCheckStayLoggedIn"
           />
 
-          <div class="a-text-explanation-enlarged">
+          <div :class="`${className}__explanation`">
             {{ t('options.stay_logged_in_tooltip') }}
           </div>
 
@@ -58,7 +58,7 @@
       </v-row>
 
       <!-- Chats -->
-      <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
+      <h3 :class="[`${className}__title`, `${className}__title--section`]">
         {{ t('options.chats_title') }}
       </h3>
       <v-row align="center" gap="0">
@@ -71,12 +71,12 @@
             hide-details
           />
 
-          <div class="a-text-explanation-enlarged">
+          <div :class="`${className}__explanation`">
             {{ t('options.send_on_enter_tooltip') }}
           </div>
         </v-col>
 
-        <v-col cols="12" class="mt-6">
+        <v-col cols="12" :class="`${className}__option-offset`">
           <v-checkbox
             v-model="formatMessages"
             :label="t('options.format_messages')"
@@ -85,12 +85,12 @@
             hide-details
           />
 
-          <div class="a-text-explanation-enlarged">
+          <div :class="`${className}__explanation`">
             {{ t('options.format_messages_tooltip') }}
           </div>
         </v-col>
 
-        <v-col cols="12" class="mt-6">
+        <v-col cols="12" :class="`${className}__option-offset`">
           <v-checkbox
             v-model="useFullDate"
             :label="t('options.use_full_date')"
@@ -99,14 +99,14 @@
             hide-details
           />
 
-          <div class="a-text-explanation-enlarged">
+          <div :class="`${className}__explanation`">
             {{ t('options.use_full_date_tooltip') }}
           </div>
         </v-col>
       </v-row>
 
       <!-- Notifications -->
-      <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
+      <h3 :class="[`${className}__title`, `${className}__title--section`]">
         {{ t('options.notification_title') }}
       </h3>
       <v-row align="center" gap="0">
@@ -119,11 +119,11 @@
             hide-details
           />
 
-          <div class="a-text-explanation-enlarged">
+          <div :class="`${className}__explanation`">
             {{ t('options.enable_sound_tooltip') }}
           </div>
         </v-col>
-        <v-col cols="12" class="mt-6">
+        <v-col cols="12" :class="`${className}__option-offset`">
           <v-checkbox
             v-model="allowPushNotifications"
             :label="t('options.enable_push')"
@@ -132,14 +132,14 @@
             hide-details
           />
 
-          <div class="a-text-explanation-enlarged">
+          <div :class="`${className}__explanation`">
             {{ t('options.enable_push_tooltip') }}
           </div>
         </v-col>
       </v-row>
 
       <!-- Actions -->
-      <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
+      <h3 :class="[`${className}__title`, `${className}__title--section`]">
         {{ t('options.actions') }}
       </h3>
       <v-row gap="0">
@@ -148,19 +148,19 @@
             <v-list-item
               :title="t('options.nodes_list')"
               :append-icon="mdiChevronRight"
-              @click="router.push('/options/nodes')"
+              @click="navigateToSettingsChild('/options/nodes')"
             />
 
             <v-list-item
               :title="t('options.wallets_list')"
               :append-icon="mdiChevronRight"
-              @click="router.push('/options/wallets')"
+              @click="navigateToSettingsChild('/options/wallets')"
             />
 
             <v-list-item
               :title="t('options.export_keys.title')"
               :append-icon="mdiChevronRight"
-              @click="router.push('/options/export-keys')"
+              @click="navigateToSettingsChild('/options/export-keys')"
             />
 
             <v-list-item
@@ -173,12 +173,13 @@
               v-if="isDevModeEnabled"
               :title="t('options.dev_screens')"
               :append-icon="mdiChevronRight"
-              @click="router.push('/options/dev-screens')"
+              @click="navigateToSettingsChild('/options/dev-screens')"
             />
 
             <v-divider />
 
             <v-list-item
+              :class="`${className}__logout`"
               :title="t('bottom.exit_button')"
               :append-icon="mdiLogoutVariant"
               @click="logout"
@@ -187,23 +188,24 @@
         </v-col>
       </v-row>
       <v-row gap="0">
-        <div
-          :class="`${className}__version_info ml-auto`"
+        <button
+          type="button"
+          :class="`${className}__version_info`"
           @click="onVersionClick"
           data-test-id="version-info"
         >
           {{ t('options.version') }} {{ appVersion }}
-        </div>
+        </button>
       </v-row>
     </template>
   </navigation-wrapper>
 </template>
 
 <script setup lang="ts">
-import { nextTick, inject, computed, onBeforeUnmount, onMounted, Ref, ref } from 'vue'
+import { nextTick, inject, computed, onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue'
 import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant } from '@mdi/js'
 import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useTheme } from 'vuetify'
 
@@ -213,25 +215,168 @@ import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import { resetPinia } from '@/plugins/pinia'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
-import { useSavedScroll } from '@/hooks/useSavedScroll'
 import { sidebarLayoutKey } from '@/lib/constants'
 import { useChatStateStore } from '@/stores/modal-state'
 import { logger } from '@/utils/devTools/logger'
 
 const store = useStore()
 const chatStateStore = useChatStateStore()
+const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
 const theme = useTheme()
 
 const className = 'settings-view'
-
-const { hasView } = useSavedScroll()
+const hasView = computed(() => route.matched.length > 2)
 
 const appVersion = inject('appVersion')
 const sidebarLayoutRef = inject<Ref>(sidebarLayoutKey)
 
 const tapCount = ref(0)
+const SETTINGS_STATE_RESET_KEY = 'resetSettingsView'
+const SETTINGS_STATE_FORCE_RESET_KEY = 'forceResetSettingsView'
+const SETTINGS_PATH_PREFIX = '/options'
+const SETTINGS_ROUTE_PATHS = ['/votes']
+const activeSettingsScrollPath = ref(route.path)
+const isRestoringSettingsScroll = ref(false)
+const isLoggingOut = ref(false)
+let settingsRestoreFrame = 0
+let settingsRestoreObserver: ResizeObserver | null = null
+
+const isSettingsPath = (path: string) => {
+  return path.startsWith(SETTINGS_PATH_PREFIX) || SETTINGS_ROUTE_PATHS.includes(path)
+}
+const getCurrentScrollTop = () => sidebarLayoutRef?.value?.scrollTop || 0
+const applySettingsScrollTop = (top: number) => {
+  if (!sidebarLayoutRef?.value) {
+    return
+  }
+
+  sidebarLayoutRef.value.scrollTop = top
+  sidebarLayoutRef.value.scrollTo({ top })
+}
+const shouldResetSettingsViewState = (path: string) => {
+  if (window.history.state?.[SETTINGS_STATE_FORCE_RESET_KEY]) {
+    return true
+  }
+
+  if (!window.history.state?.[SETTINGS_STATE_RESET_KEY]) {
+    return false
+  }
+
+  return store.getters['options/settingsScrollPosition'](path) <= 0
+}
+const stopSettingsRestore = () => {
+  if (settingsRestoreFrame) {
+    window.cancelAnimationFrame(settingsRestoreFrame)
+    settingsRestoreFrame = 0
+  }
+
+  settingsRestoreObserver?.disconnect()
+  settingsRestoreObserver = null
+}
+const waitForSettingsViewFrame = async () => {
+  await nextTick()
+  await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+}
+const onSidebarScroll = () => {
+  if (isRestoringSettingsScroll.value || isLoggingOut.value) {
+    return
+  }
+
+  saveSettingsViewState(activeSettingsScrollPath.value)
+}
+
+const saveSettingsViewState = (path = route.path) => {
+  if (!isSettingsPath(path) || !sidebarLayoutRef?.value) {
+    return
+  }
+
+  store.commit('options/setSettingsLastRoute', path)
+  store.commit('options/setSettingsScrollPosition', {
+    path,
+    top: getCurrentScrollTop()
+  })
+}
+
+const restoreSettingsViewState = async (path = route.path) => {
+  if (!isSettingsPath(path) || !sidebarLayoutRef?.value) {
+    return
+  }
+
+  stopSettingsRestore()
+  isRestoringSettingsScroll.value = true
+  await waitForSettingsViewFrame()
+
+  const shouldReset = shouldResetSettingsViewState(path)
+  const top = shouldReset ? 0 : store.getters['options/settingsScrollPosition'](path)
+
+  applySettingsScrollTop(top)
+  await waitForSettingsViewFrame()
+  applySettingsScrollTop(top)
+
+  const finalizeRestore = (restoredTop: number) => {
+    stopSettingsRestore()
+    activeSettingsScrollPath.value = path
+    store.commit('options/setSettingsScrollPosition', {
+      path,
+      top: restoredTop
+    })
+
+    store.commit('options/setSettingsLastRoute', path)
+    isRestoringSettingsScroll.value = false
+  }
+
+  if (shouldReset || top <= 0) {
+    finalizeRestore(0)
+    return
+  }
+
+  const restoreDeadline = window.performance.now() + 1500
+  let stableFrames = 0
+  let lastTop = -1
+
+  const continueRestore = () => {
+    if (!sidebarLayoutRef?.value || route.path !== path) {
+      stopSettingsRestore()
+      isRestoringSettingsScroll.value = false
+      return
+    }
+
+    applySettingsScrollTop(top)
+
+    const currentTop = getCurrentScrollTop()
+    const canReachTop =
+      sidebarLayoutRef.value.scrollHeight - sidebarLayoutRef.value.clientHeight >= top - 1
+    const reachedTop = Math.abs(currentTop - top) <= 1 && canReachTop
+
+    if (reachedTop) {
+      stableFrames = currentTop === lastTop ? stableFrames + 1 : 1
+      lastTop = currentTop
+
+      if (stableFrames >= 2) {
+        finalizeRestore(currentTop)
+        return
+      }
+    } else {
+      stableFrames = 0
+      lastTop = currentTop
+    }
+
+    if (window.performance.now() >= restoreDeadline) {
+      finalizeRestore(currentTop)
+      return
+    }
+
+    settingsRestoreFrame = window.requestAnimationFrame(continueRestore)
+  }
+
+  settingsRestoreObserver = new ResizeObserver(() => {
+    applySettingsScrollTop(top)
+  })
+  settingsRestoreObserver.observe(sidebarLayoutRef.value)
+  settingsRestoreFrame = window.requestAnimationFrame(continueRestore)
+}
 
 const isPasswordDialogDisplayed = computed({
   get() {
@@ -244,18 +389,6 @@ const isPasswordDialogDisplayed = computed({
 
 const stayLoggedIn = computed(() => {
   return store.state.options.stayLoggedIn
-})
-
-const scrollTopPosition = computed({
-  get() {
-    return store.state.options.scrollTopPosition
-  },
-  set(value) {
-    store.commit('options/updateOption', {
-      key: 'scrollTopPosition',
-      value
-    })
-  }
 })
 
 const sendMessageOnEnter = computed({
@@ -328,7 +461,7 @@ const darkTheme = computed({
       value: isDarkTheme
     })
 
-    theme.global.name.value = isDarkTheme ? 'dark' : 'light'
+    theme.change(isDarkTheme ? 'dark' : 'light')
   }
 })
 
@@ -378,6 +511,7 @@ const onCheckStayLoggedIn = () => {
 }
 
 const logout = () => {
+  isLoggingOut.value = true
   resetPinia()
   store.dispatch('stopInterval')
   store.dispatch('logout')
@@ -411,59 +545,115 @@ const onVersionClick = () => {
   }
 }
 
-onMounted(() => {
-  nextTick(() => {
-    if (sidebarLayoutRef && scrollTopPosition.value) {
-      sidebarLayoutRef.value.scrollTo({
-        top: scrollTopPosition.value
-      })
+const navigateToSettingsChild = (path: string) => {
+  saveSettingsViewState(route.path)
+
+  const savedTop = store.getters['options/settingsScrollPosition'](path)
+
+  router.push({
+    path,
+    state: {
+      resetSettingsView: savedTop <= 0
     }
   })
+}
+
+onMounted(() => {
+  sidebarLayoutRef?.value?.addEventListener('scroll', onSidebarScroll, { passive: true })
+  restoreSettingsViewState()
 })
 
 onBeforeUnmount(() => {
-  if (sidebarLayoutRef) {
-    scrollTopPosition.value = sidebarLayoutRef.value.scrollTop || 0
+  stopSettingsRestore()
+  sidebarLayoutRef?.value?.removeEventListener('scroll', onSidebarScroll)
+
+  if (!isRestoringSettingsScroll.value && !isLoggingOut.value) {
+    saveSettingsViewState(activeSettingsScrollPath.value)
   }
 })
+
+watch(
+  () => route.path,
+  async (nextPath) => {
+    await restoreSettingsViewState(nextPath)
+  }
+)
 </script>
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_text-content.scss' as textContent;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
 
 .settings-view {
+  --a-settings-gutter: var(--a-space-6);
+  --a-settings-title-padding-top: var(--a-space-4);
+  --a-settings-title-margin-top-first: var(--a-space-6);
+  --a-settings-title-margin-top-section: var(--a-space-6);
+  --a-settings-title-margin-bottom-first: var(--a-space-4);
+  --a-settings-title-margin-bottom-section: var(--a-space-6);
+  --a-settings-actions-row-min-height: var(--a-list-row-min-height);
+  --a-settings-actions-row-padding-block: var(--a-list-row-padding-block);
+  --a-settings-logout-margin-top: var(--a-space-4);
+  --a-settings-option-offset: var(--a-space-6);
+  --a-settings-version-info-hover-opacity: var(--a-opacity-interactive-hover);
+  --a-settings-version-info-active-opacity: var(--a-opacity-interactive-pressed);
+
   &__title {
-    padding-top: 15px;
-    margin-left: -24px;
-    margin-right: -24px;
-    padding-left: 24px;
-    padding-right: 24px;
+    @include mixins.a-text-caption();
+    padding-top: var(--a-settings-title-padding-top);
+    margin-top: 0;
+    margin-left: calc(var(--a-settings-gutter) * -1);
+    margin-right: calc(var(--a-settings-gutter) * -1);
+    padding-left: var(--a-settings-gutter);
+    padding-right: var(--a-settings-gutter);
   }
+
+  &__title--first {
+    margin-top: var(--a-settings-title-margin-top-first);
+    margin-bottom: var(--a-settings-title-margin-bottom-first);
+  }
+
+  &__title--section {
+    margin-top: var(--a-settings-title-margin-top-section);
+    margin-bottom: var(--a-settings-title-margin-bottom-section);
+  }
+
+  &__control-col {
+    text-align: end;
+  }
+
+  &__security-block {
+    @include mixins.a-text-regular-enlarged();
+  }
+
+  &__explanation {
+    @include textContent.a-content-explanatory-copy();
+  }
+
+  &__option-offset {
+    margin-top: var(--a-settings-option-offset);
+  }
+
   &__version_info {
     @include mixins.a-text-explanation();
-    margin-top: 24px;
-    margin-bottom: 16px;
-    cursor: pointer;
+    margin-left: auto;
+    margin-top: var(--a-space-6);
+    margin-bottom: var(--a-space-4);
+    padding: 0;
+    border: 0;
+    background: transparent;
     user-select: none;
 
     &:hover {
-      opacity: 0.8;
+      opacity: var(--a-settings-version-info-hover-opacity);
     }
 
     &:active {
-      opacity: 0.6;
+      opacity: var(--a-settings-version-info-active-opacity);
     }
-  }
-  &__action {
-    display: block;
-    font-size: 16px;
-    font-weight: 500;
-    text-decoration-line: underline;
-    margin: 6px 8px;
-    padding: 0 16px;
   }
   :deep(.v-input--selection-controls):not(.v-input--hide-details) .v-input__slot {
     margin-bottom: 0;
@@ -481,19 +671,29 @@ onBeforeUnmount(() => {
     padding: 0;
   }
   .actions-list {
-    margin-left: -24px;
-    margin-right: -24px;
+    margin-left: calc(var(--a-settings-gutter) * -1);
+    margin-right: calc(var(--a-settings-gutter) * -1);
 
     :deep(.v-list-item) {
-      padding-inline-start: 24px;
-      padding-inline-end: 24px;
+      padding-inline-start: var(--a-settings-gutter);
+      padding-inline-end: var(--a-settings-gutter);
+    }
+
+    :deep(.v-list-item--density-default.v-list-item--one-line) {
+      min-height: var(--a-settings-actions-row-min-height);
+      padding-top: var(--a-settings-actions-row-padding-block);
+      padding-bottom: var(--a-settings-actions-row-padding-block);
     }
   }
   :deep(.v-list-subheader) {
-    height: 48px;
+    height: var(--a-control-size-lg);
   }
   :deep(.v-checkbox) {
-    margin-left: -8px;
+    margin-left: calc(var(--a-space-2) * -1);
+  }
+
+  &__logout {
+    margin-top: var(--a-settings-logout-margin-top);
   }
 }
 
@@ -501,49 +701,38 @@ onBeforeUnmount(() => {
 .v-theme--light {
   .settings-view {
     &__version_info {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-color-text-muted-light);
     }
     &__title {
-      background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
+      background-color: var(--a-color-surface-soft-light);
       color: map.get(colors.$adm-colors, 'regular');
     }
-    &__action {
-      color: map.get(colors.$adm-colors, 'regular');
-    }
+    :deep(.a-switcher-button),
+    :deep(.a-switcher-button .v-icon),
     :deep(.v-label),
     &__label {
       color: map.get(colors.$adm-colors, 'regular');
     }
     .v-divider {
-      border-color: map.get(colors.$adm-colors, 'secondary2');
+      border-color: var(--a-color-border-soft-light);
     }
   }
 }
 .v-theme--dark {
   .settings-view {
-    &__action {
-      color: map.get(settings.$shades, 'white');
+    &__explanation {
+      color: var(--a-color-text-muted-dark);
     }
-  }
-}
 
-/** Breakpoints **/
-@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-  .settings-view {
-    &__title {
-      margin-left: -16px;
-      margin-right: -16px;
-      padding-left: 16px;
-      padding-right: 16px;
+    :deep(.a-switcher-button),
+    :deep(.a-switcher-button .v-icon),
+    &__label {
+      color: map.get(settings.$shades, 'white');
     }
 
     .actions-list {
-      margin-left: -16px;
-      margin-right: -16px;
-
-      :deep(.v-list-item) {
-        padding-inline-start: 16px;
-        padding-inline-end: 16px;
+      :deep(.v-list-item-title) {
+        color: map.get(settings.$shades, 'white');
       }
     }
   }

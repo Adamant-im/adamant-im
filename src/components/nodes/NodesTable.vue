@@ -1,5 +1,5 @@
 <template>
-  <div :class="classes.root">
+  <SettingsTableShell :class="classes.root">
     <v-tabs v-model="tab" bg-color="transparent">
       <v-tab value="adm">{{ t('nodes.tabs.adm_nodes') }}</v-tab>
       <v-tab value="coins">{{ t('nodes.tabs.coin_nodes') }}</v-tab>
@@ -22,17 +22,17 @@
         <IpfsNodesTable />
       </v-window-item>
     </v-window>
-    <div class="ml-6">
+
+    <template #after>
       <div v-if="tab === 'coins' || tab === 'ipfs'">
         <v-checkbox
           v-model="preferFastestCoinNodeOption"
           :label="t('nodes.fastest_title')"
-          :class="classes.checkbox"
-          class="mt-4"
+          :class="[classes.checkbox, classes.checkboxSection]"
           color="grey darken-1"
           hide-details
         />
-        <div class="a-text-explanation-enlarged">
+        <div :class="classes.description">
           {{ t('nodes.fastest_tooltip') }}
         </div>
         <div>&nbsp;<br />&nbsp;</div>
@@ -41,12 +41,11 @@
         <v-checkbox
           v-model="preferFasterServiceNodeOption"
           :label="t('nodes.fastest_title')"
-          :class="classes.checkbox"
-          class="mt-4"
+          :class="[classes.checkbox, classes.checkboxSection]"
           color="grey darken-1"
           hide-details
         />
-        <div class="a-text-explanation-enlarged">
+        <div :class="classes.description">
           {{ t('nodes.fastest_tooltip') }}
         </div>
         <div>&nbsp;<br />&nbsp;</div>
@@ -55,38 +54,32 @@
         <v-checkbox
           v-model="preferFastestAdmNodeOption"
           :label="t('nodes.fastest_title')"
-          :class="classes.checkbox"
-          class="mt-4"
+          :class="[classes.checkbox, classes.checkboxSection]"
           color="grey darken-1"
           hide-details
         />
-        <div class="a-text-explanation-enlarged">
+        <div :class="classes.description">
           {{ t('nodes.fastest_tooltip') }}
         </div>
         <v-checkbox
           v-model="useSocketConnection"
           :label="t('nodes.use_socket_connection')"
-          :class="classes.checkbox"
-          class="mt-4"
+          :class="[classes.checkbox, classes.checkboxSection]"
           color="grey darken-1"
           hide-details
         />
-        <div class="a-text-explanation-enlarged">
+        <div :class="classes.description">
           {{ t('nodes.use_socket_connection_tooltip') }}
         </div>
 
         <!-- eslint-disable vue/no-v-html -- Safe internal content -->
-        <div
-          :class="classes.info"
-          class="a-text-regular-enlarged mt-6"
-          v-html="t('nodes.nodeLabelDescription')"
-        />
+        <div :class="classes.info" v-html="t('nodes.nodeLabelDescription')" />
         <!-- eslint-enable vue/no-v-html -->
 
         <div>&nbsp;<br />&nbsp;</div>
       </div>
-    </div>
-  </div>
+    </template>
+  </SettingsTableShell>
 </template>
 
 <script lang="ts" setup>
@@ -99,12 +92,15 @@ import { CoinNodesTable } from './coins'
 import { ServiceNodesTable } from './services'
 import { IpfsNodesTable } from './ipfs'
 import { Tab } from '@/components/nodes/types'
+import SettingsTableShell from '@/components/common/SettingsTableShell.vue'
 
 const className = 'nodes-table'
 const classes = {
   root: className,
   info: `${className}__info`,
-  checkbox: `${className}__checkbox`
+  checkbox: `${className}__checkbox`,
+  checkboxSection: `${className}__checkbox-section`,
+  description: `${className}__description`
 }
 
 const { t } = useI18n()
@@ -162,39 +158,27 @@ const preferFasterServiceNodeOption = computed<boolean>({
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_text-content.scss' as textContent;
 @use '@/assets/styles/settings/_colors.scss';
-@use '@/assets/styles/themes/adamant/_mixins.scss';
-@use 'vuetify/settings';
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .nodes-table {
-  margin-left: -24px;
-  margin-right: -24px;
+  &__checkbox-section {
+    margin-top: var(--a-space-4);
+  }
 
-  :deep(.v-tab) {
-    text-transform: uppercase;
+  &__description {
+    @include textContent.a-content-explanatory-copy();
+    margin-top: var(--a-space-2);
   }
 
   &__info {
-    :deep(a) {
-      text-decoration-line: none;
-      &:hover {
-        text-decoration-line: underline;
-      }
-    }
-  }
-  :deep(.v-input--selection-controls:not(.v-input--hide-details)) .v-input__slot {
-    margin-bottom: 0;
+    @include textContent.a-content-explanatory-copy();
+    @include textContent.a-content-inline-links();
   }
 
-  :deep(.v-checkbox) {
-    margin-left: -8px;
-  }
-}
-
-@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-  .nodes-table {
-    margin-left: -16px;
-    margin-right: -16px;
+  :deep(.v-tab) {
+    text-transform: uppercase;
   }
 }
 /** Themes **/
@@ -204,10 +188,10 @@ const preferFasterServiceNodeOption = computed<boolean>({
       :deep(.v-label) {
         color: map.get(colors.$adm-colors, 'regular');
       }
-      :deep(.v-input--selection-controls__ripple),
-      :deep(.v-input--selection-controls__input) i {
-        color: map.get(colors.$adm-colors, 'regular') !important;
-        caret-color: map.get(colors.$adm-colors, 'regular') !important;
+      :deep(.v-selection-control__input .v-icon),
+      :deep(.v-selection-control__input input) {
+        color: map.get(colors.$adm-colors, 'regular');
+        caret-color: map.get(colors.$adm-colors, 'regular');
       }
     }
   }

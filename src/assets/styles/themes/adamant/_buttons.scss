@@ -4,10 +4,22 @@
 @use 'vuetify/settings';
 
 .a-btn-link {
-  font-size: 16px !important;
-  font-weight: 500;
+  font-weight: var(--a-link-action-font-weight);
   text-decoration: underline;
   text-transform: unset;
+
+  &.v-btn {
+    font-size: var(--a-link-action-font-size);
+    border-radius: var(--a-radius-sm);
+    transition:
+      background-color var(--a-motion-base) linear,
+      color var(--a-motion-base) linear,
+      opacity var(--a-motion-base) linear;
+  }
+
+  &.v-btn:focus-visible {
+    box-shadow: var(--a-focus-ring);
+  }
 }
 
 .v-btn.a-btn-primary:not(.v-btn--icon),
@@ -32,8 +44,8 @@
     }
 
     &.v-btn--disabled:not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline) {
-      background-color: map.get(settings.$shades, 'white') !important;
-      color: map.get(colors.$adm-colors, 'muted') !important;
+      background-color: map.get(settings.$shades, 'white');
+      color: var(--a-color-text-muted-light);
     }
   }
 
@@ -48,12 +60,22 @@
     }
 
     &.v-btn.v-btn--disabled {
-      color: map.get(colors.$adm-colors, 'muted') !important;
+      color: var(--a-color-text-muted-light);
     }
   }
 
   .a-btn-link {
     color: inherit;
+
+    &.v-btn:not(.v-btn--disabled):hover,
+    &.v-btn:not(.v-btn--disabled):focus-visible {
+      background-color: map.get(colors.$adm-colors, 'secondary2');
+    }
+
+    &.v-btn:not(.v-btn--disabled):hover > .v-btn__overlay,
+    &.v-btn:not(.v-btn--disabled):focus-visible > .v-btn__overlay {
+      opacity: var(--a-link-action-overlay-opacity-light);
+    }
   }
 }
 .v-theme--dark {
@@ -65,6 +87,16 @@
   }
 
   .a-btn-link {
-    color: map.get(settings.$shades, 'white');
+    color: var(--a-color-text-inverse);
+
+    &.v-btn:not(.v-btn--disabled):hover,
+    &.v-btn:not(.v-btn--disabled):focus-visible {
+      background-color: var(--a-color-overlay-inverse-soft);
+    }
+
+    &.v-btn:not(.v-btn--disabled):hover > .v-btn__overlay,
+    &.v-btn:not(.v-btn--disabled):focus-visible > .v-btn__overlay {
+      opacity: var(--a-link-action-overlay-opacity-dark);
+    }
   }
 }

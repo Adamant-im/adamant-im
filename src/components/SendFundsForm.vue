@@ -25,24 +25,30 @@
         @paste="onPasteURIAddress"
       >
         <template #label>
-          <span v-if="recipientName && addressReadonly" class="font-weight-medium">
+          <span v-if="recipientName && addressReadonly" :class="`${className}__field-label`">
             {{ $t('transfer.to_name_label', { name: recipientName }) }}
           </span>
-          <span v-else class="font-weight-medium">
+          <span v-else :class="`${className}__field-label`">
             {{ $t('transfer.to_address_label') }}
           </span>
         </template>
         <template v-if="!addressReadonly" #append-inner>
           <v-menu :offset-overflow="true" :offset-y="false" left eager>
             <template #activator="{ props }">
-              <v-icon v-bind="props" :icon="mdiDotsVertical" />
+              <v-icon
+                v-bind="props"
+                :class="`${className}__menu-activator`"
+                :icon="mdiDotsVertical"
+              />
             </template>
-            <v-list>
-              <v-list-item @click="showQrcodeScanner = true">
-                <v-list-item-title>{{ $t('transfer.decode_from_camera') }}</v-list-item-title>
+            <v-list :class="`${className}__menu-list`">
+              <v-list-item :class="`${className}__menu-item`" @click="showQrcodeScanner = true">
+                <v-list-item-title :class="`${className}__menu-item-title`">
+                  {{ $t('transfer.decode_from_camera') }}
+                </v-list-item-title>
               </v-list-item>
-              <v-list-item link>
-                <v-list-item-title>
+              <v-list-item :class="`${className}__menu-item`" link>
+                <v-list-item-title :class="`${className}__menu-item-title`">
                   <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
                     <span>{{ $t('transfer.decode_from_image') }}</span>
                   </qrcode-capture>
@@ -65,7 +71,7 @@
         color="primary"
       >
         <template #label>
-          <span class="font-weight-medium">{{ $t('transfer.amount_label') }}</span>
+          <span :class="`${className}__field-label`">{{ $t('transfer.amount_label') }}</span>
           <span class="max-amount-label">
             &nbsp;{{ `(max: ${maxToTransferFixed} ${currency})` }}
           </span>
@@ -73,15 +79,22 @@
         <template #append-inner>
           <v-menu :offset-overflow="true" :offset-y="false" left>
             <template #activator="{ props }">
-              <v-icon v-bind="props" :icon="mdiDotsVertical" />
+              <v-icon
+                v-bind="props"
+                :class="`${className}__menu-activator`"
+                :icon="mdiDotsVertical"
+              />
             </template>
-            <v-list>
+            <v-list :class="`${className}__menu-list`">
               <v-list-item
                 v-for="item in amountMenuItems"
                 :key="item.title"
+                :class="`${className}__menu-item`"
                 @click="divideAmount(item.divider)"
               >
-                <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
+                <v-list-item-title :class="`${className}__menu-item-title`">
+                  {{ $t(item.title) }}
+                </v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -93,9 +106,7 @@
         </div>
         <div class="fake-input__box">
           <span class="fake-input__value"> {{ transferFeeFixed }} {{ transferFeeCurrency }} </span>
-          <span class="fake-input__value fake-input__value--rate a-text-regular">
-            ~{{ transferFeeRate }}
-          </span>
+          <span class="fake-input__value fake-input__value--rate"> ~{{ transferFeeRate }} </span>
         </div>
       </div>
       <div v-if="!hideFinalAmount" class="fake-input">
@@ -104,9 +115,7 @@
         </div>
         <div class="fake-input__box">
           <span class="fake-input__value"> {{ finalAmountFixed }} {{ currency }} </span>
-          <span class="fake-input__value fake-input__value--rate a-text-regular">
-            ~{{ finalAmountRate }}
-          </span>
+          <span class="fake-input__value fake-input__value--rate"> ~{{ finalAmountRate }} </span>
         </div>
       </div>
       <v-text-field
@@ -129,25 +138,31 @@
       />
       <v-checkbox v-if="debug" v-model="dryRun" label="Dry run" color="grey darken-1" />
 
-      <div class="text-center">
+      <div :class="`${className}__actions`">
         <v-btn :class="`${className}__button`" class="a-btn-primary" @click="confirm">
           {{ $t('transfer.send_button') }}
         </v-btn>
       </div>
     </v-form>
 
-    <v-dialog v-model="dialog" width="500">
+    <v-dialog
+      v-model="dialog"
+      width="var(--a-secondary-dialog-width)"
+      class="send-funds-confirm-dialog"
+    >
       <v-card>
-        <v-card-title class="a-text-header">
+        <v-card-title class="send-funds-confirm-dialog__dialog-title">
           {{ $t('transfer.confirm_title') }}
         </v-card-title>
 
         <v-divider class="a-divider" />
 
-        <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -- Safe internal content -->
-        <v-card-text class="a-text-regular-enlarged pa-4" v-html="confirmMessage" />
+        <v-card-text class="send-funds-confirm-dialog__dialog-body">
+          <!-- eslint-disable-next-line vue/no-v-html -- Safe internal content -->
+          <div class="send-funds-confirm-dialog__message" v-html="confirmMessage" />
+        </v-card-text>
 
-        <v-card-actions class="pa-4">
+        <v-card-actions class="send-funds-confirm-dialog__dialog-actions">
           <v-spacer />
 
           <v-btn class="a-btn-regular" variant="text" @click="dialog = false">
@@ -159,8 +174,8 @@
               v-show="showSpinner"
               indeterminate
               color="primary"
-              size="24"
-              class="mr-4"
+              :size="COMMON_INLINE_SPINNER_SIZE"
+              class="send-funds-confirm-dialog__spinner"
             />
             {{ $t('transfer.confirm_approve') }}
           </v-btn>
@@ -218,6 +233,7 @@ import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressD
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { formatSendTxError } from '@/lib/txVerify'
 import { AllCryptos } from '@/lib/constants/cryptos'
+import { COMMON_INLINE_SPINNER_SIZE } from '@/components/common/helpers/uiMetrics'
 
 import { mdiDotsVertical, mdiMenuDown } from '@mdi/js'
 import { useStore } from 'vuex'
@@ -281,6 +297,7 @@ export default {
 
     return {
       checkIsOnline,
+      COMMON_INLINE_SPINNER_SIZE,
       mdiDotsVertical,
       mdiMenuDown
     }
@@ -357,10 +374,8 @@ export default {
      */
     transferFeeFixed() {
       const feeCurrency = isErc20(this.currency) ? 'ETH' : this.currency
-      const decimals = CryptosInfo[feeCurrency].cryptoTransferDecimals
-      const formatted = BigNumber(this.transferFee).decimalPlaces(decimals).toString()
 
-      return trimTrailingZeros(formatted)
+      return this.formatDisplayAmount(this.transferFee, feeCurrency)
     },
 
     /**
@@ -395,10 +410,7 @@ export default {
      * @returns {string}
      */
     finalAmountFixed() {
-      const decimals = CryptosInfo[this.currency].cryptoTransferDecimals
-      const formatted = BigNumber(this.finalAmount).decimalPlaces(decimals).toString()
-
-      return trimTrailingZeros(formatted)
+      return this.formatDisplayAmount(this.finalAmount, this.currency)
     },
 
     /**
@@ -626,12 +638,34 @@ export default {
     // create watcher after setting default from props
     this.$watch('currency', () => {
       this.$refs.form.validate()
+      if (!this.addressReadonly && this.$store.state.options.currentWallet !== this.currency) {
+        this.$store.commit('options/updateOption', {
+          key: 'currentWallet',
+          value: this.currency
+        })
+      }
     })
+
+    // sync carousel → form when wallet tab is tapped while on SendFunds
+    this.$watch(
+      () => this.$store.state.options.currentWallet,
+      (newVal) => {
+        if (!this.addressReadonly && this.currency !== newVal && this.cryptoList.includes(newVal)) {
+          this.currency = newVal
+        }
+      }
+    )
   },
   mounted() {
     this.fetchUserCryptoAddress()
   },
   methods: {
+    formatDisplayAmount(amount, currency) {
+      const decimals = CryptosInfo[currency].cryptoTransferDecimals
+      const formatted = BigNumber(amount).decimalPlaces(decimals, BigNumber.ROUND_DOWN).toFixed()
+
+      return trimTrailingZeros(formatted)
+    },
     checkIsNewAccount(cryptoAddress) {
       this.account.isNew = false
 
@@ -953,6 +987,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/components/_form-action-layout.scss' as formActionLayout;
+@use '@/assets/styles/components/_input-action-menu.scss' as inputActionMenu;
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+@use '@/assets/styles/components/_text-content.scss' as textContent;
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
+
 .a-input :deep(input[type='number']) {
   -moz-appearance: textfield;
 }
@@ -960,9 +1000,43 @@ export default {
 .a-input :deep(input[type='number']::-webkit-outer-spin-button) {
   -webkit-appearance: none;
 }
+
+.send-funds-confirm-dialog {
+  @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  --a-send-funds-confirm-spinner-gap: var(--a-space-4);
+
+  &__dialog-title {
+    @include mixins.a-text-header();
+  }
+
+  &__message {
+    @include textContent.a-content-body-copy();
+  }
+
+  &__spinner {
+    margin-inline-end: var(--a-send-funds-confirm-spinner-gap);
+  }
+}
+
 .send-funds-form {
+  --a-send-funds-button-margin-top: var(--a-space-4);
+  --a-send-funds-amount-label-size: var(--a-font-size-sm);
+  --a-send-funds-amount-label-floating-scale: 0.75;
+  --a-send-funds-field-label-font-weight: var(--a-font-weight-medium);
+
+  @include inputActionMenu.a-input-action-menu();
+
+  &__field-label {
+    font-weight: var(--a-send-funds-field-label-font-weight);
+  }
+
   &__button {
-    margin-top: 15px;
+    margin-top: var(--a-send-funds-button-margin-top);
+  }
+
+  &__actions {
+    @include formActionLayout.a-form-actions-center();
   }
   &__amount-input {
     :deep(.v-field__field) {
@@ -970,15 +1044,17 @@ export default {
         align-items: baseline;
 
         .max-amount-label {
-          font-size: 14px;
+          font-size: var(--a-send-funds-amount-label-size);
         }
       }
     }
 
     :deep(.v-field__outline) {
       .v-label.v-field-label.v-field-label--floating .max-amount-label {
-        font-size: 10.5px; // -25% from original size
-        line-height: 1;
+        font-size: calc(
+          var(--a-send-funds-amount-label-size) * var(--a-send-funds-amount-label-floating-scale)
+        );
+        line-height: var(--a-send-funds-amount-label-line-height);
       }
     }
   }

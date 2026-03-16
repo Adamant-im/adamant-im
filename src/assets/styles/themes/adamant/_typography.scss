@@ -71,7 +71,7 @@
   .a-text-explanation-enlarged,
   .a-text-explanation-enlarged-bold,
   .a-text-explanation-bold {
-    color: map.get(colors.$adm-colors, 'muted');
+    color: var(--a-color-text-muted-light);
   }
 
   .a-divider {
