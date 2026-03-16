@@ -1,10 +1,7 @@
-import { config as loadEnv } from 'dotenv'
+import { testPassphrase } from './helpers/env'
 import { expect, test, type Page } from '@playwright/test'
 import { loginWithPassphrase } from './helpers/auth'
 
-loadEnv({ path: '.env.local', quiet: true })
-
-const testPassphrase = process.env.ADM_TEST_ACCOUNT_PK?.trim()
 const PICKER_VIEWPORT_TOLERANCE_PX = 8
 
 test.describe('Chat message emoji picker regressions', () => {

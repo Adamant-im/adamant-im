@@ -1,11 +1,7 @@
-import { config as loadEnv } from 'dotenv'
+import { testPassphrase } from './helpers/env'
 import { expect, test } from '@playwright/test'
 
 import { loginWithNewAccount, loginWithPassphrase } from './helpers/auth'
-
-loadEnv({ path: '.env.local', quiet: true })
-
-const testPassphrase = process.env.ADM_TEST_ACCOUNT_PK?.trim()
 
 test.describe('Secondary dialogs layout regressions', () => {
   test('keeps share address and trade dialogs on the shared compact width', async ({ page }) => {

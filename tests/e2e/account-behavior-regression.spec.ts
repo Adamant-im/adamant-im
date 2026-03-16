@@ -1,10 +1,7 @@
-import { config as loadEnv } from 'dotenv'
+import { testPassphrase } from './helpers/env'
 import { expect, test, type Page } from '@playwright/test'
 import { loginWithNewAccount, loginWithPassphrase } from './helpers/auth'
 
-loadEnv({ path: '.env.local', quiet: true })
-
-const testPassphrase = process.env.ADM_TEST_ACCOUNT_PK?.trim()
 const testDetailsCrypto = 'DOGE'
 const testTransactionId = '723a8f9d1f0083b5da91c2aae1df6434d854828d8e9fac5f11b30f021af3ba86'
 

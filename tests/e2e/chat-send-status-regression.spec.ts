@@ -1,10 +1,6 @@
-import { config as loadEnv } from 'dotenv'
+import { testPassphrase } from './helpers/env'
 import { expect, test, type Page, type TestInfo } from '@playwright/test'
 import { loginWithPassphrase } from './helpers/auth'
-
-loadEnv({ path: '.env.local', quiet: true })
-
-const testPassphrase = process.env.ADM_TEST_ACCOUNT_PK?.trim()
 
 const attachPageScreenshot = async (page: Page, testInfo: TestInfo, name: string) => {
   const body = await page.screenshot({ fullPage: true })

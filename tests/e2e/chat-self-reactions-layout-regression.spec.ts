@@ -1,10 +1,6 @@
-import { config as loadEnv } from 'dotenv'
+import { testPassphrase } from './helpers/env'
 import { expect, test } from '@playwright/test'
 import { loginWithPassphrase } from './helpers/auth'
-
-loadEnv({ path: '.env.local', quiet: true })
-
-const testPassphrase = process.env.ADM_TEST_ACCOUNT_PK?.trim()
 
 test.describe('Chat self reactions regressions', () => {
   test('keeps outgoing reactions in self-chat on the left side of the outgoing bubble', async ({

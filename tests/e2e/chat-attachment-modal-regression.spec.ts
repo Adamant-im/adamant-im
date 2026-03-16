@@ -1,10 +1,7 @@
-import { config as loadEnv } from 'dotenv'
+import { testPassphrase } from './helpers/env'
 import { expect, test, type Locator } from '@playwright/test'
 import { dismissAddressWarningIfVisible, loginWithPassphrase } from './helpers/auth'
 
-loadEnv({ path: '.env.local', quiet: true })
-
-const testPassphrase = process.env.ADM_TEST_ACCOUNT_PK?.trim()
 const testChatId = 'U6386412615727665758'
 const activeImageSlideSelector =
   '.v-window-item--active.a-chat-image-modal-item, .v-window-item--active .a-chat-image-modal-item'
