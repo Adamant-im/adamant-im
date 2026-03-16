@@ -1,4 +1,4 @@
-export const ACCOUNT_PATH_PREFIXES = ['/home', '/transactions', '/transfer']
+export const ACCOUNT_PATH_PREFIXES = ['/home', '/transactions', '/transfer', '/votes']
 
 export const isAccountPath = (path?: string) => {
   return !!path && ACCOUNT_PATH_PREFIXES.some((prefix) => path.startsWith(prefix))

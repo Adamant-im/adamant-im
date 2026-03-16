@@ -36,32 +36,51 @@ test.describe('Chat self reactions regressions', () => {
     await page.waitForURL(/\/chats\/[^/?#]+$/, { timeout: 90_000 })
     await expect(page.locator('.a-chat__body-messages').first()).toBeVisible()
 
+    const targetMessage = page.locator('.a-chat__message-container--right').last()
+    await expect(targetMessage).toBeVisible()
+    await targetMessage.scrollIntoViewIfNeeded()
+    await targetMessage.hover({ force: true })
+
+    const actionsButton = targetMessage.locator('.a-chat__message-actions-icon').first()
+    await expect
+      .poll(async () => {
+        return actionsButton.evaluate((element) => window.getComputedStyle(element).visibility)
+      })
+      .toBe('visible')
+    await actionsButton.click()
+
+    const firstReactionEmoji = page
+      .locator(
+        '.a-chat-reaction-select-item:not(.a-chat-reaction-select-item--selected) .a-chat-reaction-select-item__emoji'
+      )
+      .first()
+    await expect(firstReactionEmoji).toBeVisible()
+    await firstReactionEmoji.click()
+
+    await expect
+      .poll(async () => {
+        return targetMessage.locator('.a-chat-reactions').count()
+      })
+      .toBeGreaterThan(0)
+
     const readReactionGeometry = () =>
-      page.evaluate(() => {
+      targetMessage.evaluate((messageElement) => {
         const messagesContainer = document.querySelector('.a-chat__body-messages')
 
         if (!(messagesContainer instanceof HTMLElement)) return null
 
-        const outgoingWithReactions = Array.from(
-          messagesContainer.querySelectorAll('.a-chat__message-container--right')
-        ).filter(
-          (element): element is HTMLElement =>
-            element instanceof HTMLElement && !!element.querySelector('.a-chat-reactions')
-        )
+        const reactions = messageElement.querySelector('.a-chat-reactions')
 
-        const targetMessage = outgoingWithReactions.at(-1)
-        const reactions = targetMessage?.querySelector('.a-chat-reactions')
-
-        if (!(targetMessage instanceof HTMLElement) || !(reactions instanceof HTMLElement)) {
+        if (!(messageElement instanceof HTMLElement) || !(reactions instanceof HTMLElement)) {
           return null
         }
 
-        targetMessage.scrollIntoView({
+        messageElement.scrollIntoView({
           block: 'center'
         })
 
         const containerRect = messagesContainer.getBoundingClientRect()
-        const messageRect = targetMessage.getBoundingClientRect()
+        const messageRect = messageElement.getBoundingClientRect()
         const reactionsRect = reactions.getBoundingClientRect()
 
         return {

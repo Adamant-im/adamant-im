@@ -14,23 +14,23 @@ test.describe('App core smoke checks', () => {
   test('navigates between Account, Chats and Settings', async ({ page }, testInfo) => {
     await loginWithNewAccount(page)
 
-    const accountLink = page.getByRole('link', { name: 'Account' })
-    const chatsLink = page.getByRole('link', { name: 'Chats' })
-    const settingsLink = page.getByRole('link', { name: 'Settings' })
+    const accountButton = page.getByRole('button', { name: 'Account' })
+    const chatsButton = page.getByRole('button', { name: 'Chats' })
+    const settingsButton = page.getByRole('button', { name: 'Settings' })
 
-    await expect(accountLink).toBeVisible()
-    await expect(chatsLink).toBeVisible()
-    await expect(settingsLink).toBeVisible()
+    await expect(accountButton).toBeVisible()
+    await expect(chatsButton).toBeVisible()
+    await expect(settingsButton).toBeVisible()
 
-    await accountLink.click()
+    await accountButton.click()
     await expect(page).toHaveURL(/\/home$/)
     await expect(page.locator('.account-view')).toBeVisible()
 
-    await settingsLink.click()
+    await settingsButton.click()
     await expect(page).toHaveURL(/\/options$/)
     await expect(page.locator('.settings-view')).toBeVisible()
 
-    await chatsLink.click()
+    await chatsButton.click()
     await expect(page).toHaveURL(/\/chats$/)
     await expect(page.locator('.chats-view__messages--chat')).toBeVisible()
 

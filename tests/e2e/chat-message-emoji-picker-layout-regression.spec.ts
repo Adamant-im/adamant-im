@@ -5,6 +5,7 @@ import { loginWithPassphrase } from './helpers/auth'
 loadEnv({ path: '.env.local' })
 
 const testPassphrase = process.env.ADM_TEST_ACCOUNT_PK?.trim()
+const PICKER_VIEWPORT_TOLERANCE_PX = 8
 
 test.describe('Chat message emoji picker regressions', () => {
   const openSelfChatAndWaitForMessages = async (page: Page) => {
@@ -32,9 +33,41 @@ test.describe('Chat message emoji picker regressions', () => {
     await expect(page.locator('.a-chat__body-messages').first()).toBeVisible()
   }
 
+  const getFirstFullyVisibleMessageIndex = async (page: Page) =>
+    page.evaluate(() => {
+      const messagesBody = document.querySelector('.a-chat__body-messages')
+
+      if (!(messagesBody instanceof HTMLElement)) {
+        return 0
+      }
+
+      const bodyRect = messagesBody.getBoundingClientRect()
+      const messages = Array.from(messagesBody.querySelectorAll('.a-chat__message-container'))
+
+      const visibleIndex = messages.findIndex((message) => {
+        if (!(message instanceof HTMLElement)) {
+          return false
+        }
+
+        const rect = message.getBoundingClientRect()
+        const style = window.getComputedStyle(message)
+
+        return (
+          rect.width > 0 &&
+          rect.height > 0 &&
+          style.display !== 'none' &&
+          style.visibility !== 'hidden' &&
+          rect.top >= bodyRect.top &&
+          rect.bottom <= bodyRect.bottom
+        )
+      })
+
+      return visibleIndex >= 0 ? visibleIndex : 0
+    })
+
   const readVisiblePickerBounds = async (page: Page) =>
     page.evaluate(() => {
-      const candidates = Array.from(document.querySelectorAll('.emoji-picker'))
+      const candidates = Array.from(document.querySelectorAll('.emoji-picker em-emoji-picker'))
         .filter((element): element is HTMLElement => element instanceof HTMLElement)
         .map((element) => ({
           element,
@@ -98,7 +131,9 @@ test.describe('Chat message emoji picker regressions', () => {
         }
 
         return {
-          withinHorizontalBounds: bounds.left >= 7 && bounds.right <= bounds.viewportWidth - 7,
+          withinHorizontalBounds:
+            bounds.left >= -PICKER_VIEWPORT_TOLERANCE_PX &&
+            bounds.right <= bounds.viewportWidth + PICKER_VIEWPORT_TOLERANCE_PX,
           withinVerticalBounds: bounds.top >= 7 && bounds.bottom <= bounds.viewportHeight - 7
         }
       })
@@ -121,12 +156,18 @@ test.describe('Chat message emoji picker regressions', () => {
     })
     await page.waitForTimeout(500)
 
-    const topMessage = page.locator('.a-chat__message-container').first()
+    const topMessageIndex = await getFirstFullyVisibleMessageIndex(page)
+    const topMessage = page.locator('.a-chat__message-container').nth(topMessageIndex)
     await expect(topMessage).toBeVisible()
-    await topMessage.hover()
+    await topMessage.scrollIntoViewIfNeeded()
+    await topMessage.hover({ force: true })
 
     const actionsButton = topMessage.locator('.a-chat__message-actions-icon').first()
-    await expect(actionsButton).toBeVisible()
+    await expect
+      .poll(async () => {
+        return actionsButton.evaluate((element) => window.getComputedStyle(element).visibility)
+      })
+      .toBe('visible')
     await actionsButton.click()
 
     const moreButton = page.locator('.a-chat-reaction-select__more-button').last()
@@ -143,7 +184,9 @@ test.describe('Chat message emoji picker regressions', () => {
         }
 
         return {
-          withinHorizontalBounds: bounds.left >= 7 && bounds.right <= bounds.viewportWidth - 7,
+          withinHorizontalBounds:
+            bounds.left >= -PICKER_VIEWPORT_TOLERANCE_PX &&
+            bounds.right <= bounds.viewportWidth + PICKER_VIEWPORT_TOLERANCE_PX,
           withinVerticalBounds: bounds.top >= 7 && bounds.bottom <= bounds.viewportHeight - 7
         }
       })

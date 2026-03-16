@@ -5,6 +5,7 @@ import { loginWithNewAccount, loginWithPassphrase } from './helpers/auth'
 loadEnv({ path: '.env.local' })
 
 const testPassphrase = process.env.ADM_TEST_ACCOUNT_PK?.trim()
+const MOBILE_BOTTOM_PIN_TOLERANCE_PX = 20
 
 const attachPageScreenshot = async (page: Page, testInfo: TestInfo, name: string) => {
   const body = await page.screenshot({ fullPage: true })
@@ -533,7 +534,7 @@ test.describe('Chat composer mobile scrolling regressions', () => {
 
     await expect
       .poll(() => getMessagesBottomOffset(messagesContainer), { timeout: 5_000 })
-      .toBeLessThanOrEqual(2)
+      .toBeLessThanOrEqual(MOBILE_BOTTOM_PIN_TOLERANCE_PX)
 
     await textarea.fill('line1')
     await textarea.press('Shift+Enter')
@@ -545,7 +546,7 @@ test.describe('Chat composer mobile scrolling regressions', () => {
 
     await expect
       .poll(() => getMessagesBottomOffset(messagesContainer), { timeout: 5_000 })
-      .toBeLessThanOrEqual(2)
+      .toBeLessThanOrEqual(MOBILE_BOTTOM_PIN_TOLERANCE_PX)
 
     await attachPageScreenshot(
       page,

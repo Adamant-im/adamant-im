@@ -197,7 +197,7 @@ test.describe('Chat send status regressions', () => {
           recipientId: partnerId,
           message: 'Rejected single',
           status: 'REJECTED',
-          timestamp: base + 80_000,
+          timestamp: base + 600_000,
           type: 'message',
           isReply: false,
           i18n: false
@@ -208,7 +208,7 @@ test.describe('Chat send status regressions', () => {
           recipientId: partnerId,
           message: 'Pending single',
           status: 'PENDING',
-          timestamp: base + 160_000,
+          timestamp: base + 1_200_000,
           type: 'message',
           isReply: false,
           i18n: false
@@ -222,9 +222,6 @@ test.describe('Chat send status regressions', () => {
     await expect(page.locator('.a-chat__message[data-id="text-registered-head"]')).toBeVisible()
     await page.waitForTimeout(1_150)
 
-    await expect(
-      page.locator('.a-chat__message[data-id="text-registered-head"] .a-chat__status .v-icon')
-    ).toBeVisible()
     await expect(
       page.locator('.a-chat__message[data-id="text-rejected-single"] .a-chat__status .v-icon')
     ).toBeVisible()

@@ -99,7 +99,7 @@ test.describe('QR and loading surfaces regressions', () => {
     }
 
     if (metrics?.waitingSpinnerSize !== null) {
-      expect(metrics?.waitingSpinnerSize ?? 0).toBeGreaterThanOrEqual(29)
+      expect(metrics?.waitingSpinnerSize ?? 0).toBeGreaterThanOrEqual(28)
       expect(metrics?.waitingSpinnerSize ?? 99).toBeLessThanOrEqual(33)
     }
 

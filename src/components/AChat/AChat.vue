@@ -121,9 +121,11 @@ const resizeHandler = () => {
 
   const clientHeightDelta = currentClientHeight.value - messagesRef.value.clientHeight
 
-  const nonVisibleClientHeight =
-    messagesRef.value.scrollHeight - messagesRef.value.clientHeight - messagesRef.value.scrollTop
-  const scrolledToBottom = nonVisibleClientHeight <= BOTTOM_SCROLL_TOLERANCE_PX
+  const previousScrollHeight = currentScrollHeight.value || messagesRef.value.scrollHeight
+  const previousScrollTop = currentScrollTop.value || Math.ceil(messagesRef.value.scrollTop)
+  const previousClientHeight = currentClientHeight.value || messagesRef.value.clientHeight
+  const previousOffsetToBottom = previousScrollHeight - previousClientHeight - previousScrollTop
+  const scrolledToBottom = previousOffsetToBottom <= BOTTOM_SCROLL_TOLERANCE_PX
 
   if (scrolledToBottom) {
     // Keep the viewport anchored to the latest message when composer height changes
@@ -132,6 +134,8 @@ const resizeHandler = () => {
     messagesRef.value.scrollTop += clientHeightDelta
   }
 
+  currentScrollTop.value = Math.ceil(messagesRef.value.scrollTop)
+  currentScrollHeight.value = messagesRef.value.scrollHeight
   currentClientHeight.value = messagesRef.value.clientHeight
 }
 

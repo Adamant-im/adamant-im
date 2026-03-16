@@ -127,7 +127,7 @@ describe('Navigation UI style contract', () => {
     expect(content).not.toContain("color: map.get(colors.$adm-colors, 'muted');")
     expect(content).not.toContain("color: map.get(colors.$adm-colors, 'grey-transparent');")
     expect(accountRoutesContent).toContain(
-      "export const ACCOUNT_PATH_PREFIXES = ['/home', '/transactions', '/transfer']"
+      "export const ACCOUNT_PATH_PREFIXES = ['/home', '/transactions', '/transfer', '/votes']"
     )
     expect(accountRoutesContent).toContain(
       'ACCOUNT_PATH_PREFIXES.some((prefix) => path.startsWith(prefix))'
@@ -138,10 +138,7 @@ describe('Navigation UI style contract', () => {
     expect(accountRoutesContent).toContain("name: 'Transactions'")
     expect(accountRoutesContent).toContain("name: 'Transaction'")
     expect(accountRoutesContent).toContain("name: 'SendFunds'")
-    expect(content).toContain("const SETTINGS_EXTRA_PATHS = ['/votes']")
-    expect(content).toContain(
-      'SETTINGS_EXTRA_PATHS.some((prefix) => route.path.startsWith(prefix))'
-    )
+    expect(content).not.toContain("const SETTINGS_EXTRA_PATHS = ['/votes']")
   })
 
   it('lets active overlays consume Escape before sidebar navigation', () => {

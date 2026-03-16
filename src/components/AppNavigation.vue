@@ -11,7 +11,7 @@
     <v-btn
       v-if="walletShouldBeVisible"
       :value="0"
-      :class="`${className}__button`"
+      :class="[`${className}__button`, { 'v-btn--active': isActivePage(0) }]"
       draggable="false"
       @click.capture="persistCurrentTabState"
     >
@@ -22,7 +22,7 @@
     <!-- Chat -->
     <v-btn
       :value="1"
-      :class="`${className}__button`"
+      :class="[`${className}__button`, { 'v-btn--active': isActivePage(1) }]"
       draggable="false"
       @click.capture="persistCurrentTabState"
     >
@@ -44,7 +44,7 @@
     <!-- Settings -->
     <v-btn
       :value="2"
-      :class="`${className}__button`"
+      :class="[`${className}__button`, { 'v-btn--active': isActivePage(2) }]"
       draggable="false"
       @click.capture="persistCurrentTabState"
     >
@@ -89,15 +89,9 @@ const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
 
-const SETTINGS_EXTRA_PATHS = ['/votes']
-
 const getCurrentPageIndex = () => {
   if (route.query?.fromChat) {
     return 1
-  }
-
-  if (SETTINGS_EXTRA_PATHS.some((prefix) => route.path.startsWith(prefix))) {
-    return 2
   }
 
   const currentPage = pages.find((page) => {
@@ -114,6 +108,7 @@ const walletShouldBeVisible = computed(() => {
 })
 const accountRouteTarget = computed(() => store.getters['options/accountLastRoute'] || '/home')
 const settingsRouteTarget = computed(() => store.getters['options/settingsLastRoute'] || '/options')
+const isActivePage = (index: number) => currentPageIndex.value === index
 const getSidebarLayout = () => {
   return document.querySelector('.sidebar__layout') as HTMLElement | null
 }

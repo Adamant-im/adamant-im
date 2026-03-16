@@ -10,6 +10,7 @@
       [classes.dropDown]: verticalAlignment === 'down',
       'elevation-9': elevation
     }"
+    :style="pickerStyle"
   >
     <div ref="container" />
   </div>
@@ -54,7 +55,10 @@ const picker = ref<Picker>()
 const alignment = ref<'start' | 'end'>('start')
 const verticalAlignment = ref<'up' | 'down'>('up')
 const isPlacementResolved = ref(props.position !== 'absolute')
+const horizontalOffset = ref(0)
 const VIEWPORT_PADDING = 8
+
+const pickerStyle = ref<Record<string, string>>({})
 
 const waitForLayoutFrame = async () => {
   await nextTick()
@@ -72,6 +76,8 @@ const updateAlignment = async () => {
   isPlacementResolved.value = false
   alignment.value = 'start'
   verticalAlignment.value = 'up'
+  horizontalOffset.value = 0
+  pickerStyle.value = {}
   await waitForLayoutFrame()
 
   const startRect = root.value.getBoundingClientRect()
@@ -101,6 +107,20 @@ const updateAlignment = async () => {
     ) {
       verticalAlignment.value = 'up'
     }
+  }
+
+  await waitForLayoutFrame()
+
+  const finalRect = root.value.getBoundingClientRect()
+
+  if (finalRect.right > window.innerWidth - VIEWPORT_PADDING) {
+    horizontalOffset.value = window.innerWidth - VIEWPORT_PADDING - finalRect.right
+  } else if (finalRect.left < VIEWPORT_PADDING) {
+    horizontalOffset.value = VIEWPORT_PADDING - finalRect.left
+  }
+
+  pickerStyle.value = {
+    '--a-emoji-picker-horizontal-offset': `${horizontalOffset.value}px`
   }
 
   isPlacementResolved.value = true
@@ -148,6 +168,7 @@ onBeforeUnmount(() => {
     position: absolute;
     bottom: 0;
     left: 0;
+    transform: translateX(var(--a-emoji-picker-horizontal-offset, 0px));
     transform-origin: bottom left;
   }
 

@@ -10,7 +10,7 @@ const formatRunStamp = (date: Date) => {
   const hours = pad(date.getHours())
   const minutes = pad(date.getMinutes())
 
-  return `${year}-${month}-${day} ${hours}:${minutes}`
+  return `${year}-${month}-${day} ${hours}-${minutes}`
 }
 
 const port = process.env.PLAYWRIGHT_PORT ?? '4173'
