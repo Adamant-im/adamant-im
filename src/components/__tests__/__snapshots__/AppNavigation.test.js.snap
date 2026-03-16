@@ -12,7 +12,7 @@ exports[`AppNavigation.vue > renders the correct markup 1`] = `
 >
   <!-- Wallet -->
   <v-btn
-    class="app-navigation__button"
+    class="app-navigation__button v-btn--active"
     data-v-5e3203dd=""
     draggable="false"
     value="0"

@@ -130,6 +130,7 @@ function sendFunds(selectedCrypto: string) {
           recipientAddress: partnerId || ''
         },
         query: {
+          fromChat: 'true',
           from: `/chats/${partnerId}`,
           replyToId
         }

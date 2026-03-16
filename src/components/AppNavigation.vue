@@ -89,9 +89,15 @@ const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
 
+const SETTINGS_EXTRA_PATHS = ['/votes']
+
 const getCurrentPageIndex = () => {
   if (route.query?.fromChat) {
     return 1
+  }
+
+  if (SETTINGS_EXTRA_PATHS.some((p) => route.path.startsWith(p))) {
+    return 2
   }
 
   const currentPage = pages.find((page) => {

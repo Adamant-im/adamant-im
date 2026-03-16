@@ -282,7 +282,7 @@ test.describe('Account behavior regressions', () => {
     await expect(page.locator('.app-navigation .v-btn').nth(0)).toHaveClass(/v-btn--active/)
   })
 
-  test('restores Stake and Earn route when returning to Account after switching tabs', async ({
+  test('restores Stake and Earn route when returning to Settings after switching tabs', async ({
     page
   }) => {
     await page.setViewportSize({ width: 390, height: 844 })
@@ -300,11 +300,11 @@ test.describe('Account behavior regressions', () => {
     await page.locator('.app-navigation .v-btn').nth(1).click()
     await expect(page).toHaveURL(/\/chats(?:\/)?$/)
 
-    // Switch back to Account — should restore /votes
-    await page.locator('.app-navigation .v-btn').nth(0).click()
+    // Switch back to Settings — should restore /votes
+    await page.locator('.app-navigation .v-btn').nth(2).click()
     await expect(page).toHaveURL(/\/votes(?:\/)?$/)
 
-    const walletButton = page.locator('.app-navigation .v-btn').nth(0)
-    await expect(walletButton).toHaveClass(/v-btn--active/)
+    const settingsButton = page.locator('.app-navigation .v-btn').nth(2)
+    await expect(settingsButton).toHaveClass(/v-btn--active/)
   })
 })
