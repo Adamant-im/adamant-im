@@ -544,7 +544,12 @@ watch(replyMessageId, (messageId) => {
 watch(areAdmNodesOnline, async (nodesOnline) => {
   if (!nodesOnline) return
 
-  if (isGettingPublicKey.value) {
+  const needsKeyFetch =
+    !isKeyMissing.value &&
+    !isWelcomeChat(props.partnerId) &&
+    !store.state.publicKeys[props.partnerId]
+
+  if (isGettingPublicKey.value || needsKeyFetch) {
     const partnerName = store.getters['chat/getPartnerName'](props.partnerId)
     await createChat(props.partnerId, partnerName)
   }
@@ -643,16 +648,14 @@ const createChat = async (partnerId: string, partnerName: string) => {
       partnerId,
       partnerName
     })
-    .then((key) => {
-      if (key) {
-        isGettingPublicKey.value = false
-      }
+    .then(() => {
+      isGettingPublicKey.value = false
     })
     .catch((error: unknown) => {
       vibrate.long()
+      isGettingPublicKey.value = false
       if ((error as Error).message === t('chats.no_public_key')) {
         isKeyMissing.value = true
-        isGettingPublicKey.value = false
       }
     })
 }
