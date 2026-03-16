@@ -221,7 +221,7 @@
           :send-on-enter="sendMessageOnEnter"
           :show-divider="true"
           :label="t('chats.message')"
-          :should-disable-input="isWelcomeChat(partnerId) || shouldDisableInput"
+          :should-disable-input="isWelcomeChat(partnerId) || publicKeyDisable"
           :message-text="messageText"
           @message="onMessage"
           @error="onMessageError"
@@ -332,6 +332,7 @@ import ChatPlaceholder from '@/components/Chat/ChatPlaceholder.vue'
 import { CHAT_CONNECTION_SPINNER_SIZE } from '@/components/Chat/helpers/uiMetrics'
 import { watchImmediate } from '@vueuse/core'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import { usePublicKeyFetch } from '@/components/Chat/composables/usePublicKeyFetch'
 
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
@@ -398,8 +399,12 @@ const flashingMessageId = ref<string | -1>(-1)
 const actionsMenuMessageId = ref<string | -1>(-1)
 const replyMessageId = ref<string | -1>(-1)
 const showEmojiPicker = ref(false)
-const isGettingPublicKey = ref(false)
-const isKeyMissing = ref(false)
+const {
+  isGettingPublicKey,
+  isKeyMissing,
+  shouldDisableInput: publicKeyDisable,
+  createChat
+} = usePublicKeyFetch(props.partnerId)
 
 // to handle loading spinner and allow fetching messages while the spinner is shown
 // in case of connection troubles while first fetching
@@ -427,9 +432,6 @@ const userMessages = computed(() =>
 )
 const userId = computed(() => store.state.address)
 const isNewChat = computed(() => store.getters['chat/isNewChat'](props.partnerId))
-const shouldDisableInput = computed(
-  () => isGettingPublicKey.value || isKeyMissing.value || !store.state.publicKeys[props.partnerId]
-)
 const groupedMessages = computed(() => {
   if (!messages.value.length) return []
 
@@ -496,6 +498,7 @@ const actionMessage = computed<NormalizedChatMessageTransaction>(() =>
 )
 const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
 const areAdmNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
+
 const allowPlaceholder = computed(
   () =>
     !isWelcomeChat(props.partnerId) &&
@@ -543,16 +546,6 @@ watch(replyMessageId, (messageId) => {
 
 watch(areAdmNodesOnline, async (nodesOnline) => {
   if (!nodesOnline) return
-
-  const needsKeyFetch =
-    !isKeyMissing.value &&
-    !isWelcomeChat(props.partnerId) &&
-    !store.state.publicKeys[props.partnerId]
-
-  if (isGettingPublicKey.value || needsKeyFetch) {
-    const partnerName = store.getters['chat/getPartnerName'](props.partnerId)
-    await createChat(props.partnerId, partnerName)
-  }
 
   if (loading.value && allowFetchingMessages.value) {
     await fetchChatMessages()
@@ -636,28 +629,8 @@ const handleEmptyChat = async () => {
     (!store.state.publicKeys[props.partnerId] && !isWelcomeChat(props.partnerId))
   ) {
     const partnerName = store.getters['chat/getPartnerName'](props.partnerId)
-
-    await createChat(props.partnerId, partnerName)
+    createChat(partnerName)
   }
-}
-
-const createChat = async (partnerId: string, partnerName: string) => {
-  isGettingPublicKey.value = true
-  store
-    .dispatch('chat/createChat', {
-      partnerId,
-      partnerName
-    })
-    .then(() => {
-      isGettingPublicKey.value = false
-    })
-    .catch((error: unknown) => {
-      vibrate.long()
-      isGettingPublicKey.value = false
-      if ((error as Error).message === t('chats.no_public_key')) {
-        isKeyMissing.value = true
-      }
-    })
 }
 
 /**
