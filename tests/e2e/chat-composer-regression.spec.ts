@@ -2,7 +2,7 @@ import { config as loadEnv } from 'dotenv'
 import { expect, test, type Locator, type Page, type TestInfo } from '@playwright/test'
 import { loginWithNewAccount, loginWithPassphrase } from './helpers/auth'
 
-loadEnv({ path: '.env.local' })
+loadEnv({ path: '.env.local', quiet: true })
 
 const testPassphrase = process.env.ADM_TEST_ACCOUNT_PK?.trim()
 const MOBILE_BOTTOM_PIN_TOLERANCE_PX = 20

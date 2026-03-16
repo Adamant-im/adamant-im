@@ -2,7 +2,7 @@ import { config as loadEnv } from 'dotenv'
 import { expect, test, type Locator } from '@playwright/test'
 import { dismissAddressWarningIfVisible, loginWithPassphrase } from './helpers/auth'
 
-loadEnv({ path: '.env.local' })
+loadEnv({ path: '.env.local', quiet: true })
 
 const testPassphrase = process.env.ADM_TEST_ACCOUNT_PK?.trim()
 const testChatId = 'U6386412615727665758'
