@@ -190,9 +190,27 @@ const isBalanceActive = computed(() => {
   padding-inline-end: var(--a-wallet-card-item-padding-inline-end);
 }
 
+.v-theme--light {
+  :deep(.v-list-item--active) {
+    @include mixins.linear-gradient-light-gray();
+
+    > .v-list-item__overlay {
+      opacity: 0;
+    }
+  }
+}
+
 .v-theme--dark {
   .wallet-card {
     --a-wallet-card-action-color: var(--a-color-text-inverse);
+  }
+
+  :deep(.v-list-item--active) {
+    @include mixins.linear-gradient-dark-soft();
+
+    > .v-list-item__overlay {
+      opacity: 0;
+    }
   }
 }
 </style>

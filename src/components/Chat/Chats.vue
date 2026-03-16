@@ -166,11 +166,7 @@ const unreadMessagesCount = computed(() => store.getters['chat/totalNumOfNewMess
 const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
 const areAdmNodesOnline = computed(() => admNodes.value.some((node) => node.status === 'online'))
 
-onActivated(() => {
-  if (savedRoute.value && !chatPagePartnerId.value) {
-    router.push(savedRoute.value)
-  }
-
+const restoreScrollPosition = () => {
   if (savedScrollTop.value > 0) {
     nextTick(() => {
       requestAnimationFrame(() => {
@@ -178,14 +174,20 @@ onActivated(() => {
       })
     })
   }
+}
+
+onActivated(() => {
+  if (savedRoute.value && !chatPagePartnerId.value) {
+    router.push(savedRoute.value)
+  }
+
+  restoreScrollPosition()
 })
 
 onDeactivated(() => {
   if (history.state.back.includes('/chats/')) {
     savedRoute.value = history.state.back
   }
-
-  savedScrollTop.value = messagesContainer.value?.scrollTop ?? 0
 })
 
 onMounted(() => {
@@ -199,15 +201,20 @@ onBeforeUnmount(() => {
   Visibility.unbind(Number(visibilityId.value))
 })
 
-watch(chatPagePartnerId, (value) => {
-  if (value) {
-    lastPartnerId.value = value
-  }
+watch(
+  chatPagePartnerId,
+  (value) => {
+    if (value) {
+      lastPartnerId.value = value
+    }
 
-  if (!value && route.name === 'Chats') {
-    savedRoute.value = null
-  }
-})
+    if (!value && route.name === 'Chats') {
+      savedRoute.value = null
+      restoreScrollPosition()
+    }
+  },
+  { immediate: true }
+)
 
 watch(areAdmNodesOnline, (nodesOnline) => {
   if (nodesOnline && loading.value) {
@@ -250,6 +257,15 @@ const destroyScrollListener = () => {
 
 const onScroll = (event?: Event) => {
   const target = event?.target
+
+  // Save scroll position during user scrolls (only when element is visible)
+  if (
+    target === messagesContainer.value &&
+    target instanceof HTMLElement &&
+    target.clientHeight > 0
+  ) {
+    savedScrollTop.value = target.scrollTop
+  }
 
   const elem =
     target instanceof HTMLElement

@@ -178,6 +178,9 @@ describe('Home UI style contract', () => {
     expect(content).toContain(':active="isBalanceActive"')
     expect(content).toContain("route.name === 'Transactions' || route.name === 'Transaction'")
     expect(content).toContain('route.params.crypto === props.crypto')
+    expect(content).toContain('@include mixins.linear-gradient-light-gray()')
+    expect(content).toContain('@include mixins.linear-gradient-dark-soft()')
+    expect(content).toContain('> .v-list-item__overlay')
   })
 
   it('highlights Send Funds and Stake items based on active route', () => {
@@ -190,6 +193,9 @@ describe('Home UI style contract', () => {
     expect(content).toContain("route.name === 'SendFunds'")
     expect(content).toContain('store.state.options.currentWallet === props.crypto')
     expect(content).toContain("route.name === 'Votes'")
+    expect(content).toContain('@include mixins.linear-gradient-light-gray()')
+    expect(content).toContain('@include mixins.linear-gradient-dark-soft()')
+    expect(content).toContain('> .v-list-item__overlay')
   })
 
   it('forces scroll to top and fresh data on Balance click', () => {

@@ -351,7 +351,7 @@ const emit = defineEmits(['click:chat-avatar'])
 const route = useRoute()
 const router = useRouter()
 const store = useStore()
-const { t, locale } = useI18n()
+const { t, te, locale } = useI18n()
 const showSpinner = useChatsSpinner()
 const currentLocale = computed(() => String(locale.value))
 
@@ -468,7 +468,7 @@ const groupedMessages = computed(() => {
 const getPartnerName = (address: string) => {
   const name: string = store.getters['partners/displayName'](address) || ''
 
-  return isAdamantChat(address) ? t(name) : name
+  return isAdamantChat(address) ? (te(name) ? t(name) : name || address) : name
 }
 const getUserMeta = (address: string) => ({
   id: address,
@@ -582,6 +582,18 @@ onBeforeMount(() => {
 onMounted(async () => {
   if (!isNewChat.value && isFulfilled.value && chatPage.value <= 0) {
     await fetchChatMessages()
+  }
+
+  // Force reload when chat state is stale (e.g., cached from previous session but messages missing)
+  if (isFulfilled.value && !messages.value.length && !isNewChat.value) {
+    const chatOffset = store.getters['chat/chatOffset'](props.partnerId)
+
+    if (chatPage.value > 0 || chatOffset === -1) {
+      store.commit('chat/setChatPage', { contactId: props.partnerId, page: 0 })
+      store.commit('chat/setChatOffset', { contactId: props.partnerId, offset: 0 })
+      noMoreMessages.value = false
+      await fetchChatMessages()
+    }
   }
 
   await handleEmptyChat()
