@@ -169,24 +169,4 @@ const getFreeTokens = () => {
     }
   }
 }
-
-.v-theme--light {
-  :deep(.v-list-item--active) {
-    @include mixins.linear-gradient-light-gray();
-
-    > .v-list-item__overlay {
-      opacity: 0;
-    }
-  }
-}
-
-.v-theme--dark {
-  :deep(.v-list-item--active) {
-    @include mixins.linear-gradient-dark-soft();
-
-    > .v-list-item__overlay {
-      opacity: 0;
-    }
-  }
-}
 </style>

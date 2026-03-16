@@ -580,20 +580,8 @@ onBeforeMount(() => {
 })
 
 onMounted(async () => {
-  if (!isNewChat.value && isFulfilled.value && chatPage.value <= 0) {
+  if (isFulfilled.value && chatPage.value <= 0) {
     await fetchChatMessages()
-  }
-
-  // Force reload when chat state is stale (e.g., cached from previous session but messages missing)
-  if (isFulfilled.value && !messages.value.length && !isNewChat.value) {
-    const chatOffset = store.getters['chat/chatOffset'](props.partnerId)
-
-    if (chatPage.value > 0 || chatOffset === -1) {
-      store.commit('chat/setChatPage', { contactId: props.partnerId, page: 0 })
-      store.commit('chat/setChatOffset', { contactId: props.partnerId, offset: 0 })
-      noMoreMessages.value = false
-      await fetchChatMessages()
-    }
   }
 
   await handleEmptyChat()
