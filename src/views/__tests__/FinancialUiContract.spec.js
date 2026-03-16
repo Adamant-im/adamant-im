@@ -243,6 +243,10 @@ describe('Financial UI style contract', () => {
 
     expect(tokensContent).toContain('--a-transactions-loading-item-offset-top')
     expect(tokensContent).toContain('--a-transactions-loading-item-offset-top: 0;')
+    expect(transactionsContent).toContain(
+      "import { useAccountViewState } from '@/hooks/useAccountViewState'"
+    )
+    expect(transactionsContent).toContain('useAccountViewState()')
     expect(tokensContent).toContain('--a-icon-base-font-size')
     expect(tokensContent).toContain('--a-icon-box-centered-size')
     expect(tokensContent).toContain('--a-color-text-muted-light')
@@ -275,5 +279,52 @@ describe('Financial UI style contract', () => {
     expect(iconContent).not.toContain('height: 40px;')
     expect(iconContent).not.toContain('fill: rgba(0, 0, 0, 0.54);')
     expect(iconContent).not.toContain('stroke: rgba(0, 0, 0, 0.54);')
+  })
+
+  it('manages scroll listeners with keep-alive lifecycle in Transactions view', () => {
+    const content = readFileSync(transactionsViewPath, 'utf8')
+
+    expect(content).toContain('onActivated')
+    expect(content).toContain('onDeactivated')
+    expect(content).toContain('const addScrollListener = () => {')
+    expect(content).toContain('const removeScrollListener = () => {')
+    expect(content).toContain('addScrollListener()')
+    expect(content).toContain('removeScrollListener()')
+  })
+
+  it('refetches transactions when crypto prop changes in Transactions view', () => {
+    const content = readFileSync(transactionsViewPath, 'utf8')
+
+    expect(content).toContain('() => props.crypto')
+    expect(content).toContain('if (newCrypto !== oldCrypto) {')
+    expect(content).toContain('isFulfilled.value = false')
+    expect(content).toContain('getNewTransactions()')
+  })
+
+  it('supports force refresh via store flag for Balance click', () => {
+    const content = readFileSync(transactionsViewPath, 'utf8')
+
+    expect(content).toContain('store.state.options.forceTransactionsRefresh')
+    expect(content).toContain(
+      "store.commit('options/updateOption', { key: 'forceTransactionsRefresh', value: false })"
+    )
+    expect(content).toContain('sidebarLayoutRef?.value?.scrollTo({ top: 0 })')
+  })
+
+  it('guards getNewTransactions against stale crypto fetch completion', () => {
+    const content = readFileSync(transactionsViewPath, 'utf8')
+
+    expect(content).toContain('const fetchingCrypto = cryptoModule.value')
+    expect(content).toContain('if (cryptoModule.value === fetchingCrypto) {')
+    expect(content).toContain('if (cryptoModule.value !== fetchingCrypto) return')
+  })
+
+  it('syncs SendFundsForm currency with store currentWallet', () => {
+    const content = readFileSync(sendFundsFormPath, 'utf8')
+
+    expect(content).toContain('this.$store.state.options.currentWallet !== this.currency')
+    expect(content).toContain("key: 'currentWallet'")
+    expect(content).toContain('() => this.$store.state.options.currentWallet')
+    expect(content).toContain('this.cryptoList.includes(newVal)')
   })
 })

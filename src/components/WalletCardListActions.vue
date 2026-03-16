@@ -1,6 +1,6 @@
 <template>
   <v-list bg-color="transparent" :class="className">
-    <v-list-item @click="sendFunds">
+    <v-list-item :active="isSendActive" @click="sendFunds">
       <template #prepend>
         <v-icon :class="`${className}__icon`" :icon="mdiBankTransferOut" />
       </template>
@@ -11,7 +11,7 @@
     </v-list-item>
 
     <template v-if="isADM">
-      <v-list-item @click="stakeAndEarn">
+      <v-list-item :active="isStakeActive" @click="stakeAndEarn">
         <template #prepend>
           <icon :width="WALLET_ACTION_STAKE_ICON_SIZE" :height="WALLET_ACTION_STAKE_ICON_SIZE">
             <stake-icon />
@@ -59,7 +59,7 @@ import { websiteUriToOnion } from '@/lib/uri'
 import { mdiBankTransferOut, mdiFinance, mdiGift } from '@mdi/js'
 import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 const className = 'wallet-actions'
@@ -75,11 +75,20 @@ const props = withDefaults(defineProps<Props>(), {
 
 const store = useStore()
 const router = useRouter()
+const route = useRoute()
 const { t } = useI18n()
 
 const showBuyTokensDialog = ref(false)
 
 const hasAdmTokens = computed(() => store.state.balance > 0)
+
+const isSendActive = computed(() => {
+  return route.name === 'SendFunds' && store.state.options.currentWallet === props.crypto
+})
+
+const isStakeActive = computed(() => {
+  return route.name === 'Votes'
+})
 
 const sendFunds = () => {
   router.push({

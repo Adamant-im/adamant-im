@@ -7,6 +7,7 @@ loadEnv({ path: '.env.local' })
 const testPassphrase = process.env.ADM_TEST_ACCOUNT_PK?.trim()
 const testDetailsCrypto = 'DOGE'
 const testListCrypto = 'ADM'
+const testRestorableListCrypto = testDetailsCrypto
 const testTransactionId = '723a8f9d1f0083b5da91c2aae1df6434d854828d8e9fac5f11b30f021af3ba86'
 
 const openTransactionListFromHome = async (page: Page, crypto: string) => {
@@ -25,6 +26,7 @@ const openTransactionListFromHome = async (page: Page, crypto: string) => {
 
   await activeWalletCard.locator('.wallet-card__tile').nth(1).click()
   await expect(page).toHaveURL(new RegExp(`/transactions/${crypto}$`))
+  await expect(page.locator('.transactions-view__list')).toBeVisible()
 }
 
 const assertTransactionDetailsScreenGutter = async (page: Page) => {
@@ -73,6 +75,221 @@ const assertTransactionDetailsScreenGutter = async (page: Page) => {
 }
 
 test.describe('Transactions layout regressions', () => {
+  test('restores the transaction list route and scroll after switching to chats and back', async ({
+    page
+  }) => {
+    test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
+
+    await page.setViewportSize({ width: 390, height: 600 })
+    await loginWithPassphrase(page, testPassphrase!)
+
+    await openTransactionListFromHome(page, testRestorableListCrypto)
+
+    const routeState = await page.evaluate(async () => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+      const rows = document.querySelectorAll('.transaction-item__tile')
+
+      if (!scrollPane || rows.length === 0) {
+        return { hasRows: rows.length > 0, canScroll: false, top: 0 }
+      }
+
+      scrollPane.scrollTo({ top: 220 })
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+
+      return {
+        hasRows: true,
+        canScroll: scrollPane.scrollHeight - scrollPane.clientHeight > 120,
+        top: Math.ceil(scrollPane.scrollTop)
+      }
+    })
+
+    await page.locator('.app-navigation .v-btn').nth(1).click()
+    await expect(page).toHaveURL(/\/chats(?:\/)?$/)
+
+    const savedTopAfterLeaving = await page.evaluate((path) => {
+      const store = (
+        window as Window & {
+          store?: { getters?: Record<string, unknown> }
+        }
+      ).store
+
+      const getter = store?.getters?.['options/accountScrollPosition'] as
+        | ((routePath: string) => number)
+        | undefined
+
+      return getter ? getter(path) : null
+    }, `/transactions/${testRestorableListCrypto}`)
+
+    await page.locator('.app-navigation .v-btn').nth(0).click()
+    await expect(page).toHaveURL(new RegExp(`/transactions/${testRestorableListCrypto}$`))
+    await expect(page.locator('.transactions-view__list')).toBeVisible()
+
+    const restoredState = await page.evaluate(async (path) => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+      const store = (
+        window as Window & {
+          store?: { getters?: Record<string, unknown> }
+        }
+      ).store
+
+      if (!scrollPane) {
+        return null
+      }
+
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+
+      return {
+        top: Math.ceil(scrollPane.scrollTop),
+        savedTop:
+          (
+            store?.getters?.['options/accountScrollPosition'] as
+              | ((routePath: string) => number)
+              | undefined
+          )?.(path) ?? null
+      }
+    }, `/transactions/${testRestorableListCrypto}`)
+
+    expect(restoredState).not.toBeNull()
+
+    if (routeState.canScroll) {
+      expect(routeState.top).toBeGreaterThan(100)
+      expect(savedTopAfterLeaving).toBe(routeState.top)
+      expect(Math.abs((restoredState?.top ?? 0) - routeState.top)).toBeLessThanOrEqual(1)
+    } else {
+      expect(restoredState?.top ?? 999).toBeLessThanOrEqual(1)
+    }
+  })
+
+  test('keeps the transaction list mounted and restores its scroll after opening a transaction and going back', async ({
+    page
+  }) => {
+    test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
+
+    await page.setViewportSize({ width: 390, height: 600 })
+    await loginWithPassphrase(page, testPassphrase!)
+
+    await openTransactionListFromHome(page, testRestorableListCrypto)
+
+    const listState = await page.evaluate(async () => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+      const rows = Array.from(document.querySelectorAll('.transaction-item__tile')) as HTMLElement[]
+
+      if (!scrollPane || rows.length === 0) {
+        return null
+      }
+
+      scrollPane.scrollTo({ top: 240 })
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+
+      return {
+        top: Math.ceil(scrollPane.scrollTop),
+        visibleTransactionIndex: rows.findIndex((row) => {
+          const rect = row.getBoundingClientRect()
+          return rect.top >= 80 && rect.bottom <= window.innerHeight
+        })
+      }
+    })
+
+    expect(listState).not.toBeNull()
+    expect(listState?.visibleTransactionIndex ?? -1).toBeGreaterThanOrEqual(0)
+
+    await page
+      .locator('.transaction-item__tile')
+      .nth(listState?.visibleTransactionIndex ?? 0)
+      .click()
+    await expect(page).toHaveURL(new RegExp(`/transactions/${testRestorableListCrypto}/[^/]+$`))
+
+    await page.locator('.back-button').click()
+    await expect(page).toHaveURL(new RegExp(`/transactions/${testRestorableListCrypto}$`))
+    await expect(page.locator('.transactions-view__list')).toBeVisible()
+
+    const restoredState = await page.evaluate(async () => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+
+      if (!scrollPane) {
+        return null
+      }
+
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+
+      return {
+        top: Math.ceil(scrollPane.scrollTop)
+      }
+    })
+
+    expect(restoredState).not.toBeNull()
+    expect(Math.abs((restoredState?.top ?? 0) - (listState?.top ?? 0))).toBeLessThanOrEqual(1)
+  })
+
+  test('restores the transaction details route and scroll after switching to chats and back', async ({
+    page
+  }) => {
+    test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
+
+    await page.setViewportSize({ width: 390, height: 600 })
+    await loginWithPassphrase(page, testPassphrase!)
+
+    await page.goto(`/transactions/${testDetailsCrypto}/${testTransactionId}`, {
+      waitUntil: 'domcontentloaded'
+    })
+    await expect(page).toHaveURL(
+      new RegExp(`/transactions/${testDetailsCrypto}/${testTransactionId}$`)
+    )
+
+    const detailState = await page.evaluate(async () => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+
+      if (!scrollPane) {
+        return { canScroll: false, top: 0 }
+      }
+
+      scrollPane.scrollTo({ top: 180 })
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+
+      return {
+        canScroll: scrollPane.scrollHeight - scrollPane.clientHeight > 80,
+        top: Math.ceil(scrollPane.scrollTop)
+      }
+    })
+
+    await page.locator('.app-navigation .v-btn').nth(1).click()
+    await expect(page).toHaveURL(/\/chats(?:\/)?$/)
+
+    await page.locator('.app-navigation .v-btn').nth(0).click()
+    await expect(page).toHaveURL(
+      new RegExp(`/transactions/${testDetailsCrypto}/${testTransactionId}$`)
+    )
+
+    const restoredTop = await page.evaluate(async () => {
+      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+
+      if (!scrollPane) {
+        return null
+      }
+
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+
+      return Math.ceil(scrollPane.scrollTop)
+    })
+
+    expect(restoredTop).not.toBeNull()
+
+    if (detailState.canScroll) {
+      expect(detailState.top).toBeGreaterThan(40)
+      expect(Math.abs((restoredTop ?? 0) - detailState.top)).toBeLessThanOrEqual(1)
+    } else {
+      expect(restoredTop ?? 999).toBeLessThanOrEqual(1)
+    }
+  })
+
   test('keeps transaction details aligned to the shared screen gutter on mobile', async ({
     page
   }) => {

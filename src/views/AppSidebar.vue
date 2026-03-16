@@ -36,7 +36,18 @@
             src="/img/adamant-logo-transparent-512x512.png"
             draggable="false"
           />
-          <router-view v-show="!showLogo" :key="route.path" />
+          <router-view v-slot="{ Component }">
+            <keep-alive :include="cachedChildComponentNames">
+              <component
+                :is="Component"
+                v-if="!showLogo && Component && shouldCacheChildComponent(Component)"
+              />
+            </keep-alive>
+            <component
+              :is="Component"
+              v-if="!showLogo && Component && !shouldCacheChildComponent(Component)"
+            />
+          </router-view>
         </div>
       </component>
     </div>
@@ -78,7 +89,30 @@ const classes = {
   layout: `${className}__layout`
 }
 
+const cachedChildComponentNames = ['Options', 'Transactions', 'SendFunds']
+
 const layout = computed(() => route.meta.layout || 'default')
+const getComponentName = (component: unknown) => {
+  if (!component || typeof component !== 'object') {
+    return null
+  }
+
+  const namedComponent = component as { name?: unknown; __name?: unknown }
+
+  if (typeof namedComponent.name === 'string') {
+    return namedComponent.name
+  }
+
+  if (typeof namedComponent.__name === 'string') {
+    return namedComponent.__name
+  }
+
+  return null
+}
+const shouldCacheChildComponent = (component: unknown) => {
+  const componentName = getComponentName(component)
+  return componentName !== null && cachedChildComponentNames.includes(componentName)
+}
 
 const SAVED_WIDTH_KEY = 'aside_width'
 const ASIDE_RESIZE_HANDLE_WIDTH = 10

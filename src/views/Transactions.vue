@@ -20,7 +20,7 @@
 
     <router-view v-if="hasView" />
 
-    <template v-else>
+    <div v-show="!hasView">
       <v-list
         v-if="hasTransactions"
         lines="three"
@@ -49,7 +49,7 @@
       <h3 v-else :class="`${className}__empty-state`">
         {{ t('transaction.no_transactions') }}
       </h3>
-    </template>
+    </div>
   </navigation-wrapper>
 </template>
 
@@ -58,9 +58,18 @@ import InlineSpinner from '@/components/InlineSpinner.vue'
 import TransactionListItem from '@/components/TransactionListItem.vue'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { AllNodesDisabledError, AllNodesOfflineError } from '@/lib/nodes/utils/errors'
-import { useSavedScroll } from '@/hooks/useSavedScroll'
+import { useAccountViewState } from '@/hooks/useAccountViewState'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import {
+  computed,
+  nextTick,
+  onActivated,
+  onBeforeUnmount,
+  onDeactivated,
+  onMounted,
+  ref,
+  watch
+} from 'vue'
 import { useStore } from 'vuex'
 import { onBeforeRouteUpdate, RouteLocationNormalizedLoaded, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -83,10 +92,20 @@ const route = useRoute()
 const { t } = useI18n()
 const className = 'transactions-view'
 
-const { hasView, sidebarLayoutRef } = useSavedScroll()
+const hasView = computed(() => route.matched.length > 2)
+const transactionListScrollTop = ref(0)
+const { sidebarLayoutRef, isRestoringAccountScroll } = useAccountViewState()
+const applySidebarScrollTop = async (top: number) => {
+  await nextTick()
+  await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+  sidebarLayoutRef?.value?.scrollTo({ top })
+  await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+  sidebarLayoutRef?.value?.scrollTo({ top })
+}
 
 const isFulfilled = ref(false)
 const isRejected = ref(false)
+const activeCrypto = ref(props.crypto)
 
 const cryptoModule = computed(() => {
   return props.crypto.toLowerCase()
@@ -134,12 +153,17 @@ const getNewTransactions = () => {
   if (doNotUpdate) {
     isFulfilled.value = true
   } else {
+    const fetchingCrypto = cryptoModule.value
+    activeCrypto.value = props.crypto
     store
-      .dispatch(`${cryptoModule.value}/getNewTransactions`)
+      .dispatch(`${fetchingCrypto}/getNewTransactions`)
       .then(() => {
-        isFulfilled.value = true
+        if (cryptoModule.value === fetchingCrypto) {
+          isFulfilled.value = true
+        }
       })
       .catch((err) => {
+        if (cryptoModule.value !== fetchingCrypto) return
         isRejected.value = true
         let message = err.message
         if (err instanceof AllNodesOfflineError) {
@@ -164,6 +188,10 @@ const getNewTransactions = () => {
 }
 
 const onScroll = (event: Event) => {
+  if (isRestoringAccountScroll.value) {
+    return
+  }
+
   const target = event.target as HTMLElement
 
   const height = target.offsetHeight
@@ -240,17 +268,59 @@ const handleLoading = (isConnected: boolean) => {
     store.dispatch(`${cryptoModule.value}/getOldTransactions`)
 }
 
+const addScrollListener = () => {
+  sidebarLayoutRef?.value?.addEventListener('scroll', onScroll)
+}
+const removeScrollListener = () => {
+  sidebarLayoutRef?.value?.removeEventListener('scroll', onScroll)
+}
+
 onMounted(() => {
   if (!isLoginViaPassword.value || isIDBReady.value) {
     getNewTransactions()
   }
 
-  sidebarLayoutRef?.value.addEventListener('scroll', onScroll)
+  addScrollListener()
+})
+
+onActivated(async () => {
+  if (store.state.options.forceTransactionsRefresh) {
+    store.commit('options/updateOption', { key: 'forceTransactionsRefresh', value: false })
+    isFulfilled.value = false
+    sidebarLayoutRef?.value?.scrollTo({ top: 0 })
+    getNewTransactions()
+  }
+
+  // Defer scroll listener attachment so that scroll restoration
+  // does not trigger a spurious getNewTransactions via the zero-scroll check
+  await nextTick()
+  await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+  await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+  addScrollListener()
+})
+
+onDeactivated(() => {
+  removeScrollListener()
 })
 
 onBeforeUnmount(() => {
-  sidebarLayoutRef?.value.removeEventListener('scroll', onScroll)
+  removeScrollListener()
 })
+
+const onHasViewChange = async (nextHasView: boolean, previousHasView: boolean) => {
+  if (nextHasView === previousHasView || !sidebarLayoutRef?.value) {
+    return
+  }
+
+  if (nextHasView) {
+    transactionListScrollTop.value = sidebarLayoutRef.value.scrollTop
+    return
+  }
+
+  await applySidebarScrollTop(transactionListScrollTop.value)
+}
+
+watch(hasView, onHasViewChange)
 
 watch(isOnline, (online) => {
   if (props.crypto !== 'ADM') handleLoading(online as boolean)
@@ -265,6 +335,29 @@ watch(isIDBReady, (newVal) => {
     getNewTransactions()
   }
 })
+
+watch(
+  () => props.crypto,
+  (newCrypto, oldCrypto) => {
+    if (newCrypto !== oldCrypto) {
+      isFulfilled.value = false
+      transactionListScrollTop.value = 0
+      getNewTransactions()
+    }
+  }
+)
+
+watch(
+  () => store.state.options.forceTransactionsRefresh,
+  (newVal) => {
+    if (newVal) {
+      store.commit('options/updateOption', { key: 'forceTransactionsRefresh', value: false })
+      isFulfilled.value = false
+      sidebarLayoutRef?.value?.scrollTo({ top: 0 })
+      getNewTransactions()
+    }
+  }
+)
 </script>
 
 <style lang="scss" scoped>

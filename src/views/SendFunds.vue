@@ -21,6 +21,7 @@ import { isNumeric } from '@/lib/numericHelpers'
 import SendFundsForm from '@/components/SendFundsForm.vue'
 import { AllCryptos, CryptoSymbol } from '@/lib/constants/cryptos'
 import { vibrate } from '@/lib/vibrate'
+import { useAccountViewState } from '@/hooks/useAccountViewState'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
 import { computed, onBeforeMount, ref } from 'vue'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
@@ -29,6 +30,7 @@ import { useStore } from 'vuex'
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
+useAccountViewState()
 
 const className = 'send-funds'
 const replacingPages = ['Chat', 'Chats', 'Options']

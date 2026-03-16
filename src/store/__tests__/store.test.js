@@ -201,6 +201,7 @@ describe('store', () => {
     actions.logout({ dispatch, commit })
 
     expect(dispatch).toHaveBeenCalledWith('reset')
+    expect(commit).toHaveBeenCalledWith('options/resetAccountViewState', null, { root: true })
     expect(commit).toHaveBeenCalledWith('options/resetSettingsViewState', null, { root: true })
   })
 })

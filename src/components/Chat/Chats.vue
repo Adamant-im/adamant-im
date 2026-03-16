@@ -35,6 +35,7 @@
           [`${className}__messages`]: true,
           [`${className}__messages--chat`]: true
         }"
+        ref="messagesContainer"
         @scroll="onScroll"
       >
         <template v-for="(transaction, index) in lastMessages" :key="transaction.contactId">
@@ -80,7 +81,17 @@ import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta
 import { shouldDisplayChat } from '@/components/Chat/helpers/chatVisibility'
 import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
 import { useRoute, useRouter } from 'vue-router'
-import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, watch } from 'vue'
+import {
+  computed,
+  nextTick,
+  onActivated,
+  onBeforeUnmount,
+  onDeactivated,
+  onMounted,
+  ref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import { useChatStateStore } from '@/stores/modal-state'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
@@ -120,8 +131,10 @@ const isShowChatStartDialog = computed({
   set: (value) => setShowChatStartDialog(value)
 })
 
+const messagesContainer = useTemplateRef('messagesContainer')
 const lastPartnerId = ref<string | null>(null)
 const savedRoute = ref(null)
+const savedScrollTop = ref(0)
 const loading = ref(false)
 const loadingSeparator = ref<InstanceType<typeof ChatPreview>[]>([])
 const allowRetry = ref(false)
@@ -157,12 +170,22 @@ onActivated(() => {
   if (savedRoute.value && !chatPagePartnerId.value) {
     router.push(savedRoute.value)
   }
+
+  if (savedScrollTop.value > 0) {
+    nextTick(() => {
+      requestAnimationFrame(() => {
+        messagesContainer.value?.scrollTo({ top: savedScrollTop.value })
+      })
+    })
+  }
 })
 
 onDeactivated(() => {
   if (history.state.back.includes('/chats/')) {
     savedRoute.value = history.state.back
   }
+
+  savedScrollTop.value = messagesContainer.value?.scrollTop ?? 0
 })
 
 onMounted(() => {

@@ -638,7 +638,23 @@ export default {
     // create watcher after setting default from props
     this.$watch('currency', () => {
       this.$refs.form.validate()
+      if (!this.addressReadonly && this.$store.state.options.currentWallet !== this.currency) {
+        this.$store.commit('options/updateOption', {
+          key: 'currentWallet',
+          value: this.currency
+        })
+      }
     })
+
+    // sync carousel → form when wallet tab is tapped while on SendFunds
+    this.$watch(
+      () => this.$store.state.options.currentWallet,
+      (newVal) => {
+        if (!this.addressReadonly && this.currency !== newVal && this.cryptoList.includes(newVal)) {
+          this.currency = newVal
+        }
+      }
+    )
   },
   mounted() {
     this.fetchUserCryptoAddress()

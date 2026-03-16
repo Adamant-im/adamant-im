@@ -16,7 +16,11 @@
         </template>
       </v-list-item>
 
-      <v-list-item :class="classes.walletCardTile" @click="$emit('click:balance', crypto)">
+      <v-list-item
+        :class="classes.walletCardTile"
+        :active="isBalanceActive"
+        @click="$emit('click:balance', crypto)"
+      >
         <v-list-item-title :class="classes.walletCardTitle">
           {{ t('home.balance') }}
         </v-list-item-title>
@@ -59,6 +63,7 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
 import ShareURIDialog from '@/components/ShareURIDialog.vue'
 import WalletCardListActions from '@/components/WalletCardListActions.vue'
 import { Cryptos, CryptoSymbol } from '@/lib/constants'
@@ -101,6 +106,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { t } = useI18n()
 const store = useStore()
+const route = useRoute()
 const { xs } = useDisplay()
 const key = props.crypto.toLowerCase()
 const showShareURIDialog = ref(false)
@@ -127,6 +133,13 @@ const isADM = computed(() => {
 
 const showFiatRate = computed(() => {
   return !props.hideFiatRates && store.state.rate.isLoaded
+})
+
+const isBalanceActive = computed(() => {
+  return (
+    (route.name === 'Transactions' || route.name === 'Transaction') &&
+    route.params.crypto === props.crypto
+  )
 })
 </script>
 

@@ -161,12 +161,50 @@ describe('Home UI style contract', () => {
     expect(content).toContain(
       "@include colorRoles.a-color-role-primary-surface-var('--a-wallet-actions-icon-color');"
     )
-    expect(content).toContain("store.commit('options/setSettingsLastRoute', '/votes')")
     expect(content).toContain("path: '/votes'")
+    expect(content).toContain("store.commit('options/setSettingsLastRoute', '/votes')")
     expect(content).toContain('forceResetSettingsView: true')
     expect(metricsContent).toContain('WALLET_ACTION_STAKE_ICON_SIZE = 24')
     expect(content).not.toContain('--a-wallet-actions-item-padding-inline: 28px;')
     expect(content).not.toContain('<icon :width="24" :height="24">')
     expect(content).not.toContain('opacity: unset;')
+  })
+
+  it('highlights Balance menu item when on a transactions route', () => {
+    const content = readFileSync(walletCardPath, 'utf8')
+
+    expect(content).toContain("import { useRoute } from 'vue-router'")
+    expect(content).toContain('const route = useRoute()')
+    expect(content).toContain(':active="isBalanceActive"')
+    expect(content).toContain("route.name === 'Transactions' || route.name === 'Transaction'")
+    expect(content).toContain('route.params.crypto === props.crypto')
+  })
+
+  it('highlights Send Funds and Stake items based on active route', () => {
+    const content = readFileSync(walletActionsPath, 'utf8')
+
+    expect(content).toContain("import { useRoute, useRouter } from 'vue-router'")
+    expect(content).toContain('const route = useRoute()')
+    expect(content).toContain(':active="isSendActive"')
+    expect(content).toContain(':active="isStakeActive"')
+    expect(content).toContain("route.name === 'SendFunds'")
+    expect(content).toContain('store.state.options.currentWallet === props.crypto')
+    expect(content).toContain("route.name === 'Votes'")
+  })
+
+  it('forces scroll to top and fresh data on Balance click', () => {
+    const content = readFileSync(homePath, 'utf8')
+
+    expect(content).toContain("store.commit('options/setAccountScrollPosition', { path, top: 0 })")
+    expect(content).toContain(
+      "store.commit('options/updateOption', { key: 'forceTransactionsRefresh', value: true })"
+    )
+  })
+
+  it('does not navigate away from SendFunds when currentWallet changes', () => {
+    const content = readFileSync(homePath, 'utf8')
+
+    expect(content).not.toContain("router.push({\n      name: 'Home'\n    })")
+    expect(content).not.toContain("name: 'Home'\n    }")
   })
 })

@@ -15,8 +15,7 @@ exports[`AppNavigation.vue > renders the correct markup 1`] = `
     class="app-navigation__button"
     data-v-5e3203dd=""
     draggable="false"
-    exact="true"
-    to="/home"
+    value="0"
   >
     <v-icon
       data-v-5e3203dd=""
@@ -34,7 +33,7 @@ exports[`AppNavigation.vue > renders the correct markup 1`] = `
     class="app-navigation__button"
     data-v-5e3203dd=""
     draggable="false"
-    to="/chats"
+    value="1"
   >
     <v-badge
       class="app-navigation__badge"
@@ -61,7 +60,7 @@ exports[`AppNavigation.vue > renders the correct markup 1`] = `
     class="app-navigation__button"
     data-v-5e3203dd=""
     draggable="false"
-    to="/options"
+    value="2"
   >
     <v-icon
       data-v-5e3203dd=""

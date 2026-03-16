@@ -10,17 +10,22 @@
     <!-- Wallet -->
     <v-btn
       v-if="walletShouldBeVisible"
+      :value="0"
       :class="`${className}__button`"
-      to="/home"
-      :exact="true"
       draggable="false"
+      @click.capture="persistCurrentTabState"
     >
       <v-icon :icon="mdiWallet" />
       <span :class="`${className}__label`">{{ t('bottom.wallet_button') }}</span>
     </v-btn>
 
     <!-- Chat -->
-    <v-btn :class="`${className}__button`" to="/chats" draggable="false">
+    <v-btn
+      :value="1"
+      :class="`${className}__button`"
+      draggable="false"
+      @click.capture="persistCurrentTabState"
+    >
       <v-badge
         v-if="numOfNewMessages > 0"
         :class="`${className}__badge`"
@@ -37,7 +42,12 @@
     </v-btn>
 
     <!-- Settings -->
-    <v-btn :class="`${className}__button`" :to="settingsRouteTarget" draggable="false">
+    <v-btn
+      :value="2"
+      :class="`${className}__button`"
+      draggable="false"
+      @click.capture="persistCurrentTabState"
+    >
       <v-icon :icon="mdiCog" />
       <span :class="`${className}__label`">{{ t('bottom.settings_button') }}</span>
     </v-btn>
@@ -45,10 +55,11 @@
 </template>
 <script lang="ts" setup>
 import { useStore } from 'vuex'
-import { useRoute } from 'vue-router'
-import { watch, onMounted, ref, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { watch, onMounted, ref, computed, nextTick } from 'vue'
 import { mdiWallet, mdiForum, mdiCog } from '@mdi/js'
 import { useI18n } from 'vue-i18n'
+import { isAccountPath, resolveAccountRouteTarget } from '@/router/accountRoutes'
 
 defineProps({
   absolute: Boolean
@@ -72,11 +83,23 @@ const pages = [
   }
 ]
 const currentPageIndex = ref(0)
+const isSyncingPageFromRoute = ref(false)
 const store = useStore()
 const route = useRoute()
+const router = useRouter()
 const { t } = useI18n()
 
+const SETTINGS_EXTRA_PATHS = ['/votes']
+
 const getCurrentPageIndex = () => {
+  if (route.query?.fromChat) {
+    return 1
+  }
+
+  if (SETTINGS_EXTRA_PATHS.some((prefix) => route.path.startsWith(prefix))) {
+    return 2
+  }
+
   const currentPage = pages.find((page) => {
     const pattern = new RegExp(`^${page.link}`)
     return route.path.match(pattern)
@@ -89,13 +112,128 @@ const numOfNewMessages = computed(() => store.getters['chat/totalNumOfNewMessage
 const walletShouldBeVisible = computed(() => {
   return !!store.getters['wallets/getVisibleSymbolsCount']
 })
+const accountRouteTarget = computed(() => store.getters['options/accountLastRoute'] || '/home')
 const settingsRouteTarget = computed(() => store.getters['options/settingsLastRoute'] || '/options')
+const getSidebarLayout = () => {
+  return document.querySelector('.sidebar__layout') as HTMLElement | null
+}
+const saveCurrentAccountScroll = (path: string) => {
+  if (!isAccountPath(path)) {
+    return
+  }
 
-watch(route, () => {
-  currentPageIndex.value = getCurrentPageIndex()
+  const sidebarLayout = getSidebarLayout()
+
+  if (!sidebarLayout) {
+    return
+  }
+
+  store.commit('options/setAccountScrollPosition', {
+    path,
+    top: Math.ceil(sidebarLayout.scrollTop)
+  })
+}
+const restoreAccountScroll = async (path: string) => {
+  if (!isAccountPath(path)) {
+    return
+  }
+
+  const targetTop = store.getters['options/accountScrollPosition'](path)
+
+  await nextTick()
+
+  if (targetTop <= 0) {
+    getSidebarLayout()?.scrollTo({ top: 0 })
+    return
+  }
+
+  await new Promise<void>((resolve) => {
+    const deadline = window.performance.now() + 1500
+
+    const continueRestore = () => {
+      const sidebarLayout = getSidebarLayout()
+
+      if (!sidebarLayout) {
+        resolve()
+        return
+      }
+
+      sidebarLayout.scrollTo({ top: targetTop })
+
+      const currentTop = Math.ceil(sidebarLayout.scrollTop)
+      const canReachTargetTop =
+        sidebarLayout.scrollHeight - sidebarLayout.clientHeight >= targetTop - 1
+      const reachedTargetTop = Math.abs(currentTop - targetTop) <= 1 && canReachTargetTop
+
+      if (reachedTargetTop || window.performance.now() >= deadline) {
+        resolve()
+        return
+      }
+
+      window.requestAnimationFrame(continueRestore)
+    }
+
+    window.requestAnimationFrame(continueRestore)
+  })
+}
+const persistCurrentTabState = () => {
+  saveCurrentAccountScroll(route.path)
+}
+const getNavigationTarget = (index: number) => {
+  switch (index) {
+    case 0:
+      return resolveAccountRouteTarget(accountRouteTarget.value)
+    case 1:
+      return '/chats'
+    case 2:
+      return settingsRouteTarget.value
+    default:
+      return route.path
+  }
+}
+
+watch(
+  () => route.path,
+  (path) => {
+    isSyncingPageFromRoute.value = true
+    currentPageIndex.value = getCurrentPageIndex()
+
+    if (isAccountPath(path) && !route.query.fromChat) {
+      store.commit('options/setAccountLastRoute', path)
+    }
+
+    queueMicrotask(() => {
+      isSyncingPageFromRoute.value = false
+    })
+  }
+)
+
+watch(currentPageIndex, (index) => {
+  if (isSyncingPageFromRoute.value) {
+    return
+  }
+
+  const target = getNavigationTarget(index)
+  const targetPath = router.resolve(target).path
+
+  if (target && (targetPath !== route.path || route.query.fromChat)) {
+    router.push(target).then(async () => {
+      await restoreAccountScroll(targetPath)
+    })
+  }
 })
+
 onMounted(() => {
+  isSyncingPageFromRoute.value = true
   currentPageIndex.value = getCurrentPageIndex()
+
+  if (isAccountPath(route.path) && !route.query.fromChat) {
+    store.commit('options/setAccountLastRoute', route.path)
+  }
+
+  queueMicrotask(() => {
+    isSyncingPageFromRoute.value = false
+  })
 })
 </script>
 <style lang="scss" scoped>

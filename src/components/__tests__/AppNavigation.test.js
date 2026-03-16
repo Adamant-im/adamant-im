@@ -6,7 +6,8 @@ import AppNavigation from '@/components/AppNavigation'
 
 vi.mock('vue-router', () => ({
   useRoute: vi.fn(() => ({
-    path: '/home'
+    path: '/home',
+    query: {}
   })),
   useRouter: vi.fn(() => ({
     push: vi.fn()
@@ -19,7 +20,11 @@ describe('AppNavigation.vue', () => {
       getters: {
         'chat/totalNumOfNewMessages': () => 5,
         'wallets/getVisibleSymbolsCount': () => 1,
+        'options/accountLastRoute': () => '/transactions/ADM',
         'options/settingsLastRoute': () => '/options'
+      },
+      mutations: {
+        'options/setAccountLastRoute': vi.fn()
       }
     })
 

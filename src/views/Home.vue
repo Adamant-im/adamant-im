@@ -192,6 +192,10 @@ const updateBalances = () => {
 }
 
 const goToTransactions = (crypto: string) => {
+  const path = `/transactions/${crypto}`
+  store.commit('options/setAccountScrollPosition', { path, top: 0 })
+  store.commit('options/updateOption', { key: 'forceTransactionsRefresh', value: true })
+
   router.push({
     name: 'Transactions',
     params: {
@@ -239,12 +243,6 @@ const currentWallet = computed({
 watch(currentWallet, (value) => {
   if (route.name === 'Transactions' || route.name === 'Transaction') {
     goToTransactions(value)
-  }
-
-  if (route.name === 'SendFunds') {
-    router.push({
-      name: 'Home'
-    })
   }
 })
 </script>
