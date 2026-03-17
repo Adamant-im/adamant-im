@@ -58,8 +58,14 @@ export function useWebPushNotifications() {
     port.value = null
 
     try {
-      const registrations = await navigator.serviceWorker.getRegistrations()
-      const firebaseReg = registrations.find((reg) => reg.scope.includes('/firebase/'))
+      let firebaseReg = null
+      for (let i = 0; i < 10; i++) {
+        const registrations = await navigator.serviceWorker.getRegistrations()
+        firebaseReg = registrations.find((reg) => reg.scope.includes('/firebase/'))
+        if (firebaseReg) break
+        await new Promise((resolve) => setTimeout(resolve, 500))
+      }
+
       if (!firebaseReg) {
         console.warn('[Web Push] Firebase Service Worker registration not found')
         return

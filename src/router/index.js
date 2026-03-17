@@ -20,6 +20,7 @@ import Vibro from '@/views/Vibro.vue'
 import WalletGuard from '@/middlewares/walletGuard'
 import ExportKeysForm from '@/views/ExportKeysForm.vue'
 import AppSidebar from '@/views/AppSidebar.vue'
+import NotificationsForm from '@/views/NotificationsForm.vue'
 
 /**
  * @type {Readonly<import("vue-router").RouteRecordRaw[]>}
@@ -97,6 +98,15 @@ const routes = [
             path: '/options/export-keys',
             name: 'ExportKeys',
             component: ExportKeysForm,
+            meta: {
+              requiresAuth: true,
+              layout: 'no-container'
+            }
+          },
+          {
+            path: '/options/notifications',
+            name: 'Notifications',
+            component: NotificationsForm,
             meta: {
               requiresAuth: true,
               layout: 'no-container'
