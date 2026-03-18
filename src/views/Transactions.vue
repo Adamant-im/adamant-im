@@ -139,6 +139,7 @@ const areNodesOnline = computed(() => nodes.value?.some((node) => node.status ==
 const isOnline = computed(() => store.getters['isOnline'])
 
 onBeforeRouteUpdate((to, from) => {
+  if (to.name !== 'Transactions') return
   return navigationGuard.transactions(to, from)
 })
 

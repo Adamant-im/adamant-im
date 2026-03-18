@@ -241,6 +241,11 @@ const currentWallet = computed({
 })
 
 watch(currentWallet, (value) => {
+  if (!value) return
+
+  const currentCrypto = route.params.crypto
+  if (currentCrypto === value) return
+
   if (route.name === 'Transactions' || route.name === 'Transaction') {
     goToTransactions(value)
   }

@@ -210,4 +210,12 @@ describe('Home UI style contract', () => {
     expect(content).not.toContain("router.push({\n      name: 'Home'\n    })")
     expect(content).not.toContain("name: 'Home'\n    }")
   })
+
+  it('guards currentWallet watcher against falsy values and same-crypto re-navigation', () => {
+    const content = readFileSync(homePath, 'utf8')
+
+    expect(content).toContain('if (!value) return')
+    expect(content).toContain('const currentCrypto = route.params.crypto')
+    expect(content).toContain('if (currentCrypto === value) return')
+  })
 })
