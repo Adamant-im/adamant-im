@@ -311,3 +311,16 @@ a {
     color: map.get(colors.$adm-colors, 'primary');
   }
 }
+
+/**
+ * Prevent iOS Safari from auto-zooming when an input is focused.
+ * iOS zooms whenever the focused input's font-size is below 16 px;
+ * using max() keeps existing sizes that are already larger intact.
+ */
+@media (hover: none) and (pointer: coarse) {
+  input,
+  textarea,
+  select {
+    font-size: max(16px, 1em) !important;
+  }
+}

@@ -19,6 +19,7 @@ const buttonsThemePath = path.resolve(
   currentDir,
   '../../assets/styles/themes/adamant/_buttons.scss'
 )
+const vuetifyOverridesPath = path.resolve(currentDir, '../../assets/styles/generic/_vuetify.scss')
 
 describe('Login UI style contract', () => {
   it('defines shared auth and interaction tokens', () => {
@@ -224,5 +225,24 @@ describe('Login UI style contract', () => {
     expect(content).not.toContain('font-size: 16px !important;')
     expect(content).not.toMatch(/(^|\n)\s*opacity:\s*0\.18;/)
     expect(content).not.toMatch(/(^|\n)\s*opacity:\s*0\.24;/)
+  })
+
+  it('applies uppercase letter spacing token to primary and regular action buttons', () => {
+    const tokensContent = readFileSync(genericTokensPath, 'utf8')
+    const buttonsContent = readFileSync(buttonsThemePath, 'utf8')
+
+    expect(tokensContent).toContain('--a-letter-spacing-caps-btn')
+    expect(buttonsContent).toContain('text-transform: uppercase;')
+    expect(buttonsContent).toContain('letter-spacing: var(--a-letter-spacing-caps-btn)')
+    expect(buttonsContent).toContain('.a-btn-primary')
+    expect(buttonsContent).toContain('.a-btn-regular')
+    expect(buttonsContent).not.toContain('letter-spacing: normal !important;')
+  })
+
+  it('prevents iOS Safari viewport zoom by enforcing minimum 16px font-size on inputs', () => {
+    const content = readFileSync(vuetifyOverridesPath, 'utf8')
+
+    expect(content).toContain('@media (hover: none) and (pointer: coarse)')
+    expect(content).toContain('font-size: max(16px, 1em) !important;')
   })
 })

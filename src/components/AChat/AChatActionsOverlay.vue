@@ -177,6 +177,7 @@ export default defineComponent({
   &__menu {
     position: absolute;
     top: 100%;
+    width: max-content;
 
     right: 0;
     left: unset;
