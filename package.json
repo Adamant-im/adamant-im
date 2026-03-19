@@ -1,13 +1,27 @@
 {
   "name": "adamant-im",
-  "version": "4.10.6",
+  "version": "4.11.0",
   "type": "module",
-  "author": "ADAMANT Foundation <devs@adamant.im>",
-  "license": "GPLv3",
-  "description": "Decentralized Messenger",
+  "author": "ADAMANT Community Developers <devs@adamant.im>",
+  "license": "GPL-3.0-only",
+  "description": "Decentralized anonymous messenger and non-custodial wallet PWA for ADAMANT",
   "private": true,
+  "homepage": "https://adm.im",
+  "bugs": {
+    "url": "https://github.com/Adamant-im/adamant-im/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Adamant-im/adamant-im.git"
+  },
+  "packageManager": "npm@10.9.4",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0",
+    "npm": ">=10"
+  },
   "scripts": {
     "serve": "vite preview --config vite-pwa.config.ts",
+    "serve:https": "vite preview --https --config vite-pwa.config.ts",
     "serve:testnet": "vite preview --config vite-pwa.config.ts --mode testnet",
     "dev": "vite --config vite-pwa.config.ts",
     "dev-https": "cross-env HTTPS=true vite --config vite-pwa.config.ts",
@@ -36,7 +50,7 @@
     "android:prebuild": "vue-tsc && vite build --config vite-android.config.ts",
     "android:build": "node scripts/capacitor/build-android.mjs",
     "android:generate-assets": "npx @capacitor/assets generate --android --assetPath capacitor/assets --iconBackgroundColor '#FFF' --iconBackgroundColorDark '#000' --splashBackgroundColor '#FFF' --splashBackgroundColorDark '#000'",
-    "https": "vite preview --https",
+    "https": "npm run dev-https",
     "test": "node scripts/vitest/run-clean.mjs",
     "test:e2e": "node scripts/playwright/run-clean.mjs",
     "test:e2e:detailed": "cross-env PLAYWRIGHT_DETAILED=1 node scripts/playwright/run-clean.mjs",
@@ -197,7 +211,7 @@
   },
   "main": "dist-electron/main.js",
   "lint-staged": {
-    "*.(ts|js|vue)": [
+    "*.{ts,js,vue}": [
       "eslint --fix --no-warn-ignored",
       "prettier --write"
     ]
@@ -218,9 +232,12 @@
     "decentralization",
     "anonymous",
     "anonymity",
+    "privacy",
     "secure",
     "encrypted",
     "encryption",
+    "pwa",
+    "ipfs",
     "tor",
     "onion",
     "bitcoin",
@@ -230,9 +247,13 @@
     "cryptocurrency",
     "doge",
     "dash",
+    "usdt",
+    "usdc",
     "erc20",
     "business",
-    "2fa"
+    "2fa",
+    "electron",
+    "capacitor"
   ],
   "overrides": {
     "eslint": {
