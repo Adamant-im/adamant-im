@@ -2,9 +2,14 @@
   <v-list-item :class="classes.root">
     <template v-slot:default>
       <div :class="classes.cryptoContent">
-        <v-list-item-title :class="classes.cryptoTitle">{{
-          localWallet.cryptoName
-        }}</v-list-item-title>
+        <v-list-item-title :class="classes.cryptoTitle">
+          <span v-if="localWallet.symbol === 'ADM'" :class="classes.cryptoBrandTitle">
+            {{ localWallet.cryptoName }}
+          </span>
+          <template v-else>
+            {{ localWallet.cryptoName }}
+          </template>
+        </v-list-item-title>
         <v-list-item-subtitle :class="classes.cryptoSubtitleWrap">
           <p :class="classes.cryptoSubtitle">
             <span :class="classes.cryptoSubtitleMuted">{{ localWallet.type }}</span>
@@ -71,6 +76,7 @@ const className = 'wallets-view'
 const classes = {
   root: className,
   balance: `${className}__balance`,
+  cryptoBrandTitle: `${className}__crypto-brand-title`,
   cryptoContent: `${className}__crypto-content`,
   cryptoIcon: `${className}__crypto-icon`,
   cryptoSubtitle: `${className}__crypto-subtitle`,
@@ -155,6 +161,9 @@ export default defineComponent({
   }
   &__crypto-title {
     @include walletCompactContent.a-wallet-compact-title-line();
+  }
+  &__crypto-brand-title {
+    letter-spacing: var(--a-letter-spacing-caps-btn);
   }
   &__balance {
     margin-inline-end: var(--a-wallets-list-item-balance-offset-inline-end);

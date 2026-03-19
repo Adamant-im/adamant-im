@@ -62,6 +62,8 @@ describe('Nodes UI style contract', () => {
     expect(content).toContain('<SettingsTableShell :class="classes.root">')
     expect(content).toContain('checkboxSection')
     expect(content).toContain('description')
+    expect(content).toContain('--a-nodes-tab-letter-spacing')
+    expect(content).toContain('letter-spacing: var(--a-nodes-tab-letter-spacing);')
     expect(shellContent).toContain('--a-settings-table-shell-bleed-inline-start')
     expect(shellContent).toContain('--a-settings-table-shell-bleed-inline-end')
     expect(shellContent).toContain('--a-settings-table-shell-section-inline-start: 0px;')

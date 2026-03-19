@@ -175,6 +175,8 @@
     "show_qr_code": "Show QR code",
     "stake_and_earn_btn": "Stake and earn",
     "wallet": "wallet",
+    "wallet_crypto_adamant_prefix": "",
+    "wallet_crypto_adamant_suffix": " wallet",
     "wallet_crypto": "{crypto} wallet",
     "explorer": "Open in block explorer"
   },
@@ -205,7 +207,7 @@
     "new_passphrase_label": "<b>Save</b> your new account passphrase. Keep it secret; it grants full access to your wallet and messages. If lost, it cannot be recovered.",
     "password_label": "Passphrase",
     "save_button_tooltip": "Save passphrase in a text file. ⚠️ High risk of leakage.",
-    "save_qr_code_to_images": "Save to images",
+    "save_qr_code_to_images": "Save",
     "save_qr_code_tooltip": "Save passphrase as a QR code. ⚠️ High risk of leakage.",
     "scan_qr_code_button_tooltip": "Scan QR code with passphrase using your camera",
     "subheader": "Decentralized messenger",

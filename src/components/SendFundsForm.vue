@@ -11,13 +11,13 @@
         class="a-input"
         variant="underlined"
         :items="cryptoList"
-        :disabled="addressReadonly"
+        :readonly="addressReadonly"
         :menu-icon="addressReadonly ? '' : mdiMenuDown"
       />
 
       <v-text-field
         v-model.trim="cryptoAddress"
-        :disabled="addressReadonly"
+        :readonly="addressReadonly"
         class="a-input"
         type="text"
         variant="underlined"
@@ -1021,6 +1021,7 @@ export default {
 
 .send-funds-form {
   --a-send-funds-button-margin-top: var(--a-space-4);
+  --a-send-funds-actions-padding-bottom: var(--a-space-10);
   --a-send-funds-amount-label-size: var(--a-font-size-sm);
   --a-send-funds-amount-label-floating-scale: 0.75;
   --a-send-funds-field-label-font-weight: var(--a-font-weight-medium);
@@ -1037,6 +1038,7 @@ export default {
 
   &__actions {
     @include formActionLayout.a-form-actions-center();
+    padding-bottom: var(--a-send-funds-actions-padding-bottom);
   }
   &__amount-input {
     :deep(.v-field__field) {

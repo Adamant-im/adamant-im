@@ -22,7 +22,7 @@
             <v-icon :class="`${className}__icon`" :icon="mdiMessageOutline" size="small" />
           </template>
 
-          <div>
+          <div :class="`${className}__title-wrap`">
             <v-list-item-title :class="`${className}__title`">
               {{ t('chats.new_chat') }}
             </v-list-item-title>
@@ -395,7 +395,9 @@ const checkDate = () => {
     justify-content: flex-end;
     height: 100%;
     min-height: 100%;
-    padding-inline: var(--a-chats-item-padding-inline);
+    min-width: 0;
+    padding-inline-start: var(--a-chats-item-padding-inline);
+    padding-inline-end: 0;
 
     & :deep(.v-list-item__avatar) {
       margin-right: var(--a-chats-item-avatar-gap-inline);
@@ -419,6 +421,13 @@ const checkDate = () => {
   &__title {
     font-weight: var(--a-chats-title-font-weight);
     font-size: var(--a-chats-title-font-size);
+    text-align: right;
+  }
+  &__title-wrap {
+    display: flex;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+    min-width: 0;
   }
   &__container--chat {
     max-width: var(--a-layout-max-width);

@@ -138,6 +138,14 @@ describe('Wallets UI style contract', () => {
     expect(colorRolesContent).toContain('@mixin a-color-role-subtle-var($var-name)')
   })
 
+  it('applies branded letter spacing only to the ADAMANT row title', () => {
+    const content = readFileSync(walletsListItemPath, 'utf8')
+
+    expect(content).toContain('v-if="localWallet.symbol === \'ADM\'"')
+    expect(content).toContain('cryptoBrandTitle')
+    expect(content).toContain('letter-spacing: var(--a-letter-spacing-caps-btn);')
+  })
+
   it('uses normalized size variables in wallets list item and balance row', () => {
     const tokensContent = readFileSync(genericTokensPath, 'utf8')
     const listItemContent = readFileSync(walletsListItemPath, 'utf8')

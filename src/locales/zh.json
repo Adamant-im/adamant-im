@@ -123,6 +123,8 @@
     "show_qr_code": "显示二维码",
     "stake_and_earn_btn": "质押并赚取",
     "wallet": "钱包",
+    "wallet_crypto_adamant_prefix": "",
+    "wallet_crypto_adamant_suffix": " 钱包",
     "wallet_crypto": "{crypto} 钱包"
   },
   "warning_on_addresses": {
@@ -152,7 +154,7 @@
     "new_passphrase_label": "<b>保存</b>新钱包和帐户的密码短语。您只能使用密码短语。如果丢失，将无法恢复",
     "password_label": "输入要登录的密码短语",
     "save_button_tooltip": "将您的密码短语保存在文本文件中。将其存储在安全的地方！",
-    "save_qr_code_to_images": "保存到图像",
+    "save_qr_code_to_images": "保存",
     "save_qr_code_tooltip": "将您的密码短语保存为二维码图像。将其保存在安全的地方！",
     "scan_qr_code_button_tooltip": "通过设备的摄像头扫描包含密码短语的二维码",
     "subheader": "去中心化信使"

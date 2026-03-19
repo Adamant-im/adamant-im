@@ -124,6 +124,10 @@ describe('Chats UI style contract', () => {
     expect(content).toContain(
       'margin-inline-start: var(--a-chats-connection-spinner-offset-inline-start);'
     )
+    expect(content).toContain('padding-inline-end: 0;')
+    expect(content).toContain('text-align: right;')
+    expect(content).toContain('__title-wrap')
+    expect(content).toContain('justify-content: flex-end;')
     expect(content).toContain(':size="CHATS_CONNECTION_SPINNER_SIZE"')
     expect(content).toContain('const scrollOffset = CHATS_SCROLL_OFFSET')
     expect(content).toContain('transition: transform var(--a-chats-messages-move-duration);')

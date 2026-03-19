@@ -18,7 +18,6 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
     <v-select-stub
       class="a-input"
       data-v-7dc72237=""
-      disabled="false"
       items="ADM,ETH,BNB"
       menu-icon="M7,10L12,15L17,10H7Z"
       modelvalue="ADM"
@@ -28,7 +27,6 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
       class="a-input"
       color="primary"
       data-v-7dc72237=""
-      disabled="false"
       modelmodifiers="[object Object]"
       modelvalue=""
       type="text"

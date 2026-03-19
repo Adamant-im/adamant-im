@@ -326,5 +326,8 @@ describe('Financial UI style contract', () => {
     expect(content).toContain("key: 'currentWallet'")
     expect(content).toContain('() => this.$store.state.options.currentWallet')
     expect(content).toContain('this.cryptoList.includes(newVal)')
+    expect(content).toContain(':readonly="addressReadonly"')
+    expect(content).toContain('--a-send-funds-actions-padding-bottom')
+    expect(content).toContain('padding-bottom: var(--a-send-funds-actions-padding-bottom);')
   })
 })

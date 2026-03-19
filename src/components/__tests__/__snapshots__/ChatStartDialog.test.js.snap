@@ -83,7 +83,7 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
           data-v-426ca6ff=""
         >
           <button
-            aria-label="Save to images"
+            aria-label="Save"
             class="qrcode-renderer-dialog__preview-action"
             data-v-426ca6ff=""
             type="button"
@@ -112,7 +112,7 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
             class="qrcode-renderer-dialog__button a-btn-primary"
             data-v-426ca6ff=""
           >
-            Save to images
+            Save
           </v-btn>
         </div>
       </v-card-text>
