@@ -92,6 +92,12 @@ npm run dev-https
 | Open Android Studio project             | `npm run android:open`     |
 | Run Android app on device/emulator      | `npm run android:run`      |
 
+### CSP hardening on Vercel builds
+
+Vercel preview/dev hosts use the same soft CSP profile as production domains (including current `unsafe-inline` and `unsafe-eval` allowances) to avoid behavior drift between environments.
+
+Strict CSP hardening (removing `unsafe-eval`) is tracked separately and must be done only after runtime dependency cleanup.
+
 ## Validation
 
 Baseline validation for non-trivial changes:
@@ -150,10 +156,87 @@ Run Electron locally:
 npm run electron:dev
 ```
 
+Force legacy Chrome extension-based Vue DevTools inside Electron:
+
+```bash
+ELECTRON_USE_CHROME_DEVTOOLS_EXTENSION=true npm run electron:dev
+```
+
+Keep DevTools open while suppressing noisy Chromium logs in terminal:
+
+```bash
+npm run electron:dev
+```
+
+Disable log suppression and show full Chromium/Electron internals:
+
+```bash
+ELECTRON_SUPPRESS_CHROMIUM_LOGS=false npm run electron:dev
+```
+
 Build Electron packages:
 
 ```bash
 npm run electron:build
+```
+
+Build a macOS arm64 app and notarize it:
+
+```bash
+npm run electron:build:mac:arm64:notarize
+```
+
+Preview the Electron production build:
+
+```bash
+npm run electron:serve
+```
+
+### macOS signing and notarization (local/CI)
+
+For distributable macOS builds, use a valid `Developer ID Application` certificate and notarization.
+
+The notarization hook (`scripts/electron/notarize.cjs`) supports 3 auth strategies:
+
+1. Apple ID + app-specific password
+2. Keychain profile (`xcrun notarytool store-credentials`)
+3. App Store Connect API key
+
+Supported environment variables:
+
+```bash
+# Common
+APPLE_NOTARIZE=true
+
+# Strategy 1 (Apple ID)
+APPLE_ID=...
+APPLE_APP_SPECIFIC_PASSWORD=...
+APPLE_TEAM_ID=...
+
+# Strategy 2 (Keychain profile)
+APPLE_KEYCHAIN_PROFILE=...
+# optional
+APPLE_KEYCHAIN=...
+
+# Strategy 3 (App Store Connect API key)
+APPLE_API_KEY=/absolute/path/to/AuthKey_XXXXXXXXXX.p8
+APPLE_API_KEY_ID=XXXXXXXXXX
+# optional for team keys
+APPLE_API_ISSUER=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+```
+
+Local builds can store these variables in `electron-builder.env.local` or `electron-builder.env` and the hook will load them automatically.
+For Apple ID strategy, `APPLE_APP_PASSWORD` is also accepted as an alias for `APPLE_APP_SPECIFIC_PASSWORD`.
+
+Code-signing for `electron-builder`:
+
+```bash
+# local identity in Keychain
+CSC_NAME="Developer ID Application: <Company> (<TEAM_ID>)"
+
+# or CI/base64 P12
+CSC_LINK=...
+CSC_KEY_PASSWORD=...
 ```
 
 Prepare and open Android project:
@@ -170,20 +253,36 @@ cp capacitor.env.example capacitor.env
 npm run android:build
 ```
 
-## Self-Hosting
+## Self-hosted
 
-If public ADAMANT endpoints are blocked or unreliable in your region, you can run your own ADAMANT Messenger instance.
-That improves resilience for you and helps preserve decentralization for the wider network.
+If you are unable to access [adm.im](https://adm.im) (e.g., due to censorship), you can run a self-hosted instance of ADAMANT Messenger to:
 
-Typical self-hosting flow:
+- Increase reliability and decentralization of the ADAMANT Messenger ecosystem
+- Help other users access the messenger in countries with a strong Internet limitations
 
-1. Fork this repository
-2. Adjust environment-specific configuration if needed
-3. Build the app with `npm run build`, `npm run build:testnet`, or `npm run build:tor`
-4. Deploy the generated static assets to your preferred hosting provider or mirror
+We always encourage people to build it from source.
 
-GitHub Pages is a simple option for mirror hosting.
-In your fork, enable Pages with GitHub Actions and run the Pages workflow to publish a static build.
+As an option, you can build and deploy the app to GitHub Pages.
+
+Follow the instructions below.
+
+### Enable GH Actions
+
+1. Fork the repository
+2. Go to the repository **Settings**
+3. Navigate to the **Pages** tab
+4. Set the source as **GitHub Actions**
+
+### Run GH Workflow
+
+1. Go to the **Actions** tab
+2. Enable workflows
+3. Select the **GitHub Pages** workflow
+4. Click **Run workflow**
+5. Wait until the build succeeds
+6. Open ADAMANT Messenger at `username.github.io/adamant-im`
+
+You can as well point your GitHub Pages subdomain to a [custom domain](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site).
 
 ## Security and Privacy Notes
 
