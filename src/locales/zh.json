@@ -442,7 +442,7 @@
   "dev_screens": {
     "title": "开发工具",
     "vibrations": "振动",
-    "adamant_wallets": "Adamant 钱包",
+    "adamant_wallets": "Adamant-Wallets",
     "logging": "控制台中的详细日志记录"
   },
   "dev_vibrations": {
