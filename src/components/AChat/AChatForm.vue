@@ -5,41 +5,47 @@
     <slot name="reply-preview" />
     <slot name="preview-file" />
 
-    <v-textarea
-      ref="messageTextarea"
-      v-model="message"
-      @input="onInput"
-      :placeholder="placeholder"
-      :disabled="shouldDisableInput"
-      hide-details
-      single-line
-      auto-grow
-      rows="1"
-      max-rows="10"
-      variant="underlined"
-      density="compact"
-      base-color="primary"
-      color="primary"
-      v-on="listeners"
-      :autofocus="isDesktopDevice"
-      @focusin="isInputFocused = true"
-      @focusout="isInputFocused = false"
-    >
-      <template #prepend-inner>
-        <chat-emojis
-          @keydown.capture.esc="closeElement"
-          :open="isEmojiPickerOpen"
-          @onChange="onToggleEmojiPicker"
-          @get-emoji-picture="emojiPicture"
-        ></chat-emojis>
-      </template>
-      <template v-if="showSendButton" #append-inner>
-        <slot name="append" />
-        <v-icon class="a-chat__send-icon" :icon="mdiSend" size="28" />
-      </template>
-    </v-textarea>
-
-    <div v-if="showSendButton" class="a-chat__form-send-area" @click="submitMessage" />
+    <div ref="messageInputRoot">
+      <v-textarea
+        v-model="message"
+        @input="onInput"
+        :placeholder="placeholder"
+        :disabled="shouldDisableInput"
+        hide-details
+        single-line
+        auto-grow
+        :rows="textareaRows"
+        max-rows="10"
+        variant="plain"
+        density="compact"
+        base-color="primary"
+        color="primary"
+        v-on="listeners"
+        :autofocus="isDesktopDevice"
+        @focusin="isInputFocused = true"
+        @focusout="isInputFocused = false"
+      >
+        <template #prepend-inner>
+          <chat-emojis
+            @keydown.capture.esc="closeElement"
+            :open="isEmojiPickerOpen"
+            @onChange="onToggleEmojiPicker"
+            @get-emoji-picture="emojiPicture"
+          ></chat-emojis>
+        </template>
+        <template v-if="showSendButton" #append-inner>
+          <slot name="append" />
+          <v-icon
+            class="a-chat__form-send-area"
+            :class="{ 'a-chat__form-send-area--disabled': isDisabled }"
+            :icon="mdiSend"
+            :size="sendIconSize"
+            :disabled="isDisabled"
+            @click="submitMessage"
+          />
+        </template>
+      </v-textarea>
+    </div>
   </div>
 </template>
 
@@ -51,11 +57,10 @@ import { mdiSend } from '@mdi/js'
 import { useChatStateStore } from '@/stores/modal-state'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
-import { VTextarea } from 'vuetify/components'
-
-type Textarea = VTextarea & {
-  calculateInputHeight: () => void
-}
+import { VALIDATION_ERRORS } from '@/lib/constants'
+import { getMessageSubmitAction } from '@/components/AChat/helpers/messageInputKeypress'
+import { resetTextareaAutogrow } from '@/components/AChat/helpers/resetTextareaAutogrow'
+import { CHAT_FORM_SEND_ICON_SIZE } from '@/components/AChat/helpers/uiMetrics'
 
 const store = useStore()
 const chatStateStore = useChatStateStore()
@@ -94,15 +99,25 @@ const message = ref('')
 const botCommandIndex = ref<number | null>(null)
 const botCommandSelectionMode = ref(false)
 const isInputFocused = ref(false)
-const messageTextarea = useTemplateRef<Textarea | null>('messageTextarea')
+const isTextareaHeightSyncScheduled = ref(false)
+const latestInputType = ref('')
+const messageInputRoot = useTemplateRef<HTMLElement | null>('messageInputRoot')
 
 const className = 'a-chat'
-const classList = [
+const sendIconSize = CHAT_FORM_SEND_ICON_SIZE
+const maxTextareaRows = 10
+const getMessageLineCount = (value: string) => value.split('\n').length
+const classList = computed(() => [
   `${className}__form`,
   {
     [`${className}__form--is-active`]: !!message.value
   }
-]
+])
+const textareaRows = computed(() => {
+  const lineBreakRows = message.value.split('\n').length
+
+  return Math.min(maxTextareaRows, Math.max(1, lineBreakRows))
+})
 
 const isEmojiPickerOpen = computed({
   get: () => chatStateStore.isEmojiPickerOpen,
@@ -110,37 +125,51 @@ const isEmojiPickerOpen = computed({
 })
 const placeholder = computed(() => props.label ?? t('chats.type_a_message'))
 const isDesktopDevice = !isMobile()
+
+const isDisabled = computed(() => {
+  const error = props.validator(message.value)
+
+  if (
+    error === VALIDATION_ERRORS.NotEnoughFunds ||
+    error === VALIDATION_ERRORS.NotEnoughFundsNewAccount
+  ) {
+    return false
+  }
+
+  return error !== false
+})
+
 const listeners = computed(() => {
   return {
     keypress: (e: KeyboardEvent) => {
-      // on some devices keyCode for CTRL+ENTER is 10
-      // https://bugs.chromium.org/p/chromium/issues/detail?id=79407
-      if (e.keyCode === 13 || e.keyCode === 10) {
-        // Enter || Ctrl+Enter
-        if (props.sendOnEnter) {
-          // add LF and calculate height when CTRL+ENTER or ALT+ENTER or CMD+ENTER (Mac & Windows)
-          // no need to add LF for shiftKey, it will be added automatically
-          if (e.ctrlKey || e.altKey || e.metaKey) {
-            addLineFeed()
-            calculateInputHeight()
-            return
-          }
+      const action = getMessageSubmitAction({
+        keyCode: e.keyCode,
+        sendOnEnter: props.sendOnEnter,
+        ctrlKey: e.ctrlKey,
+        altKey: e.altKey,
+        metaKey: e.metaKey,
+        shiftKey: e.shiftKey
+      })
 
-          if (!e.shiftKey) {
-            // send message if shiftKey is not pressed
-            e.preventDefault()
-            submitMessage()
-          }
-        } else {
-          if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) {
-            e.preventDefault()
-            submitMessage()
-          }
-        }
+      if (action === 'linefeed') {
+        addLineFeed()
+        return
+      }
+
+      if (action === 'send') {
+        e.preventDefault()
+        submitMessage()
       }
     },
     keydown: (e: KeyboardEvent) => {
       if (e.code === 'Escape') {
+        if (isInputFocused.value) {
+          e.preventDefault()
+          e.stopPropagation()
+          getTextareaElement()?.blur()
+          return
+        }
+
         emit('esc')
       }
     }
@@ -164,9 +193,37 @@ watch(
   (newVal) => {
     nextTick(() => {
       if (!newVal && !isInputFocused.value) {
-        messageTextarea.value?.focus()
+        focus()
       }
     })
+  }
+)
+
+watch(
+  () => message.value,
+  (nextValue, previousValue) => {
+    const isDeleteInput = latestInputType.value.startsWith('delete')
+    const hasCollapsedToEmptySecondLineAfterDelete =
+      isDeleteInput &&
+      getMessageLineCount(previousValue) === 2 &&
+      getMessageLineCount(nextValue) === 2 &&
+      !previousValue.endsWith('\n') &&
+      nextValue.endsWith('\n')
+
+    if (hasCollapsedToEmptySecondLineAfterDelete) {
+      // When deleting content from `line1\nline2`, browsers often keep an extra trailing
+      // line break (`line1\n`). Collapse only this specific shape.
+      // Do not collapse `line1\n\n -> line1\n`, otherwise one delete removes two lines.
+      latestInputType.value = ''
+      message.value = nextValue.slice(0, -1)
+      return
+    }
+
+    if (getMessageLineCount(nextValue) < getMessageLineCount(previousValue)) {
+      scheduleTextareaHeightSync()
+    }
+
+    latestInputType.value = ''
   }
 )
 
@@ -198,7 +255,46 @@ const closeElement = () => {
   setTimeout(() => focus(), 0)
 }
 
-const onInput = () => {
+const getTextareaElement = () => {
+  return messageInputRoot.value?.querySelector('textarea') ?? null
+}
+
+const resetTextareaControlHeight = () => {
+  const textareaField = messageInputRoot.value?.querySelector('.v-field')
+
+  if (textareaField instanceof HTMLElement) {
+    textareaField.style.removeProperty('--v-textarea-control-height')
+  }
+}
+
+const scheduleTextareaHeightSync = () => {
+  if (isTextareaHeightSyncScheduled.value) {
+    return
+  }
+
+  isTextareaHeightSyncScheduled.value = true
+
+  const syncTextareaHeight = () => {
+    resetTextareaControlHeight()
+    resetTextareaAutogrow(messageInputRoot.value)
+  }
+
+  nextTick(() => {
+    syncTextareaHeight()
+
+    // Vuetify auto-grow may re-apply control height after Vue updates.
+    // Second pass on the next frame stabilizes the final height.
+    requestAnimationFrame(() => {
+      syncTextareaHeight()
+      isTextareaHeightSyncScheduled.value = false
+    })
+  })
+}
+
+const onInput = (event?: Event) => {
+  const inputEvent = event as InputEvent | undefined
+  latestInputType.value = inputEvent?.inputType ?? ''
+
   store.commit('draftMessage/saveMessage', {
     message: message.value,
     partnerId: props.partnerId
@@ -206,7 +302,8 @@ const onInput = () => {
 }
 
 const emojiPicture = (emoji: string) => {
-  const caretPosition = messageTextarea.value?.selectionStart || undefined
+  const textareaElement = getTextareaElement()
+  const caretPosition = textareaElement?.selectionStart ?? undefined
 
   let before = message.value.slice(0, caretPosition)
   const after = message.value.slice(caretPosition)
@@ -230,7 +327,7 @@ const emojiPicture = (emoji: string) => {
   const newCaretPosition = (caretPosition || 0) + emojiLength
   focus()
   nextTick(() => {
-    messageTextarea.value?.setSelectionRange(newCaretPosition, newCaretPosition)
+    textareaElement?.setSelectionRange(newCaretPosition, newCaretPosition)
   })
   onInput()
 }
@@ -253,6 +350,7 @@ const submitMessage = () => {
     }
     emit('message', message.value)
     message.value = ''
+    scheduleTextareaHeightSync()
     store.commit('draftMessage/deleteMessage', {
       message: message.value,
       partnerId: props.partnerId
@@ -263,13 +361,9 @@ const submitMessage = () => {
     emit('error', error)
   }
 
-  // Fix textarea height to 1 row after miltiline message send
-  calculateInputHeight()
-  focus()
-}
-
-const calculateInputHeight = () => {
-  nextTick(messageTextarea.value?.calculateInputHeight)
+  nextTick(() => {
+    focus()
+  })
 }
 
 const addLineFeed = () => {
@@ -277,7 +371,7 @@ const addLineFeed = () => {
 }
 
 const focus = () => {
-  messageTextarea.value?.focus()
+  getTextareaElement()?.focus()
 }
 
 const selectCommand = (event: KeyboardEvent) => {
@@ -320,6 +414,7 @@ defineExpose({
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use '@/assets/styles/settings/_colors.scss';
 @use 'vuetify/settings';
 
@@ -328,32 +423,36 @@ defineExpose({
  * 2. Align icons at the bottom.
  */
 .a-chat__form {
+  --a-chat-send-color: #{map.get(settings.$shades, 'white')};
+  --a-chat-send-color-disabled: var(--a-color-text-muted-light);
+  --a-chat-form-prepend-offset-y: var(--a-chat-form-prepend-offset-y);
+  --a-chat-form-prepend-offset-inline: var(--a-chat-form-prepend-offset-inline);
+  --a-chat-form-send-hit-size: var(--a-chat-form-send-hit-size);
+
   :deep(.v-text-field__slot) textarea {
-    max-height: 230px;
+    max-height: var(--a-chat-form-max-height);
     overflow-y: auto;
   }
+
   :deep(.v-text-field) {
     align-items: flex-end;
   }
   :deep(.v-textarea) {
     .v-input__prepend {
-      margin-bottom: 2px;
-      margin-inline-end: 9px;
+      margin-bottom: var(--a-chat-form-prepend-offset-y);
+      margin-inline-end: var(--a-chat-form-prepend-offset-inline);
       padding-top: 0;
     }
     .v-field__append-inner,
     .v-field__prepend-inner {
       margin-top: auto;
       padding-top: 0;
-      margin-bottom: 4px;
+      margin-bottom: var(--a-space-1);
     }
     .v-field__prepend-inner > .v-icon,
     .v-field__append-inner > .v-icon,
     .v-field__clearable > .v-icon {
       --v-medium-emphasis-opacity: 1;
-    }
-    .v-input__control {
-      margin-bottom: 2px;
     }
     .v-field__input {
       &::placeholder {
@@ -370,23 +469,62 @@ defineExpose({
   width: 100%;
 }
 
+.a-chat__form {
+  :deep(.v-field__append-inner) {
+    @include layoutPrimitives.a-flex-align-center();
+  }
+}
+
 .a-chat__form-send-area {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--a-chat-form-send-hit-size);
+    height: var(--a-chat-form-send-hit-size);
+    background: currentColor;
+    border-radius: var(--a-radius-round);
+    opacity: 0;
+    transform: translate(-50%, -50%);
+    transition: opacity var(--a-motion-slow) var(--a-ease-standard);
+    z-index: -1;
+  }
+
+  &:hover::before {
+    opacity: 0.1;
+  }
+
+  color: var(--a-chat-send-color);
+
+  &--disabled {
+    color: var(--a-chat-send-color-disabled);
+  }
+
+  &.v-icon--disabled {
+    opacity: 1;
+  }
+
+  &:hover {
+    color: map.get(colors.$adm-colors, 'primary');
+  }
 }
 
 .v-theme--light {
+  .a-chat__form {
+    --a-chat-send-color: #{map.get(settings.$shades, 'black')};
+    --a-chat-send-color-disabled: var(--a-color-text-muted-light);
+  }
+
   .a-chat__form {
     :deep(.v-textarea) {
       .v-field__input {
         caret-color: map.get(colors.$adm-colors, 'primary');
 
         &::placeholder {
-          color: map.get(colors.$adm-colors, 'muted');
+          color: var(--a-color-text-muted-light);
         }
       }
     }
@@ -394,6 +532,11 @@ defineExpose({
 }
 
 .v-theme--dark {
+  .a-chat__form {
+    --a-chat-send-color: #{map.get(settings.$shades, 'white')};
+    --a-chat-send-color-disabled: #{rgba(map.get(settings.$shades, 'white'), 0.6)};
+  }
+
   .a-chat__form {
     :deep(.v-textarea) {
       .v-field__input {

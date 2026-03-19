@@ -3,21 +3,23 @@ import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import { formatDogeVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
+import type { NodeInfo } from '@/types/wallets'
 import { RpcRequest, RpcResponse } from './types/api/common'
 import { NetworkInfo } from './types/api/network-info'
 import { BlockchainInfo } from './types/api/blockchain-info'
+import { logger } from '@/utils/devTools/logger'
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class DogeNode extends Node<AxiosInstance> {
-  constructor(url: string) {
-    super(url, 'doge', 'node', NODE_LABELS.DogeNode)
+  constructor(endpoint: NodeInfo) {
+    super(endpoint, 'doge', 'node', NODE_LABELS.DogeNode)
   }
 
   protected buildClient(): AxiosInstance {
-    return createBtcLikeClient(this.url)
+    return createBtcLikeClient(this.url, this.healthcheckRequestTimeoutMs)
   }
 
   protected async checkHealth() {
@@ -35,13 +37,17 @@ export class DogeNode extends Node<AxiosInstance> {
   }
 
   protected async fetchNodeVersion(): Promise<void> {
-    const { version } = await this.invoke<NetworkInfo>({
-      method: 'getnetworkinfo',
-      params: []
-    })
+    try {
+      const { version } = await this.invoke<NetworkInfo>({
+        method: 'getnetworkinfo',
+        params: []
+      })
 
-    if (version) {
-      this.version = formatDogeVersion(version)
+      if (version) {
+        this.version = formatDogeVersion(version)
+      }
+    } catch (e) {
+      logger.log('doge-node', 'warn', e)
     }
   }
 
@@ -52,9 +58,12 @@ export class DogeNode extends Node<AxiosInstance> {
     params?: Request,
     requestConfig?: AxiosRequestConfig
   ): Promise<Response> {
+    const baseURL = this.getBaseURL(this)
+
     return this.client
       .request<RpcResponse<Response>>({
         ...requestConfig,
+        baseURL,
         url: '/',
         method: 'POST',
         data: params

@@ -33,8 +33,16 @@ import {
 } from '@/lib/nodes/utils/errors'
 import adamant from '@/lib/adamant'
 import { useConsiderOffline } from '@/hooks/useConsiderOffline.js'
+import { getConnectionAwareTimeout } from '@/lib/network/connection'
+import { logger } from '@/utils/devTools/logger'
 
 export let interval
+/**
+ * Monotonic token for chat polling lifecycle.
+ * Allows us to invalidate in-flight polling chain (Promise -> then -> setTimeout)
+ * when user logs out or polling restarts.
+ */
+let pollingSessionId = 0
 
 const SOCKET_ENABLED_TIMEOUT = 10000
 const SOCKET_DISABLED_TIMEOUT = 3000
@@ -98,6 +106,15 @@ const getters = {
    */
   chatsPollingTimeout: (state, getters, rootState) => {
     return rootState.options.useSocketConnection ? SOCKET_ENABLED_TIMEOUT : SOCKET_DISABLED_TIMEOUT
+  },
+
+  /**
+   * Returns chat actuality timeout used to hide outdated-state spinner.
+   * On potentially slow connection we increase the tolerance by x1.5.
+   * @returns {number}
+   */
+  chatsActualityTimeout: (state, getters) => {
+    return getConnectionAwareTimeout(getters.chatsPollingTimeout)
   },
 
   reactions: (state, getters) => (transactionId, partnerId) => {
@@ -340,12 +357,20 @@ const getters = {
     return (chat && chat.page) || 0
   },
 
-  isNoNodesDialogAllowed: (state, getters, rootState, rootGetters) => (err) => {
-    const isOnline = rootState.isOnline
+  hasDisabledAdmNodes: (state, getters, rootState, rootGetters) => {
     const admNodes = rootGetters['nodes/adm']
-    const areAdmNodesDisabled = admNodes.some((node) => node.status === 'disabled')
 
-    return isOnline && areAdmNodesDisabled && isAllNodesOfflineError(err)
+    return admNodes.some((node) => node.status === 'disabled')
+  },
+
+  isNoNodesDialogAllowed: (state, getters, rootState) => (err) => {
+    const isOnline = rootState.isOnline
+
+    return (
+      isOnline &&
+      getters.hasDisabledAdmNodes &&
+      (isAllNodesOfflineError(err) || isAllNodesDisabledError(err))
+    )
   },
 
   /**
@@ -607,7 +632,7 @@ const actions = {
    *
    * @returns {Promise}
    */
-  loadChats({ commit, dispatch, rootState }, { perPage = 25 } = {}) {
+  loadChats({ commit, dispatch, rootState, getters }, { perPage = 25 } = {}) {
     commit('setFulfilled', false)
 
     return admApi
@@ -625,7 +650,7 @@ const actions = {
         commit('setFulfilled', true)
       })
       .catch((err) => {
-        if (isAllNodesDisabledError(err) || getters.isNoNodesDialogAllowed(err)) {
+        if (getters.isNoNodesDialogAllowed(err)) {
           commit('setNoActiveNodesDialog', { value: true })
           setTimeout(() => dispatch('loadChats'), 5000) // retry in 5 seconds
         }
@@ -682,7 +707,7 @@ const actions = {
         }
       })
       .catch((err) => {
-        if (isAllNodesDisabledError(err) || getters.isNoNodesDialogAllowed(err)) {
+        if (getters.isNoNodesDialogAllowed(err)) {
           commit('setNoActiveNodesDialog', { value: true })
         }
         throw err
@@ -733,7 +758,7 @@ const actions = {
 
     return getChats(state.lastMessageHeight).then((result) => {
       const { messages, lastMessageHeight, nodeTimestamp } = result
-      const chatsActualInterval = getters.chatsPollingTimeout
+      const chatsActualInterval = getters.chatsActualityTimeout
 
       dispatch('pushMessages', messages)
 
@@ -802,7 +827,7 @@ const actions = {
    * @param {string} replyToId Optional
    * @returns {Promise}
    */
-  async sendMessage({ commit, rootState, dispatch }, { message, recipientId, replyToId }) {
+  async sendMessage({ commit, rootState, dispatch, getters }, { message, recipientId, replyToId }) {
     let id
     try {
       const type = replyToId
@@ -853,15 +878,6 @@ const actions = {
         // if the error is caused by connection we keep the message in PENDING status
         // and try to resend it after the connection is restored
 
-        dispatch(
-          'snackbar/show',
-          {
-            message: i18n.global.t(`connection.offline`),
-            timeout: 3000
-          },
-          { root: true }
-        )
-
         // timeout for self deleting out of pending messages
         const timeout = setTimeout(() => {
           dispatch('rejectPendingMessage', {
@@ -884,7 +900,7 @@ const actions = {
           partnerId: recipientId
         })
       } else {
-        if (isAllNodesDisabledError(error)) {
+        if (getters.isNoNodesDialogAllowed(error)) {
           commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
         }
 
@@ -911,7 +927,7 @@ const actions = {
    * @returns {Promise}
    */
   async sendAttachment(
-    { commit, rootState, dispatch, rootGetters },
+    { commit, rootState, dispatch, rootGetters, getters },
     { files, message, recipientId, replyToId }
   ) {
     const recipientPublicKey = await getPublicKey(recipientId)
@@ -974,7 +990,7 @@ const actions = {
 
     if (uploadData.error) {
       if (!isAllNodesOfflineError(uploadData.error)) {
-        if (isAllNodesDisabledError(uploadData.error)) {
+        if (getters.isNoNodesDialogAllowed(uploadData.error)) {
           commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
         }
 
@@ -1020,7 +1036,7 @@ const actions = {
       .catch((err) => {
         // update `message.status` to 'REJECTED' if the error is not caused by connection
         if (!isAllNodesOfflineError(err)) {
-          if (isAllNodesDisabledError(err)) {
+          if (getters.isNoNodesDialogAllowed(err)) {
             commit('setNoActiveNodesDialog', { value: true, afterSendingMessage: true })
           }
 
@@ -1032,15 +1048,6 @@ const actions = {
         } else {
           // if the error is caused by connection we keep the message in PENDING status
           // and try to resend it after the connection is restored
-
-          dispatch(
-            'snackbar/show',
-            {
-              message: i18n.global.t(`connection.offline`),
-              timeout: 3000
-            },
-            { root: true }
-          )
 
           // timeout for self deleting out of pending messages
           const timeout = setTimeout(() => {
@@ -1398,10 +1405,23 @@ const actions = {
   startInterval: {
     root: true,
     handler({ dispatch, getters }) {
+      // Start a new polling session and cancel the previously scheduled tick.
+      const currentSessionId = ++pollingSessionId
+      clearTimeout(interval)
+
       function repeat() {
+        // Polling has been stopped/restarted, ignore stale loop.
+        if (currentSessionId !== pollingSessionId) return
+
         dispatch('getNewMessages')
-          .catch((err) => console.error(err))
+          .catch((err) => {
+            // Skip stale async completion after stop/logout.
+            if (currentSessionId !== pollingSessionId) return
+            logger.log('chat', 'warn', err)
+          })
           .then(() => {
+            // Do not schedule next timeout for stale session.
+            if (currentSessionId !== pollingSessionId) return
             const timeout = getters.chatsPollingTimeout
             interval = setTimeout(repeat, timeout)
           })
@@ -1414,6 +1434,8 @@ const actions = {
   stopInterval: {
     root: true,
     handler() {
+      // Invalidate current session so in-flight promise chain cannot re-schedule polling.
+      pollingSessionId++
       clearTimeout(interval)
     }
   },

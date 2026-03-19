@@ -1,5 +1,5 @@
 <template>
-  <div :class="classes.root" class="w-100" ref="navigationWrapper">
+  <div :class="classes.root" ref="navigationWrapper">
     <app-toolbar-centered
       app
       :title="title"
@@ -12,13 +12,12 @@
 
     <v-container
       fluid
-      class="px-0 py-0"
       :class="{
         [classes.container]: true,
         [classes.containerWithLoader]: hasLoaderSlot
       }"
     >
-      <v-row justify="center" no-gutters>
+      <v-row justify="center" gap="0">
         <slot name="loader" />
 
         <container
@@ -82,6 +81,12 @@ const title = computed(() => {
       return (route.params.txId as string) || t('transaction.transactions')
     case 'SendFunds':
       return t('transfer.page_title')
+    case 'DevScreens':
+      return t('dev_screens.title')
+    case 'DevVibrations':
+      return t('dev_screens.vibrations')
+    case 'DevAdamantWallets':
+      return t('dev_screens.adamant_wallets')
 
     default:
       return t('options.page_title')
@@ -102,8 +107,11 @@ const onScroll = (event: Event) => {
 .navigation-wrapper {
   position: relative;
   height: max-content;
+  width: 100%;
 
   &__container {
+    padding: 0;
+
     &--loader {
       position: relative;
     }

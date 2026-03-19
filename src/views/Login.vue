@@ -1,9 +1,9 @@
 <template>
   <component :is="layout">
-    <v-row justify="center" no-gutters :class="className">
+    <v-row justify="center" gap="0" :class="className">
       <container>
         <div :class="`${className}__buttons`">
-          <div class="text-right">
+          <div :class="`${className}__language-switcher-wrap`">
             <language-switcher :prepend-icon="mdiChevronRight" />
           </div>
           <div :class="`${className}__settings-button-container`">
@@ -12,7 +12,7 @@
                 @click="navigate"
                 icon
                 variant="plain"
-                :size="32"
+                :size="AUTH_FORM_SETTINGS_BUTTON_SIZE"
                 :class="`${className}__settings-button`"
               >
                 <v-icon :icon="mdiCog" />
@@ -21,19 +21,23 @@
           </div>
         </div>
 
-        <v-sheet class="text-center mt-4" color="transparent">
-          <logo style="width: 300px" />
+        <v-sheet :class="`${className}__hero`" color="transparent">
+          <logo :class="`${className}__logo`" />
 
           <h1 :class="`${className}__title`">
             {{ t('login.brand_title') }}
           </h1>
-          <h2 :class="`${className}__subtitle`" class="hidden-sm-and-down mt-4">
+          <h2 :class="`${className}__subtitle`">
             {{ t('login.subheader') }}
           </h2>
         </v-sheet>
 
-        <v-sheet v-if="!isLoginViaPassword" class="text-center mt-4" color="transparent">
-          <v-row justify="center" no-gutters>
+        <v-sheet
+          v-if="!isLoginViaPassword"
+          :class="[`${className}__auth-sheet`, `${className}__auth-sheet--centered`]"
+          color="transparent"
+        >
+          <v-row justify="center" gap="0">
             <v-col sm="8" md="8" lg="8">
               <login-form
                 ref="loginForm"
@@ -44,15 +48,14 @@
             </v-col>
           </v-row>
 
-          <v-row justify="center" class="mt-4" no-gutters>
+          <v-row justify="center" :class="`${className}__qr-actions-row`" gap="0">
             <v-col cols="auto">
               <v-btn
-                class="ma-2"
                 :title="t('login.scan_qr_code_button_tooltip')"
                 icon
                 variant="text"
                 size="x-small"
-                :class="`${className}__icon`"
+                :class="[`${className}__icon`, `${className}__qr-action-button`]"
                 @click="showQrcodeScanner = true"
               >
                 <icon><qr-code-scan-icon /></icon>
@@ -62,12 +65,11 @@
             <v-col cols="auto">
               <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
                 <v-btn
-                  class="ma-2"
                   :title="t('login.login_by_qr_code_tooltip')"
                   icon
                   variant="text"
                   size="x-small"
-                  :class="`${className}__icon`"
+                  :class="[`${className}__icon`, `${className}__qr-action-button`]"
                 >
                   <icon><file-icon /></icon>
                 </v-btn>
@@ -76,14 +78,18 @@
           </v-row>
         </v-sheet>
 
-        <v-row v-if="!isLoginViaPassword" justify="center" class="mt-8">
+        <v-row v-if="!isLoginViaPassword" justify="center" :class="`${className}__passphrase-row`">
           <v-col sm="8" md="8" lg="8">
             <passphrase-generator @copy="onCopyPassphrase" />
           </v-col>
         </v-row>
 
-        <v-sheet v-if="isLoginViaPassword" class="text-center mt-6" color="transparent">
-          <v-row no-gutters justify="center">
+        <v-sheet
+          v-if="isLoginViaPassword"
+          :class="[`${className}__auth-sheet`, `${className}__auth-sheet--centered`]"
+          color="transparent"
+        >
+          <v-row gap="0" justify="center">
             <v-col sm="8" md="8" lg="8">
               <login-password-form v-model="password" @login="onLogin" @error="onLoginError" />
             </v-col>
@@ -118,6 +124,8 @@ import FileIcon from '@/components/icons/common/File.vue'
 import LoginPasswordForm from '@/components/LoginPasswordForm.vue'
 import Logo from '@/components/icons/common/Logo.vue'
 import { navigateByURI } from '@/router/navigationGuard'
+import { logger } from '@/utils/devTools/logger'
+import { AUTH_FORM_SETTINGS_BUTTON_SIZE } from '@/components/Login/helpers/uiMetrics'
 
 const store = useStore()
 const route = useRoute()
@@ -141,7 +149,7 @@ const onDetectQrcodeError = (err: unknown) => {
   store.dispatch('snackbar/show', {
     message: t('login.invalid_qr_code')
   })
-  console.warn(err)
+  logger.log('Login', 'warn', err)
 }
 
 const onLogin = () => {
@@ -179,43 +187,111 @@ const onScanQrcode = (value: string) => {
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
 
 .login-page {
+  --a-login-title-letter-spacing: 0.12em;
+  --a-login-title-gap-from-logo: var(--a-space-6);
+  --a-login-subtitle-gap: var(--a-space-2);
+  --a-login-subtitle-weight: 100;
+  --a-login-auth-sheet-margin-top: var(--a-space-6);
+  --a-login-passphrase-row-margin-top: var(--a-space-10);
+  --a-login-settings-offset-inline: var(--a-space-2);
+  --a-login-settings-hover-overlay-opacity: var(--a-opacity-overlay-soft);
+  --a-login-icon-opacity: var(--a-opacity-icon-muted);
+  --a-login-hero-margin-top: var(--a-space-4);
+  --a-login-qr-actions-row-margin-top: var(--a-space-4);
+  --a-login-qr-action-button-margin: var(--a-space-2);
+  --a-login-bottom-padding: calc(var(--a-space-8) + var(--a-safe-area-bottom));
+  --a-login-bottom-padding-mobile: calc(
+    var(--a-space-10) + var(--a-space-2) + var(--a-safe-area-bottom)
+  );
+
   height: 100%;
+  padding-bottom: var(--a-login-bottom-padding);
+
+  &__logo {
+    width: var(--a-login-hero-logo-width);
+    max-width: 100%;
+    height: auto;
+  }
 
   &__title {
-    font-family:
-      -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-      sans-serif;
-    font-weight: 100;
-    font-size: 40px;
-    line-height: 40px;
-    text-transform: uppercase;
+    @include mixins.a-text-headline();
+    font-family: var(--a-font-family-sans);
+    line-height: var(--a-login-hero-title-line-height);
+    letter-spacing: var(--a-login-title-letter-spacing);
+    margin-top: var(--a-login-title-gap-from-logo);
+    margin-bottom: 0;
   }
   &__subtitle {
-    font-family:
-      -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-      sans-serif;
-    font-weight: 100;
-    font-size: 18px;
+    @include mixins.a-text-caption-light();
+    font-family: var(--a-font-family-sans);
+    font-weight: var(--a-login-subtitle-weight);
+    margin-top: var(--a-login-subtitle-gap);
+    margin-bottom: 0;
   }
   &__icon {
-    transition: 0.2s linear;
+    transition:
+      opacity var(--a-motion-base) linear,
+      color var(--a-motion-base) linear;
   }
+
+  &__language-switcher-wrap,
+  &__hero,
+  &__auth-sheet--centered {
+    text-align: end;
+  }
+
+  &__hero,
+  &__auth-sheet--centered {
+    text-align: center;
+  }
+
   &__buttons {
     position: relative;
   }
+
+  &__hero {
+    margin-top: var(--a-login-hero-margin-top);
+  }
+
   &__settings-button-container {
     position: absolute;
     right: 0;
-    margin-right: 8px;
+    margin-right: var(--a-login-settings-offset-inline);
   }
   &__settings-button {
     &:hover > ::v-deep(.v-btn__overlay) {
       display: block;
-      opacity: 0.06;
+      opacity: var(--a-login-settings-hover-overlay-opacity);
     }
+
+    &:focus-visible {
+      box-shadow: var(--a-focus-ring);
+      border-radius: var(--a-radius-round);
+    }
+  }
+
+  &__passphrase-row {
+    margin-top: var(--a-login-passphrase-row-margin-top);
+  }
+
+  &__auth-sheet {
+    margin-top: var(--a-login-auth-sheet-margin-top);
+  }
+
+  &__qr-actions-row {
+    margin-top: var(--a-login-qr-actions-row-margin-top);
+  }
+
+  &__qr-action-button {
+    margin: var(--a-login-qr-action-button-margin);
+  }
+
+  @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
+    padding-bottom: var(--a-login-bottom-padding-mobile);
   }
 }
 
@@ -229,7 +305,7 @@ const onScanQrcode = (value: string) => {
 
     &__icon {
       color: map.get(colors.$adm-colors, 'black2');
-      opacity: 0.62;
+      opacity: var(--a-login-icon-opacity);
 
       &:hover {
         opacity: 1;
@@ -240,7 +316,7 @@ const onScanQrcode = (value: string) => {
 .v-theme--dark {
   .login-page {
     &__icon {
-      color: map.get(colors.$adm-colors, 'grey-transparent');
+      color: var(--a-color-text-muted-dark);
 
       &:hover {
         color: map.get(colors.$adm-colors, 'secondary');

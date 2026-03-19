@@ -6,6 +6,7 @@ import currency from '@/filters/currencyAmountWithSymbol'
 import { formatMessageBasic } from '@/lib/markdown'
 import { isAdamantChat } from '@/lib/chat/meta/utils'
 import { joinUrl } from '@/lib/urlFormatter.js'
+import { logger } from '@/utils/devTools/logger'
 
 let _this
 
@@ -103,7 +104,7 @@ class PushNotification extends Notification {
                 const notification = new Notify(this.i18n.t('app_title'), {
                   body: this.messageBody,
                   closeOnClick: true,
-                  icon: joinUrl(import.meta.env.BASE_URL,'/img/icons/android-chrome-192x192.png'),
+                  icon: joinUrl(import.meta.env.BASE_URL, '/img/icons/android-chrome-192x192.png'),
                   notifyClick: () => {
                     if (_this.$route.name !== 'Chat') {
                       this.router.push({
@@ -135,7 +136,7 @@ class PushNotification extends Notification {
       )
     } catch (x) {
       // Notification API not supported or another error
-      console.error(x)
+      logger.log('notifications', 'warn', x)
       this.store.dispatch('snackbar/show', {
         message: this.i18n.t('options.push_not_supported')
       })

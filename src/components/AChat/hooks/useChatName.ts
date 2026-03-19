@@ -13,7 +13,7 @@ import { isAdamantChat } from '@/lib/chat/meta/utils'
  */
 export function useChatName(address: MaybeRef<string>, fallbackToAddress = false) {
   const store = useStore()
-  const { t } = useI18n()
+  const { t, te } = useI18n()
 
   const chatName = computed(() => {
     const addressValue = unref(address)
@@ -25,7 +25,7 @@ export function useChatName(address: MaybeRef<string>, fallbackToAddress = false
     const addressValue = unref(address)
 
     if (isAdamantChat(addressValue)) {
-      return t(chatName.value)
+      return te(chatName.value) ? t(chatName.value) : chatName.value || addressValue
     }
 
     if (fallbackToAddress) {

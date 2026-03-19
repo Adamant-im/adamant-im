@@ -6,17 +6,17 @@ exports[`PassphraseGenerator.vue > renders the correct markup 1`] = `
   data-v-f3fe94d6=""
 >
   <div
-    class="text-center"
+    class="passphrase-generator__create-section"
     data-v-f3fe94d6=""
   >
     <h3
-      class="a-text-regular"
+      class="passphrase-generator__create-title"
       data-v-f3fe94d6=""
     >
-      Or create a new anonymous address:
+      Or create new anonymous address:
     </h3>
     <v-btn
-      class="a-btn-link mt-2"
+      class="passphrase-generator__create-button"
       data-v-f3fe94d6=""
       size="small"
       variant="text"

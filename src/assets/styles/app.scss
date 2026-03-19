@@ -1,6 +1,7 @@
 @forward './settings/_colors.scss';
 
 @forward './generic/_variables.scss';
+@forward './generic/_tokens.scss';
 @forward './generic/_vuetify.scss';
 @forward './generic/_layout.scss';
 @forward './generic/_animations.scss';
@@ -9,5 +10,6 @@
 @forward './components/_chat.scss';
 @forward './components/_login-form.scss';
 @forward './components/_arrow-return.scss';
+@forward './components/_switcher-button.scss';
 
 @forward './themes/adamant/_index.scss';

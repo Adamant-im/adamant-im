@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 import navigationGuard from '@/router/navigationGuard'
+import { patchLegacyNavigationGuards } from '@/router/legacyGuardCompat'
 
 import IsLogged from '@/middlewares/isLogged'
 import AuthMiddleware from '@/middlewares/auth'
@@ -122,11 +123,38 @@ const routes = [
                 top: 0
               }
             }
+          },
+          {
+            path: '/options/dev-screens',
+            name: 'DevScreens',
+            component: () => import('@/views/devScreens/DevScreens.vue'),
+            meta: {
+              requiresAuth: true,
+              layout: 'no-container'
+            }
+          },
+          {
+            path: '/options/dev-screens/vibrations',
+            name: 'DevVibrations',
+            component: () => import('@/views/devScreens/DevVibrations.vue'),
+            meta: {
+              requiresAuth: true,
+              layout: 'no-container'
+            }
+          },
+          {
+            path: '/options/dev-screens/adamant-wallets',
+            name: 'DevAdamantWallets',
+            component: () => import('@/views/devScreens/DevAdamantWallets.vue'),
+            meta: {
+              requiresAuth: true,
+              layout: 'no-container'
+            }
           }
         ]
       },
       {
-        path: '/transactions/:crypto?',
+        path: '/transactions/:crypto',
         component: Transactions,
         name: 'Transactions',
         props: true,
@@ -199,6 +227,8 @@ const router = createRouter({
     }
   }
 })
+
+patchLegacyNavigationGuards(router)
 
 router.beforeEach(IsLogged)
 router.beforeEach(AuthMiddleware)

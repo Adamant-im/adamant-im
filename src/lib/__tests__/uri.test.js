@@ -50,12 +50,12 @@ describe('uri', () => {
     })
 
     it('should decode URI', () => {
-      const encoded = encodeURI('Рик')
+      const encoded = encodeURI('Éric')
 
       expect(parseURIasAIP(`adm:U123456?label=${encoded}`)).toEqual({
         address: 'U123456',
         params: {
-          label: 'Рик'
+          label: 'Éric'
         },
         crypto: 'ADM',
         protocol: 'adm'

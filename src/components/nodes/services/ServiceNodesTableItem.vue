@@ -14,7 +14,7 @@
     </NodeColumn>
 
     <NodeColumn ping :colspan="isUnsupported ? 2 : 1">
-      <NodeStatus :node="node" />
+      <NodeStatus :node="node" @show-http-info="$emit('showHttpInfo')" />
     </NodeColumn>
   </tr>
 </template>
@@ -40,6 +40,7 @@ const classes = {
 }
 
 export default {
+  emits: ['showHttpInfo'],
   components: {
     NodeVersion,
     NodeColumn,

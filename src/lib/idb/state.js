@@ -1,4 +1,4 @@
-import cloneDeep from 'lodash/cloneDeep'
+import cloneDeep from 'lodash-es/cloneDeep'
 import merge from 'deepmerge'
 import Modules from './stores/Modules'
 import Chats from './stores/Chats'
@@ -6,7 +6,7 @@ import Security from './stores/Security'
 import { Cryptos } from '@/lib/constants'
 
 /** Modules that will be stored in IDB **/
-const modules = ['adm', 'eth', 'doge', 'kly', 'bnb', 'dash', 'usds', 'res', 'partners', 'delegates']
+const modules = ['adm', 'eth', 'doge', 'bnb', 'dash', 'usds', 'res', 'partners', 'delegates']
 
 /** Data of states and fields that must not be saved **/
 /** noActiveNodesDialog - we need it to be reinitialized with default value in order to gain proper work **/

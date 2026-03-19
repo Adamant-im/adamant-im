@@ -9,11 +9,14 @@ package3.json
 
 /tests/e2e/videos/
 /tests/e2e/screenshots/
+/playwright-report/
+/test-results/
 
 # local env files
 .env.local
 .env.*.local
 electron-builder.env
+electron-builder.env.local
 
 # Log files
 npm-debug.log*
@@ -25,7 +28,7 @@ yarn-error.log*
 .vscode
 *.suo
 *.ntvs*
-*.njsproj
+*.csproj
 *.sln
 *.sw*
 # Android-builder out
@@ -50,3 +53,6 @@ capacitor/app.keystore
 src/lib/schema/*
 !src/lib/schema/schema.json
 !src/lib/schema/config.json
+
+# ai agents
+.ai-tasks/

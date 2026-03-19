@@ -32,23 +32,13 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@use 'sass:map';
-@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/components/_color-roles.scss' as colorRoles;
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .node-version {
+  @include colorRoles.a-color-role-supporting-var('--a-node-version-color');
+
   @include mixins.a-text-explanation-small();
-}
-
-.v-theme--light {
-  .node-version {
-    color: map.get(colors.$adm-colors, 'regular');
-  }
-}
-
-.v-theme--dark {
-  .node-version {
-    opacity: 0.7;
-  }
+  color: var(--a-node-version-color);
 }
 </style>

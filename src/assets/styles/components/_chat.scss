@@ -21,6 +21,16 @@ $chat-avatar-size: 40px;
 $scroll-bar-width: 4px;
 
 .a-chat {
+  --a-chat-message-container-gap: var(--a-space-4);
+  --a-chat-message-container-grouped-gap: var(--a-space-1);
+  --a-chat-message-padding-block: var(--a-space-2);
+  --a-chat-message-padding-inline: var(--a-space-4);
+  --a-chat-message-header-min-height: 17px;
+  --a-chat-message-status-gap-inline: var(--a-space-2);
+  --a-chat-message-swipe-transition-duration: 400ms;
+  --a-chat-message-swipe-transition-ease: var(--a-ease-standard);
+  --a-chat-message-actions-icon-transition-duration: var(--a-motion-slow);
+  --a-chat-message-actions-icon-transition-ease: var(--a-ease-standard);
   display: block;
   text-decoration: none;
   height: 100%; // <-- Fallback for Chrome < v108
@@ -60,7 +70,7 @@ $scroll-bar-width: 4px;
     scrollbar-gutter: stable both-edges;
     width: 100%;
     height: 100%;
-    padding: 16px 16px 0 16px;
+    padding: var(--a-space-4);
 
     /* Scrollbar styles (Firefox) */
     scrollbar-color: map.get(settings.$grey, 'lighten-2' transparent);
@@ -91,14 +101,16 @@ $scroll-bar-width: 4px;
     float: left;
     max-width: 80%;
     margin: unset; // resets margins of <v-row/>
-    margin-bottom: 16px;
+    margin-bottom: var(--a-chat-message-container-gap);
 
     &:hover {
       .a-chat__message-actions-icon {
         visibility: visible;
         transition:
-          visibility 0.5s,
-          max-height 0.5s;
+          visibility var(--a-chat-message-actions-icon-transition-duration)
+            var(--a-chat-message-actions-icon-transition-ease),
+          max-height var(--a-chat-message-actions-icon-transition-duration)
+            var(--a-chat-message-actions-icon-transition-ease);
       }
     }
 
@@ -108,7 +120,14 @@ $scroll-bar-width: 4px;
 
     & + & {
       margin-top: unset; // resets margins of `.v-row + .v-row`
-      margin-bottom: 16px;
+    }
+
+    &--grouped {
+      margin-bottom: var(--a-chat-message-container-grouped-gap);
+    }
+
+    &--grouped-left {
+      margin-bottom: var(--a-chat-message-container-grouped-gap);
     }
 
     &--right {
@@ -116,7 +135,8 @@ $scroll-bar-width: 4px;
     }
 
     &--transition {
-      transition: left 0.4s;
+      transition: left var(--a-chat-message-swipe-transition-duration)
+        var(--a-chat-message-swipe-transition-ease);
     }
 
     &--disable-max-width {
@@ -127,11 +147,34 @@ $scroll-bar-width: 4px;
   &__message {
     display: flex;
     flex-direction: row;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    padding-left: 16px;
-    padding-right: 16px;
-    border-radius: 8px;
+    padding: var(--a-chat-message-padding-block) var(--a-chat-message-padding-inline);
+    border-radius: var(--a-radius-md);
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      width: 0;
+      height: 0;
+      border: 22px solid transparent;
+    }
+  }
+
+  &__message-container:not(&__message-container--right):not(&__message-container--grouped-left) .a-chat__message::after {
+    left: -6px;
+    border-right-color: white;
+    border-left: 0;
+    border-bottom: 0;
+    transform: rotate(-15deg);
+  }
+
+  &__message-container--right:not(&__message-container--grouped) .a-chat__message::after {
+    right: -6px;
+    border-left-color: white;
+    border-right: 0;
+    border-bottom: 0;
+    transform: rotate(15deg);
   }
 
   &__message-actions-icon {
@@ -140,7 +183,7 @@ $scroll-bar-width: 4px;
     top: 0;
     right: 0;
     overflow: hidden;
-    border-radius: 0 8px;
+    border-radius: 0 var(--a-radius-sm);
   }
 
   @keyframes flashing {
@@ -158,15 +201,15 @@ $scroll-bar-width: 4px;
   }
 
   /**
-   * 1. Аvatar must have width/height even if empty.
+   * 1. Avatar must have width/height even if empty.
    */
   &__message-avatar {
     width: $chat-avatar-size;
     height: $chat-avatar-size;
     min-width: $chat-avatar-size;
     min-height: $chat-avatar-size;
-    margin-right: 8px;
-    border-radius: 4px;
+    margin-right: var(--a-space-2);
+    border-radius: var(--a-radius-xs);
 
     img {
       border-radius: inherit;
@@ -174,8 +217,8 @@ $scroll-bar-width: 4px;
 
     &--right {
       order: 2;
-      margin-right: 0px;
-      margin-left: 8px;
+      margin-right: 0;
+      margin-left: var(--a-space-2);
     }
   }
 
@@ -192,7 +235,8 @@ $scroll-bar-width: 4px;
     display: flex;
     flex-direction: row;
     align-items: center;
-    min-height: 17px;
+    margin-top: var(--a-space-1);
+    min-height: var(--a-chat-message-header-min-height);
   }
 
   &__message-text {
@@ -205,7 +249,7 @@ $scroll-bar-width: 4px;
     code {
       font-weight: inherit;
       font-size: 14px;
-      padding: 2px 4px;
+      padding: calc(var(--a-space-1) / 2) var(--a-space-1);
       border-radius: 6px;
       overflow-x: auto;
       max-width: 100%;
@@ -218,11 +262,12 @@ $scroll-bar-width: 4px;
     }
 
     p {
+      margin-top: 0;
       margin-bottom: 0;
     }
 
     p:not(:last-child) {
-      margin-bottom: 8px;
+      margin-bottom: var(--a-space-2);
     }
 
     a {
@@ -235,22 +280,22 @@ $scroll-bar-width: 4px;
 
     pre {
       font-size: 12px;
-      padding: 8px;
-      margin-bottom: 8px;
+      padding: var(--a-space-2);
+      margin-bottom: var(--a-space-2);
       tab-size: 4;
       border-radius: 6px;
       overflow-x: auto;
       max-width: 100%;
 
       code {
-        padding: 0px;
+        padding: 0;
       }
     }
   }
 
   &__quoted-message {
-    margin-top: 4px;
-    margin-bottom: 4px;
+    margin-top: var(--a-space-1);
+    margin-bottom: var(--a-space-1);
   }
 
   /**
@@ -260,7 +305,7 @@ $scroll-bar-width: 4px;
     font-size: map.get($chat-sender, 'font-size');
     line-height: map.get($chat-sender, 'line-height');
     font-weight: 700;
-    margin-right: 8px;
+    margin-right: var(--a-space-2);
   }
 
   &__timestamp {
@@ -269,7 +314,7 @@ $scroll-bar-width: 4px;
   }
 
   &__amount {
-    font-size: 16px;
+    font-size: var(--a-space-4);
     font-weight: 500;
     line-height: 1;
     margin-top: 6px;
@@ -281,11 +326,17 @@ $scroll-bar-width: 4px;
   }
 
   &__rates-column {
+    display: flex;
     flex-direction: column;
+    margin-left: var(--a-space-4);
+  }
+
+  &__rates-amount {
+    margin-bottom: var(--a-space-1);
   }
 
   &__rates {
-    color: hsla(0, 0%, 100%, 0.7);
+    color: var(--a-color-text-muted-dark);
     font-style: italic;
     font-size: 14px;
     font-weight: 300;
@@ -293,7 +344,7 @@ $scroll-bar-width: 4px;
 
   &__status {
     line-height: 1;
-    margin-left: 8px;
+    margin-left: var(--a-chat-message-status-gap-inline);
 
     i {
       line-height: 1.2;
@@ -301,7 +352,7 @@ $scroll-bar-width: 4px;
   }
 
   &__blockchain-status {
-    font-size: 12px;
+    font-size: var(--a-space-3);
     line-height: 1;
     margin-right: 5px;
   }
@@ -314,8 +365,12 @@ $scroll-bar-width: 4px;
     margin-bottom: 15px;
   }
 
+  &__transaction-note {
+    margin-bottom: var(--a-space-1);
+  }
+
   &__form {
-    padding: 8px;
+    padding: var(--a-space-2) var(--a-space-3);
     position: relative;
     width: 100%;
 
@@ -367,12 +422,12 @@ $scroll-bar-width: 4px;
     }
   }
   &__form-append {
-    margin-right: 8px;
+    margin-right: var(--a-space-2);
   }
   &__fab {
     position: absolute;
-    right: 16px;
-    bottom: 16px;
+    right: var(--a-space-4);
+    bottom: var(--a-space-4);
     opacity: 0.7;
 
     &:hover {
@@ -401,11 +456,11 @@ $scroll-bar-width: 4px;
     }
 
     &__message {
-      background-color: #fff;
-      box-shadow:
-        0 1px 10px hsla(0, 0%, 39.2%, 0.06),
-        0 1px 1px hsla(0, 0%, 39.2%, 0.04),
-        0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
+      background-color: map.get(colors.$adm-colors, 'light-gray');
+      border-style: solid;
+      border-width: 0.1px;
+      border-color: map.get(colors.$adm-colors, 'light-gray2');
+      @include mixins.a-surface-elevation-soft();
 
       &--red {
         background-color: map.get(settings.$red, 'lighten-5');
@@ -421,11 +476,11 @@ $scroll-bar-width: 4px;
     }
 
     &__timestamp {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-color-text-muted-light);
     }
 
     &__blockchain-status {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-color-text-muted-light);
     }
 
     &__amount {
@@ -433,7 +488,7 @@ $scroll-bar-width: 4px;
     }
 
     &__rates {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-color-text-muted-light);
     }
 
     &__direction {
@@ -464,7 +519,7 @@ $scroll-bar-width: 4px;
 
       .v-text-field__slot {
         .v-label {
-          color: map.get(colors.$adm-colors, 'muted');
+          color: var(--a-color-text-muted-light);
         }
 
         textarea {
@@ -474,11 +529,11 @@ $scroll-bar-width: 4px;
       }
 
       .v-text-field > .v-input__control > .v-input__slot:before {
-        border-color: rgba(0, 0, 0, 0.12);
+        border-color: var(--a-color-border-neutral-light);
       }
 
       .v-text-field:not(.v-input--has-state) > .v-input__control > .v-input__slot:hover:before {
-        border-color: rgba(0, 0, 0, 0.12);
+        border-color: var(--a-color-border-neutral-light);
       }
 
       .v-text-field.v-input--is-focused > .v-input__control > .v-input__slot:after {
@@ -491,7 +546,7 @@ $scroll-bar-width: 4px;
       }
 
       .v-input--is-focused .v-input__slot .v-icon {
-        color: map.get(colors.$adm-colors, 'muted') !important;
+        color: var(--a-color-text-muted-light) !important;
       }
 
       &--is-active .v-input--is-focused .v-input__slot .v-icon {
@@ -514,11 +569,11 @@ $scroll-bar-width: 4px;
     }
 
     &__message {
-      background-color: map.get(colors.$adm-colors, 'black');
-      box-shadow:
-        0 1px 10px hsla(0, 0%, 39.2%, 0.06),
-        0 1px 1px hsla(0, 0%, 39.2%, 0.04),
-        0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
+      border-style: solid;
+      border-width: 0.1px;
+      border-color: map.get(colors.$adm-colors, 'black4');
+      background-color: map.get(colors.$adm-colors, 'black3');
+      @include mixins.a-surface-elevation-soft();
       &--red {
         background-color: map.get(settings.$grey, 'darken-3');
       }
@@ -527,10 +582,18 @@ $scroll-bar-width: 4px;
       }
     }
 
+    &__message-container--right:not(&__message-container--grouped) .a-chat__message::after {
+      border-left-color: map.get(colors.$adm-colors, 'black3');
+    }
+
+    &__message-container:not(&__message-container--right):not(&__message-container--grouped-left) .a-chat__message::after {
+      border-right-color: map.get(colors.$adm-colors, 'black3');
+    }
+
     &__message-actions-icon {
       background-image: linear-gradient(
         45deg,
-        map.get(colors.$adm-colors, 'muted'),
+        var(--a-color-text-muted-light),
         map.get(settings.$shades, 'black') 40%
       );
     }

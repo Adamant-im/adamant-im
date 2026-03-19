@@ -10,9 +10,17 @@ env:
   GH_TOKEN: ${{ secrets.github_token }}
   CSC_LINK: ${{ secrets.CSC_LINK }}
   CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+  # Notarization strategy 1 (Apple ID + app-specific password)
   APPLE_ID: ${{ secrets.APPLE_ID }}
   APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
   APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+  # Notarization strategy 2 (notarytool keychain profile)
+  APPLE_KEYCHAIN_PROFILE: ${{ secrets.APPLE_KEYCHAIN_PROFILE }}
+  APPLE_KEYCHAIN: ${{ secrets.APPLE_KEYCHAIN }}
+  # Notarization strategy 3 (App Store Connect API key)
+  APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+  APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+  APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
   APPLE_NOTARIZE: true # notarize the app after build
 
 jobs:
@@ -26,7 +34,7 @@ jobs:
       - name: Setup Node version 🍀
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version-file: '.nvmrc'
 
       - name: Install dependencies ⚙️
         run: npm ci

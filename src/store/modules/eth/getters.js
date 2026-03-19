@@ -9,8 +9,6 @@ export default {
     return state.gasPrice || DEFAULT_GAS_PRICE
   },
 
-  fee: (state) => (_amount) => state.fee,
-
   privateKey: (state) => state.privateKey,
 
   web3Account: (state) => state.web3Account,

@@ -3,18 +3,18 @@
     v-model="show"
     :timeout="timeout"
     :color="color"
-    :class="[className, { outlined: variant === 'outlined' }]"
+    :class="[className, { outlined: variant === 'outlined', multiline: message.length > 50 }]"
     :variant="variant"
     location="bottom"
     width="100%"
-    :multi-line="message.length > 50"
     @click:outside="show = false"
   >
     <div :class="`${className}__container`">
-      {{ message }}
+      <span :class="`${className}__message`">{{ message }}</span>
       <v-btn
         v-if="timeout === 0 || timeout > 2000 || timeout === -1"
-        size="x-small"
+        :class="`${className}__close-button`"
+        size="small"
         variant="text"
         fab
         @click="show = false"
@@ -50,7 +50,7 @@ const show = computed({
 })
 const message = computed(() => store.state.snackbar.message)
 const color = computed(() => store.state.snackbar.color)
-const variant = computed(() => store.state.snackbar.variant)
+const variant = computed(() => store.state.snackbar.variant || 'flat')
 const timeout = computed(() =>
   message.value === t('connection.offline') ? -1 : store.state.snackbar.timeout
 )
@@ -58,35 +58,57 @@ const timeout = computed(() =>
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
+@use '@/assets/styles/components/_text-content.scss' as textContent;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
 
 .app-snackbar {
   :deep(.v-snackbar__wrapper) {
-    @include mixins.a-text-regular-enlarged();
+    @include textContent.a-content-body-copy();
 
     margin: 0 auto;
     border-radius: 0;
-    max-width: 300px;
-    border: 1px solid transparent;
+    max-width: var(--a-snackbar-max-width);
+    border: var(--a-border-width-thin) solid transparent;
   }
 
   :deep(.v-snackbar__content) {
-    font-size: 16px;
-    font-weight: 300;
+    font-size: var(--a-snackbar-content-font-size);
+    line-height: var(--a-snackbar-content-line-height);
+    font-weight: var(--a-font-weight-light);
   }
 
   &__container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    @include layoutPrimitives.a-flex-space-between-center();
+    gap: var(--a-snackbar-content-gap);
+  }
+
+  &__message {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &.multiline {
+    :deep(.v-snackbar__wrapper) {
+      min-height: var(--a-snackbar-multiline-min-height);
+    }
+
+    .app-snackbar__container {
+      align-items: flex-start;
+    }
   }
 
   &__close-button {
-    min-width: unset;
-    padding: 0;
-    width: 36px;
+    &.v-btn {
+      min-width: var(--a-snackbar-close-button-size);
+      padding: 0;
+      width: var(--a-snackbar-close-button-size);
+      height: var(--a-snackbar-close-button-size);
+    }
+
+    flex: 0 0 auto;
   }
 
   &.outlined {

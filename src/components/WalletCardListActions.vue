@@ -1,6 +1,6 @@
 <template>
-  <v-list :class="className">
-    <v-list-item @click="sendFunds">
+  <v-list bg-color="transparent" :class="className">
+    <v-list-item :active="isSendActive" @click="sendFunds">
       <template #prepend>
         <v-icon :class="`${className}__icon`" :icon="mdiBankTransferOut" />
       </template>
@@ -11,9 +11,11 @@
     </v-list-item>
 
     <template v-if="isADM">
-      <v-list-item @click="stakeAndEarn">
+      <v-list-item :active="isStakeActive" @click="stakeAndEarn">
         <template #prepend>
-          <icon :width="24" :height="24"><stake-icon /></icon>
+          <icon :width="WALLET_ACTION_STAKE_ICON_SIZE" :height="WALLET_ACTION_STAKE_ICON_SIZE">
+            <stake-icon />
+          </icon>
         </template>
 
         <v-list-item-title :class="`${className}__title`">
@@ -51,12 +53,13 @@ import { CryptoSymbol } from '@/lib/constants/cryptos'
 import BuyTokensDialog from '@/components/BuyTokensDialog.vue'
 import Icon from '@/components/icons/BaseIcon.vue'
 import StakeIcon from '@/components/icons/common/Stake.vue'
+import { WALLET_ACTION_STAKE_ICON_SIZE } from '@/components/wallets/helpers/uiMetrics'
 import { websiteUriToOnion } from '@/lib/uri'
 
 import { mdiBankTransferOut, mdiFinance, mdiGift } from '@mdi/js'
 import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 const className = 'wallet-actions'
@@ -72,11 +75,20 @@ const props = withDefaults(defineProps<Props>(), {
 
 const store = useStore()
 const router = useRouter()
+const route = useRoute()
 const { t } = useI18n()
 
 const showBuyTokensDialog = ref(false)
 
 const hasAdmTokens = computed(() => store.state.balance > 0)
+
+const isSendActive = computed(() => {
+  return route.name === 'SendFunds' && store.state.options.currentWallet === props.crypto
+})
+
+const isStakeActive = computed(() => {
+  return route.name === 'Votes'
+})
 
 const sendFunds = () => {
   router.push({
@@ -88,7 +100,18 @@ const sendFunds = () => {
 }
 
 const stakeAndEarn = () => {
-  router.push('/votes')
+  store.commit('options/setSettingsLastRoute', '/votes')
+  store.commit('options/setSettingsScrollPosition', {
+    path: '/votes',
+    top: 0
+  })
+
+  router.push({
+    path: '/votes',
+    state: {
+      forceResetSettingsView: true
+    }
+  })
 }
 
 const buyTokens = () => {
@@ -102,50 +125,47 @@ const getFreeTokens = () => {
 </script>
 
 <style lang="scss" scoped>
-@use 'sass:map';
-@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/components/_color-roles.scss' as colorRoles;
 @use '@/assets/styles/themes/adamant/_mixins.scss';
-@use 'vuetify/settings';
 
 .wallet-actions {
+  --a-wallet-actions-icon-gap: var(--a-space-4);
+  --a-wallet-actions-item-padding-inline: var(--a-wallet-card-item-padding-inline-start);
+  --a-wallet-actions-row-min-height: var(--a-list-row-min-height);
+  --a-wallet-actions-row-padding-block: var(--a-list-row-padding-block);
+  --a-wallet-actions-icon-opacity: 1;
+  @include colorRoles.a-color-role-primary-surface-var('--a-wallet-actions-title-color');
+  @include colorRoles.a-color-role-primary-surface-var('--a-wallet-actions-icon-color');
+
   &__title {
     @include mixins.a-text-caption-light();
+    color: var(--a-wallet-actions-title-color);
+  }
+  &__icon {
+    color: var(--a-wallet-actions-icon-color);
   }
   :deep(.v-list-item__prepend) {
     > .v-icon {
-      margin-inline-end: 16px;
+      margin-inline-end: var(--a-wallet-actions-icon-gap);
+      opacity: var(--a-wallet-actions-icon-opacity);
     }
   }
   :deep(.v-list-item) {
-    padding: 0 16px;
+    padding: 0 var(--a-wallet-actions-item-padding-inline);
+  }
+  :deep(.v-list-item--density-default.v-list-item--one-line) {
+    min-height: var(--a-wallet-actions-row-min-height);
+    padding-top: var(--a-wallet-actions-row-padding-block);
+    padding-bottom: var(--a-wallet-actions-row-padding-block);
   }
   :deep(.v-list-item__prepend) {
     > .v-icon {
-      opacity: unset;
+      opacity: var(--a-wallet-actions-icon-opacity);
     }
   }
   :deep(.v-list-item__append) {
     > .v-icon {
-      opacity: unset;
-    }
-  }
-}
-
-/** Themes **/
-.v-theme--light {
-  .wallet-actions {
-    &__title,
-    &__icon {
-      color: map.get(colors.$adm-colors, 'regular');
-    }
-  }
-}
-
-.v-theme--dark {
-  .wallet-actions {
-    &__title,
-    &__icon {
-      color: map.get(settings.$shades, 'white');
+      opacity: var(--a-wallet-actions-icon-opacity);
     }
   }
 }

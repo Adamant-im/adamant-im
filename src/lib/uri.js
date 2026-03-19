@@ -1,8 +1,5 @@
 import { isAddress as isEthAddress, isHexStrict } from 'web3-validator'
-import { validateBase32Address as isKlyAddress } from '@klayr/cryptography'
 import { Cryptos, CryptosInfo } from './constants'
-
-const KLAYR_WALLET = 'klayr://wallet'
 
 /**
  * Get an ADAMANT URI from the address bar or argv[]
@@ -45,34 +42,7 @@ const formQueryParamsObject = (query) => {
  * }
  */
 export function parseURI(uri = getAddressBarURI()) {
-  const [origin, query = ''] = uri.split('?')
-  if (origin === KLAYR_WALLET) return parseKlyURI(query)
   return parseURIasAIP(uri)
-}
-
-/**
- * Parse info from an URI of the Klayr wallet
- * Ex.: klayr://wallet?modal=send&recipient=klyap2bbanxn4agw286ofz85zf3y2brdzjdyoby8r&amount=123&token=0000000000000000&recipientChain=00000000
- * @param {string} URI's query parameters
- * @returns {
- *   {
- *     address: string,
- *     crypto: string,
- *     params: Object<string, string>,
- *     protocol: string
- *   }
- * }
- */
-function parseKlyURI(query) {
-  let address = ''
-  let params = {}
-
-  if (query) {
-    params = formQueryParamsObject(query)
-    address = params.recipient || ''
-  }
-
-  return { address, crypto: Cryptos.KLY, params, protocol: Cryptos.KLY.toLowerCase() }
 }
 
 /**
@@ -121,17 +91,6 @@ export function parseURIasAIP(uri = getAddressBarURI()) {
     if (isHexStrict(address) && isEthAddress(address)) {
       crypto = Cryptos.ETH
     }
-
-    if (crypto === Cryptos.KLY) {
-      // We need to use try-catch https://github.com/LiskHQ/lisk-sdk/issues/6652
-      try {
-        if (!isKlyAddress(address)) {
-          crypto = ''
-        }
-      } catch {
-        crypto = ''
-      }
-    }
   }
 
   return { address, crypto, params, protocol }
@@ -178,4 +137,3 @@ export function websiteUriToOnion(str) {
 
   return str
 }
-

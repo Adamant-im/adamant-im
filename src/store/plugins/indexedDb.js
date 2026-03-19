@@ -1,5 +1,5 @@
 import throttle from 'throttle-promise'
-import cloneDeep from 'lodash/cloneDeep'
+import cloneDeep from 'lodash-es/cloneDeep'
 import { Base64 } from 'js-base64'
 
 import { router } from '@/router'
@@ -7,6 +7,7 @@ import { Modules, Chats, Security, clearDb } from '@/lib/idb'
 import { restoreState, modules } from '@/lib/idb/state'
 import { Cryptos } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import { logger } from '@/utils/devTools/logger'
 
 const chatModuleMutations = ['setHeight', 'setFulfilled']
 const multipleChatMutations = ['markAllAsRead', 'createEmptyChat', 'createAdamantChats']
@@ -135,7 +136,9 @@ export default (store) => {
           store.dispatch('startInterval')
         })
         .catch(() => {
-          console.error(
+          logger.log(
+            'indexed-db-plugin',
+            'warn',
             'Can not decode IDB with current password. Fallback to Login via Passphrase.'
           )
 
@@ -148,7 +151,7 @@ export default (store) => {
               store.commit('reset')
             })
             .catch((err) => {
-              console.error(err)
+              logger.log('indexed-db-plugin', 'warn', err)
             })
             .finally(() => {
               router.push('/')

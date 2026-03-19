@@ -2,27 +2,34 @@ import { $ } from 'execa'
 
 import { copyFile, readdir, readFile, writeFile, mkdir, rm } from 'fs/promises'
 import { resolve, join } from 'path'
-import _ from 'lodash'
+import capitalize from 'lodash-es/capitalize.js'
+import isArray from 'lodash-es/isArray.js'
+import mapValues from 'lodash-es/mapValues.js'
+import mergeWith from 'lodash-es/mergeWith.js'
+import omit from 'lodash-es/omit.js'
 
 const CRYPTOS_DATA_FILE_PATH = resolve('src/lib/constants/cryptos/data.json')
 const CRYPTOS_ICONS_DIR_PATH = resolve('src/components/icons/cryptos')
 const GENERAL_ASSETS_PATH = resolve('adamant-wallets/assets/general')
 const BRANCH = process.argv[2]
 
+// This script runs in plain Node.js context, so app logger aliases/stores are not available here.
+const logInfo = (...args) => console.info('[wallets]', ...args)
+
 void run(BRANCH)
 
 /**
  *
- * @param {string} branch The branch to pull from. E.g.: dev, master
+ * @param {string} branch The branch to sync from. E.g.: dev, master
  * @return {Promise<void>}
  */
-async function run(branch = 'master') {
+async function run(branch = 'dev') {
   // update adamant-wallets repo
-  await $`git submodule init`
-  await $`git submodule update`
-  await $`git submodule foreach git pull origin ${branch}`
+  await $`git submodule update --init`
+  await $`git -C adamant-wallets fetch origin ${branch}`
+  await $`git -C adamant-wallets checkout --detach origin/${branch}`
 
-  console.log('Updating coins data from `adamant-wallets`. Using branch:', branch)
+  logInfo('Updating coins data from `adamant-wallets`. Using branch:', branch)
 
   const { coins, config, coinDirNames, coinSymbols } = await initCoins()
   await applyBlockchains(coins, coinSymbols)
@@ -36,7 +43,7 @@ async function run(branch = 'master') {
   await updateTestnetConfig(config)
   await updateTorConfig(config)
 
-  console.log('Coins updated successfully')
+  logInfo('Coins updated successfully')
 }
 
 async function initCoins() {
@@ -48,7 +55,6 @@ async function initCoins() {
 
   await forEachDir(GENERAL_ASSETS_PATH, async ({ name }) => {
     const path = join(GENERAL_ASSETS_PATH, name, 'info.json')
-
     const coin = await parseJsonFile(path)
 
     if (coin.status !== 'active') {
@@ -58,8 +64,7 @@ async function initCoins() {
     coinDirNames[coin.symbol] = name
     coinSymbols[name] = coin.symbol
 
-    const { qqPrefix: qrPrefix, ...rest } = coin
-    coins[rest.symbol] = { qrPrefix, ...rest }
+    coins[coin.symbol] = coin
 
     if (coin.createCoin) {
       const nodeName = coin.symbol.toLowerCase()
@@ -68,7 +73,9 @@ async function initCoins() {
   })
 
   // Sort by key (coin symbol)
-  const sortedCoins = _.chain(coins).toPairs().sortBy(0).fromPairs().value()
+  const sortedCoins = Object.fromEntries(
+    Object.entries(coins).sort(([first], [second]) => first.localeCompare(second))
+  )
 
   return {
     coins: sortedCoins,
@@ -86,18 +93,31 @@ async function applyBlockchains(coins, coinSymbols) {
     const infoPath = join(blockchainPath, 'info.json')
 
     const info = await parseJsonFile(infoPath)
+    const mainCoinInfo = coinSymbols[info.mainCoin] ? coins[coinSymbols[info.mainCoin]] : {}
 
     await forEachDir(blockchainPath, async ({ name: coinName }) => {
       const coinPath = join(blockchainPath, coinName, 'info.json')
       const coin = await parseJsonFile(coinPath)
 
+      let tokenData = coins[coin.symbol] || {}
+
       if (!coins[coin.symbol]) {
-        return
+        const generalTokenPath = join(GENERAL_ASSETS_PATH, coinName, 'info.json')
+        const generalTokenInfo = await parseJsonFile(generalTokenPath)
+        if (generalTokenInfo.status === 'active') {
+          tokenData = generalTokenInfo
+        }
+      }
+
+      const result = {
+        ...mainCoinInfo,
+        ...tokenData,
+        ...omit(info, ['mainCoin']),
+        ...coin
       }
 
       coins[coin.symbol] = {
-        ...coins[coin.symbol],
-        ...coin,
+        ...result,
         mainCoin: coinSymbols[info.mainCoin],
         type: info.type,
         defaultGasLimit: info.defaultGasLimit,
@@ -113,7 +133,7 @@ async function copyIcons(coins, coinDirNames) {
   await mkdir(CRYPTOS_ICONS_DIR_PATH)
 
   for (const [name, coin] of Object.entries(coins)) {
-    const iconComponentName = `${_.capitalize(coin.symbol)}Icon.vue`
+    const iconComponentName = `${capitalize(coin.symbol)}Icon.vue`
 
     const iconPathDestination = join(CRYPTOS_ICONS_DIR_PATH, iconComponentName)
     await copyFile(
@@ -133,7 +153,7 @@ function updateDevelopmentConfig(configs) {
 }
 
 function updateTestnetConfig(configs) {
-  const testnetConfigs = _.mapValues(configs, (config) => {
+  const testnetConfigs = mapValues(configs, (config) => {
     if (config.testnet) config.nodes.list = config.testnet.nodes.list
 
     return config
@@ -143,11 +163,11 @@ function updateTestnetConfig(configs) {
 }
 
 function updateTorConfig(configs) {
-  const torConfigs = _.mapValues(configs, (config) => {
-    const torConfig = _.mergeWith(config, config.tor, (value, srcValue) => {
+  const torConfigs = mapValues(configs, (config) => {
+    const torConfig = mergeWith(config, config.tor, (value, srcValue) => {
       // customizer overrides `nodes`, `services` and `links`
       // instead of merging them
-      if (_.isArray(srcValue)) {
+      if (isArray(srcValue)) {
         return srcValue
       }
     })
@@ -165,6 +185,14 @@ async function updateConfig(configs, configName) {
   const configPath = resolve(`src/config/${configName}.json`)
   const configFile = await parseJsonFile(configPath)
 
+  // Remove obsolete coins that no longer exist in configs
+  for (const existingKey in configFile) {
+    if (!configs[existingKey]) {
+      delete configFile[existingKey]
+    }
+  }
+
+  // Add/update coins from configs
   for (const configKey in configs) {
     const config = configs[configKey]
 

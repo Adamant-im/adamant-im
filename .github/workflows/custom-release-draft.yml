@@ -1,0 +1,42 @@
+name: Custom Release Draft
+
+on:
+  workflow_call:
+    inputs:
+      target_branch:
+        required: false
+        type: string
+        default: master
+  push:
+    branches:
+      - master
+      - feat/release-drafter
+  workflow_dispatch:
+
+jobs:
+  release-draft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Install dependencies
+        run: npm install @octokit/rest @octokit/graphql
+
+      - name: Download release-notes.js
+        run: |
+          mkdir -p .github/scripts
+          curl -fsSL \
+            "https://raw.githubusercontent.com/Adamant-im/.github/main/.github/scripts/release-notes.js" \
+            -o .github/scripts/release-notes.js
+
+      - name: Run release notes script
+        run: node .github/scripts/release-notes.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}

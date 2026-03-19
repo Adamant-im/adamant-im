@@ -19,6 +19,7 @@
     "me": "我",
     "message": "键入消息",
     "message_rejected": "消息被拒绝",
+    "message_not_sent_status": "消息未发送",
     "my_qr_code": "我的二维码",
     "new_chat": "开始新的聊天",
     "no_connection": "没有Internet连接",
@@ -29,7 +30,7 @@
     "received_label": "已接收",
     "recipient": "合作伙伴地址",
     "recipient_tooltip": "合作伙伴的ADM地址，如 U1234567890987654321 或共享链接",
-    "retry_message": "无法发送：弱连接。单击重试",
+    "retry_message": "无法发送：弱连接",
     "send_button": "发送",
     "send_crypto": "发送 {crypto}",
     "sent_label": "已发送",
@@ -69,6 +70,7 @@
     },
     "you": "你",
     "chat_actions": {
+      "retry": "重试",
       "reply": "回复",
       "copy": "副本"
     },
@@ -80,11 +82,32 @@
     "you_removed_reaction": "已删除反应",
     "partner_removed_reaction": "已删除的反应",
     "nodes_offline_dialog": {
-      "title": "Nodes are offline",
-      "text": "All {coin} nodes appear to be offline or possibly disabled. To continue use the Messenger please review the <strong>Nodes list</strong> and enable any nodes that are found to be disabled.",
-      "open_nodes_button": "Open Nodes page"
+      "title": "没有活动的 {coin} 节点",
+      "text": "无法请求新消息 — 没有活动的 {coin} 区块链节点。由于您已停用其中一些节点，请考虑查看节点列表。",
+      "open_nodes_button": "查看 {coin} 节点列表"
     },
-    "unsupported_transaction_type": "This transaction type is not supported. Please refresh the page or install the latest version of the app."
+    "unsupported_transaction_type": "不支持此交易类型。请更新到最新的应用程序版本。",
+    "max_files": "上传不超过 {count} 个文件",
+    "max_file_size": "允许的最大文件大小：250 MB",
+    "file": "0 个文件 | 1 个文件 | {n} 文件 | {n} 文件",
+    "files": "文件",
+    "file_loading_error": "加载文件失败",
+    "image_loading_error": "无法加载媒体",
+    "file_not_found": "找不到文件",
+    "placeholder": {
+      "anonymous": "🕶️ 匿名：合作伙伴永远不会看到您的 IP 地址",
+      "censorship": "⛓️ 抗审查区块链架构",
+      "encrypted": "🔐 在所有设备上进行端到端加密",
+      "ipfs": "☁️ 文件/媒体的去中心化 IPFS 存储",
+      "can_not_message": "尚无法向该用户发送消息 - 他们的帐户尚未激活",
+      "what_does_it_mean": {
+        "text": "这是什么意思？",
+        "link": "https://news.adamant.im/chats-and-uninitialized-accounts-in-adamant-5035438e2fcd"
+      },
+      "public-key": "检索您合作伙伴的密钥以加密消息......"
+    },
+    "type_a_message": "输入消息",
+    "attached": "已附加"
   },
   "common": {
     "cancel": "取消",
@@ -93,13 +116,15 @@
     "yes": "是的"
   },
   "connection": {
-    "offline": "Offline—无连接",
-    "online": "联机--已设置连接"
+    "offline": "离线—无连接",
+    "online": "在线—连接已恢复"
   },
   "error": "错误",
   "errors": {
-    "something_went_wrong": "Something went wrong. Check the console for details",
-    "all_nodes_offline": "All {crypto} nodes are offline. Try again later"
+    "something_went_wrong": "出了点问题。开发者可以检查调试器",
+    "all_nodes_offline": "没有活动的 {crypto} 节点。查看节点列表",
+    "all_adm_nodes_offline": "没有活动的消息传递节点。查看 ADM 节点列表",
+    "all_nodes_disabled": "没有可用的 {crypto} 节点 — 启用至少一个"
   },
   "home": {
     "balance": "余额",
@@ -121,7 +146,12 @@
     "show_qr_code": "显示二维码",
     "stake_and_earn_btn": "质押并赚取",
     "wallet": "钱包",
-    "wallet_crypto": "{crypto} 钱包"
+    "wallet_crypto_adamant_prefix": "",
+    "wallet_crypto_adamant_suffix": " 钱包",
+    "wallet_crypto": "{crypto} 钱包",
+    "no_active_nodes": "无活动节点",
+    "no_active_nodes_pull_down": "没有活动的 {coin} 节点。查看币种节点列表",
+    "explorer": "在区块浏览器中打开"
   },
   "warning_on_addresses": {
     "warning": "警告",
@@ -150,10 +180,12 @@
     "new_passphrase_label": "<b>保存</b>新钱包和帐户的密码短语。您只能使用密码短语。如果丢失，将无法恢复",
     "password_label": "输入要登录的密码短语",
     "save_button_tooltip": "将您的密码短语保存在文本文件中。将其存储在安全的地方！",
-    "save_qr_code_to_images": "保存到图像",
+    "save_qr_code_to_images": "保存",
     "save_qr_code_tooltip": "将您的密码短语保存为二维码图像。将其保存在安全的地方！",
     "scan_qr_code_button_tooltip": "通过设备的摄像头扫描包含密码短语的二维码",
-    "subheader": "去中心化信使"
+    "subheader": "去中心化信使",
+    "show_passphrase_tooltip": "显示密码",
+    "hide_passphrase_tooltip": "隐藏密码"
   },
   "login_via_password": {
     "article": "ADAMANT 博客",
@@ -176,11 +208,12 @@
     "fastest_tooltip": "将使用最快的节点处理请求",
     "label": "类型",
     "host": "主机",
-    "inactive": "Inactive",
+    "inactive": "不活跃",
+    "updating": "更新中",
     "sync": "同步",
     "ms": "ms",
     "nodeLabelDescription": "支持去中心化并提高隐私级别--<a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">运行您自己的ADAMANT节点</a>。若要将节点添加到列表中，您需要<a target=\"_blank\"href=\"https://github.com/Adamant-im/adamant-im/\">在单独的域上部署web应用程序</a>。此限制指的是内容安全策略（CSP）。",
-    "offline": "脱机",
+    "offline": "离线",
     "coin": "硬币",
     "ping": "嗨",
     "service": "服务",
@@ -191,11 +224,24 @@
       "service_nodes": "服务节点",
       "ipfs_nodes": "IPFS节点"
     },
-    "unsupported": "不受欢迎",
-    "unsupported_reason_protocol": "不允许HTTP",
-    "unsupported_reason_api_version": "API版本过期",
+    "unsupported": "不支持",
+    "unsupported_reason_protocol": "不支持 HTTP",
+    "unsupported_reason_api_version": "API 版本过旧",
     "use_socket_connection": "使用套接字连接",
-    "use_socket_connection_tooltip": "WebSockets允许像P2P信使一样立即获取新消息"
+    "use_socket_connection_tooltip": "WebSockets允许像P2P信使一样立即获取新消息",
+    "popup": {
+      "http_restriction_title": "HTTP 节点在浏览器中被阻止",
+      "http_restriction_intro": "为了安全起见，浏览器会阻止从 HTTPS 页面到 HTTP 端点的请求。",
+      "http_vs_https_title": "🔒 HTTP 与 HTTPS",
+      "http_vs_https_http": "HTTP 未加密，因此观察者可以看到应用程序使用哪个节点。",
+      "http_vs_https_https": "HTTPS 对流量进行加密，隐藏除节点地址之外的所有内容。",
+      "adamant_encryption_title": "💡 ADAMANT 加密所有消息",
+      "adamant_encryption_text": "ADAMANT 通过 HTTP 和 HTTPS 加密区块链消息。因此 ADAMANT 节点可以安全地通过 HTTP 使用。此浏览器限制仅适用于 Web 应用程序。桌面和移动应用程序支持这两种协议。",
+      "how_to_allow_title": "要使用 HTTP 节点：",
+      "how_to_allow_browser": "在浏览器设置中允许此网站包含不安全的内容，或者",
+      "how_to_allow_http_app": "打开HTTP版本的应用程序",
+      "close": "关闭"
+    }
   },
   "notifications": {
     "tabMessage": {
@@ -240,9 +286,10 @@
       "button": "导出密钥",
       "copy_all": "全部复制",
       "eth": "以太坊和ERC-20代币"
-    }
+    },
+    "dev_screens": "开发屏幕"
   },
-  "region": "en-US",
+  "region": "zh-CN",
   "rows_per_page": "每页的行数",
   "scan": {
     "camera_button": "相机",
@@ -274,8 +321,8 @@
     "recipient": "收件人",
     "sender": "发件人",
     "startChat": "开始新的聊天",
-    "status": "Status",
-    "comment": "Comment",
+    "status": "状态",
+    "comment": "评论",
     "textData": "Tx数据记录",
     "statuses": {
       "REJECTED": "错误",
@@ -322,7 +369,6 @@
     "decode_from_camera": "用相机扫描二维码",
     "decode_from_image": "从图像中读取QR",
     "error_dust_amount": "无存量--发送更多代币",
-    "recipient_minimum_balance": "收件人必须至少有 0.05 KLY--发送更多令牌",
     "error_all_nodes_offline": "所有 {crypto} 节点都已离线，请稍后重试。",
     "error_precision": "精度过高--设置小数位数较少",
     "error_field_is_required": "字段是必需的",
@@ -341,7 +387,7 @@
     "increase_fee": "增加费用",
     "invalid_qr_code": "二维码不包含地址或无法识别",
     "no_address_text": "此用户还没有公共 {crypto} 钱包。他们必须登录Messenger，余额超过 0.001 ADM",
-    "no_address_title": "R收件人还没有 {crypto} 钱包",
+    "no_address_title": "收件人还没有 {crypto} 钱包",
     "legacy_address_text": "此用户有一个旧的 {crypto} 钱包。他们必须登录Messenger，余额超过 0.001 ADM才能更新 {crypto} 的钱包地址",
     "legacy_address_title": "收件人还有一个旧的 {crypto} 钱包",
     "page_title": "发送资金",
@@ -352,11 +398,13 @@
       "warning": "警告",
       "headline": "合作伙伴的帐户可能会被泄露",
       "about": "用户可以接受聊天中的加密转账，因为ADAMANT将钱包地址保存在区块链中。要保存这些地址，密码是必要的——这意味着没有人可以代表用户推送错误的地址。",
-      "specifics_many_addresses": "我们已经确定了多个为{partner_account}{partner_name}account: {manyAddresses} 存储的 {crypto} 地址。这意味着他们可能永远不会收到您的转账。",
+      "specifics_many_addresses": "我们已经确定 {partner_account}{partner_name} 账户中保存了多个 {crypto} 地址：{manyAddresses}。这意味着他们可能永远无法收到您的转账。",
       "reasons": "可能是骗子控制了这个账户。",
       "what_to_do": "把问题告诉你的伴侣。",
       "hide_button": "明白了"
-    }
+    },
+    "no_address_text_offline": "无法检索用户的公共 {crypto} 钱包地址。请检查您的连接。",
+    "no_address_title_offline": "连接问题"
   },
   "votes": {
     "delegate_description": "描述",
@@ -388,6 +436,34 @@
     "reset": "重置",
     "reset_message": "您真的想将列表恢复到默认状态吗？",
     "search": "搜索",
-    "summary_title": "重置钱包顺序和可见性"
+    "summary_title": "重置钱包顺序和可见性",
+    "blockchain": "主网"
+  },
+  "dev_screens": {
+    "title": "开发工具",
+    "vibrations": "振动",
+    "adamant_wallets": "Adamant-Wallets",
+    "logging": "控制台中的详细日志记录"
+  },
+  "dev_vibrations": {
+    "custom_pattern": "定制图案",
+    "pattern_placeholder": "示例：100,200,300",
+    "play": "播放",
+    "presets": "预设",
+    "very_short": "很短",
+    "short": "短的",
+    "medium": "中等的",
+    "long": "长的",
+    "double_very_short": "双极短",
+    "triple_very_short": "三重极短",
+    "double_short": "双短"
+  },
+  "dev_wallets": {
+    "configuration": "配置",
+    "select_coin": "选择币种",
+    "select_blockchain": "选择上下文",
+    "select_property": "选择属性",
+    "result": "结果",
+    "copy_value": "复制值"
   }
 }

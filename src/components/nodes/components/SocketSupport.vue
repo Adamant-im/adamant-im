@@ -1,17 +1,13 @@
 <template>
-  <v-icon
-    :icon="node.socketSupport ? mdiCheck : mdiClose"
-    :class="node.socketSupport ? classes.supported : classes.unsupported"
-  />
+  <v-icon v-if="showSocketStateIcon" :icon="icon" :class="iconClass" />
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
+import { computed, defineComponent, PropType } from 'vue'
 
 import type { NodeStatusResult } from '@/lib/nodes/abstract.node'
 
 import { mdiCheck, mdiClose } from '@mdi/js'
-
 
 const className = 'socket-support'
 const classes = {
@@ -26,9 +22,20 @@ export default defineComponent({
       required: true
     }
   },
-  setup() {
+  setup(props) {
+    const showSocketStateIcon = computed(
+      () => props.node.status !== 'offline' && props.node.status !== 'unsupported_version'
+    )
+    const icon = computed(() => (props.node.socketSupport ? mdiCheck : mdiClose))
+    const iconClass = computed(() =>
+      props.node.socketSupport ? classes.supported : classes.unsupported
+    )
+
     return {
       classes,
+      showSocketStateIcon,
+      icon,
+      iconClass,
       mdiCheck,
       mdiClose
     }
@@ -47,10 +54,10 @@ export default defineComponent({
 .v-theme--light {
   .socket-support {
     &--supported {
-      color: map.get(colors.$adm-colors, 'good') !important;
+      color: map.get(colors.$adm-colors, 'good');
     }
     &--unsupported {
-      color: map.get(colors.$adm-colors, 'danger') !important;
+      color: map.get(colors.$adm-colors, 'danger');
     }
   }
 }
@@ -58,10 +65,10 @@ export default defineComponent({
 .v-theme--dark {
   .socket-support {
     &--supported {
-      color: map.get(colors.$adm-colors, 'good') !important;
+      color: map.get(colors.$adm-colors, 'good');
     }
     &--unsupported {
-      color: map.get(colors.$adm-colors, 'danger') !important;
+      color: map.get(colors.$adm-colors, 'danger');
     }
   }
 }

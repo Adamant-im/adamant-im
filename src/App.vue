@@ -4,7 +4,12 @@
     <warning-on-addresses-dialog v-model="showWarningOnAddressesDialog" />
 
     <v-main>
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <keep-alive :include="cachedRootComponentNames">
+          <component :is="Component" v-if="Component && shouldCacheRootComponent(Component)" />
+        </keep-alive>
+        <component :is="Component" v-if="Component && !shouldCacheRootComponent(Component)" />
+      </router-view>
     </v-main>
   </v-app>
 </template>
@@ -20,12 +25,15 @@ import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { useResendPendingMessages } from '@/hooks/useResendPendingMessages'
 import { useTrackConnection } from '@/hooks/useTrackConnection'
+import { useHealthcheckResume } from '@/hooks/useHealthcheckResume'
 
 useResendPendingMessages()
 useTrackConnection()
+useHealthcheckResume()
 
 const store = useStore()
 const isSnackbarShowing = computed(() => store.state.snackbar.show)
+const cachedRootComponentNames = ['AppSidebar']
 
 const showWarningOnAddressesDialog = ref(false)
 
@@ -34,6 +42,27 @@ const notifications = ref<Notifications | null>(null)
 const themeName = computed(() => {
   return store.state.options.darkTheme ? ThemeName.Dark : ThemeName.Light
 })
+const getComponentName = (component: unknown) => {
+  if (!component || typeof component !== 'object') {
+    return null
+  }
+
+  const namedComponent = component as { name?: unknown; __name?: unknown }
+
+  if (typeof namedComponent.name === 'string') {
+    return namedComponent.name
+  }
+
+  if (typeof namedComponent.__name === 'string') {
+    return namedComponent.__name
+  }
+
+  return null
+}
+const shouldCacheRootComponent = (component: unknown) => {
+  const componentName = getComponentName(component)
+  return componentName !== null && cachedRootComponentNames.includes(componentName)
+}
 
 const { locale } = useI18n()
 

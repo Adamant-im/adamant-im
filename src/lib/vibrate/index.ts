@@ -1,3 +1,5 @@
+import { logger } from '@/utils/devTools/logger'
+
 export const VIBRATION_PATTERN: Record<string, number[]> = {
   VERY_SHORT: [40],
   SHORT: [80],
@@ -13,7 +15,11 @@ function checkVibrateIsSupported() {
     return true
   }
 
-  console.warn('Navigator: vibrate() method is not supported by your browser')
+  logger.log(
+    'vibrate/index',
+    'warn',
+    'Navigator: vibrate() method is not supported by your browser'
+  )
   return false
 }
 
@@ -21,7 +27,7 @@ export function createVibrationPattern(pattern: number[]): () => void {
   return () => {
     if (!checkVibrateIsSupported()) return
 
-    navigator.userAgentData?.mobile && navigator.vibrate(pattern)
+    if (navigator.userAgentData?.mobile) navigator.vibrate(pattern)
   }
 }
 

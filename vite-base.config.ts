@@ -11,6 +11,8 @@ import { fileURLToPath } from 'node:url'
 import { deferScripsPlugin } from './vite-config/plugins/deferScriptsPlugin'
 import { preloadCSSPlugin } from './vite-config/plugins/preloadCSSPlugin'
 import { excludeBip39Wordlists } from './vite-config/rollup/excludeBip39Wordlists'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import VueDevTools from 'vite-plugin-vue-devtools'
 
 const env = loadEnv('production', process.cwd())
 const basePublicPath = env.VITE_PUBLIC_PATH || '/'
@@ -22,6 +24,7 @@ export default defineConfig({
   base: basePublicPath,
   plugins: [
     wasm(),
+    VueDevTools(),
     vue(),
     vueJsx(),
     commonjs(),
@@ -29,7 +32,14 @@ export default defineConfig({
       Buffer: ['buffer', 'Buffer']
     }),
     deferScripsPlugin(),
-    preloadCSSPlugin()
+    preloadCSSPlugin(),
+    nodePolyfills({
+      include: ['util', 'process', 'buffer', 'events', 'stream'],
+      globals: {
+        Buffer: true,
+        process: true
+      }
+    })
   ],
   css: {
     postcss: {
@@ -37,6 +47,7 @@ export default defineConfig({
     },
     preprocessorOptions: {
       scss: {
+        api: 'legacy',
         includePaths: ['./src']
       }
     }
@@ -47,19 +58,21 @@ export default defineConfig({
 
       // Node.js polyfills
       buffer: 'buffer/',
-      events: 'rollup-plugin-node-polyfills/polyfills/events',
+      events: 'events/',
       stream: 'stream-browserify',
       path: 'path-browserify',
       crypto: 'crypto-browserify',
       http: 'stream-http',
       https: 'https-browserify',
       os: 'os-browserify/browser',
-      assert: 'assert'
+      assert: 'assert',
+      vm: path.resolve(__dirname, './src/lib/polyfills/vm.js')
     },
     extensions: ['.tsx', '.ts', '.js', '.json', '.vue']
   },
   server: {
-    port: 8080
+    port: process.env.HTTPS === 'true' ? 5173 : 8080,
+    https: process.env.HTTPS === 'true' ? {} : undefined
   },
   // Some old libs like `promise-queue` and `readable-stream` still uses Webpack.
   define: {
@@ -67,6 +80,12 @@ export default defineConfig({
     'process.env': {}
   },
   optimizeDeps: {
+    include: [
+      'buffer',
+      'vite-plugin-node-polyfills/shims/buffer',
+      'vite-plugin-node-polyfills/shims/global',
+      'vite-plugin-node-polyfills/shims/process'
+    ],
     esbuildOptions: {
       // Node.js global to browser globalThis
       define: {
@@ -76,6 +95,9 @@ export default defineConfig({
   },
   build: {
     target: 'esnext',
+    // Current app bundles include heavy crypto/runtime chunks by design.
+    // Keep build output clean from non-actionable size warnings.
+    chunkSizeWarningLimit: 4000,
     commonjsOptions: {
       include: []
     },
@@ -89,6 +111,18 @@ export default defineConfig({
 
           return 'assets/[name]-[hash][extname]'
         }
+      }
+    }
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    css: {
+      include: [/.+/]
+    },
+    server: {
+      deps: {
+        inline: ['vuetify']
       }
     }
   }

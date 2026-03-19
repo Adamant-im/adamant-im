@@ -1,5 +1,5 @@
 <template>
-  <v-row justify="center" no-gutters>
+  <v-row justify="center" gap="0" class="chat-view">
     <container>
       <chat
         :key="partnerId"
@@ -94,3 +94,10 @@ export default {
   }
 }
 </script>
+
+<style scoped lang="scss">
+.chat-view {
+  width: 100%;
+  margin: 0;
+}
+</style>

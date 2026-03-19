@@ -1,0 +1,78 @@
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
+
+@mixin a-secondary-dialog-title() {
+  @include mixins.a-text-header();
+}
+
+@mixin a-secondary-dialog-body-copy() {
+  @include mixins.a-text-regular-enlarged();
+}
+
+@mixin a-secondary-dialog-link-action() {
+  @include mixins.a-text-active();
+}
+
+@mixin a-secondary-dialog-action-block($padding: 0) {
+  padding: $padding;
+  text-align: center;
+}
+
+@mixin a-secondary-dialog-primary-action-button() {
+  margin-top: var(--a-secondary-dialog-action-margin-top);
+  margin-bottom: var(--a-secondary-dialog-action-margin-bottom);
+}
+
+@mixin a-secondary-dialog-footer-link-block() {
+  padding: 0 0 var(--a-secondary-dialog-footer-padding-bottom) 0;
+  text-align: center;
+}
+
+@mixin a-secondary-dialog-card-frame() {
+  &__card-title,
+  &__dialog-title {
+    padding: var(--a-secondary-dialog-title-padding) !important;
+  }
+
+  &__card-text,
+  &__body,
+  &__dialog-body {
+    padding: var(--a-secondary-dialog-content-padding) !important;
+  }
+
+  &__card-actions,
+  &__actions,
+  &__dialog-actions {
+    padding: var(--a-secondary-dialog-actions-padding) !important;
+  }
+
+  &__list {
+    padding: 0 !important;
+  }
+
+  &__list-item {
+    min-height: var(--a-list-row-min-height) !important;
+    padding-block: var(--a-list-row-padding-block) !important;
+    padding-inline: var(--a-secondary-dialog-padding-inline) !important;
+  }
+
+  &__list .v-list-item,
+  &__list :deep(.v-list-item) {
+    padding-inline: var(--a-secondary-dialog-padding-inline) !important;
+  }
+}
+
+@mixin a-secondary-dialog-warning-frame() {
+  @include a-secondary-dialog-card-frame();
+
+  &__disclaimer {
+    margin-top: var(--a-secondary-dialog-disclaimer-gap);
+  }
+
+  &__highlight {
+    padding: var(--a-secondary-dialog-highlight-padding);
+  }
+
+  &__btn-icon {
+    margin-inline-end: var(--a-secondary-dialog-action-icon-gap);
+  }
+}

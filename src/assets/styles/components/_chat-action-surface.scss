@@ -1,0 +1,5 @@
+@mixin a-chat-action-surface($radius: var(--a-chat-action-surface-radius)) {
+  border-radius: $radius;
+  background-color: rgb(var(--v-theme-surface));
+  border: var(--a-border-width-thin) solid rgba(var(--v-border-color), var(--v-border-opacity));
+}

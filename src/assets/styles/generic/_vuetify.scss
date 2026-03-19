@@ -42,32 +42,32 @@ html {
 }
 
 .v-theme--light {
-  .v-btn--disabled:not(.v-btn--icon).v-btn--variant-elevated {
-    background-color: map.get(colors.$adm-colors, 'secondary') !important;
-    color: map.get(colors.$adm-colors, 'primary2') !important;
-    box-shadow: none !important;
+  .v-btn.v-btn--disabled:not(.v-btn--icon).v-btn--variant-elevated {
+    background-color: map.get(colors.$adm-colors, 'secondary');
+    color: map.get(colors.$adm-colors, 'primary2');
+    box-shadow: none;
   }
-  .v-btn--disabled:not(.v-btn--icon).v-btn--variant-elevated > .v-btn__overlay {
-    opacity: 0 !important;
+  .v-btn.v-btn--disabled:not(.v-btn--icon).v-btn--variant-elevated > .v-btn__overlay {
+    opacity: 0;
   }
 }
 .v-theme--dark {
-  .v-btn--disabled:not(.v-btn--icon).v-btn--variant-elevated {
-    background-color: hsla(0, 0%, 100%, 0.35) !important;
-    color: hsla(0, 0%, 100%, 0.95) !important;
-    box-shadow: none !important;
+  .v-btn.v-btn--disabled:not(.v-btn--icon).v-btn--variant-elevated {
+    background-color: hsla(0, 0%, 100%, 0.35);
+    color: hsla(0, 0%, 100%, 0.95);
+    box-shadow: none;
     opacity: 0.36;
   }
-  .v-btn--disabled:not(.v-btn--icon).v-btn--variant-elevated > .v-btn__overlay {
-    opacity: 0 !important;
+  .v-btn.v-btn--disabled:not(.v-btn--icon).v-btn--variant-elevated > .v-btn__overlay {
+    opacity: 0;
   }
 }
 
 // Change default dialog background color
 .v-card {
-  &.v-theme--dark {
-    background-color: #424242; // secondary
-    border-color: #424242; // secondary
+  &.v-theme--dark:not(.bg-transparent) {
+    background-color: var(--a-color-surface-secondary-dark);
+    border-color: var(--a-color-surface-secondary-dark);
   }
 }
 
@@ -75,17 +75,11 @@ html {
   padding: 16px;
 }
 
-.v-list {
-  &.v-theme--dark {
-    background-color: #424242; // secondary
-  }
-}
-
 .v-menu .v-overlay__content > .v-card,
 .v-menu .v-overlay__content > .v-sheet,
 .v-menu .v-overlay__content > .v-list {
   &.v-theme--dark {
-    background-color: #424242; // secondary
+    background-color: var(--a-color-surface-secondary-dark);
   }
 }
 
@@ -104,7 +98,7 @@ html {
 
 .v-theme--dark.v-card {
   > .v-card__text {
-    color: #fff;
+    color: var(--a-color-text-inverse);
   }
 
   > .v-card-title {
@@ -112,7 +106,7 @@ html {
   }
 
   > .v-card__subtitle {
-    color: #fff;
+    color: var(--a-color-text-inverse);
   }
 }
 
@@ -121,15 +115,16 @@ html {
 }
 
 .v-theme--dark.v-data-table {
-  background-color: #424242;
+  background-color: var(--a-color-surface-secondary-dark);
 }
 
-.v-snack__content {
-  font-size: 16px;
+.v-snackbar__content {
+  font-size: var(--a-snackbar-content-font-size);
+  line-height: var(--a-snackbar-content-line-height);
 }
 
 .v-snackbar__wrapper {
-  max-width: 400px;
+  max-width: var(--a-snackbar-max-width);
 }
 
 /**
@@ -187,29 +182,57 @@ html {
 }
 
 .v-list-item-subtitle {
-  opacity: unset;
+  opacity: 1;
+
+  p {
+    margin: 0;
+  }
 }
 
 .v-label {
-  opacity: unset;
+  opacity: 1;
 }
 .v-theme--light .v-field__outline {
-  color: map.get(colors.$adm-colors, 'muted');
+  color: var(--a-color-text-muted-light);
 }
 .v-theme--dark .v-field__outline {
-  color: map.get(colors.$adm-colors, 'grey-transparent');
+  color: var(--a-color-text-muted-dark);
 }
 .v-theme--light .v-field__field .v-label {
-  color: map.get(colors.$adm-colors, 'muted');
+  color: var(--a-color-text-muted-light);
 }
 .v-theme--dark .v-field__field .v-label {
-  color: map.get(colors.$adm-colors, 'grey-transparent');
+  color: var(--a-color-text-muted-dark);
 }
 
-.v-list-item--density-default.v-list-item--one-line {
-  min-height: 56px;
-  padding-top: 8px;
-  padding-bottom: 8px;
+/* Restore brand accent for focused fields after Vuetify migration */
+.v-theme--light
+  .v-field.v-field--focused:not(.v-field--error):not(.v-field--disabled)
+  .v-field__outline,
+.v-theme--light
+  .v-field.v-field--focused:not(.v-field--error):not(.v-field--disabled)
+  .v-field__field
+  .v-label {
+  color: map.get(colors.$adm-colors, 'primary');
+}
+
+.v-theme--dark
+  .v-field.v-field--focused:not(.v-field--error):not(.v-field--disabled)
+  .v-field__outline,
+.v-theme--dark
+  .v-field.v-field--focused:not(.v-field--error):not(.v-field--disabled)
+  .v-field__field
+  .v-label {
+  color: map.get(colors.$adm-colors, 'primary');
+}
+
+/**
+ * Legacy alias from Vuetify 2 naming used in templates/styles.
+ * Vuetify 4 class is `.v-row--no-gutter`.
+ */
+.v-row--no-gutters {
+  --v-col-gap-x: 0px;
+  --v-col-gap-y: 0px;
 }
 
 .v-theme--dark {
@@ -286,5 +309,18 @@ a {
   a,
   a:visited {
     color: map.get(colors.$adm-colors, 'primary');
+  }
+}
+
+/**
+ * Prevent iOS Safari from auto-zooming when an input is focused.
+ * iOS zooms whenever the focused input's font-size is below 16 px;
+ * using max() keeps existing sizes that are already larger intact.
+ */
+@media (hover: none) and (pointer: coarse) {
+  input,
+  textarea,
+  select {
+    font-size: max(16px, 1em) !important;
   }
 }

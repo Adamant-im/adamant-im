@@ -1,9 +1,10 @@
 import * as utils from '@/lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
-import { CryptosInfo, DEFAULT_ETH_TRANSFER_GAS_LIMIT, FetchStatus } from '@/lib/constants'
+import { CryptosInfo, FetchStatus } from '@/lib/constants'
 import { storeCryptoAddress, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import shouldUpdate from '../../utils/coinUpdatesGuard'
+import { logger } from '@/utils/devTools/logger'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
@@ -21,7 +22,7 @@ function storeEthAddress(context) {
 }
 
 const initTransaction = async (api, context, ethAddress, amount, nonce, increaseFee) => {
-  const gasPrice = await api.useClient((client) => client.getGasPrice())
+  const gasPrice = BigInt(context.getters.finalGasPrice(increaseFee))
 
   const transaction = {
     from: context.state.address,
@@ -31,10 +32,20 @@ const initTransaction = async (api, context, ethAddress, amount, nonce, increase
     nonce
   }
 
-  const gasLimit = await api
-    .useClient((client) => client.estimateGas(transaction))
-    .catch(() => BigInt(DEFAULT_ETH_TRANSFER_GAS_LIMIT))
-  transaction.gasLimit = increaseFee ? utils.increaseFee(gasLimit) : gasLimit
+  const ethInfo = CryptosInfo['ETH']
+  const reliabilityGasLimitPercent = ethInfo.reliabilityGasLimitPercent
+
+  try {
+    let estimatedGasLimit = await api.useClient((client) => client().estimateGas(transaction))
+
+    const reliableGasLimit = utils.calculateReliableValue(
+      estimatedGasLimit,
+      reliabilityGasLimitPercent
+    )
+    transaction.gasLimit = BigInt(reliableGasLimit.integerValue().toString())
+  } catch {
+    transaction.gasLimit = BigInt(ethInfo.defaultGasLimit)
+  }
 
   return transaction
 }
@@ -54,7 +65,7 @@ const createSpecificActions = (api) => ({
 
       try {
         const rawBalance = await api.useClient((client) =>
-          client.getBalance(state.address, 'latest')
+          client().getBalance(state.address, 'latest')
         )
         const balance = Number(utils.toEther(rawBalance.toString()))
 
@@ -63,7 +74,7 @@ const createSpecificActions = (api) => ({
         commit('setBalanceActualUntil', Date.now() + CryptosInfo.ETH.balanceValidInterval)
       } catch (err) {
         commit('setBalanceStatus', FetchStatus.Error)
-        console.warn(err)
+        logger.log('actions', 'warn', err)
       }
     }
   },
@@ -82,7 +93,7 @@ const createSpecificActions = (api) => ({
       function repeat() {
         validateStoredCryptoAddresses()
         dispatch('updateBalance')
-          .catch((err) => console.error(err))
+          .catch((err) => logger.log('eth-actions', 'warn', err))
           .then(() => {
             interval = setTimeout(() => {
               repeat()
@@ -115,31 +126,30 @@ const createSpecificActions = (api) => ({
 
     // Balance
     void api
-      .useClient((client) => client.getBalance(context.state.address, 'latest'))
+      .useClient((client) => client().getBalance(context.state.address, 'latest'))
       .then((balance) => {
         context.commit('balance', Number(utils.toEther(balance.toString())))
         context.commit('setBalanceStatus', FetchStatus.Success)
       })
-      .catch((err) => console.warn(err))
+      .catch((err) => logger.log('actions', 'warn', err))
 
     // Current gas price
     void api
-      .useClient((client) => client.getGasPrice())
+      .useClient((client) => client().getGasPrice())
       .then((price) => {
         context.commit('gasPrice', {
-          gasPrice: Number(price),
-          fee: +(+utils.calculateFee(DEFAULT_ETH_TRANSFER_GAS_LIMIT, price)).toFixed(8)
+          gasPrice: price.toString()
         })
       })
-      .catch((err) => console.warn(err))
+      .catch((err) => logger.log(`actions`, 'warn', err))
 
     // Current block number
     void api
-      .useClient((client) => client.getBlockNumber())
+      .useClient((client) => client().getBlockNumber())
       .then((number) => {
         context.commit('blockNumber', Number(number))
       })
-      .catch((err) => console.warn(err))
+      .catch((err) => logger.log('actions', 'warn', err))
 
     const delay = Math.max(0, STATUS_INTERVAL - Date.now() + lastStatusUpdate)
     setTimeout(() => {

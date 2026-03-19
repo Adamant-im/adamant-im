@@ -26,6 +26,7 @@
     "me": "Me",
     "message": "Message",
     "message_rejected": "Message rejected",
+    "message_not_sent_status": "Message not sent",
     "my_qr_code": "My QR code",
     "new_chat": "New chat",
     "no_connection": "No Internet connection",
@@ -48,7 +49,7 @@
     "received_label": "Received",
     "recipient": "Partner address",
     "recipient_tooltip": "Partner ADM address like U1234567890987654321 or Share link",
-    "retry_message": "Could not send: Weak connection. Tap to retry",
+    "retry_message": "Could not send: Weak connection",
     "send_button": "Send",
     "send_crypto": "Send {crypto}",
     "sent_label": "Sent",
@@ -89,6 +90,7 @@
     },
     "you": "You",
     "chat_actions": {
+      "retry": "Retry",
       "reply": "Reply",
       "copy": "Copy"
     },
@@ -116,6 +118,33 @@
   "connection": {
     "offline": "Offline—No connection",
     "online": "Online—Connection restored"
+  },
+  "dev_screens": {
+    "title": "Development Tools",
+    "vibrations": "Vibrations",
+    "adamant_wallets": "Adamant-Wallets",
+    "logging": "Verbose logging in Console"
+  },
+  "dev_vibrations": {
+    "custom_pattern": "Custom Pattern",
+    "pattern_placeholder": "Example: 100,200,300",
+    "play": "Play",
+    "presets": "Presets",
+    "very_short": "Very Short",
+    "short": "Short",
+    "medium": "Medium",
+    "long": "Long",
+    "double_very_short": "Double Very Short",
+    "triple_very_short": "Triple Very Short",
+    "double_short": "Double Short"
+  },
+  "dev_wallets": {
+    "configuration": "Configuration",
+    "select_coin": "Select Coin",
+    "select_blockchain": "Select Context",
+    "select_property": "Select Property",
+    "result": "Result",
+    "copy_value": "Copy Value"
   },
   "error": "Error",
   "errors": {
@@ -146,6 +175,8 @@
     "show_qr_code": "Show QR code",
     "stake_and_earn_btn": "Stake and earn",
     "wallet": "wallet",
+    "wallet_crypto_adamant_prefix": "",
+    "wallet_crypto_adamant_suffix": " wallet",
     "wallet_crypto": "{crypto} wallet",
     "explorer": "Open in block explorer"
   },
@@ -176,7 +207,7 @@
     "new_passphrase_label": "<b>Save</b> your new account passphrase. Keep it secret; it grants full access to your wallet and messages. If lost, it cannot be recovered.",
     "password_label": "Passphrase",
     "save_button_tooltip": "Save passphrase in a text file. ⚠️ High risk of leakage.",
-    "save_qr_code_to_images": "Save to images",
+    "save_qr_code_to_images": "Save",
     "save_qr_code_tooltip": "Save passphrase as a QR code. ⚠️ High risk of leakage.",
     "scan_qr_code_button_tooltip": "Scan QR code with passphrase using your camera",
     "subheader": "Decentralized messenger",
@@ -199,12 +230,26 @@
     "user_password_unlock": "Unlock"
   },
   "nodes": {
+    "popup": {
+      "http_restriction_title": "HTTP nodes are blocked in browser",
+      "http_restriction_intro": "For security, browsers block requests from HTTPS pages to HTTP endpoints.",
+      "http_vs_https_title": "🔒 HTTP vs HTTPS",
+      "http_vs_https_http": "HTTP is unencrypted, so observers may see which node the app uses.",
+      "http_vs_https_https": "HTTPS encrypts traffic, hiding everything except the node address.",
+      "adamant_encryption_title": "💡 ADAMANT encrypts all messages",
+      "adamant_encryption_text": "ADAMANT encrypts blockchain messages over both HTTP and HTTPS. So ADAMANT nodes are safe to use via HTTP. This browser restriction applies only to the Web app. Desktop and mobile apps support both protocols.",
+      "how_to_allow_title": "To use HTTP nodes:",
+      "how_to_allow_browser": "Allow insecure content for this site in browser settings, or",
+      "how_to_allow_http_app": "Open the HTTP version of the app",
+      "close": "Close"
+    },
     "active": "Active",
     "fastest_title": "Use the fastest available node",
     "fastest_tooltip": "Automatically selects the node with the lowest latency",
     "label": "Type",
     "host": "Host",
     "inactive": "Inactive",
+    "updating": "Updating",
     "sync": "Syncing",
     "ms": "ms",
     "nodeLabelDescription": "Help strengthen the network: <a target=\"_blank\" href=\"https://news.adamant.im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">Run your own ADM node</a>. Note: To list a node, <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">deploy your own app</a> (CSP requirement).",
@@ -268,7 +313,8 @@
     "use_full_date_tooltip": "Displays dates as 2021-01-17 instead of relative terms like 'Yesterday' or 'Today'",
     "version": "App Version:",
     "vote_for_delegates_button": "Vote for delegates",
-    "wallets_list": "Wallet list"
+    "wallets_list": "Wallet list",
+    "dev_screens": "Dev screens"
   },
   "region": "en-US",
   "rows_per_page": "Rows per page",
@@ -350,7 +396,6 @@
     "decode_from_camera": "Scan QR code with camera",
     "decode_from_image": "Read QR code from image",
     "error_dust_amount": "Dust amount—Send more tokens",
-    "recipient_minimum_balance": "Recipient must have at least 0.05 KLY—Send more tokens",
     "error_all_nodes_offline": "All {crypto} nodes offline",
     "error_precision": "Too many decimals—Reduce precision",
     "error_field_is_required": "Field is required",
@@ -418,6 +463,7 @@
     "reset": "Reset",
     "reset_message": "Are you sure you want to reset the wallet list to its default state?",
     "search": "Search",
-    "summary_title": "Reset wallet list"
+    "summary_title": "Reset wallet list",
+    "blockchain": "Mainnet"
   }
 }

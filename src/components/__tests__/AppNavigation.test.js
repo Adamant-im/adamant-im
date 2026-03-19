@@ -1,27 +1,37 @@
 import { vi, describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-
+import { createStore } from 'vuex'
 import mockupI18n from './__mocks__/plugins/i18n'
 import AppNavigation from '@/components/AppNavigation'
 
+vi.mock('vue-router', () => ({
+  useRoute: vi.fn(() => ({
+    path: '/home',
+    query: {}
+  })),
+  useRouter: vi.fn(() => ({
+    push: vi.fn()
+  }))
+}))
+
 describe('AppNavigation.vue', () => {
   it('renders the correct markup', () => {
+    const store = createStore({
+      getters: {
+        'chat/totalNumOfNewMessages': () => 5,
+        'wallets/getVisibleSymbolsCount': () => 1,
+        'options/accountLastRoute': () => '/transactions/ADM',
+        'options/settingsLastRoute': () => '/options'
+      },
+      mutations: {
+        'options/setAccountLastRoute': vi.fn()
+      }
+    })
+
     const wrapper = mount(AppNavigation, {
       shallow: true,
       global: {
-        mocks: {
-          $route: {
-            path: '/home'
-          },
-          $router: {
-            push: vi.fn()
-          },
-          $t: vi.fn(),
-          $store: {
-            getters: {}
-          }
-        },
-        plugins: [mockupI18n()]
+        plugins: [mockupI18n(), store]
       }
     })
 

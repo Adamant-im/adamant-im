@@ -1,5 +1,5 @@
 <template>
-  <v-table :class="classes.root">
+  <SettingsDataTable :class="classes.root">
     <delegates-table-head />
     <tbody>
       <template v-if="searchDelegates.length > 0">
@@ -19,12 +19,13 @@
       />
       <delegates-not-found v-else :search-query="searchQuery" />
     </tbody>
-  </v-table>
+  </SettingsDataTable>
 </template>
 
 <script>
 import { computed, defineComponent, reactive, ref, toRefs } from 'vue'
 import { useStore } from 'vuex'
+import SettingsDataTable from '@/components/common/SettingsDataTable.vue'
 import DelegatesTableItem from './DelegatesTableItem.vue'
 import DelegatesTableHead from './DelegatesTableHead.vue'
 import DelegatesNotFound from './DelegatesNotFound.vue'
@@ -52,6 +53,7 @@ function filterDelegatesFn(searchQuery) {
 
 export default defineComponent({
   components: {
+    SettingsDataTable,
     DelegatesNotFound,
     DelegatesTableHead,
     DelegatesTableItem,
@@ -119,23 +121,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-@use 'sass:map';
-@use '@/assets/styles/settings/_colors.scss';
-@use 'vuetify/settings';
-
-.delegates-table {
-}
-
-@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-  .delegates-table {
-  }
-}
-
-.v-theme--dark {
-  .delegates-table {
-    background-color: map.get(colors.$adm-colors, 'black2');
-  }
-}
-</style>

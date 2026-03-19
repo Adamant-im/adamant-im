@@ -10,7 +10,7 @@
     </NodeColumn>
 
     <NodeColumn ping :colspan="isUnsupported ? 2 : 1">
-      <NodeStatus :node="node" />
+      <NodeStatus :node="node" @show-http-info="$emit('showHttpInfo')" />
     </NodeColumn>
   </tr>
 </template>
@@ -34,6 +34,7 @@ const classes = {
 }
 
 export default {
+  emits: ['showHttpInfo'],
   components: {
     NodeStatusCheckbox,
     NodeColumn,
@@ -77,6 +78,6 @@ export default {
 
 <style lang="scss">
 .ipfs-nodes-table-item {
-  line-height: 14px;
+  line-height: var(--a-font-size-sm);
 }
 </style>

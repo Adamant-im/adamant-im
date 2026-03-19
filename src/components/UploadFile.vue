@@ -2,7 +2,7 @@
   <input
     :accept="accept"
     ref="fileInput"
-    style="display: none"
+    :class="classes.input"
     multiple
     type="file"
     @change="uploadFile"
@@ -12,6 +12,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
+import { logger } from '@/utils/devTools/logger'
 import {
   computeCID,
   cropImage,
@@ -29,7 +30,7 @@ function getImageResolution(file: File): Promise<{ width?: number; height?: numb
       resolve({ width: img.width, height: img.height })
     }
     img.onerror = (err) => {
-      console.warn('Error loading image:', err)
+      logger.log('UploadFile', 'warn', 'Error loading image:', err)
       resolve({})
       URL.revokeObjectURL(img.src)
     }
@@ -51,6 +52,10 @@ export default defineComponent({
   },
   emits: ['file'],
   setup(props, { emit }) {
+    const className = 'upload-file'
+    const classes = {
+      input: `${className}__input`
+    }
     const store = useStore()
 
     const uploadFile = async (event: Event) => {
@@ -58,7 +63,7 @@ export default defineComponent({
       const selectedFiles = input.files
 
       if (!selectedFiles) {
-        console.warn('No files selected')
+        logger.log('UploadFile', 'warn', 'No files selected')
         return
       }
 
@@ -122,8 +127,17 @@ export default defineComponent({
     }
 
     return {
+      classes,
       uploadFile
     }
   }
 })
 </script>
+
+<style lang="scss" scoped>
+.upload-file {
+  &__input {
+    display: none;
+  }
+}
+</style>

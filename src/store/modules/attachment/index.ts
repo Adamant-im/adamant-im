@@ -2,6 +2,7 @@ import { MutationTree, GetterTree, ActionTree } from 'vuex'
 import { RootState } from '@/store/types'
 import { AttachmentsState } from '@/store/modules/attachment/types'
 import { AttachmentApi } from '@/lib/attachment-api'
+import { logger } from '@/utils/devTools/logger'
 
 const state = (): AttachmentsState => ({
   attachments: {},
@@ -74,7 +75,7 @@ const actions: ActionTree<AttachmentsState, RootState> = {
         commit('setAttachment', { cid, url })
         return url
       } catch (error) {
-        console.error('Error fetching image:', error)
+        logger.log('attachment-store', 'warn', 'Error fetching image:', error)
         throw error
       }
     }

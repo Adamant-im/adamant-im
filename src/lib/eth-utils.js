@@ -3,7 +3,6 @@ import * as web3Utils from 'web3-utils'
 import { privateKeyToAccount } from 'web3-eth-accounts'
 import BigNumber from 'bignumber.js'
 import cache from '@/store/cache.js'
-import { INCREASE_FEE_MULTIPLIER } from '@/lib/constants'
 
 const HD_KEY_PATH = "m/44'/60'/3'/1/0"
 
@@ -53,8 +52,8 @@ export function getAccountFromPassphrase(passphrase, api) {
 export function calculateFee(gasUsed, gasPrice) {
   // After London hardfork we may not receive gasPrice. Still we change gasPrice to effectiveGasPrice where it's possible
   if (!gasPrice) return '0'
-  const gas = BigNumber(gasUsed, 10)
-  const price = BigNumber(gasPrice, 10)
+  const gas = new BigNumber(String(gasUsed), 10)
+  const price = new BigNumber(String(gasPrice), 10)
   const fee = gas.times(price).toString(10)
   return toEther(fee)
 }
@@ -75,9 +74,9 @@ export function toWhole(amount, decimals) {
     fraction += '0'
   }
 
-  const num = BigNumber(whole, 10)
-    .times(BigNumber(10, 10).pow(BigNumber(decimals, 10)))
-    .plus(BigNumber(fraction, 10))
+  const num = new BigNumber(String(whole), 10)
+    .times(new BigNumber('10', 10).pow(new BigNumber(String(decimals), 10)))
+    .plus(new BigNumber(String(fraction), 10))
     .toString(10)
 
   return num
@@ -109,12 +108,24 @@ export function toFraction(amount, decimals, separator = '.') {
 }
 
 /**
- * @param {bigint | number} gasLimit
- * @param {number} multiplier
- * @returns {bigint} Increased fee
+ * Calculates reliable value by adding percentage margin and optional increase
+ * @param {number|string|BigNumber} baseValue base value (gasLimit or gasPrice)
+ * @param {number} reliabilityPercent percentage to add (e.g., 10 for 10%)
+ * @param {boolean} [applyIncrease] whether to apply the increase fee
+ * @param {number} [increasePercent] additional percentage for increased fee (e.g., 50 for 50%)
+ * @returns {BigNumber} value with reliability margin (and optional increase) as BigNumber
  */
-export function increaseFee(gasLimit, multiplier = INCREASE_FEE_MULTIPLIER) {
-  const increasedGasLimit = BigNumber(Number(gasLimit)).multipliedBy(multiplier).toNumber()
+export function calculateReliableValue(
+  baseValue,
+  reliabilityPercent,
+  applyIncrease,
+  increasePercent
+) {
+  let result = BigNumber(baseValue).times(1 + reliabilityPercent / 100)
 
-  return BigInt(Math.round(increasedGasLimit))
+  if (applyIncrease) {
+    result = result.times(1 + increasePercent / 100)
+  }
+
+  return result
 }

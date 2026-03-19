@@ -53,17 +53,20 @@ export default defineComponent({
 @use 'vuetify/settings';
 
 .node-column {
-  font-size: 14px;
-  padding-left: 0 !important;
-  padding-right: 8px !important;
+  --a-node-column-font-size: var(--a-font-size-sm);
+  --a-node-column-padding-inline-end: var(--a-space-2);
+
+  font-size: var(--a-node-column-font-size);
+  padding-left: 0;
+  padding-right: var(--a-node-column-padding-inline-end);
 
   &--checkbox {
-    width: 64px;
-    max-width: 64px;
-    padding-right: 0 !important;
+    width: var(--a-node-column-checkbox-width);
+    max-width: var(--a-node-column-checkbox-width);
+    padding-right: 0;
   }
   &--ping {
-    padding-right: 8px !important;
+    padding-right: var(--a-node-column-padding-inline-end);
   }
 
   &--align-right {
@@ -78,8 +81,8 @@ export default defineComponent({
 @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
   .node-column {
     &--checkbox {
-      width: 56px;
-      max-width: 56px;
+      width: var(--a-node-column-checkbox-width-mobile);
+      max-width: var(--a-node-column-checkbox-width-mobile);
     }
   }
 }
@@ -87,11 +90,6 @@ export default defineComponent({
 .v-theme--light {
   .node-column {
     color: map.get(colors.$adm-colors, 'regular');
-  }
-}
-
-.v-theme--dark {
-  .node-column {
   }
 }
 </style>

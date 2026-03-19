@@ -1,9 +1,9 @@
 import { computed, MaybeRef, unref } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import { getTxFetchInfo } from '@/lib/transactionsFetching'
-import { adm, btcIndexer, dash, dogeIndexer, eth, kly } from '@/lib/nodes'
+import { adm, btcIndexer, dash, dogeIndexer, eth } from '@/lib/nodes'
 
-type Chain = 'ADM' | 'BTC' | 'DOGE' | 'DASH' | 'ETH' | 'KLY'
+type Chain = 'ADM' | 'BTC' | 'DOGE' | 'DASH' | 'ETH'
 
 const fetchBlockHeight = async (chain: Chain): Promise<number> => {
   switch (chain) {
@@ -17,8 +17,6 @@ const fetchBlockHeight = async (chain: Chain): Promise<number> => {
       return dash.getHeight()
     case 'ETH':
       return eth.getHeight()
-    case 'KLY':
-      return kly.getHeight()
     default:
       throw new Error(`Unsupported chain: ${chain}`)
   }

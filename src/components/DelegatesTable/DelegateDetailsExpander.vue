@@ -11,13 +11,13 @@
 
       <v-list-item v-for="(item, i) in delegateDetails" :key="i" :class="classes.listItem">
         <template #prepend>
-          <v-list-item-title class="a-text-explanation">
+          <v-list-item-title :class="classes.label">
             {{ item.title }}
           </v-list-item-title>
         </template>
 
         <template #append>
-          <v-list-item-title class="a-text-explanation text-right">
+          <v-list-item-title :class="[classes.label, classes.value]">
             {{ item.value }}
           </v-list-item-title>
         </template>
@@ -47,7 +47,9 @@ export default defineComponent({
       root: className,
       list: `${className}__list`,
       listItem: `${className}__list-item`,
-      address: `${className}__address`
+      address: `${className}__address`,
+      label: `${className}__label`,
+      value: `${className}__value`
     }
 
     const { t } = useI18n()
@@ -87,19 +89,26 @@ export default defineComponent({
 @use 'vuetify/settings';
 
 .delegate-details-expander {
-  margin: 10px 26px;
+  margin-block: var(--a-delegate-details-expander-margin-block);
+  margin-inline: var(--a-delegate-details-expander-margin-inline);
 
   &__list-item {
-    height: 36px;
-    :deep(.v-list__tile) {
-      padding-left: 20px;
-      padding-right: 20px;
-    }
+    min-height: var(--a-delegate-details-expander-item-height);
+    padding-left: var(--a-delegate-details-expander-item-padding-inline);
+    padding-right: var(--a-delegate-details-expander-item-padding-inline);
   }
   &__address {
     a {
       @include mixins.a-text-active();
     }
+  }
+
+  &__label {
+    @include mixins.a-text-explanation();
+  }
+
+  &__value {
+    text-align: right;
   }
 }
 

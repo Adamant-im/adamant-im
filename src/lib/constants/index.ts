@@ -94,35 +94,20 @@ export const WelcomeMessage = {
 }
 
 export const BTC_BASED = Object.freeze([Cryptos.DOGE, Cryptos.DASH, Cryptos.BTC])
-export const KLY_BASED = Object.freeze([Cryptos.KLY])
 export const INSTANT_SEND = Object.freeze([Cryptos.DASH])
-export const ALLOW_TEXT_DATA = Object.freeze([Cryptos.KLY]) // Some blockchains allow storing a text message within a Tx
 
 export const isErc20 = (crypto: CryptoSymbol) => CryptosInfo[crypto]?.type === 'ERC20'
 export const isEthBased = (crypto: CryptoSymbol) => isErc20(crypto) || crypto === Cryptos.ETH
 export const isFeeEstimate = (crypto: CryptoSymbol) => isEthBased(crypto)
 export const isBtcBased = (crypto: CryptoSymbol) => BTC_BASED.includes(crypto)
-export const isKlyBased = (crypto: CryptoSymbol) => KLY_BASED.includes(crypto)
-export const isSelfTxAllowed = (crypto: CryptoSymbol) =>
-  KLY_BASED.includes(crypto) || crypto === Cryptos.ADM
+export const isSelfTxAllowed = (crypto: CryptoSymbol) => crypto === Cryptos.ADM
+
 export const isInstantSendPossible = (crypto: CryptoSymbol) => INSTANT_SEND.includes(crypto)
-export const isTextDataAllowed = (crypto: CryptoSymbol) => ALLOW_TEXT_DATA.includes(crypto)
-
-export const RE_KLY_ADDRESS_LEGACY = /^[0-9]{2,21}L$/
-
 /**
  * These gas limit values are used only for estimate fees for ETH & ERC-20 transfers in the Send tokens form,
  * Actual gas limit values are calculated with estimateGas(transactionObject)
  * when each specific transaction is created
  */
-
-/** Gas limit value for the ETH transfers */
-export const DEFAULT_ETH_TRANSFER_GAS_LIMIT = (CryptosInfo['ETH'] as any).defaultGasLimit // @todo fix type in adamant-wallets
-/** Gas limit value for the ERC-20 transfers */
-export const DEFAULT_ERC20_TRANSFER_GAS_LIMIT = DEFAULT_ETH_TRANSFER_GAS_LIMIT * 2.4
-
-/** Increase fee multiplier. Used as a checkbox on SendFundsForm */
-export const INCREASE_FEE_MULTIPLIER = 1.5
 
 export { AllCryptos, AllCryptosOrder, Cryptos, CryptosInfo, CryptosOrder, type CryptoSymbol }
 
@@ -257,6 +242,19 @@ export const REACT_EMOJIS = {
   FOLDED_HANDS: '🙏',
   FLUSHED_FACE: '😳',
   PARTY_POPPER: '🎉'
+} as const
+
+/**
+ * Time offset for grouping messages in the chat
+ **/
+export const CHAT_MESSAGE_BUBBLE_TIME_OFFSET = 30000
+
+/** Validation errors for the chat message */
+export const VALIDATION_ERRORS = {
+  EmptyMessage: 'EMPTY_MESSAGE',
+  NotEnoughFunds: 'NON_ENOUGH_FUNDS',
+  NotEnoughFundsNewAccount: 'NON_ENOUGH_FUNDS_NEW_ACCOUNT',
+  MessageTooLong: 'MESSAGE_LENGTH_EXCEED'
 } as const
 
 export const sidebarLayoutKey = Symbol('sidebarLayout')

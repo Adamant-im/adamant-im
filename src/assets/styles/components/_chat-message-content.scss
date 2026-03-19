@@ -1,0 +1,5 @@
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
+
+@mixin a-chat-message-body-copy() {
+  @include mixins.a-text-regular-enlarged();
+}

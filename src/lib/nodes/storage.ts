@@ -28,7 +28,6 @@ const defaultOptions: Options = {
   doge: defaultConfig,
   dash: defaultConfig,
   eth: defaultConfig,
-  kly: defaultConfig,
   ipfs: defaultConfig
 }
 

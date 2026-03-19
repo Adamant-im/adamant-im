@@ -24,18 +24,18 @@
 
   .v-label.v-field-label--floating {
     .a-label-secondary {
-      font-size: 10.5px !important;
+      font-size: 10.5px;
     }
   }
 }
 .fake-input {
   color: rgba(255, 255, 255, 0.5);
-  font-weight: 400;
-  padding-top: 12px;
-  margin-top: 4px;
+  font-weight: var(--a-font-weight-regular);
+  padding-top: var(--a-fake-input-padding-top);
+  margin-top: var(--a-fake-input-margin-top);
   pointer-events: none;
   flex: 1 1 auto;
-  font-size: 16px;
+  font-size: var(--a-fake-input-font-size);
   text-align: left;
   display: flex;
   align-items: flex-start;
@@ -46,10 +46,11 @@
     left: 0px;
     right: auto;
     position: absolute;
-    transform: translateY(-18px) scale(0.75);
+    transform: translateY(var(--a-fake-input-label-translate-y))
+      scale(var(--a-fake-input-label-scale));
     overflow: hidden;
     text-overflow: ellipsis;
-    top: 15px;
+    top: var(--a-fake-input-label-top);
     transform-origin: top left;
     white-space: nowrap;
     max-width: 133%;
@@ -57,7 +58,7 @@
 
   &__box {
     width: 100%;
-    padding-bottom: 20px;
+    padding-bottom: var(--a-fake-input-box-padding-bottom);
     position: relative;
     display: flex;
     align-items: baseline;
@@ -73,7 +74,7 @@
           transparent 4px
         )
         1 repeat;
-      border-color: rgba(255, 255, 255, 0.7);
+      border-color: map.get(colors.$adm-colors, 'grey-transparent');
       border-style: solid;
       border-width: thin 0 0 0;
       border-top-width: 1px;
@@ -81,41 +82,41 @@
       position: absolute;
       transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
       width: 100%;
-      top: 31px;
+      top: var(--a-fake-input-box-divider-top);
     }
   }
 
   &__value {
-    line-height: 32px;
+    line-height: var(--a-fake-input-value-line-height);
     display: block;
     text-overflow: ellipsis;
     white-space: nowrap;
 
     &--rate {
       font-style: italic;
-      padding-left: 3px;
-      color: inherit !important;
+      padding-inline-start: var(--a-fake-input-rate-padding-inline-start);
+      color: inherit;
     }
   }
 }
 .v-theme--light {
   .a-input {
     .v-label {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-color-text-muted-light);
     }
 
     .v-label.v-label--active {
-      color: map.get(colors.$adm-colors, 'muted') !important;
+      color: var(--a-color-text-muted-light);
     }
 
     .v-label--is-disabled {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-color-text-muted-light);
     }
 
     &.v-input--is-disabled {
       input,
       textarea {
-        color: map.get(colors.$adm-colors, 'muted');
+        color: var(--a-color-text-muted-light);
       }
     }
 
@@ -132,7 +133,7 @@
     }
 
     .v-input__control > .v-input__slot:before {
-      border-color: rgba(0, 0, 0, 0.12);
+      border-color: var(--a-color-border-neutral-light);
     }
 
     &:not(.v-input--has-state) > .v-input__control > .v-input__slot:hover:before {
@@ -146,7 +147,7 @@
   }
 
   .fake-input {
-    color: rgba(0, 0, 0, 0.54);
+    color: var(--a-color-text-muted-light);
   }
 
   .fake-input__box:before {

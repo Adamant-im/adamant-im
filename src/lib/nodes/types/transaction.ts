@@ -46,14 +46,6 @@ export type CoinTransaction = {
   confirmations?: number
 }
 
-export type KlyTransaction = CoinTransaction & {
-  data: string
-  height?: number
-  nonce: string
-  module: 'token'
-  command: 'transfer'
-}
-
 export type EthTransaction = Omit<CoinTransaction, 'timestamp'> & {
   blockNumber?: number
   time?: number // timestamp in seconds
@@ -75,9 +67,4 @@ export type BtcTransaction = Omit<CoinTransaction, 'confirmations'> & {
 export type DogeTransaction = Omit<BtcTransaction, 'height'>
 export type DashTransaction = BtcTransaction
 
-export type AnyCoinTransaction =
-  | BtcTransaction
-  | DogeTransaction
-  | DashTransaction
-  | EthTransaction
-  | KlyTransaction
+export type AnyCoinTransaction = BtcTransaction | DogeTransaction | DashTransaction | EthTransaction

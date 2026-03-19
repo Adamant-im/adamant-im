@@ -11,6 +11,10 @@ import {
 } from '../../../lib/pending-transactions'
 import { signTransaction, TransactionFactory } from 'web3-eth-accounts'
 import api from '@/lib/nodes/eth'
+import EthContract from 'web3-eth-contract'
+import { isErc20 } from '@/lib/constants'
+import Erc20 from '../erc20/erc20.abi.json'
+import { logger } from '@/utils/devTools/logger'
 
 /** Interval between attempts to fetch the registered tx details */
 const CHUNK_SIZE = 25
@@ -140,7 +144,9 @@ export default function createActions(config) {
         )
 
         if (sentTransactionHash !== signedTransaction.transactionHash) {
-          console.warn(
+          logger.log(
+            'eth-base-actions',
+            'warn',
             `Something wrong with sent ETH tx, computed hash and sent tx differs: ${signedTransaction.transactionHash} and ${sentTransactionHash}`
           )
         }
@@ -177,7 +183,7 @@ export default function createActions(config) {
       if (!transaction) return
 
       void api
-        .useClient((client) => client.getBlock(payload.blockNumber))
+        .useClient((client) => client().getBlock(payload.blockNumber))
         .then((block) => {
           // Converting from BigInt into Number must be safe
           const timestamp = BigNumber(block.timestamp.toString()).multipliedBy(1000).toNumber()
@@ -251,6 +257,42 @@ export default function createActions(config) {
       }
 
       context.commit('areOlderLoading', false)
+    },
+
+    /**
+     * Estimate gas limit for ETH or ERC20 transaction
+     * @param {Object} context - Vuex context
+     * @param {Object} params - Parameters
+     * @param {number} params.amount - Transaction amount
+     * @param {string} params.address - Recipient address
+     * @returns {Promise<number|null>} Estimated gas limit or null if estimation failed
+     */
+    estimateGasLimit: {
+      async handler({ state }, { amount, address }) {
+        try {
+          const isToken = isErc20(state.crypto)
+          const toAddress = isToken ? state.contractAddress : address
+          const value = isToken ? '0x0' : utils.toWei(amount)
+          const data = isToken
+            ? new EthContract(Erc20, state.contractAddress).methods
+                .transfer(address, utils.toWhole(amount, state.decimals))
+                .encodeABI()
+            : undefined
+
+          const transaction = {
+            from: state.address,
+            to: toAddress,
+            value,
+            ...(data && { data })
+          }
+
+          const gasLimit = await api.useClient((client) => client().estimateGas(transaction))
+          return Number(gasLimit)
+        } catch (error) {
+          logger.log('eth-base-actions', 'warn', `${state.crypto} EstimateGas failed:`, error)
+          return null
+        }
+      }
     }
   }
 }

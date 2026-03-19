@@ -11,7 +11,7 @@
       <div
         :class="{
           [classes.reactionSelect]: true,
-          [classes.reactionSelectLeft]: transaction.senderId === partnerId,
+          [classes.reactionSelectLeft]: incomingMessage,
           [classes.reactionSelectBottom]: isLargeMessage
         }"
       >
@@ -23,7 +23,7 @@
       <div
         :class="{
           [classes.menu]: true,
-          [classes.menuLeft]: transaction.senderId === partnerId,
+          [classes.menuLeft]: incomingMessage,
           [classes.menuBottom]: isLargeMessage
         }"
       >
@@ -34,10 +34,12 @@
 </template>
 
 <script lang="ts">
-import { usePartnerId } from '@/components/AChat/hooks/usePartnerId'
+import { isIncomingMessage as resolveIncomingMessage } from '@/components/AChat/helpers/isIncomingMessage'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { computed, defineComponent, onMounted, PropType, reactive, ref } from 'vue'
+import { useStore } from 'vuex'
 import { vibrate } from '@/lib/vibrate'
+import { logger } from '@/utils/devTools/logger'
 
 const className = 'a-chat-actions-overlay'
 const classes = {
@@ -64,8 +66,8 @@ export default defineComponent({
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
+    const store = useStore()
     const rootRef = ref<HTMLElement | null>(null)
-    const partnerId = usePartnerId(props.transaction)
 
     const rect = computed(() => {
       const element = document.querySelector(`.a-chat__message[data-id='${props.transaction.id}']`)
@@ -73,7 +75,9 @@ export default defineComponent({
       if (element) {
         return element.getBoundingClientRect()
       } else {
-        console.warn(
+        logger.log(
+          'AChatActionsOverlay',
+          'warn',
           `[AChatActionsOverlay]: <AChatMessage/> with "data-id"="${props.transaction.id}" was not found`
         )
         return null
@@ -93,6 +97,9 @@ export default defineComponent({
 
       return rect.value.height > window.innerHeight / 2
     })
+    const incomingMessage = computed(() =>
+      resolveIncomingMessage(props.transaction.senderId, store.state.address)
+    )
 
     onMounted(() => {
       setTimeout(() => {
@@ -123,7 +130,7 @@ export default defineComponent({
       position,
       rootRef,
       handleClick,
-      partnerId,
+      incomingMessage,
       isLargeMessage
     }
   }
@@ -132,6 +139,9 @@ export default defineComponent({
 
 <style lang="scss">
 .a-chat-actions-overlay {
+  --a-chat-actions-overlay-transition-duration: 50ms;
+  --a-chat-actions-overlay-transition-ease: var(--a-ease-standard);
+  --a-chat-actions-overlay-reaction-gap: var(--a-space-1);
   position: absolute;
   top: 0;
   bottom: 0;
@@ -140,13 +150,14 @@ export default defineComponent({
 
   &__message {
     position: fixed;
-    transition: all 0.05s ease;
+    transition: all var(--a-chat-actions-overlay-transition-duration)
+      var(--a-chat-actions-overlay-transition-ease);
   }
 
   &__reaction-select {
     position: absolute;
     bottom: 100%;
-    margin-bottom: 16px;
+    margin-bottom: var(--a-chat-actions-overlay-reaction-gap);
     z-index: 1;
 
     right: 0;
@@ -166,6 +177,7 @@ export default defineComponent({
   &__menu {
     position: absolute;
     top: 100%;
+    width: max-content;
 
     right: 0;
     left: unset;
@@ -176,7 +188,9 @@ export default defineComponent({
     }
 
     &--bottom {
-      margin-top: calc(46px + 16px); // <AReactionSelect/> height + margin
+      margin-top: calc(
+        var(--a-chat-actions-overlay-reaction-height) + var(--a-chat-actions-overlay-reaction-gap)
+      ); // <AReactionSelect/> height + margin
     }
   }
 }

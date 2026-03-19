@@ -1,0 +1,19 @@
+@mixin a-wallet-compact-line-copy() {
+  line-height: var(--a-wallet-compact-line-height);
+}
+
+@mixin a-wallet-compact-title-line() {
+  line-height: var(--a-wallet-compact-title-line-height);
+}
+
+@mixin a-wallet-compact-trailing-copy() {
+  text-align: end;
+  @include a-wallet-compact-title-line();
+}
+
+@mixin a-wallet-compact-trailing-loading() {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  @include a-wallet-compact-line-copy();
+}

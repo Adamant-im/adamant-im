@@ -1,10 +1,10 @@
 <template>
   <div :class="classes.root">
-    <div class="text-center">
-      <h3 class="a-text-regular">
+    <div :class="classes.createSection">
+      <h3 :class="classes.createTitle">
         {{ t('login.create_address_label') }}
       </h3>
-      <v-btn class="a-btn-link mt-2" variant="text" size="small" @click="generatePassphrase">
+      <v-btn :class="classes.createButton" variant="text" size="small" @click="generatePassphrase">
         {{ t('login.new_button') }}
       </v-btn>
     </div>
@@ -12,14 +12,7 @@
     <transition name="slide-fade">
       <div v-if="showPassphrase" :class="classes.box">
         <!-- eslint-disable vue/no-v-html -- Safe internal content -->
-        <div
-          ref="el"
-          :class="{
-            'mt-2': true,
-            [classes.passphraseLabel]: true
-          }"
-          v-html="t('login.new_passphrase_label')"
-        />
+        <div ref="el" :class="classes.passphraseLabel" v-html="t('login.new_passphrase_label')" />
         <!-- eslint-enable vue/no-v-html -->
 
         <v-textarea
@@ -30,8 +23,9 @@
           multi-line
           readonly
           rows="3"
-          class="pt-0"
+          :class="classes.textarea"
           color="grey"
+          hide-details
           no-resize
           @click.prevent="selectText"
         >
@@ -39,8 +33,8 @@
             <div :class="classes.icons">
               <icon
                 :class="classes.icon"
-                :width="24"
-                :height="24"
+                :width="AUTH_FORM_TOGGLE_ICON_SIZE"
+                :height="AUTH_FORM_TOGGLE_ICON_SIZE"
                 shape-rendering="crispEdges"
                 :title="t('login.copy_button_tooltip')"
                 @click="copyToClipboardHandler"
@@ -49,8 +43,8 @@
               </icon>
               <icon
                 :class="classes.icon"
-                :width="24"
-                :height="24"
+                :width="AUTH_FORM_TOGGLE_ICON_SIZE"
+                :height="AUTH_FORM_TOGGLE_ICON_SIZE"
                 shape-rendering="auto"
                 :title="t('login.save_button_tooltip')"
                 @click="saveFile"
@@ -59,8 +53,8 @@
               </icon>
               <icon
                 :class="classes.icon"
-                :width="24"
-                :height="24"
+                :width="AUTH_FORM_TOGGLE_ICON_SIZE"
+                :height="AUTH_FORM_TOGGLE_ICON_SIZE"
                 shape-rendering="crispEdges"
                 :title="t('login.save_qr_code_tooltip')"
                 @click="showQrcodeRendererDialog = true"
@@ -71,7 +65,7 @@
                 :class="classes.icon"
                 :title="passphraseVisibilityTooltip"
                 :icon="showSuggestedPassphrase ? mdiEye : mdiEyeOff"
-                size="24"
+                :size="AUTH_FORM_TOGGLE_ICON_SIZE"
                 @click="togglePassphraseVisibility"
               />
             </div>
@@ -98,6 +92,8 @@ import SaveIcon from '@/components/icons/common/Save.vue'
 import QrCodeIcon from '@/components/icons/common/QrCode.vue'
 import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { VTextarea } from 'vuetify/components'
+import { logger } from '@/utils/devTools/logger'
+import { AUTH_FORM_TOGGLE_ICON_SIZE } from '@/components/Login/helpers/uiMetrics'
 
 const { t } = useI18n()
 
@@ -106,8 +102,12 @@ const emit = defineEmits(['copy', 'save'])
 const className = 'passphrase-generator'
 const classes = {
   root: className,
+  createSection: `${className}__create-section`,
+  createTitle: `${className}__create-title`,
+  createButton: `${className}__create-button`,
   box: `${className}__box`,
   passphraseLabel: `${className}__passphrase-label`,
+  textarea: `${className}__textarea`,
   icons: `${className}__icons`,
   icon: `${className}__icon`
 }
@@ -165,7 +165,7 @@ const generatePassphrase = () => {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' })
     } else {
-      console.warn('[PassphraseGenerator] `element` is undefined')
+      logger.log('PassphraseGenerator', 'warn', '[PassphraseGenerator] `element` is undefined')
     }
   }, 0)
 }
@@ -177,6 +177,8 @@ const togglePassphraseVisibility = () => {
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_form-action-layout.scss' as formActionLayout;
+@use '@/assets/styles/components/_link-action-button.scss' as linkActionButton;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
@@ -186,15 +188,50 @@ const togglePassphraseVisibility = () => {
  * 2. Remove textarea border bottom.
  */
 .passphrase-generator {
+  --a-passphrase-create-title-gap: var(--a-space-1);
+  --a-passphrase-create-button-margin-top: var(--a-space-2);
+  --a-passphrase-box-margin-top: var(--a-space-10);
+  --a-passphrase-label-margin-top: var(--a-space-2);
+  --a-passphrase-label-font-size: var(--a-font-size-xs);
+  --a-passphrase-label-font-weight: var(--a-font-weight-regular);
+  --a-passphrase-label-letter-spacing: var(--a-letter-spacing-normal);
+  --a-passphrase-textarea-padding-top: var(--a-space-3);
+  --a-passphrase-icon-opacity: var(--a-opacity-icon-muted);
+  --a-passphrase-icon-transition-duration: var(--a-motion-emphasized);
+  --a-passphrase-icon-size: var(--a-auth-control-hit-size);
+  --a-passphrase-icon-hit-offset: calc(
+    (var(--a-passphrase-icon-size) - var(--a-auth-control-icon-size)) / -2
+  );
+  --a-passphrase-icons-top-offset: calc(var(--a-space-1) * -1);
+  --a-passphrase-icons-gap: var(--a-space-5);
+  --a-passphrase-icon-backdrop-opacity-dark: 0.3;
+  --a-passphrase-icon-backdrop-opacity-light: 0.12;
+  --a-passphrase-label-line-height: var(--a-auth-control-label-line-height);
+
+  &__create-section {
+    @include formActionLayout.a-form-helper-section-center();
+  }
+
+  &__create-title {
+    @include mixins.a-text-regular();
+    margin-top: 0;
+    margin-bottom: var(--a-passphrase-create-title-gap);
+  }
+
+  &__create-button {
+    @include linkActionButton.a-link-action-button();
+    margin-top: var(--a-passphrase-create-button-margin-top);
+  }
+
   &__box {
-    margin-top: 36px;
+    margin-top: var(--a-passphrase-box-margin-top);
     :deep(.v-input) {
       margin-top: 0;
     }
     :deep(.v-textarea) textarea {
       @include mixins.a-text-regular();
-      line-height: 18px;
-      padding-top: 12px;
+      line-height: var(--a-passphrase-label-line-height);
+      padding-top: var(--a-passphrase-textarea-padding-top);
       mask-image: unset;
     }
     :deep(.v-textarea) {
@@ -204,22 +241,29 @@ const togglePassphraseVisibility = () => {
       }
     }
   }
+
+  &__textarea {
+    :deep(.v-field__input) {
+      padding-top: 0;
+    }
+  }
+
   &__icon {
     position: relative;
-    opacity: 0.62;
-    transition: all 0.4s ease;
+    opacity: var(--a-passphrase-icon-opacity);
+    transition: all var(--a-passphrase-icon-transition-duration) ease;
 
     &::before {
       content: '';
       position: absolute;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      top: -6px;
-      left: -6px;
+      border-radius: var(--a-radius-round);
+      width: var(--a-passphrase-icon-size);
+      height: var(--a-passphrase-icon-size);
+      top: var(--a-passphrase-icon-hit-offset);
+      left: var(--a-passphrase-icon-hit-offset);
       background-color: map.get(colors.$adm-colors, 'regular');
       opacity: 0;
-      transition: all 0.4s ease;
+      transition: all var(--a-passphrase-icon-transition-duration) ease;
     }
 
     &:hover {
@@ -227,22 +271,39 @@ const togglePassphraseVisibility = () => {
     }
   }
   &__icons {
-    margin-top: -4px;
+    margin-top: var(--a-passphrase-icons-top-offset);
     > *:not(:first-child) {
-      margin-left: 20px;
+      margin-left: var(--a-passphrase-icons-gap);
     }
   }
   &__passphrase-label {
+    margin-top: var(--a-passphrase-label-margin-top);
     color: map.get(colors.$adm-colors, 'grey');
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 18px;
-    letter-spacing: normal !important;
+    font-size: var(--a-passphrase-label-font-size);
+    font-weight: var(--a-passphrase-label-font-weight);
+    line-height: var(--a-passphrase-label-line-height);
+    letter-spacing: var(--a-passphrase-label-letter-spacing);
   }
 
   :deep(.v-input--is-focused) {
     .v-icon .svg-icon {
       fill: map.get(colors.$adm-colors, 'regular');
+    }
+  }
+}
+
+.v-theme--light {
+  .passphrase-generator {
+    &__create-button {
+      @include linkActionButton.a-link-action-button-light();
+    }
+  }
+}
+
+.v-theme--dark {
+  .passphrase-generator {
+    &__create-button {
+      @include linkActionButton.a-link-action-button-dark();
     }
   }
 }
@@ -265,7 +326,7 @@ const togglePassphraseVisibility = () => {
         }
 
         &:before {
-          opacity: 0.3;
+          opacity: var(--a-passphrase-icon-backdrop-opacity-dark);
         }
       }
     }
@@ -292,7 +353,7 @@ const togglePassphraseVisibility = () => {
         }
 
         &:before {
-          opacity: 0.12;
+          opacity: var(--a-passphrase-icon-backdrop-opacity-light);
         }
       }
     }

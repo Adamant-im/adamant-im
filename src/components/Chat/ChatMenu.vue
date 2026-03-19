@@ -1,8 +1,13 @@
 <template>
   <div>
-    <v-menu eager v-model="isChatMenuOpen">
+    <v-menu eager v-model="isChatMenuOpen" :open-on-hover="isDesktop">
       <template #activator="{ props }">
-        <v-icon class="chat-menu__icon" v-bind="props" :icon="mdiPlusCircleOutline" size="28" />
+        <v-icon
+          class="chat-menu__icon"
+          v-bind="props"
+          :icon="mdiPlusCircleOutline"
+          :size="COMMON_TRIGGER_ICON_SIZE"
+        />
       </template>
 
       <UploadFile
@@ -65,9 +70,10 @@ import { useChatStateStore } from '@/stores/modal-state'
 import type { FileData } from '@/lib/files'
 import { CoinSymbol } from '@/store/modules/wallets/types'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
+import { useScreenSize } from '@/hooks/useScreenSize'
+import { COMMON_TRIGGER_ICON_SIZE } from '@/components/common/helpers/uiMetrics'
 
 const fetchingErrors = {
-  liskLegacy: 'Only legacy Lisk address',
   noAddress: 'No crypto wallet address',
   connection: 'Connection error'
 } as const
@@ -85,7 +91,7 @@ const router = useRouter()
 const store = useStore()
 const { t } = useI18n()
 const chatStateStore = useChatStateStore()
-
+const { isMobileView } = useScreenSize()
 const { setChatMenuOpen } = chatStateStore
 
 const uploadImageRef = useTemplateRef<InstanceType<typeof UploadFile>>('uploadImageRef')
@@ -96,6 +102,8 @@ const dialogTitle = ref('')
 const dialogText = ref('')
 const crypto = ref('')
 const acceptImage = 'image/* , video/*'
+
+const isDesktop = !isMobileView.value
 
 const isChatMenuOpen = computed({
   get: () => chatStateStore.isChatMenuOpen,
@@ -122,6 +130,7 @@ function sendFunds(selectedCrypto: string) {
           recipientAddress: partnerId || ''
         },
         query: {
+          fromChat: 'true',
           from: `/chats/${partnerId}`,
           replyToId
         }
@@ -129,11 +138,6 @@ function sendFunds(selectedCrypto: string) {
     })
     .catch((e: Error) => {
       crypto.value = selectedCrypto
-
-      if (e.message.includes(fetchingErrors.liskLegacy)) {
-        dialogTitle.value = t('transfer.legacy_address_title', { crypto: selectedCrypto })
-        dialogText.value = t('transfer.legacy_address_text', { crypto: selectedCrypto })
-      }
 
       if (e.message.includes(fetchingErrors.noAddress)) {
         dialogTitle.value = t('transfer.no_address_title', { crypto: selectedCrypto })
@@ -168,8 +172,6 @@ function fetchCryptoAddress(selectedCrypto: string): Promise<any> {
     .then((address: any) => {
       if (!address) {
         throw new Error(fetchingErrors.noAddress)
-      } else if (address.onlyLegacyLiskAddress) {
-        throw new Error(fetchingErrors.liskLegacy)
       }
 
       return address
@@ -182,17 +184,35 @@ function fetchCryptoAddress(selectedCrypto: string): Promise<any> {
 @use 'vuetify/settings';
 
 .chat-menu {
+  &__icon {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: calc(var(--a-chat-trigger-hover-inset) * -1);
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0;
+      transition: 0.4s;
+      z-index: -1;
+    }
+
+    &:hover::before {
+      opacity: 0.1;
+    }
+  }
+
   &__list {
-    min-width: 200px;
+    min-width: calc((var(--a-control-size-lg) * 4) + var(--a-space-2));
     max-height: 100vh;
 
     :deep(.v-list-item-title) {
-      font-weight: 400;
+      font-weight: 300;
     }
   }
 }
 
-/** Themes **/
 .v-theme--light {
   .chat-menu {
     &__icon {
@@ -200,11 +220,9 @@ function fetchCryptoAddress(selectedCrypto: string): Promise<any> {
     }
   }
 }
+
 .v-theme--dark {
   .chat-menu {
-    &__icon {
-      color: map.get(settings.$shades, 'white');
-    }
     &__list {
       :deep(.v-list-item-title) {
         color: map.get(settings.$shades, 'white');

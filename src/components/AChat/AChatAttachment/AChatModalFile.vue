@@ -1,8 +1,8 @@
 <template>
-  <v-carousel-item :class="classes.root" :max-width="500" :max-height="250">
+  <v-carousel-item :class="classes.root" :max-width="fileMaxWidth" :max-height="fileMaxHeight">
     <v-card :class="classes.card" width="100%" height="100%">
       <div :class="classes.container">
-        <IconFile :width="128" :height="128" :text="fileExtension" />
+        <IconFile :width="iconSize" :height="iconSize" :text="fileExtension" />
 
         <div>
           <div :class="classes.fileName">{{ fileName }}</div>
@@ -21,6 +21,11 @@ import { computed, defineComponent, PropType } from 'vue'
 import IconFile from '@/components/icons/common/IconFile.vue'
 import { FileAsset } from '@/lib/adamant-api/asset'
 import { formatBytes, formatFileExtension } from '@/lib/files'
+import {
+  CHAT_MODAL_FILE_ICON_SIZE,
+  CHAT_MODAL_FILE_MAX_HEIGHT,
+  CHAT_MODAL_FILE_MAX_WIDTH
+} from '@/components/AChat/helpers/uiMetrics'
 
 const className = 'a-chat-modal-file'
 const classes = {
@@ -30,7 +35,6 @@ const classes = {
   fileName: `${className}__file-name`,
   fileSize: `${className}__file-size`
 }
-
 export default defineComponent({
   components: { IconFile },
   props: {
@@ -61,7 +65,10 @@ export default defineComponent({
       fileName,
       fileExtension,
       fileSize,
-      formatBytes
+      formatBytes,
+      fileMaxWidth: CHAT_MODAL_FILE_MAX_WIDTH,
+      fileMaxHeight: CHAT_MODAL_FILE_MAX_HEIGHT,
+      iconSize: CHAT_MODAL_FILE_ICON_SIZE
     }
   }
 })
@@ -69,6 +76,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
@@ -86,15 +94,13 @@ export default defineComponent({
   }
 
   &__card {
-    margin: 8px;
+    margin: var(--a-space-2);
   }
 
   &__container {
     height: inherit;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
+    @include layoutPrimitives.a-flex-center();
+    gap: var(--a-space-2);
   }
 
   &__file-name {
@@ -102,7 +108,7 @@ export default defineComponent({
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 220px;
+    max-width: var(--a-chat-modal-file-name-max-width);
   }
 
   &__file-size {
@@ -114,7 +120,8 @@ export default defineComponent({
   .a-chat-modal-file {
     &__card {
       background-color: map.get(colors.$adm-colors, 'black2');
-      border: 1px solid map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
+      border: var(--a-border-width-thin) solid
+        map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
     }
 
     &__file-name {
@@ -122,7 +129,7 @@ export default defineComponent({
     }
 
     &__file-size {
-      color: map.get(colors.$adm-colors, 'grey-transparent');
+      color: var(--a-color-text-muted-dark);
     }
   }
 }
@@ -131,7 +138,7 @@ export default defineComponent({
   .a-chat-modal-file {
     &__card {
       background-color: map.get(colors.$adm-colors, 'secondary2');
-      border: 1px solid map.get(colors.$adm-colors, 'secondary');
+      border: var(--a-border-width-thin) solid map.get(colors.$adm-colors, 'secondary');
     }
 
     &__file-name {
@@ -139,7 +146,7 @@ export default defineComponent({
     }
 
     &__file-size {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-color-text-muted-light);
     }
   }
 }

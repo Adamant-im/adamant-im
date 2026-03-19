@@ -2,9 +2,9 @@ productName: ADAMANT Messenger
 appId: im.adamant.msg
 
 files:
-  - "!**/node_modules/**"
-  - "dist-electron"
-  - "package.json"
+  - '!**/node_modules/**'
+  - 'dist-electron'
+  - 'package.json'
 
 directories:
   output: './release-electron'
@@ -38,16 +38,18 @@ mac:
   notarize: false
   target:
     target: 'default'
-    arch: 
+    arch:
       - x64
       - arm64
+      - universal
 
 afterSign: 'scripts/electron/notarize.cjs'
+afterAllArtifactBuild: 'scripts/electron/staple.cjs'
 afterPack: 'scripts/electron/sandboxFix.mjs'
-
 
 # Config for OSX dmg
 dmg:
+  sign: true
   background: './build/osx/background.jpeg'
   contents:
     - x: 260
@@ -60,12 +62,15 @@ dmg:
 # Linux configuration
 linux:
   category: 'InstantMessaging'
-  desktop:
-    Icon: './build/linux/icon.png'
-    Name: 'ADAMANT Messenger'
-    Terminal: false
-    Type: 'Application'
   artifactName: 'ADAMANT-Messenger-${version}.${ext}'
+
+  desktop:
+    entry:
+      Icon: './build/linux/icon.png'
+      Name: 'ADAMANT Messenger'
+      Terminal: false
+      Type: 'Application'
+
   icon: './build/linux/'
   target:
     - AppImage

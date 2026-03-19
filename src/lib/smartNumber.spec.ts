@@ -66,4 +66,11 @@ describe('smartNumber', () => {
     expect(numbers[5]).toBe('9.00…8')
     expect(numbers[6]).toBe('4.00…2')
   })
+
+  it('should handle zero and integer values without decimal part', () => {
+    expect(smartNumber(0)).toBe('0')
+    expect(smartNumber('0')).toBe('0')
+    expect(smartNumber(5)).toBe('5')
+    expect(smartNumber('9')).toBe('9')
+  })
 })

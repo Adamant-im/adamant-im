@@ -2,7 +2,7 @@
   <navigation-wrapper :class="className">
     <send-funds-form
       ref="sendFundsFormRef"
-      class="pt-5"
+      :class="`${className}__form`"
       :crypto-currency="cryptoCurrency"
       :recipient-address="recipientAddress"
       :amount-to-send="amountToSend"
@@ -21,6 +21,7 @@ import { isNumeric } from '@/lib/numericHelpers'
 import SendFundsForm from '@/components/SendFundsForm.vue'
 import { AllCryptos, CryptoSymbol } from '@/lib/constants/cryptos'
 import { vibrate } from '@/lib/vibrate'
+import { useAccountViewState } from '@/hooks/useAccountViewState'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
 import { computed, onBeforeMount, ref } from 'vue'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
@@ -29,6 +30,7 @@ import { useStore } from 'vuex'
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
+useAccountViewState()
 
 const className = 'send-funds'
 const replacingPages = ['Chat', 'Chats', 'Options']
@@ -47,7 +49,7 @@ onBeforeMount(() => {
   validateAmountToSend()
 })
 
-onBeforeRouteLeave((to, from, next) => {
+onBeforeRouteLeave((to) => {
   const currentData = store.state.options.sendFundsData
 
   // if not from chats
@@ -83,7 +85,6 @@ onBeforeRouteLeave((to, from, next) => {
       }
     })
   }
-  next()
 })
 
 const validateCryptoCurrency = () => {
@@ -132,10 +133,8 @@ const onError = (message: string) => {
 .send-funds {
   position: relative;
 
-  &__content {
-    overflow-y: auto;
-    height: calc(100vh - var(--v-layout-bottom) - var(--toolbar-height));
-    padding-top: var(--toolbar-height);
+  &__form {
+    padding-top: var(--a-space-5);
   }
 }
 </style>

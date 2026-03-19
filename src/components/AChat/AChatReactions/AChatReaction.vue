@@ -97,25 +97,25 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: space-around;
-  width: 24px;
-  height: 24px;
+  width: var(--a-chat-reaction-size);
+  height: var(--a-chat-reaction-size);
   position: relative;
 
   &__emoji {
     text-align: center;
     vertical-align: middle;
     line-height: 1;
-    font-size: 16px;
+    font-size: var(--a-chat-reaction-emoji-size);
   }
 
   &__emoji--animate {
-    animation: animate__heartBeat 1.5s ease-in-out;
+    animation: animate__heartBeat var(--a-chat-reaction-animation-duration) ease-in-out;
   }
 
   &__avatar {
     position: absolute;
-    bottom: -9px;
-    right: -9px;
+    bottom: calc(var(--a-chat-reaction-avatar-offset) * -1);
+    right: calc(var(--a-chat-reaction-avatar-offset) * -1);
   }
 }
 

@@ -26,6 +26,7 @@
     "me": "Я",
     "message": "Сообщение",
     "message_rejected": "Сообщение отклонено",
+    "message_not_sent_status": "Сообщение не отправлено",
     "my_qr_code": "Мой QR-код",
     "new_chat": "Новый чат",
     "no_connection": "Нет подключения к Интернету",
@@ -48,7 +49,7 @@
     "received_label": "Получили",
     "recipient": "Адрес собеседника",
     "recipient_tooltip": "ADM-адрес собеседника как U1234567890987654321 или ссылка",
-    "retry_message": "Не отправлено: Ошибка соединения. Нажмите, чтобы повторить",
+    "retry_message": "Не отправили: Ошибка соединения",
     "send_button": "Отправить",
     "send_crypto": "Отправить {crypto}",
     "sent_label": "Отправили",
@@ -89,6 +90,7 @@
     },
     "you": "Вы",
     "chat_actions": {
+      "retry": "Повторить",
       "reply": "Цитировать",
       "copy": "Копировать"
     },
@@ -116,6 +118,33 @@
   "connection": {
     "offline": "Нет подключения к Интернету",
     "online": "Подключение восстановлено"
+  },
+  "dev_screens": {
+    "title": "Инструменты разработчика",
+    "vibrations": "Вибрации",
+    "adamant_wallets": "Adamant-Wallets",
+    "logging": "Детализация ведения журнала в консоли"
+  },
+  "dev_vibrations": {
+    "custom_pattern": "Произвольный паттерн",
+    "pattern_placeholder": "Пример: 100,200,300",
+    "play": "Играть",
+    "presets": "Заготовки",
+    "very_short": "Очень короткая",
+    "short": "Короткая",
+    "medium": "Средняя",
+    "long": "Длинная",
+    "double_very_short": "Двойная очень короткая",
+    "triple_very_short": "Тройная очень короткая",
+    "double_short": "Двойная короткая"
+  },
+  "dev_wallets": {
+    "configuration": "Конфигурация",
+    "select_coin": "Выберите монету",
+    "select_blockchain": "Выберите контекст",
+    "select_property": "Выберите свойство",
+    "result": "Результат",
+    "copy_value": "Копировать значение"
   },
   "error": "Ошибка",
   "errors": {
@@ -146,6 +175,8 @@
     "show_qr_code": "Показать QR-код",
     "stake_and_earn_btn": "Застейкать и заработать",
     "wallet": "кошелек",
+    "wallet_crypto_adamant_prefix": "Кошелек ",
+    "wallet_crypto_adamant_suffix": "",
     "wallet_crypto": "Кошелек {crypto}",
     "explorer": "Посмотреть в обозревателе"
   },
@@ -176,7 +207,7 @@
     "new_passphrase_label": "Это парольная фраза для вашего аккаунта. <b>Сохраните ее и держите в секрете</b>! Она дает полный доступ к кошельку и переписке. Утерянную пассфразу восстановить невозможно.",
     "password_label": "Паccфраза",
     "save_button_tooltip": "Сохранить пассфразу в текстовом файле. ⚠️ Высокий риск утечки.",
-    "save_qr_code_to_images": "Сохранить в изображениях",
+    "save_qr_code_to_images": "Сохранить",
     "save_qr_code_tooltip": "Сохранить пассфразу как изображение с QR-кодом. ⚠️ Высокий риск утечки.",
     "scan_qr_code_button_tooltip": "Сканировать камерой QR-код с парольной фразой",
     "subheader": "Децентрализованный мессенджер",
@@ -199,16 +230,30 @@
     "user_password_unlock": "Разблокировать"
   },
   "nodes": {
+    "popup": {
+      "http_restriction_title": "HTTP-ноды ограничены в браузере",
+      "http_restriction_intro": "Из соображений безопасности браузеры блокируют запросы с HTTPS-страниц к HTTP-адресам.",
+      "http_vs_https_title": "🔒 HTTP и HTTPS",
+      "http_vs_https_http": "HTTP не шифрует трафик, поэтому наблюдатели могут видеть, к какой ноде идет запрос.",
+      "http_vs_https_https": "HTTPS шифрует соединение: виден только адрес ноды.",
+      "adamant_encryption_title": "💡 ADAMANT шифрует все сообщения",
+      "adamant_encryption_text": "ADAMANT шифрует сообщения в блокчейне и при HTTP, и при HTTPS. Поэтому ноды ADAMANT безопасны даже по HTTP. Ограничение действует только в веб-версии; десктоп- и мобильное приложение поддерживают оба протокола.",
+      "how_to_allow_title": "Чтобы использовать HTTP-ноды:",
+      "how_to_allow_browser": "Разрешите небезопасный контент для этого сайта в настройках браузера, или",
+      "how_to_allow_http_app": "Откройте HTTP-версию приложения",
+      "close": "Закрыть"
+    },
     "active": "Активная",
     "fastest_title": "Подключаться к самому быстрому узлу",
     "fastest_tooltip": "Автоматически выбирает узлы с наименьшим пингом",
     "label": "Тип",
     "host": "Хост",
     "inactive": "Неактивная",
+    "updating": "Обновляется",
     "sync": "Синхронизируется",
     "ms": "мс",
     "nodeLabelDescription": "Поддержите децентрализацию и повысьте уровень приватности: <a target=\"_blank\" href=\"https://news.adamant.im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">Установите свою ноду ADM</a>. Чтобы добавить узлы в список, <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">разверните свое веб-приложение</a> (ограничение CSP).",
-    "offline": "Недоступна",
+    "offline": "Не в сети",
     "coin": "Coin",
     "ping": "Пинг",
     "service": "Сервис",
@@ -268,7 +313,8 @@
     "use_full_date_tooltip": "Всегда показывать даты в полном формате, например, 2021-01-17 вместо 'Вчера' и 'Сегодня'",
     "version": "Версия приложения:",
     "vote_for_delegates_button": "Голосовать за делегатов",
-    "wallets_list": "Список кошельков"
+    "wallets_list": "Список кошельков",
+    "dev_screens": "Экраны разработчика"
   },
   "region": "ru-RU",
   "rows_per_page": "Строк на страницу",
@@ -350,7 +396,6 @@
     "decode_from_camera": "Отсканировать QR-код камерой",
     "decode_from_image": "Прочитать QR-код с изображения",
     "error_dust_amount": "Мелочь — Отправьте больше токенов",
-    "recipient_minimum_balance": "На кошельке получателя должно быть больше 0.05 KLY — Отправьте больше токенов",
     "error_all_nodes_offline": "Все {crypto}-ноды недоступны",
     "error_precision": "Слишком много цифр после запятой",
     "error_field_is_required": "Поле не заполнено",
@@ -418,6 +463,7 @@
     "reset": "Сбросить",
     "reset_message": "Вы действительно хотите вернуть список кошельков к изначальному состоянию?",
     "search": "Поиск",
-    "summary_title": "Сброс настроек кошельков"
+    "summary_title": "Сброс настроек кошельков",
+    "blockchain": "Мейннет"
   }
 }

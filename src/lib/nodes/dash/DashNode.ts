@@ -2,21 +2,23 @@ import { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import type { NodeInfo } from '@/types/wallets'
 import { RpcRequest, RpcResponse } from './types/api/common'
 import { NetworkInfo } from './types/api/network-info'
 import { BlockchainInfo } from './types/api/blockchain-info'
+import { logger } from '@/utils/devTools/logger'
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
 export class DashNode extends Node<AxiosInstance> {
-  constructor(url: string) {
-    super(url, 'dash', 'node', NODE_LABELS.DashNode)
+  constructor(endpoint: NodeInfo) {
+    super(endpoint, 'dash', 'node', NODE_LABELS.DashNode)
   }
 
   protected buildClient(): AxiosInstance {
-    return createBtcLikeClient(this.url)
+    return createBtcLikeClient(this.url, this.healthcheckRequestTimeoutMs)
   }
 
   protected async checkHealth() {
@@ -32,12 +34,16 @@ export class DashNode extends Node<AxiosInstance> {
   }
 
   protected async fetchNodeVersion(): Promise<void> {
-    const { buildversion } = await this.invoke<NetworkInfo>({
-      method: 'getnetworkinfo'
-    })
+    try {
+      const { buildversion } = await this.invoke<NetworkInfo>({
+        method: 'getnetworkinfo'
+      })
 
-    if (buildversion) {
-      this.version = buildversion.replace('v', '')
+      if (buildversion) {
+        this.version = buildversion.replace('v', '')
+      }
+    } catch (e) {
+      logger.log('dash-node', 'warn', e)
     }
   }
 
@@ -48,9 +54,12 @@ export class DashNode extends Node<AxiosInstance> {
     params: Request,
     requestConfig?: AxiosRequestConfig
   ): Promise<Result> {
+    const baseURL = this.getBaseURL(this)
+
     return this.client
       .request<RpcResponse<Result>>({
         ...requestConfig,
+        baseURL,
         url: '/',
         method: 'POST',
         data: params
@@ -70,9 +79,12 @@ export class DashNode extends Node<AxiosInstance> {
     params: Request[],
     requestConfig?: AxiosRequestConfig
   ): Promise<RpcResponse<Result>[]> {
+    const baseURL = this.getBaseURL(this)
+
     return this.client
       .request<RpcResponse<Result>[]>({
         ...requestConfig,
+        baseURL,
         url: '/',
         method: 'POST',
         data: params

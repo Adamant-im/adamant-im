@@ -26,7 +26,6 @@ import bitcoinModule from './modules/btc'
 import dashModule from './modules/dash'
 import delegatesModule from './modules/delegates'
 import dogeModule from './modules/doge'
-import klyModule from './modules/kly'
 import nodesModule from './modules/nodes'
 import walletsModule from './modules/wallets'
 import nodesPlugin from './modules/nodes/nodes-plugin'
@@ -45,6 +44,7 @@ import { cryptoTransferAsset, replyWithCryptoTransferAsset } from '@/lib/adamant
 import { PendingTxStore } from '@/lib/pending-transactions'
 import servicesModule from './modules/services'
 import servicesPlugin from './modules/services/services-plugin'
+import { logger } from '@/utils/devTools/logger'
 
 export let interval
 
@@ -159,8 +159,10 @@ const store = {
         dispatch('afterLogin', account.passphrase)
       })
     },
-    logout({ dispatch }) {
+    logout({ dispatch, commit }) {
       dispatch('reset')
+      commit('options/resetAccountViewState', null, { root: true })
+      commit('options/resetSettingsViewState', null, { root: true })
       dispatch('wallets/initWalletsSymbols')
       dispatch('draftMessage/resetState', null, { root: true })
       PendingTxStore.clear()
@@ -237,7 +239,7 @@ const store = {
         function repeat() {
           validateStoredCryptoAddresses()
           dispatch('updateBalance')
-            .catch((err) => console.error(err))
+            .catch((err) => logger.log('store', 'warn', err))
             .then(
               () =>
                 (interval = setTimeout(
@@ -248,7 +250,7 @@ const store = {
                 ))
             )
         }
-        dispatch('initBalanceUpdate').catch((err) => console.error(err))
+        dispatch('initBalanceUpdate').catch((err) => logger.log('store', 'warn', err))
         repeat()
       }
     },
@@ -264,7 +266,6 @@ const store = {
     adm: admModule, // ADM transfers
     attachment: attachmentModule, // Files and photos attachments
     doge: dogeModule,
-    kly: klyModule,
     dash: dashModule,
     btc: bitcoinModule,
     partners: partnersModule, // Partners: display names, crypto addresses and so on

@@ -25,7 +25,7 @@ jobs:
       - name: Setup Node version 🍀
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version-file: '.nvmrc'
 
       - name: Configure GitHub Pages ⚙️
         uses: actions/configure-pages@v5

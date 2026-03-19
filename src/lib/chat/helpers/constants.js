@@ -20,6 +20,4 @@ export const KnownCryptos = Object.keys(Cryptos).reduce((map, crypto) => {
 }, {})
 
 /** Cryptos, supported by other clients, but not PWA */
-export const UnsupportedCryptos = {
-  kly_transaction: 'KLY'
-}
+export const UnsupportedCryptos = {}

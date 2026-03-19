@@ -4,7 +4,11 @@
     :class="{
       'a-chat__message-container--right': isStringEqualCI(transaction.senderId, userId),
       'a-chat__message-container--transition': elementLeftOffset === 0,
-      'a-chat__message-container--disable-max-width': disableMaxWidth
+      'a-chat__message-container--disable-max-width': disableMaxWidth,
+      'a-chat__message-container--grouped':
+        !transaction.showBubble && isStringEqualCI(transaction.senderId, userId),
+      'a-chat__message-container--grouped-left':
+        !transaction.showBubble && !isStringEqualCI(transaction.senderId, userId)
     }"
     v-touch="{
       move: onMove,
@@ -24,7 +28,7 @@
       :data-id="dataId"
     >
       <div class="a-chat__message-card">
-        <div class="a-chat__message-card-header mt-1">
+        <div class="a-chat__message-card-header">
           <div v-if="transaction.status === 'CONFIRMED'" class="a-chat__blockchain-status">
             &#x26AD;
           </div>
@@ -36,11 +40,11 @@
               v-if="transaction.status === 'REJECTED'"
               :icon="statusIcon"
               :title="t('chats.retry_message')"
-              size="15"
+              :size="CHAT_STATUS_ICON_ERROR_SIZE"
               color="red"
               @click="$emit('resend')"
             />
-            <v-icon v-else :icon="statusIcon" size="13" />
+            <v-icon v-else :icon="statusIcon" :size="CHAT_STATUS_ICON_SIZE" />
           </div>
         </div>
 
@@ -54,17 +58,9 @@
         <div class="a-chat__message-card-body">
           <!-- eslint-disable vue/no-v-html -- Safe with DOMPurify.sanitize() content -->
           <!-- AChatMessage :message <- Chat.vue :message="formatMessage(message)" <- formatMessage <- DOMPurify.sanitize() -->
-          <div
-            v-if="html"
-            class="a-chat__message-text a-text-regular-enlarged"
-            v-html="formattedMessage"
-          />
+          <div v-if="html" class="a-chat__message-text" v-html="formattedMessage" />
           <!-- eslint-enable vue/no-v-html -->
-          <div
-            v-else
-            class="a-chat__message-text a-text-regular-enlarged"
-            v-text="formattedMessage"
-          />
+          <div v-else class="a-chat__message-text" v-text="formattedMessage" />
         </div>
       </div>
     </div>
@@ -125,6 +121,7 @@ import { isWelcomeChat } from '@/lib/chat/meta/utils'
 import ImageLayout from './ImageLayout.vue'
 import InlineLayout from './InlineLayout.vue'
 import AChatImageModal from './AChatImageModal.vue'
+import { CHAT_STATUS_ICON_ERROR_SIZE, CHAT_STATUS_ICON_SIZE } from '../helpers/uiMetrics'
 
 export default defineComponent({
   methods: { downloadFile },
@@ -228,6 +225,8 @@ export default defineComponent({
       onLongPress,
       formatDate,
       time,
+      CHAT_STATUS_ICON_SIZE,
+      CHAT_STATUS_ICON_ERROR_SIZE,
       currentIndex,
       isModalOpen,
       openModal,
@@ -239,29 +238,39 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_chat-message-content.scss' as chatMessageContent;
 @use '@/assets/styles/settings/_colors.scss';
-@use '@/assets/styles/themes/adamant/_mixins.scss';
+@use 'vuetify/settings';
 
 .a-chat__attachments {
-  width: 500px;
+  --a-chat-attachments-offset-top: var(--a-space-1);
+  --a-chat-attachments-grid-width: 80vw;
+  width: var(--a-chat-attachments-max-width);
   max-width: 100%;
-  margin-top: 4px;
+  margin-top: var(--a-chat-attachments-offset-top);
 
   &--inline {
     width: auto;
   }
 }
 
+.a-chat__message-text {
+  @include chatMessageContent.a-chat-message-body-copy();
+}
+
 .a-chat_file-container {
-  max-width: 420px;
+  max-width: var(--a-chat-attachments-file-container-max-width);
 }
 
 .a-chat_fileContainerWithElement {
   display: grid;
-  gap: 2px;
-  width: 80vw;
-  max-width: 200px;
-  grid-template-columns: repeat(auto-fit, minmax(98px, 1fr));
+  gap: calc(var(--a-space-1) / 2);
+  width: var(--a-chat-attachments-grid-width);
+  max-width: var(--a-chat-attachments-grid-max-width);
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(var(--a-chat-attachments-grid-min-column-width), 1fr)
+  );
 }
 
 .a-chat_file-img {
@@ -280,8 +289,8 @@ export default defineComponent({
 
 .v-theme--dark {
   .a-chat-file {
-    background-color: rgba(245, 245, 245, 0.1); // @todo const
-    color: #fff;
+    background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
+    color: map.get(settings.$shades, 'white');
   }
 }
 </style>

@@ -159,9 +159,6 @@
       "displayName": "doge-node",
       "list": [
         {
-          "url": "http://mtg4mq43p67cbj6qwcqgppjv7uzm7ximjlzapsbnbh5ls6zqkjsq26ad.onion"
-        },
-        {
           "url": "http://bfu3iiofsagyhi22zijfilbkzlzbalpylhhfcluqmezx2avdwcxut7yd.onion"
         },
         {
@@ -187,9 +184,6 @@
           "docs": "https://github.com/blockstream/esplora/blob/master/API.md"
         },
         "list": [
-          {
-            "url": "http://mtg4mq43p67cbj6qwcqgppjv7uzm7ximjlzapsbnbh5ls6zqkjsq26ad.onion/api"
-          },
           {
             "url": "http://bfu3iiofsagyhi22zijfilbkzlzbalpylhhfcluqmezx2avdwcxut7yd.onion/api"
           },
@@ -242,51 +236,6 @@
           },
           {
             "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
-          }
-        ],
-        "healthCheck": {
-          "normalUpdateInterval": 330000,
-          "crucialUpdateInterval": 30000,
-          "onScreenUpdateInterval": 10000
-        }
-      }
-    }
-  },
-  "kly": {
-    "explorer": "https://explorer.klayr.xyz",
-    "explorerTx": "https://explorer.klayr.xyz/transaction/${ID}",
-    "explorerAddress": "https://explorer.klayr.xyz/account/${ID}",
-    "nodes": {
-      "displayName": "kly-node",
-      "list": [
-        {
-          "url": "http://5fr7uybpxecid5gikrm65hstsfhve2772keyqdvxirsiywlyo6zap6yd.onion"
-        },
-        {
-          "url": "http://5rmyjfvazkg5gcyo3gwvdinykvycsleeebumdm6zlj6dhf6gshpelfid.onion"
-        }
-      ],
-      "healthCheck": {
-        "normalUpdateInterval": 270000,
-        "crucialUpdateInterval": 30000,
-        "onScreenUpdateInterval": 10000,
-        "threshold": 5
-      }
-    },
-    "services": {
-      "klyService": {
-        "displayName": "kly-indexer",
-        "description": {
-          "software": "klayr-service",
-          "github": "https://github.com/KlayrHQ/klayr-service",
-          "docs": "https://klayr.xyz/documentation/klayr-service"
-        },
-        "list": [
-          {
-            "url": "http://3om4mobnbppxuexwufprp4cle4fivstooqqap6yoll5qk3kikesmqgad.onion"
-          },
-          {
-            "url": "http://xif2b7cchtn27aq2qypjc6p3phamrt4fdc3gbl5e6kk2fw3ypovre5id.onion"
           }
         ],
         "healthCheck": {

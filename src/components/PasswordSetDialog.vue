@@ -1,13 +1,13 @@
 <template>
-  <v-dialog v-model="show" width="500">
+  <v-dialog v-model="show" :class="className" width="var(--a-secondary-dialog-width)">
     <v-card>
-      <v-card-title class="a-text-header">
+      <v-card-title :class="`${className}__card-title`">
         {{ t('login_via_password.popup_title') }}
       </v-card-title>
 
       <v-divider class="a-divider" />
 
-      <v-card-text class="pa-4">
+      <v-card-text :class="`${className}__body`">
         <!--     Todo: check src/components/LoginForm.vue component and consider the possibility to move common code to new component  -->
         <v-text-field
           v-model="password"
@@ -26,22 +26,27 @@
               @click="togglePasswordVisibility"
               icon
               :ripple="false"
-              :size="28"
+              :size="AUTH_FORM_TOGGLE_BUTTON_SIZE"
               variant="plain"
             >
-              <v-icon :icon="showPassword ? mdiEye : mdiEyeOff" :size="24" />
+              <v-icon
+                :icon="showPassword ? mdiEye : mdiEyeOff"
+                :size="AUTH_FORM_TOGGLE_ICON_SIZE"
+              />
             </v-btn>
           </template>
         </v-text-field>
 
-        <div class="a-text-regular-enlarged">
+        <div :class="`${className}__article-hint`">
           {{ t('login_via_password.article_hint') }}
-          <a @click="openLink(userPasswordAgreementLink)">{{ t('login_via_password.article') }}</a
+          <a :class="`${className}__article-link`" @click="openLink(userPasswordAgreementLink)">{{
+            t('login_via_password.article')
+          }}</a
           >.
         </div>
       </v-card-text>
 
-      <v-card-actions class="pa-3">
+      <v-card-actions :class="`${className}__actions`">
         <v-spacer />
 
         <v-btn variant="text" class="a-btn-regular" @click="show = false">
@@ -58,8 +63,8 @@
             v-show="showSpinner"
             indeterminate
             color="primary"
-            size="24"
-            class="mr-4"
+            :size="AUTH_FORM_SUBMIT_SPINNER_SIZE"
+            :class="`${className}__submit-spinner`"
           />
           {{ t('login_via_password.popup_confirm_text') }}
         </v-btn>
@@ -76,6 +81,12 @@ import { useI18n } from 'vue-i18n'
 
 import { UserPasswordArticleLink } from '@/lib/constants'
 import { saveState } from '@/lib/idb/state'
+import { logger } from '@/utils/devTools/logger'
+import {
+  AUTH_FORM_SUBMIT_SPINNER_SIZE,
+  AUTH_FORM_TOGGLE_BUTTON_SIZE,
+  AUTH_FORM_TOGGLE_ICON_SIZE
+} from '@/components/Login/helpers/uiMetrics'
 
 const props = defineProps<{
   modelValue: boolean
@@ -88,6 +99,7 @@ const emit = defineEmits<{
 
 const store = useStore()
 const { t } = useI18n()
+const className = 'password-set-dialog'
 
 const password = ref('')
 const showSpinner = ref(false)
@@ -128,7 +140,7 @@ const submit = () => {
     })
     .then(() => saveState(store))
     .catch((err) => {
-      console.error(err)
+      logger.log('password-set-dialog', 'warn', err)
     })
     .finally(() => {
       disabledButton.value = false
@@ -137,3 +149,26 @@ const submit = () => {
     })
 }
 </script>
+
+<style lang="scss" scoped>
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+.password-set-dialog {
+  @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  &__card-title {
+    @include secondaryDialog.a-secondary-dialog-title();
+  }
+
+  &__article-hint {
+    @include secondaryDialog.a-secondary-dialog-body-copy();
+  }
+
+  &__article-link {
+    @include secondaryDialog.a-secondary-dialog-link-action();
+  }
+
+  &__submit-spinner {
+    margin-inline-end: var(--a-auth-control-inline-gap);
+  }
+}
+</style>
