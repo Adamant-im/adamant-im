@@ -120,7 +120,7 @@ describe('Home UI style contract', () => {
     expect(content).toContain('--a-wallet-card-title-color')
     expect(content).toContain('--a-wallet-card-subtitle-color')
     expect(content).toContain('--a-wallet-card-action-color')
-    expect(content).toContain('letter-spacing: var(--a-letter-spacing-caps-btn);')
+    expect(content).toContain('letter-spacing: var(--a-letter-spacing-caps-small);')
     expect(content).toContain('var(--a-color-surface-transparent)')
     expect(content).toContain('var(--a-wallet-card-subtitle-line-height)')
     expect(content).toContain('var(--a-font-style-emphasis)')

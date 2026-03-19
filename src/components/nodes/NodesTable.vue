@@ -163,7 +163,7 @@ const preferFasterServiceNodeOption = computed<boolean>({
 @use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .nodes-table {
-  --a-nodes-tab-letter-spacing: var(--a-letter-spacing-caps-btn);
+  --a-nodes-tab-letter-spacing: var(--a-letter-spacing-caps-small);
 
   &__checkbox-section {
     margin-top: var(--a-space-4);

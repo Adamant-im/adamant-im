@@ -231,9 +231,9 @@ describe('Login UI style contract', () => {
     const tokensContent = readFileSync(genericTokensPath, 'utf8')
     const buttonsContent = readFileSync(buttonsThemePath, 'utf8')
 
-    expect(tokensContent).toContain('--a-letter-spacing-caps-btn')
+    expect(tokensContent).toContain('--a-letter-spacing-caps-small')
     expect(buttonsContent).toContain('text-transform: uppercase;')
-    expect(buttonsContent).toContain('letter-spacing: var(--a-letter-spacing-caps-btn)')
+    expect(buttonsContent).toContain('letter-spacing: var(--a-letter-spacing-caps-small)')
     expect(buttonsContent).toContain('.a-btn-primary')
     expect(buttonsContent).toContain('.a-btn-regular')
     expect(buttonsContent).not.toContain('letter-spacing: normal !important;')

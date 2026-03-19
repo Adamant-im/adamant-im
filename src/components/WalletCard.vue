@@ -180,7 +180,7 @@ const isBalanceActive = computed(() => {
     color: var(--a-wallet-card-title-color);
   }
   &__brand-title {
-    letter-spacing: var(--a-letter-spacing-caps-btn);
+    letter-spacing: var(--a-letter-spacing-caps-small);
   }
   &__subtitle {
     @include mixins.a-text-regular-enlarged();

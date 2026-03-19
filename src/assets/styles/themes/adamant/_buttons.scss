@@ -25,7 +25,7 @@
 .v-btn.a-btn-primary:not(.v-btn--icon),
 .v-btn.a-btn-regular:not(.v-btn--icon) {
   text-transform: uppercase;
-  letter-spacing: var(--a-letter-spacing-caps-btn);
+  letter-spacing: var(--a-letter-spacing-caps-small);
 }
 
 .v-overlay.v-dialog .v-card-actions,
@@ -34,7 +34,7 @@
 
   .v-btn:not(.v-btn--icon) {
     text-transform: uppercase;
-    letter-spacing: var(--a-letter-spacing-caps-btn);
+    letter-spacing: var(--a-letter-spacing-caps-small);
   }
 }
 

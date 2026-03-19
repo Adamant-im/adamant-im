@@ -18,7 +18,7 @@ const assertNoDocumentScrollLeak = async (page: Page) => {
 }
 
 test.describe('Transfer layout regressions', () => {
-  test('keeps in-chat readonly fields underlined and leaves bottom room for send button', async ({
+  test('keeps in-chat readonly fields using fake-input styling and leaves bottom room for send button', async ({
     page
   }) => {
     await page.setViewportSize({ width: 390, height: 640 })
@@ -46,27 +46,31 @@ test.describe('Transfer layout regressions', () => {
     await expect(sidebarPane).toBeVisible()
 
     const initialMetrics = await page.evaluate(() => {
-      const fields = Array.from(
-        document.querySelectorAll('.send-funds-form .v-field')
+      const fakeInputs = Array.from(
+        document.querySelectorAll('.send-funds-form .fake-input')
       ) as HTMLElement[]
       const actions = document.querySelector('.send-funds-form__actions') as HTMLElement | null
       const button = document.querySelector('.send-funds-form__button') as HTMLElement | null
       const pane = document.querySelector('.sidebar__layout.a-scroll-pane') as HTMLElement | null
 
-      const coinField = fields[0] ?? null
-      const toField = fields[1] ?? null
+      const coinField = fakeInputs[0] ?? null
+      const toField = fakeInputs[1] ?? null
 
       if (!coinField || !toField || !actions || !button || !pane) {
         return null
       }
 
       const actionsStyle = getComputedStyle(actions)
+      const coinLabel = coinField.querySelector('.fake-input__label')?.textContent?.trim() ?? ''
+      const toLabel = toField.querySelector('.fake-input__label')?.textContent?.trim() ?? ''
       const buttonRect = button.getBoundingClientRect()
       const paneRect = pane.getBoundingClientRect()
 
       return {
-        coinNotDisabled: !coinField.classList.contains('v-field--disabled'),
-        toNotDisabled: !toField.classList.contains('v-field--disabled'),
+        coinUsesFakeInput: coinField.classList.contains('fake-input'),
+        toUsesFakeInput: toField.classList.contains('fake-input'),
+        coinLabel,
+        toLabel,
         actionsPaddingBottom: Number.parseFloat(actionsStyle.paddingBottom),
         canScroll: pane.scrollHeight > pane.clientHeight + 1,
         buttonBottomGap: paneRect.bottom - buttonRect.bottom
@@ -74,10 +78,12 @@ test.describe('Transfer layout regressions', () => {
     })
 
     expect(initialMetrics).not.toBeNull()
-    expect(initialMetrics?.coinNotDisabled).toBe(true)
-    expect(initialMetrics?.toNotDisabled).toBe(true)
-    expect(initialMetrics?.actionsPaddingBottom ?? 0).toBeGreaterThanOrEqual(23)
-    expect(initialMetrics?.actionsPaddingBottom ?? 99).toBeLessThanOrEqual(25)
+    expect(initialMetrics?.coinUsesFakeInput).toBe(true)
+    expect(initialMetrics?.toUsesFakeInput).toBe(true)
+    expect(initialMetrics?.coinLabel).toBe('Cryptocurrency')
+    expect(initialMetrics?.toLabel).toBe('To Address')
+    expect(initialMetrics?.actionsPaddingBottom ?? 0).toBeGreaterThanOrEqual(36)
+    expect(initialMetrics?.actionsPaddingBottom ?? 99).toBeLessThanOrEqual(44)
     expect(initialMetrics?.buttonBottomGap ?? 0).toBeGreaterThanOrEqual(20)
 
     if (initialMetrics?.canScroll) {

@@ -143,7 +143,7 @@ describe('Wallets UI style contract', () => {
 
     expect(content).toContain('v-if="localWallet.symbol === \'ADM\'"')
     expect(content).toContain('cryptoBrandTitle')
-    expect(content).toContain('letter-spacing: var(--a-letter-spacing-caps-btn);')
+    expect(content).toContain('letter-spacing: var(--a-letter-spacing-caps-small);')
   })
 
   it('uses normalized size variables in wallets list item and balance row', () => {

@@ -163,7 +163,7 @@ export default defineComponent({
     @include walletCompactContent.a-wallet-compact-title-line();
   }
   &__crypto-brand-title {
-    letter-spacing: var(--a-letter-spacing-caps-btn);
+    letter-spacing: var(--a-letter-spacing-caps-small);
   }
   &__balance {
     margin-inline-end: var(--a-wallets-list-item-balance-offset-inline-end);
