@@ -1,15 +1,21 @@
 import { testPassphrase } from './helpers/env'
 import { expect, test, type Page } from '@playwright/test'
-import { loginWithPassphrase } from './helpers/auth'
+import { dismissAddressWarningIfVisible, loginWithPassphrase } from './helpers/auth'
 
 const PICKER_VIEWPORT_TOLERANCE_PX = 8
 
 test.describe('Chat message emoji picker regressions', () => {
+  const dismissLateAddressWarning = async (page: Page) => {
+    await dismissAddressWarningIfVisible(page, 12_000)
+    await dismissAddressWarningIfVisible(page, 2_000)
+  }
+
   const openSelfChatAndWaitForMessages = async (page: Page) => {
     await loginWithPassphrase(page, testPassphrase!)
 
     await page.goto('/chats')
     await expect(page).toHaveURL(/\/chats$/)
+    await dismissLateAddressWarning(page)
 
     const chatItems = page.locator('.chats-view__messages--chat .v-list-item')
     const selfChatItem = chatItems
@@ -28,6 +34,7 @@ test.describe('Chat message emoji picker regressions', () => {
 
     await page.waitForURL(/\/chats\/[^/?#]+$/, { timeout: 90_000 })
     await expect(page.locator('.a-chat__body-messages').first()).toBeVisible()
+    await dismissLateAddressWarning(page)
   }
 
   const getFirstFullyVisibleMessageIndex = async (page: Page) =>
@@ -108,6 +115,7 @@ test.describe('Chat message emoji picker regressions', () => {
     const outgoingMessage = page.locator('.a-chat__message-container--right').last()
     await expect(outgoingMessage).toBeVisible()
     await outgoingMessage.scrollIntoViewIfNeeded()
+    await dismissLateAddressWarning(page)
     await outgoingMessage.hover()
 
     const actionsButton = outgoingMessage.locator('.a-chat__message-actions-icon').first()
@@ -157,6 +165,7 @@ test.describe('Chat message emoji picker regressions', () => {
     const topMessage = page.locator('.a-chat__message-container').nth(topMessageIndex)
     await expect(topMessage).toBeVisible()
     await topMessage.scrollIntoViewIfNeeded()
+    await dismissLateAddressWarning(page)
     await topMessage.hover({ force: true })
 
     const actionsButton = topMessage.locator('.a-chat__message-actions-icon').first()
