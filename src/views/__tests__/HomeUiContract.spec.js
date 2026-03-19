@@ -109,13 +109,18 @@ describe('Home UI style contract', () => {
     const colorRolesContent = readFileSync(colorRolesPath, 'utf8')
 
     expect(content).toContain('walletCardActions: `${className}__actions`')
+    expect(content).toContain('walletCardBrandTitle')
     expect(content).toContain('<WalletCardListActions :class="classes.walletCardActions"')
     expect(content).toContain('hideFiatRates?: boolean')
     expect(content).toContain('const showFiatRate = computed(() => {')
+    expect(content).toContain('const isADM = computed(() => {')
+    expect(content).toContain("t('home.wallet_crypto_adamant_prefix')")
+    expect(content).toContain("t('home.wallet_crypto_adamant_suffix')")
     expect(content).toContain('!props.hideFiatRates && store.state.rate.isLoaded')
     expect(content).toContain('--a-wallet-card-title-color')
     expect(content).toContain('--a-wallet-card-subtitle-color')
     expect(content).toContain('--a-wallet-card-action-color')
+    expect(content).toContain('letter-spacing: var(--a-letter-spacing-caps-small);')
     expect(content).toContain('var(--a-color-surface-transparent)')
     expect(content).toContain('var(--a-wallet-card-subtitle-line-height)')
     expect(content).toContain('var(--a-font-style-emphasis)')
@@ -209,5 +214,13 @@ describe('Home UI style contract', () => {
 
     expect(content).not.toContain("router.push({\n      name: 'Home'\n    })")
     expect(content).not.toContain("name: 'Home'\n    }")
+  })
+
+  it('guards currentWallet watcher against falsy values and same-crypto re-navigation', () => {
+    const content = readFileSync(homePath, 'utf8')
+
+    expect(content).toContain('if (!value) return')
+    expect(content).toContain('const currentCrypto = route.params.crypto')
+    expect(content).toContain('if (currentCrypto === value) return')
   })
 })

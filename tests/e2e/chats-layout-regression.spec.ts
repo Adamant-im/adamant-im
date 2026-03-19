@@ -67,6 +67,11 @@ test.describe('Chats layout regressions', () => {
     const geometry = await page.evaluate(() => {
       const row = document.querySelector('.chats-view__chats-actions') as HTMLElement | null
       const button = document.querySelector('.chats-view__item') as HTMLElement | null
+      const newChatTitle = document.querySelector('.chats-view__title') as HTMLElement | null
+      const firstDate = document.querySelector('.chat-brief__date') as HTMLElement | null
+      const firstPreview = document.querySelector(
+        '.chats-view__messages--chat .chat-brief'
+      ) as HTMLElement | null
       const spinner = document.querySelector(
         '.chats-view__connection-spinner'
       ) as HTMLElement | null
@@ -74,12 +79,15 @@ test.describe('Chats layout regressions', () => {
         '.chats-view__messages--chat .chat-brief__chat-avatar, .chats-view__messages--chat .chat-brief__icon'
       ) as HTMLElement | null
 
-      if (!row || !button) {
+      if (!row || !button || !newChatTitle || !firstPreview) {
         return null
       }
 
       const rowRect = row.getBoundingClientRect()
       const buttonRect = button.getBoundingClientRect()
+      const newChatTitleRect = newChatTitle.getBoundingClientRect()
+      const firstPreviewRect = firstPreview.getBoundingClientRect()
+      const firstDateRect = firstDate?.getBoundingClientRect() ?? null
       const rowStyle = getComputedStyle(row)
       const markRead = document.querySelector('.chats-view__mark-read-btn') as HTMLElement | null
       const markReadRect = markRead?.getBoundingClientRect() ?? null
@@ -110,6 +118,12 @@ test.describe('Chats layout regressions', () => {
         buttonHeight: buttonRect.height,
         rowPaddingLeft: Number.parseFloat(rowStyle.paddingLeft),
         rowPaddingRight: Number.parseFloat(rowStyle.paddingRight),
+        newChatTitleRightGap: rowRect.right - newChatTitleRect.right,
+        firstPreviewRightGap: rowRect.right - firstPreviewRect.right,
+        firstDateRightGap: firstDateRect ? rowRect.right - firstDateRect.right : null,
+        titleToDateRightEdgeDelta: firstDateRect
+          ? Math.abs(newChatTitleRect.right - firstDateRect.right)
+          : null,
         centerDelta: Math.abs(
           rowRect.top + rowRect.height / 2 - (buttonRect.top + buttonRect.height / 2)
         ),
@@ -130,10 +144,22 @@ test.describe('Chats layout regressions', () => {
     expect(geometry?.rowPaddingLeft ?? 99).toBeLessThanOrEqual(21)
     expect(geometry?.rowPaddingRight ?? 0).toBeGreaterThanOrEqual(23)
     expect(geometry?.rowPaddingRight ?? 99).toBeLessThanOrEqual(25)
+    expect(geometry?.newChatTitleRightGap ?? 0).toBeGreaterThanOrEqual(23)
+    expect(geometry?.newChatTitleRightGap ?? 99).toBeLessThanOrEqual(25)
+    expect(geometry?.firstPreviewRightGap ?? 0).toBeLessThanOrEqual(1)
     expect(geometry?.centerDelta ?? 999).toBeLessThanOrEqual(2)
 
     if (geometry?.markReadCenterDelta !== null) {
       expect(geometry?.markReadCenterDelta ?? 999).toBeLessThanOrEqual(2)
+    }
+
+    if (geometry?.firstDateRightGap !== null) {
+      expect(geometry?.firstDateRightGap ?? 0).toBeGreaterThanOrEqual(23)
+      expect(geometry?.firstDateRightGap ?? 99).toBeLessThanOrEqual(25)
+    }
+
+    if (geometry?.titleToDateRightEdgeDelta !== null) {
+      expect(geometry?.titleToDateRightEdgeDelta ?? 999).toBeLessThanOrEqual(2)
     }
 
     if (geometry?.spinnerSize !== null) {
@@ -317,6 +343,8 @@ test.describe('Chats layout regressions', () => {
       const preview = document.querySelector(
         '.chats-view__messages--chat .chat-brief'
       ) as HTMLElement | null
+      const newChatTitle = document.querySelector('.chats-view__title') as HTMLElement | null
+      const firstDate = document.querySelector('.chat-brief__date') as HTMLElement | null
       const spinner = document.querySelector(
         '.chats-view__connection-spinner'
       ) as HTMLElement | null
@@ -327,7 +355,7 @@ test.describe('Chats layout regressions', () => {
       const subtitle = preview?.querySelector('.chat-brief__subtitle') as HTMLElement | null
       const heading = preview?.querySelector('.chat-brief__heading') as HTMLElement | null
 
-      if (!row || !preview || !avatar || !title || !subtitle || !heading) {
+      if (!row || !preview || !avatar || !title || !subtitle || !heading || !newChatTitle) {
         return null
       }
 
@@ -353,6 +381,8 @@ test.describe('Chats layout regressions', () => {
 
       const rowRect = row.getBoundingClientRect()
       const previewRect = preview.getBoundingClientRect()
+      const newChatTitleRect = newChatTitle.getBoundingClientRect()
+      const firstDateRect = firstDate?.getBoundingClientRect() ?? null
       const rowStyle = getComputedStyle(row)
       const previewStyle = getComputedStyle(preview)
       const avatarRect = avatar.getBoundingClientRect()
@@ -365,6 +395,11 @@ test.describe('Chats layout regressions', () => {
         rowRightGap: window.innerWidth - rowRect.right,
         rowPaddingLeft: Number.parseFloat(rowStyle.paddingLeft),
         rowPaddingRight: Number.parseFloat(rowStyle.paddingRight),
+        newChatTitleRightGap: window.innerWidth - newChatTitleRect.right,
+        firstDateRightGap: firstDateRect ? window.innerWidth - firstDateRect.right : null,
+        titleToDateRightEdgeDelta: firstDateRect
+          ? Math.abs(newChatTitleRect.right - firstDateRect.right)
+          : null,
         previewLeft: previewRect.left,
         previewRightGap: window.innerWidth - previewRect.right,
         previewPaddingLeft: Number.parseFloat(previewStyle.paddingLeft),
@@ -388,6 +423,8 @@ test.describe('Chats layout regressions', () => {
     expect(metrics?.rowPaddingLeft ?? 99).toBeLessThanOrEqual(21)
     expect(metrics?.rowPaddingRight ?? 0).toBeGreaterThanOrEqual(23)
     expect(metrics?.rowPaddingRight ?? 99).toBeLessThanOrEqual(25)
+    expect(metrics?.newChatTitleRightGap ?? 0).toBeGreaterThanOrEqual(23)
+    expect(metrics?.newChatTitleRightGap ?? 99).toBeLessThanOrEqual(25)
     expect(metrics?.previewPaddingLeft ?? 0).toBeGreaterThanOrEqual(19)
     expect(metrics?.previewPaddingLeft ?? 99).toBeLessThanOrEqual(21)
     expect(metrics?.previewPaddingRight ?? 0).toBeGreaterThanOrEqual(23)
@@ -402,6 +439,15 @@ test.describe('Chats layout regressions', () => {
     expect(metrics?.subtitleLeft ?? 999).toBeLessThanOrEqual(89)
     expect(metrics?.headingGap ?? 0).toBeGreaterThanOrEqual(1)
     expect(metrics?.headingGap ?? 99).toBeLessThanOrEqual(3)
+
+    if (metrics?.firstDateRightGap !== null) {
+      expect(metrics?.firstDateRightGap ?? 0).toBeGreaterThanOrEqual(23)
+      expect(metrics?.firstDateRightGap ?? 99).toBeLessThanOrEqual(25)
+    }
+
+    if (metrics?.titleToDateRightEdgeDelta !== null) {
+      expect(metrics?.titleToDateRightEdgeDelta ?? 999).toBeLessThanOrEqual(2)
+    }
 
     if (metrics?.spinnerSize !== null) {
       expect(metrics?.spinnerSize ?? 0).toBeGreaterThanOrEqual(31)

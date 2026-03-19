@@ -225,6 +225,8 @@ describe('AChat UI style contract', () => {
     expect(menuContent).toContain("t('chats.chat_actions.retry')")
     expect(menuContent).toContain('--a-chat-message-actions-menu-overlay-inset-inline')
     expect(menuContent).toContain('chatActionSurface.a-chat-action-surface()')
+    expect(menuContent).toContain('--a-chat-message-actions-menu-list-min-width')
+    expect(menuContent).toContain('min-width: var(--a-chat-message-actions-menu-list-min-width)')
     expect(actionSurfaceMixinContent).toContain(
       '@mixin a-chat-action-surface($radius: var(--a-chat-action-surface-radius))'
     )
@@ -239,6 +241,7 @@ describe('AChat UI style contract', () => {
     expect(overlayContent).toContain('--a-chat-actions-overlay-reaction-height')
     expect(overlayContent).toContain('--a-chat-actions-overlay-reaction-gap')
     expect(overlayContent).toContain('--a-chat-actions-overlay-transition-duration')
+    expect(overlayContent).toContain('width: max-content')
     expect(overlayContent).not.toContain('--a-chat-actions-overlay-reaction-gap: var(--a-space-4);')
     expect(overlayContent).not.toContain('--a-chat-actions-overlay-reaction-gap: var(--a-space-2);')
     expect(overlayContent).not.toContain('--a-chat-actions-overlay-reaction-height: 46px;')

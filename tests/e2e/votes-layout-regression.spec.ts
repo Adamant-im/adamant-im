@@ -18,6 +18,29 @@ const assertNoDocumentScrollLeak = async (page: Page) => {
 }
 
 test.describe('Votes layout regressions', () => {
+  const openFirstDelegateDetails = async (page: Page) => {
+    const expander = page.locator('.delegate-details-expander')
+    const listItem = expander.locator('.delegate-details-expander__list-item').first()
+
+    for (let attempt = 1; attempt <= 3; attempt += 1) {
+      const firstRow = page.locator('.delegates-table-item').first()
+      await expect(firstRow).toBeVisible()
+      await firstRow.click()
+
+      try {
+        await expect(expander).toBeVisible({ timeout: 4_000 })
+        await expect(listItem).toBeVisible({ timeout: 4_000 })
+        return
+      } catch (error) {
+        if (attempt === 3) {
+          throw error
+        }
+
+        await page.waitForTimeout(250)
+      }
+    }
+  }
+
   test('keeps delegates screen aligned to shared settings table shell on desktop', async ({
     page
   }) => {
@@ -141,10 +164,7 @@ test.describe('Votes layout regressions', () => {
 
     await page.goto('/votes')
     await expect(page).toHaveURL(/\/votes$/)
-
-    const firstRow = page.locator('.delegates-table-item').first()
-    await expect(firstRow).toBeVisible()
-    await firstRow.click()
+    await openFirstDelegateDetails(page)
 
     const metrics = await page.evaluate(() => {
       const expander = document.querySelector('.delegate-details-expander') as HTMLElement | null

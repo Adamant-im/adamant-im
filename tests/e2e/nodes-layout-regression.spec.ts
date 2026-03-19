@@ -18,6 +18,30 @@ const assertNoDocumentScrollLeak = async (page: Page) => {
 }
 
 test.describe('Nodes layout regressions', () => {
+  test('keeps uppercase tabs using shared tracking', async ({ page }) => {
+    await loginWithNewAccount(page)
+
+    await page.goto('/options/nodes')
+    await expect(page).toHaveURL(/\/options\/nodes$/)
+
+    const firstTab = page.locator('.nodes-table .v-tab').first()
+    await expect(firstTab).toBeVisible()
+
+    const metrics = await firstTab.evaluate((element) => {
+      const style = getComputedStyle(element)
+
+      return {
+        letterSpacing: Number.parseFloat(style.letterSpacing),
+        textTransform: style.textTransform
+      }
+    })
+
+    expect(metrics.textTransform).toBe('uppercase')
+    expect(metrics.letterSpacing).toBeGreaterThan(0)
+
+    await assertNoDocumentScrollLeak(page)
+  })
+
   test('keeps nodes table gutters and row typography consistent', async ({ page }) => {
     await loginWithNewAccount(page)
 

@@ -6,18 +6,34 @@
     />
 
     <v-form ref="form" v-model="validForm" @submit.prevent="confirm">
+      <div v-if="addressReadonly" class="fake-input">
+        <div class="fake-input__label">
+          {{ $t('transfer.crypto') }}
+        </div>
+        <div class="fake-input__box">
+          <span class="fake-input__value">{{ currency }}</span>
+        </div>
+      </div>
       <v-select
+        v-else
         v-model="currency"
         class="a-input"
         variant="underlined"
         :items="cryptoList"
-        :disabled="addressReadonly"
-        :menu-icon="addressReadonly ? '' : mdiMenuDown"
+        :menu-icon="mdiMenuDown"
       />
 
+      <div v-if="addressReadonly" class="fake-input">
+        <div class="fake-input__label">
+          {{ readonlyRecipientLabel }}
+        </div>
+        <div class="fake-input__box">
+          <span class="fake-input__value">{{ cryptoAddress }}</span>
+        </div>
+      </div>
       <v-text-field
+        v-else
         v-model.trim="cryptoAddress"
-        :disabled="addressReadonly"
         class="a-input"
         type="text"
         variant="underlined"
@@ -25,14 +41,11 @@
         @paste="onPasteURIAddress"
       >
         <template #label>
-          <span v-if="recipientName && addressReadonly" :class="`${className}__field-label`">
-            {{ $t('transfer.to_name_label', { name: recipientName }) }}
-          </span>
-          <span v-else :class="`${className}__field-label`">
+          <span :class="`${className}__field-label`">
             {{ $t('transfer.to_address_label') }}
           </span>
         </template>
-        <template v-if="!addressReadonly" #append-inner>
+        <template #append-inner>
           <v-menu :offset-overflow="true" :offset-y="false" left eager>
             <template #activator="{ props }">
               <v-icon
@@ -489,6 +502,11 @@ export default {
     },
     recipientName() {
       return this.getPartnerName(this.address)
+    },
+    readonlyRecipientLabel() {
+      return this.recipientName
+        ? this.$t('transfer.to_name_label', { name: this.recipientName })
+        : this.$t('transfer.to_address_label')
     },
     exponent() {
       return CryptosInfo[this.currency].cryptoTransferDecimals
@@ -1021,6 +1039,7 @@ export default {
 
 .send-funds-form {
   --a-send-funds-button-margin-top: var(--a-space-4);
+  --a-send-funds-actions-padding-bottom: var(--a-space-10);
   --a-send-funds-amount-label-size: var(--a-font-size-sm);
   --a-send-funds-amount-label-floating-scale: 0.75;
   --a-send-funds-field-label-font-weight: var(--a-font-weight-medium);
@@ -1037,6 +1056,7 @@ export default {
 
   &__actions {
     @include formActionLayout.a-form-actions-center();
+    padding-bottom: var(--a-send-funds-actions-padding-bottom);
   }
   &__amount-input {
     :deep(.v-field__field) {

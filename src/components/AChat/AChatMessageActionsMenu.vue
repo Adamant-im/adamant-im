@@ -90,11 +90,13 @@ export default defineComponent({
 .message-actions-menu {
   --a-chat-message-actions-menu-list-padding-block: 0;
   --a-chat-message-actions-menu-overlay-inset-inline: var(--a-space-4);
+  --a-chat-message-actions-menu-list-min-width: 160px;
 
   &__list {
     @include chatActionSurface.a-chat-action-surface();
     padding-top: var(--a-chat-message-actions-menu-list-padding-block);
     padding-bottom: var(--a-chat-message-actions-menu-list-padding-block);
+    min-width: var(--a-chat-message-actions-menu-list-min-width);
   }
 
   &__overlay-content {

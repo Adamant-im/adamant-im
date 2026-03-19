@@ -3,7 +3,14 @@
     <v-list lines="two" bg-color="transparent" :class="classes.walletCardList">
       <v-list-item :class="classes.walletCardTile" @click="showShareURIDialog = true">
         <v-list-item-title :class="classes.walletCardTitle">
-          {{ t('home.wallet_crypto', { crypto: cryptoName }) }}
+          <template v-if="isADM">
+            <span v-if="walletTitlePrefix">{{ walletTitlePrefix }}</span>
+            <span :class="classes.walletCardBrandTitle">{{ cryptoName }}</span>
+            <span v-if="walletTitleSuffix">{{ walletTitleSuffix }}</span>
+          </template>
+          <template v-else>
+            {{ t('home.wallet_crypto', { crypto: cryptoName }) }}
+          </template>
         </v-list-item-title>
         <v-list-item-subtitle :class="classes.walletCardSubtitle">
           {{ address }}
@@ -90,6 +97,7 @@ const classes = {
   root: className,
   walletCardAction: `${className}__action`,
   walletCardActions: `${className}__actions`,
+  walletCardBrandTitle: `${className}__brand-title`,
   walletCardIcon: `${className}__icon`,
   walletCardList: `${className}__list`,
   walletCardRate: `${className}__rate`,
@@ -131,6 +139,14 @@ const isADM = computed(() => {
   return props.crypto === Cryptos.ADM
 })
 
+const walletTitlePrefix = computed(() => {
+  return isADM.value ? t('home.wallet_crypto_adamant_prefix') : ''
+})
+
+const walletTitleSuffix = computed(() => {
+  return isADM.value ? t('home.wallet_crypto_adamant_suffix') : ''
+})
+
 const showFiatRate = computed(() => {
   return !props.hideFiatRates && store.state.rate.isLoaded
 })
@@ -158,6 +174,9 @@ const isBalanceActive = computed(() => {
   &__title {
     @include mixins.a-text-caption();
     color: var(--a-wallet-card-title-color);
+  }
+  &__brand-title {
+    letter-spacing: var(--a-letter-spacing-caps-small);
   }
   &__subtitle {
     @include mixins.a-text-regular-enlarged();

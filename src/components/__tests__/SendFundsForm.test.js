@@ -674,6 +674,46 @@ describe('SendFundsForm', () => {
     })
   })
 
+  describe('readonly chat fields', () => {
+    it('renders coin and recipient as fake inputs in readonly mode', async () => {
+      wrapper = shallowMount(SendFundsForm, {
+        global: {
+          plugins: [store, i18n, vuetify],
+          mocks: {
+            $route: {
+              query: {}
+            }
+          },
+          stubs: {
+            ...DEFAULT_STUBS,
+            'v-form': {
+              template: '<div><slot /></div>',
+              methods: { validate: () => Promise.resolve({ valid: true }) }
+            }
+          }
+        },
+        props: {
+          cryptoCurrency: 'ADM',
+          recipientAddress: 'U111111',
+          addressReadonly: true
+        }
+      })
+
+      wrapper.setData({
+        cryptoAddress: 'U111111'
+      })
+
+      await nextTick()
+
+      const html = wrapper.html()
+      expect(html).toContain('fake-input__label')
+      expect(html).toContain('transfer.crypto')
+      expect(html).toContain('transfer.to_name_label')
+      expect(html).toContain('U111111')
+      expect(html).not.toContain('menu-icon=""')
+    })
+  })
+
   /** methods **/
   describe('methods.submit', () => {
     const transactionId = 'T1'

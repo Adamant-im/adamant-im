@@ -160,4 +160,26 @@ test.describe('Home layout regressions', () => {
 
     await assertNoDocumentScrollLeak(page)
   })
+
+  test('keeps branded ADAMANT title tracking on the home wallet card', async ({ page }) => {
+    await loginWithNewAccount(page)
+
+    await page.goto('/home')
+    await expect(page).toHaveURL(/\/home$/)
+
+    const brandTitle = page.locator('.wallet-card__brand-title').first()
+    await expect(brandTitle).toBeVisible()
+
+    const metrics = await brandTitle.evaluate((element) => {
+      const style = getComputedStyle(element)
+
+      return {
+        text: element.textContent?.trim() ?? '',
+        letterSpacing: Number.parseFloat(style.letterSpacing)
+      }
+    })
+
+    expect(metrics.text).toBe('ADAMANT')
+    expect(metrics.letterSpacing).toBeGreaterThan(0)
+  })
 })

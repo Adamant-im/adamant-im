@@ -18,6 +18,106 @@ const assertNoDocumentScrollLeak = async (page: Page) => {
 }
 
 test.describe('Transfer layout regressions', () => {
+  test('keeps in-chat readonly fields using fake-input styling and leaves bottom room for send button', async ({
+    page
+  }) => {
+    await page.setViewportSize({ width: 390, height: 640 })
+    await loginWithNewAccount(page)
+
+    const address = await page.evaluate(() => {
+      const runtime = window as typeof window & {
+        store?: {
+          state: {
+            address: string
+          }
+        }
+      }
+
+      return runtime.store?.state.address ?? ''
+    })
+
+    expect(address).toMatch(/^U/i)
+
+    await page.goto(`/transfer/ADM/${address}`)
+    await expect(page).toHaveURL(new RegExp(`/transfer/ADM/${address}$`))
+    await expect(page.locator('.send-funds-form')).toBeVisible()
+
+    const sidebarPane = page.locator('.sidebar__layout.a-scroll-pane')
+    await expect(sidebarPane).toBeVisible()
+
+    const initialMetrics = await page.evaluate(() => {
+      const fakeInputs = Array.from(
+        document.querySelectorAll('.send-funds-form .fake-input')
+      ) as HTMLElement[]
+      const actions = document.querySelector('.send-funds-form__actions') as HTMLElement | null
+      const button = document.querySelector('.send-funds-form__button') as HTMLElement | null
+      const pane = document.querySelector('.sidebar__layout.a-scroll-pane') as HTMLElement | null
+
+      const coinField = fakeInputs[0] ?? null
+      const toField = fakeInputs[1] ?? null
+
+      if (!coinField || !toField || !actions || !button || !pane) {
+        return null
+      }
+
+      const actionsStyle = getComputedStyle(actions)
+      const coinLabel = coinField.querySelector('.fake-input__label')?.textContent?.trim() ?? ''
+      const toLabel = toField.querySelector('.fake-input__label')?.textContent?.trim() ?? ''
+      const buttonRect = button.getBoundingClientRect()
+      const paneRect = pane.getBoundingClientRect()
+
+      return {
+        coinUsesFakeInput: coinField.classList.contains('fake-input'),
+        toUsesFakeInput: toField.classList.contains('fake-input'),
+        coinLabel,
+        toLabel,
+        actionsPaddingBottom: Number.parseFloat(actionsStyle.paddingBottom),
+        canScroll: pane.scrollHeight > pane.clientHeight + 1,
+        buttonBottomGap: paneRect.bottom - buttonRect.bottom
+      }
+    })
+
+    expect(initialMetrics).not.toBeNull()
+    expect(initialMetrics?.coinUsesFakeInput).toBe(true)
+    expect(initialMetrics?.toUsesFakeInput).toBe(true)
+    expect(initialMetrics?.coinLabel).toBe('Cryptocurrency')
+    expect(initialMetrics?.toLabel).toBe('To Address')
+    expect(initialMetrics?.actionsPaddingBottom ?? 0).toBeGreaterThanOrEqual(36)
+    expect(initialMetrics?.actionsPaddingBottom ?? 99).toBeLessThanOrEqual(44)
+    expect(initialMetrics?.buttonBottomGap ?? 0).toBeGreaterThanOrEqual(20)
+
+    if (initialMetrics?.canScroll) {
+      await sidebarPane.evaluate((element) => {
+        element.scrollTop = element.scrollHeight
+      })
+
+      await expect
+        .poll(() => sidebarPane.evaluate((element) => element.scrollTop))
+        .toBeGreaterThan(0)
+
+      const scrolledMetrics = await page.evaluate(() => {
+        const pane = document.querySelector('.sidebar__layout.a-scroll-pane') as HTMLElement | null
+        const button = document.querySelector('.send-funds-form__button') as HTMLElement | null
+
+        if (!pane || !button) {
+          return null
+        }
+
+        const paneRect = pane.getBoundingClientRect()
+        const buttonRect = button.getBoundingClientRect()
+
+        return {
+          buttonBottomGap: paneRect.bottom - buttonRect.bottom
+        }
+      })
+
+      expect(scrolledMetrics).not.toBeNull()
+      expect(scrolledMetrics?.buttonBottomGap ?? 0).toBeGreaterThanOrEqual(20)
+    }
+
+    await assertNoDocumentScrollLeak(page)
+  })
+
   test('lets Escape close currency dropdown before leaving send funds screen', async ({ page }) => {
     const routerWarnings: string[] = []
 
