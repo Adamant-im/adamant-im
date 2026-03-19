@@ -3,7 +3,7 @@
     <v-list lines="two" bg-color="transparent" :class="classes.walletCardList">
       <v-list-item :class="classes.walletCardTile" @click="showShareURIDialog = true">
         <v-list-item-title :class="classes.walletCardTitle">
-          <template v-if="isAdamantWallet">
+          <template v-if="isADM">
             <span v-if="walletTitlePrefix">{{ walletTitlePrefix }}</span>
             <span :class="classes.walletCardBrandTitle">{{ cryptoName }}</span>
             <span v-if="walletTitleSuffix">{{ walletTitleSuffix }}</span>
@@ -139,16 +139,12 @@ const isADM = computed(() => {
   return props.crypto === Cryptos.ADM
 })
 
-const isAdamantWallet = computed(() => {
-  return props.crypto === Cryptos.ADM
-})
-
 const walletTitlePrefix = computed(() => {
-  return isAdamantWallet.value ? t('home.wallet_crypto_adamant_prefix') : ''
+  return isADM.value ? t('home.wallet_crypto_adamant_prefix') : ''
 })
 
 const walletTitleSuffix = computed(() => {
-  return isAdamantWallet.value ? t('home.wallet_crypto_adamant_suffix') : ''
+  return isADM.value ? t('home.wallet_crypto_adamant_suffix') : ''
 })
 
 const showFiatRate = computed(() => {

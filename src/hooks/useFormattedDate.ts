@@ -1,3 +1,4 @@
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { EPOCH } from '@/lib/constants'
 
@@ -5,7 +6,7 @@ export function useFormattedDate() {
   const { t } = useI18n()
   const DEFAULT_DATE_LOCALE = 'en-US'
 
-  const getDateLocale = () => {
+  const dateLocale = computed(() => {
     const locale = t('region')
 
     try {
@@ -13,7 +14,7 @@ export function useFormattedDate() {
     } catch {
       return DEFAULT_DATE_LOCALE
     }
-  }
+  })
 
   const getTime = (date: Date) => {
     const hours = date.getHours()
@@ -63,7 +64,7 @@ export function useFormattedDate() {
       options.year = 'numeric'
     }
 
-    return date.toLocaleDateString(getDateLocale(), options) + ', ' + getTime(date)
+    return date.toLocaleDateString(dateLocale.value, options) + ', ' + getTime(date)
   }
 
   return {

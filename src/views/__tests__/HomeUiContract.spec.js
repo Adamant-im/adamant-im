@@ -113,7 +113,7 @@ describe('Home UI style contract', () => {
     expect(content).toContain('<WalletCardListActions :class="classes.walletCardActions"')
     expect(content).toContain('hideFiatRates?: boolean')
     expect(content).toContain('const showFiatRate = computed(() => {')
-    expect(content).toContain('const isAdamantWallet = computed(() => {')
+    expect(content).toContain('const isADM = computed(() => {')
     expect(content).toContain("t('home.wallet_crypto_adamant_prefix')")
     expect(content).toContain("t('home.wallet_crypto_adamant_suffix')")
     expect(content).toContain('!props.hideFiatRates && store.state.rate.isLoaded')

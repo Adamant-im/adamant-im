@@ -1,30 +1,12 @@
 import { testPassphrase } from './helpers/env'
 import { expect, test, type Page } from '@playwright/test'
 import { loginWithNewAccount, loginWithPassphrase } from './helpers/auth'
+import { openTransactionListFromHome } from './helpers/openTransactionListFromHome'
 
 const testDetailsCrypto = 'DOGE'
 const testListCrypto = 'ADM'
 const testRestorableListCrypto = testDetailsCrypto
 const testTransactionId = '723a8f9d1f0083b5da91c2aae1df6434d854828d8e9fac5f11b30f021af3ba86'
-
-const openTransactionListFromHome = async (page: Page, crypto: string) => {
-  await page.goto('/home', { waitUntil: 'domcontentloaded' })
-  await expect(page).toHaveURL(/\/home(?:\/)?$/)
-
-  const activeWalletTab = page.locator('[role="tab"][aria-selected="true"]').first()
-  const activeTabText = (await activeWalletTab.textContent())?.trim() ?? ''
-
-  if (!activeTabText.includes(crypto)) {
-    await page.getByRole('tab', { name: new RegExp(crypto, 'i') }).click()
-  }
-
-  const activeWalletCard = page.locator('.v-window-item--active .wallet-card').first()
-  await expect(activeWalletCard).toBeVisible()
-
-  await activeWalletCard.locator('.wallet-card__tile').nth(1).click()
-  await expect(page).toHaveURL(new RegExp(`/transactions/${crypto}$`))
-  await expect(page.locator('.transactions-view__list')).toBeVisible()
-}
 
 const assertTransactionDetailsScreenGutter = async (page: Page) => {
   const firstRow = page.locator('.transaction-view__list .transaction-list-item').first()
