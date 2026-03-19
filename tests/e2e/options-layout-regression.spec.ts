@@ -17,7 +17,56 @@ const assertNoDocumentScrollLeak = async (page: Page) => {
   expect(documentMetrics.scrollTop).toBe(0)
 }
 
+const supportedWalletSymbols = ['ADM', 'BTC', 'DASH', 'DOGE', 'ETH', 'USDC', 'USDT']
+
 test.describe('Options layout regressions', () => {
+  test('survives legacy wallet symbols in persisted storage', async ({ page }) => {
+    const runtimeErrors: string[] = []
+
+    page.on('pageerror', (error) => {
+      runtimeErrors.push(error.message)
+    })
+
+    await page.addInitScript(
+      ({ storageKey, symbols }) => {
+        const persistedSymbols = symbols.map((symbol) => ({
+          symbol,
+          isVisible: true
+        }))
+
+        persistedSymbols.push({
+          symbol: 'LEGACY',
+          isVisible: true
+        })
+
+        window.localStorage.setItem(
+          storageKey,
+          JSON.stringify({
+            symbols: persistedSymbols
+          })
+        )
+      },
+      {
+        storageKey: 'WALLETS_STATE_STORAGE',
+        symbols: supportedWalletSymbols
+      }
+    )
+
+    await loginWithNewAccount(page)
+
+    await page.goto('/options')
+    await expect(page).toHaveURL(/\/options$/)
+    await expect(page.locator('.settings-view')).toBeVisible()
+
+    await expect
+      .poll(async () => {
+        return page.evaluate(() => window.localStorage.getItem('WALLETS_STATE_STORAGE'))
+      })
+      .not.toContain('LEGACY')
+
+    expect(runtimeErrors).toEqual([])
+  })
+
   test('keeps title and action list gutters consistent', async ({ page }) => {
     await loginWithNewAccount(page)
 
