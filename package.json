@@ -1,8 +1,8 @@
 {
   "name": "adamant-im",
-  "version": "4.10.6",
+  "version": "4.11.0",
   "type": "module",
-  "author": "ADAMANT Foundation <devs@adamant.im>",
+  "author": "ADAMANT Community Developers <devs@adamant.im>",
   "license": "GPLv3",
   "description": "Decentralized Messenger",
   "private": true,
