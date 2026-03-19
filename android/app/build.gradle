@@ -1,3 +1,29 @@
+import groovy.json.JsonSlurper
+
+def packageJsonFile = rootProject.file('../package.json')
+
+if (!packageJsonFile.exists()) {
+    throw new GradleException("package.json was not found at ${packageJsonFile}")
+}
+
+def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
+def androidVersionName = packageJson.version?.toString()
+
+if (!androidVersionName) {
+    throw new GradleException('package.json does not contain a valid version field')
+}
+
+def versionMatcher = (androidVersionName =~ /^(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/)
+
+if (!versionMatcher.matches()) {
+    throw new GradleException("Unsupported package.json version format: ${androidVersionName}")
+}
+
+def versionParts = versionMatcher[0][1..3].collect { it as Integer }
+
+// Reserve two digits for minor and patch to keep versionCode monotonic for Google Play
+def androidVersionCode = (versionParts[0] * 10000) + (versionParts[1] * 100) + versionParts[2]
+
 apply plugin: 'com.android.application'
 
 android {
@@ -7,8 +33,8 @@ android {
         applicationId "im.adamant.adamantmessengerpwa"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 4106
-        versionName "4.10.6"
+        versionCode androidVersionCode
+        versionName androidVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

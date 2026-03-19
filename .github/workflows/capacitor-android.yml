@@ -70,7 +70,7 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           SRC="android/app/build/outputs/apk/release/app-release-signed.apk"
           DEST="android/app/build/outputs/apk/release/ADAMANT.Messenger-${VERSION}-signed.apk"
-          mv "$SRC" "$DEST"    
+          mv "$SRC" "$DEST"
 
       - name: Build and Sign Android App (AAB) 🛠️
         run: |
@@ -81,6 +81,13 @@ jobs:
             --keystorealias $ANDROID_KEYSTORE_ALIAS \
             --keystorealiaspass $ANDROID_KEYSTORE_ALIAS_PASSWORD \
             --androidreleasetype AAB
+
+      - name: Rename AAB with version from package.json
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          SRC="android/app/build/outputs/bundle/release/app-release-signed.aab"
+          DEST="android/app/build/outputs/bundle/release/ADAMANT.Messenger-${VERSION}-signed.aab"
+          mv "$SRC" "$DEST"
 
       - name: Save artifacts 💾
         uses: actions/upload-artifact@v4
