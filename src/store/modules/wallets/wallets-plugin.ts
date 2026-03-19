@@ -1,5 +1,5 @@
 import VuexPersistence from 'vuex-persist'
-import { mapWallets } from '@/store/modules/wallets/utils'
+import { normalizeWalletsState } from '@/store/modules/wallets/utils'
 import { WalletsState } from '@/store/modules/wallets/types'
 import { TypedStorage } from '@/lib/typed-storage'
 
@@ -12,18 +12,10 @@ const stateStorage = new TypedStorage<typeof WALLETS_STATE_STORAGE_KEY, WalletsS
 )
 function initWallets() {
   const state = stateStorage.getItem()
-  const defaultState = { symbols: mapWallets() }
+  const normalizedState = normalizeWalletsState(state)
 
-  if (!state) {
-    stateStorage.setItem(defaultState)
-  } else {
-    const hasDifference = !!defaultState.symbols.filter(
-      ({ symbol: symbol1 }) => !state!.symbols.some(({ symbol: symbol2 }) => symbol2 === symbol1)
-    ).length
-
-    if (hasDifference) {
-      stateStorage.setItem(defaultState)
-    }
+  if (JSON.stringify(state) !== JSON.stringify(normalizedState)) {
+    stateStorage.setItem(normalizedState)
   }
 }
 initWallets()
@@ -33,8 +25,9 @@ const walletsPersistencePlugin = new VuexPersistence({
   restoreState: (key, storage) => {
     let wallets = {}
     if (storage) {
-      const stateFromLS = stateStorage.getItem()
-      if (stateFromLS?.symbols) {
+      const stateFromLS = normalizeWalletsState(stateStorage.getItem())
+
+      if (stateFromLS.symbols.length) {
         wallets = stateFromLS
       }
     }
