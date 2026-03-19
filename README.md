@@ -277,7 +277,7 @@ npm run android:build
 If you are unable to access [adm.im](https://adm.im) (e.g., due to censorship), you can run a self-hosted instance of ADAMANT Messenger to:
 
 - Increase reliability and decentralization of the ADAMANT Messenger ecosystem
-- Help other users access the messenger in countries with a strong Internet limitations
+- Help other users access the messenger in countries with strong Internet limitations
 
 We always encourage people to build it from source.
 
