@@ -40,7 +40,7 @@ Accounts do not require phone numbers or emails, private keys stay on the user s
 | Resource        | Link                                                                                                                                                                      |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Website         | [adamant.im](https://adamant.im)                                                                                                                                          |
-| Apps            | [adamant.im/#adm-apps](https://adamant.im/#adm-apps)                                                                                                                                                                                                                                                                    |
+| Apps            | [adamant.im/#adm-apps](https://adamant.im/#adm-apps)                                                                                                                      |
 | Documentation   | [docs.adamant.im](https://docs.adamant.im)                                                                                                                                |
 | Whitepaper      | [adamant-whitepaper-en.pdf](https://adamant.im/whitepaper/adamant-whitepaper-en.pdf)                                                                                      |
 | Releases        | [GitHub Releases](https://github.com/Adamant-im/adamant-im/releases)                                                                                                      |
