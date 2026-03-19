@@ -40,12 +40,31 @@ Accounts do not require phone numbers or emails, private keys stay on the user s
 | Resource        | Link                                                                                                                                                                      |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Website         | [adamant.im](https://adamant.im)                                                                                                                                          |
-| Web app         | [msg.adamant.im](https://msg.adamant.im)                                                                                                                                  |
+| Apps            | [adamant.im/#adm-apps](https://adamant.im/#adm-apps)                                                                                                                                                                                                                                                                    |
 | Documentation   | [docs.adamant.im](https://docs.adamant.im)                                                                                                                                |
 | Whitepaper      | [adamant-whitepaper-en.pdf](https://adamant.im/whitepaper/adamant-whitepaper-en.pdf)                                                                                      |
 | Releases        | [GitHub Releases](https://github.com/Adamant-im/adamant-im/releases)                                                                                                      |
 | Media pack      | [media_pack.zip](https://adamant.im/img/media_pack.zip)                                                                                                                   |
 | Project profile | [About ADAMANT: Description and Details](https://docs.google.com/document/d/e/2PACX-1vR_SndPoXvRvntay9Pn9A_xbI1n940GvSAENiU5SuYcznFT-6a7X0RqH50vCgJR-QmXPLe1s_1DRtl6/pub) |
+
+### Community PWA Deployments
+
+Mainnet app:
+
+- GitHub Pages auto-build: [adamant-im.github.io/adamant-im](https://adamant-im.github.io/adamant-im/) from `master` only due to GitHub Pages limitations
+- Vercel auto-build: [msg2.adamant.im](https://msg2.adamant.im) from `master` on Vercel US
+- Server-side auto-build: [msg.adamant.im](https://msg.adamant.im) and [adm.im](https://adm.im) from `master`
+- Server-side auto-build: [msgtest.adamant.im](https://msgtest.adamant.im) from `dev`
+- Server-side Tor auto-build: <http://adamant6457join2rxdkr2y7iqatar7n4n72lordxeknj435i4cjhpyd.onion> from `master`
+- Server-side Tor auto-build: <http://il2fcw65jrrv4au7mtuvodzfwtc6hje6r4ooz7yoqu2jl422b44iofyd.onion> from `dev`
+- Vercel auto-build: [dev.adamant.im](https://dev.adamant.im) from the `dev` branch on Vercel US
+- Massa DeWeb auto-build: [adm.massahub.network](https://adm.massahub.network) from `master`, hosted on the Massa blockchain
+- GitHub Actions auto-build can also be configured by any user for their own `master` deployment
+
+Testnet app:
+
+- GitHub Actions auto-build in Surge: [msg-adamant-testnet.surge.sh](https://msg-adamant-testnet.surge.sh) from `master`, mirrored at <http://msg-testnet.adamant.im> (HTTP-only for the mirror)
+- GitHub Actions auto-build in Surge: [dev-adamant-testnet.surge.sh](https://dev-adamant-testnet.surge.sh) from `dev`, mirrored at <http://dev-testnet.adamant.im> (HTTP-only for the mirror)
 
 ## Quick Start
 
