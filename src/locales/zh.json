@@ -289,7 +289,7 @@
     },
     "dev_screens": "开发屏幕"
   },
-  "region": "en-US",
+  "region": "zh-CN",
   "rows_per_page": "每页的行数",
   "scan": {
     "camera_button": "相机",

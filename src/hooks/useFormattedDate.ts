@@ -3,6 +3,17 @@ import { EPOCH } from '@/lib/constants'
 
 export function useFormattedDate() {
   const { t } = useI18n()
+  const DEFAULT_DATE_LOCALE = 'en-US'
+
+  const getDateLocale = () => {
+    const locale = t('region')
+
+    try {
+      return Intl.getCanonicalLocales(locale)[0] ?? DEFAULT_DATE_LOCALE
+    } catch {
+      return DEFAULT_DATE_LOCALE
+    }
+  }
 
   const getTime = (date: Date) => {
     const hours = date.getHours()
@@ -52,7 +63,7 @@ export function useFormattedDate() {
       options.year = 'numeric'
     }
 
-    return date.toLocaleDateString(t('region'), options) + ', ' + getTime(date)
+    return date.toLocaleDateString(getDateLocale(), options) + ', ' + getTime(date)
   }
 
   return {

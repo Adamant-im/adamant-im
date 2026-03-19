@@ -282,7 +282,7 @@
     "use_full_date_tooltip": "Zeigt Datumsangaben als 17.01.2021 anstelle relativer Begriffe wie „Gestern“ oder „Heute“ an.",
     "dev_screens": "Entwicklungsbildschirme"
   },
-  "region": "de-GER",
+  "region": "de-DE",
   "rows_per_page": "Rows per page",
   "scan": {
     "camera_button": "Camera",
