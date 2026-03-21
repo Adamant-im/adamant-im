@@ -72,7 +72,7 @@ export class AndroidPushService extends BasePushService {
     this.privateKey = privateKey
 
     if (Capacitor.getPlatform() === 'android') {
-      this.savePrivateKeyToAndroid(privateKey)
+      this.savePrivateKeyToAndroid()
     }
   }
 
@@ -84,12 +84,12 @@ export class AndroidPushService extends BasePushService {
     }
   }
 
-  private async savePrivateKeyToAndroid(privateKey: string): Promise<void> {
+  private async savePrivateKeyToAndroid(): Promise<void> {
     try {
       const { SecureStoragePlugin } = await import('capacitor-secure-storage-plugin')
       await SecureStoragePlugin.set({
         key: 'adamant_private_key',
-        value: privateKey
+        value: this.privateKey as string
       })
     } catch (error) {
       console.error('Failed to save private key:', error)

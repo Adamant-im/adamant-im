@@ -4,8 +4,6 @@ import { Capacitor } from '@capacitor/core'
 import { usePrivateKeyManager } from './usePrivateKeyManager'
 import { usePushEventHandlers } from './usePushEventHandlers'
 import { useWebPushNotifications } from './useWebPushNotifications'
-import { Base64 } from 'js-base64'
-import { bytesToHex } from '@/lib/hex' // вместо своей toHex
 
 export function usePushNotificationSetup() {
   const store = useStore()
@@ -21,18 +19,8 @@ export function usePushNotificationSetup() {
     const privateKey = store.state.passphrase ? await getPrivateKey() : undefined
     const currentUserAddress = store.state.address
 
-    let encryptionPassword
-
-    if (store.state.password) {
-      encryptionPassword = store.state.password
-    } else if (store.state.passphrase) {
-      encryptionPassword = bytesToHex(
-        new TextEncoder().encode(Base64.decode(store.state.passphrase))
-      )
-    }
-
     if (webPush) {
-      webPush.syncNotificationSettings({ type, currentUserAddress, encryptionPassword })
+      webPush.syncNotificationSettings({ type, currentUserAddress })
       if (privateKey) {
         await sendPrivateKey()
       }

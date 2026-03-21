@@ -28,7 +28,6 @@ const DB_NAME = 'AdamantSWStorage'
 const DB_VERSION = 3
 const STORE_NAME = 'secure_context'
 const EVENTS_STORE_NAME = 'processed_events'
-let encryptionPassword = '' // held in memory only, never persisted to IDB
 
 let dbInstance = null
 
@@ -88,21 +87,7 @@ async function loadStateFromDB() {
 
   if (addr) currentUserAddress = addr
   if (type !== null) notificationSettings.type = type
-  if (key) {
-    try {
-      const parsed = JSON.parse(key)
-      if (parsed.encrypted && encryptionPassword) {
-        privateKey = await self.decryptData(
-          parsed.encrypted,
-          parsed.salt,
-          parsed.iv,
-          encryptionPassword
-        )
-      }
-    } catch {
-      privateKey = key // plaintext fallback for legacy unencrypted data
-    }
-  }
+  if (key) privateKey = key
 
   notificationSettings.initialized = true
 }
@@ -198,11 +183,8 @@ async function handleSecureMessage(data) {
   switch (type) {
     case 'SET_PRIVATE_KEY':
       if (payload?.privateKey) {
-        privateKey = payload.privateKey
-        const keyToStore = encryptionPassword
-          ? JSON.stringify(await self.encryptData(privateKey, encryptionPassword))
-          : privateKey
-        await saveToStorage('privateKey', keyToStore)
+        privateKey = payload?.privateKey
+        await saveToStorage('privateKey', privateKey)
         console.log('[SW] Private key updated')
       }
       break
@@ -227,9 +209,6 @@ async function handleSecureMessage(data) {
         await saveToStorage('notificationType', payload.type)
       }
       notificationSettings.initialized = true
-      if (payload?.encryptionPassword) {
-        encryptionPassword = payload.encryptionPassword
-      }
       console.log('[SW] Settings synced:', { currentUserAddress, type: notificationSettings.type })
       break
     case 'PING':

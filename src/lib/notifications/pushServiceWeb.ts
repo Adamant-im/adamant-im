@@ -8,7 +8,6 @@ import { firebaseSwRegistrationPromise } from '@/main'
 
 export class WebPushService extends BasePushService {
   private token: string | null = null
-  private privateKey: string | null = null
 
   async initialize(): Promise<boolean> {
     if (!fcm) {
@@ -90,7 +89,6 @@ export class WebPushService extends BasePushService {
       }
 
       this.token = null
-      this.privateKey = null
 
       return true
     } catch (error) {
@@ -110,13 +108,9 @@ export class WebPushService extends BasePushService {
     }
   }
 
-  setPrivateKey(privateKey: string): void {
-    this.privateKey = privateKey
-  }
+  setPrivateKey(): void {}
 
-  clearPrivateKey(): void {
-    this.privateKey = null
-  }
+  clearPrivateKey(): void {}
 
   isInitialized(): boolean {
     return super.isInitialized()
@@ -128,6 +122,5 @@ export class WebPushService extends BasePushService {
 
   reset(): void {
     super.reset()
-    this.privateKey = null
   }
 }
