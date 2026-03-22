@@ -2,8 +2,7 @@ import { CryptoSymbol, TransactionStatus, TransactionStatusType } from '@/lib/co
 
 const finalStatuses = new Set<TransactionStatusType>([
   TransactionStatus.CONFIRMED,
-  TransactionStatus.REJECTED,
-  TransactionStatus.INVALID
+  TransactionStatus.REJECTED
 ])
 
 const checkedTransactions = new Set<string>()

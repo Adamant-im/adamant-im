@@ -17,11 +17,11 @@ export function useKVSCryptoAddress(
 
   const isEnabled = computed(() => !!admAddress.value)
 
-  const { data } = useQuery({
+  const query = useQuery({
     queryKey: ['KVS', crypto, admAddress],
     queryFn: fetchCryptoAddress,
     enabled: isEnabled
   })
 
-  return data
+  return query
 }

@@ -14,6 +14,7 @@ export function useTransactionStatus(
   queryStatus: Ref<QueryStatus>,
   transactionStatus?: Ref<TransactionStatusType | undefined>,
   inconsistentStatus?: Ref<InconsistentStatus>,
+  isInconsistentStatusResolving?: Ref<boolean>,
   additionalStatus?: Ref<TransactionAdditionalStatusType | undefined>,
   isLoadingError?: Ref<boolean | undefined>,
   isRefetchError?: Ref<boolean | undefined>,
@@ -50,6 +51,12 @@ export function useTransactionStatus(
       return resolvedKnownStatus
     }
     if (queryStatus.value === 'success') {
+      if (isInconsistentStatusResolving?.value) {
+        return resolvedKnownStatus === TransactionStatus.CONFIRMED
+          ? TransactionStatus.PENDING
+          : resolvedKnownStatus || TransactionStatus.PENDING
+      }
+
       if (inconsistentStatus?.value) return TransactionStatus.INVALID
 
       return resolvedKnownStatus || TransactionStatus.CONFIRMED

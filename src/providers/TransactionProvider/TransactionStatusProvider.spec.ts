@@ -172,7 +172,7 @@ describe('TransactionStatusProvider', () => {
     )
   })
 
-  it('skips auto-query on the next chat remount in the same session once an invalid status was remembered', () => {
+  it('keeps auto-query enabled for invalid statuses so stale inconsistency results can self-heal', () => {
     const { store } = createStoreMock()
     syncTransactionStatusSession('U111111')
     rememberTransactionFinalStatus(
@@ -205,8 +205,8 @@ describe('TransactionStatusProvider', () => {
       | { enabled: { value: boolean } }
       | undefined
 
-    expect(params?.enabled.value).toBe(false)
-    expect(wrapper.find('[data-status]').attributes('data-status')).toBe(TransactionStatus.INVALID)
+    expect(params?.enabled.value).toBe(true)
+    expect(wrapper.find('[data-status]').attributes('data-status')).toBe(TransactionStatus.PENDING)
   })
 
   it('skips auto-query on the next chat remount in the same session once a rejected status was remembered', () => {

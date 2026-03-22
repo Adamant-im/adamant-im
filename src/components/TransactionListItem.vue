@@ -146,6 +146,7 @@ export default {
       liveQueryStatus,
       liveTransactionStatus,
       undefined,
+      undefined,
       liveAdditionalStatus,
       isLiveTransactionLoadingError,
       isLiveTransactionRefetchError,

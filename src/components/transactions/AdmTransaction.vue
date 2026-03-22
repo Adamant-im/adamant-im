@@ -66,6 +66,7 @@ export default defineComponent({
       queryStatus,
       statusValue,
       undefined,
+      undefined,
       additionalStatus,
       isLoadingError,
       isRefetchError,

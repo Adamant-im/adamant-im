@@ -4,6 +4,8 @@ import { TransactionAdditionalStatus, TransactionStatus } from '@/lib/constants'
 import { AllNodesOfflineError } from '@/lib/nodes/utils/errors'
 import { useTransactionStatus } from './useTransactionStatus'
 
+const boolRef = (value: boolean) => ref<boolean | undefined>(value)
+
 describe('useTransactionStatus', () => {
   it('rejects a pending status when a background refetch exhausts all retries', () => {
     const status = useTransactionStatus(
@@ -12,8 +14,9 @@ describe('useTransactionStatus', () => {
       computed(() => TransactionStatus.PENDING),
       undefined,
       undefined,
-      ref(false),
-      ref(true)
+      undefined,
+      boolRef(false),
+      boolRef(true)
     )
 
     expect(status.value).toBe(TransactionStatus.REJECTED)
@@ -26,8 +29,9 @@ describe('useTransactionStatus', () => {
       computed(() => TransactionStatus.REGISTERED),
       undefined,
       undefined,
-      ref(false),
-      ref(true)
+      undefined,
+      boolRef(false),
+      boolRef(true)
     )
 
     expect(status.value).toBe(TransactionStatus.REGISTERED)
@@ -40,8 +44,9 @@ describe('useTransactionStatus', () => {
       undefined,
       undefined,
       undefined,
-      ref(true),
-      ref(false)
+      undefined,
+      boolRef(true),
+      boolRef(false)
     )
 
     expect(status.value).toBe(TransactionStatus.REJECTED)
@@ -54,8 +59,9 @@ describe('useTransactionStatus', () => {
       undefined,
       undefined,
       undefined,
-      ref(true),
-      ref(false),
+      undefined,
+      boolRef(true),
+      boolRef(false),
       ref(new AllNodesOfflineError('btc'))
     )
 
@@ -69,8 +75,9 @@ describe('useTransactionStatus', () => {
       computed(() => TransactionStatus.PENDING),
       undefined,
       undefined,
-      ref(true),
-      ref(false)
+      undefined,
+      boolRef(true),
+      boolRef(false)
     )
 
     expect(status.value).toBe(TransactionStatus.REJECTED)
@@ -83,8 +90,9 @@ describe('useTransactionStatus', () => {
       computed(() => TransactionStatus.PENDING),
       undefined,
       undefined,
-      ref(false),
-      ref(false)
+      undefined,
+      boolRef(false),
+      boolRef(false)
     )
 
     expect(status.value).toBe(TransactionStatus.REJECTED)
@@ -95,6 +103,7 @@ describe('useTransactionStatus', () => {
       ref(false),
       ref('success'),
       computed(() => TransactionStatus.REGISTERED),
+      undefined,
       undefined,
       computed(() => TransactionAdditionalStatus.INSTANT_SEND)
     )
@@ -108,11 +117,25 @@ describe('useTransactionStatus', () => {
       ref('error'),
       computed(() => TransactionStatus.REGISTERED),
       undefined,
+      undefined,
       computed(() => TransactionAdditionalStatus.INSTANT_SEND),
-      ref(false),
-      ref(true)
+      boolRef(false),
+      boolRef(true)
     )
 
     expect(status.value).toBe(TransactionStatus.CONFIRMED)
+  })
+
+  it('keeps a transfer pending while consistency checks are still resolving', () => {
+    const status = useTransactionStatus(
+      ref(false),
+      ref('success'),
+      computed(() => TransactionStatus.CONFIRMED),
+      computed(() => ''),
+      computed(() => true),
+      computed(() => TransactionAdditionalStatus.NONE)
+    )
+
+    expect(status.value).toBe(TransactionStatus.PENDING)
   })
 })

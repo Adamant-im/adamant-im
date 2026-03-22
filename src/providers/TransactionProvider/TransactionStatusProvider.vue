@@ -131,7 +131,11 @@ export default defineComponent({
 
         rememberTransactionFinalStatus(sessionTransactionKey.value, resolvedStatus)
 
-        if (resolvedStatus !== TransactionStatus.REJECTED) {
+        if (
+          resolvedStatus !== TransactionStatus.CONFIRMED &&
+          resolvedStatus !== TransactionStatus.REJECTED &&
+          resolvedStatus !== TransactionStatus.INVALID
+        ) {
           return
         }
 
@@ -161,6 +165,14 @@ export default defineComponent({
     const transactionStatus = computed(() => {
       if (props.transaction.type === 'UNKNOWN_CRYPTO') {
         return TransactionStatus.UNKNOWN
+      }
+
+      if (
+        queryEnabled.value &&
+        queryStatus.value === 'pending' &&
+        localResolvedStatus.value === TransactionStatus.INVALID
+      ) {
+        return TransactionStatus.PENDING
       }
 
       if (!queryEnabled.value || queryStatus.value === 'pending') {

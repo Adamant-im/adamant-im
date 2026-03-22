@@ -6,6 +6,8 @@ import { TransactionInconsistentReason } from '../utils/getInconsistentStatus'
 const admTransaction = ref<any>()
 const senderCryptoAddress = ref<string | undefined>()
 const recipientCryptoAddress = ref<string | undefined>()
+const senderCryptoAddressStatus = ref<'pending' | 'success' | 'error'>('success')
+const recipientCryptoAddressStatus = ref<'pending' | 'success' | 'error'>('success')
 
 vi.mock('vuex', () => ({
   useStore: () => ({
@@ -21,12 +23,18 @@ vi.mock('./useFindAdmTransaction', () => ({
 }))
 
 vi.mock('@/hooks/queries/useKVSCryptoAddress', () => ({
-  useKVSCryptoAddress: (admAddress: { value?: string }) =>
-    computed(() =>
+  useKVSCryptoAddress: (admAddress: { value?: string }) => ({
+    data: computed(() =>
       admAddress.value === admTransaction.value?.senderId
         ? senderCryptoAddress.value
         : recipientCryptoAddress.value
+    ),
+    status: computed(() =>
+      admAddress.value === admTransaction.value?.senderId
+        ? senderCryptoAddressStatus.value
+        : recipientCryptoAddressStatus.value
     )
+  })
 }))
 
 import { useInconsistentStatus } from './useInconsistentStatus'
@@ -48,6 +56,8 @@ describe('useInconsistentStatus', () => {
     }
     senderCryptoAddress.value = 'chain-sender'
     recipientCryptoAddress.value = 'chain-recipient'
+    senderCryptoAddressStatus.value = 'success'
+    recipientCryptoAddressStatus.value = 'success'
   })
 
   it('reports missing recipient KVS address as an inconsistent status', () => {
@@ -107,6 +117,29 @@ describe('useInconsistentStatus', () => {
         recipientId: 'wrong-recipient',
         amount: 999,
         confirmations: 0
+      }) as any,
+      Cryptos.BTC
+    )
+
+    expect(result.value).toBe('')
+  })
+
+  it('waits for KVS address lookups before marking a transaction as inconsistent', () => {
+    recipientCryptoAddress.value = undefined
+    recipientCryptoAddressStatus.value = 'pending'
+
+    const result = useInconsistentStatus(
+      ref({
+        id: 'tx-1',
+        hash: 'tx-1',
+        fee: 0,
+        status: TransactionStatus.CONFIRMED,
+        timestamp: Date.now(),
+        direction: 'from',
+        senderId: 'chain-sender',
+        recipientId: 'chain-recipient',
+        amount: 1,
+        confirmations: 1
       }) as any,
       Cryptos.BTC
     )

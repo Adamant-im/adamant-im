@@ -83,6 +83,7 @@ export default defineComponent({
       queryStatus,
       transactionStatus,
       inconsistentStatus,
+      undefined,
       additionalStatus,
       isLoadingError,
       isRefetchError,
