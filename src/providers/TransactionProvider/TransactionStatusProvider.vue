@@ -22,6 +22,7 @@ import type { NormalizedChatMessageTransaction } from '@/lib/chat/helpers/normal
 import { useTransactionAdditionalStatus } from '@/components/transactions/hooks/useTransactionAdditionalStatus'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import {
+  forgetTransactionFinalStatus,
   hasTransactionFinalStatusInSession,
   makeTransactionStatusSessionKey,
   rememberTransactionFinalStatus,
@@ -142,6 +143,20 @@ export default defineComponent({
       { immediate: true }
     )
 
+    const refetchTransactionStatus = async () => {
+      forgetTransactionFinalStatus(sessionTransactionKey.value)
+
+      if (partnerId.value && props.transaction.hash) {
+        store.commit('chat/updateCryptoTransferMessage', {
+          partnerId: partnerId.value,
+          hash: props.transaction.hash,
+          status: TransactionStatus.PENDING
+        })
+      }
+
+      return refetch()
+    }
+
     const transactionStatus = computed(() => {
       if (props.transaction.type === 'UNKNOWN_CRYPTO') {
         return TransactionStatus.UNKNOWN
@@ -161,7 +176,7 @@ export default defineComponent({
       status: transactionStatus,
       inconsistentStatus,
       statusIcon,
-      refetch
+      refetch: refetchTransactionStatus
     }
   }
 })

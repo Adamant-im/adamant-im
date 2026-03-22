@@ -47,6 +47,10 @@ export function useInconsistentStatus(
       return ''
     }
 
+    if ('status' in transaction.value && transaction.value.status === 'PENDING') {
+      return ''
+    }
+
     return getInconsistentStatus(transaction.value, admTx.value, {
       senderCryptoAddress: senderCryptoAddress.value,
       recipientCryptoAddress: recipientCryptoAddress.value

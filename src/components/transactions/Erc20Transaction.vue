@@ -31,6 +31,7 @@ import { useTransactionAdditionalStatus } from './hooks/useTransactionAdditional
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useInconsistentStatus } from './hooks/useInconsistentStatus'
 import { useFindAdmTransaction } from './hooks/useFindAdmTransaction'
+import { useSyncChatTransferPendingStatus } from './hooks/useSyncChatTransferPendingStatus'
 import { useErc20TransactionQuery } from '@/hooks/queries/transaction'
 import { useClearPendingTransaction } from './hooks/useClearPendingTransaction'
 import { getPartnerAddress } from './utils/getPartnerAddress'
@@ -77,6 +78,7 @@ const status = useTransactionStatus(
 useClearPendingTransaction(props.crypto, transaction, status)
 
 const admTx = useFindAdmTransaction(props.id)
+useSyncChatTransferPendingStatus(props.crypto, props.id, admTx, isFetching, queryStatus)
 const senderAdmAddress = computed(() => admTx.value?.senderId || '')
 const recipientAdmAddress = computed(() => admTx.value?.recipientId || '')
 const partnerAdmAddress = computed(() =>

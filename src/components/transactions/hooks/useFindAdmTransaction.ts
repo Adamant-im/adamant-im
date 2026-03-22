@@ -19,7 +19,7 @@ export function useFindAdmTransaction(
       // @ts-expect-error-next-line
       Object.values(chat.messages).some((msg) => {
         // @ts-expect-error-next-line
-        if (msg.hash && msg.hash === hashValue) {
+        if ((msg.hash && msg.hash === hashValue) || msg.id === hashValue) {
           admTx = msg as NormalizedChatMessageTransaction
         }
         return !!admTx?.id

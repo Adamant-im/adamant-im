@@ -93,4 +93,24 @@ describe('useInconsistentStatus', () => {
 
     expect(result.value).toBe(TransactionInconsistentReason.NO_SENDER_CRYPTO_ADDRESS)
   })
+
+  it('does not mark locally pending placeholder transactions as inconsistent', () => {
+    const result = useInconsistentStatus(
+      ref({
+        id: 'tx-1',
+        hash: 'tx-1',
+        fee: 0,
+        status: TransactionStatus.PENDING,
+        timestamp: Date.now(),
+        direction: 'from',
+        senderId: 'wrong-sender',
+        recipientId: 'wrong-recipient',
+        amount: 999,
+        confirmations: 0
+      }) as any,
+      Cryptos.BTC
+    )
+
+    expect(result.value).toBe('')
+  })
 })

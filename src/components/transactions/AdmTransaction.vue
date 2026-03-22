@@ -20,6 +20,8 @@ import { computed, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
 import { useTransactionAdditionalStatus } from './hooks/useTransactionAdditionalStatus'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
+import { useFindAdmTransaction } from './hooks/useFindAdmTransaction'
+import { useSyncChatTransferPendingStatus } from './hooks/useSyncChatTransferPendingStatus'
 import { useFormatADMAddress } from '@/hooks/address/useFormatADMAddress'
 import { useBlockHeight } from '@/hooks/queries/useBlockHeight'
 import { useAdmTransactionQuery } from '@/hooks/queries/transaction'
@@ -69,6 +71,8 @@ export default defineComponent({
       isRefetchError,
       error
     )
+    const admTx = useFindAdmTransaction(props.id)
+    useSyncChatTransferPendingStatus(props.crypto, props.id, admTx, isFetching, queryStatus)
 
     const partnerAdmAddress = computed(() => {
       return transaction.value

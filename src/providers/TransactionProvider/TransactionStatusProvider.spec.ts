@@ -65,7 +65,11 @@ const slotHost = defineComponent({
         TransactionStatusProvider as any,
         { transaction: props.transaction },
         {
-          default: ({ status }: { status: string }) => h('div', { 'data-status': status }, status)
+          default: ({ status, refetch }: { status: string; refetch: () => void }) =>
+            h('div', [
+              h('div', { 'data-status': status }, status),
+              h('button', { 'data-refetch': '', onClick: refetch }, 'refetch')
+            ])
         }
       )
   }
@@ -286,5 +290,39 @@ describe('TransactionStatusProvider', () => {
 
     expect(params?.knownStatus.value).toBe(TransactionStatus.CONFIRMED)
     expect(params?.enabled.value).toBe(true)
+  })
+
+  it('clears the remembered final status and sets chat transfer back to pending on manual refetch', async () => {
+    const { store, commit } = createStoreMock()
+    syncTransactionStatusSession('U111111')
+    rememberTransactionFinalStatus(
+      makeTransactionStatusSessionKey('U111111', 'DASH', 'dash-hash'),
+      TransactionStatus.REJECTED
+    )
+
+    const wrapper = mount(slotHost, {
+      props: {
+        transaction: {
+          id: 'local-id',
+          hash: 'dash-hash',
+          type: 'DASH',
+          senderId: 'U111111',
+          recipientId: 'U222222',
+          status: TransactionStatus.REJECTED
+        }
+      },
+      global: {
+        plugins: [store]
+      }
+    })
+
+    await wrapper.find('[data-refetch]').trigger('click')
+
+    expect(commit).toHaveBeenCalledWith('chat/updateCryptoTransferMessage', {
+      partnerId: 'U222222',
+      hash: 'dash-hash',
+      status: TransactionStatus.PENDING
+    })
+    expect(refetch).toHaveBeenCalledTimes(1)
   })
 })

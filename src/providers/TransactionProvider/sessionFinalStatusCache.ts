@@ -45,6 +45,14 @@ export function rememberTransactionFinalStatus(key: string, status?: Transaction
   checkedTransactions.add(key)
 }
 
+export function forgetTransactionFinalStatus(key: string) {
+  if (!key) {
+    return
+  }
+
+  checkedTransactions.delete(key)
+}
+
 export function hasTransactionFinalStatusInSession(key: string, status?: TransactionStatusType) {
   return !!key && !!status && finalStatuses.has(status) && checkedTransactions.has(key)
 }
