@@ -18,7 +18,7 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 import TransactionStatusProvider from './TransactionStatusProvider.vue'
-import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import type { NormalizedChatMessageTransaction } from '@/lib/chat/helpers/normalizeMessage'
 import { TransactionStatus } from '@/lib/constants'
 
 export default defineComponent({

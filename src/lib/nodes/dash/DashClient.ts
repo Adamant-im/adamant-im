@@ -56,12 +56,15 @@ export class DashClient extends Client<DashNode> {
     return transaction
   }
 
-  async getTransactionsIds() {
-    return this.invoke<string[]>({ method: 'getaddresstxids' })
+  async getTransactionsIds(address: string) {
+    return this.invoke<string[]>({
+      method: 'getaddresstxids',
+      params: [address]
+    })
   }
 
   async getTransactions(address: string) {
-    const txIds = await this.getTransactionsIds()
+    const txIds = await this.getTransactionsIds(address)
 
     const rpcCalls = txIds.map((txId) => ({
       method: 'getrawtransaction',

@@ -13,7 +13,9 @@ export function useTransactionStatus(
   queryStatus: Ref<QueryStatus>,
   transactionStatus?: Ref<TransactionStatusType | undefined>,
   inconsistentStatus?: Ref<InconsistentStatus>,
-  additionalStatus?: Ref<TransactionAdditionalStatusType | undefined>
+  additionalStatus?: Ref<TransactionAdditionalStatusType | undefined>,
+  isLoadingError?: Ref<boolean | undefined>,
+  isRefetchError?: Ref<boolean | undefined>
 ) {
   return computed(() => {
     const resolvedKnownStatus =
@@ -21,8 +23,20 @@ export function useTransactionStatus(
         ? TransactionStatus.CONFIRMED
         : transactionStatus?.value
 
+    if (isRefetchError?.value && resolvedKnownStatus === TransactionStatus.PENDING) {
+      return TransactionStatus.REJECTED
+    }
+
     if (queryStatus.value === 'error') {
-      return resolvedKnownStatus || TransactionStatus.REJECTED
+      if (isRefetchError?.value && resolvedKnownStatus) {
+        return resolvedKnownStatus
+      }
+
+      if (isLoadingError?.value || !resolvedKnownStatus) {
+        return TransactionStatus.REJECTED
+      }
+
+      return resolvedKnownStatus
     }
     if (queryStatus.value === 'success') {
       if (inconsistentStatus?.value) return TransactionStatus.INVALID

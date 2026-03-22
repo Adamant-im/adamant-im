@@ -18,7 +18,7 @@ import {
   TransactionStatus,
   tsIcon
 } from '@/lib/constants'
-import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import type { NormalizedChatMessageTransaction } from '@/lib/chat/helpers/normalizeMessage'
 import { useTransactionAdditionalStatus } from '@/components/transactions/hooks/useTransactionAdditionalStatus'
 import { isStringEqualCI } from '@/lib/textHelpers'
 
@@ -58,11 +58,7 @@ export default defineComponent({
     })
     const queryKnownStatus = computed(() => props.transaction.status)
     const queryEnabled = computed(() => {
-      return (
-        isSupportedCrypto.value &&
-        !!transactionId.value &&
-        props.transaction.status !== TransactionStatus.CONFIRMED
-      )
+      return isSupportedCrypto.value && !!transactionId.value
     })
 
     const { transaction, queryStatus, status, inconsistentStatus, additionalStatus, refetch } =
@@ -114,14 +110,6 @@ export default defineComponent({
       }
 
       if (!queryEnabled.value || queryStatus.value === 'pending') {
-        return localResolvedStatus.value
-      }
-
-      if (
-        queryStatus.value === 'error' &&
-        props.transaction.status !== TransactionStatus.REJECTED &&
-        props.transaction.status !== TransactionStatus.UNKNOWN
-      ) {
         return localResolvedStatus.value
       }
 

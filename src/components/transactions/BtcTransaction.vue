@@ -67,6 +67,8 @@ export default defineComponent({
     const {
       status: queryStatus,
       isFetching,
+      isLoadingError,
+      isRefetchError,
       data: transaction,
       refetch
     } = useTransactionQuery(props.id)
@@ -78,7 +80,9 @@ export default defineComponent({
       queryStatus,
       transactionStatus,
       inconsistentStatus,
-      additionalStatus
+      additionalStatus,
+      isLoadingError,
+      isRefetchError
     )
     useClearPendingTransaction(props.crypto, transaction, status)
 

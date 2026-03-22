@@ -110,7 +110,7 @@ describe('TransactionStatusProvider', () => {
     expect(wrapper.find('[data-status]').attributes('data-status')).toBe(TransactionStatus.PENDING)
   })
 
-  it('keeps the local registered status when the live query errors before the transaction is indexed', () => {
+  it('uses the live rejected status when the query layer resolves the transfer as failed', () => {
     queryStatusRef.value = 'error'
     liveStatusRef.value = TransactionStatus.REJECTED
     const { store } = createStoreMock()
@@ -129,9 +129,7 @@ describe('TransactionStatusProvider', () => {
       }
     })
 
-    expect(wrapper.find('[data-status]').attributes('data-status')).toBe(
-      TransactionStatus.REGISTERED
-    )
+    expect(wrapper.find('[data-status]').attributes('data-status')).toBe(TransactionStatus.REJECTED)
   })
 
   it('uses the live success status once it is available', () => {
@@ -179,6 +177,30 @@ describe('TransactionStatusProvider', () => {
       | undefined
 
     expect(params?.knownStatus.value).toBe(TransactionStatus.REJECTED)
+    expect(params?.enabled.value).toBe(true)
+  })
+
+  it('keeps live queries enabled for crypto transfers that are locally marked as confirmed', () => {
+    const { store } = createStoreMock()
+    mount(slotHost, {
+      props: {
+        transaction: {
+          id: 'local-id',
+          hash: 'btc-hash',
+          type: 'BTC',
+          status: TransactionStatus.CONFIRMED
+        }
+      },
+      global: {
+        plugins: [store]
+      }
+    })
+
+    const params = useTransactionStatusQueryMock.mock.calls[0]?.[2] as
+      | { knownStatus: { value: string }; enabled: { value: boolean } }
+      | undefined
+
+    expect(params?.knownStatus.value).toBe(TransactionStatus.CONFIRMED)
     expect(params?.enabled.value).toBe(true)
   })
 })

@@ -47,6 +47,8 @@ export default defineComponent({
     const {
       status: queryStatus,
       isFetching,
+      isLoadingError,
+      isRefetchError,
       data: transaction,
       refetch
     } = useAdmTransactionQuery(props.id)
@@ -59,7 +61,9 @@ export default defineComponent({
       queryStatus,
       statusValue,
       undefined,
-      additionalStatus
+      additionalStatus,
+      isLoadingError,
+      isRefetchError
     )
 
     const partnerAdmAddress = computed(() => {

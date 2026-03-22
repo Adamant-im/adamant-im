@@ -53,6 +53,8 @@ const cryptoAddress = computed(() => store.state.eth.address)
 const {
   status: queryStatus,
   isFetching,
+  isLoadingError,
+  isRefetchError,
   data: transaction,
   refetch
 } = useErc20TransactionQuery(props.crypto)(props.id)
@@ -64,7 +66,9 @@ const status = useTransactionStatus(
   queryStatus,
   transactionStatus,
   inconsistentStatus,
-  additionalStatus
+  additionalStatus,
+  isLoadingError,
+  isRefetchError
 )
 useClearPendingTransaction(props.crypto, transaction, status)
 

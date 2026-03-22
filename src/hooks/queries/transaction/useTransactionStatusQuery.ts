@@ -14,6 +14,8 @@ export function useTransactionStatusQuery(
   const {
     status: queryStatus,
     isFetching,
+    isLoadingError,
+    isRefetchError,
     data: transaction,
     refetch
   } = useTransactionQuery(transactionId, unref(crypto), params)
@@ -31,12 +33,16 @@ export function useTransactionStatusQuery(
     queryStatus,
     transactionStatus,
     inconsistentStatus,
-    additionalStatus
+    additionalStatus,
+    isLoadingError,
+    isRefetchError
   )
 
   return {
     transaction,
     queryStatus,
+    isLoadingError,
+    isRefetchError,
     inconsistentStatus,
     additionalStatus,
     status,

@@ -168,8 +168,8 @@ import {
   TransactionStatusType,
   tsUpdatable
 } from '@/lib/constants'
-import { DecodedChatMessageTransaction } from '@/lib/adamant-api'
-import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import type { DecodedChatMessageTransaction } from '@/lib/adamant-api'
+import type { NormalizedChatMessageTransaction } from '@/lib/chat/helpers/normalizeMessage'
 import { InconsistentStatus } from './utils/getInconsistentStatus'
 import { PendingTransaction } from '@/lib/pending-transactions'
 import { AnyCoinTransaction } from '@/lib/nodes/types/transaction'

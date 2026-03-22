@@ -1,6 +1,6 @@
 import { computed, ComputedRef, MaybeRef, unref } from 'vue'
 import { useStore } from 'vuex'
-import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import type { NormalizedChatMessageTransaction } from '@/lib/chat/helpers/normalizeMessage'
 
 /**
  * Find ADM special message by transactionHash in the chat messages

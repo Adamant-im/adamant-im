@@ -1,5 +1,5 @@
-import { DecodedChatMessageTransaction } from '@/lib/adamant-api'
-import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import type { DecodedChatMessageTransaction } from '@/lib/adamant-api'
+import type { NormalizedChatMessageTransaction } from '@/lib/chat/helpers/normalizeMessage'
 import { CoinTransaction } from '@/lib/nodes/types/transaction'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { CryptosInfo, CryptoSymbol } from '@/lib/constants'

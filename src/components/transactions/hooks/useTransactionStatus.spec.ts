@@ -4,18 +4,58 @@ import { TransactionAdditionalStatus, TransactionStatus } from '@/lib/constants'
 import { useTransactionStatus } from './useTransactionStatus'
 
 describe('useTransactionStatus', () => {
-  it('keeps optimistic pending status when a live query errors before the transaction is indexed', () => {
+  it('rejects a pending status when a background refetch exhausts all retries', () => {
     const status = useTransactionStatus(
       ref(false),
       ref('error'),
-      computed(() => TransactionStatus.PENDING)
+      computed(() => TransactionStatus.PENDING),
+      undefined,
+      undefined,
+      ref(false),
+      ref(true)
     )
 
-    expect(status.value).toBe(TransactionStatus.PENDING)
+    expect(status.value).toBe(TransactionStatus.REJECTED)
+  })
+
+  it('keeps a registered status when a background refetch errors after the node has seen the transaction', () => {
+    const status = useTransactionStatus(
+      ref(false),
+      ref('error'),
+      computed(() => TransactionStatus.REGISTERED),
+      undefined,
+      undefined,
+      ref(false),
+      ref(true)
+    )
+
+    expect(status.value).toBe(TransactionStatus.REGISTERED)
   })
 
   it('falls back to rejected when a live query errors and there is no known transaction state', () => {
-    const status = useTransactionStatus(ref(false), ref('error'))
+    const status = useTransactionStatus(
+      ref(false),
+      ref('error'),
+      undefined,
+      undefined,
+      undefined,
+      ref(true),
+      ref(false)
+    )
+
+    expect(status.value).toBe(TransactionStatus.REJECTED)
+  })
+
+  it('rejects a pending transaction when the initial lookup exhausts all retries', () => {
+    const status = useTransactionStatus(
+      ref(false),
+      ref('error'),
+      computed(() => TransactionStatus.PENDING),
+      undefined,
+      undefined,
+      ref(true),
+      ref(false)
+    )
 
     expect(status.value).toBe(TransactionStatus.REJECTED)
   })
@@ -38,7 +78,9 @@ describe('useTransactionStatus', () => {
       ref('error'),
       computed(() => TransactionStatus.REGISTERED),
       undefined,
-      computed(() => TransactionAdditionalStatus.INSTANT_SEND)
+      computed(() => TransactionAdditionalStatus.INSTANT_SEND),
+      ref(false),
+      ref(true)
     )
 
     expect(status.value).toBe(TransactionStatus.CONFIRMED)

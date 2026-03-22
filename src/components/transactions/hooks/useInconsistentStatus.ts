@@ -3,7 +3,7 @@ import { useStore } from 'vuex'
 import { useFindAdmTransaction } from './useFindAdmTransaction'
 import { useKVSCryptoAddress } from '@/hooks/queries/useKVSCryptoAddress'
 import { CryptoSymbol, isErc20 } from '@/lib/constants'
-import { DecodedChatMessageTransaction } from '@/lib/adamant-api'
+import type { DecodedChatMessageTransaction } from '@/lib/adamant-api'
 import { getInconsistentStatus, InconsistentStatus } from '../utils/getInconsistentStatus'
 import {
   BtcTransaction,
@@ -43,14 +43,9 @@ export function useInconsistentStatus(
   const recipientCryptoAddress = useKVSCryptoAddress(recipientId, crypto)
 
   return computed<InconsistentStatus>(() => {
-    if (
-      !transaction.value ||
-      !admTx.value ||
-      !mineCryptoAddress.value ||
-      !senderCryptoAddress.value ||
-      !recipientCryptoAddress.value
-    )
+    if (!transaction.value || !admTx.value || !mineCryptoAddress.value) {
       return ''
+    }
 
     return getInconsistentStatus(transaction.value, admTx.value, {
       senderCryptoAddress: senderCryptoAddress.value,
