@@ -131,6 +131,13 @@ function decodeOutputs(hex, network) {
   }))
 }
 
+function calculateUtxoFee(hex, totalInputAmount) {
+  const transaction = bitcoin.Transaction.fromHex(hex)
+  const totalOut = transaction.outs.reduce((sum, output) => sum + output.value, 0n)
+
+  return BigInt(totalInputAmount) - totalOut
+}
+
 async function expectOfflineTransfer({
   api,
   crypto,
@@ -151,6 +158,7 @@ async function expectOfflineTransfer({
 
   expect(validateAddress(crypto, recipientAddress)).toBe(true)
   expect(transaction.txid).toMatch(/^[0-9a-f]{64}$/)
+  expect(calculateUtxoFee(transaction.hex, fundingAmount)).toBe(BigInt(Math.floor(fee * 1e8)))
   expect(outputs[0]).toEqual({
     address: recipientAddress,
     value: BigInt(Math.floor(amount * 1e8))
@@ -193,10 +201,7 @@ describe('offline bitcoin-like send builders', () => {
         recipientAddress,
         amount: 1.5,
         fee: 1,
-        fundingAmount: 500_000_000,
-        extraMocks: () => {
-          vi.spyOn(api, 'getFeePerByte').mockResolvedValue(1)
-        }
+        fundingAmount: 500_000_000
       })
     }
   )

@@ -100,6 +100,26 @@ function decodeOutputs(hex, network) {
   }))
 }
 
+function calculateUtxoFee(hex, unspents) {
+  const transaction = bitcoin.Transaction.fromHex(hex)
+  const totalIn = transaction.ins.reduce((sum, input) => {
+    const txid = Buffer.from(input.hash).reverse().toString('hex')
+    const utxo = unspents.find((item) => item.txid === txid && item.vout === input.index)
+
+    if (!utxo) {
+      throw new Error(`Missing UTXO for ${txid}:${input.index}`)
+    }
+
+    return sum.plus(utxo.amount)
+  }, new BigNumber(0))
+  const totalOut = transaction.outs.reduce(
+    (sum, output) => sum.plus(output.value.toString()),
+    new BigNumber(0)
+  )
+
+  return totalIn.minus(totalOut).div(SATOSHI_MULTIPLIER).toNumber()
+}
+
 function solveMaxSendable(balance, feeCalculator, decimals) {
   let amount = new BigNumber(balance)
 
@@ -423,6 +443,7 @@ liveDescribe('live no-broadcast send builders from ADM_TEST_ACCOUNT_PK', () => {
 
         expect(validateAddress(Cryptos.BTC, recipient)).toBe(true)
         expect(transaction.txid).toMatch(/^[0-9a-f]{64}$/)
+        expect(calculateUtxoFee(transaction.hex, live.btc.unspents)).toBe(fee)
         expect(outputs[0]).toEqual({ address: recipient, value: toSmallestUnit(amount) })
 
         restore()
@@ -446,6 +467,8 @@ liveDescribe('live no-broadcast send builders from ADM_TEST_ACCOUNT_PK', () => {
 
       expect(new BigNumber(live.btc.balance).toNumber()).toBeGreaterThan(Number(amount) + feeOn)
       expect(feeOn).toBeGreaterThan(feeOff)
+      expect(calculateUtxoFee(txOff.hex, live.btc.unspents)).toBe(feeOff)
+      expect(calculateUtxoFee(txOn.hex, live.btc.unspents)).toBe(feeOn)
       expect(outputsOff[0].value).toBe(toSmallestUnit(amount))
       expect(outputsOn[0].value).toBe(toSmallestUnit(amount))
 
@@ -460,6 +483,7 @@ liveDescribe('live no-broadcast send builders from ADM_TEST_ACCOUNT_PK', () => {
       const outputs = decodeOutputs(transaction.hex, networks[Cryptos.BTC])
 
       expect(new BigNumber(amount).toNumber()).toBeGreaterThanOrEqual(getMinAmount(Cryptos.BTC))
+      expect(calculateUtxoFee(transaction.hex, live.btc.unspents)).toBe(fee)
       expect(outputs[0].value).toBe(toSmallestUnit(amount))
 
       restore()
@@ -496,6 +520,7 @@ liveDescribe('live no-broadcast send builders from ADM_TEST_ACCOUNT_PK', () => {
         const outputs = decodeOutputs(transaction.hex, networks[Cryptos.DOGE])
 
         expect(validateAddress(Cryptos.DOGE, recipient)).toBe(true)
+        expect(calculateUtxoFee(transaction.hex, live.doge.unspents)).toBe(fee)
         expect(outputs[0].value).toBe(toSmallestUnit(amount))
 
         restore()
@@ -517,6 +542,8 @@ liveDescribe('live no-broadcast send builders from ADM_TEST_ACCOUNT_PK', () => {
       const halfTx = await live.doge.api.createTransaction(DOGE_RECIPIENTS.p2pkh, halfAmount, fee)
       const fullTx = await live.doge.api.createTransaction(DOGE_RECIPIENTS.p2sh, fullAmount, fee)
 
+      expect(calculateUtxoFee(halfTx.hex, live.doge.unspents)).toBe(fee)
+      expect(calculateUtxoFee(fullTx.hex, live.doge.unspents)).toBe(fee)
       expect(decodeOutputs(halfTx.hex, networks[Cryptos.DOGE])[0].value).toBe(
         toSmallestUnit(halfAmount)
       )
@@ -553,6 +580,7 @@ liveDescribe('live no-broadcast send builders from ADM_TEST_ACCOUNT_PK', () => {
         const outputs = decodeOutputs(transaction.hex, networks[Cryptos.DASH])
 
         expect(validateAddress(Cryptos.DASH, recipient)).toBe(true)
+        expect(calculateUtxoFee(transaction.hex, live.dash.unspents)).toBe(fee)
         expect(outputs[0].value).toBe(toSmallestUnit(amount))
 
         restore()
@@ -574,6 +602,8 @@ liveDescribe('live no-broadcast send builders from ADM_TEST_ACCOUNT_PK', () => {
       const halfTx = await live.dash.api.createTransaction(DASH_RECIPIENTS.p2pkh, halfAmount, fee)
       const fullTx = await live.dash.api.createTransaction(DASH_RECIPIENTS.p2sh, fullAmount, fee)
 
+      expect(calculateUtxoFee(halfTx.hex, live.dash.unspents)).toBe(fee)
+      expect(calculateUtxoFee(fullTx.hex, live.dash.unspents)).toBe(fee)
       expect(decodeOutputs(halfTx.hex, networks[Cryptos.DASH])[0].value).toBe(
         toSmallestUnit(halfAmount)
       )
