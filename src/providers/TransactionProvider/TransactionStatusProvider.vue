@@ -21,6 +21,12 @@ import {
 import type { NormalizedChatMessageTransaction } from '@/lib/chat/helpers/normalizeMessage'
 import { useTransactionAdditionalStatus } from '@/components/transactions/hooks/useTransactionAdditionalStatus'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import {
+  hasTransactionFinalStatusInSession,
+  makeTransactionStatusSessionKey,
+  rememberTransactionFinalStatus,
+  syncTransactionStatusSession
+} from './sessionFinalStatusCache'
 
 export default defineComponent({
   props: {
@@ -34,6 +40,8 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore()
+    syncTransactionStatusSession(store.state.address)
+
     const transactionId = computed(() =>
       props.transaction.type === 'ADM' ? props.transaction.id : props.transaction.hash
     )
@@ -57,8 +65,14 @@ export default defineComponent({
       return props.transaction.type in Cryptos
     })
     const queryKnownStatus = computed(() => props.transaction.status)
+    const sessionTransactionKey = computed(() =>
+      makeTransactionStatusSessionKey(store.state.address, crypto.value, transactionId.value)
+    )
+    const skipAutoQuery = computed(() =>
+      hasTransactionFinalStatusInSession(sessionTransactionKey.value, localResolvedStatus.value)
+    )
     const queryEnabled = computed(() => {
-      return isSupportedCrypto.value && !!transactionId.value
+      return isSupportedCrypto.value && !!transactionId.value && !skipAutoQuery.value
     })
 
     const { transaction, queryStatus, status, inconsistentStatus, additionalStatus, refetch } =
@@ -81,10 +95,12 @@ export default defineComponent({
           return
         }
 
+        rememberTransactionFinalStatus(sessionTransactionKey.value, status.value)
+
         store.commit('chat/updateCryptoTransferMessage', {
           partnerId: partnerId.value,
           hash: props.transaction.hash,
-          status: resolvedLiveTransaction.status,
+          status: status.value,
           confirmations: resolvedLiveTransaction.confirmations,
           instantlock:
             'instantlock' in resolvedLiveTransaction
@@ -99,6 +115,28 @@ export default defineComponent({
             ('instantsend' in resolvedLiveTransaction
               ? resolvedLiveTransaction.instantsend
               : undefined)
+        })
+      },
+      { immediate: true }
+    )
+
+    watch(
+      status,
+      (resolvedStatus) => {
+        if (!partnerId.value || !props.transaction.hash) {
+          return
+        }
+
+        rememberTransactionFinalStatus(sessionTransactionKey.value, resolvedStatus)
+
+        if (resolvedStatus !== TransactionStatus.REJECTED) {
+          return
+        }
+
+        store.commit('chat/updateCryptoTransferMessage', {
+          partnerId: partnerId.value,
+          hash: props.transaction.hash,
+          status: resolvedStatus
         })
       },
       { immediate: true }

@@ -4,6 +4,12 @@ import { createStore } from 'vuex'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { TransactionStatus } from '@/lib/constants'
 import TransactionStatusProvider from './TransactionStatusProvider.vue'
+import {
+  makeTransactionStatusSessionKey,
+  rememberTransactionFinalStatus,
+  resetTransactionStatusSessionCache,
+  syncTransactionStatusSession
+} from './sessionFinalStatusCache'
 
 const {
   queryStatusRef,
@@ -70,8 +76,13 @@ const createStoreMock = () => {
     state: {
       address: 'U111111'
     },
-    mutations: {
-      noop() {}
+    modules: {
+      chat: {
+        namespaced: true,
+        mutations: {
+          updateCryptoTransferMessage() {}
+        }
+      }
     }
   })
 
@@ -82,6 +93,7 @@ const createStoreMock = () => {
 
 describe('TransactionStatusProvider', () => {
   beforeEach(() => {
+    resetTransactionStatusSessionCache()
     queryStatusRef.value = 'pending'
     liveStatusRef.value = TransactionStatus.PENDING
     transactionRef.value = undefined
@@ -154,6 +166,78 @@ describe('TransactionStatusProvider', () => {
     expect(wrapper.find('[data-status]').attributes('data-status')).toBe(
       TransactionStatus.CONFIRMED
     )
+  })
+
+  it('skips auto-query on the next chat remount in the same session once an invalid status was remembered', () => {
+    const { store } = createStoreMock()
+    syncTransactionStatusSession('U111111')
+    rememberTransactionFinalStatus(
+      makeTransactionStatusSessionKey('U111111', 'BTC', 'btc-hash'),
+      TransactionStatus.INVALID
+    )
+
+    queryStatusRef.value = 'pending'
+    liveStatusRef.value = TransactionStatus.PENDING
+    transactionRef.value = undefined
+    inconsistentStatusRef.value = ''
+
+    const wrapper = mount(slotHost, {
+      props: {
+        transaction: {
+          id: 'local-id',
+          hash: 'btc-hash',
+          type: 'BTC',
+          senderId: 'U111111',
+          recipientId: 'U222222',
+          status: TransactionStatus.INVALID
+        }
+      },
+      global: {
+        plugins: [store]
+      }
+    })
+
+    const params = useTransactionStatusQueryMock.mock.calls[0]?.[2] as
+      | { enabled: { value: boolean } }
+      | undefined
+
+    expect(params?.enabled.value).toBe(false)
+    expect(wrapper.find('[data-status]').attributes('data-status')).toBe(TransactionStatus.INVALID)
+  })
+
+  it('skips auto-query on the next chat remount in the same session once a rejected status was remembered', () => {
+    const { store } = createStoreMock()
+    syncTransactionStatusSession('U111111')
+    rememberTransactionFinalStatus(
+      makeTransactionStatusSessionKey('U111111', 'DOGE', 'doge-hash'),
+      TransactionStatus.REJECTED
+    )
+
+    queryStatusRef.value = 'pending'
+    liveStatusRef.value = TransactionStatus.PENDING
+
+    const wrapper = mount(slotHost, {
+      props: {
+        transaction: {
+          id: 'local-id',
+          hash: 'doge-hash',
+          type: 'DOGE',
+          senderId: 'U111111',
+          recipientId: 'U222222',
+          status: TransactionStatus.REJECTED
+        }
+      },
+      global: {
+        plugins: [store]
+      }
+    })
+
+    const params = useTransactionStatusQueryMock.mock.calls[0]?.[2] as
+      | { enabled: { value: boolean } }
+      | undefined
+
+    expect(params?.enabled.value).toBe(false)
+    expect(wrapper.find('[data-status]').attributes('data-status')).toBe(TransactionStatus.REJECTED)
   })
 
   it('keeps live queries enabled for crypto transfers that are locally marked as rejected', () => {
