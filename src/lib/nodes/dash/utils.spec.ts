@@ -180,4 +180,27 @@ describe('normalizeTransaction', () => {
     // Assert: amount should be first output (1000)
     expect(result.amount).toBe(1000)
   })
+
+  it('should calculate fee without floating-point drift', () => {
+    const result = normalizeTransaction(
+      {
+        ...txSelfTransfer,
+        vin: [
+          {
+            ...txSelfTransfer.vin[0],
+            value: 0.0014
+          }
+        ],
+        vout: [
+          {
+            ...txSelfTransfer.vout[0],
+            value: 0.0013
+          }
+        ]
+      },
+      OWNER_ADDRESS
+    )
+
+    expect(result.fee).toBe(0.0001)
+  })
 })

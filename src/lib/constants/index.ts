@@ -9,6 +9,7 @@ import {
 
 import {
   mdiCheck,
+  mdiClockCheckOutline,
   mdiClockOutline,
   mdiCloseCircleOutline,
   mdiAlertOutline,
@@ -152,8 +153,12 @@ export const TransactionAdditionalStatus = {
 }
 
 export const tsIcon = function (status: TransactionStatusType) {
-  if (status === TransactionStatus.CONFIRMED || status === TransactionStatus.REGISTERED) {
+  if (status === TransactionStatus.CONFIRMED) {
     return mdiCheck
+  }
+
+  if (status === TransactionStatus.REGISTERED) {
+    return mdiClockCheckOutline
   }
 
   if (status === TransactionStatus.PENDING) {

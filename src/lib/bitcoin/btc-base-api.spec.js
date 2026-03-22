@@ -73,4 +73,32 @@ describe('BtcBaseApi.buildTransaction', () => {
       })
     )
   })
+
+  it('calculates normalized BTC-like fees without floating-point drift', () => {
+    const api = Object.create(BtcBaseApi.prototype)
+    api._address = 'Xowner'
+
+    const normalized = api._mapTransaction({
+      txid: 'b'.repeat(64),
+      vin: [
+        {
+          address: 'Xowner',
+          value: 0.0014
+        }
+      ],
+      vout: [
+        {
+          value: 0.0013,
+          scriptPubKey: {
+            addresses: ['Xrecipient']
+          }
+        }
+      ],
+      confirmations: 0,
+      time: 1,
+      height: 1
+    })
+
+    expect(normalized.fee).toBe(0.0001)
+  })
 })

@@ -1,4 +1,5 @@
 import * as bitcoin from 'bitcoinjs-lib'
+import BigNumber from 'bignumber.js'
 
 import networks from './networks'
 import { CryptosInfo } from '../constants'
@@ -240,9 +241,9 @@ export default class BtcBaseApi {
 
     let fee = tx.fees
     if (!fee) {
-      const totalIn = tx.vin.reduce((sum, x) => sum + (x.value ? +x.value : 0), 0)
-      const totalOut = tx.vout.reduce((sum, x) => sum + (x.value ? +x.value : 0), 0)
-      fee = totalIn - totalOut
+      const totalIn = tx.vin.reduce((sum, x) => sum.plus(x.value ? x.value : 0), new BigNumber(0))
+      const totalOut = tx.vout.reduce((sum, x) => sum.plus(x.value ? x.value : 0), new BigNumber(0))
+      fee = totalIn.minus(totalOut).toNumber()
     }
 
     const height = tx.height
