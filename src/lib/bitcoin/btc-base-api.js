@@ -78,8 +78,8 @@ export default class BtcBaseApi {
 
     const hex = await this.buildTransaction(address, amount, unspents, fee)
 
-    let txid = bitcoin.crypto.sha256(Buffer.from(hex, 'hex'))
-    txid = bitcoin.crypto.sha256(Buffer.from(txid))
+    let txid = Buffer.from(bitcoin.crypto.sha256(Buffer.from(hex, 'hex')))
+    txid = Buffer.from(bitcoin.crypto.sha256(txid))
     txid = txid.toString('hex').match(/.{2}/g).reverse().join('')
 
     return { hex, txid }
