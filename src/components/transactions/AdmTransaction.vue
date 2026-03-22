@@ -9,6 +9,7 @@
     :partner="partnerAdmAddress || ''"
     :query-status="queryStatus"
     :transaction-status="transactionStatus"
+    :additional-status="additionalStatus"
     :crypto="crypto"
     @refetch-status="refetch"
   />
@@ -17,13 +18,14 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
+import { useTransactionAdditionalStatus } from './hooks/useTransactionAdditionalStatus'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useFormatADMAddress } from '@/hooks/address/useFormatADMAddress'
 import { useBlockHeight } from '@/hooks/queries/useBlockHeight'
 import { useAdmTransactionQuery } from '@/hooks/queries/transaction'
 import TransactionTemplate from './TransactionTemplate.vue'
 import { getExplorerTxUrl } from '@/config/utils'
-import { Cryptos, CryptoSymbol } from '@/lib/constants'
+import { Cryptos, CryptoSymbol, TransactionStatusType } from '@/lib/constants'
 import { getPartnerAddress } from './utils/getPartnerAddress'
 
 export default defineComponent({
@@ -48,7 +50,17 @@ export default defineComponent({
       data: transaction,
       refetch
     } = useAdmTransactionQuery(props.id)
-    const transactionStatus = useTransactionStatus(isFetching, queryStatus)
+    const statusValue = computed<TransactionStatusType | undefined>(
+      () => (transaction.value as { status?: TransactionStatusType } | undefined)?.status
+    )
+    const additionalStatus = useTransactionAdditionalStatus(transaction, props.crypto)
+    const transactionStatus = useTransactionStatus(
+      isFetching,
+      queryStatus,
+      statusValue,
+      undefined,
+      additionalStatus
+    )
 
     const partnerAdmAddress = computed(() => {
       return transaction.value
@@ -92,7 +104,8 @@ export default defineComponent({
       explorerLink,
       confirmations,
       queryStatus,
-      transactionStatus
+      transactionStatus,
+      additionalStatus
     }
   }
 })

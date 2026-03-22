@@ -1,4 +1,5 @@
 import { computed, MaybeRef, unref } from 'vue'
+import { useTransactionAdditionalStatus } from '@/components/transactions/hooks/useTransactionAdditionalStatus'
 import { useInconsistentStatus } from '@/components/transactions/hooks/useInconsistentStatus'
 import { useTransactionStatus } from '@/components/transactions/hooks/useTransactionStatus'
 import { CryptoSymbol } from '@/lib/constants'
@@ -17,6 +18,7 @@ export function useTransactionStatusQuery(
     refetch
   } = useTransactionQuery(transactionId, unref(crypto), params)
   const inconsistentStatus = useInconsistentStatus(transaction, unref(crypto))
+  const additionalStatus = useTransactionAdditionalStatus(transaction, unref(crypto))
   const transactionStatus = computed(() => {
     if (transaction.value && 'status' in transaction.value) {
       return transaction.value.status
@@ -27,12 +29,14 @@ export function useTransactionStatusQuery(
     isFetching,
     queryStatus,
     transactionStatus,
-    inconsistentStatus
+    inconsistentStatus,
+    additionalStatus
   )
 
   return {
     queryStatus,
     inconsistentStatus,
+    additionalStatus,
     status,
     refetch
   }

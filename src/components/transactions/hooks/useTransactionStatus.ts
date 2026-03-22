@@ -1,22 +1,33 @@
 import type { QueryStatus } from '@tanstack/vue-query'
 import { computed, Ref } from 'vue'
-import { TransactionStatus, TransactionStatusType } from '@/lib/constants'
+import {
+  TransactionAdditionalStatus,
+  TransactionAdditionalStatusType,
+  TransactionStatus,
+  TransactionStatusType
+} from '@/lib/constants'
 import { InconsistentStatus } from '../utils/getInconsistentStatus'
 
 export function useTransactionStatus(
   isFetching: Ref<boolean>,
   queryStatus: Ref<QueryStatus>,
   transactionStatus?: Ref<TransactionStatusType | undefined>,
-  inconsistentStatus?: Ref<InconsistentStatus>
+  inconsistentStatus?: Ref<InconsistentStatus>,
+  additionalStatus?: Ref<TransactionAdditionalStatusType | undefined>
 ) {
   return computed(() => {
+    const resolvedKnownStatus =
+      additionalStatus?.value === TransactionAdditionalStatus.INSTANT_SEND
+        ? TransactionStatus.CONFIRMED
+        : transactionStatus?.value
+
     if (queryStatus.value === 'error') {
-      return transactionStatus?.value || TransactionStatus.REJECTED
+      return resolvedKnownStatus || TransactionStatus.REJECTED
     }
     if (queryStatus.value === 'success') {
       if (inconsistentStatus?.value) return TransactionStatus.INVALID
 
-      return transactionStatus?.value || TransactionStatus.CONFIRMED
+      return resolvedKnownStatus || TransactionStatus.CONFIRMED
     }
     if (isFetching.value) return TransactionStatus.PENDING
 

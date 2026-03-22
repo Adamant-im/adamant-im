@@ -114,4 +114,58 @@ describe('TransactionListItem.vue', () => {
       timestamp: 1_710_000_600
     })
   })
+
+  it('renders Dash InstantSend transactions as successful in the list while details keep polling', () => {
+    queryData.value = {
+      id: 'dash-tx-1',
+      senderId: 'Xsender',
+      recipientId: 'Xrecipient',
+      amount: 0.0013,
+      status: 'REGISTERED',
+      instantsend: true,
+      timestamp: 1_710_000_000_000
+    }
+
+    const wrapper = mount(TransactionListItem, {
+      shallow: true,
+      props: {
+        id: 'dash-tx-1',
+        senderId: 'Xsender',
+        recipientId: 'Xrecipient',
+        amount: 0.0013,
+        status: 'PENDING',
+        timestamp: 1_710_000_000_000,
+        crypto: 'DASH'
+      },
+      global: {
+        mocks: {
+          $t: (key) => key,
+          $te: () => false,
+          $store: {
+            state: {
+              address: 'U1234567890',
+              dash: {
+                address: 'Xsender'
+              },
+              chat: {
+                chats: {}
+              },
+              adm: {
+                transactions: {}
+              }
+            },
+            getters: {
+              'rate/historyRate': () => '42.00 USD',
+              'partners/displayName': () => '',
+              'chat/isPartnerInChatList': () => false
+            },
+            dispatch: vi.fn()
+          }
+        }
+      }
+    })
+
+    expect(wrapper.vm.resolvedStatus).toBe('CONFIRMED')
+    expect(wrapper.vm.isStatusVisibleTransaction).toBe(false)
+  })
 })

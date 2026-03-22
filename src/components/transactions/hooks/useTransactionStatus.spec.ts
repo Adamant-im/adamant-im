@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { describe, expect, it } from 'vitest'
-import { TransactionStatus } from '@/lib/constants'
+import { TransactionAdditionalStatus, TransactionStatus } from '@/lib/constants'
 import { useTransactionStatus } from './useTransactionStatus'
 
 describe('useTransactionStatus', () => {
@@ -18,5 +18,29 @@ describe('useTransactionStatus', () => {
     const status = useTransactionStatus(ref(false), ref('error'))
 
     expect(status.value).toBe(TransactionStatus.REJECTED)
+  })
+
+  it('treats Dash InstantSend as a successful virtual status', () => {
+    const status = useTransactionStatus(
+      ref(false),
+      ref('success'),
+      computed(() => TransactionStatus.REGISTERED),
+      undefined,
+      computed(() => TransactionAdditionalStatus.INSTANT_SEND)
+    )
+
+    expect(status.value).toBe(TransactionStatus.CONFIRMED)
+  })
+
+  it('keeps Dash InstantSend as successful even if a follow-up fetch errors', () => {
+    const status = useTransactionStatus(
+      ref(false),
+      ref('error'),
+      computed(() => TransactionStatus.REGISTERED),
+      undefined,
+      computed(() => TransactionAdditionalStatus.INSTANT_SEND)
+    )
+
+    expect(status.value).toBe(TransactionStatus.CONFIRMED)
   })
 })

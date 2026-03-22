@@ -67,6 +67,9 @@ export function normalizeTransaction(tx: Transaction, ownerAddress: string): Das
     recipientId,
     amount,
     confirmations,
-    height
+    height,
+    instantlock: tx.instantlock,
+    instantlock_internal: tx.instantlock_internal,
+    instantsend: tx.instantlock
   }
 }

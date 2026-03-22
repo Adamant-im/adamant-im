@@ -77,6 +77,7 @@ import { timestampInSec } from '@/filters/helpers'
 import currency from '@/filters/currencyAmountWithSymbol'
 import { mdiAirplaneLanding, mdiAirplaneTakeoff, mdiMessageOutline, mdiMessageText } from '@mdi/js'
 import { useTransactionQuery } from '@/hooks/queries/transaction'
+import { useTransactionAdditionalStatus } from '@/components/transactions/hooks/useTransactionAdditionalStatus'
 import { useTransactionStatus } from '@/components/transactions/hooks/useTransactionStatus'
 import { useClearPendingTransaction } from '@/components/transactions/hooks/useClearPendingTransaction'
 
@@ -133,10 +134,16 @@ export default {
       enabled: hasLiveStatusTracking
     })
     const liveTransactionStatus = computed(() => liveTransaction.value?.status)
+    const liveAdditionalStatus = useTransactionAdditionalStatus(
+      liveTransaction,
+      toRef(props, 'crypto')
+    )
     const liveStatus = useTransactionStatus(
       isLiveTransactionFetching,
       liveQueryStatus,
-      liveTransactionStatus
+      liveTransactionStatus,
+      undefined,
+      liveAdditionalStatus
     )
 
     useClearPendingTransaction(toRef(props, 'crypto'), liveTransaction, liveStatus)
@@ -299,7 +306,7 @@ export default {
         )
       }
 
-      // If crytpo is not ADM: we have to scan all the messages
+      // If crypto is not ADM: we have to scan all the messages
       const admTx = {}
       Object.values(this.$store.state.chat.chats).some((chat) => {
         Object.values(chat.messages).some((msg) => {

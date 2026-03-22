@@ -50,8 +50,8 @@
         {{ formattedTransactionStatus
         }}<span v-if="inconsistentStatus">{{
           ': ' + t(`transaction.inconsistent_reasons.${inconsistentStatus}`, { crypto })
-        }}</span>
-        <!--            <span v-if="status.addStatus">{{ ': ' + status.addDescription }}</span>-->
+        }}</span
+        ><span v-else-if="formattedAdditionalStatus">{{ `: ${formattedAdditionalStatus}` }}</span>
       </div>
     </v-list-item>
 
@@ -163,6 +163,7 @@ import {
   CryptosInfo,
   CryptoSymbol,
   Symbols,
+  TransactionAdditionalStatusType,
   TransactionStatus,
   TransactionStatusType,
   tsUpdatable
@@ -214,6 +215,10 @@ const props = defineProps({
   transactionStatus: {
     type: String as PropType<TransactionStatusType>,
     required: true
+  },
+  additionalStatus: {
+    type: [String, Boolean] as PropType<TransactionAdditionalStatusType>,
+    default: false
   },
   inconsistentStatus: {
     type: String as PropType<InconsistentStatus>
@@ -281,6 +286,14 @@ const formattedTransactionStatus = computed(() => {
   if (isPendingQuery.value) return Symbols.HOURGLASS
 
   return t(`transaction.statuses.${props.transactionStatus}`)
+})
+
+const formattedAdditionalStatus = computed(() => {
+  if (!props.additionalStatus) {
+    return ''
+  }
+
+  return t(`transaction.statuses_add.${props.additionalStatus}`)
 })
 
 const statusUpdatable = computed(() => tsUpdatable(props.transactionStatus, props.crypto))

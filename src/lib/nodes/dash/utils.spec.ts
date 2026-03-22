@@ -203,4 +203,21 @@ describe('normalizeTransaction', () => {
 
     expect(result.fee).toBe(0.0001)
   })
+
+  it('should preserve Dash InstantSend flags in the normalized transaction', () => {
+    const result = normalizeTransaction(
+      {
+        ...txWithDuplicateSenders,
+        confirmations: 0,
+        instantlock: true,
+        instantlock_internal: true
+      },
+      OWNER_ADDRESS
+    )
+
+    expect(result.status).toBe('REGISTERED')
+    expect(result.instantlock).toBe(true)
+    expect(result.instantlock_internal).toBe(true)
+    expect(result.instantsend).toBe(true)
+  })
 })

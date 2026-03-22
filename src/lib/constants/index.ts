@@ -135,6 +135,8 @@ export type TransactionStatusType =
   | 'INVALID'
   | 'UNKNOWN'
 
+export type TransactionAdditionalStatusType = false | 'instant_send' | 'adm_registered'
+
 /** Status of ADM or coin transaction */
 export const TransactionStatus: Record<TransactionStatusType, TransactionStatusType> = {
   CONFIRMED: 'CONFIRMED', // Tx has at least 1 network confirmation
@@ -150,7 +152,7 @@ export const TransactionAdditionalStatus = {
   NONE: false,
   INSTANT_SEND: 'instant_send', // Dash InstantSend enabled transaction
   ADM_REGISTERED: 'adm_registered' // ADM tx, registered in a blockchain, but has 0 confirmations yet
-}
+} as const satisfies Record<string, TransactionAdditionalStatusType>
 
 export const tsIcon = function (status: TransactionStatusType) {
   if (status === TransactionStatus.CONFIRMED) {

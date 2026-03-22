@@ -9,6 +9,7 @@
     :partner="partnerAdmAddress || ''"
     :query-status="queryStatus"
     :transaction-status="status"
+    :additional-status="additionalStatus"
     :inconsistent-status="inconsistentStatus"
     :adm-tx="admTx"
     :crypto="crypto"
@@ -26,6 +27,7 @@ import { Cryptos, CryptoSymbol } from '@/lib/constants'
 import { AllCryptos } from '@/lib/constants/cryptos'
 import { useCryptoAddressPretty } from './hooks/address'
 import { useBlockHeight } from '@/hooks/queries/useBlockHeight'
+import { useTransactionAdditionalStatus } from './hooks/useTransactionAdditionalStatus'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useInconsistentStatus } from './hooks/useInconsistentStatus'
 import { useFindAdmTransaction } from './hooks/useFindAdmTransaction'
@@ -55,8 +57,15 @@ const {
   refetch
 } = useErc20TransactionQuery(props.crypto)(props.id)
 const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
+const additionalStatus = useTransactionAdditionalStatus(transaction, props.crypto)
 const transactionStatus = computed(() => transaction.value?.status)
-const status = useTransactionStatus(isFetching, queryStatus, transactionStatus, inconsistentStatus)
+const status = useTransactionStatus(
+  isFetching,
+  queryStatus,
+  transactionStatus,
+  inconsistentStatus,
+  additionalStatus
+)
 useClearPendingTransaction(props.crypto, transaction, status)
 
 const admTx = useFindAdmTransaction(props.id)

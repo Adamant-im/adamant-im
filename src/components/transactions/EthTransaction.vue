@@ -9,6 +9,7 @@
     :partner="partnerAdmAddress || ''"
     :query-status="queryStatus"
     :transaction-status="status"
+    :additional-status="additionalStatus"
     :inconsistent-status="inconsistentStatus"
     :adm-tx="admTx"
     :crypto="crypto"
@@ -23,6 +24,7 @@ import TransactionTemplate from './TransactionTemplate.vue'
 import { getExplorerTxUrl } from '@/config/utils'
 import { Cryptos, CryptoSymbol } from '@/lib/constants'
 import { useCryptoAddressPretty } from './hooks/address'
+import { useTransactionAdditionalStatus } from './hooks/useTransactionAdditionalStatus'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useInconsistentStatus } from './hooks/useInconsistentStatus'
 import { useFindAdmTransaction } from './hooks/useFindAdmTransaction'
@@ -57,12 +59,14 @@ export default defineComponent({
       refetch
     } = useEthTransactionQuery(props.id)
     const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
+    const additionalStatus = useTransactionAdditionalStatus(transaction, props.crypto)
     const transactionStatus = computed(() => transaction.value?.status)
     const status = useTransactionStatus(
       isFetching,
       queryStatus,
       transactionStatus,
-      inconsistentStatus
+      inconsistentStatus,
+      additionalStatus
     )
     useClearPendingTransaction(props.crypto, transaction, status)
 
@@ -115,6 +119,7 @@ export default defineComponent({
       admTx,
       queryStatus,
       status,
+      additionalStatus,
       inconsistentStatus
     }
   }
