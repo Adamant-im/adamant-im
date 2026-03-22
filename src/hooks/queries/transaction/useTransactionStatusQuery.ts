@@ -23,7 +23,8 @@ export function useTransactionStatusQuery(
     if (transaction.value && 'status' in transaction.value) {
       return transaction.value.status
     }
-    return undefined
+
+    return params.knownStatus ? unref(params.knownStatus) : undefined
   })
   const status = useTransactionStatus(
     isFetching,

@@ -29,21 +29,22 @@ export default defineComponent({
     )
     const crypto = computed(() => props.transaction.type)
 
-    const isNotFinalized = computed(() => {
-      const { status } = props.transaction
-      return status === TransactionStatus.REGISTERED || status === TransactionStatus.PENDING
-    })
     const isSupportedCrypto = computed(() => {
       return props.transaction.type in Cryptos
     })
+    const queryKnownStatus = computed(() => props.transaction.status)
     const queryEnabled = computed(() => {
-      return isNotFinalized.value && isSupportedCrypto.value
+      return (
+        isSupportedCrypto.value &&
+        !!transactionId.value &&
+        props.transaction.status !== TransactionStatus.CONFIRMED
+      )
     })
 
     const { queryStatus, status, inconsistentStatus, refetch } = useTransactionStatusQuery(
       transactionId,
       crypto.value as CryptoSymbol,
-      { enabled: queryEnabled }
+      { enabled: queryEnabled, knownStatus: queryKnownStatus }
     )
 
     const transactionStatus = computed(() => {
@@ -51,13 +52,18 @@ export default defineComponent({
         return TransactionStatus.UNKNOWN
       }
 
-      if (props.transaction.type === 'ADM') {
-        return props.transaction.status === TransactionStatus.CONFIRMED
-          ? TransactionStatus.CONFIRMED
-          : status.value
+      if (!queryEnabled.value || queryStatus.value === 'pending') {
+        return props.transaction.status
       }
 
-      // other cryptos
+      if (
+        queryStatus.value === 'error' &&
+        props.transaction.status !== TransactionStatus.REJECTED &&
+        props.transaction.status !== TransactionStatus.UNKNOWN
+      ) {
+        return props.transaction.status
+      }
+
       return status.value
     })
 
