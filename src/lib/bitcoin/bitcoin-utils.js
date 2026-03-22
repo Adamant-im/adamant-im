@@ -19,3 +19,7 @@ export function isValidAddress(address) {
 export function convertToSmallestUnit(amount, multiplier) {
   return Math.floor(new BigNumber(amount).times(multiplier).toNumber())
 }
+
+export function convertToBigIntSmallestUnit(amount, multiplier) {
+  return BigInt(convertToSmallestUnit(amount, multiplier))
+}

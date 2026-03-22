@@ -1,9 +1,8 @@
 import * as bitcoin from 'bitcoinjs-lib'
 
 import networks from './networks'
-import { BigNumber } from '../bignumber'
-import { isPositiveNumber } from '@/lib/numericHelpers'
 import { CryptosInfo } from '../constants'
+import { convertToBigIntSmallestUnit } from './bitcoin-utils'
 
 import { ECPairFactory } from 'ecpair'
 import * as tinysecp from 'tiny-secp256k1'
@@ -137,20 +136,20 @@ export default class BtcBaseApi {
    * @returns {string}
    */
   buildTransaction(address, amount, unspents, fee) {
-    amount = new BigNumber(amount).times(this.multiplier).toNumber()
-    amount = Math.floor(amount)
+    const localAmount = convertToBigIntSmallestUnit(amount, this.multiplier)
+    const heldFee = convertToBigIntSmallestUnit(fee, this.multiplier)
 
     const txb = new bitcoin.Psbt({
       network: this._network
     })
     txb.setVersion(1)
 
-    const target = amount + new BigNumber(fee).times(this.multiplier).toNumber()
-    let transferAmount = 0
+    const target = localAmount + heldFee
+    let transferAmount = 0n
     let inputs = 0
 
     unspents.forEach((tx) => {
-      const amt = Math.floor(tx.amount)
+      const amt = BigInt(Math.floor(tx.amount))
       if (transferAmount < target) {
         txb.addInput({
           hash: tx.txid,
@@ -164,12 +163,12 @@ export default class BtcBaseApi {
 
     txb.addOutput({
       address,
-      value: amount
+      value: localAmount
     })
     // This is a necessary step
     // If we'll not add a change to output, it will burn in hell
     const change = transferAmount - target
-    if (isPositiveNumber(change)) {
+    if (change > 0n) {
       txb.addOutput({
         address: this._address,
         value: change

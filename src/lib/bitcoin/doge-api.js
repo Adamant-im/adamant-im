@@ -2,10 +2,9 @@ import BtcBaseApi from './btc-base-api'
 import { Cryptos } from '../constants'
 import { BigNumber } from '../bignumber'
 import * as bitcoin from 'bitcoinjs-lib'
-import { isPositiveNumber } from '../numericHelpers'
 import { ECPairFactory } from 'ecpair'
 import * as tinysecp from 'tiny-secp256k1'
-import { convertToSmallestUnit } from './bitcoin-utils'
+import { convertToBigIntSmallestUnit, convertToSmallestUnit } from './bitcoin-utils'
 import { dogeIndexer } from '../../lib/nodes'
 
 const ECPairAPI = ECPairFactory(tinysecp)
@@ -42,7 +41,7 @@ export default class DogeApi extends BtcBaseApi {
 
   /** @override */
   async buildTransaction(address, amount, unspents, fee) {
-    const localAmount = convertToSmallestUnit(amount, this.multiplier)
+    const localAmount = convertToBigIntSmallestUnit(amount, this.multiplier)
     const heldFee = convertToSmallestUnit(fee, this.multiplier)
 
     const psbt = new bitcoin.Psbt({
@@ -51,8 +50,8 @@ export default class DogeApi extends BtcBaseApi {
     psbt.setVersion(1)
     psbt.setMaximumFeeRate(heldFee)
 
-    const target = localAmount + heldFee
-    let transferAmount = 0
+    const target = localAmount + BigInt(heldFee)
+    let transferAmount = 0n
     let inputsCount = 0
     let estimatedTxBytes = 0
 
@@ -66,12 +65,10 @@ export default class DogeApi extends BtcBaseApi {
         index: tx.vout,
         nonWitnessUtxo: buffer
       })
-      transferAmount += tx.amount
+      transferAmount += BigInt(tx.amount)
       estimatedTxBytes += buffer.length
       inputsCount++
     }
-
-    transferAmount = Math.floor(transferAmount)
 
     psbt.addOutput({
       address,
@@ -91,8 +88,8 @@ export default class DogeApi extends BtcBaseApi {
 
     // This is a necessary step
     // If we'll not add a difference to output, it will burn in hell
-    const difference = transferAmount - localAmount - estimatedFee
-    if (isPositiveNumber(difference)) {
+    const difference = transferAmount - localAmount - BigInt(estimatedFee)
+    if (difference > 0n) {
       psbt.addOutput({
         address: this._address,
         value: difference
