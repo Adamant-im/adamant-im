@@ -46,9 +46,19 @@ export const loginWithNewAccount = async (page: Page) => {
 }
 
 export const loginWithPassphrase = async (page: Page, passphrase: string) => {
-  await page.goto('/')
+  await page.goto('/', { waitUntil: 'domcontentloaded' })
 
   const loginInput = page.locator('input[autocomplete="current-password"]')
+
+  if (!(await loginInput.isVisible().catch(() => false))) {
+    const currentPath = new URL(page.url()).pathname
+
+    if (/^\/(?:chats|home|account|settings|transfer)(?:\/.*)?$/.test(currentPath)) {
+      await dismissAddressWarningIfVisible(page, 8_000)
+      return
+    }
+  }
+
   await expect(loginInput).toBeVisible()
   await loginInput.fill(passphrase)
 

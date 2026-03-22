@@ -160,11 +160,17 @@ describe('Navigation UI style contract', () => {
     expect(content).toContain('document.querySelectorAll(\'[aria-expanded="true"]\')')
     expect(content).toContain("style.display !== 'none' && style.visibility !== 'hidden'")
     expect(content).toContain("element.getAttribute('role') === 'combobox'")
+    expect(content).toContain('const blurFocusedSendFundsField = () => {')
+    expect(content).toContain("const sendFundsForm = activeElement.closest('.send-funds-form')")
+    expect(content).toContain("role === 'spinbutton'")
+    expect(content).toContain('activeElement.blur()')
     expect(content).toContain("document.addEventListener('keydown', onKeydownHandler, true)")
     expect(content).toContain("document.removeEventListener('keydown', onKeydownHandler, true)")
-    expect(content).toContain(
-      'hasFocusedEditableElement() ||\n    hasActiveOverlay() ||\n    hasExpandedPopupActivator()'
-    )
+    expect(content).toContain('if (hasActiveOverlay()) {')
+    expect(content).toContain('if (blurFocusedSendFundsField()) {')
+    expect(content).toContain('e.preventDefault()')
+    expect(content).toContain('e.stopPropagation()')
+    expect(content).toContain('if (hasFocusedEditableElement() || hasExpandedPopupActivator()) {')
     expect(content).not.toContain('<router-view v-show="!showLogo" :key="route.path" />')
   })
 

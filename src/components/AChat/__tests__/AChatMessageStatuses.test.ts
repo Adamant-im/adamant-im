@@ -3,11 +3,12 @@ import { mount } from '@vue/test-utils'
 import { createStore } from 'vuex'
 import { createI18n } from 'vue-i18n'
 import { defineComponent, nextTick } from 'vue'
+import { mdiCheck, mdiClockCheckOutline } from '@mdi/js'
 
 import AChatMessage from '../AChatMessage.vue'
 import AChatAttachment from '../AChatAttachment/AChatAttachment.vue'
 import AChatTransaction from '../AChatTransaction.vue'
-import { TransactionStatus } from '@/lib/constants'
+import { TransactionStatus, tsColor } from '@/lib/constants'
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 ;(globalThis as any).config = new Proxy(
@@ -176,7 +177,9 @@ const i18n = createI18n({
         transaction_statuses: {
           PENDING: 'Pending',
           REGISTERED: 'Registered',
-          REJECTED: 'Rejected'
+          CONFIRMED: 'Confirmed',
+          REJECTED: 'Rejected',
+          INVALID: 'Invalid'
         }
       }
     }
@@ -442,5 +445,63 @@ describe('AChat sending status UI', () => {
     expect(wrapper.find('.a-chat__message-card-header').exists()).toBe(true)
     expect(wrapper.find('.a-chat__timestamp').exists()).toBe(true)
     expect(wrapper.find('.a-chat__status .v-icon').exists()).toBe(true)
+  })
+
+  it('colors confirmed, rejected and invalid crypto transfer statuses in chat bubbles', () => {
+    const store = createTestStore()
+
+    const confirmedWrapper = mount(AChatTransaction, {
+      props: {
+        transaction: createCryptoTransaction({
+          status: TransactionStatus.CONFIRMED
+        })
+      },
+      global: globalMountOptions(store)
+    })
+    const rejectedWrapper = mount(AChatTransaction, {
+      props: {
+        transaction: createCryptoTransaction({
+          status: TransactionStatus.REJECTED
+        })
+      },
+      global: globalMountOptions(store)
+    })
+    const invalidWrapper = mount(AChatTransaction, {
+      props: {
+        transaction: createCryptoTransaction({
+          status: TransactionStatus.INVALID
+        })
+      },
+      global: globalMountOptions(store)
+    })
+
+    expect(confirmedWrapper.find('.a-chat__status .v-icon').attributes('data-color')).toBe(
+      tsColor(TransactionStatus.CONFIRMED)
+    )
+    expect(rejectedWrapper.find('.a-chat__status .v-icon').attributes('data-color')).toBe(
+      tsColor(TransactionStatus.REJECTED)
+    )
+    expect(invalidWrapper.find('.a-chat__status .v-icon').attributes('data-color')).toBe(
+      tsColor(TransactionStatus.INVALID)
+    )
+  })
+
+  it('renders registered outgoing text messages with a plain check icon', () => {
+    const store = createTestStore()
+    const wrapper = mount(AChatMessage, {
+      props: {
+        transaction: createTextTransaction({
+          showTime: true,
+          showBubble: true,
+          status: TransactionStatus.REGISTERED
+        })
+      },
+      global: globalMountOptions(store)
+    })
+
+    expect(wrapper.find('.a-chat__status .v-icon').attributes('data-icon')).toBe(mdiCheck)
+    expect(wrapper.find('.a-chat__status .v-icon').attributes('data-icon')).not.toBe(
+      mdiClockCheckOutline
+    )
   })
 })

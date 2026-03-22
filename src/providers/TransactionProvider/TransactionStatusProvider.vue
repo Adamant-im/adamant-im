@@ -8,10 +8,26 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+import { computed, defineComponent, PropType, watch } from 'vue'
+import { useStore } from 'vuex'
 import { useTransactionStatusQuery } from '@/hooks/queries/transaction'
-import { Cryptos, CryptoSymbol, TransactionStatus, tsIcon } from '@/lib/constants'
-import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import {
+  Cryptos,
+  CryptoSymbol,
+  TransactionAdditionalStatus,
+  TransactionStatus,
+  tsIcon
+} from '@/lib/constants'
+import type { NormalizedChatMessageTransaction } from '@/lib/chat/helpers/normalizeMessage'
+import { useTransactionAdditionalStatus } from '@/components/transactions/hooks/useTransactionAdditionalStatus'
+import { isStringEqualCI } from '@/lib/textHelpers'
+import {
+  forgetTransactionFinalStatus,
+  hasTransactionFinalStatusInSession,
+  makeTransactionStatusSessionKey,
+  rememberTransactionFinalStatus,
+  syncTransactionStatusSession
+} from './sessionFinalStatusCache'
 
 export default defineComponent({
   props: {
@@ -24,40 +40,145 @@ export default defineComponent({
     }
   },
   setup(props) {
+    const store = useStore()
+    syncTransactionStatusSession(store.state.address)
+
     const transactionId = computed(() =>
       props.transaction.type === 'ADM' ? props.transaction.id : props.transaction.hash
     )
-    const crypto = computed(() => props.transaction.type)
+    const crypto = computed(() => props.transaction.type as CryptoSymbol)
+    const localAdditionalStatus = useTransactionAdditionalStatus(
+      computed(() => props.transaction as any),
+      crypto
+    )
+    const localResolvedStatus = computed(() =>
+      localAdditionalStatus.value === TransactionAdditionalStatus.INSTANT_SEND
+        ? TransactionStatus.CONFIRMED
+        : props.transaction.status
+    )
+    const partnerId = computed(() =>
+      isStringEqualCI(props.transaction.senderId, store.state.address)
+        ? props.transaction.recipientId
+        : props.transaction.senderId
+    )
 
-    const isNotFinalized = computed(() => {
-      const { status } = props.transaction
-      return status === TransactionStatus.REGISTERED || status === TransactionStatus.PENDING
-    })
     const isSupportedCrypto = computed(() => {
       return props.transaction.type in Cryptos
     })
+    const queryKnownStatus = computed(() => props.transaction.status)
+    const sessionTransactionKey = computed(() =>
+      makeTransactionStatusSessionKey(store.state.address, crypto.value, transactionId.value)
+    )
+    const skipAutoQuery = computed(() =>
+      hasTransactionFinalStatusInSession(sessionTransactionKey.value, localResolvedStatus.value)
+    )
     const queryEnabled = computed(() => {
-      return isNotFinalized.value && isSupportedCrypto.value
+      return isSupportedCrypto.value && !!transactionId.value && !skipAutoQuery.value
     })
 
-    const { queryStatus, status, inconsistentStatus, refetch } = useTransactionStatusQuery(
-      transactionId,
-      crypto.value as CryptoSymbol,
-      { enabled: queryEnabled }
+    const { transaction, queryStatus, status, inconsistentStatus, additionalStatus, refetch } =
+      useTransactionStatusQuery(transactionId, crypto, {
+        enabled: queryEnabled,
+        knownStatus: queryKnownStatus,
+        knownAdmTransaction: computed(() => props.transaction)
+      })
+
+    watch(
+      transaction,
+      (liveTransaction) => {
+        const resolvedLiveTransaction = liveTransaction as any
+
+        if (
+          queryStatus.value !== 'success' ||
+          !resolvedLiveTransaction ||
+          !partnerId.value ||
+          !props.transaction.hash
+        ) {
+          return
+        }
+
+        rememberTransactionFinalStatus(sessionTransactionKey.value, status.value)
+
+        store.commit('chat/updateCryptoTransferMessage', {
+          partnerId: partnerId.value,
+          hash: props.transaction.hash,
+          status: status.value,
+          confirmations: resolvedLiveTransaction.confirmations,
+          instantlock:
+            'instantlock' in resolvedLiveTransaction
+              ? resolvedLiveTransaction.instantlock
+              : undefined,
+          instantlock_internal:
+            'instantlock_internal' in resolvedLiveTransaction
+              ? resolvedLiveTransaction.instantlock_internal
+              : undefined,
+          instantsend:
+            additionalStatus.value === TransactionAdditionalStatus.INSTANT_SEND ||
+            ('instantsend' in resolvedLiveTransaction
+              ? resolvedLiveTransaction.instantsend
+              : undefined)
+        })
+      },
+      { immediate: true }
     )
+
+    watch(
+      status,
+      (resolvedStatus) => {
+        if (!partnerId.value || !props.transaction.hash) {
+          return
+        }
+
+        rememberTransactionFinalStatus(sessionTransactionKey.value, resolvedStatus)
+
+        if (
+          resolvedStatus !== TransactionStatus.CONFIRMED &&
+          resolvedStatus !== TransactionStatus.REJECTED &&
+          resolvedStatus !== TransactionStatus.INVALID
+        ) {
+          return
+        }
+
+        store.commit('chat/updateCryptoTransferMessage', {
+          partnerId: partnerId.value,
+          hash: props.transaction.hash,
+          status: resolvedStatus
+        })
+      },
+      { immediate: true }
+    )
+
+    const refetchTransactionStatus = async () => {
+      forgetTransactionFinalStatus(sessionTransactionKey.value)
+
+      if (partnerId.value && props.transaction.hash) {
+        store.commit('chat/updateCryptoTransferMessage', {
+          partnerId: partnerId.value,
+          hash: props.transaction.hash,
+          status: TransactionStatus.PENDING
+        })
+      }
+
+      return refetch()
+    }
 
     const transactionStatus = computed(() => {
       if (props.transaction.type === 'UNKNOWN_CRYPTO') {
         return TransactionStatus.UNKNOWN
       }
 
-      if (props.transaction.type === 'ADM') {
-        return props.transaction.status === TransactionStatus.CONFIRMED
-          ? TransactionStatus.CONFIRMED
-          : status.value
+      if (
+        queryEnabled.value &&
+        queryStatus.value === 'pending' &&
+        localResolvedStatus.value === TransactionStatus.INVALID
+      ) {
+        return TransactionStatus.PENDING
       }
 
-      // other cryptos
+      if (!queryEnabled.value || queryStatus.value === 'pending') {
+        return localResolvedStatus.value
+      }
+
       return status.value
     })
 
@@ -68,7 +189,7 @@ export default defineComponent({
       status: transactionStatus,
       inconsistentStatus,
       statusIcon,
-      refetch
+      refetch: refetchTransactionStatus
     }
   }
 })

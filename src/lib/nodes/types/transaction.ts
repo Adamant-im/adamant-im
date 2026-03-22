@@ -65,6 +65,10 @@ export type BtcTransaction = Omit<CoinTransaction, 'confirmations'> & {
 }
 
 export type DogeTransaction = Omit<BtcTransaction, 'height'>
-export type DashTransaction = BtcTransaction
+export type DashTransaction = BtcTransaction & {
+  instantlock?: boolean
+  instantlock_internal?: boolean
+  instantsend?: boolean
+}
 
 export type AnyCoinTransaction = BtcTransaction | DogeTransaction | DashTransaction | EthTransaction

@@ -29,7 +29,8 @@ export function useDashTransactionQuery(
     },
     retry: retryFactory(Cryptos.DASH, unref(transactionId)),
     retryDelay: retryDelayFactory(Cryptos.DASH, unref(transactionId)),
-    refetchInterval: ({ state }) => refetchIntervalFactory(Cryptos.DASH, state.status, state.data),
+    refetchInterval: ({ state }) =>
+      refetchIntervalFactory(Cryptos.DASH, state.status, state.data, state.error),
     refetchOnWindowFocus: false,
     refetchOnMount: params?.refetchOnMount ?? (({ state }) => refetchOnMountFn(state.data)),
     enabled: params.enabled

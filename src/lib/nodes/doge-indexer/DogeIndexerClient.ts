@@ -6,7 +6,11 @@ import { Client } from '../abstract.client'
 import { NB_BLOCKS } from './constants'
 import { normalizeTransaction } from './utils'
 import { NodeStatus } from './types/api/node-status'
-import { Transaction, GetTransactionsParams } from './types/api/transaction'
+import {
+  Transaction,
+  GetTransactionsParams,
+  GetTransactionsResponse
+} from './types/api/transaction'
 import { GetUnspentsParams, UTXO } from './types/api/utxo'
 import { AddressInfo } from './types/api/address'
 import { EstimatedFee, GetEstimatedFeeParams } from './types/api/estimated-fee'
@@ -42,11 +46,14 @@ export class DogeIndexerClient extends Client<DogeIndexer> {
   }
 
   async getTransactions(address: string, params: GetTransactionsParams = {}) {
-    const transactions = await this.request<Transaction[], GetTransactionsParams>(
+    const response = await this.request<GetTransactionsResponse, GetTransactionsParams>(
       'GET',
       `/api/addrs/${address}/txs`,
       params
     )
+    const transactions = Array.isArray(response)
+      ? response
+      : response.items || response.txs || response.transactions || []
 
     return transactions.map((transaction) => normalizeTransaction(transaction, address))
   }

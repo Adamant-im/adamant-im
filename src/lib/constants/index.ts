@@ -9,6 +9,7 @@ import {
 
 import {
   mdiCheck,
+  mdiClockCheckOutline,
   mdiClockOutline,
   mdiCloseCircleOutline,
   mdiAlertOutline,
@@ -134,6 +135,8 @@ export type TransactionStatusType =
   | 'INVALID'
   | 'UNKNOWN'
 
+export type TransactionAdditionalStatusType = false | 'instant_send' | 'adm_registered'
+
 /** Status of ADM or coin transaction */
 export const TransactionStatus: Record<TransactionStatusType, TransactionStatusType> = {
   CONFIRMED: 'CONFIRMED', // Tx has at least 1 network confirmation
@@ -149,11 +152,15 @@ export const TransactionAdditionalStatus = {
   NONE: false,
   INSTANT_SEND: 'instant_send', // Dash InstantSend enabled transaction
   ADM_REGISTERED: 'adm_registered' // ADM tx, registered in a blockchain, but has 0 confirmations yet
-}
+} as const satisfies Record<string, TransactionAdditionalStatusType>
 
 export const tsIcon = function (status: TransactionStatusType) {
-  if (status === TransactionStatus.CONFIRMED || status === TransactionStatus.REGISTERED) {
+  if (status === TransactionStatus.CONFIRMED) {
     return mdiCheck
+  }
+
+  if (status === TransactionStatus.REGISTERED) {
+    return mdiClockCheckOutline
   }
 
   if (status === TransactionStatus.PENDING) {
@@ -174,10 +181,14 @@ export const tsIcon = function (status: TransactionStatusType) {
 }
 
 export const tsColor = function (status: TransactionStatusType) {
+  if (status === TransactionStatus.CONFIRMED) {
+    return 'var(--a-color-status-success)'
+  }
+
   if (status === TransactionStatus.REJECTED) {
-    return 'red'
+    return 'var(--a-color-status-danger)'
   } else if (status === TransactionStatus.INVALID || status === TransactionStatus.UNKNOWN) {
-    return 'yellow'
+    return 'var(--a-color-status-attention)'
   }
   return ''
 }

@@ -1,5 +1,5 @@
-import { DecodedChatMessageTransaction } from '@/lib/adamant-api'
-import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import type { DecodedChatMessageTransaction } from '@/lib/adamant-api'
+import type { NormalizedChatMessageTransaction } from '@/lib/chat/helpers/normalizeMessage'
 import { CoinTransaction } from '@/lib/nodes/types/transaction'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { CryptosInfo, CryptoSymbol } from '@/lib/constants'
@@ -28,7 +28,8 @@ export function getInconsistentStatus(
     recipientCryptoAddress
   }: { senderCryptoAddress?: string; recipientCryptoAddress?: string }
 ): InconsistentStatus {
-  const isAdmTransaction = 'message' in transaction // marker that transaction is and ADM transaction
+  const isAdmTransaction =
+    'message' in transaction || ('type' in transaction && typeof transaction.type === 'number')
   if (isAdmTransaction) {
     return '' // ADM transactions are always consistent
   }

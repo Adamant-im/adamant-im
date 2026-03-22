@@ -46,6 +46,32 @@ const createAdmTransaction = (
 })
 
 describe('getInconsistentStatus', () => {
+  test('treats native ADM transfers as always consistent', () => {
+    expect(
+      getInconsistentStatus(
+        {
+          id: 'adm-native-1',
+          type: 0,
+          senderId: 'U1111111111111111111',
+          recipientId: 'U2222222222222222222',
+          confirmations: 1,
+          amount: 100000000,
+          fee: 50000000
+        } as any,
+        createAdmTransaction({
+          id: 'adm-native-1',
+          hash: 'adm-native-1',
+          type: 'ADM',
+          amount: 1
+        }),
+        {
+          senderCryptoAddress: SENDER_CRYPTO_ADDRESS,
+          recipientCryptoAddress: RECIPIENT_CRYPTO_ADDRESS
+        }
+      )
+    ).toBe('')
+  })
+
   describe('NO_SENDER_CRYPTO_ADDRESS', () => {
     test('should pass validation when sender crypto address exists', () => {
       const coinTransaction = createCoinTransaction()

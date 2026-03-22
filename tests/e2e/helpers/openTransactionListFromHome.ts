@@ -1,8 +1,11 @@
 import { expect, type Page } from '@playwright/test'
 
+import { dismissAddressWarningIfVisible } from './auth'
+
 export const openTransactionListFromHome = async (page: Page, crypto: string) => {
   await page.goto('/home', { waitUntil: 'domcontentloaded' })
   await expect(page).toHaveURL(/\/home(?:\/)?$/)
+  await dismissAddressWarningIfVisible(page, 8_000)
 
   const activeWalletTab = page.locator('[role="tab"][aria-selected="true"]').first()
   const activeTabText = (await activeWalletTab.textContent())?.trim() ?? ''

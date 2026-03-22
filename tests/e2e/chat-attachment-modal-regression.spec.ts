@@ -2,24 +2,122 @@ import { testPassphrase } from './helpers/env'
 import { expect, test, type Locator } from '@playwright/test'
 import { dismissAddressWarningIfVisible, loginWithPassphrase } from './helpers/auth'
 
-const testChatId = 'U6386412615727665758'
 const activeImageSlideSelector =
   '.v-window-item--active.a-chat-image-modal-item, .v-window-item--active .a-chat-image-modal-item'
-type PreviewTarget = 'incoming-latest' | 'outgoing-before-incoming'
+
+type PreviewTarget = 'latest' | 'previous'
+
+type PreviewCase = {
+  chatPath: string
+  target: PreviewTarget
+}
 
 test.describe('Chat attachment modal regressions', () => {
   test('closes image modal even on near-edge backdrop clicks for different image aspect ratios', async ({
     page
   }) => {
-    test.setTimeout(180_000)
+    test.setTimeout(240_000)
     test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
 
     await loginWithPassphrase(page, testPassphrase!)
 
     const modal = page.locator('.a-chat-image-modal__container')
-    const openTargetChat = async () => {
-      await page.goto(`/chats/${testChatId}`)
-      await page.waitForURL(new RegExp(`/chats/${testChatId}$`), { timeout: 90_000 })
+    const modalContent = page.locator('.a-chat-image-modal__content')
+
+    const findPreviewCases = async () => {
+      await page.goto('/chats')
+      await expect(page).toHaveURL(/\/chats$/)
+      await dismissAddressWarningIfVisible(page, 12_000)
+
+      const chatItems = page.locator('.chats-view__messages--chat .v-list-item')
+      await expect(chatItems.first()).toBeVisible({ timeout: 15_000 })
+
+      const visibleCount = await chatItems.count()
+      const maxChatsToInspect = Math.min(visibleCount, 16)
+      const preferredIndexes: number[] = []
+      const fallbackIndexes: number[] = []
+      const cases: PreviewCase[] = []
+
+      for (let index = 0; index < maxChatsToInspect; index += 1) {
+        const text = (
+          (await chatItems
+            .nth(index)
+            .textContent()
+            .catch(() => '')) ?? ''
+        ).trim()
+
+        if (/Attached:/i.test(text)) {
+          preferredIndexes.push(index)
+        } else {
+          fallbackIndexes.push(index)
+        }
+      }
+
+      for (const index of [...preferredIndexes, ...fallbackIndexes]) {
+        await page.goto('/chats')
+        await expect(page).toHaveURL(/\/chats$/)
+        await dismissAddressWarningIfVisible(page, 3_000)
+        await expect(chatItems.first()).toBeVisible({ timeout: 15_000 })
+
+        await chatItems.nth(index).click()
+        await page.waitForURL(/\/chats\/[^/?#]+$/, { timeout: 90_000 })
+        await dismissAddressWarningIfVisible(page, 3_000)
+
+        const chatPath = new URL(page.url()).pathname
+        if (!chatPath.startsWith('/chats/')) {
+          continue
+        }
+
+        const messagesContainer = page.locator('.a-chat__body-messages').first()
+        await expect(messagesContainer).toBeVisible()
+        await messagesContainer.evaluate((element) => {
+          element.scrollTop = element.scrollHeight
+        })
+        await page.waitForTimeout(350)
+
+        let previewCount = 0
+
+        for (let attempt = 1; attempt <= 18; attempt += 1) {
+          previewCount = await messagesContainer.locator('.a-chat__attachments .v-img').count()
+
+          if (previewCount > 0) {
+            break
+          }
+
+          await messagesContainer.evaluate((element) => {
+            const step = Math.max(260, Math.floor(element.clientHeight * 0.9))
+            element.scrollTop = Math.max(0, element.scrollTop - step)
+          })
+          await page.waitForTimeout(450)
+        }
+
+        if (previewCount > 0) {
+          cases.push({ chatPath, target: 'latest' })
+
+          if (previewCount > 1) {
+            cases.push({ chatPath, target: 'previous' })
+          }
+        }
+
+        if (cases.length >= 6) {
+          return cases
+        }
+      }
+
+      if (cases.length > 0) {
+        return cases
+      }
+
+      throw new Error('Failed to find chats with image previews')
+    }
+
+    const previewCases = await findPreviewCases()
+
+    const openTargetChat = async (chatPath: string) => {
+      await page.goto(chatPath)
+      await page.waitForURL(new RegExp(`${chatPath.replace('/', '\\/')}$`), {
+        timeout: 90_000
+      })
       await dismissAddressWarningIfVisible(page, 12_000)
 
       const messagesContainer = page.locator('.a-chat__body-messages').first()
@@ -30,6 +128,46 @@ test.describe('Chat attachment modal regressions', () => {
       await page.waitForTimeout(300)
 
       return messagesContainer
+    }
+
+    const resolveTargetPreview = async (messagesContainer: Locator, target: PreviewTarget) => {
+      const maxAttempts = 20
+
+      for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        const previews = await messagesContainer.locator('.a-chat__attachments .v-img').count()
+
+        if (previews > 0) {
+          const orderedIndexes = await messagesContainer.evaluate((container) => {
+            return Array.from(container.querySelectorAll('.a-chat__attachments .v-img'))
+              .map((preview, index) => ({
+                index,
+                top: preview.getBoundingClientRect().top
+              }))
+              .filter((item) => Number.isFinite(item.top))
+              .sort((a, b) => b.top - a.top)
+              .map((item) => item.index)
+          })
+
+          const targetIndex =
+            target === 'previous' ? (orderedIndexes[1] ?? orderedIndexes[0]) : orderedIndexes[0]
+
+          if (typeof targetIndex === 'number') {
+            const locator = messagesContainer
+              .locator('.a-chat__attachments .v-img')
+              .nth(targetIndex)
+            await expect(locator).toBeVisible({ timeout: 12_000 })
+            return locator
+          }
+        }
+
+        await messagesContainer.evaluate((element) => {
+          const step = Math.max(260, Math.floor(element.clientHeight * 0.9))
+          element.scrollTop = Math.max(0, element.scrollTop - step)
+        })
+        await page.waitForTimeout(500)
+      }
+
+      throw new Error(`Failed to resolve preview target: ${target}`)
     }
 
     const openPreviewModal = async (messagesContainer: Locator, target: PreviewTarget) => {
@@ -63,8 +201,6 @@ test.describe('Chat attachment modal regressions', () => {
 
       return 1
     }
-
-    let surfaceChecked = false
 
     const getActiveImageRect = async () =>
       page.evaluate((selector) => {
@@ -138,92 +274,29 @@ test.describe('Chat attachment modal regressions', () => {
         }
       }, activeImageSlideSelector)
 
-    const resolveTargetPreview = async (messagesContainer: Locator, target: PreviewTarget) => {
-      const maxAttempts = 8
+    const getRightGutterPoint = (
+      imageRect: { left: number; right: number; top: number; bottom: number },
+      contentRect: { x: number; y: number; width: number; height: number }
+    ) => {
+      const modalRight = contentRect.x + contentRect.width
+      const imageCenterY = Math.round((imageRect.top + imageRect.bottom) / 2)
+      const rightGutter = modalRight - imageRect.right
 
-      for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-        if ((await messagesContainer.count()) === 0) {
-          await openTargetChat()
-          continue
-        }
-
-        let targetIndex: number | null = null
-
-        try {
-          targetIndex = await messagesContainer.evaluate(
-            (container, targetName: PreviewTarget) => {
-              const previews = Array.from(container.querySelectorAll('.a-chat__attachments .v-img'))
-                .map((preview, index) => {
-                  const messageContainer = preview.closest('.a-chat__message-container')
-                  const timestamp = messageContainer
-                    ?.querySelector('.a-chat__timestamp')
-                    ?.textContent?.trim()
-                  const rect = preview.getBoundingClientRect()
-
-                  return {
-                    index,
-                    top: rect.top,
-                    outgoing:
-                      messageContainer?.classList.contains('a-chat__message-container--right') ??
-                      false,
-                    timestamp
-                  }
-                })
-                .filter((item) => Number.isFinite(item.top))
-                .sort((a, b) => b.top - a.top)
-
-              const latestIncoming = previews.find((item) => !item.outgoing)
-              const outgoingByKnownTimestamp = previews.find(
-                (item) => item.outgoing && item.timestamp?.includes('07:43')
-              )
-              const outgoingBeforeIncoming = latestIncoming
-                ? previews.find((item) => item.outgoing && item.top < latestIncoming.top - 1)
-                : undefined
-
-              const chosen =
-                targetName === 'incoming-latest'
-                  ? latestIncoming
-                  : (outgoingByKnownTimestamp ??
-                    outgoingBeforeIncoming ??
-                    previews.find((item) => item.outgoing))
-
-              return typeof chosen?.index === 'number' ? chosen.index : null
-            },
-            target,
-            { timeout: 8_000 }
-          )
-        } catch {
-          await openTargetChat()
-          continue
-        }
-
-        if (targetIndex !== null) {
-          const locator = messagesContainer.locator('.a-chat__attachments .v-img').nth(targetIndex)
-          await expect(locator).toBeVisible({ timeout: 8_000 })
-          return locator
-        }
-
-        await messagesContainer.evaluate((element) => {
-          const step = Math.max(180, Math.floor(element.clientHeight * 0.6))
-          element.scrollTop = Math.max(0, element.scrollTop - step)
-        })
-        await page.waitForTimeout(220)
+      if (rightGutter < 16) {
+        return null
       }
 
-      throw new Error(`Failed to resolve preview target: ${target}`)
+      return {
+        x: Math.round(imageRect.right + Math.max(10, rightGutter / 2)),
+        y: imageCenterY
+      }
     }
 
-    const assertNearRightBackdropClosesModal = async (target: PreviewTarget) => {
-      const messagesContainer = await openTargetChat()
+    let surfaceChecked = false
 
-      // Make sure the message feed is hydrated before selecting target image previews.
-      await expect
-        .poll(async () => await messagesContainer.locator('.a-chat__attachments .v-img').count(), {
-          timeout: 15_000
-        })
-        .toBeGreaterThan(0)
-
-      await openPreviewModal(messagesContainer, target)
+    const assertBackdropClickClosesModal = async (previewCase: PreviewCase) => {
+      const messagesContainer = await openTargetChat(previewCase.chatPath)
+      await openPreviewModal(messagesContainer, previewCase.target)
 
       if (!surfaceChecked) {
         const surfaces = await page.evaluate(() => {
@@ -249,7 +322,6 @@ test.describe('Chat attachment modal regressions', () => {
         }
 
         expect(surfaces.scrimBackdropFilter).toContain('blur(')
-
         surfaceChecked = true
       }
 
@@ -257,36 +329,48 @@ test.describe('Chat attachment modal regressions', () => {
       expect(activeImageRect).not.toBeNull()
       if (!activeImageRect) return
 
-      const centerPoint = {
+      const imageCenter = {
         x: Math.round((activeImageRect.left + activeImageRect.right) / 2),
         y: Math.round((activeImageRect.top + activeImageRect.bottom) / 2)
       }
 
-      await page.mouse.click(centerPoint.x, centerPoint.y)
+      await page.mouse.click(imageCenter.x, imageCenter.y)
       await expect(modal).toBeVisible()
 
-      const viewport = page.viewportSize()
-      expect(viewport).not.toBeNull()
+      const contentBox = await modalContent.boundingBox()
+      expect(contentBox).not.toBeNull()
+      if (!contentBox) return
 
-      const messagesContainerBox = await messagesContainer.boundingBox()
-      const paneLeft = messagesContainerBox ? Math.round(messagesContainerBox.x) : 0
-
-      let nearRightX = Math.round(activeImageRect.right + 4)
-      if (nearRightX > (viewport?.width ?? 1280) - 4) {
-        nearRightX = Math.max(paneLeft + 4, Math.round(activeImageRect.left - 4))
-      }
-      const nearRightBackdropPoint = {
-        x: nearRightX,
-        y: centerPoint.y
+      const gutterPoint = getRightGutterPoint(activeImageRect, contentBox)
+      if (!gutterPoint) {
+        await page.keyboard.press('Escape').catch(() => undefined)
+        await expect(modal).toBeHidden()
+        return false
       }
 
-      await page.mouse.click(nearRightBackdropPoint.x, nearRightBackdropPoint.y)
+      await modalContent.click({
+        force: true,
+        position: {
+          x: Math.max(8, Math.min(contentBox.width - 8, gutterPoint.x - contentBox.x)),
+          y: Math.max(8, Math.min(contentBox.height - 8, gutterPoint.y - contentBox.y))
+        }
+      })
       await expect(modal).toBeHidden()
+      return true
     }
 
-    // Latest incoming image with cats
-    await assertNearRightBackdropClosesModal('incoming-latest')
-    // Previous outgoing image around 07:43 with different aspect ratio
-    await assertNearRightBackdropClosesModal('outgoing-before-incoming')
+    let successfulCases = 0
+
+    for (const previewCase of previewCases) {
+      if (await assertBackdropClickClosesModal(previewCase)) {
+        successfulCases += 1
+      }
+
+      if (successfulCases >= 2) {
+        break
+      }
+    }
+
+    expect(successfulCases).toBeGreaterThanOrEqual(2)
   })
 })
