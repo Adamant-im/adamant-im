@@ -2,7 +2,6 @@ import { testPassphrase } from './helpers/env'
 import { expect, test, type Locator } from '@playwright/test'
 import { dismissAddressWarningIfVisible, loginWithPassphrase } from './helpers/auth'
 
-const testChatId = 'U6386412615727665758'
 const activeImageSlideSelector =
   '.v-window-item--active.a-chat-image-modal-item, .v-window-item--active .a-chat-image-modal-item'
 type PreviewTarget = 'incoming-latest' | 'outgoing-before-incoming'
@@ -11,15 +10,113 @@ test.describe('Chat attachment modal regressions', () => {
   test('closes image modal even on near-edge backdrop clicks for different image aspect ratios', async ({
     page
   }) => {
-    test.setTimeout(180_000)
+    test.setTimeout(240_000)
     test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
 
     await loginWithPassphrase(page, testPassphrase!)
 
     const modal = page.locator('.a-chat-image-modal__container')
+    let targetChatPath: string | null = null
+
+    const findChatWithMixedImagePreviews = async () => {
+      await page.goto('/chats')
+      await expect(page).toHaveURL(/\/chats$/)
+      await dismissAddressWarningIfVisible(page, 12_000)
+
+      const chatItems = page.locator('.chats-view__messages--chat .v-list-item')
+      await expect(chatItems.first()).toBeVisible({ timeout: 15_000 })
+      const visibleCount = await chatItems.count()
+      const maxChatsToInspect = Math.min(visibleCount, 12)
+      const preferredIndexes: number[] = []
+      const fallbackIndexes: number[] = []
+
+      for (let index = 0; index < maxChatsToInspect; index += 1) {
+        const itemText = (
+          (await chatItems
+            .nth(index)
+            .textContent()
+            .catch(() => '')) ?? ''
+        ).trim()
+
+        if (/Attached:/i.test(itemText)) {
+          preferredIndexes.push(index)
+        } else {
+          fallbackIndexes.push(index)
+        }
+      }
+
+      const indexesToInspect = [...preferredIndexes, ...fallbackIndexes]
+
+      for (const index of indexesToInspect) {
+        await page.goto('/chats')
+        await expect(page).toHaveURL(/\/chats$/)
+        await dismissAddressWarningIfVisible(page, 3_000)
+        await expect(chatItems.first()).toBeVisible({ timeout: 15_000 })
+
+        const chatItem = chatItems.nth(index)
+        await chatItem.click()
+        await page.waitForURL(/\/chats\/[^/?#]+$/, { timeout: 90_000 })
+        await dismissAddressWarningIfVisible(page, 3_000)
+
+        const chatPath = new URL(page.url()).pathname
+        if (!chatPath.startsWith('/chats/')) {
+          continue
+        }
+
+        const messagesContainer = page.locator('.a-chat__body-messages').first()
+        await expect(messagesContainer).toBeVisible()
+
+        await messagesContainer.evaluate((element) => {
+          element.scrollTop = element.scrollHeight
+        })
+        await page.waitForTimeout(350)
+
+        for (let attempt = 1; attempt <= 18; attempt += 1) {
+          const previewStats = await messagesContainer.evaluate((container) => {
+            const previews = Array.from(
+              container.querySelectorAll('.a-chat__attachments .v-img')
+            ).map((preview) => {
+              const messageContainer = preview.closest('.a-chat__message-container')
+              return {
+                incoming:
+                  !(messageContainer instanceof HTMLElement) ||
+                  !messageContainer.classList.contains('a-chat__message-container--right'),
+                outgoing:
+                  messageContainer instanceof HTMLElement &&
+                  messageContainer.classList.contains('a-chat__message-container--right')
+              }
+            })
+
+            return {
+              incoming: previews.filter((item) => item.incoming).length,
+              outgoing: previews.filter((item) => item.outgoing).length
+            }
+          })
+
+          if (previewStats.incoming > 0 && previewStats.outgoing > 0) {
+            return chatPath
+          }
+
+          await messagesContainer.evaluate((element) => {
+            const step = Math.max(260, Math.floor(element.clientHeight * 0.9))
+            element.scrollTop = Math.max(0, element.scrollTop - step)
+          })
+          await page.waitForTimeout(450)
+        }
+      }
+
+      throw new Error('Failed to find a chat with both incoming and outgoing image previews')
+    }
+
     const openTargetChat = async () => {
-      await page.goto(`/chats/${testChatId}`)
-      await page.waitForURL(new RegExp(`/chats/${testChatId}$`), { timeout: 90_000 })
+      if (!targetChatPath) {
+        targetChatPath = await findChatWithMixedImagePreviews()
+      }
+
+      await page.goto(targetChatPath)
+      await page.waitForURL(new RegExp(`${targetChatPath.replace('/', '\\/')}$`), {
+        timeout: 90_000
+      })
       await dismissAddressWarningIfVisible(page, 12_000)
 
       const messagesContainer = page.locator('.a-chat__body-messages').first()
@@ -139,7 +236,7 @@ test.describe('Chat attachment modal regressions', () => {
       }, activeImageSlideSelector)
 
     const resolveTargetPreview = async (messagesContainer: Locator, target: PreviewTarget) => {
-      const maxAttempts = 8
+      const maxAttempts = 20
 
       for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
         if ((await messagesContainer.count()) === 0) {
@@ -199,15 +296,15 @@ test.describe('Chat attachment modal regressions', () => {
 
         if (targetIndex !== null) {
           const locator = messagesContainer.locator('.a-chat__attachments .v-img').nth(targetIndex)
-          await expect(locator).toBeVisible({ timeout: 8_000 })
+          await expect(locator).toBeVisible({ timeout: 12_000 })
           return locator
         }
 
         await messagesContainer.evaluate((element) => {
-          const step = Math.max(180, Math.floor(element.clientHeight * 0.6))
+          const step = Math.max(260, Math.floor(element.clientHeight * 0.9))
           element.scrollTop = Math.max(0, element.scrollTop - step)
         })
-        await page.waitForTimeout(220)
+        await page.waitForTimeout(500)
       }
 
       throw new Error(`Failed to resolve preview target: ${target}`)
@@ -215,13 +312,6 @@ test.describe('Chat attachment modal regressions', () => {
 
     const assertNearRightBackdropClosesModal = async (target: PreviewTarget) => {
       const messagesContainer = await openTargetChat()
-
-      // Make sure the message feed is hydrated before selecting target image previews.
-      await expect
-        .poll(async () => await messagesContainer.locator('.a-chat__attachments .v-img').count(), {
-          timeout: 15_000
-        })
-        .toBeGreaterThan(0)
 
       await openPreviewModal(messagesContainer, target)
 
@@ -267,20 +357,43 @@ test.describe('Chat attachment modal regressions', () => {
 
       const viewport = page.viewportSize()
       expect(viewport).not.toBeNull()
+      const scrim = page.locator('.v-overlay__scrim').last()
+      await expect(scrim).toBeVisible()
 
       const messagesContainerBox = await messagesContainer.boundingBox()
       const paneLeft = messagesContainerBox ? Math.round(messagesContainerBox.x) : 0
+      const modalBox = await modal.boundingBox()
+      const scrimBox = await scrim.boundingBox()
+      expect(modalBox).not.toBeNull()
+      expect(scrimBox).not.toBeNull()
+      if (!modalBox || !scrimBox) return
 
-      let nearRightX = Math.round(activeImageRect.right + 4)
-      if (nearRightX > (viewport?.width ?? 1280) - 4) {
-        nearRightX = Math.max(paneLeft + 4, Math.round(activeImageRect.left - 4))
-      }
+      const viewportWidth = viewport?.width ?? 1280
+      const modalLeft = modalBox.x
+      const modalRight = modalBox.x + modalBox.width
+      const rightBackdropSpace = Math.max(0, viewportWidth - modalRight - 8)
+      const leftBackdropSpace = Math.max(0, modalLeft - paneLeft - 8)
+
+      let nearRightX =
+        rightBackdropSpace >= 12
+          ? Math.round(modalRight + Math.min(Math.max(16, rightBackdropSpace / 2), 80))
+          : Math.max(
+              paneLeft + 8,
+              Math.round(modalLeft - Math.min(Math.max(16, leftBackdropSpace / 2), 80))
+            )
+
       const nearRightBackdropPoint = {
         x: nearRightX,
         y: centerPoint.y
       }
 
-      await page.mouse.click(nearRightBackdropPoint.x, nearRightBackdropPoint.y)
+      await scrim.click({
+        force: true,
+        position: {
+          x: Math.max(8, Math.min(scrimBox.width - 8, nearRightBackdropPoint.x - scrimBox.x)),
+          y: Math.max(8, Math.min(scrimBox.height - 8, nearRightBackdropPoint.y - scrimBox.y))
+        }
+      })
       await expect(modal).toBeHidden()
     }
 

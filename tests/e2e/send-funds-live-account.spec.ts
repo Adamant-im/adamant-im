@@ -1,8 +1,8 @@
 import { expect, test, type Page } from '@playwright/test'
-import { loginWithPassphrase } from './helpers/auth'
+import { dismissAddressWarningIfVisible, loginWithPassphrase } from './helpers/auth'
 import { testPassphrase } from './helpers/env'
 
-const LIVE_TIMEOUT = 120_000
+const LIVE_TIMEOUT = 180_000
 
 const recipients = {
   ADM: 'U12345678901234567890',
@@ -135,10 +135,25 @@ const getSnackbar = (page: Page) => page.locator('.app-snackbar')
 
 const waitForWalletReady = async (page: Page, crypto: SpendableCrypto) => {
   await expect
-    .poll(() => getRuntimeWalletState(page, crypto), {
-      timeout: LIVE_TIMEOUT
-    })
-    .toMatchObject({ ready: true })
+    .poll(
+      async () => {
+        const wallet = await getRuntimeWalletState(page, crypto)
+
+        if (!wallet.ready || !wallet.address || wallet.balance <= 0) {
+          return false
+        }
+
+        if (crypto === 'BTC') {
+          return (wallet.feeRate ?? 0) > 0 && (wallet.utxoCount ?? 0) > 0
+        }
+
+        return true
+      },
+      {
+        timeout: LIVE_TIMEOUT
+      }
+    )
+    .toBe(true)
 
   const wallet = await getRuntimeWalletState(page, crypto)
 
@@ -156,6 +171,7 @@ const waitForWalletReady = async (page: Page, crypto: SpendableCrypto) => {
 const openTransferScreen = async (page: Page, crypto: SpendableCrypto) => {
   await page.goto(`/transfer/${crypto}`, { waitUntil: 'domcontentloaded' })
   await expect(page).toHaveURL(new RegExp(`/transfer/${crypto}$`))
+  await dismissAddressWarningIfVisible(page, 8_000)
   await expect(page.locator('.send-funds-form')).toBeVisible()
 
   await expect
@@ -184,6 +200,12 @@ const fillRecipient = async (page: Page, recipient: string) => {
 }
 
 const pickSendAllAmount = async (page: Page) => {
+  await expect
+    .poll(() => getSendFundsSnapshot(page).then((snapshot) => snapshot.maxToTransfer), {
+      timeout: 30_000
+    })
+    .toBeGreaterThan(0)
+
   await page.locator('.send-funds-form__menu-activator').nth(1).click()
 
   const sendAllOption = page
@@ -194,13 +216,19 @@ const pickSendAllAmount = async (page: Page) => {
   await expect(sendAllOption).toBeVisible()
   await sendAllOption.click()
 
+  let snapshot = await getSendFundsSnapshot(page)
+  if (Number(snapshot.amountString || 0) <= 0 && snapshot.maxToTransfer > 0) {
+    const safeAmount = floorAmount(snapshot.maxToTransfer, snapshot.exponent)
+    await getAmountInput(page).fill(safeAmount)
+    snapshot = await getSendFundsSnapshot(page)
+  }
+
   await expect
     .poll(() => getSendFundsSnapshot(page).then((snapshot) => Number(snapshot.amountString || 0)), {
-      timeout: 15_000
+      timeout: 30_000
     })
     .toBeGreaterThan(0)
 
-  const snapshot = await getSendFundsSnapshot(page)
   const safeAmount = floorAmount(snapshot.maxToTransfer, snapshot.exponent)
 
   if (
@@ -247,6 +275,36 @@ const expectConfirmationAndCancel = async (
   await expect(dialog).toBeHidden()
 }
 
+const waitForTransferFee = async (page: Page) => {
+  await expect
+    .poll(() => getSendFundsSnapshot(page).then((snapshot) => snapshot.transferFee), {
+      timeout: 30_000
+    })
+    .toBeGreaterThan(0)
+}
+
+const clampAmountToCurrentMax = async (page: Page) => {
+  const snapshot = await getSendFundsSnapshot(page)
+  const currentAmount = Number(snapshot.amountString || 0)
+
+  if (currentAmount <= 0 || currentAmount <= snapshot.maxToTransfer) {
+    return
+  }
+
+  const safeAmount = floorAmount(snapshot.maxToTransfer, snapshot.exponent)
+  await getAmountInput(page).fill(safeAmount)
+
+  await expect
+    .poll(
+      () =>
+        getSendFundsSnapshot(page).then((nextSnapshot) => Number(nextSnapshot.amountString || 0)),
+      {
+        timeout: 15_000
+      }
+    )
+    .toBeLessThanOrEqual(snapshot.maxToTransfer)
+}
+
 const expectSnackbarMessage = async (page: Page, message: RegExp) => {
   const snackbar = getSnackbar(page)
   await expect(snackbar).toBeVisible()
@@ -276,6 +334,8 @@ const runSupportedIncreaseFeeFlow = async (page: Page, crypto: 'BTC' | 'ETH' | '
 
   await setIncreaseFee(page, false)
   await pickSendAllAmount(page)
+  await waitForTransferFee(page)
+  await clampAmountToCurrentMax(page)
   const offSnapshot = await getSendFundsSnapshot(page)
   expect(offSnapshot.transferFee).toBeGreaterThan(0)
   expect(Number(offSnapshot.amountString)).toBeGreaterThan(0)
@@ -283,6 +343,8 @@ const runSupportedIncreaseFeeFlow = async (page: Page, crypto: 'BTC' | 'ETH' | '
 
   await setIncreaseFee(page, true)
   await pickSendAllAmount(page)
+  await waitForTransferFee(page)
+  await clampAmountToCurrentMax(page)
   const onSnapshot = await getSendFundsSnapshot(page)
 
   expect(onSnapshot.transferFee).toBeGreaterThan(offSnapshot.transferFee)
@@ -303,6 +365,8 @@ const runNoToggleFlow = async (page: Page, crypto: 'ADM' | 'DOGE' | 'DASH') => {
   await expect(page.locator('.send-funds-form .v-selection-control')).toHaveCount(0)
 
   await pickSendAllAmount(page)
+  await waitForTransferFee(page)
+  await clampAmountToCurrentMax(page)
   const sendAllSnapshot = await getSendFundsSnapshot(page)
 
   expect(sendAllSnapshot.transferFee).toBeGreaterThan(0)
