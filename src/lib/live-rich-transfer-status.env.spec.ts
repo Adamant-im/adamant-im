@@ -422,6 +422,7 @@ async function mountTransactionStatus(transaction: Record<string, any>) {
 
 liveDescribe('live rich transfer status checks from ADM_TEST_ACCOUNT_PK', () => {
   let restoreTxFetchInfo: (() => void) | undefined
+  const originalTxFetchInfo = new Map<string, Record<string, number> | undefined>()
 
   beforeAll(async () => {
     const passphraseHash = new Uint8Array(
@@ -484,6 +485,14 @@ liveDescribe('live rich transfer status checks from ADM_TEST_ACCOUNT_PK', () => 
       [Cryptos.DASH]: dashTransactions[0],
       [Cryptos.ETH]: ethTransaction,
       USDT: usdtTransaction
+    }
+
+    for (const crypto of CRYPTOS_UNDER_TEST) {
+      const target = getFetchInfoTarget(crypto)
+
+      if (!originalTxFetchInfo.has(target.symbol)) {
+        originalTxFetchInfo.set(target.symbol, { ...target.txFetchInfo })
+      }
     }
 
     restoreTxFetchInfo = setShortTxFetchInfo()
@@ -569,6 +578,46 @@ liveDescribe('live rich transfer status checks from ADM_TEST_ACCOUNT_PK', () => 
     },
     120000
   )
+
+  it('keeps live invalid new BTC rich messages pending when the real txFetchInfo is used', async () => {
+    const target = getFetchInfoTarget(Cryptos.BTC)
+    const shortTxFetchInfo = { ...target.txFetchInfo }
+    const liveTxFetchInfo = originalTxFetchInfo.get(target.symbol)
+
+    target.txFetchInfo = liveTxFetchInfo
+
+    const hash = buildFakeHash(`BTC-live-fetch-info-${Date.now()}`)
+    const transaction = await sendFraudRichMessage({
+      crypto: Cryptos.BTC,
+      hash,
+      amount: '1',
+      comments: 'live invalid new BTC with live txFetchInfo'
+    })
+
+    PendingTxStore.save(
+      Cryptos.BTC,
+      createPendingTransaction({
+        hash,
+        senderId: live.senderAddresses[Cryptos.BTC]!,
+        recipientId: live.recipientAddresses[Cryptos.BTC] || live.senderAddresses[Cryptos.BTC]!,
+        amount: 1,
+        fee: 0
+      })
+    )
+
+    const { wrapper, stop } = await mountTransactionStatus(transaction)
+
+    try {
+      await wait(4_000)
+
+      expect(wrapper.find('[data-status]').attributes('data-status')).toBe(
+        TransactionStatus.PENDING
+      )
+    } finally {
+      stop()
+      target.txFetchInfo = shortTxFetchInfo
+    }
+  }, 120000)
 
   it.each(CRYPTOS_UNDER_TEST)(
     'marks falsified %s rich messages as INVALID with a live inconsistency reason',
