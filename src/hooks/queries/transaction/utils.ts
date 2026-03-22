@@ -45,7 +45,7 @@ export function retryDelayFactory(crypto: CryptoSymbol, transactionId: string) {
 export function refetchIntervalFactory(
   crypto: CryptoSymbol,
   queryStatus: QueryStatus,
-  transaction?: { status: TransactionStatusType; timestamp?: number }
+  transaction?: { status?: TransactionStatusType; timestamp?: number }
 ) {
   const txFetchInfo = getTxFetchInfo(crypto)
 
@@ -67,9 +67,10 @@ export function refetchIntervalFactory(
   return txFetchInfo.registeredInterval
 }
 
-export function refetchOnMountFn(transaction?: { status: TransactionStatusType }) {
+export function refetchOnMountFn(transaction?: { status?: TransactionStatusType }) {
   return (
     !transaction ||
+    !transaction?.status ||
     transaction?.status === TransactionStatus.PENDING ||
     transaction?.status === TransactionStatus.REGISTERED
   )

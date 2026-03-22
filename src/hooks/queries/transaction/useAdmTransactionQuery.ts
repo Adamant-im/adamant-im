@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/vue-query'
 import { MaybeRef, unref } from 'vue'
 import { useStore } from 'vuex'
-import { retryDelayFactory, retryFactory } from './utils'
+import { refetchIntervalFactory, refetchOnMountFn, retryDelayFactory, retryFactory } from './utils'
 
 import { DecodedChatMessageTransaction, decodeTransaction } from '@/lib/adamant-api'
 import * as admApi from '@/lib/adamant-api'
-import { Cryptos } from '@/lib/constants'
+import { Cryptos, TransactionStatusType } from '@/lib/constants'
 import { UseTransactionQueryParams } from './types'
 
 const fetchTransaction = async (transactionId: string, currentUserAdmAddress: string) => {
@@ -26,6 +26,9 @@ export function useAdmTransactionQuery(
   params: UseTransactionQueryParams = {}
 ) {
   const store = useStore()
+  const toTransactionStatusShape = (
+    transaction?: DecodedChatMessageTransaction
+  ): { status?: TransactionStatusType; timestamp?: number } | undefined => transaction
 
   return useQuery({
     queryKey: ['transaction', Cryptos.ADM, transactionId],
@@ -33,9 +36,12 @@ export function useAdmTransactionQuery(
     initialData: {} as DecodedChatMessageTransaction,
     retry: retryFactory(Cryptos.ADM, unref(transactionId)),
     retryDelay: retryDelayFactory(Cryptos.ADM, unref(transactionId)),
-    refetchInterval: false,
+    refetchInterval: ({ state }) =>
+      refetchIntervalFactory(Cryptos.ADM, state.status, toTransactionStatusShape(state.data)),
     refetchOnWindowFocus: false,
-    refetchOnMount: params?.refetchOnMount,
+    refetchOnMount:
+      params?.refetchOnMount ??
+      (({ state }) => refetchOnMountFn(toTransactionStatusShape(state.data))),
     enabled: params.enabled
   })
 }
