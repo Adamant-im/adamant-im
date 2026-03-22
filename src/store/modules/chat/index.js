@@ -562,6 +562,39 @@ const mutations = {
     }
   },
 
+  updateCryptoTransferMessage(
+    state,
+    { partnerId, hash, status, confirmations, instantlock, instantlock_internal, instantsend }
+  ) {
+    const chat = state.chats[partnerId]
+
+    if (!chat || !hash) {
+      return
+    }
+
+    const message = chat.messages.find((message) => message.hash === hash || message.id === hash)
+
+    if (!message) {
+      return
+    }
+
+    if (status) {
+      message.status = status
+    }
+    if (typeof confirmations === 'number') {
+      message.confirmations = confirmations
+    }
+    if (typeof instantlock === 'boolean') {
+      message.instantlock = instantlock
+    }
+    if (typeof instantlock_internal === 'boolean') {
+      message.instantlock_internal = instantlock_internal
+    }
+    if (typeof instantsend === 'boolean') {
+      message.instantsend = instantsend
+    }
+  },
+
   /**
    * Add `Welcome to ADAMANT` & `ADAMANT Tokens` to state.chats.
    */

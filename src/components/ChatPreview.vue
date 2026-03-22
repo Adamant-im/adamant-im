@@ -57,7 +57,7 @@
                 :icon="tsIcon(status)"
                 :class="`${className}__status-icon`"
               />
-              {{ transactionDirection }} {{ currency(transaction.amount, transaction.type) }}
+              <span>{{ transactionPreviewText }}</span>
               <v-icon
                 v-if="isIncomingTransaction"
                 :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
@@ -123,7 +123,7 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon, TransactionStatus as TS } from '@/lib/constants'
 import { useChatName } from '@/components/AChat/hooks/useChatName'
 import { TransactionProvider } from '@/providers/TransactionProvider'
-import { mdiArrowLeftTop, mdiDotsHorizontal } from '@mdi/js'
+import { mdiArrowLeftTop, mdiCheck, mdiDotsHorizontal } from '@mdi/js'
 import { AdamantChatMeta } from '@/lib/chat/meta/chat-meta'
 
 const className = 'chat-brief'
@@ -217,6 +217,10 @@ const transactionDirection = computed(() => {
 
   return direction
 })
+const transactionPreviewText = computed(
+  () =>
+    `${transactionDirection.value} ${currency(props.transaction.amount, props.transaction.type)}`
+)
 const isIncomingTransaction = computed(
   () => !isStringEqualCI(props.userId, props.transaction.senderId)
 )
@@ -225,7 +229,9 @@ const numOfNewMessages = computed(() => store.getters['chat/numOfNewMessages'](c
 const createdAt = computed(() => props.transaction.timestamp)
 
 const status = computed(() => props.transaction.status)
-const admStatusIcon = computed(() => tsIcon(status.value))
+const admStatusIcon = computed(() =>
+  status.value === TS.REGISTERED ? mdiCheck : tsIcon(status.value)
+)
 const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 </script>
 

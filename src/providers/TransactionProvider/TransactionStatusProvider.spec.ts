@@ -1,5 +1,6 @@
 import { defineComponent, h, PropType } from 'vue'
 import { mount } from '@vue/test-utils'
+import { createStore } from 'vuex'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { TransactionStatus } from '@/lib/constants'
 import TransactionStatusProvider from './TransactionStatusProvider.vue'
@@ -7,18 +8,24 @@ import TransactionStatusProvider from './TransactionStatusProvider.vue'
 const {
   queryStatusRef,
   liveStatusRef,
+  transactionRef,
+  additionalStatusRef,
   inconsistentStatusRef,
   refetch,
   useTransactionStatusQueryMock
 } = vi.hoisted(() => {
   const queryStatusRef = { value: 'pending' as 'pending' | 'error' | 'success' }
   const liveStatusRef = { value: 'PENDING' }
+  const transactionRef = { value: undefined as Record<string, any> | undefined }
+  const additionalStatusRef = { value: false as string | boolean }
   const inconsistentStatusRef = { value: '' }
   const refetch = vi.fn()
   const useTransactionStatusQueryMock = vi.fn(
     (_transactionId?: unknown, _crypto?: unknown, _params?: unknown) => ({
+      transaction: transactionRef,
       queryStatus: queryStatusRef,
       status: liveStatusRef,
+      additionalStatus: additionalStatusRef,
       inconsistentStatus: inconsistentStatusRef,
       refetch
     })
@@ -27,6 +34,8 @@ const {
   return {
     queryStatusRef,
     liveStatusRef,
+    transactionRef,
+    additionalStatusRef,
     inconsistentStatusRef,
     refetch,
     useTransactionStatusQueryMock
@@ -56,16 +65,34 @@ const slotHost = defineComponent({
   }
 })
 
+const createStoreMock = () => {
+  const store = createStore({
+    state: {
+      address: 'U111111'
+    },
+    mutations: {
+      noop() {}
+    }
+  })
+
+  const commit = vi.spyOn(store, 'commit')
+
+  return { store, commit }
+}
+
 describe('TransactionStatusProvider', () => {
   beforeEach(() => {
     queryStatusRef.value = 'pending'
     liveStatusRef.value = TransactionStatus.PENDING
+    transactionRef.value = undefined
+    additionalStatusRef.value = false
     inconsistentStatusRef.value = ''
     refetch.mockReset()
     useTransactionStatusQueryMock.mockClear()
   })
 
   it('keeps the local pending status in chat preview while the live query is still pending', () => {
+    const { store } = createStoreMock()
     const wrapper = mount(slotHost, {
       props: {
         transaction: {
@@ -74,6 +101,9 @@ describe('TransactionStatusProvider', () => {
           type: 'DASH',
           status: TransactionStatus.PENDING
         }
+      },
+      global: {
+        plugins: [store]
       }
     })
 
@@ -83,6 +113,7 @@ describe('TransactionStatusProvider', () => {
   it('keeps the local registered status when the live query errors before the transaction is indexed', () => {
     queryStatusRef.value = 'error'
     liveStatusRef.value = TransactionStatus.REJECTED
+    const { store } = createStoreMock()
 
     const wrapper = mount(slotHost, {
       props: {
@@ -92,6 +123,9 @@ describe('TransactionStatusProvider', () => {
           type: 'DOGE',
           status: TransactionStatus.REGISTERED
         }
+      },
+      global: {
+        plugins: [store]
       }
     })
 
@@ -103,6 +137,7 @@ describe('TransactionStatusProvider', () => {
   it('uses the live success status once it is available', () => {
     queryStatusRef.value = 'success'
     liveStatusRef.value = TransactionStatus.CONFIRMED
+    const { store } = createStoreMock()
 
     const wrapper = mount(slotHost, {
       props: {
@@ -112,6 +147,9 @@ describe('TransactionStatusProvider', () => {
           type: 'DASH',
           status: TransactionStatus.PENDING
         }
+      },
+      global: {
+        plugins: [store]
       }
     })
 
@@ -121,6 +159,7 @@ describe('TransactionStatusProvider', () => {
   })
 
   it('keeps live queries enabled for crypto transfers that are locally marked as rejected', () => {
+    const { store } = createStoreMock()
     mount(slotHost, {
       props: {
         transaction: {
@@ -129,6 +168,9 @@ describe('TransactionStatusProvider', () => {
           type: 'BTC',
           status: TransactionStatus.REJECTED
         }
+      },
+      global: {
+        plugins: [store]
       }
     })
 

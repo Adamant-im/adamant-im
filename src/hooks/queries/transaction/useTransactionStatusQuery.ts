@@ -35,6 +35,7 @@ export function useTransactionStatusQuery(
   )
 
   return {
+    transaction,
     queryStatus,
     inconsistentStatus,
     additionalStatus,

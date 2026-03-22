@@ -90,6 +90,7 @@
 import { computed, defineComponent, onBeforeUnmount, PropType, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
+import { mdiCheck } from '@mdi/js'
 
 import { useFormatMessage } from './hooks/useFormatMessage'
 import { usePartnerId } from './hooks/usePartnerId'
@@ -151,7 +152,11 @@ export default defineComponent({
 
     const showAvatar = computed(() => !isWelcomeChat(partnerId.value))
 
-    const statusIcon = computed(() => tsIcon(props.transaction.status))
+    const statusIcon = computed(() =>
+      props.transaction.status === TransactionStatus.REGISTERED
+        ? mdiCheck
+        : tsIcon(props.transaction.status)
+    )
     const isOutgoingMessage = computed(() =>
       isStringEqualCI(props.transaction.senderId, userId.value)
     )

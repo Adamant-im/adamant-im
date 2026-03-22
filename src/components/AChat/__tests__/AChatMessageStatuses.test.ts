@@ -3,6 +3,7 @@ import { mount } from '@vue/test-utils'
 import { createStore } from 'vuex'
 import { createI18n } from 'vue-i18n'
 import { defineComponent, nextTick } from 'vue'
+import { mdiCheck, mdiClockCheckOutline } from '@mdi/js'
 
 import AChatMessage from '../AChatMessage.vue'
 import AChatAttachment from '../AChatAttachment/AChatAttachment.vue'
@@ -442,5 +443,24 @@ describe('AChat sending status UI', () => {
     expect(wrapper.find('.a-chat__message-card-header').exists()).toBe(true)
     expect(wrapper.find('.a-chat__timestamp').exists()).toBe(true)
     expect(wrapper.find('.a-chat__status .v-icon').exists()).toBe(true)
+  })
+
+  it('renders registered outgoing text messages with a plain check icon', () => {
+    const store = createTestStore()
+    const wrapper = mount(AChatMessage, {
+      props: {
+        transaction: createTextTransaction({
+          showTime: true,
+          showBubble: true,
+          status: TransactionStatus.REGISTERED
+        })
+      },
+      global: globalMountOptions(store)
+    })
+
+    expect(wrapper.find('.a-chat__status .v-icon').attributes('data-icon')).toBe(mdiCheck)
+    expect(wrapper.find('.a-chat__status .v-icon').attributes('data-icon')).not.toBe(
+      mdiClockCheckOutline
+    )
   })
 })

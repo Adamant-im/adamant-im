@@ -8,10 +8,19 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+import { computed, defineComponent, PropType, watch } from 'vue'
+import { useStore } from 'vuex'
 import { useTransactionStatusQuery } from '@/hooks/queries/transaction'
-import { Cryptos, CryptoSymbol, TransactionStatus, tsIcon } from '@/lib/constants'
+import {
+  Cryptos,
+  CryptoSymbol,
+  TransactionAdditionalStatus,
+  TransactionStatus,
+  tsIcon
+} from '@/lib/constants'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { useTransactionAdditionalStatus } from '@/components/transactions/hooks/useTransactionAdditionalStatus'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default defineComponent({
   props: {
@@ -24,10 +33,25 @@ export default defineComponent({
     }
   },
   setup(props) {
+    const store = useStore()
     const transactionId = computed(() =>
       props.transaction.type === 'ADM' ? props.transaction.id : props.transaction.hash
     )
-    const crypto = computed(() => props.transaction.type)
+    const crypto = computed(() => props.transaction.type as CryptoSymbol)
+    const localAdditionalStatus = useTransactionAdditionalStatus(
+      computed(() => props.transaction as any),
+      crypto
+    )
+    const localResolvedStatus = computed(() =>
+      localAdditionalStatus.value === TransactionAdditionalStatus.INSTANT_SEND
+        ? TransactionStatus.CONFIRMED
+        : props.transaction.status
+    )
+    const partnerId = computed(() =>
+      isStringEqualCI(props.transaction.senderId, store.state.address)
+        ? props.transaction.recipientId
+        : props.transaction.senderId
+    )
 
     const isSupportedCrypto = computed(() => {
       return props.transaction.type in Cryptos
@@ -41,10 +65,47 @@ export default defineComponent({
       )
     })
 
-    const { queryStatus, status, inconsistentStatus, refetch } = useTransactionStatusQuery(
-      transactionId,
-      crypto.value as CryptoSymbol,
-      { enabled: queryEnabled, knownStatus: queryKnownStatus }
+    const { transaction, queryStatus, status, inconsistentStatus, additionalStatus, refetch } =
+      useTransactionStatusQuery(transactionId, crypto, {
+        enabled: queryEnabled,
+        knownStatus: queryKnownStatus
+      })
+
+    watch(
+      transaction,
+      (liveTransaction) => {
+        const resolvedLiveTransaction = liveTransaction as any
+
+        if (
+          queryStatus.value !== 'success' ||
+          !resolvedLiveTransaction ||
+          !partnerId.value ||
+          !props.transaction.hash
+        ) {
+          return
+        }
+
+        store.commit('chat/updateCryptoTransferMessage', {
+          partnerId: partnerId.value,
+          hash: props.transaction.hash,
+          status: resolvedLiveTransaction.status,
+          confirmations: resolvedLiveTransaction.confirmations,
+          instantlock:
+            'instantlock' in resolvedLiveTransaction
+              ? resolvedLiveTransaction.instantlock
+              : undefined,
+          instantlock_internal:
+            'instantlock_internal' in resolvedLiveTransaction
+              ? resolvedLiveTransaction.instantlock_internal
+              : undefined,
+          instantsend:
+            additionalStatus.value === TransactionAdditionalStatus.INSTANT_SEND ||
+            ('instantsend' in resolvedLiveTransaction
+              ? resolvedLiveTransaction.instantsend
+              : undefined)
+        })
+      },
+      { immediate: true }
     )
 
     const transactionStatus = computed(() => {
@@ -53,7 +114,7 @@ export default defineComponent({
       }
 
       if (!queryEnabled.value || queryStatus.value === 'pending') {
-        return props.transaction.status
+        return localResolvedStatus.value
       }
 
       if (
@@ -61,7 +122,7 @@ export default defineComponent({
         props.transaction.status !== TransactionStatus.REJECTED &&
         props.transaction.status !== TransactionStatus.UNKNOWN
       ) {
-        return props.transaction.status
+        return localResolvedStatus.value
       }
 
       return status.value
