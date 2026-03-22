@@ -267,15 +267,54 @@ const hasFocusedEditableElement = () => {
   return activeElement.isContentEditable
 }
 
+const blurFocusedSendFundsField = () => {
+  const activeElement = document.activeElement
+
+  if (!(activeElement instanceof HTMLElement)) {
+    return false
+  }
+
+  const sendFundsForm = activeElement.closest('.send-funds-form')
+
+  if (!sendFundsForm) {
+    return false
+  }
+
+  const role = activeElement.getAttribute('role')
+  const isBlurCandidate =
+    activeElement instanceof HTMLInputElement ||
+    activeElement instanceof HTMLTextAreaElement ||
+    activeElement instanceof HTMLSelectElement ||
+    activeElement.isContentEditable ||
+    role === 'combobox' ||
+    role === 'textbox' ||
+    role === 'spinbutton'
+
+  if (!isBlurCandidate || typeof activeElement.blur !== 'function') {
+    return false
+  }
+
+  activeElement.blur()
+
+  return true
+}
+
 const onKeydownHandler = (e: KeyboardEvent) => {
-  if (
-    e.key !== 'Escape' ||
-    !canPressEscape.value ||
-    e.defaultPrevented ||
-    hasFocusedEditableElement() ||
-    hasActiveOverlay() ||
-    hasExpandedPopupActivator()
-  ) {
+  if (e.key !== 'Escape' || !canPressEscape.value || e.defaultPrevented) {
+    return
+  }
+
+  if (hasActiveOverlay()) {
+    return
+  }
+
+  if (blurFocusedSendFundsField()) {
+    e.preventDefault()
+    e.stopPropagation()
+    return
+  }
+
+  if (hasFocusedEditableElement() || hasExpandedPopupActivator()) {
     return
   }
 

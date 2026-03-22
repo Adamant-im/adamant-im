@@ -64,7 +64,7 @@ export default defineComponent({
       transactionStatus,
       inconsistentStatus
     )
-    useClearPendingTransaction(props.crypto, transaction)
+    useClearPendingTransaction(props.crypto, transaction, status)
 
     const admTx = useFindAdmTransaction(props.id)
     const senderAdmAddress = computed(() => admTx.value?.senderId || '')

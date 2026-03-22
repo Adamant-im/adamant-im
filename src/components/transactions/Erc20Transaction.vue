@@ -57,7 +57,7 @@ const {
 const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
 const transactionStatus = computed(() => transaction.value?.status)
 const status = useTransactionStatus(isFetching, queryStatus, transactionStatus, inconsistentStatus)
-useClearPendingTransaction(props.crypto, transaction)
+useClearPendingTransaction(props.crypto, transaction, status)
 
 const admTx = useFindAdmTransaction(props.id)
 const senderAdmAddress = computed(() => admTx.value?.senderId || '')
