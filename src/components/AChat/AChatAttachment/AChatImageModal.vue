@@ -1,12 +1,5 @@
 <template>
-  <v-dialog
-    v-model="show"
-    fullscreen
-    scrim
-    :class="classes.root"
-    @keydown="handleKeydown"
-    @click:outside="closeModal"
-  >
+  <v-dialog v-model="show" fullscreen scrim :class="classes.root" @keydown="handleKeydown">
     <v-card :class="classes.container">
       <div :class="classes.content" @click.capture="handleBackgroundClick">
         <v-toolbar color="transparent">
