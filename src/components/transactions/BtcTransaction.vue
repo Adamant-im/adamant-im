@@ -20,6 +20,7 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
+import { useRoute } from 'vue-router'
 import TransactionTemplate from './TransactionTemplate.vue'
 import { getExplorerTxUrl } from '@/config/utils'
 import { CryptoSymbol } from '@/lib/constants'
@@ -28,6 +29,7 @@ import { useBtcAddressPretty } from './hooks/address'
 import { useTransactionAdditionalStatus } from './hooks/useTransactionAdditionalStatus'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useInconsistentStatus } from './hooks/useInconsistentStatus'
+import { useFindAdmAddress } from './hooks/useFindAdmAddress'
 import { useFindAdmTransaction } from './hooks/useFindAdmTransaction'
 import { useSyncChatTransferPendingStatus } from './hooks/useSyncChatTransferPendingStatus'
 import {
@@ -37,6 +39,7 @@ import {
 } from '@/hooks/queries/transaction'
 import { useClearPendingTransaction } from './hooks/useClearPendingTransaction'
 import { getPartnerAddress } from './utils/getPartnerAddress'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 const query = {
   BTC: useBtcTransactionQuery,
@@ -60,9 +63,16 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore()
+    const route = useRoute()
 
     const cryptoKey = computed(() => props.crypto.toLowerCase())
     const cryptoAddress = computed(() => store.state[cryptoKey.value].address)
+    const myAdmAddress = computed(() => store.state.address)
+    const preferredPartnerId = computed(() =>
+      typeof route.query.from === 'string'
+        ? route.query.from.match(/\/chats\/([^/]+)/)?.[1] || ''
+        : ''
+    )
 
     const useTransactionQuery = query[props.crypto]
     const {
@@ -76,7 +86,8 @@ export default defineComponent({
     } = useTransactionQuery(props.id, {
       refetchOnMount: true
     })
-    const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
+    const admTx = useFindAdmTransaction(props.id, preferredPartnerId)
+    const inconsistentStatus = useInconsistentStatus(transaction, props.crypto, admTx)
     const additionalStatus = useTransactionAdditionalStatus(transaction, props.crypto)
     const transactionStatus = computed(() => transaction.value?.status)
     const status = useTransactionStatus(
@@ -91,15 +102,61 @@ export default defineComponent({
     )
     useClearPendingTransaction(props.crypto, transaction, status)
 
-    const admTx = useFindAdmTransaction(props.id)
-    useSyncChatTransferPendingStatus(props.crypto, props.id, admTx, isFetching, queryStatus)
-    const senderAdmAddress = computed(() => admTx.value?.senderId || '')
-    const recipientAdmAddress = computed(() => admTx.value?.recipientId || '')
-    const partnerAdmAddress = computed(() =>
-      admTx.value
-        ? getPartnerAddress(admTx.value?.senderId, admTx.value?.recipientId, cryptoAddress.value)
-        : ''
+    const senderFallbackAdmAddress = useFindAdmAddress(
+      computed(() => props.crypto),
+      computed(() => transaction.value?.senderId || ''),
+      computed(() => props.id)
     )
+    const recipientFallbackAdmAddress = useFindAdmAddress(
+      computed(() => props.crypto),
+      computed(() => transaction.value?.recipientId || ''),
+      computed(() => props.id)
+    )
+    useSyncChatTransferPendingStatus(props.crypto, props.id, admTx, isFetching, queryStatus)
+    const senderAdmAddress = computed(() => {
+      if (admTx.value?.senderId) {
+        return admTx.value.senderId
+      }
+
+      if (isStringEqualCI(transaction.value?.senderId || '', cryptoAddress.value)) {
+        return myAdmAddress.value
+      }
+
+      return senderFallbackAdmAddress.value || ''
+    })
+    const recipientAdmAddress = computed(() => {
+      if (admTx.value?.recipientId) {
+        return admTx.value.recipientId
+      }
+
+      if (isStringEqualCI(transaction.value?.recipientId || '', cryptoAddress.value)) {
+        return myAdmAddress.value
+      }
+
+      return recipientFallbackAdmAddress.value || ''
+    })
+    const partnerAdmAddress = computed(() => {
+      if (senderAdmAddress.value && recipientAdmAddress.value) {
+        return getPartnerAddress(
+          senderAdmAddress.value,
+          recipientAdmAddress.value,
+          myAdmAddress.value
+        )
+      }
+
+      if (senderAdmAddress.value && !isStringEqualCI(senderAdmAddress.value, myAdmAddress.value)) {
+        return senderAdmAddress.value
+      }
+
+      if (
+        recipientAdmAddress.value &&
+        !isStringEqualCI(recipientAdmAddress.value, myAdmAddress.value)
+      ) {
+        return recipientAdmAddress.value
+      }
+
+      return ''
+    })
 
     const senderFormatted = useBtcAddressPretty(
       transaction,

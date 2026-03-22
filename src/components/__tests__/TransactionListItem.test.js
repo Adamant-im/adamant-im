@@ -168,4 +168,117 @@ describe('TransactionListItem.vue', () => {
     expect(wrapper.vm.resolvedStatus).toBe('CONFIRMED')
     expect(wrapper.vm.isStatusVisibleTransaction).toBe(false)
   })
+
+  it('falls back to known partner crypto addresses to resolve ADM chat links in transaction lists', async () => {
+    const wrapper = mount(TransactionListItem, {
+      shallow: true,
+      props: {
+        id: 'doge-tx-1',
+        senderId: 'DPartnerAddress',
+        recipientId: 'DMyAddress',
+        amount: 1,
+        status: 'CONFIRMED',
+        timestamp: 1_710_000_000_000,
+        crypto: 'DOGE'
+      },
+      global: {
+        mocks: {
+          $t: (key) => key,
+          $te: () => false,
+          $store: {
+            state: {
+              address: 'UMyAdamantAddress',
+              partners: {
+                list: {
+                  UPartnerAdamantAddress: {
+                    DOGE: 'DPartnerAddress'
+                  }
+                }
+              },
+              doge: {
+                address: 'DMyAddress'
+              },
+              chat: {
+                chats: {}
+              },
+              adm: {
+                transactions: {}
+              }
+            },
+            getters: {
+              'rate/historyRate': () => '42.00 USD',
+              'partners/displayName': (address) =>
+                address === 'UPartnerAdamantAddress' ? 'Doge Partner' : '',
+              'chat/isPartnerInChatList': (address) => address === 'UPartnerAdamantAddress'
+            },
+            dispatch: vi.fn()
+          }
+        }
+      }
+    })
+
+    expect(wrapper.vm.partnerAdmId).toBe('UPartnerAdamantAddress')
+    expect(wrapper.vm.partnerName).toBe('Doge Partner')
+    expect(wrapper.vm.isClickIcon).toBe(true)
+
+    await wrapper.vm.onClickIcon()
+
+    expect(wrapper.emitted('click:icon')).toEqual([['UPartnerAdamantAddress']])
+  })
+
+  it('does not divide ADM live amounts twice when the transaction query already returns ADM units', () => {
+    queryData.value = {
+      id: 'adm-tx-1',
+      senderId: 'U1234567890',
+      recipientId: 'U0987654321',
+      amount: 0.5,
+      status: 'REGISTERED',
+      timestamp: 269_282_595
+    }
+
+    const historyRateGetter = vi.fn(() => '42.00 USD')
+
+    const wrapper = mount(TransactionListItem, {
+      shallow: true,
+      props: {
+        id: 'adm-tx-1',
+        senderId: 'U1234567890',
+        recipientId: 'U0987654321',
+        amount: 50_000_000,
+        status: 'PENDING',
+        timestamp: 269_282_595,
+        crypto: 'ADM'
+      },
+      global: {
+        mocks: {
+          $t: (key) => key,
+          $te: () => false,
+          $store: {
+            state: {
+              address: 'U1234567890',
+              partners: {
+                list: {}
+              },
+              chat: {
+                chats: {}
+              },
+              adm: {
+                transactions: {}
+              }
+            },
+            getters: {
+              'rate/historyRate': historyRateGetter,
+              'partners/displayName': () => '',
+              'chat/isPartnerInChatList': () => false
+            },
+            dispatch: vi.fn()
+          }
+        }
+      }
+    })
+
+    expect(wrapper.text()).toContain('0.5 ADM')
+    expect(wrapper.text()).not.toContain('0.000000005 ADM')
+    expect(historyRateGetter).toHaveBeenCalledWith(1_773_654_195, '0.5', 'ADM')
+  })
 })

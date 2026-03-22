@@ -26,7 +26,7 @@ export function useFindAdmAddress(
     const transactionHashValue = unref(transactionHash)
 
     // First, check the known partners
-    const partners = store.state.partners
+    const partners = store.state.partners?.list || {}
     Object.keys(partners).some((uid) => {
       const partner = partners[uid]
       if (isStringEqualCI(partner[crypto.value], cryptoAddressValue)) {

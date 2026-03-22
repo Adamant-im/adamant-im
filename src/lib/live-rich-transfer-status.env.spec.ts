@@ -524,7 +524,7 @@ liveDescribe('live rich transfer status checks from ADM_TEST_ACCOUNT_PK', () => 
           `${crypto} old status`,
           () => wrapper.find('[data-status]').attributes('data-status'),
           (value) => value === TransactionStatus.REJECTED,
-          10_000
+          30_000
         )
 
         expect(wrapper.find('[data-status]').attributes('data-status')).toBe(
@@ -566,7 +566,7 @@ liveDescribe('live rich transfer status checks from ADM_TEST_ACCOUNT_PK', () => 
           `${crypto} new status`,
           () => wrapper.find('[data-status]').attributes('data-status'),
           (value) => value === TransactionStatus.REJECTED,
-          10_000
+          30_000
         )
 
         expect(wrapper.find('[data-status]').attributes('data-status')).toBe(
@@ -643,7 +643,7 @@ liveDescribe('live rich transfer status checks from ADM_TEST_ACCOUNT_PK', () => 
           `${crypto} invalid status`,
           () => wrapper.find('[data-status]').attributes('data-status'),
           (value) => value === TransactionStatus.INVALID,
-          20_000
+          60_000
         )
 
         expect(wrapper.find('[data-status]').attributes('data-status')).toBe(

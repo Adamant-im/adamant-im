@@ -20,7 +20,11 @@ export function useTransactionStatusQuery(
     data: transaction,
     refetch
   } = useTransactionQuery(transactionId, unref(crypto), params)
-  const inconsistentStatus = useInconsistentStatus(transaction, unref(crypto))
+  const inconsistentStatus = useInconsistentStatus(
+    transaction,
+    unref(crypto),
+    params.knownAdmTransaction
+  )
   const additionalStatus = useTransactionAdditionalStatus(transaction, unref(crypto))
   const transactionStatus = computed(() => {
     if (transaction.value && 'status' in transaction.value) {

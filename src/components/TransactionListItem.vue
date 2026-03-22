@@ -21,7 +21,7 @@
 
       <v-list-item-title>
         <span :class="`${className}__amount ${directionClass}`">{{
-          currency(resolvedAmount, crypto)
+          currency(resolvedAmount, crypto, isAdmLiveAmountNormalized)
         }}</span>
         <span :class="`${className}__rates`">{{ historyRate }}</span>
         <span
@@ -182,6 +182,9 @@ export default {
     resolvedAmount() {
       return this.liveTransaction?.amount ?? this.amount
     },
+    isAdmLiveAmountNormalized() {
+      return this.crypto === Cryptos.ADM && typeof this.liveTransaction?.amount === 'number'
+    },
     resolvedStatus() {
       return this.hasLiveStatusTracking ? this.liveStatus : this.status
     },
@@ -208,9 +211,24 @@ export default {
     // Partner's ADM address, if found. Else, returns 'undefined'
     partnerAdmId() {
       const admTx = this.getAdmTx
-      return isStringEqualCI(admTx.senderId, this.$store.state.address)
-        ? admTx.recipientId
-        : admTx.senderId
+      if (admTx.senderId || admTx.recipientId) {
+        return isStringEqualCI(admTx.senderId, this.$store.state.address)
+          ? admTx.recipientId
+          : admTx.senderId
+      }
+
+      if (this.isCryptoADM()) {
+        return this.partnerId
+      }
+
+      const partners = this.$store.state.partners?.list || {}
+      const cryptoKey = this.crypto
+
+      return (
+        Object.keys(partners).find((uid) =>
+          isStringEqualCI(partners[uid]?.[cryptoKey], this.partnerId)
+        ) || ''
+      )
     },
     // Partner's name from KVS, if partnerAdmId found
     partnerName() {
@@ -260,7 +278,11 @@ export default {
       return admTx.message
     },
     historyRate() {
-      const amount = currencyAmount(this.resolvedAmount, this.crypto)
+      const amount = currencyAmount(
+        this.resolvedAmount,
+        this.crypto,
+        this.isAdmLiveAmountNormalized
+      )
       return (
         '~' +
         this.$store.getters['rate/historyRate'](

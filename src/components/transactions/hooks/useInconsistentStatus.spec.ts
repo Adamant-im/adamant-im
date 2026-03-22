@@ -113,4 +113,75 @@ describe('useInconsistentStatus', () => {
 
     expect(result.value).toBe('')
   })
+
+  it('never marks native ADM transactions as inconsistent', () => {
+    recipientCryptoAddress.value = undefined
+    senderCryptoAddress.value = undefined
+
+    const result = useInconsistentStatus(
+      ref({
+        id: 'tx-1',
+        fee: 0.5,
+        amount: 1,
+        senderId: 'sender-adm',
+        recipientId: 'recipient-adm',
+        message: 'hello',
+        status: TransactionStatus.CONFIRMED,
+        timestamp: Date.now()
+      }) as any,
+      Cryptos.ADM
+    )
+
+    expect(result.value).toBe('')
+  })
+
+  it('prefers the explicitly provided ADM transaction over a global hash match', () => {
+    admTransaction.value = {
+      id: 'wrong-adm',
+      hash: 'tx-1',
+      senderId: 'sender-adm',
+      recipientId: 'recipient-adm',
+      amount: 999,
+      timestamp: Date.now(),
+      confirmations: 1,
+      status: TransactionStatus.CONFIRMED,
+      type: Cryptos.BTC,
+      message: '',
+      asset: {}
+    }
+
+    const result = useInconsistentStatus(
+      ref({
+        id: 'tx-1',
+        hash: 'tx-1',
+        fee: 0,
+        status: TransactionStatus.CONFIRMED,
+        timestamp: Date.now(),
+        direction: 'from',
+        senderId: 'chain-sender',
+        recipientId: 'chain-recipient',
+        amount: 1,
+        confirmations: 1
+      }) as any,
+      Cryptos.BTC,
+      computed(
+        () =>
+          ({
+            id: 'right-adm',
+            hash: 'tx-1',
+            senderId: 'sender-adm',
+            recipientId: 'recipient-adm',
+            amount: 1,
+            timestamp: Date.now(),
+            confirmations: 1,
+            status: TransactionStatus.CONFIRMED,
+            type: Cryptos.BTC,
+            message: '',
+            asset: {}
+          }) as any
+      )
+    )
+
+    expect(result.value).toBe('')
+  })
 })

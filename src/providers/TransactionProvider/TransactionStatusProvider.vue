@@ -79,7 +79,8 @@ export default defineComponent({
     const { transaction, queryStatus, status, inconsistentStatus, additionalStatus, refetch } =
       useTransactionStatusQuery(transactionId, crypto, {
         enabled: queryEnabled,
-        knownStatus: queryKnownStatus
+        knownStatus: queryKnownStatus,
+        knownAdmTransaction: computed(() => props.transaction)
       })
 
     watch(
