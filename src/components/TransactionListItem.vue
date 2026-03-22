@@ -4,7 +4,9 @@
       <template #prepend>
         <v-icon
           :class="`${className}__prepend-icon ${directionClass}`"
-          :icon="isStringEqualCI(senderId, userId) ? mdiAirplaneTakeoff : mdiAirplaneLanding"
+          :icon="
+            isStringEqualCI(resolvedSenderId, userId) ? mdiAirplaneTakeoff : mdiAirplaneLanding
+          "
           size="small"
         />
       </template>
@@ -19,7 +21,7 @@
 
       <v-list-item-title>
         <span :class="`${className}__amount ${directionClass}`">{{
-          currency(amount, crypto)
+          currency(resolvedAmount, crypto, isAdmLiveAmountNormalized)
         }}</span>
         <span :class="`${className}__rates`">{{ historyRate }}</span>
         <span
@@ -40,9 +42,11 @@
 
       <v-list-item-subtitle :class="`${className}__date`">
         <span v-if="!isStatusVisibleTransaction">{{ formatDate(createdAt) }}</span>
-        <span v-else-if="status" :class="`${className}__status ${className}__status--${status}`">{{
-          $t(`transaction.statuses.${status}`)
-        }}</span>
+        <span
+          v-else-if="resolvedStatus"
+          :class="`${className}__status ${className}__status--${resolvedStatus}`"
+          >{{ $t(`transaction.statuses.${resolvedStatus}`) }}</span
+        >
       </v-list-item-subtitle>
 
       <template #append>
@@ -63,6 +67,7 @@
 </template>
 
 <script>
+import { computed, toRef } from 'vue'
 import formatDate from '@/filters/date'
 import { EPOCH, Cryptos, TransactionStatus } from '@/lib/constants'
 import partnerName from '@/mixins/partnerName'
@@ -71,6 +76,10 @@ import currencyAmount from '@/filters/currencyAmount'
 import { timestampInSec } from '@/filters/helpers'
 import currency from '@/filters/currencyAmountWithSymbol'
 import { mdiAirplaneLanding, mdiAirplaneTakeoff, mdiMessageOutline, mdiMessageText } from '@mdi/js'
+import { useTransactionQuery } from '@/hooks/queries/transaction'
+import { useTransactionAdditionalStatus } from '@/components/transactions/hooks/useTransactionAdditionalStatus'
+import { useTransactionStatus } from '@/components/transactions/hooks/useTransactionStatus'
+import { useClearPendingTransaction } from '@/components/transactions/hooks/useClearPendingTransaction'
 
 export default {
   mixins: [partnerName],
@@ -111,8 +120,45 @@ export default {
     }
   },
   emits: ['click:transaction', 'click:icon'],
-  setup() {
+  setup(props) {
+    const hasLiveStatusTracking = computed(() => {
+      return (
+        props.status === TransactionStatus.PENDING || props.status === TransactionStatus.REGISTERED
+      )
+    })
+    const {
+      data: liveTransaction,
+      status: liveQueryStatus,
+      isFetching: isLiveTransactionFetching,
+      isLoadingError: isLiveTransactionLoadingError,
+      isRefetchError: isLiveTransactionRefetchError,
+      error: liveTransactionError
+    } = useTransactionQuery(toRef(props, 'id'), props.crypto, {
+      enabled: hasLiveStatusTracking
+    })
+    const liveTransactionStatus = computed(() => liveTransaction.value?.status)
+    const liveAdditionalStatus = useTransactionAdditionalStatus(
+      liveTransaction,
+      toRef(props, 'crypto')
+    )
+    const liveStatus = useTransactionStatus(
+      isLiveTransactionFetching,
+      liveQueryStatus,
+      liveTransactionStatus,
+      undefined,
+      undefined,
+      liveAdditionalStatus,
+      isLiveTransactionLoadingError,
+      isLiveTransactionRefetchError,
+      liveTransactionError
+    )
+
+    useClearPendingTransaction(toRef(props, 'crypto'), liveTransaction, liveStatus)
+
     return {
+      hasLiveStatusTracking,
+      liveStatus,
+      liveTransaction,
       mdiAirplaneLanding,
       mdiAirplaneTakeoff,
       mdiMessageOutline,
@@ -122,7 +168,32 @@ export default {
   data: () => ({
     virtualTimestamp: Date.now()
   }),
+  watch: {
+    resolvedTimestamp() {
+      this.getHistoryRates()
+    }
+  },
   computed: {
+    resolvedSenderId() {
+      return this.liveTransaction?.senderId || this.senderId
+    },
+    resolvedRecipientId() {
+      return this.liveTransaction?.recipientId || this.recipientId
+    },
+    resolvedAmount() {
+      return this.liveTransaction?.amount ?? this.amount
+    },
+    isAdmLiveAmountNormalized() {
+      return this.crypto === Cryptos.ADM && typeof this.liveTransaction?.amount === 'number'
+    },
+    resolvedStatus() {
+      return this.hasLiveStatusTracking ? this.liveStatus : this.status
+    },
+    resolvedTimestamp() {
+      return typeof this.liveTransaction?.timestamp === 'number'
+        ? this.liveTransaction.timestamp
+        : this.timestamp
+    },
     // Own crypto address, like 1F9bMGsui6GbcFaGSNao5YcjnEk38eXXg7 or U3716604363012166999
     userId() {
       if (this.crypto === Cryptos.ADM) {
@@ -134,14 +205,31 @@ export default {
     },
     // Crypto address, like 1F9bMGsui6GbcFaGSNao5YcjnEk38eXXg7 or U3716604363012166999
     partnerId() {
-      return isStringEqualCI(this.senderId, this.userId) ? this.recipientId : this.senderId
+      return isStringEqualCI(this.resolvedSenderId, this.userId)
+        ? this.resolvedRecipientId
+        : this.resolvedSenderId
     },
     // Partner's ADM address, if found. Else, returns 'undefined'
     partnerAdmId() {
       const admTx = this.getAdmTx
-      return isStringEqualCI(admTx.senderId, this.$store.state.address)
-        ? admTx.recipientId
-        : admTx.senderId
+      if (admTx.senderId || admTx.recipientId) {
+        return isStringEqualCI(admTx.senderId, this.$store.state.address)
+          ? admTx.recipientId
+          : admTx.senderId
+      }
+
+      if (this.isCryptoADM()) {
+        return this.partnerId
+      }
+
+      const partners = this.$store.state.partners?.list || {}
+      const cryptoKey = this.crypto
+
+      return (
+        Object.keys(partners).find((uid) =>
+          isStringEqualCI(partners[uid]?.[cryptoKey], this.partnerId)
+        ) || ''
+      )
     },
     // Partner's name from KVS, if partnerAdmId found
     partnerName() {
@@ -157,9 +245,9 @@ export default {
     },
     createdAt() {
       if (this.crypto === 'ADM') {
-        return this.timestamp * 1000 + EPOCH
+        return this.resolvedTimestamp * 1000 + EPOCH
       }
-      return this.timestamp
+      return this.resolvedTimestamp
     },
     isPartnerInChatList() {
       return this.$store.getters['chat/isPartnerInChatList'](this.partnerAdmId)
@@ -176,11 +264,11 @@ export default {
     },
     directionClass() {
       if (
-        isStringEqualCI(this.senderId, this.userId) &&
-        isStringEqualCI(this.recipientId, this.userId)
+        isStringEqualCI(this.resolvedSenderId, this.userId) &&
+        isStringEqualCI(this.resolvedRecipientId, this.userId)
       ) {
         return `${this.className}__amount--is-itself`
-      } else if (isStringEqualCI(this.senderId, this.userId)) {
+      } else if (isStringEqualCI(this.resolvedSenderId, this.userId)) {
         return `${this.className}__amount--is-outgoing`
       } else {
         return `${this.className}__amount--is-incoming`
@@ -191,11 +279,15 @@ export default {
       return admTx.message
     },
     historyRate() {
-      const amount = currencyAmount(this.amount, this.crypto)
+      const amount = currencyAmount(
+        this.resolvedAmount,
+        this.crypto,
+        this.isAdmLiveAmountNormalized
+      )
       return (
         '~' +
         this.$store.getters['rate/historyRate'](
-          timestampInSec(this.crypto, this.timestamp || this.virtualTimestamp),
+          timestampInSec(this.crypto, this.resolvedTimestamp || this.virtualTimestamp),
           amount,
           this.crypto
         )
@@ -203,9 +295,9 @@ export default {
     },
     isStatusVisibleTransaction() {
       return (
-        this.status === TransactionStatus.PENDING ||
-        this.status === TransactionStatus.REGISTERED ||
-        this.status === TransactionStatus.REJECTED
+        this.resolvedStatus === TransactionStatus.PENDING ||
+        this.resolvedStatus === TransactionStatus.REGISTERED ||
+        this.resolvedStatus === TransactionStatus.REJECTED
       )
     }
   },
@@ -243,7 +335,7 @@ export default {
         )
       }
 
-      // If crytpo is not ADM: we have to scan all the messages
+      // If crypto is not ADM: we have to scan all the messages
       const admTx = {}
       Object.values(this.$store.state.chat.chats).some((chat) => {
         Object.values(chat.messages).some((msg) => {
@@ -258,7 +350,7 @@ export default {
     },
     getHistoryRates() {
       this.$store.dispatch('rate/getHistoryRates', {
-        timestamp: timestampInSec(this.crypto, this.timestamp || this.virtualTimestamp)
+        timestamp: timestampInSec(this.crypto, this.resolvedTimestamp || this.virtualTimestamp)
       })
     },
     currency,

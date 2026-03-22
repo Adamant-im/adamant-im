@@ -54,3 +54,11 @@ export type GetTransactionsParams = {
   from?: number
   to?: number
 }
+
+export type GetTransactionsResponse =
+  | Transaction[]
+  | {
+      items?: Transaction[]
+      txs?: Transaction[]
+      transactions?: Transaction[]
+    }

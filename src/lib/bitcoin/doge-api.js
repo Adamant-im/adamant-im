@@ -2,10 +2,9 @@ import BtcBaseApi from './btc-base-api'
 import { Cryptos } from '../constants'
 import { BigNumber } from '../bignumber'
 import * as bitcoin from 'bitcoinjs-lib'
-import { isPositiveNumber } from '../numericHelpers'
 import { ECPairFactory } from 'ecpair'
 import * as tinysecp from 'tiny-secp256k1'
-import { convertToSmallestUnit } from './bitcoin-utils'
+import { convertToBigIntSmallestUnit, convertToSmallestUnit } from './bitcoin-utils'
 import { dogeIndexer } from '../../lib/nodes'
 
 const ECPairAPI = ECPairFactory(tinysecp)
@@ -17,8 +16,6 @@ const POST_CONFIG = {
 }
 
 export const CHUNK_SIZE = 20
-// P2PKH output size (https://gist.github.com/junderw/b43af3253ea5865ed52cb51c200ac19c)
-export const OUTPUTS_COMPENSATION = 34 * 4
 export const NB_BLOCKS = 5 // Number of last blocks
 
 export default class DogeApi extends BtcBaseApi {
@@ -42,7 +39,7 @@ export default class DogeApi extends BtcBaseApi {
 
   /** @override */
   async buildTransaction(address, amount, unspents, fee) {
-    const localAmount = convertToSmallestUnit(amount, this.multiplier)
+    const localAmount = convertToBigIntSmallestUnit(amount, this.multiplier)
     const heldFee = convertToSmallestUnit(fee, this.multiplier)
 
     const psbt = new bitcoin.Psbt({
@@ -51,10 +48,9 @@ export default class DogeApi extends BtcBaseApi {
     psbt.setVersion(1)
     psbt.setMaximumFeeRate(heldFee)
 
-    const target = localAmount + heldFee
-    let transferAmount = 0
+    const target = localAmount + BigInt(heldFee)
+    let transferAmount = 0n
     let inputsCount = 0
-    let estimatedTxBytes = 0
 
     for (const tx of unspents) {
       if (transferAmount >= target) {
@@ -66,33 +62,19 @@ export default class DogeApi extends BtcBaseApi {
         index: tx.vout,
         nonWitnessUtxo: buffer
       })
-      transferAmount += tx.amount
-      estimatedTxBytes += buffer.length
+      transferAmount += BigInt(tx.amount)
       inputsCount++
     }
-
-    transferAmount = Math.floor(transferAmount)
 
     psbt.addOutput({
       address,
       value: localAmount
     })
 
-    // Estimated fee based on https://github.com/dogecoin/dogecoin/blob/master/doc/fee-recommendation.md
-    const currentFeeRate = await this.getFeePerByte()
-    let estimatedFee = Math.floor(
-      new BigNumber(currentFeeRate)
-        .times(estimatedTxBytes + OUTPUTS_COMPENSATION)
-        .times(this.multiplier)
-        .toNumber()
-    )
-
-    estimatedFee = Math.min(estimatedFee, heldFee)
-
     // This is a necessary step
     // If we'll not add a difference to output, it will burn in hell
-    const difference = transferAmount - localAmount - estimatedFee
-    if (isPositiveNumber(difference)) {
+    const difference = transferAmount - localAmount - BigInt(heldFee)
+    if (difference > 0n) {
       psbt.addOutput({
         address: this._address,
         value: difference

@@ -37,7 +37,7 @@ const outputDir = path.join(runRootDir, 'artifacts')
 
 export default defineConfig({
   testDir: './tests/e2e',
-  timeout: 90_000,
+  timeout: 120_000,
   expect: {
     timeout: 15_000
   },

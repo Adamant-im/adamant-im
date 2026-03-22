@@ -106,6 +106,7 @@ import { FileAsset } from '@/lib/adamant-api/asset'
 import { ref, computed, defineComponent, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
+import { mdiCheck } from '@mdi/js'
 
 import { useFormatMessage } from '../hooks/useFormatMessage'
 import { usePartnerId } from '../hooks/usePartnerId'
@@ -113,7 +114,7 @@ import { useTransactionTime } from '../hooks/useTransactionTime'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { isLocalFile } from '@/lib/files'
 import { downloadFile, isStringEqualCI } from '@/lib/textHelpers'
-import { tsIcon } from '@/lib/constants'
+import { TransactionStatus, tsIcon } from '@/lib/constants'
 import QuotedMessage from '../QuotedMessage.vue'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
 import formatDate from '@/filters/date'
@@ -184,7 +185,11 @@ export default defineComponent({
     }
     const showAvatar = computed(() => !isWelcomeChat(partnerId.value))
 
-    const statusIcon = computed(() => tsIcon(props.transaction.status))
+    const statusIcon = computed(() =>
+      props.transaction.status === TransactionStatus.REGISTERED
+        ? mdiCheck
+        : tsIcon(props.transaction.status)
+    )
     const isOutgoingMessage = computed(() =>
       isStringEqualCI(props.transaction.senderId, userId.value)
     )

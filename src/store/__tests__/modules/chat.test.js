@@ -1066,6 +1066,47 @@ describe('Store: chat.js', () => {
       })
     })
 
+    describe('mutations.updateCryptoTransferMessage', () => {
+      it('should update crypto transfer live status without changing chat ordering timestamp', () => {
+        const partnerId = 'U123456'
+        const originalTimestamp = 1_710_000_000_000
+        const messages = [
+          {
+            id: 'localId1',
+            hash: 'dash-hash',
+            timestamp: originalTimestamp,
+            status: TS.PENDING
+          }
+        ]
+        const state = {
+          chats: {
+            [partnerId]: {
+              messages
+            }
+          }
+        }
+
+        mutations.updateCryptoTransferMessage(state, {
+          partnerId,
+          hash: 'dash-hash',
+          status: TS.REGISTERED,
+          confirmations: 0,
+          instantsend: true
+        })
+
+        expect(messages).toEqual([
+          {
+            id: 'localId1',
+            hash: 'dash-hash',
+            timestamp: originalTimestamp,
+            status: TS.REGISTERED,
+            confirmations: 0,
+            instantsend: true
+          }
+        ])
+      })
+    })
+
     /**
      * mutations.createAdamantChats
      */

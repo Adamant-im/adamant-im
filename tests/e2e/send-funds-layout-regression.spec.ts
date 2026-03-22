@@ -152,6 +152,47 @@ test.describe('Transfer layout regressions', () => {
     ).toBeHidden()
     expect(routerWarnings).toEqual([])
 
+    const activeElementAfterClose = await page.evaluate(() => {
+      const activeElement = document.activeElement as HTMLElement | null
+      return activeElement?.getAttribute('role') || activeElement?.tagName || ''
+    })
+
+    expect(activeElementAfterClose.toLowerCase()).toContain('combobox')
+
+    await page.keyboard.press('Escape')
+    await expect(page).toHaveURL(/\/transfer(?:\/)?$/)
+
+    const sendFundsFieldStillFocused = await page.evaluate(() => {
+      const activeElement = document.activeElement as HTMLElement | null
+      return !!activeElement?.closest('.send-funds-form .v-input')
+    })
+
+    expect(sendFundsFieldStillFocused).toBe(false)
+
+    await page.keyboard.press('Escape')
+    await expect(page).not.toHaveURL(/\/transfer(?:\/)?$/)
+
+    await assertNoDocumentScrollLeak(page)
+  })
+
+  test('blurs amount field on first Escape before leaving send funds screen', async ({ page }) => {
+    await loginWithNewAccount(page)
+
+    await page.goto('/transfer')
+    await expect(page).toHaveURL(/\/transfer(?:\/)?$/)
+    await expect(page.locator('.send-funds-form')).toBeVisible()
+
+    const amountInput = page.locator('.send-funds-form__amount-input input')
+    await amountInput.click()
+    await expect(amountInput).toBeFocused()
+
+    await page.keyboard.press('Escape')
+    await expect(page).toHaveURL(/\/transfer(?:\/)?$/)
+    await expect(amountInput).not.toBeFocused()
+
+    await page.keyboard.press('Escape')
+    await expect(page).not.toHaveURL(/\/transfer(?:\/)?$/)
+
     await assertNoDocumentScrollLeak(page)
   })
 
