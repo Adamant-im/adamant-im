@@ -181,10 +181,14 @@ export const tsIcon = function (status: TransactionStatusType) {
 }
 
 export const tsColor = function (status: TransactionStatusType) {
+  if (status === TransactionStatus.CONFIRMED) {
+    return 'var(--a-color-status-success)'
+  }
+
   if (status === TransactionStatus.REJECTED) {
-    return 'red'
+    return 'var(--a-color-status-danger)'
   } else if (status === TransactionStatus.INVALID || status === TransactionStatus.UNKNOWN) {
-    return 'yellow'
+    return 'var(--a-color-status-attention)'
   }
   return ''
 }

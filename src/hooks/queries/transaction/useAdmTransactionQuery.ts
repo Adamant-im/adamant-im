@@ -37,7 +37,12 @@ export function useAdmTransactionQuery(
     retry: retryFactory(Cryptos.ADM, unref(transactionId)),
     retryDelay: retryDelayFactory(Cryptos.ADM, unref(transactionId)),
     refetchInterval: ({ state }) =>
-      refetchIntervalFactory(Cryptos.ADM, state.status, toTransactionStatusShape(state.data)),
+      refetchIntervalFactory(
+        Cryptos.ADM,
+        state.status,
+        toTransactionStatusShape(state.data),
+        state.error
+      ),
     refetchOnWindowFocus: false,
     refetchOnMount:
       params?.refetchOnMount ??

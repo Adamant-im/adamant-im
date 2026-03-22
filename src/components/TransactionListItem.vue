@@ -129,7 +129,10 @@ export default {
     const {
       data: liveTransaction,
       status: liveQueryStatus,
-      isFetching: isLiveTransactionFetching
+      isFetching: isLiveTransactionFetching,
+      isLoadingError: isLiveTransactionLoadingError,
+      isRefetchError: isLiveTransactionRefetchError,
+      error: liveTransactionError
     } = useTransactionQuery(toRef(props, 'id'), props.crypto, {
       enabled: hasLiveStatusTracking
     })
@@ -143,7 +146,10 @@ export default {
       liveQueryStatus,
       liveTransactionStatus,
       undefined,
-      liveAdditionalStatus
+      liveAdditionalStatus,
+      isLiveTransactionLoadingError,
+      isLiveTransactionRefetchError,
+      liveTransactionError
     )
 
     useClearPendingTransaction(toRef(props, 'crypto'), liveTransaction, liveStatus)

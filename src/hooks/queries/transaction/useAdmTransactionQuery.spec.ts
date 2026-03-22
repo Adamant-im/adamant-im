@@ -54,10 +54,15 @@ describe('useAdmTransactionQuery', () => {
       }
     })
     expect(refetchInterval).toBe(4321)
-    expect(utilsMock.refetchIntervalFactory).toHaveBeenCalledWith('ADM', 'pending', {
-      status: 'PENDING',
-      timestamp: 1_710_000_000
-    })
+    expect(utilsMock.refetchIntervalFactory).toHaveBeenCalledWith(
+      'ADM',
+      'pending',
+      {
+        status: 'PENDING',
+        timestamp: 1_710_000_000
+      },
+      undefined
+    )
 
     const refetchOnMount = query.refetchOnMount({
       state: {

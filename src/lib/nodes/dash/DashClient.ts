@@ -8,6 +8,29 @@ import { RpcRequest } from './types/api/common'
 import { UTXO } from './types/api/utxo'
 import { Balance } from './types/api/balance'
 import { Transaction } from './types/api/transaction'
+import { TransactionNotFound } from '../utils/errors'
+
+function isDashTransactionNotFoundError(error: unknown) {
+  if (!error || typeof error !== 'object') {
+    return false
+  }
+
+  const messageCandidates = [
+    error instanceof Error ? error.message : '',
+    (error as { response?: { data?: { error?: { message?: string }; message?: string } } }).response
+      ?.data?.error?.message,
+    (error as { response?: { data?: { error?: { message?: string }; message?: string } } }).response
+      ?.data?.message
+  ]
+    .filter((value): value is string => typeof value === 'string')
+    .map((value) => value.toLowerCase())
+
+  return messageCandidates.some(
+    (message) =>
+      message.includes('no such mempool or blockchain transaction') ||
+      message.includes('transaction not found')
+  )
+}
 
 export class DashClient extends Client<DashNode> {
   constructor(endpoints: NodeInfo[] = [], minNodeVersion = '0.0.0') {
@@ -39,19 +62,39 @@ export class DashClient extends Client<DashNode> {
   }
 
   async getTransaction(transactionId: string, address: string) {
-    const transaction = await this.invoke<Transaction>({
-      method: 'getrawtransaction',
-      params: [transactionId, true]
-    })
+    let transaction: Transaction
+
+    try {
+      transaction = await this.invoke<Transaction>({
+        method: 'getrawtransaction',
+        params: [transactionId, true]
+      })
+    } catch (error) {
+      if (isDashTransactionNotFoundError(error)) {
+        throw new TransactionNotFound(transactionId, this.type)
+      }
+
+      throw error
+    }
 
     return normalizeTransaction(transaction, address)
   }
 
   async getTransactionHex(transactionId: string) {
-    const transaction = await this.invoke<string>({
-      method: 'getrawtransaction',
-      params: [transactionId, false]
-    })
+    let transaction: string
+
+    try {
+      transaction = await this.invoke<string>({
+        method: 'getrawtransaction',
+        params: [transactionId, false]
+      })
+    } catch (error) {
+      if (isDashTransactionNotFoundError(error)) {
+        throw new TransactionNotFound(transactionId, this.type)
+      }
+
+      throw error
+    }
 
     return transaction
   }

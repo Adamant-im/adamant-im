@@ -1,11 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Cryptos, CryptosInfo, TransactionStatus } from '@/lib/constants'
+import { AllNodesOfflineError, TransactionNotFound } from '@/lib/nodes/utils/errors'
 import {
   getTxFetchInfo,
   INSTANT_SEND_INTERVAL,
   INSTANT_SEND_TIME
 } from '@/lib/transactionsFetching'
-import { refetchIntervalFactory, refetchOnMountFn, retryDelayFactory, retryFactory } from './utils'
+import {
+  isTransactionQueryRecoverableError,
+  refetchIntervalFactory,
+  refetchOnMountFn,
+  retryDelayFactory,
+  retryFactory
+} from './utils'
 
 const pendingGetMock = vi.fn()
 
@@ -62,9 +69,11 @@ describe('transaction query utils', () => {
     const newPendingAttempts = btcTxFetchInfo.newPendingAttempts!
     const oldPendingAttempts = btcTxFetchInfo.oldPendingAttempts!
 
-    expect(retryFactory(Cryptos.BTC, 'tx-new')(Math.max(newPendingAttempts - 2, 0))).toBe(true)
-    expect(retryFactory(Cryptos.BTC, 'tx-new')(newPendingAttempts - 1)).toBe(false)
-    expect(retryFactory(Cryptos.BTC, 'tx-old')(oldPendingAttempts - 1)).toBe(false)
+    expect(
+      retryFactory(Cryptos.BTC, 'tx-new')(Math.max(newPendingAttempts - 2, 0), undefined)
+    ).toBe(true)
+    expect(retryFactory(Cryptos.BTC, 'tx-new')(newPendingAttempts - 1, undefined)).toBe(false)
+    expect(retryFactory(Cryptos.BTC, 'tx-old')(oldPendingAttempts - 1, undefined)).toBe(false)
 
     expect(retryDelayFactory(Cryptos.BTC, 'tx-new')()).toBe(
       CryptosInfo[Cryptos.BTC].txFetchInfo!.newPendingInterval
@@ -72,6 +81,13 @@ describe('transaction query utils', () => {
     expect(retryDelayFactory(Cryptos.BTC, 'tx-old')()).toBe(
       CryptosInfo[Cryptos.BTC].txFetchInfo!.oldPendingInterval
     )
+  })
+
+  it('does not spend txFetchInfo retry budget on recoverable connectivity errors', () => {
+    const recoverableError = new AllNodesOfflineError('btc')
+
+    expect(retryFactory(Cryptos.BTC, 'tx-any')(10_000, recoverableError)).toBe(true)
+    expect(isTransactionQueryRecoverableError(recoverableError)).toBe(true)
   })
 
   it('keeps fast refetching recent Dash registered transactions while InstantSend is still possible', () => {
@@ -106,6 +122,32 @@ describe('transaction query utils', () => {
       refetchIntervalFactory(Cryptos.DOGE, 'success', {
         status: TransactionStatus.CONFIRMED
       })
+    ).toBe(false)
+  })
+
+  it('keeps polling registered transactions after recoverable lookup errors', () => {
+    expect(
+      refetchIntervalFactory(
+        Cryptos.BTC,
+        'error',
+        {
+          status: TransactionStatus.REGISTERED
+        },
+        new AllNodesOfflineError('btc')
+      )
+    ).toBe(CryptosInfo[Cryptos.BTC].txFetchInfo!.registeredInterval)
+  })
+
+  it('stops polling when the lookup error definitively says the transaction does not exist', () => {
+    expect(
+      refetchIntervalFactory(
+        Cryptos.BTC,
+        'error',
+        {
+          status: TransactionStatus.PENDING
+        },
+        new TransactionNotFound('tx-id', Cryptos.BTC)
+      )
     ).toBe(false)
   })
 })

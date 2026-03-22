@@ -6,6 +6,7 @@ import {
   TransactionStatus,
   TransactionStatusType
 } from '@/lib/constants'
+import { isTransactionQueryRecoverableError } from '@/hooks/queries/transaction/utils'
 import { InconsistentStatus } from '../utils/getInconsistentStatus'
 
 export function useTransactionStatus(
@@ -15,19 +16,29 @@ export function useTransactionStatus(
   inconsistentStatus?: Ref<InconsistentStatus>,
   additionalStatus?: Ref<TransactionAdditionalStatusType | undefined>,
   isLoadingError?: Ref<boolean | undefined>,
-  isRefetchError?: Ref<boolean | undefined>
+  isRefetchError?: Ref<boolean | undefined>,
+  queryError?: Ref<unknown | null | undefined>
 ) {
   return computed(() => {
     const resolvedKnownStatus =
       additionalStatus?.value === TransactionAdditionalStatus.INSTANT_SEND
         ? TransactionStatus.CONFIRMED
         : transactionStatus?.value
+    const hasRecoverableError = isTransactionQueryRecoverableError(queryError?.value)
+
+    if (hasRecoverableError) {
+      return resolvedKnownStatus || TransactionStatus.PENDING
+    }
 
     if (isRefetchError?.value && resolvedKnownStatus === TransactionStatus.PENDING) {
       return TransactionStatus.REJECTED
     }
 
     if (queryStatus.value === 'error') {
+      if (resolvedKnownStatus === TransactionStatus.PENDING) {
+        return TransactionStatus.REJECTED
+      }
+
       if (isRefetchError?.value && resolvedKnownStatus) {
         return resolvedKnownStatus
       }

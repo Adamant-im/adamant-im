@@ -55,6 +55,7 @@
                 v-if="!isIncomingTransaction"
                 :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
                 :icon="tsIcon(status)"
+                :color="tsColor(status)"
                 :class="`${className}__status-icon`"
               />
               <span>{{ transactionPreviewText }}</span>
@@ -62,6 +63,7 @@
                 v-if="isIncomingTransaction"
                 :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
                 :icon="tsIcon(status)"
+                :color="tsColor(status)"
                 :class="`${className}__status-icon`"
               />
             </v-list-item-subtitle>
@@ -120,7 +122,7 @@ import { formatChatPreviewMessage } from '@/lib/markdown'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import { tsIcon, TransactionStatus as TS } from '@/lib/constants'
+import { tsColor, tsIcon, TransactionStatus as TS } from '@/lib/constants'
 import { useChatName } from '@/components/AChat/hooks/useChatName'
 import { TransactionProvider } from '@/providers/TransactionProvider'
 import { mdiArrowLeftTop, mdiCheck, mdiDotsHorizontal } from '@mdi/js'

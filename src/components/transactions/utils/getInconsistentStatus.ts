@@ -28,7 +28,8 @@ export function getInconsistentStatus(
     recipientCryptoAddress
   }: { senderCryptoAddress?: string; recipientCryptoAddress?: string }
 ): InconsistentStatus {
-  const isAdmTransaction = 'message' in transaction // marker that transaction is and ADM transaction
+  const isAdmTransaction =
+    'message' in transaction || ('type' in transaction && typeof transaction.type === 'number')
   if (isAdmTransaction) {
     return '' // ADM transactions are always consistent
   }

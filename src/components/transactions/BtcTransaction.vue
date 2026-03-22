@@ -69,9 +69,12 @@ export default defineComponent({
       isFetching,
       isLoadingError,
       isRefetchError,
+      error,
       data: transaction,
       refetch
-    } = useTransactionQuery(props.id)
+    } = useTransactionQuery(props.id, {
+      refetchOnMount: true
+    })
     const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
     const additionalStatus = useTransactionAdditionalStatus(transaction, props.crypto)
     const transactionStatus = computed(() => transaction.value?.status)
@@ -82,7 +85,8 @@ export default defineComponent({
       inconsistentStatus,
       additionalStatus,
       isLoadingError,
-      isRefetchError
+      isRefetchError,
+      error
     )
     useClearPendingTransaction(props.crypto, transaction, status)
 

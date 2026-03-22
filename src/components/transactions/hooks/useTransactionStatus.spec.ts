@@ -1,6 +1,7 @@
 import { computed, ref } from 'vue'
 import { describe, expect, it } from 'vitest'
 import { TransactionAdditionalStatus, TransactionStatus } from '@/lib/constants'
+import { AllNodesOfflineError } from '@/lib/nodes/utils/errors'
 import { useTransactionStatus } from './useTransactionStatus'
 
 describe('useTransactionStatus', () => {
@@ -46,6 +47,21 @@ describe('useTransactionStatus', () => {
     expect(status.value).toBe(TransactionStatus.REJECTED)
   })
 
+  it('keeps pending while the query error is recoverable and the network can come back later', () => {
+    const status = useTransactionStatus(
+      ref(false),
+      ref('error'),
+      undefined,
+      undefined,
+      undefined,
+      ref(true),
+      ref(false),
+      ref(new AllNodesOfflineError('btc'))
+    )
+
+    expect(status.value).toBe(TransactionStatus.PENDING)
+  })
+
   it('rejects a pending transaction when the initial lookup exhausts all retries', () => {
     const status = useTransactionStatus(
       ref(false),
@@ -54,6 +70,20 @@ describe('useTransactionStatus', () => {
       undefined,
       undefined,
       ref(true),
+      ref(false)
+    )
+
+    expect(status.value).toBe(TransactionStatus.REJECTED)
+  })
+
+  it('rejects a pending known status on a definitive query error even without loading flags', () => {
+    const status = useTransactionStatus(
+      ref(false),
+      ref('error'),
+      computed(() => TransactionStatus.PENDING),
+      undefined,
+      undefined,
+      ref(false),
       ref(false)
     )
 

@@ -55,9 +55,12 @@ const {
   isFetching,
   isLoadingError,
   isRefetchError,
+  error,
   data: transaction,
   refetch
-} = useErc20TransactionQuery(props.crypto)(props.id)
+} = useErc20TransactionQuery(props.crypto)(props.id, {
+  refetchOnMount: true
+})
 const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
 const additionalStatus = useTransactionAdditionalStatus(transaction, props.crypto)
 const transactionStatus = computed(() => transaction.value?.status)
@@ -68,7 +71,8 @@ const status = useTransactionStatus(
   inconsistentStatus,
   additionalStatus,
   isLoadingError,
-  isRefetchError
+  isRefetchError,
+  error
 )
 useClearPendingTransaction(props.crypto, transaction, status)
 
