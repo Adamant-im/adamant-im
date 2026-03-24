@@ -61,6 +61,8 @@ import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useSaveCursor } from '@/hooks/useSaveCursor'
 import { useConsiderOffline } from '@/hooks/useConsiderOffline'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import { NotificationType } from '@/lib/constants'
+import { pushService } from '@/lib/notifications/pushServiceFactory'
 
 const className = 'login-form'
 const classes = {
@@ -144,10 +146,15 @@ const submit = () => {
     })
 }
 
-const removePassword = () => {
+const removePassword = async () => {
   clearDb().finally(() => {
     store.dispatch('removePassword')
   })
+  store.commit('options/updateOption', {
+    key: 'allowNotificationType',
+    value: NotificationType['NoNotifications']
+  })
+  await pushService.revokeLocalSubscription()
 }
 </script>
 

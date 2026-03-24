@@ -313,7 +313,7 @@ const stayLoggedIn = computed(() => {
   return store.state.options.stayLoggedIn
 })
 
-const onCheckStayLoggedIn = () => {
+const onCheckStayLoggedIn = async () => {
   if (!stayLoggedIn.value) {
     isIDBSupported
       .then(() => {
@@ -331,6 +331,11 @@ const onCheckStayLoggedIn = () => {
 
       store.commit('resetPassword')
     })
+    store.commit('options/updateOption', {
+      key: 'allowNotificationType',
+      value: NotificationType['NoNotifications']
+    })
+    await pushService.unregisterDevice()
   }
 }
 

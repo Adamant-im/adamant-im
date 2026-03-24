@@ -60,6 +60,7 @@ export class AndroidPushService extends BasePushService {
         signalAsset(this.deviceId!, this.token, 'FCM', 'remove'),
         MessageType.SIGNAL_MESSAGE
       )
+      await this.revokeLocalSubscription()
       this.token = null
       return true
     } catch (error) {
@@ -138,6 +139,10 @@ export class AndroidPushService extends BasePushService {
       signalAsset(this.deviceId!, newToken, 'FCM', 'add'),
       MessageType.SIGNAL_MESSAGE
     )
+  }
+
+  async revokeLocalSubscription(): Promise<void> {
+    await this.clearPrivateKeyFromAndroid()
   }
 
   isInitialized(): boolean {

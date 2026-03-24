@@ -83,10 +83,7 @@ export class WebPushService extends BasePushService {
         MessageType.SIGNAL_MESSAGE
       )
 
-      const revoked = await this.revokeToken()
-      if (!revoked) {
-        throw new Error('Failed to revoke FCM token')
-      }
+      await this.revokeLocalSubscription()
 
       this.token = null
 
@@ -97,14 +94,13 @@ export class WebPushService extends BasePushService {
     }
   }
 
-  private async revokeToken(): Promise<boolean> {
-    if (!fcm) return false
+  async revokeLocalSubscription(): Promise<void> {
+    if (!fcm) return
 
     try {
       await deleteToken(fcm)
-      return true
     } catch {
-      return false
+      throw new Error('Failed to revoke FCM token')
     }
   }
 

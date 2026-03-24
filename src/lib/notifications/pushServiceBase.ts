@@ -9,6 +9,7 @@ export interface PushService {
   requestPermissions(): Promise<boolean>
   registerDevice(): Promise<void>
   unregisterDevice(): Promise<boolean>
+  revokeLocalSubscription(): Promise<void>
 
   // Private key management
   setPrivateKey(privateKey: string): void
@@ -28,6 +29,7 @@ export abstract class BasePushService implements PushService {
   abstract unregisterDevice(): Promise<boolean>
   abstract setPrivateKey(privateKey: string): void
   abstract clearPrivateKey(): void
+  abstract revokeLocalSubscription(): Promise<void>
 
   async initialize(): Promise<boolean> {
     if (this.initialized) {
