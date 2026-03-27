@@ -11,6 +11,12 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.goterl.lazysodium.LazySodiumAndroid;
+import com.goterl.lazysodium.SodiumAndroid;
+import com.goterl.lazysodium.interfaces.Box;
+import com.goterl.lazysodium.interfaces.Sign;
+import com.whitestein.securestorage.PasswordStorageHelper;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import android.os.Handler;
 import android.os.Looper;
@@ -20,6 +26,7 @@ public class AdamantFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "AdamantFirebaseMsg";
     private static final String CHANNEL_ID = "adamant_notifications";
+    private static final String PRIVATE_KEY_STORAGE_KEY = "adamant_private_key";
     private static final long CLEANUP_INTERVAL = 2 * 60 * 1000;
 
     private static final HashSet<String> processedEvents = new HashSet<>();
@@ -69,12 +76,9 @@ public class AdamantFirebaseMessagingService extends FirebaseMessagingService {
                     return;
                 }
                 processedEvents.add(transactionId);
-                // Check if this is a signal message that should be hidden
                 if (isSignalMessage(txnData)) {
-                    // Signal message - don't show notification but still mark as processed
                     return;
                 }
-
                 String body = formatNotificationText(txnData);
                 if (body == null) {
                     return;
@@ -107,7 +111,6 @@ public class AdamantFirebaseMessagingService extends FirebaseMessagingService {
                 return;
             }
 
-            String title = senderId;
             String body = formatNotificationText(txnData);
 
             Intent clickIntent = new Intent(this, MainActivity.class);
@@ -125,7 +128,7 @@ public class AdamantFirebaseMessagingService extends FirebaseMessagingService {
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                     .setSmallIcon(android.R.drawable.ic_dialog_info)
-                    .setContentTitle(title)
+                    .setContentTitle(senderId)
                     .setContentText(body)
                     .setAutoCancel(true)
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -142,26 +145,88 @@ public class AdamantFirebaseMessagingService extends FirebaseMessagingService {
         }
     }
 
+    // ─── Private key & decryption ─────────────────────────────────────────────
+
+    private byte[] readPrivateKeyBytes() {
+        try {
+            PasswordStorageHelper storage = new PasswordStorageHelper(this);
+            byte[] data = storage.getData(PRIVATE_KEY_STORAGE_KEY);
+            if (data == null) {
+                return null;
+            }
+            String hexKey = new String(data, StandardCharsets.UTF_8);
+            return hexToBytes(hexKey);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to read private key from SecureStorage", e);
+            return null;
+        }
+    }
+
+    private String decryptMessage(JSONObject transaction) {
+        try {
+            JSONObject chat = transaction.getJSONObject("asset").getJSONObject("chat");
+            String messageHex = chat.getString("message");
+            String nonceHex = chat.getString("own_message");
+            String senderPkHex = transaction.getString("senderPublicKey");
+
+            byte[] messageBytes = hexToBytes(messageHex);
+            byte[] nonceBytes = hexToBytes(nonceHex);
+            byte[] senderPkBytes = hexToBytes(senderPkHex);
+            byte[] mySkBytes = readPrivateKeyBytes();
+
+            if (mySkBytes == null || messageBytes == null || nonceBytes == null || senderPkBytes == null) {
+                return null;
+            }
+
+            LazySodiumAndroid sodium = new LazySodiumAndroid(new SodiumAndroid());
+
+            byte[] curve25519Pk = new byte[Sign.CURVE25519_PUBLICKEYBYTES];
+            int pkResult = sodium.getSodium().crypto_sign_ed25519_pk_to_curve25519(curve25519Pk, senderPkBytes);
+            if (pkResult != 0) {
+                Log.w(TAG, "Failed to convert sender public key to Curve25519");
+                return null;
+            }
+
+            byte[] curve25519Sk = new byte[Sign.CURVE25519_SECRETKEYBYTES];
+            int skResult = sodium.getSodium().crypto_sign_ed25519_sk_to_curve25519(curve25519Sk, mySkBytes);
+            if (skResult != 0) {
+                Log.w(TAG, "Failed to convert private key to Curve25519");
+                return null;
+            }
+
+            byte[] decrypted = new byte[messageBytes.length - Box.MACBYTES];
+            int boxResult = sodium.getSodium().crypto_box_open_easy(
+                    decrypted, messageBytes, messageBytes.length, nonceBytes, curve25519Pk, curve25519Sk
+            );
+            if (boxResult != 0) {
+                Log.w(TAG, "Message decryption failed");
+                return null;
+            }
+
+            return new String(decrypted, StandardCharsets.UTF_8);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Exception during decryption", e);
+            return null;
+        }
+    }
+
+    // ─── Notification text formatting ─────────────────────────────────────────
+
     private String formatNotificationText(String txnData) {
         try {
             JSONObject transaction = new JSONObject(txnData);
-
             int transactionType = transaction.optInt("type", -1);
             long transactionAmount = transaction.optLong("amount", 0);
 
-            // Type 0: Pure ADM Transfer (without comments)
             if (transactionType == 0) {
                 return formatADMTransfer(transactionAmount);
             }
 
-            // Type 8: Chat Message (can include ADM transfer with comment)
             if (transactionType == 8) {
-                // If amount > 0, it's ADM transfer with comment
                 if (transactionAmount > 0) {
                     return formatADMTransferWithComment(transactionAmount);
                 }
-
-                // Regular chat message - check asset.chat.type
                 return formatChatMessage(transaction);
             }
 
@@ -174,28 +239,29 @@ public class AdamantFirebaseMessagingService extends FirebaseMessagingService {
 
     private String formatChatMessage(JSONObject transaction) {
         try {
-            if (!transaction.has("asset")) {
+            JSONObject asset = transaction.optJSONObject("asset");
+            if (asset == null) {
+                return "New message";
+            }
+            JSONObject chat = asset.optJSONObject("chat");
+            if (chat == null) {
                 return "New message";
             }
 
-            JSONObject asset = transaction.getJSONObject("asset");
-            if (!asset.has("chat")) {
-                return "New message";
-            }
-
-            JSONObject chat = asset.getJSONObject("chat");
             int chatType = chat.optInt("type", 1);
 
-            switch (chatType) {
-                case 1:
-                    // Basic Encrypted Message
-                    return "New message";
-                case 2:
-                    // Rich Content Message (crypto transfers, etc.)
-                    return "sent you crypto";
-                default:
-                    return "New message";
+            if (chatType == 2) {
+                return "sent you crypto";
             }
+
+            // chatType == 1: attempt decryption
+            String decrypted = decryptMessage(transaction);
+            if (decrypted != null && !decrypted.isEmpty()) {
+                return decrypted;
+            }
+
+            return "New message";
+
         } catch (Exception e) {
             return "New message";
         }
@@ -206,7 +272,6 @@ public class AdamantFirebaseMessagingService extends FirebaseMessagingService {
             return "sent you ADM";
         }
         double admAmount = amount / 100000000.0;
-
         java.math.BigDecimal bd = java.math.BigDecimal.valueOf(admAmount);
         return String.format("sent you %s ADM", bd.stripTrailingZeros().toPlainString());
     }
@@ -216,9 +281,23 @@ public class AdamantFirebaseMessagingService extends FirebaseMessagingService {
             return "sent you ADM with message";
         }
         double admAmount = amount / 100000000.0;
-
         java.math.BigDecimal bd = java.math.BigDecimal.valueOf(admAmount);
         return String.format("sent you %s ADM with message", bd.stripTrailingZeros().toPlainString());
+    }
+
+    // ─── Helpers ──────────────────────────────────────────────────────────────
+
+    private static byte[] hexToBytes(String hex) {
+        if (hex == null || hex.length() % 2 != 0) {
+            return null;
+        }
+        int len = hex.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4)
+                    + Character.digit(hex.charAt(i + 1), 16));
+        }
+        return data;
     }
 
     private boolean areNotificationsDisabled() {
@@ -233,17 +312,18 @@ public class AdamantFirebaseMessagingService extends FirebaseMessagingService {
 
     private boolean isAppInForeground() {
         try {
-            android.app.ActivityManager activityManager = (android.app.ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-            java.util.List<android.app.ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-
+            android.app.ActivityManager activityManager =
+                    (android.app.ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+            java.util.List<android.app.ActivityManager.RunningAppProcessInfo> appProcesses =
+                    activityManager.getRunningAppProcesses();
             if (appProcesses == null) {
                 return false;
             }
-
             String packageName = getPackageName();
             for (android.app.ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
                 if (appProcess.processName.equals(packageName)) {
-                    return appProcess.importance == android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
+                    return appProcess.importance ==
+                            android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
                 }
             }
             return false;
@@ -254,20 +334,16 @@ public class AdamantFirebaseMessagingService extends FirebaseMessagingService {
 
     private String extractTransactionId(String txnData) {
         try {
-            JSONObject transaction = new JSONObject(txnData);
-            return transaction.optString("id", null);
+            return new JSONObject(txnData).optString("id", null);
         } catch (Exception e) {
-            // Fallback to string parsing
             return extractFieldFromJson(txnData, "\"id\":\"", 6);
         }
     }
 
     private String extractSenderId(String txnData) {
         try {
-            JSONObject transaction = new JSONObject(txnData);
-            return transaction.optString("senderId", null);
+            return new JSONObject(txnData).optString("senderId", null);
         } catch (Exception e) {
-            // Fallback to string parsing
             return extractFieldFromJson(txnData, "\"senderId\":\"", 12);
         }
     }
@@ -278,7 +354,6 @@ public class AdamantFirebaseMessagingService extends FirebaseMessagingService {
             if (startIndex == -1) {
                 return null;
             }
-
             startIndex += patternLength;
             int endIndex = jsonData.indexOf("\"", startIndex);
             return endIndex == -1 ? null : jsonData.substring(startIndex, endIndex);
@@ -295,7 +370,6 @@ public class AdamantFirebaseMessagingService extends FirebaseMessagingService {
                     NotificationManager.IMPORTANCE_DEFAULT
             );
             channel.setDescription("Notifications for ADAMANT Messenger");
-
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
