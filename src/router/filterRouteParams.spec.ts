@@ -1,3 +1,4 @@
+import type { RouteParamsGeneric } from 'vue-router'
 import { describe, expect, it } from 'vitest'
 import { filterRouteParams } from '@/router/filterRouteParams'
 
@@ -32,5 +33,30 @@ describe('filterRouteParams', () => {
     ).toEqual({
       pathMatch: ['foo', 'bar']
     })
+  })
+
+  it('drops param values that are not string, number, or string/number arrays', () => {
+    expect(
+      filterRouteParams('/transactions/:crypto', {
+        crypto: true,
+        txId: 'abc123'
+      } as RouteParamsGeneric)
+    ).toEqual({})
+
+    expect(
+      filterRouteParams('/transactions/:crypto', {
+        crypto: { nested: 'object' },
+        txId: 'abc123'
+      } as RouteParamsGeneric)
+    ).toEqual({})
+  })
+
+  it('drops array params when any element is not a string or number', () => {
+    expect(
+      filterRouteParams('/:pathMatch(.*)*', {
+        pathMatch: ['ok', 2, { bad: true }],
+        txId: 'abc123'
+      } as RouteParamsGeneric)
+    ).toEqual({})
   })
 })
