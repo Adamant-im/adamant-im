@@ -28,7 +28,7 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "src/store/index.js",
-    "public/firebase-messaging-sw.js"
+    "public/firebase/firebase-messaging-sw.js"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

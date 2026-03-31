@@ -3,7 +3,14 @@ importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js'
 importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging-compat.js')
 importScripts('https://cdnjs.cloudflare.com/ajax/libs/tweetnacl/1.0.3/nacl.min.js')
 importScripts('/js/ed2curve.min.js')
-importScripts('/js/sw-crypto-utils.js')
+
+function hexToBytes(hex) {
+  const bytes = []
+  for (let i = 0; i < hex.length; i += 2) {
+    bytes.push(parseInt(hex.substr(i, 2), 16))
+  }
+  return Uint8Array.from(bytes)
+}
 
 const NOTIFICATION_TYPES = {
   NO_NOTIFICATIONS: 0,
@@ -229,10 +236,10 @@ function decryptMessage(transaction, privateKeyHex) {
     if (!chat?.message || !transaction.senderPublicKey || !privateKeyHex) return null
     const { message, own_message } = chat
 
-    const msgBytes = self.hexToBytes(message)
-    const nonceBytes = self.hexToBytes(own_message)
-    const senderKeyBytes = self.hexToBytes(transaction.senderPublicKey)
-    const privateKeyBytes = self.hexToBytes(privateKeyHex)
+    const msgBytes = hexToBytes(message)
+    const nonceBytes = hexToBytes(own_message)
+    const senderKeyBytes = hexToBytes(transaction.senderPublicKey)
+    const privateKeyBytes = hexToBytes(privateKeyHex)
 
     const dhPublicKey = ed2curve.convertPublicKey(senderKeyBytes)
     const dhSecretKey = ed2curve.convertSecretKey(privateKeyBytes)

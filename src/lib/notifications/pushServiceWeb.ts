@@ -97,6 +97,12 @@ export class WebPushService extends BasePushService {
   async revokeLocalSubscription(): Promise<void> {
     if (!fcm) return
 
+    const swRegistration = await firebaseSwRegistrationPromise
+
+    if (swRegistration) {
+      ;(fcm as any).swRegistration = swRegistration
+    }
+
     try {
       await deleteToken(fcm)
     } catch {
