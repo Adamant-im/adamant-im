@@ -9,16 +9,22 @@
     transition="slide-y-reverse-transition"
   >
     <template #activator="{ props }">
-      <v-icon class="chat-emojis__icon" :icon="mdiEmoticonOutline" size="28" v-bind="props" />
+      <v-icon
+        class="chat-emojis__icon"
+        :icon="mdiEmoticonOutline"
+        :size="COMMON_TRIGGER_ICON_SIZE"
+        v-bind="props"
+      />
     </template>
 
-    <emoji-picker @emoji:select="getEmoji" position="absolute"></emoji-picker>
+    <emoji-picker @emoji:select="getEmoji"></emoji-picker>
   </v-menu>
 </template>
 <script>
 import EmojiPicker from '@/components/EmojiPicker.vue'
 import { mdiEmoticonOutline } from '@mdi/js'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import { COMMON_TRIGGER_ICON_SIZE } from '@/components/common/helpers/uiMetrics'
 
 export default {
   props: {
@@ -31,6 +37,7 @@ export default {
   setup() {
     const { isMobileView } = useScreenSize()
     return {
+      COMMON_TRIGGER_ICON_SIZE,
       mdiEmoticonOutline,
       isDesktop: !isMobileView.value
     }
@@ -59,7 +66,7 @@ export default {
     &::before {
       content: '';
       position: absolute;
-      inset: -3px;
+      inset: calc(var(--a-chat-trigger-hover-inset) * -1);
       border-radius: 50%;
       background: currentColor;
       opacity: 0;

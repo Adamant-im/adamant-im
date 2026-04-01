@@ -13,7 +13,7 @@
       @click="$emit('cancel')"
       :class="classes.closeButton"
       :icon="mdiClose"
-      size="24"
+      :size="COMMON_ICON_SIZE"
       variant="plain"
     />
   </div>
@@ -25,7 +25,7 @@ import { defineComponent, PropType } from 'vue'
 import type { FileData } from '@/lib/files'
 import FilesPreviewItem from './FilesPreviewItem.vue'
 import { mdiClose } from '@mdi/js'
-
+import { COMMON_ICON_SIZE } from '@/components/common/helpers/uiMetrics'
 
 const className = 'files-preview'
 const classes = {
@@ -48,6 +48,7 @@ export default defineComponent({
   setup() {
     return {
       classes,
+      COMMON_ICON_SIZE,
       mdiClose
     }
   }
@@ -60,24 +61,24 @@ export default defineComponent({
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .files-preview {
-  border-radius: 8px;
-  margin-bottom: 8px;
-  padding: 8px 16px;
+  border-radius: var(--a-radius-sm);
+  margin-bottom: var(--a-space-2);
+  padding: var(--a-space-2) var(--a-space-4);
   position: relative;
 
   &__files {
     display: flex;
-    gap: 8px;
+    gap: var(--a-space-2);
     overflow: auto;
-    margin-right: 12px;
+    margin-right: var(--a-space-3);
   }
 
   &__close-button {
     position: absolute;
     right: 0;
     top: 0;
-    margin-right: 4px;
-    margin-top: 4px;
+    margin-right: var(--a-space-1);
+    margin-top: var(--a-space-1);
   }
 }
 
@@ -85,7 +86,7 @@ export default defineComponent({
   .files-preview {
     background-color: map.get(colors.$adm-colors, 'secondary');
     color: map.get(colors.$adm-colors, 'regular');
-    border-left: 3px solid map.get(colors.$adm-colors, 'attention');
+    border-left: var(--a-chat-accent-border-width) solid map.get(colors.$adm-colors, 'attention');
   }
 }
 
@@ -93,7 +94,7 @@ export default defineComponent({
   .files-preview {
     background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent2');
     color: #fff;
-    border-left: 3px solid map.get(colors.$adm-colors, 'attention');
+    border-left: var(--a-chat-accent-border-width) solid map.get(colors.$adm-colors, 'attention');
   }
 }
 </style>

@@ -27,7 +27,7 @@ exports[`AChat.vue > renders the correct markup 1`] = `
           class="a-chat__spinner"
           data-v-f44da01d=""
           indeterminate=""
-          size="20"
+          size="32"
         />
       </div>
       <div

@@ -1,15 +1,15 @@
 <template>
-  <v-dialog v-model="show" width="500">
+  <v-dialog v-model="show" width="var(--a-secondary-dialog-width)" :class="className">
     <v-card>
-      <v-card-title class="a-text-header">
+      <v-card-title :class="`${className}__card-title`">
         {{ title }}
       </v-card-title>
 
       <v-divider class="a-divider" />
 
-      <v-card-text class="pa-4">{{ text }}</v-card-text>
+      <v-card-text :class="`${className}__card-text`">{{ text }}</v-card-text>
 
-      <v-card-actions>
+      <v-card-actions :class="`${className}__card-actions`">
         <v-spacer />
 
         <v-btn variant="text" class="a-btn-regular" @click="show = false">
@@ -38,6 +38,7 @@ export default {
   },
   emits: ['update:modelValue'],
   computed: {
+    className: () => 'chat-dialog',
     show: {
       get() {
         return this.modelValue
@@ -49,3 +50,14 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
+.chat-dialog {
+  @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  &__card-title {
+    @include secondaryDialog.a-secondary-dialog-title();
+  }
+}
+</style>

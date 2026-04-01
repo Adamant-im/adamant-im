@@ -3,7 +3,14 @@
     <v-list lines="two" bg-color="transparent" :class="classes.walletCardList">
       <v-list-item :class="classes.walletCardTile" @click="showShareURIDialog = true">
         <v-list-item-title :class="classes.walletCardTitle">
-          {{ t('home.wallet_crypto', { crypto: cryptoName }) }}
+          <template v-if="isADM">
+            <span v-if="walletTitlePrefix">{{ walletTitlePrefix }}</span>
+            <span :class="classes.walletCardBrandTitle">{{ cryptoName }}</span>
+            <span v-if="walletTitleSuffix">{{ walletTitleSuffix }}</span>
+          </template>
+          <template v-else>
+            {{ t('home.wallet_crypto', { crypto: cryptoName }) }}
+          </template>
         </v-list-item-title>
         <v-list-item-subtitle :class="classes.walletCardSubtitle">
           {{ address }}
@@ -16,14 +23,18 @@
         </template>
       </v-list-item>
 
-      <v-list-item :class="classes.walletCardTile" @click="$emit('click:balance', crypto)">
+      <v-list-item
+        :class="classes.walletCardTile"
+        :active="isBalanceActive"
+        @click="$emit('click:balance', crypto)"
+      >
         <v-list-item-title :class="classes.walletCardTitle">
           {{ t('home.balance') }}
         </v-list-item-title>
         <v-list-item-subtitle :class="classes.walletCardSubtitle">
           <p v-if="!allCoinNodesDisabled">
             {{ xs ? calculatedBalance : calculatedFullBalance }} {{ crypto }}
-            <span v-if="$store.state.rate.isLoaded" class="a-text-regular">
+            <span v-if="showFiatRate" :class="classes.walletCardRate">
               ~{{ rate }} {{ currentCurrency }}
             </span>
             <v-tooltip
@@ -45,7 +56,7 @@
       </v-list-item>
     </v-list>
 
-    <WalletCardListActions :class="classes.walletCardList" :crypto="crypto" :is-a-d-m="isADM" />
+    <WalletCardListActions :class="classes.walletCardActions" :crypto="crypto" :is-a-d-m="isADM" />
 
     <ShareURIDialog
       v-model="showShareURIDialog"
@@ -59,6 +70,7 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
 import ShareURIDialog from '@/components/ShareURIDialog.vue'
 import WalletCardListActions from '@/components/WalletCardListActions.vue'
 import { Cryptos, CryptoSymbol } from '@/lib/constants'
@@ -76,6 +88,7 @@ type Props = {
   crypto: CryptoSymbol
   cryptoName: string
   currentCurrency: string
+  hideFiatRates?: boolean
   allCoinNodesDisabled: boolean
   rate: number
 }
@@ -83,8 +96,11 @@ type Props = {
 const classes = {
   root: className,
   walletCardAction: `${className}__action`,
+  walletCardActions: `${className}__actions`,
+  walletCardBrandTitle: `${className}__brand-title`,
   walletCardIcon: `${className}__icon`,
   walletCardList: `${className}__list`,
+  walletCardRate: `${className}__rate`,
   walletCardSubtitle: `${className}__subtitle`,
   walletCardTile: `${className}__tile`,
   walletCardTitle: `${className}__title`
@@ -98,6 +114,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { t } = useI18n()
 const store = useStore()
+const route = useRoute()
 const { xs } = useDisplay()
 const key = props.crypto.toLowerCase()
 const showShareURIDialog = ref(false)
@@ -121,71 +138,97 @@ const calculatedFullBalance = computed(() => {
 const isADM = computed(() => {
   return props.crypto === Cryptos.ADM
 })
+
+const walletTitlePrefix = computed(() => {
+  return isADM.value ? t('home.wallet_crypto_adamant_prefix') : ''
+})
+
+const walletTitleSuffix = computed(() => {
+  return isADM.value ? t('home.wallet_crypto_adamant_suffix') : ''
+})
+
+const showFiatRate = computed(() => {
+  return !props.hideFiatRates && store.state.rate.isLoaded
+})
+
+const isBalanceActive = computed(() => {
+  return (
+    (route.name === 'Transactions' || route.name === 'Transaction') &&
+    route.params.crypto === props.crypto
+  )
+})
 </script>
 
 <style lang="scss" scoped>
-@use 'sass:map';
-@use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/components/_color-roles.scss' as colorRoles;
 @use '@/assets/styles/themes/adamant/_mixins.scss';
-@use 'vuetify/settings';
 
 .wallet-card {
+  --a-wallet-card-surface: var(--a-color-surface-transparent);
+  --a-wallet-card-action-color: var(--a-color-text-muted-light);
+  @include colorRoles.a-color-role-primary-surface-var('--a-wallet-card-title-color');
+  @include colorRoles.a-color-role-subtle-var('--a-wallet-card-subtitle-color');
+
+  background-color: var(--a-wallet-card-surface);
+
   &__title {
     @include mixins.a-text-caption();
+    color: var(--a-wallet-card-title-color);
+  }
+  &__brand-title {
+    letter-spacing: var(--a-letter-spacing-caps-small);
   }
   &__subtitle {
     @include mixins.a-text-regular-enlarged();
-    line-height: 24px;
+    line-height: var(--a-wallet-card-subtitle-line-height);
+    color: var(--a-wallet-card-subtitle-color);
     word-break: break-word;
     display: block;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-
-    span {
-      font-style: italic;
-      color: inherit;
-    }
+  }
+  &__rate {
+    @include mixins.a-text-regular();
+    font-style: var(--a-font-style-emphasis);
+    color: inherit;
   }
   &__list {
-    padding: 8px 0 0;
+    background: var(--a-wallet-card-surface);
+    padding-block-start: var(--a-wallet-card-list-padding-top);
+    padding-block-end: 0;
+  }
+
+  &__action {
+    color: var(--a-wallet-card-action-color);
   }
 }
 
 ::v-deep(.wallet-card__list .wallet-card__tile) {
-  padding-inline: 16px;
-  padding-left: 28px;
+  padding-inline-start: var(--a-wallet-card-item-padding-inline-start);
+  padding-inline-end: var(--a-wallet-card-item-padding-inline-end);
 }
 
-/** Themes **/
 .v-theme--light {
-  .wallet-card {
-    background-color: transparent;
-    &__list {
-      background: inherit;
-    }
-    &__title {
-      color: map.get(colors.$adm-colors, 'regular');
-    }
-    &__subtitle {
-      color: map.get(colors.$adm-colors, 'muted');
-    }
-    &__action {
-      color: map.get(colors.$adm-colors, 'muted');
+  :deep(.v-list-item--active) {
+    @include mixins.linear-gradient-light-gray();
+
+    > .v-list-item__overlay {
+      opacity: 0;
     }
   }
 }
+
 .v-theme--dark {
   .wallet-card {
-    background-color: transparent;
-    &__list {
-      background: inherit;
-    }
-    &__title {
-      color: map.get(settings.$shades, 'white');
-    }
-    &__subtitle {
-      color: rgba(map.get(settings.$shades, 'white'), 70%);
+    --a-wallet-card-action-color: var(--a-color-text-inverse);
+  }
+
+  :deep(.v-list-item--active) {
+    @include mixins.linear-gradient-dark-soft();
+
+    > .v-list-item__overlay {
+      opacity: 0;
     }
   }
 }

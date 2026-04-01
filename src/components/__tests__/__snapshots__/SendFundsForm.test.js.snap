@@ -18,7 +18,6 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
     <v-select-stub
       class="a-input"
       data-v-7dc72237=""
-      disabled="false"
       items="ADM,ETH,BNB"
       menu-icon="M7,10L12,15L17,10H7Z"
       modelvalue="ADM"
@@ -28,7 +27,6 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
       class="a-input"
       color="primary"
       data-v-7dc72237=""
-      disabled="false"
       modelmodifiers="[object Object]"
       modelvalue=""
       type="text"
@@ -66,7 +64,7 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
           0.5 ADM
         </span>
         <span
-          class="fake-input__value fake-input__value--rate a-text-regular"
+          class="fake-input__value fake-input__value--rate"
           data-v-7dc72237=""
         >
            ~0.00 USD
@@ -94,7 +92,7 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
           0.5 ADM
         </span>
         <span
-          class="fake-input__value fake-input__value--rate a-text-regular"
+          class="fake-input__value fake-input__value--rate"
           data-v-7dc72237=""
         >
            ~0.00 USD
@@ -105,7 +103,7 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
     <!--v-if-->
     <!--v-if-->
     <div
-      class="text-center"
+      class="send-funds-form__actions"
       data-v-7dc72237=""
     >
       <v-btn-stub
@@ -116,9 +114,10 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
     
   </div>
   <v-dialog-stub
+    class="send-funds-confirm-dialog"
     data-v-7dc72237=""
     modelvalue="false"
-    width="500"
+    width="var(--a-secondary-dialog-width)"
   />
   <!--v-if-->
 </div>

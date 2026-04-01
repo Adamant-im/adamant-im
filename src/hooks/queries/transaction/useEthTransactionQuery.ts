@@ -25,7 +25,8 @@ export function useEthTransactionQuery(
     },
     retry: retryFactory(Cryptos.ETH, unref(transactionId)),
     retryDelay: retryDelayFactory(Cryptos.ETH, unref(transactionId)),
-    refetchInterval: ({ state }) => refetchIntervalFactory(Cryptos.ETH, state.status, state.data),
+    refetchInterval: ({ state }) =>
+      refetchIntervalFactory(Cryptos.ETH, state.status, state.data, state.error),
     refetchOnWindowFocus: false,
     refetchOnMount: params?.refetchOnMount ?? (({ state }) => refetchOnMountFn(state.data)),
     enabled: params.enabled

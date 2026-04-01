@@ -1,8 +1,8 @@
 <template>
-  <v-menu offset-y>
+  <v-menu offset-y :class="className">
     <template #activator="{ props }">
       <v-btn
-        class="ma-0 btn"
+        :class="[`${className}__button`, 'a-switcher-button']"
         variant="text"
         v-bind="props"
         :prepend-icon="prependIcon"
@@ -12,9 +12,16 @@
       </v-btn>
     </template>
 
-    <v-list>
-      <v-list-item v-for="(language, code) in languages" :key="code" @click="onSelect(code)">
-        <v-list-item-title>{{ language.title }}</v-list-item-title>
+    <v-list :class="`${className}__list`">
+      <v-list-item
+        v-for="(language, code) in languages"
+        :key="code"
+        :class="`${className}__item`"
+        @click="onSelect(code)"
+      >
+        <v-list-item-title :class="`${className}__item-title`">
+          {{ language.title }}
+        </v-list-item-title>
       </v-list-item>
     </v-list>
   </v-menu>
@@ -24,6 +31,8 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
+
+const className = 'language-switcher'
 
 defineProps({
   prependIcon: {
@@ -57,33 +66,9 @@ const onSelect = (code) => {
 </script>
 
 <style lang="scss" scoped>
-@use 'sass:map';
-@use '@/assets/styles/settings/_colors.scss';
-@use 'vuetify/settings';
+@use '@/assets/styles/components/_switcher-menu.scss' as switcherMenu;
 
-.btn {
-  text-transform: capitalize;
-  font-weight: 300;
-
-  :deep(.v-icon) {
-    margin-top: 2px;
-
-    &:before {
-      transition: 0.2s linear;
-    }
-  }
-
-  &[aria-expanded='true'] {
-    :deep(.v-icon) {
-      transform: rotate(90deg);
-    }
-  }
-}
-
-/** Themes **/
-.v-theme--light {
-  .btn {
-    color: map.get(colors.$adm-colors, 'regular');
-  }
+.language-switcher {
+  @include switcherMenu.a-switcher-menu();
 }
 </style>

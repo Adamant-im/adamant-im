@@ -5,7 +5,7 @@ exports[`QrcodeScannerDialog.vue > renders the correct markup 1`] = `
   class="qrcode-scanner-dialog"
   data-v-c5e2af2c=""
   modelvalue="true"
-  width="500"
+  width="var(--a-secondary-dialog-width)"
 >
   <v-card
     class="qrcode-scanner-dialog"
@@ -14,19 +14,19 @@ exports[`QrcodeScannerDialog.vue > renders the correct markup 1`] = `
     <!-- Camera Waiting -->
     <v-row
       align="center"
-      class="pa-8"
+      class="qrcode-scanner-dialog__status"
       data-v-c5e2af2c=""
       gap="0"
       justify="center"
     >
       <div
-        class="a-text-header"
+        class="qrcode-scanner-dialog__status-title"
         data-v-c5e2af2c=""
       >
         Waiting for camera…
       </div>
       <v-progress-circular
-        class="ml-4"
+        class="qrcode-scanner-dialog__waiting-spinner"
         color="primary"
         data-v-c5e2af2c=""
         indeterminate=""
@@ -54,12 +54,12 @@ exports[`QrcodeScannerDialog.vue > renders the correct markup 1`] = `
         </div>
       </v-col>
       <v-col
-        class="pa-6"
+        class="qrcode-scanner-dialog__hint"
         cols="12"
         data-v-c5e2af2c=""
       >
         <h3
-          class="a-text-regular text-center"
+          class="qrcode-scanner-dialog__hint-title"
           data-v-c5e2af2c=""
         >
           Hold steady for 2—3 seconds to scan QR code
@@ -73,6 +73,7 @@ exports[`QrcodeScannerDialog.vue > renders the correct markup 1`] = `
       data-v-c5e2af2c=""
     />
     <v-card-actions
+      class="qrcode-scanner-dialog__dialog-actions"
       data-v-c5e2af2c=""
     >
       <v-spacer

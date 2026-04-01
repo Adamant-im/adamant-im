@@ -24,7 +24,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .blockchain-label {
-  --v-chip-height: 18px;
-  padding: 0 4px;
+  --v-chip-height: var(--a-node-label-height);
+  padding: 0 var(--a-node-label-padding-inline);
 }
 </style>

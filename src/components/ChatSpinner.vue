@@ -1,13 +1,22 @@
 <template>
-  <div v-if="value">
+  <div v-if="value" :class="className">
     <div :class="`${className}__overlay`" />
 
-    <v-progress-circular v-if="value" :size="150" :stroke="1" color="#4A4A4A" indeterminate />
+    <v-progress-circular
+      :class="`${className}__spinner`"
+      :size="CHAT_SPINNER_SIZE"
+      :stroke="CHAT_SPINNER_STROKE"
+      color="var(--a-spinner-neutral-color)"
+      indeterminate
+    />
   </div>
 </template>
 
 <script>
 import { defineComponent } from 'vue'
+
+const CHAT_SPINNER_SIZE = 150
+const CHAT_SPINNER_STROKE = 1
 
 export default defineComponent({
   props: {
@@ -20,6 +29,8 @@ export default defineComponent({
     const className = 'chat-spinner'
 
     return {
+      CHAT_SPINNER_SIZE,
+      CHAT_SPINNER_STROKE,
       className
     }
   }
@@ -27,8 +38,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-$chat-spinner-size: 150px !default;
-
 .chat-spinner {
   /**
    * 1. Position overlay relative to Container.vue

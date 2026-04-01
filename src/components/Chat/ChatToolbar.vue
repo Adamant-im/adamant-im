@@ -1,12 +1,12 @@
 <template>
-  <v-toolbar flat height="56" :class="`${className}`" color="transparent">
+  <v-toolbar flat :class="`${className}`" color="transparent">
     <back-button @click="goBack" v-if="isMobileView">
       <v-badge
         v-if="numOfNewMessages > 0"
         :value="numOfNewMessages"
         color="primary"
         :class="`${className}__messages-counter`"
-        :content="numOfNewMessages > 99 ? '99+' : numOfNewMessages"
+        :content="messagesCounterContent"
       >
       </v-badge>
     </back-button>
@@ -44,6 +44,7 @@ import { useRouter } from 'vue-router'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
 import { useI18n } from 'vue-i18n'
 import { useChatName } from '@/components/AChat/hooks/useChatName'
+import { CHAT_TOOLBAR_UNREAD_COUNTER_MAX } from './helpers/uiMetrics'
 
 const { partnerId } = defineProps({
   partnerId: {
@@ -73,6 +74,11 @@ const partnerName = computed({
 })
 
 const numOfNewMessages = computed(() => store.getters['chat/numWithoutTheCurrentChat'](partnerId))
+const messagesCounterContent = computed(() => {
+  return numOfNewMessages.value > CHAT_TOOLBAR_UNREAD_COUNTER_MAX
+    ? `${CHAT_TOOLBAR_UNREAD_COUNTER_MAX}+`
+    : numOfNewMessages.value
+})
 
 const goBack = () => {
   router.push({ name: 'Chats' })
@@ -87,27 +93,60 @@ const goBack = () => {
 @use 'vuetify/settings';
 
 .chat-toolbar {
+  --a-chat-toolbar-padding-inline-start: var(--a-space-4);
+  --a-chat-toolbar-content-gap: var(--a-space-2);
+  --a-chat-toolbar-content-gap-mobile: var(--a-chat-toolbar-content-gap);
+  --a-chat-toolbar-back-button-margin-inline-end-mobile: var(--a-space-1);
+  --a-chat-toolbar-content-padding-inline-end: var(--a-space-3);
+  --a-chat-toolbar-content-padding-inline-end-mobile: var(--a-space-2);
+  --a-chat-toolbar-counter-offset-top: calc((var(--a-space-3) + (var(--a-space-1) / 2)) * -1);
+  --a-chat-toolbar-counter-offset-left: calc(var(--a-space-1) / -2);
+  --a-chat-toolbar-adm-name-letter-spacing: var(--a-letter-spacing-caps-subtle);
+  --a-chat-toolbar-label-font-size: var(--a-font-size-md);
+  --a-chat-toolbar-input-padding-top: var(--a-space-5);
+  --a-chat-toolbar-input-font-weight: var(--a-font-weight-medium);
+  --a-chat-toolbar-floating-label-font-size: var(--a-space-5);
+  --a-chat-toolbar-floating-label-offset-y: calc(var(--a-space-3) / -2);
+  --a-chat-toolbar-floating-label-scale: var(--a-field-floating-label-scale);
+
   flex-grow: 0;
   flex-shrink: 0;
-  padding-left: 12px;
+  padding-inline-start: var(--a-chat-toolbar-padding-inline-start);
+
+  :deep(.v-toolbar__content) {
+    min-height: var(--toolbar-height) !important;
+    height: var(--toolbar-height) !important;
+    gap: var(--a-chat-toolbar-content-gap);
+    padding-inline-end: var(--a-chat-toolbar-content-padding-inline-end);
+  }
 
   @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
-    padding-left: 0;
+    padding-inline-start: 0;
+
+    :deep(.v-toolbar__content) {
+      gap: var(--a-chat-toolbar-content-gap-mobile);
+      padding-inline-end: var(--a-chat-toolbar-content-padding-inline-end-mobile);
+    }
+
+    // Keep avatar/name spacing unchanged and only tighten the back-button to avatar gap.
+    :deep(.v-toolbar__content > .back-button:first-child) {
+      margin-inline-end: var(--a-chat-toolbar-back-button-margin-inline-end-mobile) !important;
+    }
   }
 
   &__messages-counter {
     position: relative;
-    top: -14px;
-    left: -2px;
+    top: var(--a-chat-toolbar-counter-offset-top);
+    left: var(--a-chat-toolbar-counter-offset-left);
   }
   &__textfield-container {
     width: 100%;
+    min-width: 0;
   }
 
   &__adm-chat-name {
-    font-size: 20px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
+    @include mixins.a-text-header();
+    letter-spacing: var(--a-chat-toolbar-adm-name-letter-spacing);
   }
 
   &__textfield {
@@ -133,22 +172,23 @@ const goBack = () => {
       .v-label.v-field-label {
         max-width: unset;
         @include mixins.a-text-regular-enlarged-bold();
-        font-size: 16px;
+        font-size: var(--a-chat-toolbar-label-font-size);
       }
     }
 
     .v-field__input {
-      line-height: 20px;
-      padding-top: 20px;
-      font-weight: 500;
+      line-height: var(--a-line-height-sm);
+      padding-top: var(--a-chat-toolbar-input-padding-top);
+      font-weight: var(--a-chat-toolbar-input-font-weight);
     }
 
     .v-field__outline {
       .v-label.v-field-label.v-field-label--floating {
-        line-height: 20px;
-        font-size: 20px;
-        transform: translateY(-6px) scale(0.6875);
-        font-weight: 500;
+        line-height: var(--a-line-height-sm);
+        font-size: var(--a-chat-toolbar-floating-label-font-size);
+        transform: translateY(var(--a-chat-toolbar-floating-label-offset-y))
+          scale(var(--a-chat-toolbar-floating-label-scale));
+        font-weight: var(--a-chat-toolbar-input-font-weight);
       }
     }
 
@@ -165,7 +205,7 @@ const goBack = () => {
 /** Themes **/
 .v-theme--light {
   .chat-toolbar {
-    background-color: map.get(colors.$adm-colors, 'secondary2-transparent');
+    background-color: var(--a-color-surface-soft-light);
 
     :deep(.v-text-field) {
       .primary--text {

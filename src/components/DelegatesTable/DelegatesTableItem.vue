@@ -1,27 +1,26 @@
 <template>
-  <tr :class="classes.item" @click="handleClick">
+  <tr :class="[classes.item, classes.itemInteractive]" @click="handleClick">
     <td
       :class="{
         [classes.td]: true,
         [classes.tdUsername]: true
       }"
-      class="pl-4 pr-2"
     >
       {{ username }}
     </td>
 
-    <td :class="classes.td" class="pl-0 pr-2">
+    <td :class="classes.td">
       {{ rank }}
     </td>
 
-    <td :class="classes.td" class="pl-0 pr-2">
+    <td :class="classes.td">
       <delegate-vote-checkbox :delegate="delegate" />
     </td>
   </tr>
 
   <!-- eslint-disable vue/no-multiple-template-root -->
   <tr v-if="detailsExpanded" :class="classes.details">
-    <td colspan="3" class="pa-0">
+    <td colspan="3" :class="classes.detailsCell">
       <delegate-details-expander :delegate="delegate" />
     </td>
   </tr>
@@ -29,7 +28,7 @@
 </template>
 
 <script>
-import { computed, reactive } from 'vue'
+import { computed } from 'vue'
 import { useStore } from 'vuex'
 
 import DelegateVoteCheckbox from '@/components/DelegatesTable/DelegateVoteCheckbox.vue'
@@ -64,13 +63,13 @@ export default {
     const className = 'delegates-table-item'
     const classes = {
       item: className,
+      itemInteractive: `${className}--interactive`,
       details: `${className}__details`,
+      detailsCell: `${className}__details-cell`,
       td: `${className}__td`,
       tdUsername: `${className}__td-username`
     }
 
-    const delegateObj = reactive(() => delegate)
-    const address = computed(() => delegate.address)
     const username = computed(() => delegate.username)
     const rank = computed(() => delegate.rank)
 
@@ -87,8 +86,6 @@ export default {
 
     return {
       classes,
-      delegateObj,
-      address,
       username,
       rank,
       handleClick
@@ -100,20 +97,28 @@ export default {
 <style lang="scss">
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
-@use '@/assets/styles/themes/adamant/_mixins.scss';
-@use 'vuetify/settings';
 
 .delegates-table-item {
-  &__td {
-    font-size: 14px;
-  }
-  &__td-username {
+  --a-delegates-table-item-font-size: var(--a-font-size-sm);
+  --a-delegates-table-item-padding-inline-end: var(--a-space-2);
+  --a-delegates-table-item-padding-inline-start-primary: var(--a-space-4);
+
+  &--interactive {
     cursor: pointer;
   }
-}
 
-@media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
-  .delegates-table-item {
+  td.delegates-table-item__td {
+    font-size: var(--a-delegates-table-item-font-size);
+    padding-left: 0;
+    padding-right: var(--a-delegates-table-item-padding-inline-end);
+  }
+
+  td.delegates-table-item__td-username {
+    padding-left: var(--a-delegates-table-item-padding-inline-start-primary);
+  }
+
+  td.delegates-table-item__details-cell {
+    padding: 0;
   }
 }
 
@@ -127,8 +132,8 @@ export default {
 
 .v-theme--dark {
   .delegates-table-item {
-    &__td {
-      border-bottom: none !important;
+    td.delegates-table-item__td {
+      border-bottom: none;
       border-top: thin solid map.get(colors.$adm-colors, 'regular');
     }
   }

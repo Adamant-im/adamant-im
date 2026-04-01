@@ -1,6 +1,6 @@
 <template>
   <v-list-item v-if="isLoadingSeparator">
-    <div class="d-flex justify-center">
+    <div :class="`${className}__loading-separator`">
       <v-icon
         ref="loadingDots"
         :class="{ kmove: isLoadingSeparatorActive }"
@@ -21,7 +21,7 @@
         <adm-fill-icon />
       </icon>
       <div v-else :class="`${className}__chat-avatar`">
-        <chat-avatar :size="48" :user-id="contactId" use-public-key />
+        <chat-avatar :size="CHAT_PREVIEW_AVATAR_SIZE" :user-id="contactId" use-public-key />
       </div>
 
       <v-badge
@@ -35,13 +35,7 @@
 
     <div>
       <div :class="`${className}__heading`">
-        <v-list-item-title
-          :class="{
-            'a-text-regular-enlarged-bold': true,
-            [`${className}__title`]: true
-          }"
-          >{{ chatName }}</v-list-item-title
-        >
+        <v-list-item-title :class="`${className}__title`">{{ chatName }}</v-list-item-title>
         <div v-if="!isMessageReadonly" :class="`${className}__date`">
           {{ formatDate(createdAt) }}
         </div>
@@ -57,9 +51,21 @@
         <TransactionProvider :transaction="transaction">
           <template #default="{ status }">
             <v-list-item-subtitle :class="`${className}__subtitle`">
-              <v-icon v-if="!isIncomingTransaction" size="15" :icon="tsIcon(status)" />
-              {{ transactionDirection }} {{ currency(transaction.amount, transaction.type) }}
-              <v-icon v-if="isIncomingTransaction" size="15" :icon="tsIcon(status)" />
+              <v-icon
+                v-if="!isIncomingTransaction"
+                :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
+                :icon="tsIcon(status)"
+                :color="tsColor(status)"
+                :class="`${className}__status-icon`"
+              />
+              <span>{{ transactionPreviewText }}</span>
+              <v-icon
+                v-if="isIncomingTransaction"
+                :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
+                :icon="tsIcon(status)"
+                :color="tsColor(status)"
+                :class="`${className}__status-icon`"
+              />
             </v-list-item-subtitle>
           </template>
         </TransactionProvider>
@@ -79,17 +85,20 @@
 
       <!-- Message -->
       <template v-else>
-        <v-list-item-subtitle
-          :class="['a-text-explanation-enlarged-bold', `${className}__subtitle`]"
-        >
+        <v-list-item-subtitle :class="`${className}__subtitle`">
           <template v-if="isOutgoingTransaction">
             <v-icon
               v-if="transaction.isReply && isConfirmed"
               :icon="mdiArrowLeftTop"
-              size="15"
-              class="mr-1"
+              :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
+              :class="`${className}__status-icon`"
             />
-            <v-icon v-else :icon="admStatusIcon" size="15" class="mr-1" />
+            <v-icon
+              v-else
+              :icon="admStatusIcon"
+              :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
+              :class="`${className}__status-icon`"
+            />
           </template>
 
           <span v-html="lastMessageTextNoFormats"></span>
@@ -113,13 +122,15 @@ import { formatChatPreviewMessage } from '@/lib/markdown'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import { tsIcon, TransactionStatus as TS } from '@/lib/constants'
+import { tsColor, tsIcon, TransactionStatus as TS } from '@/lib/constants'
 import { useChatName } from '@/components/AChat/hooks/useChatName'
 import { TransactionProvider } from '@/providers/TransactionProvider'
-import { mdiArrowLeftTop, mdiDotsHorizontal } from '@mdi/js'
+import { mdiArrowLeftTop, mdiCheck, mdiDotsHorizontal } from '@mdi/js'
 import { AdamantChatMeta } from '@/lib/chat/meta/chat-meta'
 
 const className = 'chat-brief'
+const CHAT_PREVIEW_AVATAR_SIZE = 52
+const CHAT_PREVIEW_STATUS_ICON_SIZE = 15
 
 type Props = {
   userId: string
@@ -208,6 +219,10 @@ const transactionDirection = computed(() => {
 
   return direction
 })
+const transactionPreviewText = computed(
+  () =>
+    `${transactionDirection.value} ${currency(props.transaction.amount, props.transaction.type)}`
+)
 const isIncomingTransaction = computed(
   () => !isStringEqualCI(props.userId, props.transaction.senderId)
 )
@@ -216,28 +231,34 @@ const numOfNewMessages = computed(() => store.getters['chat/numOfNewMessages'](c
 const createdAt = computed(() => props.transaction.timestamp)
 
 const status = computed(() => props.transaction.status)
-const admStatusIcon = computed(() => tsIcon(status.value))
+const admStatusIcon = computed(() =>
+  status.value === TS.REGISTERED ? mdiCheck : tsIcon(status.value)
+)
 const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 </script>
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_color-roles.scss' as colorRoles;
+@use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 @keyframes movement {
   from {
-    left: -50px;
+    left: calc(var(--a-chat-brief-loading-separator-shift) * -1);
   }
   to {
-    left: 50px;
+    left: var(--a-chat-brief-loading-separator-shift);
   }
 }
 
 .kmove {
+  --a-chat-brief-loading-separator-shift: 50px;
+  --a-chat-brief-loading-separator-duration: 500ms;
   position: relative;
   animation-name: movement;
-  animation-duration: 0.5s;
+  animation-duration: var(--a-chat-brief-loading-separator-duration);
   animation-iteration-count: infinite;
   animation-direction: alternate;
 }
@@ -246,16 +267,34 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
  * 1. Message/Transaction content.
  */
 .chat-brief {
+  --a-chat-brief-avatar-size: var(--a-chat-preview-avatar-size);
+  --a-chat-brief-avatar-gap: var(--a-space-4);
+  --a-chat-brief-date-gap: var(--a-space-4);
+  --a-chat-brief-heading-gap: var(--a-chat-preview-heading-gap);
+  --a-chat-brief-icon-size: var(--a-chat-preview-avatar-size);
+  --a-chat-brief-item-padding-inline-start: var(--a-chat-preview-item-padding-inline-start);
+  --a-chat-brief-item-padding-inline-end: var(--a-chat-preview-item-padding-inline-end);
+  --a-chat-brief-subtitle-line-height: 1.5;
+  --a-chat-brief-border-width: var(--a-border-width-thin);
+  --a-chat-brief-icon-fill-light: var(--a-color-icon-subtle-light);
+  @include colorRoles.a-color-role-subtle-var('--a-chat-brief-meta-color');
   position: relative;
+  padding-inline-start: var(--a-chat-brief-item-padding-inline-start);
+  padding-inline-end: var(--a-chat-brief-item-padding-inline-end);
+
+  &__loading-separator {
+    display: flex;
+    justify-content: center;
+  }
 
   &__chat-avatar {
-    margin-right: 16px;
+    margin-right: var(--a-chat-brief-avatar-gap);
   }
 
   &__icon {
-    width: 48px;
-    height: 48px;
-    margin-right: 16px;
+    width: var(--a-chat-brief-icon-size);
+    height: var(--a-chat-brief-icon-size);
+    margin-right: var(--a-chat-brief-avatar-gap);
 
     :deep(.svg-icon) {
       width: 100%;
@@ -264,18 +303,19 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
   }
 
   &__heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    @include layoutPrimitives.a-flex-space-between-center();
+    margin-bottom: var(--a-chat-brief-heading-gap);
   }
 
   &__title {
-    line-height: 24px;
+    @include mixins.a-text-regular-enlarged-bold();
+    line-height: var(--a-line-height-md);
     margin-bottom: 0;
   }
 
   &__subtitle {
-    line-height: 1.5;
+    @include mixins.a-text-explanation-enlarged-bold();
+    line-height: var(--a-chat-brief-subtitle-line-height);
     display: block;
     white-space: nowrap;
     overflow: hidden;
@@ -284,35 +324,38 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 
   &__date {
     @include mixins.a-text-explanation-small();
-    margin-left: 16px;
+    margin-left: var(--a-chat-brief-date-gap);
     white-space: nowrap;
+  }
+
+  &__status-icon {
+    display: inline-flex;
+    vertical-align: middle;
+    transform: translateY(var(--a-chat-preview-status-icon-shift-y));
+    margin-inline-end: var(--a-space-1);
   }
 
   &__badge {
     :deep(.v-badge__badge) {
-      left: calc(100% - 12px - 16px) !important;
-      font-size: 14px;
-      width: 22px;
-      height: 22px;
+      left: calc(100% - var(--a-space-3) - var(--a-space-4)) !important;
+      font-size: var(--a-font-size-sm);
+      width: var(--a-size-badge-md);
+      height: var(--a-size-badge-md);
     }
-  }
-
-  :deep(.v-list-item-subtitle) {
-    @include mixins.a-text-explanation-enlarged-bold();
   }
 }
 
 /** Themes **/
 .v-theme--light {
   .chat-brief {
-    border-bottom: 1px solid map.get(colors.$adm-colors, 'secondary2');
+    border-bottom: var(--a-chat-brief-border-width) solid map.get(colors.$adm-colors, 'secondary2');
 
     &__date {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-chat-brief-meta-color);
     }
 
     &__icon {
-      fill: #bdbdbd;
+      fill: var(--a-chat-brief-icon-fill-light);
     }
 
     &--active {
@@ -320,7 +363,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
     }
 
     :deep(.v-list-item-subtitle) {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: var(--a-chat-brief-meta-color);
     }
   }
 }
@@ -331,7 +374,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
     }
 
     :deep(.v-list-item-subtitle) {
-      color: map.get(colors.$adm-colors, 'grey-transparent');
+      color: var(--a-chat-brief-meta-color);
     }
   }
 }

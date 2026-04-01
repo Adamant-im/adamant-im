@@ -1,7 +1,7 @@
 <template>
   <v-form ref="form" :class="classes.root" @submit.prevent="submit">
     <!-- Hidden input with username to prevent Chrome warning in console -->
-    <input type="text" name="username" autocomplete="username" style="display: none" />
+    <input type="text" name="username" autocomplete="username" :class="classes.usernameInput" />
     <v-row gap="0">
       <slot>
         <!--     Todo: check src/components/PasswordSetDialog.vue component and consider the possibility to move common code to new component  -->
@@ -11,8 +11,7 @@
           @keydown.enter.prevent="submit"
           :label="t('login.password_label')"
           autocomplete="current-password"
-          :class="classes.textField"
-          class="text-center"
+          :class="[classes.textField, classes.textFieldCentered]"
           :type="showPassphrase ? 'text' : 'password'"
           variant="underlined"
         >
@@ -21,10 +20,13 @@
               @click="togglePassphraseVisibility"
               icon
               :ripple="false"
-              :size="28"
+              :size="AUTH_FORM_TOGGLE_BUTTON_SIZE"
               variant="plain"
             >
-              <v-icon :icon="showPassphrase ? mdiEye : mdiEyeOff" :size="24" />
+              <v-icon
+                :icon="showPassphrase ? mdiEye : mdiEyeOff"
+                :size="AUTH_FORM_TOGGLE_ICON_SIZE"
+              />
             </v-btn>
           </template>
         </v-text-field>
@@ -33,15 +35,15 @@
       <slot name="append-outer" />
     </v-row>
 
-    <v-row align="center" justify="center" gap="0">
+    <v-row align="center" justify="center" gap="0" class="login-form__submit-row">
       <slot name="button">
         <v-btn class="login-form__button a-btn-primary" type="submit">
           <v-progress-circular
             v-show="showSpinner"
             indeterminate
             color="primary"
-            size="24"
-            class="mr-4"
+            :size="AUTH_FORM_SUBMIT_SPINNER_SIZE"
+            class="login-form__submit-spinner"
           />
           {{ t('login.login_button') }}
         </v-btn>
@@ -67,11 +69,18 @@ import { isAllNodesOfflineError, isAllNodesDisabledError } from '@/lib/nodes/uti
 import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useSaveCursor } from '@/hooks/useSaveCursor'
 import { logger } from '@/utils/devTools/logger'
+import {
+  AUTH_FORM_SUBMIT_SPINNER_SIZE,
+  AUTH_FORM_TOGGLE_BUTTON_SIZE,
+  AUTH_FORM_TOGGLE_ICON_SIZE
+} from '@/components/Login/helpers/uiMetrics'
 
 const className = 'login-form'
 const classes = {
   root: className,
-  textField: `${className}__textfield`
+  textField: `${className}__textfield`,
+  textFieldCentered: `${className}__textfield--centered`,
+  usernameInput: `${className}__username-input`
 }
 
 type Props = {
@@ -160,17 +169,39 @@ defineExpose({
 @use 'vuetify/settings';
 
 .login-form {
+  --a-login-form-passphrase-toggle-size: var(--a-auth-control-button-size);
+  --a-login-form-submit-spinner-gap: var(--a-auth-control-inline-gap);
+  --a-login-form-passphrase-toggle-offset: calc(var(--a-login-form-passphrase-toggle-size) * -1);
+  --a-login-form-passphrase-input-padding-inline: var(--a-control-size-sm);
+  --a-login-form-submit-row-margin-top: var(--a-space-2);
+
   &__textfield {
     &:deep(.v-field__append-inner) {
       padding-left: 0;
-      margin-left: -28px; // compensate the append-inner icon
+      margin-left: var(--a-login-form-passphrase-toggle-offset);
     }
 
     &:deep(.v-field__input) {
       width: 100%;
-      padding-right: 32px;
-      padding-left: 32px;
+      padding-right: var(--a-login-form-passphrase-input-padding-inline);
+      padding-left: var(--a-login-form-passphrase-input-padding-inline);
     }
+  }
+
+  &__textfield--centered {
+    text-align: center;
+  }
+
+  &__submit-row {
+    margin-top: var(--a-login-form-submit-row-margin-top);
+  }
+
+  &__submit-spinner {
+    margin-inline-end: var(--a-login-form-submit-spinner-gap);
+  }
+
+  &__username-input {
+    display: none;
   }
 }
 

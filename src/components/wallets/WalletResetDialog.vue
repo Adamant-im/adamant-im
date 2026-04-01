@@ -1,10 +1,19 @@
 <template>
-  <div class="text-right">
-    <v-btn class="a-btn-primary ma-2" color="primary" @click="isDialogVisible = true">
+  <div :class="`${classes.root}__trigger-wrap`">
+    <v-btn
+      :class="[`${classes.root}__trigger`, 'a-btn-primary']"
+      color="primary"
+      @click="isDialogVisible = true"
+    >
       {{ t('wallets.reset') }}
     </v-btn>
 
-    <v-dialog v-model="isDialogVisible" width="500" scroll-strategy="reposition">
+    <v-dialog
+      v-model="isDialogVisible"
+      width="var(--a-secondary-dialog-width)"
+      scroll-strategy="reposition"
+      :class="classes.root"
+    >
       <v-card>
         <v-card-title :class="`${classes.root}__dialog-title`">
           {{ t('wallets.summary_title') }}
@@ -12,13 +21,13 @@
 
         <v-divider :class="`${classes.root}__divider`" />
 
-        <v-row gap="0" class="pa-4">
+        <v-card-text :class="`${classes.root}__dialog-body`">
           <div :class="`${classes.root}__dialog-summary`">
             {{ t('wallets.reset_message') }}
           </div>
-        </v-row>
+        </v-card-text>
 
-        <v-card-actions>
+        <v-card-actions :class="`${classes.root}__dialog-actions`">
           <v-spacer></v-spacer>
           <v-btn variant="text" class="a-btn-regular" @click="isDialogVisible = false">
             {{ t('common.cancel') }}
@@ -37,7 +46,7 @@ import { defineComponent, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 
-const className = 'wallets-view'
+const className = 'wallet-reset-dialog'
 const classes = {
   root: className
 }
@@ -66,11 +75,22 @@ export default defineComponent({
 
 <style scoped lang="scss">
 @use 'sass:map';
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
 
-.wallets-view {
+.wallet-reset-dialog {
+  @include secondaryDialog.a-secondary-dialog-card-frame();
+
+  &__trigger-wrap {
+    text-align: end;
+  }
+
+  &__trigger {
+    margin: var(--a-space-2);
+  }
+
   &__dialog-summary {
     @include mixins.a-text-regular-enlarged();
   }
@@ -81,7 +101,7 @@ export default defineComponent({
 
 /** Themes **/
 .v-theme--light {
-  .wallets-view {
+  .wallet-reset-dialog {
     &__dialog-summary {
       color: map.get(colors.$adm-colors, 'regular');
     }

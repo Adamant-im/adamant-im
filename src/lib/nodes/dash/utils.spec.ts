@@ -180,4 +180,44 @@ describe('normalizeTransaction', () => {
     // Assert: amount should be first output (1000)
     expect(result.amount).toBe(1000)
   })
+
+  it('should calculate fee without floating-point drift', () => {
+    const result = normalizeTransaction(
+      {
+        ...txSelfTransfer,
+        vin: [
+          {
+            ...txSelfTransfer.vin[0],
+            value: 0.0014
+          }
+        ],
+        vout: [
+          {
+            ...txSelfTransfer.vout[0],
+            value: 0.0013
+          }
+        ]
+      },
+      OWNER_ADDRESS
+    )
+
+    expect(result.fee).toBe(0.0001)
+  })
+
+  it('should preserve Dash InstantSend flags in the normalized transaction', () => {
+    const result = normalizeTransaction(
+      {
+        ...txWithDuplicateSenders,
+        confirmations: 0,
+        instantlock: true,
+        instantlock_internal: true
+      },
+      OWNER_ADDRESS
+    )
+
+    expect(result.status).toBe('REGISTERED')
+    expect(result.instantlock).toBe(true)
+    expect(result.instantlock_internal).toBe(true)
+    expect(result.instantsend).toBe(true)
+  })
 })

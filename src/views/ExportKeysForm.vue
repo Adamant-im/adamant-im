@@ -1,7 +1,7 @@
 <template>
-  <v-form @submit.prevent="revealKeys">
+  <v-form :class="className" @submit.prevent="revealKeys">
     <div v-if="keys.length" :class="`${className}__keys`">
-      <div v-for="key in keys" :key="key.crypto">
+      <div v-for="key in keys" :key="key.crypto" :class="`${className}__key-field`">
         <v-text-field
           v-model="key.key"
           :readonly="true"
@@ -11,30 +11,35 @@
           color="primary"
         >
           <template #label>
-            <span class="font-weight-medium">
+            <span :class="`${className}__field-label`">
               {{ key.cryptoName }}
             </span>
           </template>
           <template #append-inner>
             <v-btn
               icon
+              type="button"
               ripple
-              size="28"
+              :size="AUTH_FORM_TOGGLE_BUTTON_SIZE"
               :class="`${className}__btn-copy`"
               @click="copyKey(key.key)"
             >
-              <v-icon :class="`${className}__icon`" :icon="mdiContentCopy" size="20" />
+              <v-icon
+                :class="`${className}__icon`"
+                :icon="mdiContentCopy"
+                :size="AUTH_FORM_COPY_ICON_SIZE"
+              />
             </v-btn>
           </template>
         </v-text-field>
       </div>
 
-      <div class="text-right">
+      <div :class="`${className}__copy-all-row`">
         <v-btn
           :class="`${className}__copy_all_button`"
-          class="a-btn-link"
           variant="text"
           size="small"
+          type="button"
           @click="copyAll"
         >
           {{ t('options.export_keys.copy_all') }}
@@ -42,7 +47,7 @@
       </div>
     </div>
 
-    <div :class="`${className}__disclaimer a-text-regular-enlarged`">
+    <div :class="`${className}__disclaimer`">
       {{ t('options.export_keys.disclaimer') }}
     </div>
 
@@ -54,27 +59,45 @@
       :type="showPassphrase ? 'text' : 'password'"
     >
       <template #label>
-        <span class="font-weight-medium">
+        <span :class="`${className}__field-label`">
           {{ t('options.export_keys.passphrase') }}
         </span>
       </template>
       <template #append-inner>
-        <v-btn @click="togglePassphraseVisibility" icon :ripple="false" :size="28" variant="plain">
-          <v-icon :icon="showPassphrase ? mdiEye : mdiEyeOff" :size="24" />
+        <v-btn
+          :class="`${className}__field-action`"
+          @click="togglePassphraseVisibility"
+          icon
+          type="button"
+          :ripple="false"
+          :size="AUTH_FORM_TOGGLE_BUTTON_SIZE"
+          variant="plain"
+        >
+          <v-icon :icon="showPassphrase ? mdiEye : mdiEyeOff" :size="AUTH_FORM_TOGGLE_ICON_SIZE" />
         </v-btn>
 
         <v-menu :offset-overflow="true" :offset-y="false" left eager>
           <template #activator="{ props }">
-            <v-btn v-bind="props" icon variant="plain" :size="28" :ripple="false">
-              <v-icon :icon="mdiDotsVertical" :size="24" />
+            <v-btn
+              v-bind="props"
+              :class="[`${className}__field-action`, `${className}__menu-activator`]"
+              icon
+              type="button"
+              variant="plain"
+              :size="AUTH_FORM_TOGGLE_BUTTON_SIZE"
+              :ripple="false"
+            >
+              <v-icon :icon="mdiDotsVertical" :size="AUTH_FORM_MENU_ICON_SIZE" />
             </v-btn>
           </template>
-          <v-list>
-            <v-list-item @click="showQrcodeScanner = true">
-              <v-list-item-title>{{ t('transfer.decode_from_camera') }}</v-list-item-title>
+          <v-list :class="`${className}__menu-list`">
+            <v-list-item :class="`${className}__menu-item`" @click="showQrcodeScanner = true">
+              <v-list-item-title :class="`${className}__menu-item-title`">
+                {{ t('transfer.decode_from_camera') }}
+              </v-list-item-title>
             </v-list-item>
-            <v-list-item link>
-              <v-list-item-title>
+            <v-list-item :class="`${className}__menu-item`" link>
+              <v-list-item-title :class="`${className}__menu-item-title`">
                 <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
                   <span>{{ t('transfer.decode_from_image') }}</span>
                 </qrcode-capture>
@@ -85,8 +108,8 @@
       </template>
     </v-text-field>
 
-    <div class="text-center">
-      <v-btn :class="`${className}__export_keys_button`" class="a-btn-primary" @click="revealKeys">
+    <div :class="`${className}__actions`">
+      <v-btn :class="`${className}__export_keys_button`" class="a-btn-primary" type="submit">
         {{ t('options.export_keys.button') }}
       </v-btn>
     </div>
@@ -111,6 +134,12 @@ import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { mdiContentCopy, mdiDotsVertical, mdiEye, mdiEyeOff } from '@mdi/js'
 import { logger } from '@/utils/devTools/logger'
+import {
+  AUTH_FORM_COPY_ICON_SIZE,
+  AUTH_FORM_MENU_ICON_SIZE,
+  AUTH_FORM_TOGGLE_BUTTON_SIZE,
+  AUTH_FORM_TOGGLE_ICON_SIZE
+} from '@/components/Login/helpers/uiMetrics'
 
 function getBtcKey(crypto, passphrase, asWif) {
   const keyPair = getBtcAccount(crypto, passphrase).keyPair
@@ -204,6 +233,10 @@ export default defineComponent({
       mdiDotsVertical,
       mdiEye,
       mdiEyeOff,
+      AUTH_FORM_COPY_ICON_SIZE,
+      AUTH_FORM_MENU_ICON_SIZE,
+      AUTH_FORM_TOGGLE_BUTTON_SIZE,
+      AUTH_FORM_TOGGLE_ICON_SIZE,
       onDetectQrcode,
       onDetectQrcodeError,
       onScanQrcode,
@@ -217,27 +250,78 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
+@use '@/assets/styles/components/_form-action-layout.scss' as formActionLayout;
+@use '@/assets/styles/components/_input-action-menu.scss' as inputActionMenu;
+@use '@/assets/styles/components/_link-action-button.scss' as linkActionButton;
+@use '@/assets/styles/components/_text-content.scss' as textContent;
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
+
 .export-keys-form {
+  --a-export-keys-section-spacing: var(--a-space-6);
+  --a-export-keys-key-field-gap: var(--a-space-4);
+  --a-export-keys-copy-all-margin-bottom: var(--a-space-3);
+  --a-export-keys-button-margin-top: var(--a-space-4);
+  --a-export-keys-button-margin-bottom: var(--a-space-6);
+  --a-export-keys-field-label-font-weight: var(--a-font-weight-medium);
+
+  @include inputActionMenu.a-input-action-menu();
+
+  width: 100%;
+  box-sizing: border-box;
+
   &__keys {
-    margin-top: 24px;
-    margin-bottom: 24px;
+    margin-top: var(--a-export-keys-section-spacing);
+    margin-bottom: var(--a-export-keys-section-spacing);
+    display: grid;
+    gap: var(--a-export-keys-key-field-gap);
+  }
+  &__copy-all-row {
+    display: flex;
+    justify-content: flex-end;
   }
   &__disclaimer {
-    margin-top: 24px;
-    margin-bottom: 24px;
+    @include textContent.a-content-explanatory-copy();
+    margin-top: var(--a-export-keys-section-spacing);
+    margin-bottom: var(--a-export-keys-section-spacing);
   }
   &__btn-copy {
-    margin-right: 0;
-    margin-bottom: 0;
+    margin: 0;
+  }
+  &__field-action {
+    margin: 0;
+  }
+  &__field-label {
+    font-weight: var(--a-export-keys-field-label-font-weight);
   }
   &__export_keys_button {
-    margin-top: 15px;
-    margin-bottom: 24px;
+    margin-top: var(--a-export-keys-button-margin-top);
+    margin-bottom: var(--a-export-keys-button-margin-bottom);
+  }
+
+  &__actions {
+    @include formActionLayout.a-form-actions-center();
   }
   &__copy_all_button {
-    padding-right: 0;
-    margin-right: 0;
-    margin-bottom: 12px;
+    @include linkActionButton.a-link-action-button();
+    padding-inline-end: 0;
+    margin-inline-end: 0;
+    margin-bottom: var(--a-export-keys-copy-all-margin-bottom);
+  }
+}
+
+.v-theme--light {
+  .export-keys-form {
+    &__copy_all_button {
+      @include linkActionButton.a-link-action-button-light();
+    }
+  }
+}
+
+.v-theme--dark {
+  .export-keys-form {
+    &__copy_all_button {
+      @include linkActionButton.a-link-action-button-dark();
+    }
   }
 }
 </style>

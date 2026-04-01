@@ -1,7 +1,7 @@
 <template>
-  <div :class="classes" :style="styles" @click="$attrs.onClick">
+  <div :class="classes" :style="avatarSizeStyles" @click="$attrs.onClick">
     <img v-if="avatar" :src="avatar" :width="size" :height="size" />
-    <canvas ref="avatar" :width="canvasSize" :height="canvasSize" :style="{ display: 'none' }" />
+    <canvas ref="avatar" :width="canvasSize" :height="canvasSize" :class="`${className}__canvas`" />
   </div>
 </template>
 
@@ -33,10 +33,9 @@ export default {
     classes() {
       return [this.className, { [`${this.className}--clickable`]: this.isClickable }]
     },
-    styles() {
+    avatarSizeStyles() {
       return {
-        width: `${this.size}px`,
-        height: `${this.size}px`
+        '--a-chat-avatar-size': `${this.size}px`
       }
     },
     avatar() {
@@ -102,7 +101,13 @@ export default {
 
 <style lang="scss" scoped>
 .chat-avatar {
+  width: var(--a-chat-avatar-size);
+  height: var(--a-chat-avatar-size);
   line-height: 1;
+
+  &__canvas {
+    display: none;
+  }
 
   &--clickable {
     cursor: pointer;

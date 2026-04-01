@@ -1,14 +1,17 @@
 <template>
-  <img v-if="dataUrl" :src="dataUrl" alt="" />
-  <div class="spinner-container" v-else>
-    <InlineSpinner :size="152" />
+  <img v-if="dataUrl" :src="dataUrl" alt="" :class="`${className}__image`" />
+  <div v-else :class="`${className}__spinner-container`">
+    <InlineSpinner :size="spinnerSize" />
   </div>
 </template>
 
 <script>
 import InlineSpinner from '@/components/InlineSpinner.vue'
 import { logger } from '@/utils/devTools/logger'
+import { QRCODE_RENDERER_SPINNER_SIZE } from '@/components/Qrcode/helpers/uiMetrics'
 import QRCode from 'qrcode'
+
+const className = 'qrcode-renderer'
 
 export default {
   props: {
@@ -29,6 +32,14 @@ export default {
   data: () => ({
     dataUrl: ''
   }),
+  computed: {
+    className() {
+      return className
+    },
+    spinnerSize() {
+      return QRCODE_RENDERER_SPINNER_SIZE
+    }
+  },
   watch: {
     text() {
       this.render()
@@ -70,17 +81,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
+
 /**
  * 1. Should not be inline to avoid empty element with line-height.
  */
-img {
+.qrcode-renderer__image {
   display: block; // [1]
   max-width: 100%;
 }
-.spinner-container {
-  display: flex;
-  align-items: center;
-  max-width: 250px;
+.qrcode-renderer__spinner-container {
+  @include layoutPrimitives.a-flex-align-center();
+  max-width: var(--a-qrcode-renderer-max-width);
   overflow: hidden;
 }
 </style>

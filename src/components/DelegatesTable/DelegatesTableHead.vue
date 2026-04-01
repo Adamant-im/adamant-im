@@ -1,13 +1,13 @@
 <template>
   <thead :class="classes.root">
     <tr>
-      <th :class="classes.td" class="pl-4 pr-2">
+      <th :class="[classes.td, classes.tdPrimary]">
         {{ t('votes.table_head_name') }}
       </th>
-      <th :class="classes.td" class="pl-0 pr-2">
+      <th :class="classes.td">
         {{ t('votes.table_head_rank') }}
       </th>
-      <th :class="classes.td" class="pl-0 pr-2">
+      <th :class="classes.td">
         {{ t('votes.table_head_vote') }}
       </th>
     </tr>
@@ -24,7 +24,8 @@ export default {
     const className = 'delegates-table-head'
     const classes = {
       root: className,
-      td: `${className}__td`
+      td: `${className}__td`,
+      tdPrimary: `${className}__td--primary`
     }
 
     return {
@@ -38,28 +39,36 @@ export default {
 <style lang="scss">
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
-@use '@/assets/styles/themes/adamant/_mixins.scss';
-@use 'vuetify/settings';
 
 .delegates-table-head {
-  &__td {
-    font-weight: 300;
-    font-size: 12px;
+  --a-delegates-table-head-font-size: var(--a-font-size-xs);
+  --a-delegates-table-head-padding-inline-end: var(--a-space-2);
+  --a-delegates-table-head-padding-inline-start-primary: var(--a-space-4);
+
+  th.delegates-table-head__td {
+    font-size: var(--a-delegates-table-head-font-size);
+    padding-left: 0;
+    padding-right: var(--a-delegates-table-head-padding-inline-end);
+  }
+
+  th.delegates-table-head__td--primary {
+    padding-left: var(--a-delegates-table-head-padding-inline-start-primary);
   }
 }
 
 .v-theme--light {
   .delegates-table-head {
     &__td {
-      color: map.get(colors.$adm-colors, 'muted');
+      color: map.get(colors.$adm-colors, 'regular');
     }
   }
 }
 
 .v-theme--dark {
   .delegates-table-head {
-    &__td {
-      border-bottom: none !important;
+    th.delegates-table-head__td {
+      color: map.get(colors.$adm-colors, 'white');
+      border-bottom: none;
     }
   }
 }

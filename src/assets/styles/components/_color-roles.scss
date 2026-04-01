@@ -1,0 +1,23 @@
+@mixin a-color-role-primary-surface-var($var-name) {
+  #{$var-name}: var(--a-color-text-regular);
+
+  .v-theme--dark & {
+    #{$var-name}: var(--a-color-text-inverse);
+  }
+}
+
+@mixin a-color-role-supporting-var($var-name) {
+  #{$var-name}: var(--a-color-text-regular);
+
+  .v-theme--dark & {
+    #{$var-name}: var(--a-color-text-muted-dark);
+  }
+}
+
+@mixin a-color-role-subtle-var($var-name) {
+  #{$var-name}: var(--a-color-text-muted-light);
+
+  .v-theme--dark & {
+    #{$var-name}: var(--a-color-text-muted-dark);
+  }
+}

@@ -10,7 +10,7 @@ export default {
     getPartnerName(address) {
       const name = this.$store.getters['partners/displayName'](address) || ''
 
-      return isAdamantChat(address) ? this.$t(name) : name
+      return isAdamantChat(address) ? (this.$te(name) ? this.$t(name) : name || address) : name
     }
   }
 }

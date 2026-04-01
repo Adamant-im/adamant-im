@@ -5,42 +5,56 @@
     @open:change="toggleActionsDropdown"
     @click:reply="openReplyPreview"
     @click:copy="copyMessageToClipboard"
+    @click:retry="retryMessage"
   >
     <template #top>
-      <EmojiPicker
-        v-if="showEmojiPicker"
-        @emoji:select="onEmojiSelect"
-        elevation
-        position="absolute"
-      />
+      <transition name="slide-y-reverse-transition" mode="out-in">
+        <AChatMessageStatusNote v-if="isRejectedOutgoingMessage" key="rejected-status-note" />
 
-      <AChatReactionSelect
-        v-else
-        :transaction="transaction"
-        @reaction:add="sendReaction"
-        @reaction:remove="removeReaction"
-        @click:emoji-picker="$emit('update:showEmojiPicker', true)"
-      />
+        <EmojiPicker
+          v-else-if="showEmojiPicker"
+          key="emoji-picker"
+          @emoji:select="onEmojiSelect"
+          elevation
+          position="absolute"
+        />
+
+        <AChatReactionSelect
+          v-else
+          key="reaction-select"
+          :transaction="transaction"
+          @reaction:add="sendReaction"
+          @reaction:remove="removeReaction"
+          @click:emoji-picker="$emit('update:showEmojiPicker', true)"
+        />
+      </transition>
     </template>
 
     <template #bottom>
       <AChatMessageActionsList
         v-if="!showEmojiPicker"
+        :transaction="transaction"
         @click:reply="openReplyPreview"
         @click:copy="copyMessageToClipboard"
+        @click:retry="retryMessage"
       />
     </template>
   </AChatMessageActionsDropdown>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import EmojiPicker from '@/components/EmojiPicker.vue'
 import {
   AChatReactionSelect,
   AChatMessageActionsList,
-  AChatMessageActionsDropdown
+  AChatMessageActionsDropdown,
+  AChatMessageStatusNote
 } from '@/components/AChat'
+import { TransactionStatus } from '@/lib/constants'
+import { useStore } from 'vuex'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 const props = defineProps<{
   transaction: NormalizedChatMessageTransaction
@@ -52,11 +66,20 @@ const emit = defineEmits<{
   (e: 'open:change', open: boolean, transaction: NormalizedChatMessageTransaction): void
   (e: 'click:reply', message: NormalizedChatMessageTransaction): void
   (e: 'click:copy', message: NormalizedChatMessageTransaction): void
+  (e: 'click:retry', message: NormalizedChatMessageTransaction): void
   (e: 'reaction:add', reactToId: string, emoji: string): void
   (e: 'reaction:remove', reactToId: string, emoji: string): void
   (e: 'emoji:select', transactionId: string, emoji: string): void
   (e: 'update:showEmojiPicker', value: boolean): void
 }>()
+
+const store = useStore()
+const isRejectedOutgoingMessage = computed(
+  () =>
+    props.transaction.type === 'message' &&
+    props.transaction.status === TransactionStatus.REJECTED &&
+    isStringEqualCI(props.transaction.senderId, store.state.address)
+)
 
 const toggleActionsDropdown = (open: boolean) => {
   emit('open:change', open, props.transaction)
@@ -68,6 +91,10 @@ const openReplyPreview = () => {
 
 const copyMessageToClipboard = () => {
   emit('click:copy', props.transaction)
+}
+
+const retryMessage = () => {
+  emit('click:retry', props.transaction)
 }
 
 const sendReaction = (reactToId: string, emoji: string) => {

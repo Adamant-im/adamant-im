@@ -21,8 +21,7 @@
 import { vibrate } from '@/lib/vibrate'
 import { useTemplateRef } from 'vue'
 import type { BrowserQRCodeReader } from '@zxing/browser'
-
-const IMG_MAX_SIZE = 400
+import { QRCODE_CAPTURE_IMAGE_MAX_SIZE } from '@/components/Qrcode/helpers/uiMetrics'
 
 const emit = defineEmits<{
   (e: 'detect', text: string): void
@@ -64,12 +63,12 @@ const drawCanvas = (file: File) => {
       }
 
       const ratio = img.width / img.height
-      let newWidth = IMG_MAX_SIZE
-      let newHeight = IMG_MAX_SIZE / ratio
+      let newWidth = QRCODE_CAPTURE_IMAGE_MAX_SIZE
+      let newHeight = QRCODE_CAPTURE_IMAGE_MAX_SIZE / ratio
 
-      if (newHeight > IMG_MAX_SIZE) {
-        newHeight = IMG_MAX_SIZE
-        newWidth = IMG_MAX_SIZE * ratio
+      if (newHeight > QRCODE_CAPTURE_IMAGE_MAX_SIZE) {
+        newHeight = QRCODE_CAPTURE_IMAGE_MAX_SIZE
+        newWidth = QRCODE_CAPTURE_IMAGE_MAX_SIZE * ratio
       }
 
       canvas.value.width = newWidth

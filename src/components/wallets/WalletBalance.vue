@@ -1,15 +1,15 @@
 <template>
   <div
-    class="px-0"
     :class="{
       [classes.root]: true,
-      [classes.singleLine]: Number(balance) === 0
+      [classes.singleLine]: !isBalanceValid || Number(balance) === 0
     }"
   >
-    <p
-      :class="{ [classes.statusTitle]: true, 'a-text-explanation': balance === 0 }"
-      class="text-end"
-    >
+    <div v-if="!isBalanceValid" :class="classes.statusLoading">
+      <v-icon :icon="mdiDotsHorizontal" :size="WALLET_TAB_LOADING_ICON_SIZE" />
+    </div>
+
+    <p v-else :class="[classes.statusTitle, { [classes.statusTitleEmpty]: balance === 0 }]">
       {{ xs ? calculatedBalance : calculatedFullBalance }}
       <v-tooltip
         v-if="xs && calculatedFullBalance.toString().length > SIGNIFICANT_DIGITS"
@@ -20,9 +20,7 @@
       </v-tooltip>
     </p>
 
-    <p v-if="Number(balance) !== 0" :class="classes.statusText" class="text-end">
-      {{ currentFiatCurrency }} {{ rate }}
-    </p>
+    <p v-if="showFiatRate" :class="classes.statusText">{{ currentFiatCurrency }} {{ rate }}</p>
   </div>
 </template>
 
@@ -33,6 +31,9 @@ import { Cryptos } from '@/lib/constants'
 import { useStore } from 'vuex'
 import smartNumber from '@/lib/smartNumber'
 import { useDisplay } from 'vuetify'
+import { useNow } from '@vueuse/core'
+import { mdiDotsHorizontal } from '@mdi/js'
+import { WALLET_TAB_LOADING_ICON_SIZE } from '@/components/wallets/helpers/uiMetrics'
 
 const SIGNIFICANT_DIGITS = 7
 const className = 'wallet-balance'
@@ -40,7 +41,9 @@ const className = 'wallet-balance'
 const classes = {
   root: className,
   singleLine: `${className}--single-line`,
+  statusLoading: `${className}__status-loading`,
   statusTitle: `${className}__status-title`,
+  statusTitleEmpty: `${className}__status-title--empty`,
   statusText: `${className}__status-text`
 }
 
@@ -53,9 +56,11 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore()
+    const now = useNow({ interval: 500 })
     const { xs } = useDisplay()
     const { symbol } = toRefs(props)
     const key = symbol.value.toLowerCase()
+    const currentTime = computed(() => now.value.getTime())
 
     const balance = computed(() => {
       return symbol.value === Cryptos.ADM
@@ -63,6 +68,18 @@ export default defineComponent({
         : store.state[key]
           ? store.state[key].balance
           : 0
+    })
+
+    const balanceActualUntil = computed(() => {
+      return symbol.value === Cryptos.ADM
+        ? store.state.balanceActualUntil
+        : store.state[key]
+          ? store.state[key].balanceActualUntil
+          : 0
+    })
+
+    const isBalanceValid = computed(() => {
+      return balanceActualUntil.value > currentTime.value
     })
 
     const calculatedBalance = computed(() => {
@@ -87,14 +104,22 @@ export default defineComponent({
         : 0
     })
 
+    const showFiatRate = computed(() => {
+      return isBalanceValid.value && Number(balance.value) !== 0 && currentRate.value !== undefined
+    })
+
     return {
       SIGNIFICANT_DIGITS,
+      WALLET_TAB_LOADING_ICON_SIZE,
       balance,
+      isBalanceValid,
       classes,
       calculatedBalance,
       calculatedFullBalance,
       currentFiatCurrency,
+      mdiDotsHorizontal,
       rate,
+      showFiatRate,
       xs
     }
   }
@@ -102,17 +127,23 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@use 'sass:map';
-@use '@/assets/styles/settings/_colors.scss';
-@use 'vuetify/settings';
+@use '@/assets/styles/components/_color-roles.scss' as colorRoles;
+@use '@/assets/styles/components/_wallet-compact-content.scss' as walletCompactContent;
+@use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
 
 .wallet-balance {
-  height: 40px;
+  --a-wallet-balance-height: var(--a-control-size-md);
+  --a-wallet-balance-gap: var(--a-financial-stack-gap);
+  --a-wallet-balance-fiat-size: var(--a-font-size-xs);
+  --a-wallet-balance-status-font-weight: var(--a-financial-text-font-weight);
+  @include colorRoles.a-color-role-supporting-var('--a-wallet-balance-status-color');
+
+  height: var(--a-wallet-balance-height);
   display: flex;
-  line-height: 1;
+  @include walletCompactContent.a-wallet-compact-line-copy();
   flex-direction: column;
   justify-content: center;
-  gap: 6px;
+  gap: var(--a-wallet-balance-gap);
 
   p {
     margin: 0;
@@ -120,23 +151,33 @@ export default defineComponent({
 
   &--single-line {
     gap: 0;
+    justify-content: center;
   }
 
   &__status-title {
-    line-height: 1.1;
+    @include mixins.a-text-regular-enlarged();
+    @include walletCompactContent.a-wallet-compact-trailing-copy();
+  }
+
+  &__status-loading {
+    @include walletCompactContent.a-wallet-compact-trailing-loading();
+  }
+
+  &__status-title--empty {
+    @include mixins.a-text-explanation();
   }
 
   &__status-text {
-    font-size: 12px;
-    font-weight: 300;
-    line-height: 1.1;
+    @include walletCompactContent.a-wallet-compact-trailing-copy();
+    font-size: var(--a-wallet-balance-fiat-size);
+    font-weight: var(--a-wallet-balance-status-font-weight);
   }
 }
 
 .v-theme--light {
   .wallet-balance {
     &__status-text {
-      color: map.get(colors.$adm-colors, 'regular');
+      color: var(--a-wallet-balance-status-color);
     }
   }
 }
@@ -144,8 +185,7 @@ export default defineComponent({
 .v-theme--dark {
   .wallet-balance {
     &__status-text {
-      color: map.get(settings.$shades, 'white');
-      opacity: 0.7;
+      color: var(--a-wallet-balance-status-color);
     }
   }
 }

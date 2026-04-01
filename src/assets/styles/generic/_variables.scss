@@ -2,6 +2,15 @@ $breakpoints: (
   'mobile': 768px
 );
 
+$layout-split-frame-breakpoint: 1513px;
+
 :root {
   --toolbar-height: 56px;
+  --a-safe-area-top: env(safe-area-inset-top, 0px);
+  --a-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --a-layout-bottom: 0px;
+  --a-layout-height: calc(100vh - var(--a-layout-bottom));
+  --a-layout-height-safe: calc(
+    100vh - var(--a-layout-bottom) - var(--a-safe-area-bottom) - var(--a-safe-area-top)
+  );
 }

@@ -1,11 +1,14 @@
 <template>
   <div
-    class="d-flex justify-center ma-auto"
     :class="{
       [classes.root]: true,
-      [classes.rootWithAside]: needAside
+      [classes.rootWithAside]: needAside,
+      [classes.frame]: true
     }"
-    :style="{ '--asideWidth': asideWidth }"
+    :style="{
+      '--asideWidth': asideWidth,
+      '--asideResizeHandleWidth': `${ASIDE_RESIZE_HANDLE_WIDTH}px`
+    }"
   >
     <aside
       v-if="needAside"
@@ -18,11 +21,11 @@
     >
       <left-side />
     </aside>
-    <div :class="classes.layout" ref="sidebarLayout">
+    <div :class="[classes.layout, 'a-scroll-pane']" ref="sidebarLayout">
       <component :is="layout">
         <div
-          class="d-flex justify-center"
           :class="{
+            [classes.routerViewHost]: true,
             [classes.routerView]: true,
             [classes.routerViewNoAside]: !needAside,
             [classes.routerViewLogo]: showLogo
@@ -33,7 +36,18 @@
             src="/img/adamant-logo-transparent-512x512.png"
             draggable="false"
           />
-          <router-view v-show="!showLogo" :key="route.path" />
+          <router-view v-slot="{ Component }">
+            <keep-alive :include="cachedChildComponentNames">
+              <component
+                :is="Component"
+                v-if="!showLogo && Component && shouldCacheChildComponent(Component)"
+              />
+            </keep-alive>
+            <component
+              :is="Component"
+              v-if="!showLogo && Component && !shouldCacheChildComponent(Component)"
+            />
+          </router-view>
         </div>
       </component>
     </div>
@@ -47,6 +61,7 @@ import { useStore } from 'vuex'
 import LeftSide from '@/components/LeftSide.vue'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { sidebarLayoutKey } from '@/lib/constants'
+import { filterRouteParams } from '@/router/filterRouteParams'
 import { useChatStateStore } from '@/stores/modal-state'
 import { storeToRefs } from 'pinia'
 
@@ -63,18 +78,44 @@ const className = 'sidebar'
 
 const classes = {
   root: className,
+  frame: `${className}__frame`,
   rootWithAside: `${className}__with-aside`,
   aside: `${className}__aside`,
   asideHasView: `${className}__aside--has-view`,
+  routerViewHost: `${className}__router-view-host`,
   routerView: `${className}__router-view`,
   routerViewNoAside: `${className}__router-view--no-aside`,
   routerViewLogo: `${className}__router-view--logo`,
   layout: `${className}__layout`
 }
 
+const cachedChildComponentNames = ['Options', 'Transactions', 'SendFunds']
+
 const layout = computed(() => route.meta.layout || 'default')
+const getComponentName = (component: unknown) => {
+  if (!component || typeof component !== 'object') {
+    return null
+  }
+
+  const namedComponent = component as { name?: unknown; __name?: unknown }
+
+  if (typeof namedComponent.name === 'string') {
+    return namedComponent.name
+  }
+
+  if (typeof namedComponent.__name === 'string') {
+    return namedComponent.__name
+  }
+
+  return null
+}
+const shouldCacheChildComponent = (component: unknown) => {
+  const componentName = getComponentName(component)
+  return componentName !== null && cachedChildComponentNames.includes(componentName)
+}
 
 const SAVED_WIDTH_KEY = 'aside_width'
+const ASIDE_RESIZE_HANDLE_WIDTH = 10
 
 const asideRef = useTemplateRef('aside')
 let isResizing = false
@@ -117,7 +158,7 @@ const startResize = (event: MouseEvent) => {
   const { left, width: boxWidth } = asideRef.value.getBoundingClientRect()
   const mouseX = event.clientX
 
-  if (mouseX >= left + boxWidth - 10 && !isResizing) {
+  if (mouseX >= left + boxWidth - ASIDE_RESIZE_HANDLE_WIDTH && !isResizing) {
     isResizing = true
     document.body.style.cursor = 'ew-resize'
     document.addEventListener('mousemove', resize)
@@ -180,32 +221,126 @@ const canPressEscape = computed(() => {
   )
 })
 
+const hasActiveOverlay = () => {
+  // Let Vuetify overlays consume Escape first. Otherwise the global sidebar handler
+  // can navigate away while a select/menu/dialog is still open in the current view.
+  return Array.from(document.querySelectorAll('.v-overlay.v-overlay--active')).some((overlay) => {
+    if (!(overlay instanceof HTMLElement)) {
+      return false
+    }
+
+    const style = window.getComputedStyle(overlay)
+
+    return style.display !== 'none' && style.visibility !== 'hidden'
+  })
+}
+
+const hasExpandedPopupActivator = () => {
+  return Array.from(document.querySelectorAll('[aria-expanded="true"]')).some((element) => {
+    if (!(element instanceof HTMLElement)) {
+      return false
+    }
+
+    return (
+      element.getAttribute('role') === 'combobox' ||
+      element.hasAttribute('aria-haspopup') ||
+      element.classList.contains('v-field')
+    )
+  })
+}
+
+const hasFocusedEditableElement = () => {
+  const activeElement = document.activeElement
+
+  if (!(activeElement instanceof HTMLElement)) {
+    return false
+  }
+
+  if (activeElement instanceof HTMLTextAreaElement) {
+    return !activeElement.readOnly && !activeElement.disabled
+  }
+
+  if (activeElement instanceof HTMLInputElement) {
+    return !activeElement.readOnly && !activeElement.disabled
+  }
+
+  return activeElement.isContentEditable
+}
+
+const blurFocusedSendFundsField = () => {
+  const activeElement = document.activeElement
+
+  if (!(activeElement instanceof HTMLElement)) {
+    return false
+  }
+
+  const sendFundsForm = activeElement.closest('.send-funds-form')
+
+  if (!sendFundsForm) {
+    return false
+  }
+
+  const role = activeElement.getAttribute('role')
+  const isBlurCandidate =
+    activeElement instanceof HTMLInputElement ||
+    activeElement instanceof HTMLTextAreaElement ||
+    activeElement instanceof HTMLSelectElement ||
+    activeElement.isContentEditable ||
+    role === 'combobox' ||
+    role === 'textbox' ||
+    role === 'spinbutton'
+
+  if (!isBlurCandidate || typeof activeElement.blur !== 'function') {
+    return false
+  }
+
+  activeElement.blur()
+
+  return true
+}
+
 const onKeydownHandler = (e: KeyboardEvent) => {
-  if (canPressEscape.value && e.key === 'Escape') {
-    if (route.query.from?.includes('chats')) {
-      router.push(route.query.from as string)
-      return
-    }
+  if (e.key !== 'Escape' || !canPressEscape.value || e.defaultPrevented) {
+    return
+  }
 
-    const parentRoute = route.matched.length > 1 ? route.matched.at(-2) : null
+  if (hasActiveOverlay()) {
+    return
+  }
 
-    if (parentRoute) {
-      router.push({
-        name: parentRoute.name,
-        params: { ...route.params }
-      })
+  if (blurFocusedSendFundsField()) {
+    e.preventDefault()
+    e.stopPropagation()
+    return
+  }
 
-      return
-    }
+  if (hasFocusedEditableElement() || hasExpandedPopupActivator()) {
+    return
+  }
+
+  if (route.query.from?.includes('chats')) {
+    router.push(route.query.from as string)
+    return
+  }
+
+  const parentRoute = route.matched.length > 1 ? route.matched.at(-2) : null
+
+  if (parentRoute) {
+    const params = filterRouteParams(parentRoute.path, route.params)
+
+    router.push({
+      name: parentRoute.name,
+      ...(Object.keys(params).length > 0 ? { params } : {})
+    })
   }
 }
 
 onMounted(() => {
-  document.addEventListener('keydown', onKeydownHandler)
+  document.addEventListener('keydown', onKeydownHandler, true)
 })
 
 onBeforeUnmount(() => {
-  document.removeEventListener('keydown', onKeydownHandler)
+  document.removeEventListener('keydown', onKeydownHandler, true)
 })
 </script>
 
@@ -217,29 +352,34 @@ onBeforeUnmount(() => {
 
 .sidebar {
   display: flex;
-  max-width: 800px;
+  max-width: var(--a-layout-content-max-width);
   width: 100%;
 
+  &__frame {
+    justify-content: center;
+    margin: 0 auto;
+  }
+
   &__with-aside {
-    max-width: 1512px;
-    @media (min-width: 1513px) {
-      border-right: 2px solid black;
-      border-left: 2px solid black;
+    max-width: var(--a-layout-split-max-width);
+    @media (min-width: variables.$layout-split-frame-breakpoint) {
+      border-right: var(--a-border-width-strong) solid black;
+      border-left: var(--a-border-width-strong) solid black;
     }
   }
 
   &__aside {
     width: var(--asideWidth);
     min-height: 100%;
-    height: calc(100vh - var(--v-layout-bottom));
-    border-right: 2px solid black;
+    height: var(--a-layout-height);
+    border-right: var(--a-border-width-strong) solid black;
     position: relative;
-    max-width: 75%;
+    max-width: var(--a-layout-split-pane-max-width-ratio);
     user-select: none;
 
     @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
-      margin-top: env(safe-area-inset-top);
-      height: calc(100vh - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top));
+      margin-top: var(--a-safe-area-top);
+      height: var(--a-layout-height-safe);
       border-right: none;
     }
 
@@ -248,7 +388,7 @@ onBeforeUnmount(() => {
       position: absolute;
       right: 0;
       top: 0;
-      width: 10px;
+      width: var(--asideResizeHandleWidth);
       height: 100%;
       cursor: ew-resize;
 
@@ -272,14 +412,12 @@ onBeforeUnmount(() => {
 
   &__layout {
     @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
-      margin-top: env(safe-area-inset-top);
-      height: calc(100vh - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top));
+      margin-top: var(--a-safe-area-top);
+      height: var(--a-layout-height-safe);
     }
 
     flex: 1 1 auto;
-    overflow-y: auto;
-    overflow-x: hidden;
-    height: calc(100vh - var(--v-layout-bottom));
+    height: var(--a-layout-height);
     width: calc(100% - var(--asideWidth));
 
     &:deep(> .v-container) {
@@ -293,7 +431,7 @@ onBeforeUnmount(() => {
 
     &--no-aside {
       width: 100%;
-      max-width: 800px;
+      max-width: var(--a-layout-content-max-width);
     }
 
     &--logo {
@@ -301,7 +439,7 @@ onBeforeUnmount(() => {
     }
 
     img {
-      max-width: 512px;
+      max-width: var(--a-layout-logo-max-width);
       width: 100%;
       height: auto;
       user-select: none;
@@ -310,6 +448,11 @@ onBeforeUnmount(() => {
     :deep(.a-container) {
       max-width: unset;
     }
+  }
+
+  &__router-view-host {
+    display: flex;
+    justify-content: center;
   }
 }
 
@@ -327,9 +470,9 @@ onBeforeUnmount(() => {
 .v-theme--light {
   .sidebar {
     &__with-aside {
-      @media (min-width: 1513px) {
-        border-right: 2px solid map.get(colors.$adm-colors, 'secondary2');
-        border-left: 2px solid map.get(colors.$adm-colors, 'secondary2');
+      @media (min-width: variables.$layout-split-frame-breakpoint) {
+        border-right: var(--a-border-width-strong) solid map.get(colors.$adm-colors, 'secondary2');
+        border-left: var(--a-border-width-strong) solid map.get(colors.$adm-colors, 'secondary2');
       }
     }
 

@@ -16,6 +16,7 @@
     "incorrect_address": "Fehlerhafte Empfängeradresse",
     "message": "Gib deine Nachricht ein",
     "message_rejected": "Nachricht zurückgewiesen",
+    "message_not_sent_status": "Nachricht wurde nicht gesendet",
     "new_chat": "Starte neuen Chat",
     "new_chat_tooltip": "Klicke hier um eine neue Konversation zu starten",
     "no_address": "Bitte gib die Empfängeradresse an",
@@ -50,6 +51,7 @@
     "welcome_message_title": "Willkommen in ADAMANT",
     "you": "YOU",
     "chat_actions": {
+      "retry": "Erneut senden",
       "reply": "Reply",
       "copy": "Copy"
     },
@@ -60,7 +62,60 @@
     "partner_reacted": "Reacted",
     "you_removed_reaction": "Removed reaction",
     "partner_removed_reaction": "Removed reaction",
-    "unsupported_transaction_type": "This transaction type is not supported. Please refresh the page or install the latest version of the app."
+    "unsupported_transaction_type": "Dieser Transaktionstyp wird nicht unterstützt. Bitte aktualisieren Sie auf die neueste App-Version.",
+    "attach_file": "Datei senden",
+    "attach_image": "Medien verschicken",
+    "no_public_key": "Diese Adresse ist noch nicht aktiv. Es kann kein Chat gestartet werden",
+    "unable_to_retrieve_no_public_key": "`Nachricht kann nicht entschlüsselt werden: Öffentlicher Schlüssel des Partners fehlt`",
+    "max_files": "Laden Sie nicht mehr als {count} Dateien hoch",
+    "max_file_size": "Maximal zulässige Dateigröße: 250 MB",
+    "file": "0 Dateien | 1 Datei | {n} Dateien | {n} Dateien",
+    "files": "Datei(en)",
+    "file_loading_error": "Die Datei konnte nicht geladen werden",
+    "image_loading_error": "Das Laden des Mediums ist fehlgeschlagen",
+    "file_not_found": "Datei nicht gefunden",
+    "me": "Ich",
+    "my_qr_code": "Mein QR-Code",
+    "placeholder": {
+      "anonymous": "🕶️ Anonym: Partner sehen niemals Ihre IP-Adresse",
+      "censorship": "⛓️ Zensurresistente Blockchain-Architektur",
+      "encrypted": "🔐 Ende-zu-Ende-Verschlüsselung auf allen Geräten",
+      "ipfs": "☁️ Dezentraler IPFS-Speicher für Dateien/Medien",
+      "can_not_message": "Diesem Benutzer kann noch keine Nachricht gesendet werden, da sein Konto nicht aktiviert ist",
+      "what_does_it_mean": {
+        "text": "Was bedeutet es?",
+        "link": "https://news.adamant.im/chats-and-uninitialized-accounts-in-adamant-5035438e2fcd"
+      },
+      "public-key": "Den Schlüssel Ihres Partners zum Verschlüsseln von Nachrichten abrufen …"
+    },
+    "show_my_qr_code": "Zeige meinen QR-Code",
+    "type_a_message": "Geben Sie eine Nachricht ein",
+    "free_adm_disclaimer": "ADAMANT ist einzigartig unter den Messengern – es ist wirklich dezentralisiert. Für jede Aktion, einschließlich Messaging, fällt eine Netzwerkgebühr von 0,001 ADM an. Um jetzt mit dem Versenden von Nachrichten zu beginnen, holen Sie sich Ihre kostenlosen Willkommensmünzen.",
+    "free_adm_title": "Holen Sie sich kostenloses ADM",
+    "how_to_use_messenger": "So starten Sie mit einem Blockchain Messenger",
+    "how_to_use_messenger_link": "https://news.adamant.im/how-to-start-with-a-blockchain-messenger-54d1eb9704e6",
+    "virtual": {
+      "bitcoin_bet": "(Der Bot ist veraltet)",
+      "bitcoin_bet_title": "Wetten Sie auf den Bitcoin-Preis",
+      "adelina": "Hallo, ich bin Adelina. Lass uns ein nettes Gespräch führen! Ich kann viele Dinge tun, wie zum Beispiel:\n- Verfassen Sie eine E-Mail oder ein anderes Schreiben\n- Schreiben Sie Python-Code\n- Beantworten Sie Fragen zu einer Reihe von Dokumenten\n- Unterstützen Sie Gespräche\n- Nachhilfelehrer für verschiedene Fächer\n- Sprachen übersetzen\n- Verfassen Sie ein Gedicht\n- Simulieren Sie Charaktere für Videospiele und vieles mehr",
+      "adelina_title": "Adelina AI",
+      "bounty_wallet_title": "Kopfgeld-Geldbörse",
+      "bounty_foundation_wallet_title": "Adoption Hot Wallet",
+      "exchange_bot": "Hallo! Ich bin dein Exchange-Bot ₿. Ich arbeite sofort und anonym. Senden Sie **/help**, um zu sehen, was ich tun kann. **ℹ**️ Erfahren Sie mehr auf dem ADAMANT-Blog.",
+      "exchange_bot_title": "Austausch",
+      "bounty_bot": "Willkommen! Verdienen Sie ADM mit Ihrer sozialen Aktivität! Für Details senden Sie den Befehl **/help**.",
+      "bounty_bot_title": "ADM Bounty-Bot",
+      "donate_bot": "ADAMANT Messenger gedeiht dank Ihrer Unterstützung. Spenden Sie ADM, Bitcoin, Ethereum oder andere Token direkt in diesem Chat. Weitere Geldbörsen finden Sie unter: https://adamant.im/donate. Vielen Dank!",
+      "donate_bot_title": "Spenden Sie an ADAMANT",
+      "welcome_message": "**ADAMANT** ist ein **wirklich unabhängiger** Blockchain-Messenger – frei von Regierungen, Unternehmen oder sogar seinen eigenen Entwicklern. Unterstützt durch ein **dezentrales Netzwerk**, **Open-Source-Code** und **Benutzer-Feedback** gewährleistet es Autonomie. Für jede Aktion, wie das Versenden von Nachrichten oder das Speichern von Kontakten, fällt eine **0,001 ADM-Gebühr** an, um das Netzwerk aufrechtzuerhalten.\n\nIm Gegensatz zu zentralisierten oder typischen P2P-Messengern\n# ADAMANT bietet:\n🕵️‍♂️ **Echte Anonymität**: Keine Telefonnummern, keine E-Mails. Ihre IP bleibt selbst vor Partnern verborgen. Für zusätzliche Privatsphäre stellen Sie eine Verbindung über die **Tor-App** her.\n🛡️ **Zensurresistenz und unaufhaltsam**: Niemand kann Konten sperren, einschränken oder deaktivieren. Benutzer haben die volle Kontrolle – und die volle Verantwortung – für ihre Inhalte.\n🛰️ **Dezentrale Dateifreigabe**: Mithilfe von IPFS bleiben Dateien verteilt und unzensierbar\n🔐 **Security by Design**: Greifen Sie nahtlos über mehrere Geräte auf Ihr Konto zu und bewahren Sie dabei die vollständige Ende-zu-Ende-Verschlüsselung\n🌐 **Community-gesteuert**: Kein Risikokapital, keine Unternehmen – nur Cypherpunks und Code\n👛 **Krypto-Wallet und In-Chat-Kryptotransfers**: Senden und empfangen Sie Krypto mit voller Kontrolle über Ihre privaten Schlüssel\n⚒️ **Forging-ADM**: Leiten Sie Ihren eigenen Delegierten oder stimmen Sie für einen Forging-Pool, um das Netzwerk zu unterstützen und ADM zu verdienen\n# Nehmen Sie es ernst:\nIhre Privatsphäre liegt **in Ihren Händen**. Bleiben Sie auf der sicheren Seite: Vermeiden Sie unbekannte Links, legen Sie ein Gerätepasswort fest und geben Sie Ihre ADM-Adresse nur direkt weiter. Weitere Tipps: https://adamant.im/staysecured.\n\n**Ihre Passphrase = Ihre Verantwortung**. Schreiben Sie es physisch auf – es kann **nicht wiederhergestellt werden**. Bei Verlust oder Diebstahl sind Ihre Token und Chats für immer verloren. Behandeln Sie es wie eine **Milliarden-Dollar-Geldbörse**.\n# Jetzt loslegen:\n1️⃣ Fordern Sie kostenloses Willkommens-ADM an\n2️⃣ Teilen Sie Ihre ADM-Adresse mit Freunden\n3️⃣ Folgen Sie uns auf GitHub und X\n4️⃣ Handeln Sie mit ADM\n5️⃣ Machen Sie mit",
+      "welcome_message_title": "Willkommen"
+    },
+    "attached": "Beigefügt",
+    "nodes_offline_dialog": {
+      "title": "Keine aktiven {coin}-Knoten",
+      "text": "Es können keine neuen Nachrichten angefordert werden – keine aktiven {coin}-Blockchain-Knoten. Da Sie einige davon deaktiviert haben, sollten Sie die Knotenliste überprüfen.",
+      "open_nodes_button": "Überprüfen Sie die Knotenliste {coin}"
+    }
   },
   "common": {
     "cancel": "Abbrechen",
@@ -71,20 +126,30 @@
   "error": "Error",
   "home": {
     "balance": "Balance",
-    "buy_tokens_btn": "Buy & sell coins",
+    "buy_tokens_btn": "Handel",
     "buy_tokens_btn_link": "https://adamant.im/de-buy-tokens/",
     "copied": "Kopiert",
-    "copy": "Copy",
-    "copy_address": "Copy address",
-    "copy_uri": "Copy Share link",
-    "create_qrcode": "Create QR code",
+    "copy": "Kopieren",
+    "copy_address": "Adresse kopieren",
+    "copy_uri": "Link kopieren",
+    "create_qrcode": "Erstellen Sie einen QR-Code",
     "exchanges_on": "Exchanges on {aggregator}",
     "free_adm_btn": "Free ADM tokens",
     "free_tokens_link": "https://adamant.im/de-free-adm-tokens/",
-    "send_btn": "Send funds",
+    "send_btn": "Geld senden",
     "share_uri": "Share {crypto} address",
     "show_qr_code": "Show QR code",
-    "stake_and_earn_btn": "Setzen und verdienen"
+    "stake_and_earn_btn": "Setzen und verdienen",
+    "wallet": "Geldbörse",
+    "wallet_crypto": "{crypto} Wallet",
+    "wallet_crypto_adamant_prefix": "",
+    "wallet_crypto_adamant_suffix": " Wallet",
+    "buy_tokens_anonymously": "Anonym auf der Website",
+    "buy_tokens_exchanger": "Austausch im Chat",
+    "no_active_nodes": "Keine aktiven Knoten",
+    "no_active_nodes_pull_down": "Keine aktiven {coin}-Knoten. Überprüfen Sie die Münzknotenliste",
+    "send_crypto": "Senden Sie {crypto}",
+    "explorer": "Im Block-Explorer öffnen"
   },
   "login": {
     "brand_title": "ADAMANT",
@@ -98,8 +163,15 @@
     "new_button": "Neu Erstellen",
     "new_password_label": "<b>Sichern</b> die Passphrase für deine neue Wallet und Messenger Konto. Es gibt keine andere Möglichkeit zum Login, nur mittels der Passphrase. Es gibt keine Möglichkeit der Wiederherstellung, bei Verlust der Passphrase.",
     "password_label": "Gib hier deine Passphrase ein",
+    "save_qr_code_to_images": "Speichern",
     "save_button_tooltip": "Klick hier um deine Passphrase in einer Textdatei zu speichern. Leg diese an einem sicheren Speicherort ab!",
-    "scan_qr_code_button_tooltip": "Scan QR with passphrase via device camera"
+    "scan_qr_code_button_tooltip": "Scan QR with passphrase via device camera",
+    "copy_button_tooltip": "Kopieren",
+    "new_passphrase_label": "<b>Speichern</b> die Passphrase Ihres neuen Kontos. Halten Sie es geheim; Es gewährt vollen Zugriff auf Ihr Portemonnaie und Ihre Nachrichten. Bei Verlust kann es nicht wiederhergestellt werden.",
+    "save_qr_code_tooltip": "Passphrase als QR-Code speichern. ⚠️ Hohes Leckagerisiko.",
+    "subheader": "Dezentraler Messenger",
+    "show_passphrase_tooltip": "Passphrase anzeigen",
+    "hide_passphrase_tooltip": "Passphrase ausblenden"
   },
   "login_via_password": {
     "article": "ADAMANT Blog",
@@ -113,7 +185,8 @@
     "popup_title": "Set password",
     "remove_password": "Remove password",
     "remove_password_hint": "Or remove password for login via passphrase",
-    "user_password_unlock": "Unlock"
+    "user_password_unlock": "Unlock",
+    "user_password_title": "Passwort"
   },
   "nodes": {
     "active": "Active",
@@ -135,12 +208,35 @@
     },
     "unsupported": "Nicht unterstützt",
     "unsupported_reason_protocol": "HTTP wird nicht unterstützt",
-    "unsupported_reason_api_version": "Veraltete API-Version"
+    "unsupported_reason_api_version": "Veraltete API-Version",
+    "popup": {
+      "http_restriction_title": "HTTP-Knoten sind im Browser blockiert",
+      "http_restriction_intro": "Aus Sicherheitsgründen blockieren Browser Anfragen von HTTPS-Seiten an HTTP-Endpunkte.",
+      "http_vs_https_title": "🔒 HTTP vs. HTTPS",
+      "http_vs_https_http": "HTTP ist unverschlüsselt, sodass Beobachter sehen können, welchen Knoten die App verwendet.",
+      "http_vs_https_https": "HTTPS verschlüsselt den Datenverkehr und verbirgt alles außer der Knotenadresse.",
+      "adamant_encryption_title": "💡 ADAMANT verschlüsselt alle Nachrichten",
+      "adamant_encryption_text": "ADAMANT verschlüsselt Blockchain-Nachrichten sowohl über HTTP als auch über HTTPS. Daher können ADAMANT-Knoten sicher über HTTP verwendet werden. Diese Browsereinschränkung gilt nur für die Web-App. Desktop- und mobile Apps unterstützen beide Protokolle.",
+      "how_to_allow_title": "So verwenden Sie HTTP-Knoten:",
+      "how_to_allow_browser": "Erlauben Sie unsichere Inhalte für diese Website in den Browsereinstellungen, oder",
+      "how_to_allow_http_app": "Öffnen Sie die HTTP-Version der App",
+      "close": "Schließen"
+    },
+    "label": "Typ",
+    "updating": "Aktualisierung",
+    "sync": "Synchronisierung",
+    "coin": "Münze",
+    "use_socket_connection": "Socket-Verbindung verwenden",
+    "use_socket_connection_tooltip": "Erhalten Sie Nachrichten sofort über WebSocket-Verbindungen"
   },
   "notifications": {
     "message": {
       "few": "0 Neue Nachricht | 1 Neue Nachricht | {n} Neue Nachrichten",
       "many": "{n} Neue Nachrichten"
+    },
+    "tabMessage": {
+      "few": "keine neuen Nachrichten | 1 Nachricht | {n} Nachrichten | {n} Nachrichten",
+      "many": "99+ Nachrichten"
     }
   },
   "options": {
@@ -158,7 +254,7 @@
     "nodes_list": "Liste der Knoten",
     "notification_title": "Benachrichtigungen",
     "other": "Other",
-    "page_title": "Settings",
+    "page_title": "Einstellungen",
     "push_denied": "PUSH notifications has been denied in browser settings",
     "push_not_supported": "PUSH notifications not supported by this browser",
     "security_title": "Sicherheit",
@@ -166,9 +262,27 @@
     "send_on_enter_tooltip": "Nachricht senden bei ENTER",
     "version": "App Version: ",
     "vote_for_delegates_button": "Vote for delegates",
-    "wallets_list": "Liste der Geldbörsen"
+    "wallets_list": "Liste der Geldbörsen",
+    "actions": "Aktionen",
+    "enable_push": "Desktop-Benachrichtigungen",
+    "enable_push_tooltip": "Warnungen über Browser-/Betriebssystembenachrichtigungen anzeigen (Berechtigungen erforderlich)",
+    "export_keys": {
+      "button": "Schlüssel exportieren",
+      "copy_all": "Alles kopieren",
+      "disclaimer": "Alle integrierten ADAMANT-Wallets sind durch Ihre Passphrase gesichert und ermöglichen Ihnen exklusiven Zugriff. Sie können private Schlüssel zwar exportieren, um sie anderswo zu verwenden, aber denken Sie daran: Die Sicherheit liegt ausschließlich in Ihrer Verantwortung.",
+      "eth": "Ethereum- und ERC-20-Token",
+      "passphrase": "Passphrase",
+      "title": "Private Schlüssel exportieren"
+    },
+    "format_messages": "Markdown-Formatierung",
+    "format_messages_tooltip": "Verwenden Sie _kursiv_, **fett**, `monospace` und mehr",
+    "stay_logged_in": "Bleiben Sie eingeloggt",
+    "stay_logged_in_tooltip": "Legen Sie ein App-Passwort für den schnellen Zugriff fest. Ein sicheres Passwort sorgt dafür, dass Ihre Nachrichten und Passphrasen sicher verschlüsselt bleiben.",
+    "use_full_date": "Zeigen Sie immer die vollständigen Daten an",
+    "use_full_date_tooltip": "Zeigt Datumsangaben als 17.01.2021 anstelle relativer Begriffe wie „Gestern“ oder „Heute“ an.",
+    "dev_screens": "Entwicklungsbildschirme"
   },
-  "region": "de-GER",
+  "region": "de-DE",
   "rows_per_page": "Rows per page",
   "scan": {
     "camera_button": "Camera",
@@ -191,17 +305,42 @@
     "valueTimeTxn": "Wert zum Zeitpunkt von Txn",
     "commission": "Gebühr",
     "confirmations": "Bestätigungen",
-    "continueChat": "Continue chat",
+    "continueChat": "Setzen Sie den Chat fort",
     "date": "Datum",
     "explorer": "Open in Explorer",
     "me": "Me",
     "me_and_addresses": "no address | Me and {n} more address | Me and {n} more addresses",
-    "no_transactions": "No transactions yet",
+    "no_transactions": "Noch keine Transaktionen",
     "recipient": "Zu",
     "sender": "Von",
-    "startChat": "Start chat",
-    "transactions": "Transactions",
-    "txid": "Transaktion #"
+    "startChat": "Chat starten",
+    "transactions": "Transaktionen",
+    "txid": "Transaktion #",
+    "status": "Status",
+    "comment": "Kommentar",
+    "textData": "Tx-Datensatz",
+    "statuses": {
+      "REJECTED": "Fehler",
+      "PENDING": "Ausstehend",
+      "REGISTERED": "Warten auf Bestätigungen",
+      "CONFIRMED": "Erfolg",
+      "INVALID": "Inkonsistent",
+      "UNKNOWN": "Unbekannte Krypto"
+    },
+    "statuses_add": {
+      "instant_send": "InstantSend bestätigt (noch 0 Blockchain-Bestätigungen)",
+      "adm_registered": "Vorläufige Abnahme (vollständige Bestätigung steht noch aus)"
+    },
+    "inconsistent_reasons": {
+      "unknown": "Die Transaktionsprüfung ist fehlgeschlagen",
+      "no_recipient_crypto_address": "Die {crypto}-Adresse des Empfängers fehlt",
+      "no_sender_crypto_address": "Die {crypto}-Adresse des Absenders fehlt",
+      "wrong_tx_hash": "Ungültiger Transaktions-Hash – möglicher Betrug",
+      "wrong_amount": "Nicht übereinstimmende Beträge – möglicher Betrug",
+      "wrong_timestamp": "Zeitstempeldiskrepanz zwischen Nachricht und {crypto}-Transaktion",
+      "sender_crypto_address_mismatch": "Absenderadresse geändert – potenzieller Betrug",
+      "recipient_crypto_address_mismatch": "Empfängeradresse geändert – potenzieller Betrug"
+    }
   },
   "transfer": {
     "amount_label": "Betrag der gesendet wird",
@@ -214,31 +353,52 @@
     "commission_label": "Transaktionsgebühr",
     "confirm_approve": "Bestätigt",
     "confirm_cancel": "Abbrechen",
-    "confirm_message": "Transaktionsbestätigung von  <b>{amount} {crypto}</b> an die Adresse <span class='address-in-confirm'>{target}</span>.",
-    "confirm_message_with_name": "Confirm transfer of <b>{amount} {crypto}</b> to {name} <span class=\"a-text-explanation-enlarged\">({address})</span>.",
+    "confirm_message": "Bestätigen Sie die Überweisung von <b>{amount} {crypto}</b> an die Adresse <span class=\"address-in-confirm\">{address}</span>.",
+    "confirm_message_with_name": "Bestätigen Sie die Überweisung von <b>{amount} {crypto}</b> an {name} <span class=\"a-text-explanation-enlarged\">({address})</span>.",
     "confirm_title": "Transaktionsbestätigung",
-    "crypto": "Cryptocurrency",
-    "decode_from_camera": "Scan QR with camera",
-    "decode_from_image": "Read QR from image",
-    "error_field_is_required": "Field is required",
+    "crypto": "Kryptowährung",
+    "decode_from_camera": "QR mit Kamera scannen",
+    "decode_from_image": "QR aus Bild lesen",
+    "error_field_is_required": "Feld ist erforderlich",
     "error_incorrect_address": "Keine gültige {crypto} Wallet Adresse",
     "error_incorrect_amount": "Kein gültiger Betrag",
     "error_no_address": "Bitte gib hier eine Wallet Adresse ein",
     "error_no_amount": "Bitte gib hier einen Betrag ein",
     "error_not_enough": "Nicht genug Token",
-    "error_same_recipient": "Recipient address can not be same as sender address",
-    "error_unknown": "Unknown error. Weak connection?",
-    "error_no_hash": "Failed. Unable to get Tx hash",
+    "error_same_recipient": "Empfängeradresse darf nicht mit der Absenderadresse übereinstimmen",
+    "error_unknown": "Unbekannter Fehler. Schwache Verbindung?",
+    "error_no_hash": "Transaktions-Hash konnte nicht abgerufen werden",
     "final_amount_label": "Betrag inklusive Transaktionsgebühr",
-    "increase_fee": "Increase fee",
-    "invalid_qr_code": "QR code does not contain an address or unrecognizable",
+    "increase_fee": "Gebühr erhöhen",
+    "invalid_qr_code": "QR-Code enthält keine Adresse oder ist nicht lesbar",
     "max_transfer": "Max to transfer",
-    "no_address_text": "This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.",
-    "no_address_title": "Recipient has no {crypto} wallet yet",
+    "no_address_text": "Dieser Benutzer hat noch keine öffentliche {crypto}-Wallet",
+    "no_address_title": "Empfänger hat keine öffentliche {crypto}-Wallet",
     "page_title": "Send funds",
     "send_button": "Betrag senden",
     "to_address_label": "An die Adresse",
-    "to_name_label": "To {name}"
+    "to_name_label": "An {name}",
+    "textdata_label": "Öffentliche Nachricht in der {crypto}-Blockchain",
+    "commission_estimate_label": "Geschätzte Ablösesumme",
+    "error_dust_amount": "Staubmenge – Senden Sie mehr Token",
+    "error_all_nodes_offline": "Alle {crypto}-Knoten offline",
+    "error_precision": "Zu viele Dezimalstellen – Reduzieren Sie die Genauigkeit",
+    "error_not_enough_adm_fee": "Für das Senden von {crypto} im Chat ist eine Gebühr von 0,001 ADM erforderlich",
+    "error_not_enough_eth_fee": "Nicht genug ETH, um eine Transfergebühr zu bezahlen",
+    "error_pending_transaction": "Die vorherige {crypto}-Transaktion wird noch verarbeitet. Fahren Sie später mit der neuen Übertragung fort.",
+    "no_address_text_offline": "Die öffentliche {crypto}-Wallet-Adresse des Benutzers konnte nicht abgerufen werden. Bitte überprüfen Sie Ihre Verbindung.",
+    "no_address_title_offline": "Verbindungsproblem",
+    "legacy_address_text": "Dieser Benutzer verfügt über eine alte {crypto}-Wallet. Es wird automatisch aktualisiert, wenn sie sich mit der neuesten App-Version anmelden.",
+    "legacy_address_title": "Der Empfänger verfügt über eine alte {crypto}-Wallet",
+    "warning_on_partner_address": {
+      "warning": "Warnung",
+      "headline": "Das Konto des Partners ist möglicherweise kompromittiert",
+      "about": "Benutzer können Kryptotransfers direkt im Chat akzeptieren, da ADAMANT Wallet-Adressen in der Blockchain speichert. Dies ist mit einer Passphrase gesichert.",
+      "specifics_many_addresses": "Das Konto {partner_account}{partner_name} hat mehrere gespeicherte {crypto}-Adressen: {manyAddresses}. Möglicherweise erhalten sie Ihre Überweisung nie.",
+      "reasons": "Dieses Konto könnte von Betrügern kontrolliert werden.",
+      "what_to_do": "Benachrichtigen Sie den Partner umgehend.",
+      "hide_button": "Habe es"
+    }
   },
   "votes": {
     "delegate_approval": "Blocks approved",
@@ -265,13 +425,65 @@
     "upvotes": "Upvotes",
     "vote_button_text": "Vote",
     "vote_request_limit": "Vote request limit: {limit}",
-    "waiting_confirmations": "Waiting for confirmations"
+    "waiting_confirmations": "Waiting for confirmations",
+    "loading_delegates": "Delegierte werden geladen…"
   },
   "wallets": {
     "coins_not_found_title": "Keine Kryptowährungen gefunden",
     "reset": "Zurücksetzen",
     "reset_message": "Möchten Sie die Liste wirklich in ihren ursprünglichen Zustand zurückversetzen?",
     "search": "Suchen",
-    "summary_title": "Einstellungen zurücksetzen"
+    "summary_title": "Einstellungen zurücksetzen",
+    "blockchain": "Mainnet"
+  },
+  "connection": {
+    "offline": "Offline – Keine Verbindung",
+    "online": "Online – Verbindung wiederhergestellt"
+  },
+  "dev_screens": {
+    "title": "Entwicklungstools",
+    "vibrations": "Vibrationen",
+    "adamant_wallets": "Adamant-Geldbörsen",
+    "logging": "Ausführliche Protokollierung in der Konsole"
+  },
+  "dev_vibrations": {
+    "custom_pattern": "Benutzerdefiniertes Muster",
+    "pattern_placeholder": "Beispiel: 100.200.300",
+    "play": "Spielen",
+    "presets": "Voreinstellungen",
+    "very_short": "Sehr kurz",
+    "short": "Kurz",
+    "medium": "Medium",
+    "long": "Lang",
+    "double_very_short": "Doppelt sehr kurz",
+    "triple_very_short": "Dreifach sehr kurz",
+    "double_short": "Doppelt kurz"
+  },
+  "dev_wallets": {
+    "configuration": "Konfiguration",
+    "select_coin": "Wählen Sie Münze",
+    "select_blockchain": "Wählen Sie Kontext aus",
+    "select_property": "Wählen Sie Eigenschaft aus",
+    "result": "Ergebnis",
+    "copy_value": "Wert kopieren"
+  },
+  "errors": {
+    "something_went_wrong": "Etwas ist schief gelaufen. Entwickler können den Debugger überprüfen",
+    "all_nodes_offline": "Keine aktiven {crypto}-Knoten. Überprüfen Sie die Knotenliste",
+    "all_adm_nodes_offline": "Keine aktiven Nachrichtenknoten. Überprüfen Sie die ADM-Knotenliste",
+    "all_nodes_disabled": "Keine {crypto}-Knoten verfügbar – Aktivieren Sie mindestens einen"
+  },
+  "warning_on_addresses": {
+    "warning": "Warnung",
+    "headline": "Ihr Konto ist möglicherweise kompromittiert",
+    "about": "Dank der Speicherung von Wallet-Adressen in der Blockchain durch ADAMANT können Sie Kryptotransfers direkt im Chat akzeptieren. Zum Speichern einer Adresse ist Ihre Passphrase erforderlich, sodass niemand sonst in Ihrem Namen falsche Adressen hinzufügen kann.",
+    "specifics_wrong_addresses": "Die App hat eine Inkonsistenz in Ihrer gespeicherten {crypto}-Adresse festgestellt. Derzeit gespeichert als: {storedAddress}, aber die korrekte Adresse lautet: {correctAddress}. Das heißt, wenn Ihnen jemand im Chat {crypto} sendet, erhalten Sie es nicht.",
+    "specifics_many_addresses": "Die App hat mehrere in Ihrem Konto gespeicherte {crypto}-Adressen erkannt: {manyAddresses}. Dies deutet darauf hin, dass möglicherweise betrügerische Adressen hinzugefügt wurden.",
+    "full_list_wrong_addresses": "Vollständige Liste der Kryptowährungen mit nicht übereinstimmenden Adressen: {crypto_list}.",
+    "full_list_many_addresses": "Wallets mit mehreren gespeicherten Adressen: {crypto_list}.",
+    "reasons": "Ihr Konto ist möglicherweise kompromittiert. Möglicherweise haben Sie Ihre Passphrase in eine Phishing-App eingegeben, die authentisch aussah, oder Hacker haben sich Zugriff darauf verschafft.",
+    "what_to_do": "Wir empfehlen, alle Ihre Kryptowährungen von diesem Konto auf ein neues zu übertragen. Stellen Sie sicher, dass Ihr Gerät sicher ist und verwenden Sie nur vertrauenswürdige Quellen für den Zugriff auf die App. Denken Sie daran: Sie allein sind für die Sicherheit Ihres Kontos verantwortlich.",
+    "hide_button": "Habe es",
+    "forget_button": "Auf diesem Gerät nicht mehr anzeigen"
   }
 }

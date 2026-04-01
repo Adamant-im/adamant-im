@@ -24,6 +24,7 @@ export default function smartNumber(num: string | number, locale: string = 'en-U
   const integerPartCount = String(integerPart).length
 
   const decimalPart = stringifiedNumber.split('.')[1]
+  const hasDecimalPart = decimalPart !== undefined && decimalPart !== ''
 
   // For very large numbers
   if (integerPart > maximumBeforeCompact) {
@@ -31,7 +32,11 @@ export default function smartNumber(num: string | number, locale: string = 'en-U
   }
 
   // For very small numbers
-  if (integerPart < 10 && BigNumber(toSmallPrecision(`0.${decimalPart}`)) <= minimumValue) {
+  if (
+    integerPart < 10 &&
+    hasDecimalPart &&
+    BigNumber(toSmallPrecision(`0.${decimalPart}`)) <= minimumValue
+  ) {
     const resultFullPart = toLocalCurrency(stringifiedNumber, locale, decimalOptions)
     const modifiedDecimal = String(toSmallPrecision(`0.${decimalPart}`))
       .split('.')

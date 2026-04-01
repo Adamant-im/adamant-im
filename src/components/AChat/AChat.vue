@@ -11,7 +11,11 @@
           :class="classes.spinnerWrapper"
           :style="{ top: spinnerTop + 'px' }"
         >
-          <v-progress-circular indeterminate :size="20" :class="classes.spinner" />
+          <v-progress-circular
+            indeterminate
+            :size="CHAT_CONNECTION_SPINNER_SIZE"
+            :class="classes.spinner"
+          />
         </div>
 
         <div ref="messagesRef" :class="classes.bodyMessages">
@@ -54,6 +58,7 @@ import { SCROLL_TO_REPLIED_MESSAGE_ANIMATION_DURATION } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { User } from '@/components/AChat/types'
+import { CHAT_CONNECTION_SPINNER_SIZE } from '@/components/Chat/helpers/uiMetrics'
 import { isWelcomeChat } from '@/lib/chat/meta/utils'
 
 const className = 'a-chat'
@@ -105,21 +110,32 @@ const currentClientHeight = ref(0)
 const placeholderHeight = ref(0)
 const scrollTop = ref(0)
 
+const SPINNER_VISIBLE_PLACEHOLDER_OFFSET = 12
+const SPINNER_PLACEHOLDER_TOP_OFFSET = 48
+const SPINNER_DEFAULT_TOP = 36
+// Mobile browsers can report fractional scroll positions while at the visual bottom
+const BOTTOM_SCROLL_TOLERANCE_PX = 2
+
 const resizeHandler = () => {
   if (!messagesRef.value) return
 
   const clientHeightDelta = currentClientHeight.value - messagesRef.value.clientHeight
 
-  const nonVisibleClientHeight =
-    messagesRef.value.scrollHeight -
-    messagesRef.value.clientHeight -
-    Math.ceil(messagesRef.value.scrollTop)
-  const scrolledToBottom = nonVisibleClientHeight === 0
+  const previousScrollHeight = currentScrollHeight.value || messagesRef.value.scrollHeight
+  const previousScrollTop = currentScrollTop.value || Math.ceil(messagesRef.value.scrollTop)
+  const previousClientHeight = currentClientHeight.value || messagesRef.value.clientHeight
+  const previousOffsetToBottom = previousScrollHeight - previousClientHeight - previousScrollTop
+  const scrolledToBottom = previousOffsetToBottom <= BOTTOM_SCROLL_TOLERANCE_PX
 
-  if (!scrolledToBottom) {
+  if (scrolledToBottom) {
+    // Keep the viewport anchored to the latest message when composer height changes
+    messagesRef.value.scrollTop = messagesRef.value.scrollHeight
+  } else {
     messagesRef.value.scrollTop += clientHeightDelta
   }
 
+  currentScrollTop.value = Math.ceil(messagesRef.value.scrollTop)
+  currentScrollHeight.value = messagesRef.value.scrollHeight
   currentClientHeight.value = messagesRef.value.clientHeight
 }
 
@@ -133,8 +149,9 @@ const onScroll = () => {
   const scrollHeight = messagesRef.value.scrollHeight
   const scrollTopVal = Math.ceil(messagesRef.value.scrollTop)
   const clientHeight = messagesRef.value.clientHeight
+  const offsetToBottom = scrollHeight - scrollTopVal - clientHeight
 
-  if (scrollHeight - scrollTopVal === clientHeight) {
+  if (offsetToBottom <= BOTTOM_SCROLL_TOLERANCE_PX) {
     emit('scroll:bottom')
   } else if (scrollTopVal === 0) {
     currentScrollHeight.value = scrollHeight
@@ -263,11 +280,11 @@ defineExpose({
 const spinnerTop = computed(() => {
   if (
     (props.showNewChatPlaceholder || props.isGettingPublicKey) &&
-    scrollTop.value < placeholderHeight.value + 12
+    scrollTop.value < placeholderHeight.value + SPINNER_VISIBLE_PLACEHOLDER_OFFSET
   ) {
-    return placeholderHeight.value - scrollTop.value + 48
+    return placeholderHeight.value - scrollTop.value + SPINNER_PLACEHOLDER_TOP_OFFSET
   }
-  return 36
+  return SPINNER_DEFAULT_TOP
 })
 </script>
 

@@ -1,42 +1,56 @@
 <template>
-  <div class="progress-fog">
+  <div class="progress-indicator progress-fog">
     <v-progress-circular
       v-show="showSpinner"
-      :size="150"
-      :stroke="1"
-      class="progress-circular"
-      color="#4A4A4A"
+      :size="PROGRESS_INDICATOR_SPINNER_SIZE"
+      :stroke="PROGRESS_INDICATOR_SPINNER_STROKE"
+      class="progress-indicator__spinner progress-circular"
       indeterminate
     />
   </div>
 </template>
 
 <script>
+const PROGRESS_INDICATOR_SPINNER_SIZE = 150
+const PROGRESS_INDICATOR_SPINNER_STROKE = 1
+
 export default {
   props: {
     showSpinner: {
       default: true,
       type: Boolean
     }
-  }
+  },
+  data: () => ({
+    PROGRESS_INDICATOR_SPINNER_SIZE,
+    PROGRESS_INDICATOR_SPINNER_STROKE
+  })
 }
 </script>
 
 <style lang="scss" scoped>
-.progress-circular {
-  left: 50%;
-  margin: 0px -75px;
+@use 'sass:map';
+@use '@/assets/styles/settings/_colors.scss';
+@use 'vuetify/settings';
+
+.progress-indicator {
+  background: var(--a-progress-indicator-backdrop);
   position: fixed;
-}
-.progress-fog {
-  background: rgba(0, 0, 0, 0.3);
-  height: 100%;
-  left: 0;
-  min-height: 100vh;
-  padding-top: 15%;
-  position: fixed;
-  top: 0;
+  inset: 0;
   width: 100%;
-  z-index: 10;
+  min-height: 100vh;
+  z-index: var(--a-progress-indicator-z-index);
+  display: grid;
+  place-items: center;
+}
+
+.progress-indicator__spinner {
+  color: map.get(colors.$adm-colors, 'regular');
+}
+
+.v-theme--dark {
+  .progress-indicator__spinner {
+    color: map.get(settings.$shades, 'white');
+  }
 }
 </style>

@@ -1,0 +1,3 @@
+export const NODE_STATUS_SPINNER_SIZE = 12
+export const NODE_STATUS_SPINNER_WIDTH = 2
+export const NODE_STATUS_DETAIL_ICON_SIZE = 12

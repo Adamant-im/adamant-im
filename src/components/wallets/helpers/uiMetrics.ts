@@ -1,0 +1,3 @@
+export const WALLET_ACTION_STAKE_ICON_SIZE = 24
+export const WALLET_LIST_ICON_SIZE = 32
+export const WALLET_TAB_LOADING_ICON_SIZE = 18

@@ -36,7 +36,9 @@ jobs:
           SECRET_KEY: ${{ secrets.MASSA_ACCOUNT_SECRET_KEY }}
           CONTRACT_ADDRESS: ${{ secrets.MASSA_WEBSITE_CONTRACT_ADDRESS }}
         run: |
-          npx @massalabs/deweb-cli upload ./dist \
+          # Work around upstream packaging issue: @massalabs/massa-web3 requires tslib
+          npm install --no-save @massalabs/deweb-cli@0.6.1 tslib@2.8.1
+          node node_modules/@massalabs/deweb-cli/bin/index.js upload ./dist \
             --node_url https://mainnet.massa.net/api/v2 \
             --address $CONTRACT_ADDRESS \
             --accept_disclaimer \

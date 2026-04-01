@@ -196,9 +196,12 @@ describe('store', () => {
 
   it('should reset state when logout', () => {
     const dispatch = vi.fn()
+    const commit = vi.fn()
 
-    actions.logout({ dispatch })
+    actions.logout({ dispatch, commit })
 
     expect(dispatch).toHaveBeenCalledWith('reset')
+    expect(commit).toHaveBeenCalledWith('options/resetAccountViewState', null, { root: true })
+    expect(commit).toHaveBeenCalledWith('options/resetSettingsViewState', null, { root: true })
   })
 })

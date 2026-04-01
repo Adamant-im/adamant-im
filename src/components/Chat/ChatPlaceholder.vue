@@ -11,12 +11,16 @@
       :class="[classes.container, `${classes.container}_public-key`]"
     >
       <div v-if="!isKeyMissing">
-        <v-progress-circular :class="classes.spinner" indeterminate :size="20" />
+        <v-progress-circular
+          :class="classes.spinner"
+          indeterminate
+          :size="CHAT_PLACEHOLDER_PUBLIC_KEY_SPINNER_SIZE"
+        />
         {{ t('chats.placeholder.public-key') }}
       </div>
       <div v-else>
         <p>{{ t('chats.placeholder.can_not_message') }}</p>
-        <a class="a-text-active" @click="openLink">
+        <a :class="classes.link" @click="openLink">
           {{ t('chats.placeholder.what_does_it_mean.text') }}
         </a>
       </div>
@@ -28,6 +32,7 @@
 import { useI18n } from 'vue-i18n'
 import { joinUrl } from '@/lib/urlFormatter'
 
+const CHAT_PLACEHOLDER_PUBLIC_KEY_SPINNER_SIZE = 20
 const { t } = useI18n()
 
 type Props = {
@@ -37,14 +42,15 @@ type Props = {
 }
 
 defineProps<Props>()
-const logo = joinUrl(import.meta.env.BASE_URL, '/img/adamant-logo-transparent-512x512.png');
+const logo = joinUrl(import.meta.env.BASE_URL, '/img/adamant-logo-transparent-512x512.png')
 const className = 'chat-placeholder'
 const classes = {
   root: className,
   row: `${className}__row`,
   container: `${className}__container`,
   spinner: `${className}__spinner`,
-  logo: `${className}__logo`
+  logo: `${className}__logo`,
+  link: `${className}__link`
 }
 const keys = ['encrypted', 'ipfs', 'anonymous', 'censorship']
 
@@ -58,14 +64,16 @@ function openLink() {
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/components/_chat.scss';
+@use '@/assets/styles/generic/_variables.scss';
+@use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
 
 .chat-placeholder {
   display: flex;
   flex-direction: column;
-  row-gap: 16px;
+  row-gap: var(--a-space-4);
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: var(--a-space-4);
 
   &__container {
     margin: auto;
@@ -74,31 +82,45 @@ function openLink() {
     height: auto;
     justify-content: flex-start;
     align-items: center;
-    row-gap: 5px;
-    padding: 16px;
-    background: map.get(colors.$adm-colors, 'black');
-    border-radius: 8px;
+    row-gap: var(--a-space-1);
+    padding: var(--a-space-4);
+    padding-bottom: var(--a-space-6);
+    border: var(--a-border-width-thin) solid transparent;
+    border-radius: var(--a-radius-sm);
+    @include mixins.a-surface-elevation-soft();
 
     &_public-key {
       height: auto;
       flex-direction: row;
-      column-gap: 8px;
+      column-gap: var(--a-space-2);
+    }
+
+    p {
+      margin: 0;
     }
   }
 
   &__spinner {
-    margin-bottom: 4px;
-    margin-right: 4px;
+    margin-bottom: var(--a-space-1);
+    margin-right: var(--a-space-1);
   }
 
   &__row {
     width: 100%;
     text-align: center;
+
+    @media (min-width: #{map.get(variables.$breakpoints, 'mobile') + 1px}) {
+      padding-inline: var(--a-screen-padding-inline);
+    }
   }
 
   &__logo {
-    width: 100px;
-    height: 100px;
+    width: var(--a-chat-placeholder-logo-size);
+    height: var(--a-chat-placeholder-logo-size);
+  }
+
+  &__link {
+    @include mixins.a-text-active();
   }
 }
 
@@ -112,11 +134,8 @@ function openLink() {
         color: map.get(settings.$blue, 'base');
       }
 
-      background: #fff;
-      box-shadow:
-        0 1px 10px hsla(0, 0%, 39.2%, 0.06),
-        0 1px 1px hsla(0, 0%, 39.2%, 0.04),
-        0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
+      background-color: map.get(colors.$adm-colors, 'light-gray');
+      border-color: map.get(colors.$adm-colors, 'light-gray2');
     }
 
     &__spinner {
@@ -132,11 +151,8 @@ function openLink() {
         color: map.get(settings.$blue, 'lighten-2');
       }
 
-      background-color: map.get(colors.$adm-colors, 'black');
-      box-shadow:
-        0 1px 10px hsla(0, 0%, 39.2%, 0.06),
-        0 1px 1px hsla(0, 0%, 39.2%, 0.04),
-        0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
+      background-color: map.get(colors.$adm-colors, 'black3');
+      border-color: map.get(colors.$adm-colors, 'black4');
     }
 
     &__spinner {

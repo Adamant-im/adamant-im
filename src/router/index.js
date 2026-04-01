@@ -164,7 +164,7 @@ const routes = [
         ]
       },
       {
-        path: '/transactions/:crypto?',
+        path: '/transactions/:crypto',
         component: Transactions,
         name: 'Transactions',
         props: true,

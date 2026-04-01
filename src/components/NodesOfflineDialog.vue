@@ -1,7 +1,7 @@
 <template>
-  <v-dialog v-model="showDialog" width="500" :class="className">
+  <v-dialog v-model="showDialog" width="var(--a-secondary-dialog-width)" :class="className">
     <v-card>
-      <v-card-title :class="`${className}__card-title a-text-header`">
+      <v-card-title :class="`${className}__card-title`">
         {{ t('chats.nodes_offline_dialog.title', { coin: nodeType.toUpperCase() }) }}
       </v-card-title>
 
@@ -9,16 +9,15 @@
 
       <v-card-text :class="`${className}__card-text`">
         <div
-          :class="`${className}__disclaimer a-text-regular-enlarged`"
+          :class="`${className}__disclaimer`"
           v-html="t('chats.nodes_offline_dialog.text', { coin: nodeType.toUpperCase() })"
         ></div>
       </v-card-text>
 
-      <v-col cols="12" :class="[`${className}__btn-block`, 'text-center']">
+      <v-col cols="12" :class="`${className}__btn-block`">
         <v-btn
-          @click="showDialog = false"
+          @click="openNodesScreen"
           :class="[`${className}__btn-free-tokens`, 'a-btn-primary']"
-          to="/options/nodes"
           variant="text"
           :prepend-icon="mdiOpenInNew"
         >
@@ -35,6 +34,7 @@
 import { computed, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import { NodeType } from '@/lib/nodes/types'
 import { mdiOpenInNew } from '@mdi/js'
 
@@ -54,6 +54,7 @@ export default {
   setup() {
     const { t } = useI18n()
     const store = useStore()
+    const router = useRouter()
 
     const showDialog = computed({
       get() {
@@ -64,12 +65,29 @@ export default {
       }
     })
 
+    const openNodesScreen = () => {
+      showDialog.value = false
+      store.commit('options/setSettingsLastRoute', '/options/nodes')
+      store.commit('options/setSettingsScrollPosition', {
+        path: '/options/nodes',
+        top: 0
+      })
+
+      router.push({
+        name: 'Nodes',
+        state: {
+          forceResetSettingsView: true
+        }
+      })
+    }
+
     return {
       t,
       classes,
       showDialog,
       className,
-      mdiOpenInNew
+      mdiOpenInNew,
+      openNodesScreen
     }
   }
 }
@@ -77,24 +95,25 @@ export default {
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '@/assets/styles/settings/_colors.scss';
+@use '@/assets/styles/components/_secondary-dialog.scss' as secondaryDialog;
 @use 'vuetify/_settings.scss';
 
 .all-nodes-disabled-dialog {
+  @include secondaryDialog.a-secondary-dialog-warning-frame();
+
   &__card-title {
+    @include secondaryDialog.a-secondary-dialog-title();
   }
-  &__card-text {
-    padding: 16px !important;
+
+  &__disclaimer {
+    @include secondaryDialog.a-secondary-dialog-body-copy();
   }
-  &__btn {
-    margin-top: 15px;
-    margin-bottom: 20px;
-  }
-  &__btn-icon {
-    margin-right: 8px;
-  }
+
   &__btn-block {
-    padding: 12px 0 24px 0;
-    text-align: center;
+    @include secondaryDialog.a-secondary-dialog-action-block(
+      var(--a-secondary-dialog-button-block-padding-top) 0
+        var(--a-secondary-dialog-button-block-padding-bottom) 0
+    );
   }
 }
 

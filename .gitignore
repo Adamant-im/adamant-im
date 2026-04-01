@@ -9,6 +9,8 @@ package3.json
 
 /tests/e2e/videos/
 /tests/e2e/screenshots/
+/playwright-report/
+/test-results/
 
 # local env files
 .env.local

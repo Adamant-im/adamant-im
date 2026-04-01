@@ -159,8 +159,10 @@ const store = {
         dispatch('afterLogin', account.passphrase)
       })
     },
-    logout({ dispatch }) {
+    logout({ dispatch, commit }) {
       dispatch('reset')
+      commit('options/resetAccountViewState', null, { root: true })
+      commit('options/resetSettingsViewState', null, { root: true })
       dispatch('wallets/initWalletsSymbols')
       dispatch('draftMessage/resetState', null, { root: true })
       PendingTxStore.clear()
@@ -188,12 +190,14 @@ const store = {
         ? replyWithCryptoTransferAsset(payload.replyToId, transferPayload)
         : cryptoTransferAsset(transferPayload)
 
-      return sendSpecialMessage(payload.address, asset, MessageType.RICH_CONTENT_MESSAGE).then((result) => {
-        if (!result.success) {
-          throw new Error(`Failed to send "${asset.type}"`)
+      return sendSpecialMessage(payload.address, asset, MessageType.RICH_CONTENT_MESSAGE).then(
+        (result) => {
+          if (!result.success) {
+            throw new Error(`Failed to send "${asset.type}"`)
+          }
+          return result.success
         }
-        return result.success
-      })
+      )
     },
     reset({ commit }) {
       commit('reset', null, { root: true })

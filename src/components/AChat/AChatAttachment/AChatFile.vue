@@ -2,7 +2,7 @@
   <div :class="classes.root">
     <AChatFileLoader v-if="isImage" :transaction="transaction" :partnerId="partnerId" :file="file">
       <template #default="{ fileUrl, error, isLoading, uploadProgress }">
-        <div v-if="error" :style="{ width: `${iconSize}px`, height: `${iconSize}px` }">
+        <div v-if="error" :class="classes.errorWrapper">
           <div :class="classes.error">
             <v-tooltip location="bottom">
               <template #activator="{ props }">
@@ -17,10 +17,10 @@
         <v-img
           v-else
           :src="fileUrl"
-          :width="iconSize"
-          :height="iconSize"
-          :max-width="iconSize"
-          :max-height="iconSize"
+          :width="CHAT_ATTACHMENT_PREVIEW_SIZE"
+          :height="CHAT_ATTACHMENT_PREVIEW_SIZE"
+          :max-width="CHAT_ATTACHMENT_PREVIEW_SIZE"
+          :max-height="CHAT_ATTACHMENT_PREVIEW_SIZE"
           cover
           @click="!isLoading && $emit('click')"
         >
@@ -47,7 +47,6 @@
         <div
           v-show="uploadProgress < 100"
           :class="[classes.placeholder, classes.placeholderTransparent, classes.uploadFileProgress]"
-          style=""
         >
           <v-progress-circular color="grey-lighten-4" :model-value="uploadProgress" />
         </div>
@@ -56,8 +55,8 @@
       <IconFile
         :class="classes.icon"
         :text="fileExtensionDisplay"
-        :height="iconSize"
-        :width="iconSize"
+        :height="CHAT_ATTACHMENT_PREVIEW_SIZE"
+        :width="CHAT_ATTACHMENT_PREVIEW_SIZE"
         @click="$emit('click')"
       />
     </div>
@@ -80,6 +79,7 @@ import IconFile from '@/components/icons/common/IconFile.vue'
 import { useStore } from 'vuex'
 import { AChatFileLoader } from './AChatFileLoader'
 import { mdiImageOff } from '@mdi/js'
+import { CHAT_ATTACHMENT_PREVIEW_SIZE } from '../helpers/uiMetrics'
 
 const className = 'a-chat-file'
 const classes = {
@@ -89,15 +89,13 @@ const classes = {
   uploadFileProgress: `${className}__upload-file-progress`,
   placeholderTransparent: `${className}__placeholder--transparent`,
   icon: `${className}__icon`,
-  iconWrapper: `${className}__icon-wrapper`,
+  errorWrapper: `${className}__error-wrapper`,
   fileInfo: `${className}__file-info`,
   name: `${className}__name`,
   size: `${className}__size`,
   error: `${className}__error`,
   errorIcon: `${className}__error-icon`
 }
-
-const iconSize = 64
 
 const props = defineProps<{
   transaction: NormalizedChatMessageTransaction
@@ -155,26 +153,41 @@ const uploadProgress = computed(() => {
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
 
 .a-chat-file {
+  --a-chat-file-width: calc(var(--a-space-10) * 4);
+  --a-chat-file-preview-size: calc(var(--a-space-4) * 4);
+  --a-chat-file-info-gap-inline: var(--a-space-2);
+  --a-chat-file-name-font-size: var(--a-font-size-md);
+  --a-chat-file-name-font-weight: 400;
+  --a-chat-file-size-font-size: var(--a-font-size-sm);
+  --a-chat-file-error-font-weight: 400;
+  --a-chat-attachment-placeholder-surface: #{map.get(colors.$adm-colors, 'secondary2')};
+  --a-chat-attachment-placeholder-surface-transparent: #{rgba(
+      map.get(colors.$adm-colors, 'grey'),
+      0.35
+    )};
+  --a-chat-attachment-error-surface: #{map.get(colors.$adm-colors, 'secondary2')};
+  --a-chat-attachment-error-icon-color: #{map.get(settings.$grey, 'darken-1')};
+  --a-chat-file-name-color: #{map.get(colors.$adm-colors, 'regular')};
+  --a-chat-file-size-color: #{map.get(colors.$adm-colors, 'muted')};
   display: flex;
   margin-left: auto;
-  width: 160px;
+  width: var(--a-chat-file-width);
 
   &__placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @include layoutPrimitives.a-flex-center();
     height: 100%;
   }
 
   &__file-icon {
     position: relative;
-    width: 64px;
-    height: 64px;
+    width: var(--a-chat-file-preview-size);
+    height: var(--a-chat-file-preview-size);
   }
 
   &__upload-file-progress {
@@ -183,7 +196,7 @@ const uploadProgress = computed(() => {
     bottom: 0;
     left: 0;
     right: 0;
-    border-radius: 8px;
+    border-radius: var(--a-radius-sm);
   }
 
   &__icon {
@@ -191,20 +204,22 @@ const uploadProgress = computed(() => {
   }
 
   &__file-info {
-    margin-left: 8px;
+    margin-left: var(--a-chat-file-info-gap-inline);
     overflow: hidden;
   }
 
   &__name {
-    font-size: 16px;
-    font-weight: 400;
+    font-size: var(--a-chat-file-name-font-size);
+    font-weight: var(--a-chat-file-name-font-weight);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--a-chat-file-name-color);
   }
 
   &__size {
-    font-size: 14px;
+    font-size: var(--a-chat-file-size-font-size);
+    color: var(--a-chat-file-size-color);
   }
 
   &__error {
@@ -213,63 +228,53 @@ const uploadProgress = computed(() => {
     justify-content: space-around;
     width: 100%;
     height: 100%;
-    font-weight: 400;
+    font-weight: var(--a-chat-file-error-font-weight);
+    background-color: var(--a-chat-attachment-error-surface);
+  }
+
+  &__error-wrapper {
+    width: var(--a-chat-file-preview-size);
+    height: var(--a-chat-file-preview-size);
+  }
+
+  &__placeholder {
+    background-color: var(--a-chat-attachment-placeholder-surface);
+
+    &--transparent {
+      background-color: var(--a-chat-attachment-placeholder-surface-transparent);
+    }
+  }
+
+  &__error-icon {
+    color: var(--a-chat-attachment-error-icon-color);
   }
 }
 
 .v-theme--dark {
   .a-chat-file {
-    &__placeholder {
-      background-color: map.get(colors.$adm-colors, 'muted');
-
-      &--transparent {
-        background-color: map.get(colors.$adm-colors, 'muted');
-      }
-    }
-
-    &__name {
-      color: map.get(settings.$shades, 'white');
-    }
-
-    &__size {
-      color: map.get(colors.$adm-colors, 'grey');
-    }
-
-    &__error {
-      background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
-    }
-
-    &__error-icon {
-      color: map.get(settings.$shades, 'white');
-    }
+    --a-chat-attachment-placeholder-surface: #{map.get(colors.$adm-colors, 'muted')};
+    --a-chat-attachment-placeholder-surface-transparent: #{map.get(colors.$adm-colors, 'muted')};
+    --a-chat-attachment-error-surface: #{map.get(
+        colors.$adm-colors,
+        'secondary2-slightly-transparent'
+      )};
+    --a-chat-attachment-error-icon-color: #{map.get(settings.$shades, 'white')};
+    --a-chat-file-name-color: #{map.get(settings.$shades, 'white')};
+    --a-chat-file-size-color: #{map.get(colors.$adm-colors, 'grey')};
   }
 }
 
 .v-theme--light {
   .a-chat-file {
-    &__placeholder {
-      background-color: map.get(colors.$adm-colors, 'secondary2');
-
-      &--transparent {
-        background-color: rgba(map.get(colors.$adm-colors, 'grey'), 0.35);
-      }
-    }
-
-    &__name {
-      color: map.get(colors.$adm-colors, 'regular');
-    }
-
-    &__size {
-      color: map.get(colors.$adm-colors, 'muted');
-    }
-
-    &__error {
-      background-color: map.get(colors.$adm-colors, 'secondary2');
-    }
-
-    &__error-icon {
-      color: map.get(settings.$grey, 'darken-1');
-    }
+    --a-chat-attachment-placeholder-surface: #{map.get(colors.$adm-colors, 'secondary2')};
+    --a-chat-attachment-placeholder-surface-transparent: #{rgba(
+        map.get(colors.$adm-colors, 'grey'),
+        0.35
+      )};
+    --a-chat-attachment-error-surface: #{map.get(colors.$adm-colors, 'secondary2')};
+    --a-chat-attachment-error-icon-color: #{map.get(settings.$grey, 'darken-1')};
+    --a-chat-file-name-color: #{map.get(colors.$adm-colors, 'regular')};
+    --a-chat-file-size-color: #{map.get(colors.$adm-colors, 'muted')};
   }
 }
 </style>

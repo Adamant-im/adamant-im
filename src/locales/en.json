@@ -26,6 +26,7 @@
     "me": "Me",
     "message": "Message",
     "message_rejected": "Message rejected",
+    "message_not_sent_status": "Message not sent",
     "my_qr_code": "My QR code",
     "new_chat": "New chat",
     "no_connection": "No Internet connection",
@@ -48,7 +49,7 @@
     "received_label": "Received",
     "recipient": "Partner address",
     "recipient_tooltip": "Partner ADM address like U1234567890987654321 or Share link",
-    "retry_message": "Could not send: Weak connection. Tap to retry",
+    "retry_message": "Could not send: Weak connection",
     "send_button": "Send",
     "send_crypto": "Send {crypto}",
     "sent_label": "Sent",
@@ -89,6 +90,7 @@
     },
     "you": "You",
     "chat_actions": {
+      "retry": "Retry",
       "reply": "Reply",
       "copy": "Copy"
     },
@@ -173,6 +175,8 @@
     "show_qr_code": "Show QR code",
     "stake_and_earn_btn": "Stake and earn",
     "wallet": "wallet",
+    "wallet_crypto_adamant_prefix": "",
+    "wallet_crypto_adamant_suffix": " wallet",
     "wallet_crypto": "{crypto} wallet",
     "explorer": "Open in block explorer"
   },
@@ -203,7 +207,7 @@
     "new_passphrase_label": "<b>Save</b> your new account passphrase. Keep it secret; it grants full access to your wallet and messages. If lost, it cannot be recovered.",
     "password_label": "Passphrase",
     "save_button_tooltip": "Save passphrase in a text file. ⚠️ High risk of leakage.",
-    "save_qr_code_to_images": "Save to images",
+    "save_qr_code_to_images": "Save",
     "save_qr_code_tooltip": "Save passphrase as a QR code. ⚠️ High risk of leakage.",
     "scan_qr_code_button_tooltip": "Scan QR code with passphrase using your camera",
     "subheader": "Decentralized messenger",
