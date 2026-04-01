@@ -143,6 +143,12 @@ export class AndroidPushService extends BasePushService {
 
   async revokeLocalSubscription(): Promise<void> {
     await this.clearPrivateKeyFromAndroid()
+    try {
+      const { Preferences } = await import('@capacitor/preferences')
+      await Preferences.set({ key: 'allowNotificationType', value: '0' })
+    } catch (error) {
+      console.error('Failed to update allowNotificationType in Preferences:', error)
+    }
   }
 
   isInitialized(): boolean {
