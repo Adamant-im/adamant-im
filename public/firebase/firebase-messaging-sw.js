@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
-importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js')
-importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging-compat.js')
-importScripts('https://cdnjs.cloudflare.com/ajax/libs/tweetnacl/1.0.3/nacl.min.js')
+importScripts('/js/firebase-app-compat.js')
+importScripts('/js/firebase-messaging-compat.js')
+importScripts('/js/nacl.min.js')
 importScripts('/js/ed2curve.min.js')
 
 function hexToBytes(hex) {
