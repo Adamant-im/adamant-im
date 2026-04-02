@@ -79,6 +79,7 @@ export default defineConfig([
     'src/types/wallets/**',
     'src/components/icons/cryptos/*.vue',
     'dist/**',
-    'node_modules/**'
+    'node_modules/**',
+    'public/js/*.js'
   ])
 ])

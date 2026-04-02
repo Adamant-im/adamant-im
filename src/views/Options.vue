@@ -2,7 +2,6 @@
   <navigation-wrapper :class="className">
     <router-view v-if="hasView" />
     <template v-else>
-      <!-- General -->
       <h3 :class="[`${className}__title`, `${className}__title--first`]">
         {{ t('options.general_title') }}
       </h3>
@@ -34,7 +33,6 @@
         </v-col>
       </v-row>
 
-      <!-- Security -->
       <h3 :class="[`${className}__title`, `${className}__title--section`]">
         {{ t('options.security_title') }}
       </h3>
@@ -57,7 +55,6 @@
         </v-col>
       </v-row>
 
-      <!-- Chats -->
       <h3 :class="[`${className}__title`, `${className}__title--section`]">
         {{ t('options.chats_title') }}
       </h3>
@@ -105,7 +102,6 @@
         </v-col>
       </v-row>
 
-      <!-- Notifications -->
       <h3 :class="[`${className}__title`, `${className}__title--section`]">
         {{ t('options.notification_title') }}
       </h3>
@@ -118,7 +114,6 @@
             density="comfortable"
             hide-details
           />
-
           <div :class="`${className}__explanation`">
             {{ t('options.enable_sound_tooltip') }}
           </div>
@@ -131,20 +126,24 @@
             density="comfortable"
             hide-details
           />
-
           <div :class="`${className}__explanation`">
             {{ t('options.enable_push_tooltip') }}
           </div>
         </v-col>
       </v-row>
 
-      <!-- Actions -->
       <h3 :class="[`${className}__title`, `${className}__title--section`]">
         {{ t('options.actions') }}
       </h3>
       <v-row gap="0">
         <v-col cols="12">
           <v-list class="actions-list">
+            <v-list-item
+              :title="t('options.notification_title')"
+              :append-icon="mdiChevronRight"
+              @click="navigateToSettingsChild('/options/notifications')"
+            />
+
             <v-list-item
               :title="t('options.nodes_list')"
               :append-icon="mdiChevronRight"
@@ -187,6 +186,7 @@
           </v-list>
         </v-col>
       </v-row>
+
       <v-row gap="0">
         <button
           type="button"
@@ -215,9 +215,12 @@ import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import { resetPinia } from '@/plugins/pinia'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
-import { sidebarLayoutKey } from '@/lib/constants'
+import { NotificationType, sidebarLayoutKey } from '@/lib/constants'
 import { useChatStateStore } from '@/stores/modal-state'
 import { logger } from '@/utils/devTools/logger'
+
+import { pushService } from '@/lib/notifications/pushServiceFactory'
+import { usePushNotificationSetup } from '@/hooks/pushNotifications/usePushNotificationSetup'
 
 const store = useStore()
 const chatStateStore = useChatStateStore()
@@ -225,6 +228,9 @@ const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
 const theme = useTheme()
+
+// Initialize Push Notifications
+usePushNotificationSetup()
 
 const className = 'settings-view'
 const hasView = computed(() => route.matched.length > 2)
@@ -247,63 +253,46 @@ const isSettingsPath = (path: string) => {
   return path.startsWith(SETTINGS_PATH_PREFIX) || SETTINGS_ROUTE_PATHS.includes(path)
 }
 const getCurrentScrollTop = () => sidebarLayoutRef?.value?.scrollTop || 0
-const applySettingsScrollTop = (top: number) => {
-  if (!sidebarLayoutRef?.value) {
-    return
-  }
 
+const applySettingsScrollTop = (top: number) => {
+  if (!sidebarLayoutRef?.value) return
   sidebarLayoutRef.value.scrollTop = top
   sidebarLayoutRef.value.scrollTo({ top })
 }
+
 const shouldResetSettingsViewState = (path: string) => {
-  if (window.history.state?.[SETTINGS_STATE_FORCE_RESET_KEY]) {
-    return true
-  }
-
-  if (!window.history.state?.[SETTINGS_STATE_RESET_KEY]) {
-    return false
-  }
-
+  if (window.history.state?.[SETTINGS_STATE_FORCE_RESET_KEY]) return true
+  if (!window.history.state?.[SETTINGS_STATE_RESET_KEY]) return false
   return store.getters['options/settingsScrollPosition'](path) <= 0
 }
+
 const stopSettingsRestore = () => {
   if (settingsRestoreFrame) {
     window.cancelAnimationFrame(settingsRestoreFrame)
     settingsRestoreFrame = 0
   }
-
   settingsRestoreObserver?.disconnect()
   settingsRestoreObserver = null
 }
+
 const waitForSettingsViewFrame = async () => {
   await nextTick()
   await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
 }
-const onSidebarScroll = () => {
-  if (isRestoringSettingsScroll.value || isLoggingOut.value) {
-    return
-  }
 
+const onSidebarScroll = () => {
+  if (isRestoringSettingsScroll.value || isLoggingOut.value) return
   saveSettingsViewState(activeSettingsScrollPath.value)
 }
 
 const saveSettingsViewState = (path = route.path) => {
-  if (!isSettingsPath(path) || !sidebarLayoutRef?.value) {
-    return
-  }
-
+  if (!isSettingsPath(path) || !sidebarLayoutRef?.value) return
   store.commit('options/setSettingsLastRoute', path)
-  store.commit('options/setSettingsScrollPosition', {
-    path,
-    top: getCurrentScrollTop()
-  })
+  store.commit('options/setSettingsScrollPosition', { path, top: getCurrentScrollTop() })
 }
 
 const restoreSettingsViewState = async (path = route.path) => {
-  if (!isSettingsPath(path) || !sidebarLayoutRef?.value) {
-    return
-  }
-
+  if (!isSettingsPath(path) || !sidebarLayoutRef?.value) return
   stopSettingsRestore()
   isRestoringSettingsScroll.value = true
   await waitForSettingsViewFrame()
@@ -318,11 +307,7 @@ const restoreSettingsViewState = async (path = route.path) => {
   const finalizeRestore = (restoredTop: number) => {
     stopSettingsRestore()
     activeSettingsScrollPath.value = path
-    store.commit('options/setSettingsScrollPosition', {
-      path,
-      top: restoredTop
-    })
-
+    store.commit('options/setSettingsScrollPosition', { path, top: restoredTop })
     store.commit('options/setSettingsLastRoute', path)
     isRestoringSettingsScroll.value = false
   }
@@ -344,7 +329,6 @@ const restoreSettingsViewState = async (path = route.path) => {
     }
 
     applySettingsScrollTop(top)
-
     const currentTop = getCurrentScrollTop()
     const canReachTop =
       sidebarLayoutRef.value.scrollHeight - sidebarLayoutRef.value.clientHeight >= top - 1
@@ -353,7 +337,6 @@ const restoreSettingsViewState = async (path = route.path) => {
     if (reachedTop) {
       stableFrames = currentTop === lastTop ? stableFrames + 1 : 1
       lastTop = currentTop
-
       if (stableFrames >= 2) {
         finalizeRestore(currentTop)
         return
@@ -367,16 +350,15 @@ const restoreSettingsViewState = async (path = route.path) => {
       finalizeRestore(currentTop)
       return
     }
-
     settingsRestoreFrame = window.requestAnimationFrame(continueRestore)
   }
 
-  settingsRestoreObserver = new ResizeObserver(() => {
-    applySettingsScrollTop(top)
-  })
+  settingsRestoreObserver = new ResizeObserver(() => applySettingsScrollTop(top))
   settingsRestoreObserver.observe(sidebarLayoutRef.value)
   settingsRestoreFrame = window.requestAnimationFrame(continueRestore)
 }
+
+/** Computed Options **/
 
 const isPasswordDialogDisplayed = computed({
   get() {
@@ -387,19 +369,14 @@ const isPasswordDialogDisplayed = computed({
   }
 })
 
-const stayLoggedIn = computed(() => {
-  return store.state.options.stayLoggedIn
-})
+const stayLoggedIn = computed(() => store.state.options.stayLoggedIn)
 
 const sendMessageOnEnter = computed({
   get() {
     return store.state.options.sendMessageOnEnter
   },
   set(value) {
-    store.commit('options/updateOption', {
-      key: 'sendMessageOnEnter',
-      value
-    })
+    store.commit('options/updateOption', { key: 'sendMessageOnEnter', value })
   }
 })
 
@@ -408,10 +385,7 @@ const formatMessages = computed({
     return store.state.options.formatMessages
   },
   set(value) {
-    store.commit('options/updateOption', {
-      key: 'formatMessages',
-      value
-    })
+    store.commit('options/updateOption', { key: 'formatMessages', value })
   }
 })
 
@@ -420,10 +394,7 @@ const useFullDate = computed({
     return store.state.options.useFullDate
   },
   set(value) {
-    store.commit('options/updateOption', {
-      key: 'useFullDate',
-      value
-    })
+    store.commit('options/updateOption', { key: 'useFullDate', value })
   }
 })
 
@@ -432,10 +403,7 @@ const allowSoundNotifications = computed({
     return store.state.options.allowSoundNotifications
   },
   set(value) {
-    store.commit('options/updateOption', {
-      key: 'allowSoundNotifications',
-      value
-    })
+    store.commit('options/updateOption', { key: 'allowSoundNotifications', value })
   }
 })
 
@@ -444,10 +412,7 @@ const allowPushNotifications = computed({
     return store.state.options.allowPushNotifications
   },
   set(value) {
-    store.commit('options/updateOption', {
-      key: 'allowPushNotifications',
-      value
-    })
+    store.commit('options/updateOption', { key: 'allowPushNotifications', value })
   }
 })
 
@@ -456,62 +421,68 @@ const darkTheme = computed({
     return store.state.options.darkTheme
   },
   set(isDarkTheme) {
-    store.commit('options/updateOption', {
-      key: 'darkTheme',
-      value: isDarkTheme
-    })
-
-    theme.change(isDarkTheme ? 'dark' : 'light')
+    store.commit('options/updateOption', { key: 'darkTheme', value: isDarkTheme })
+    if (theme.change) {
+      theme.change(isDarkTheme ? 'dark' : 'light')
+    } else {
+      theme.global.name.value = isDarkTheme ? 'dark' : 'light'
+    }
   }
 })
 
 const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
-
 const isDevModeEnabled = computed({
   get() {
     return store.state.options.devModeEnabled
   },
   set(value) {
-    store.commit('options/updateOption', {
-      key: 'devModeEnabled',
-      value
-    })
+    store.commit('options/updateOption', { key: 'devModeEnabled', value })
   }
 })
 
+/** Logic Methods **/
+
 const onSetPassword = () => {
-  store.commit('options/updateOption', {
-    key: 'stayLoggedIn',
-    value: true
-  })
+  store.commit('options/updateOption', { key: 'stayLoggedIn', value: true })
 }
 
-const onCheckStayLoggedIn = () => {
+const onCheckStayLoggedIn = async () => {
   if (!stayLoggedIn.value) {
     isIDBSupported
       .then(() => {
         isPasswordDialogDisplayed.value = true
       })
       .catch(() => {
-        store.dispatch('snackbar/show', {
-          message: t('options.idb_not_supported'),
-          timeout: 5000
-        })
+        store.dispatch('snackbar/show', { message: t('options.idb_not_supported'), timeout: 5000 })
       })
   } else {
-    clearDb().then(() => {
-      store.commit('options/updateOption', {
-        key: 'stayLoggedIn',
-        value: false
-      })
+    // Unregister Push on disable (from Feat)
+    await pushService.unregisterDevice()
+    store.commit('options/updateOption', {
+      key: 'allowNotificationType',
+      value: NotificationType['NoNotifications']
+    })
 
+    clearDb().then(() => {
+      store.commit('options/updateOption', { key: 'stayLoggedIn', value: false })
       store.commit('resetPassword')
     })
   }
 }
 
-const logout = () => {
+const logout = async () => {
   isLoggingOut.value = true
+
+  // Unregister Push on Logout (from Feat)
+  if (store.state.options.allowNotificationType === NotificationType['Push']) {
+    await pushService.unregisterDevice()
+    store.commit('options/updateOption', {
+      key: 'allowNotificationType',
+      value: NotificationType['NoNotifications']
+    })
+  }
+  pushService.reset()
+
   resetPinia()
   store.dispatch('stopInterval')
   store.dispatch('logout')
@@ -522,9 +493,7 @@ const logout = () => {
         logger.log('options', 'warn', err)
       })
       .finally(() => {
-        // turn off `loginViaPassword` option
         store.commit('options/updateOption', { key: 'stayLoggedIn', value: false })
-
         router.push('/')
       })
   } else {
@@ -534,29 +503,22 @@ const logout = () => {
 
 const onVersionClick = () => {
   tapCount.value++
-
   if (tapCount.value >= 10) {
     isDevModeEnabled.value = true
-
-    store.dispatch('snackbar/show', {
-      message: 'Dev screens enabled',
-      timeout: 3000
-    })
+    store.dispatch('snackbar/show', { message: 'Dev screens enabled', timeout: 3000 })
   }
 }
 
 const navigateToSettingsChild = (path: string) => {
   saveSettingsViewState(route.path)
-
   const savedTop = store.getters['options/settingsScrollPosition'](path)
-
   router.push({
     path,
-    state: {
-      resetSettingsView: savedTop <= 0
-    }
+    state: { [SETTINGS_STATE_RESET_KEY]: savedTop <= 0 }
   })
 }
+
+/** Lifecycle **/
 
 onMounted(() => {
   sidebarLayoutRef?.value?.addEventListener('scroll', onSidebarScroll, { passive: true })
@@ -566,7 +528,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   stopSettingsRestore()
   sidebarLayoutRef?.value?.removeEventListener('scroll', onSidebarScroll)
-
   if (!isRestoringSettingsScroll.value && !isLoggingOut.value) {
     saveSettingsViewState(activeSettingsScrollPath.value)
   }
@@ -694,6 +655,18 @@ watch(
 
   &__logout {
     margin-top: var(--a-settings-logout-margin-top);
+  }
+  &__info-tooltip {
+    white-space: break-spaces;
+    :deep(.v-overlay__content) {
+      padding-top: 24px;
+      color: white;
+      background-color: map.get(colors.$adm-colors, 'regular');
+    }
+  }
+  &__notifications-col {
+    height: 60px;
+    margin-top: -10px !important;
   }
 }
 
