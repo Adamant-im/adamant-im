@@ -149,6 +149,7 @@ const messaging = firebase.messaging()
 let securePort = null
 
 self.addEventListener('message', (event) => {
+  console.log('[Push-Reg] SW: Message received from UI')
   if (event.data && event.data.type === 'INIT_SECURE_CHANNEL') {
     // Close old port if exists
     if (securePort) {
@@ -202,6 +203,7 @@ async function handleSecureMessage(data) {
       await saveToStorage('currentUserAddress', '')
       break
     case 'SYNC_SETTINGS':
+      console.log('[Push-Reg] SW: Syncing settings')
       if (payload?.currentUserAddress) {
         if (currentUserAddress && currentUserAddress !== payload.currentUserAddress) {
           // User changed - clear old key
@@ -285,6 +287,9 @@ function parseTransactionPayload(payload) {
 }
 
 messaging.onBackgroundMessage(async (payload) => {
+  console.log('[Push-Reg] SW: Incoming push event from network')
+  await initDB()
+  console.log('[Push-Reg] SW: DB initialized')
   if (!securePort) {
     const windowClients = await self.clients.matchAll({ type: 'window' })
     windowClients.forEach((c) => c.postMessage({ type: 'SW_RESTARTED' }))

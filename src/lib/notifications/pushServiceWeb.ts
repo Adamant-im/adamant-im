@@ -60,11 +60,13 @@ export class WebPushService extends BasePushService {
     if (this.deviceId) {
       try {
         const signalData = signalAsset(this.deviceId, this.token, 'FCM', 'add')
+        console.log('[Push-Reg] Web: Sending registration transaction to blockchain - add')
         await sendSpecialMessage(
           ADAMANT_NOTIFICATION_SERVICE_ADDRESS,
           signalData,
           MessageType.SIGNAL_MESSAGE
         )
+        console.log('[Push-Reg] Web: Registration transaction SUCCESS')
       } catch (error) {
         console.error('Failed to register device with notification service:', error)
         throw error
@@ -75,7 +77,7 @@ export class WebPushService extends BasePushService {
   async unregisterDevice(): Promise<boolean> {
     if (!this.token || !this.deviceId) return false
     const signalData = signalAsset(this.deviceId, this.token, 'FCM', 'remove')
-
+    console.log('[Push-Reg] Web: Sending registration transaction to blockchain - remove')
     try {
       await sendSpecialMessage(
         ADAMANT_NOTIFICATION_SERVICE_ADDRESS,
@@ -86,7 +88,7 @@ export class WebPushService extends BasePushService {
       await this.revokeLocalSubscription()
 
       this.token = null
-
+      console.error('[Push-Reg] Web: Unregistration FAILED')
       return true
     } catch (error) {
       console.error('Failed to unregister device:', error)

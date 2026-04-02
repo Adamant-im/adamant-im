@@ -219,7 +219,6 @@ import { NotificationType, sidebarLayoutKey } from '@/lib/constants'
 import { useChatStateStore } from '@/stores/modal-state'
 import { logger } from '@/utils/devTools/logger'
 
-// Imports from Feat branch (Push logic)
 import { pushService } from '@/lib/notifications/pushServiceFactory'
 import { usePushNotificationSetup } from '@/hooks/pushNotifications/usePushNotificationSetup'
 

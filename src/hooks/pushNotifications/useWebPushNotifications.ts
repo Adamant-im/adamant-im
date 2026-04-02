@@ -24,10 +24,12 @@ export function useWebPushNotifications() {
     if (!port.value || !isSecureChannelReady.value || isSyncing.value) return
 
     isSyncing.value = true
+    console.log('[Push-Reg] UI: Start flushing message queue')
     while (messageQueue.length > 0) {
       const msg = messageQueue.shift()
       if (msg) {
         try {
+          console.log('[Push-Reg] UI: Posting message to Service Worker')
           port.value.postMessage({
             type: msg.type,
             payload: msg.payload,
