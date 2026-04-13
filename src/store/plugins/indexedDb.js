@@ -135,11 +135,12 @@ export default (store) => {
         .then(() => {
           store.dispatch('startInterval')
         })
-        .catch(() => {
+        .catch((err) => {
           logger.log(
             'indexed-db-plugin',
             'warn',
-            'Can not decode IDB with current password. Fallback to Login via Passphrase.'
+            'Failed to restore state from IndexedDB. This may happen after a security update. User will need to log in with passphrase to restore data from blockchain.',
+            err
           )
 
           clearDb()

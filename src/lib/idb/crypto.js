@@ -8,8 +8,6 @@ import { UserPasswordHashSettings } from '@/lib/constants'
 import store from '@/store'
 import { Buffer } from 'buffer'
 
-const NONCE = Buffer.allocUnsafe(24)
-
 /**
  * @param {string|number|Object} data
  * @returns {Buffer}
@@ -18,7 +16,10 @@ export function encrypt(data) {
   const stringified = JSON.stringify(data)
   const secretKey = ed2curve.convertSecretKey(store.state.password)
 
-  return nacl.secretbox(Buffer.from(stringified), NONCE, secretKey)
+  const nonce = nacl.randomBytes(24)
+  const box = nacl.secretbox(Buffer.from(stringified), nonce, secretKey)
+
+  return Buffer.concat([nonce, box])
 }
 
 /**
@@ -27,8 +28,16 @@ export function encrypt(data) {
  */
 export function decrypt(encryptedData) {
   const secretKey = ed2curve.convertSecretKey(store.state.password)
-  const decoded = decode(nacl.secretbox.open(encryptedData, NONCE, secretKey))
 
+  const nonce = encryptedData.subarray(0, 24)
+  const box = encryptedData.subarray(24)
+  const decrypted = nacl.secretbox.open(box, nonce, secretKey)
+
+  if (decrypted === null) {
+    throw new Error('Failed to decrypt data: invalid format or wrong password')
+  }
+
+  const decoded = decode(decrypted)
   return JSON.parse(decoded)
 }
 
