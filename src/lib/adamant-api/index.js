@@ -1,7 +1,12 @@
 import Queue from 'promise-queue'
 import { Base64 } from 'js-base64'
 
-import constants, { Transactions, Delegates, MessageType } from '@/lib/constants'
+import constants, {
+  Transactions,
+  Delegates,
+  MessageType,
+  UserPasswordHashSettings
+} from '@/lib/constants'
 import utils from '@/lib/adamant'
 import client from '@/lib/nodes/adm'
 import { encryptPassword } from '@/lib/idb/crypto'
@@ -646,9 +651,21 @@ export function loginOrRegister(passphrase) {
  * @returns {Promise} Encrypted password
  */
 export function loginViaPassword(password, store) {
-  return encryptPassword(password)
+  const currentPassword = store.state.password
+  const isPasswordObject = currentPassword && typeof currentPassword === 'object'
+  const expectedHash = isPasswordObject ? currentPassword.hash : currentPassword
+  const salt = isPasswordObject
+    ? currentPassword.salt
+    : store.state.passwordSalt || UserPasswordHashSettings.SALT
+
+  return encryptPassword(password, salt)
     .then((encryptedPassword) => {
+      if (expectedHash && encryptedPassword.hash !== expectedHash) {
+        throw new Error('Invalid password')
+      }
+
       store.commit('setPassword', encryptedPassword)
+      store.commit('setPasswordSalt', encryptedPassword.salt)
 
       return restoreState(store)
     })

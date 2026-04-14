@@ -8,13 +8,21 @@ import { UserPasswordHashSettings } from '@/lib/constants'
 import store from '@/store'
 import { Buffer } from 'buffer'
 
+function getPasswordHash(password) {
+  if (password && typeof password === 'object' && password.hash) {
+    return password.hash
+  }
+
+  return password
+}
+
 /**
  * @param {string|number|Object} data
  * @returns {Buffer}
  */
 export function encrypt(data) {
   const stringified = JSON.stringify(data)
-  const secretKey = ed2curve.convertSecretKey(store.state.password)
+  const secretKey = ed2curve.convertSecretKey(getPasswordHash(store.state.password))
 
   const nonce = nacl.randomBytes(24)
   const box = nacl.secretbox(Buffer.from(stringified), nonce, secretKey)
@@ -27,7 +35,7 @@ export function encrypt(data) {
  * @returns {string|number|Object}
  */
 export function decrypt(encryptedData) {
-  const secretKey = ed2curve.convertSecretKey(store.state.password)
+  const secretKey = ed2curve.convertSecretKey(getPasswordHash(store.state.password))
 
   const nonce = encryptedData.subarray(0, 24)
   const box = encryptedData.subarray(24)
@@ -41,20 +49,21 @@ export function decrypt(encryptedData) {
   return JSON.parse(decoded)
 }
 
-export function encryptPassword(password) {
+export function encryptPassword(password, salt) {
   return new Promise((resolve, reject) => {
+    const passwordSalt = salt ? salt : bytesToHex(crypto.getRandomValues(new Uint8Array(32)))
     pbkdf2.pbkdf2(
       password,
-      UserPasswordHashSettings.SALT,
+      passwordSalt,
       UserPasswordHashSettings.ITERATIONS,
       UserPasswordHashSettings.KEYLEN,
       UserPasswordHashSettings.DIGEST,
       (err, encryptedPassword) => {
         if (err) return reject(err)
 
-        const passwordString = bytesToHex(encryptedPassword)
+        const hash = bytesToHex(encryptedPassword)
 
-        resolve(passwordString)
+        resolve({ salt: passwordSalt, hash })
       }
     )
   })

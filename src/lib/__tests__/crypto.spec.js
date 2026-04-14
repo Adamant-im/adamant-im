@@ -122,3 +122,25 @@ describe('Random nonce per encryption', () => {
     expect(decrypted).toStrictEqual(testData)
   })
 })
+
+describe('encryptPassword', () => {
+  it('returns hash with random salt', async () => {
+    const result = await crypto.encryptPassword('test-password')
+
+    expect(result).toHaveProperty('salt')
+    expect(result).toHaveProperty('hash')
+    expect(result.salt.length).toBe(64)
+    expect(result.hash.length).toBe(128)
+  })
+
+  it('uses provided salt for deterministic hash', async () => {
+    const salt = 'a'.repeat(64)
+
+    const first = await crypto.encryptPassword('same-password', salt)
+    const second = await crypto.encryptPassword('same-password', salt)
+
+    expect(first.salt).toBe(salt)
+    expect(second.salt).toBe(salt)
+    expect(first.hash).toBe(second.hash)
+  })
+})

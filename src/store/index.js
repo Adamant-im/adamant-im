@@ -66,6 +66,7 @@ const store = {
     balanceStatus: FetchStatus.Loading,
     passphrase: '',
     password: '',
+    passwordSalt: '',
     publicKeys: {},
     isOnline: true,
     balanceActualUntil: 0
@@ -111,8 +112,12 @@ const store = {
     setPassword(state, password) {
       state.password = password
     },
+    setPasswordSalt(state, salt) {
+      state.passwordSalt = salt
+    },
     resetPassword(state) {
       state.password = ''
+      state.passwordSalt = ''
     },
     setIDBReady(state, value) {
       state.IDBReady = value
@@ -122,6 +127,7 @@ const store = {
       state.balance = 0
       state.passphrase = ''
       state.password = ''
+      state.passwordSalt = ''
       state.IDBReady = false
       state.publicKeys = {}
       cache.resetCachedSeed()
@@ -203,6 +209,7 @@ const store = {
     setPassword({ commit }, password) {
       return encryptPassword(password).then((encryptedPassword) => {
         commit('setPassword', encryptedPassword)
+        commit('setPasswordSalt', encryptedPassword.salt)
 
         return encryptedPassword
       })
