@@ -413,7 +413,7 @@ adamant.encodeValue = function (value, privateKey) {
     const charBuf = new Uint8Array(length)
     crypto.getRandomValues(charBuf)
     return Array.from(charBuf)
-      .map((b) => String.fromCharCode(97 + (b % 26)))
+      .map((b) => String.fromCharCode(97 + (b % 26))) // 97 - ASCII code for 'a', 26 - number of letters in the English alphabet
       .join('')
   }
 
