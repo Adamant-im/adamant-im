@@ -408,10 +408,10 @@ adamant.decodeMessage = function (msg, senderPublicKey, privateKey, nonce) {
 adamant.encodeValue = function (value, privateKey) {
   const randomString = () => {
     const lenBuf = new Uint8Array(1)
-    crypto.getRandomValues(lenBuf)
+    crypto.randomFillSync(lenBuf)
     const length = (lenBuf[0] % 10) + 1
     const charBuf = new Uint8Array(length)
-    crypto.getRandomValues(charBuf)
+    crypto.randomFillSync(charBuf)
     return Array.from(charBuf)
       .map((b) => String.fromCharCode(97 + (b % 26))) // 97 - ASCII code for 'a', 26 - number of letters in the English alphabet
       .join('')

@@ -92,7 +92,7 @@
     "dayjs": "^1.11.19",
     "deepmerge": "^4.3.1",
     "detect-browser": "^5.3.0",
-    "dompurify": "^3.3.1",
+    "dompurify": "^3.4.0",
     "ecpair": "^3.0.1",
     "ed2curve": "^0.3.0",
     "emoji-mart": "^5.6.0",
