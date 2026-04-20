@@ -6,7 +6,7 @@
       </div>
 
       <div :class="classes.message">
-        <span v-if="!isCryptoTransfer" v-html="messageLabel"></span>
+        <span v-if="!isCryptoTransfer" v-text="messageLabel"></span>
         <span v-else>{{ cryptoTransferLabel }}</span>
       </div>
 
@@ -29,7 +29,7 @@ import { useStore } from 'vuex'
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 import { Cryptos } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
-import { formatChatPreviewMessage } from '@/lib/markdown'
+import { formatMessageBasic } from '@/lib/markdown'
 import { mdiClose } from '@mdi/js'
 import type { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { COMMON_ICON_SIZE } from '@/components/common/helpers/uiMetrics'
@@ -74,7 +74,7 @@ const cryptoTransferLabel = computed(() => {
 
 const messageLabel = computed(() => {
   return store.state.options.formatMessages
-    ? formatChatPreviewMessage(props.message.message)
+    ? formatMessageBasic(props.message.message)
     : props.message.message
 })
 </script>

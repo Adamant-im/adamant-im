@@ -101,7 +101,7 @@
             />
           </template>
 
-          <span v-html="lastMessageTextNoFormats"></span>
+          <span v-text="lastMessageTextNoFormats"></span>
         </v-list-item-subtitle>
       </template>
     </div>
@@ -118,7 +118,7 @@ import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 import Icon from '@/components/icons/BaseIcon.vue'
 import currency from '@/filters/currencyAmountWithSymbol'
 import formatDate from '@/filters/dateBrief'
-import { formatChatPreviewMessage } from '@/lib/markdown'
+import { formatMessageBasic } from '@/lib/markdown'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { isStringEqualCI } from '@/lib/textHelpers'
@@ -207,7 +207,7 @@ const lastMessageTextLocalized = computed(() =>
 )
 const lastMessageTextNoFormats = computed(() => {
   if (isAdamantChat(contactId.value) || store.state.options.formatMessages) {
-    return formatChatPreviewMessage(lastMessageTextLocalized.value)
+    return formatMessageBasic(lastMessageTextLocalized.value)
   }
 
   return lastMessageTextLocalized.value

@@ -8,10 +8,12 @@
       <v-divider class="a-divider" />
 
       <v-card-text :class="`${className}__card-text`">
+        <!-- eslint-disable vue/no-v-html -- Safe: static i18n string with constant coin symbol -->
         <div
           :class="`${className}__disclaimer`"
           v-html="t('chats.nodes_offline_dialog.text', { coin: nodeType.toUpperCase() })"
         ></div>
+        <!-- eslint-enable vue/no-v-html -->
       </v-card-text>
 
       <v-col cols="12" :class="`${className}__btn-block`">
