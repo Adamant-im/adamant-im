@@ -89,8 +89,15 @@ function createProtocol(scheme, customProtocol) {
   }
 
   targetProtocol.handle(scheme, async (request) => {
+    const staticRoot = path.resolve(__dirname)
     const pathName = decodeURI(new URL(request.url).pathname) // Needed in case URL contains spaces
-    const filePath = path.join(__dirname, pathName)
+    const filePath = path.resolve(staticRoot, '.' + pathName)
+    if (!filePath.startsWith(staticRoot + path.sep)) {
+      return new Response('Forbidden', {
+        status: 403,
+        headers: { 'content-type': 'text/plain' }
+      })
+    }
 
     try {
       const data = await readFile(filePath)
