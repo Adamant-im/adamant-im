@@ -64,4 +64,20 @@ export class AdmClient extends Client<AdmNode> {
   ): Promise<CreateNewChatMessageResponseDto> {
     return this.post('/api/chats/process', () => ({ transaction }))
   }
+
+  /**
+   * Returns the URL of an active node that is different from `excludeUrl`.
+   * Used for cross-node public key verification.
+   * Returns `null` when no alternative node is available.
+   */
+  getAlternativeNodeUrl(excludeUrl: string): string | null {
+    const availableNodes = this.nodes.filter(
+      (node) => this.isActiveNode(node) && node.url !== excludeUrl
+    )
+    if (availableNodes.length === 0) return null
+    const node = this.useFastest
+      ? this.getFastestNode(availableNodes)
+      : this.getRandomNode(availableNodes)
+    return node?.url ?? null
+  }
 }

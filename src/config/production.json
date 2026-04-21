@@ -21,12 +21,6 @@
           "alt_ip": "http://147.93.10.209:36666"
         },
         {
-          "url": "http://78.47.205.206:36666"
-        },
-        {
-          "url": "http://184.94.215.92:45555"
-        },
-        {
           "url": "https://node2.blockchain2fa.io"
         },
         {
@@ -66,9 +60,6 @@
         {
           "url": "https://clown.bbry.org",
           "alt_ip": "http://65.108.52.254:6687"
-        },
-        {
-          "url": "http://100.42.184.57:27579"
         }
       ],
       "healthCheck": {
