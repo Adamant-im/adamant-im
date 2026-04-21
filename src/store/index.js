@@ -293,7 +293,6 @@ const store = {
 }
 
 const storeInstance = createStore(store)
-window.store = storeInstance
 
 // Need to init persistence plugin before other, because they use info from wallets
 registerVuexPlugins(storeInstance, [walletsPersistencePlugin])
