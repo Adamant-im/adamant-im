@@ -2,7 +2,6 @@ import utils from '@/lib/adamant'
 import { hexToBytes } from '@/lib/hex'
 import ipfs from '@/lib/nodes/ipfs'
 import { Buffer } from 'buffer'
-import { logger } from '@/utils/devTools/logger'
 import { NACL_BOX_OVERHEAD, UPLOAD_MAX_FILE_SIZE } from '@/lib/constants'
 
 export class AttachmentApi {
@@ -35,8 +34,6 @@ export class AttachmentApi {
       'Content-Type': 'multipart/form-data'
     })
 
-    logger.log('attachment-api/index', 'info', 'File:', file)
-    logger.log('attachment-api/index', 'info', 'Public key:', publicKey)
     return { cids, nonce }
   }
 }
