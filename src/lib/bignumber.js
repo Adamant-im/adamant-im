@@ -101,6 +101,7 @@ BigNumber.prototype.toBuffer = function (opts) {
   // Zero-pad the hex string so the chunks are all `size` long
   while (hex.length < 2 * len) hex = '0' + hex
 
+  // eslint-disable-next-line security/detect-non-literal-regexp -- Safe: pattern built from numeric `size` parameter, not user-controlled input
   const hx = hex.split(new RegExp('(.{' + 2 * size + '})')).filter(function (s) {
     return s.length > 0
   })

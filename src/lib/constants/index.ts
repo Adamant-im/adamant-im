@@ -1,4 +1,4 @@
-import {
+﻿import {
   AllCryptos,
   AllCryptosOrder,
   Cryptos,
@@ -77,6 +77,8 @@ export const Fees = {
 }
 
 /** Regex for detecting of base64 encoded string */
+
+// eslint-disable-next-line security/detect-unsafe-regex -- Safe: inner group uses exact {4} quantifier, no ambiguous branching; not ReDoS-vulnerable
 export const base64regex =
   /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
 

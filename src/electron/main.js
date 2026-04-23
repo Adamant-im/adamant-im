@@ -100,6 +100,7 @@ function createProtocol(scheme, customProtocol) {
     }
 
     try {
+      // eslint-disable-next-line security/detect-non-literal-fs-filename -- Safe: filePath is validated against staticRoot prefix above (path traversal protection)
       const data = await readFile(filePath)
       const extension = path.extname(filePath).toLowerCase()
       const mimeType = mimeTypes[extension] || 'text/plain'

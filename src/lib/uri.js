@@ -83,6 +83,7 @@ export function parseURIasAIP(uri = getAddressBarURI()) {
     address = origin
 
     for (const [symbol, { regexAddress }] of Object.entries(CryptosInfo)) {
+      // eslint-disable-next-line security/detect-non-literal-regexp -- Safe: regexAddress is a static pattern from CryptosInfo config, not user input
       if (new RegExp(regexAddress).test(address)) {
         crypto = symbol
       }

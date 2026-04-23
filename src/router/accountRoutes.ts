@@ -32,6 +32,7 @@ export const resolveAccountRouteTarget = (path: string) => {
     }
   }
 
+  // eslint-disable-next-line security/detect-unsafe-regex -- Safe: [^/]+ groups are deterministic, no overlapping alternation, not ReDoS-vulnerable
   const sendFundsMatch = path.match(/^\/transfer(?:\/([^/]+))?(?:\/([^/]+))?(?:\/([^/]+))?$/)
 
   if (sendFundsMatch) {
