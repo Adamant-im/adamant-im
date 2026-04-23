@@ -30,6 +30,10 @@ jobs:
           node-version-file: .nvmrc
       - name: Install dependencies 📦
         run: npm ci
+      - name: Check dependency signatures
+        run: npm audit signatures
+      - name: Check for high/critical vulnerabilities
+        run: npm audit --audit-level=critical
       - name: Run ESLint 🛠️
         run: |
           npm run lint
