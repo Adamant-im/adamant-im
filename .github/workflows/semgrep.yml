@@ -1,0 +1,45 @@
+name: Semgrep SAST
+
+on:
+  pull_request:
+    types:
+      - opened
+      - ready_for_review
+      - reopened
+      - synchronize
+  push:
+    branches:
+      - dev
+      - master
+  workflow_dispatch:
+
+jobs:
+  semgrep:
+    name: Scan source code with Semgrep
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    # Do not run on Dependabot PRs — Dependabot cannot access secrets, so
+    # SEMGREP_APP_TOKEN would be empty. The push-to-dev trigger covers those
+    # branches once merged.
+    if: github.actor != 'dependabot[bot]'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep SAST
+        run: |
+          semgrep scan \
+            --config=p/javascript \
+            --config=p/typescript \
+            --config=p/secrets \
+            --config=p/security-audit \
+            --sarif-output=semgrep.sarif \
+            .
+
+      - name: Upload SARIF results to GitHub Security tab
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
+          category: semgrep
