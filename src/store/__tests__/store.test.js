@@ -100,8 +100,16 @@ vi.mock('@/lib/adamant-api', () => ({
   getCurrentAccount: vi.fn()
 }))
 
+vi.mock('@/lib/idb/crypto', () => ({
+  encryptPassword: vi.fn(async () => ({
+    salt: 'test-salt',
+    hash: 'test-hash'
+  }))
+}))
+
 import { Base64 } from 'js-base64'
 import storeModule, { store } from '@/store'
+import { encryptPassword } from '@/lib/idb/crypto'
 
 const { getters, mutations, actions } = store
 
@@ -110,6 +118,7 @@ const fakeData = {
   balance: 1000,
   passphrase: 'lorem ipsum',
   password: '',
+  passwordSalt: '',
   IDBReady: false,
   publicKeys: {}
 }
@@ -152,6 +161,7 @@ describe('store', () => {
       balance: 1000,
       passphrase: 'lorem ipsum',
       password: 'password',
+      passwordSalt: 'salt',
       IDBReady: true,
       publicKeys: {
         U123456: 'key'
@@ -165,6 +175,7 @@ describe('store', () => {
       balance: 0,
       passphrase: '',
       password: '',
+      passwordSalt: '',
       IDBReady: false,
       publicKeys: {}
     })
@@ -203,5 +214,28 @@ describe('store', () => {
     expect(dispatch).toHaveBeenCalledWith('reset')
     expect(commit).toHaveBeenCalledWith('options/resetAccountViewState', null, { root: true })
     expect(commit).toHaveBeenCalledWith('options/resetSettingsViewState', null, { root: true })
+  })
+
+  it('should persist passwordSalt when setting password', async () => {
+    const commit = vi.fn()
+
+    await actions.setPassword({ commit }, 'my-password')
+
+    expect(encryptPassword).toHaveBeenCalledWith('my-password')
+    expect(commit).toHaveBeenCalledWith('setPassword', { salt: 'test-salt', hash: 'test-hash' })
+    expect(commit).toHaveBeenCalledWith('setPasswordSalt', 'test-salt')
+  })
+
+  it('should clear passwordSalt when removing password', () => {
+    const commit = vi.fn()
+
+    actions.removePassword({ commit })
+
+    expect(commit).toHaveBeenCalledWith('resetPassword')
+    expect(commit).toHaveBeenCalledWith('setIDBReady', false)
+    expect(commit).toHaveBeenCalledWith('options/updateOption', {
+      key: 'stayLoggedIn',
+      value: false
+    })
   })
 })

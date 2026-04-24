@@ -204,6 +204,7 @@ Build and platform targets:
 - Keep visual behavior stable across light and dark themes by changing component variables or tokens, not duplicating unrelated selectors
 - Avoid widening selector scope with `!important` unless the framework layer makes it strictly necessary and there is no safer selector-based alternative
 - Do not modify SVG assets for routine UI cleanup unless the task explicitly requires SVG-level changes
+- `v-html` is only permitted in two explicitly approved cases: (1) DOMPurify-sanitized markdown output (always pass through `renderMarkdown()` or `sanitizeHTML()` from `src/lib/markdown.ts`); (2) static i18n strings authored by developers. Any other use — especially with user-controlled message content from the network — is forbidden. The `vue/no-v-html` ESLint rule is enabled as `error`; disable it only with an explicit inline comment stating why the use is safe (`eslint-disable vue/no-v-html -- Safe: <reason>`).
 
 ## UI Validation Rules
 

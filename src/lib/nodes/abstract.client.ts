@@ -38,6 +38,13 @@ export abstract class Client<N extends Node> {
   label: TNodeLabel
 
   /**
+   * URL of the last node that successfully responded to a request.
+   * Used by callers that need to identify which node served the previous response
+   * (e.g. for cross-node public key verification.
+   */
+  lastUsedNodeUrl: string | null = null
+
+  /**
    * Resolves when at least one node is ready to accept requests
    */
   ready: Promise<void>
@@ -242,7 +249,9 @@ export abstract class Client<N extends Node> {
       const node = this.getNode(triedNodes)
 
       try {
-        return await Promise.resolve(request(node))
+        const result = await Promise.resolve(request(node))
+        this.lastUsedNodeUrl = node.url
+        return result
       } catch (error) {
         if (!this.isNodeUnavailableError(error)) {
           throw error

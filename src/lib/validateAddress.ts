@@ -20,6 +20,7 @@ export default function validateAddress(crypto: CryptoSymbol, address: string) {
 
   for (const [symbol, { regexAddress }] of Object.entries(CryptosInfo)) {
     if (crypto === symbol && regexAddress) {
+      // eslint-disable-next-line security/detect-non-literal-regexp -- Safe: regexAddress is a static pattern from CryptosInfo config, not user input
       return new RegExp(regexAddress).test(address)
     }
   }

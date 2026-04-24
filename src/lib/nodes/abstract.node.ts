@@ -469,6 +469,7 @@ export abstract class Node<C = unknown> {
   }
 
   formatHeight(height: number) {
+    // eslint-disable-next-line security/detect-unsafe-regex -- Safe: input is always height.toString() (pure digits, never user-controlled)
     return height.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }
 

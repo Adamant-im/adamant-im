@@ -82,10 +82,12 @@
             <h3 :class="`${classes.root}__state-title`">
               {{ t('scan.no_camera_stream') }}
             </h3>
+            <!-- eslint-disable vue/no-v-html -- Safe: static i18n string with browser API error string -->
             <p
               :class="`${classes.root}__state-message`"
               v-html="t('scan.no_stream_details', { noStreamDetails })"
             />
+            <!-- eslint-enable vue/no-v-html -->
           </template>
         </v-col>
       </v-row>

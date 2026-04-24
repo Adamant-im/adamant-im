@@ -56,3 +56,5 @@ src/lib/schema/*
 
 # ai agents
 .ai-tasks/
+.claude
+.github/copilot-instructions.md

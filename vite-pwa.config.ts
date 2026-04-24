@@ -4,6 +4,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl'
 
 import viteBaseConfig from './vite-base.config'
 import { manifest } from './vite-config/manifest'
+import { cspMetaPlugin } from './vite-config/plugins/cspMetaPlugin'
 
 const useHttps = process.env.HTTPS === 'true'
 
@@ -11,6 +12,7 @@ export default mergeConfig(
   viteBaseConfig,
   defineConfig({
     plugins: [
+      cspMetaPlugin(),
       VitePWA({
         registerType: 'autoUpdate',
         srcDir: 'src',

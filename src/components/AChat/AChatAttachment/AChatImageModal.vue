@@ -385,7 +385,8 @@ export default {
         const imageUrl = await store.dispatch('attachment/getAttachmentUrl', {
           cid: file.id,
           publicKey: publicKey.value,
-          nonce: file.nonce
+          nonce: file.nonce,
+          size: file.size
         })
 
         const fileName = file.name

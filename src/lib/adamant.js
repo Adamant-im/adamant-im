@@ -406,11 +406,16 @@ adamant.decodeMessage = function (msg, senderPublicKey, privateKey, nonce) {
  * @returns {{message: string, nonce: string}} encoded value and nonce (both as HEX-strings)
  */
 adamant.encodeValue = function (value, privateKey) {
-  const randomString = () =>
-    Math.random()
-      .toString(36)
-      .replace(/[^a-z]+/g, '')
-      .substr(0, Math.ceil(Math.random() * 10))
+  const randomString = () => {
+    const lenBuf = new Uint8Array(1)
+    crypto.randomFillSync(lenBuf)
+    const length = (lenBuf[0] % 10) + 1
+    const charBuf = new Uint8Array(length)
+    crypto.randomFillSync(charBuf)
+    return Array.from(charBuf)
+      .map((b) => String.fromCharCode(97 + (b % 26))) // 97 - ASCII code for 'a', 26 - number of letters in the English alphabet
+      .join('')
+  }
 
   const nonce = Buffer.allocUnsafe(24)
   sodium.randombytes(nonce)

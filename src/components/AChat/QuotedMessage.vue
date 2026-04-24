@@ -28,7 +28,7 @@
       </span>
 
       <span v-else>
-        <span v-html="messageLabel"></span>
+        <span v-text="messageLabel"></span>
       </span>
     </div>
   </div>
@@ -43,7 +43,7 @@ import { getTransaction, decodeChat } from '@/lib/adamant-api'
 import { NormalizedChatMessageTransaction, normalizeMessage } from '@/lib/chat/helpers'
 import { Cryptos } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
-import { formatChatPreviewMessage } from '@/lib/markdown'
+import { formatMessageBasic } from '@/lib/markdown'
 import { ChatMessageTransaction } from '@/lib/schema/client/api'
 import { logger } from '@/utils/devTools/logger'
 import { QUOTED_MESSAGE_LOADING_SPINNER_SIZE } from '@/components/AChat/helpers/uiMetrics'
@@ -143,7 +143,7 @@ export default defineComponent({
       }
 
       return store.state.options.formatMessages
-        ? formatChatPreviewMessage(transaction.value.message)
+        ? formatMessageBasic(transaction.value.message)
         : transaction.value.message
     })
 
