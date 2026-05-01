@@ -38,12 +38,13 @@ export default defineComponent({
     )
 
     const getFileFromStorage = async () => {
-      const { id, nonce } = props.file
+      const { id, nonce, size } = props.file
 
       imageUrl.value = await store.dispatch('attachment/getAttachmentUrl', {
         cid: id,
         publicKey: publicKey.value,
-        nonce
+        nonce,
+        size
       })
     }
 

@@ -13,6 +13,7 @@
           class="a-input"
           color="primary"
         />
+        <!-- eslint-disable-next-line vue/no-v-html -- Safe: static i18n string from developers -->
         <div :class="`${className}__info`" v-html="t('votes.stake_info')" />
       </template>
 

@@ -1,0 +1,20 @@
+version: 2
+updates:
+  # GitHub Actions version updates — keeps CI action versions current,
+  # which matters for supply chain security (compromised old action versions).
+  # npm security updates are handled by GitHub's built-in Dependabot security
+  # updates feature (Settings -> Security -> Dependabot security updates), which
+  # opens PRs only for CVEs — no routine version-bump noise.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: UTC
+    open-pull-requests-limit: 5
+    labels:
+      - Chore
+    commit-message:
+      prefix: Chore
+      include: scope

@@ -89,10 +89,18 @@ function createProtocol(scheme, customProtocol) {
   }
 
   targetProtocol.handle(scheme, async (request) => {
+    const staticRoot = path.resolve(__dirname)
     const pathName = decodeURI(new URL(request.url).pathname) // Needed in case URL contains spaces
-    const filePath = path.join(__dirname, pathName)
+    const filePath = path.resolve(staticRoot, '.' + pathName)
+    if (!filePath.startsWith(staticRoot + path.sep)) {
+      return new Response('Forbidden', {
+        status: 403,
+        headers: { 'content-type': 'text/plain' }
+      })
+    }
 
     try {
+      // eslint-disable-next-line security/detect-non-literal-fs-filename -- Safe: filePath is validated against staticRoot prefix above (path traversal protection)
       const data = await readFile(filePath)
       const extension = path.extname(filePath).toLowerCase()
       const mimeType = mimeTypes[extension] || 'text/plain'

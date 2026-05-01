@@ -101,6 +101,7 @@ const getCurrentPageIndex = () => {
   }
 
   const currentPage = pages.find((page) => {
+    // eslint-disable-next-line security/detect-non-literal-regexp -- Safe: page.link is a static route path from internal navigation config, not user input
     const pattern = new RegExp(`^${page.link}`)
     return route.path.match(pattern)
   })

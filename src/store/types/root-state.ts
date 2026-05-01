@@ -6,7 +6,8 @@ export interface RootState {
   balance: number
   balanceStatus: string // FetchStatus
   passphrase: string
-  password: string
+  password: string | { salt: string; hash: string }
+  passwordSalt: string
   IDBReady: boolean
   publicKeys: Record<string, string>
 

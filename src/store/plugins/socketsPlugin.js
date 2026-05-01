@@ -2,24 +2,33 @@ import socketClient from '@/lib/sockets'
 import { decodeChat, getPublicKey } from '@/lib/adamant-api'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { MessageType } from '@/lib/constants'
+import { logger } from '@/utils/devTools/logger'
 
 function subscribe(store) {
   socketClient.subscribe('newMessage', (transaction) => {
-    const promise = isStringEqualCI(transaction.recipientId, store.state.address)
-      ? Promise.resolve(transaction.senderPublicKey)
-      : getPublicKey(transaction.recipientId)
+    const promise = getPublicKey(
+      isStringEqualCI(transaction.recipientId, store.state.address)
+        ? transaction.senderId
+        : transaction.recipientId
+    )
+    promise
+      .then((publicKey) => {
+        const decoded = transaction.type === 0 ? transaction : decodeChat(transaction, publicKey)
 
-    promise.then((publicKey) => {
-      const decoded = transaction.type === 0 ? transaction : decodeChat(transaction, publicKey)
+        // All transactions we get via socket are shown in chats, including ADM direct transfers
+        // Currently, we don't update confirmations for direct transfers, see getChats() in adamant-api.js
+        // So we'll update confirmations in getTransactionStatus()
 
-      // All transactions we get via socket are shown in chats, including ADM direct transfers
-      // Currently, we don't update confirmations for direct transfers, see getChats() in adamant-api.js
-      // So we'll update confirmations in getTransactionStatus()
-
-      if (transaction.asset?.chat?.type !== MessageType.SIGNAL_MESSAGE) {
-        store.dispatch('chat/pushMessages', [decoded])
-      }
-    })
+        if (transaction.asset?.chat?.type !== MessageType.SIGNAL_MESSAGE) {
+          store.dispatch('chat/pushMessages', [decoded])
+        }
+      })
+      .catch((err) => {
+        logger.warn(
+          'socketsPlugin',
+          `Dropping socket message from ${transaction.senderId}: ${err.message}`
+        )
+      })
   })
 }
 

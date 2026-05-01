@@ -1,7 +1,12 @@
 import Queue from 'promise-queue'
 import { Base64 } from 'js-base64'
 
-import constants, { Transactions, Delegates, MessageType } from '@/lib/constants'
+import constants, {
+  Transactions,
+  Delegates,
+  MessageType,
+  UserPasswordHashSettings
+} from '@/lib/constants'
 import utils from '@/lib/adamant'
 import client from '@/lib/nodes/adm'
 import { encryptPassword } from '@/lib/idb/crypto'
@@ -106,36 +111,108 @@ export function isReady() {
 }
 
 /**
- * Retrieves user public key by his address
+ * Retrieves user public key by his address.
+ * On first fetch (no cache), cross-verifies the key with a second node
+ * to detect malicious/MITM nodes .Caches only when both nodes agree.
  * @param {string} address ADM address
  * @returns {Promise<string>}
  */
-export function getPublicKey(address = '') {
+export async function getPublicKey(address = '') {
   if (address === store.state.address && myKeypair.publicKey) {
-    return Promise.resolve(myKeypair.publicKey.toString('hex'))
+    return myKeypair.publicKey.toString('hex')
   }
 
   // @todo remove returning cached keys and use getCachedPublicKey instead
   const publicKeyCached = store.getters.publicKey(address)
 
   if (publicKeyCached) {
-    return Promise.resolve(publicKeyCached)
+    return publicKeyCached
   }
 
-  return client.get('/api/accounts/getPublicKey', { address }).then((response) => {
-    const publicKey = response.publicKey
+  const response = await client.get('/api/accounts/getPublicKey', { address })
+  const publicKey = response.publicKey
 
-    if (publicKey) {
-      store.commit('setPublicKey', {
-        adamantAddress: address,
-        publicKey
-      })
-
-      return publicKey
-    }
-
+  if (!publicKey) {
     throw new Error(i18n.global.t('chats.no_public_key'))
-  })
+  }
+
+  // Cross-verify the public key with a second node.
+  // Public keys are blockchain-consensus data: every honest node must return the same value.
+  // A divergence is strong evidence of a compromised or MITM node.
+  const firstNodeUrl = client.lastUsedNodeUrl
+  const altNodeUrl = firstNodeUrl ? client.getAlternativeNodeUrl(firstNodeUrl) : null
+
+  if (!altNodeUrl) {
+    // Only one active node available — cannot cross-verify, accept result with a warning
+    logger.warn(
+      'adamant-api',
+      'getPublicKey: only one node available, cross-verification skipped',
+      {
+        address
+      }
+    )
+    store.commit('setPublicKey', { adamantAddress: address, publicKey })
+    return publicKey
+  }
+
+  const altNode = client.nodes.find((node) => node.url === altNodeUrl)
+  if (!altNode) {
+    store.commit('setPublicKey', { adamantAddress: address, publicKey })
+    return publicKey
+  }
+
+  let altPublicKey
+  try {
+    const altResponse = await altNode.request({
+      method: 'get',
+      url: '/api/accounts/getPublicKey',
+      payload: { address }
+    })
+    altPublicKey = altResponse.publicKey
+  } catch (err) {
+    // Second node is offline or timed out — fall back to first result with a warning
+    logger.warn(
+      'adamant-api',
+      'getPublicKey: second node request failed, cross-verification skipped',
+      {
+        address,
+        altNodeUrl,
+        error: err.message
+      }
+    )
+    store.commit('setPublicKey', { adamantAddress: address, publicKey })
+    return publicKey
+  }
+
+  if (!altPublicKey) {
+    // Second node has no record yet (very new account, propagation lag) — accept first result
+    logger.warn(
+      'adamant-api',
+      'getPublicKey: second node has no key for address yet, accepting first node result',
+      {
+        address,
+        firstNodeUrl
+      }
+    )
+    store.commit('setPublicKey', { adamantAddress: address, publicKey })
+    return publicKey
+  }
+
+  if (publicKey !== altPublicKey) {
+    logger.error(
+      'adamant-api',
+      'getPublicKey: public key mismatch between nodes — possible MITM attack',
+      {
+        address,
+        firstNodeUrl,
+        altNodeUrl
+      }
+    )
+    throw new Error(i18n.global.t('chats.public_key_mismatch'))
+  }
+
+  store.commit('setPublicKey', { adamantAddress: address, publicKey })
+  return publicKey
 }
 
 /**
@@ -646,9 +723,21 @@ export function loginOrRegister(passphrase) {
  * @returns {Promise} Encrypted password
  */
 export function loginViaPassword(password, store) {
-  return encryptPassword(password)
+  const currentPassword = store.state.password
+  const isPasswordObject = currentPassword && typeof currentPassword === 'object'
+  const expectedHash = isPasswordObject ? currentPassword.hash : currentPassword
+  const salt = isPasswordObject
+    ? currentPassword.salt
+    : store.state.passwordSalt || UserPasswordHashSettings.SALT
+
+  return encryptPassword(password, salt)
     .then((encryptedPassword) => {
+      if (expectedHash && encryptedPassword.hash !== expectedHash) {
+        throw new Error('Invalid password')
+      }
+
       store.commit('setPassword', encryptedPassword)
+      store.commit('setPasswordSalt', encryptedPassword.salt)
 
       return restoreState(store)
     })

@@ -5,6 +5,7 @@ const vuexPersistence = new VuexPersistence({
   storage: window.localStorage,
   reducer: (state) => {
     return {
+      passwordSalt: state.passwordSalt,
       // modules
       language: state.language,
       options: {

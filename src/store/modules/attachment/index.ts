@@ -53,19 +53,29 @@ const actions: ActionTree<AttachmentsState, RootState> = {
   },
   getAttachment(
     _context,
-    { cid, publicKey, nonce }: { cid: string; publicKey: string; nonce: string }
+    {
+      cid,
+      publicKey,
+      nonce,
+      size
+    }: { cid: string; publicKey: string; nonce: string; size?: number }
   ) {
-    return attachmentApi?.getFile(cid, nonce, publicKey)
+    return attachmentApi?.getFile(cid, nonce, publicKey, size)
   },
   async getAttachmentUrl(
     { state, commit },
-    { cid, publicKey, nonce }: { cid: string; publicKey: string; nonce: string }
+    {
+      cid,
+      publicKey,
+      nonce,
+      size
+    }: { cid: string; publicKey: string; nonce: string; size?: number }
   ) {
     if (state.attachments[cid]) {
       return state.attachments[cid]
     } else {
       try {
-        const fileData = await attachmentApi?.getFile(cid, nonce, publicKey)
+        const fileData = await attachmentApi?.getFile(cid, nonce, publicKey, size)
         if (!fileData) {
           throw new Error('Failed to fetch image')
         }
