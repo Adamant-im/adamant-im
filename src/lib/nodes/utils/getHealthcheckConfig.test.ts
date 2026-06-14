@@ -2,9 +2,21 @@ import { describe, expect, it } from 'vitest'
 import config from '@/config'
 import { NODE_LABELS, type TNodeLabel } from '@/lib/nodes/constants'
 import { filterSyncedNodes } from './filterSyncedNodes'
-import { getNodeHealthcheckConfig, getNodeSyncThreshold } from './getHealthcheckConfig'
+import {
+  getNodeHealthcheckConfig,
+  getNodeSyncThreshold,
+  resolveServiceSyncThreshold
+} from './getHealthcheckConfig'
 
 describe('node sync thresholds', () => {
+  it('uses a service threshold when adamant-wallets defines one', () => {
+    expect(resolveServiceSyncThreshold({ threshold: 7 }, { threshold: 5 })).toBe(7)
+  })
+
+  it('falls back to the blockchain node threshold when the service omits it', () => {
+    expect(resolveServiceSyncThreshold({}, { threshold: 5 })).toBe(5)
+  })
+
   it.each<[TNodeLabel, number]>([
     [NODE_LABELS.AdmNode, 10],
     [NODE_LABELS.EthNode, 5],
