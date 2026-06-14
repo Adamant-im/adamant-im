@@ -155,6 +155,18 @@ Run the smoke suite:
 npm run test:e2e
 ```
 
+Tests explicitly marked with the `@long-running` tag are skipped by default. Use
+`longRunningTestTitle()` to mark tests whose observed runtime exceeds the configured threshold,
+then include them explicitly:
+
+```bash
+npm run test:e2e -- --perform-long-running
+```
+
+Change the threshold in
+`tests/e2e/helpers/longRunning.ts` (`LONG_RUNNING_TEST_THRESHOLD_MS = 40_000`) and reassess the
+tagged tests when updating it.
+
 Run with extended artifacts:
 
 ```bash

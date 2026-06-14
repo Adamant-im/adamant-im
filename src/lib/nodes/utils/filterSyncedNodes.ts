@@ -1,17 +1,5 @@
 import { TNodeLabel } from '@/lib/nodes/constants'
-import { getNodeHealthcheckConfig } from './getHealthcheckConfig'
-
-/**
- * Allowed height delta for the nodes.
- *
- * If two nodes' heights differ by no more than this value,
- * they are considered to be in sync with each other.
- */
-function getHeightEpsilon(nodeLabel: TNodeLabel): number {
-  const config = getNodeHealthcheckConfig(nodeLabel)
-
-  return config.threshold || 10000
-}
+import { getNodeSyncThreshold } from './getHealthcheckConfig'
 
 interface Node {
   height: number
@@ -38,7 +26,7 @@ export function filterSyncedNodes<N extends Node>(
     }
   }
 
-  const heightEpsilon = getHeightEpsilon(nodeLabel)
+  const heightEpsilon = getNodeSyncThreshold(nodeLabel)
 
   // For each node we take its height and list of nodes that have the same height ± epsilon
   const groups = nodes.map((node) => {
@@ -55,7 +43,11 @@ export function filterSyncedNodes<N extends Node>(
    * the one with the biggest height wins.
    * */
   const winner = groups.reduce((acc, curr) => {
-    if (curr.height > acc.height || curr.nodes.length > acc.nodes.length) {
+    const hasMoreNodes = curr.nodes.length > acc.nodes.length
+    const hasSameNodeCountAtHigherHeight =
+      curr.nodes.length === acc.nodes.length && curr.height > acc.height
+
+    if (hasMoreNodes || hasSameNodeCountAtHigherHeight) {
       return curr
     }
 

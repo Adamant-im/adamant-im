@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { expect, test, type Page } from '@playwright/test'
 import { loginWithPassphrase } from './helpers/auth'
 import { testPassphrase } from './helpers/env'
+import { longRunningTestTitle } from './helpers/longRunning'
 
 const LIVE_TIMEOUT = 120_000
 const RECIPIENT_ADM = 'U6386412615727665758'
@@ -177,7 +178,7 @@ const getChatTransferStatus = async (page: Page, comments: string) => {
 }
 
 test.describe('Live BTC pending chat status', () => {
-  test('keeps a newly sent invalid BTC rich message pending in the live browser session when browser PendingTxStore knows it', async ({
+  test(longRunningTestTitle('keeps a newly sent invalid BTC rich message pending in the live browser session when browser PendingTxStore knows it', 43_800), async ({
     page
   }) => {
     test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')

@@ -1,6 +1,7 @@
 import { testPassphrase } from './helpers/env'
 import { expect, test, type Locator } from '@playwright/test'
 import { dismissAddressWarningIfVisible, loginWithPassphrase } from './helpers/auth'
+import { longRunningTestTitle } from './helpers/longRunning'
 
 const activeImageSlideSelector =
   '.v-window-item--active.a-chat-image-modal-item, .v-window-item--active .a-chat-image-modal-item'
@@ -13,7 +14,7 @@ type PreviewCase = {
 }
 
 test.describe('Chat attachment modal regressions', () => {
-  test('closes image modal even on near-edge backdrop clicks for different image aspect ratios', async ({
+  test(longRunningTestTitle('closes image modal even on near-edge backdrop clicks for different image aspect ratios', 102_000), async ({
     page
   }) => {
     test.setTimeout(240_000)
