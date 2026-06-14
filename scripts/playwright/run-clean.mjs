@@ -3,12 +3,18 @@ import { env, exit, platform, argv } from 'node:process'
 
 const command = platform === 'win32' ? 'npx.cmd' : 'npx'
 const cleanEnv = { ...env }
+const performLongRunningFlag = '--perform-long-running'
+const playwrightArgs = argv.slice(2).filter((argument) => argument !== performLongRunningFlag)
+
+if (argv.includes(performLongRunningFlag)) {
+  cleanEnv.PLAYWRIGHT_PERFORM_LONG_RUNNING = '1'
+}
 
 // Keep colored Playwright output if the parent requested it, but drop NO_COLOR
 // so Node does not print "NO_COLOR is ignored due to FORCE_COLOR" warnings.
 delete cleanEnv.NO_COLOR
 
-const child = spawn(command, ['playwright', 'test', ...argv.slice(2)], {
+const child = spawn(command, ['playwright', 'test', ...playwrightArgs], {
   stdio: 'inherit',
   env: cleanEnv
 })

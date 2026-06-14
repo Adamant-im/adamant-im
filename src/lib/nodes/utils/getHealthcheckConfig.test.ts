@@ -18,16 +18,46 @@ describe('node sync thresholds', () => {
   })
 
   it.each<[TNodeLabel, number]>([
-    [NODE_LABELS.AdmNode, 10],
-    [NODE_LABELS.EthNode, 5],
-    [NODE_LABELS.EthIndexer, 5],
-    [NODE_LABELS.BtcNode, 2],
-    [NODE_LABELS.BtcIndexer, 2],
-    [NODE_LABELS.DogeNode, 3],
-    [NODE_LABELS.DogeIndexer, 3],
-    [NODE_LABELS.DashNode, 3],
-    [NODE_LABELS.IpfsNode, 6_000_000],
-    [NODE_LABELS.RatesInfo, 6_000_000]
+    [NODE_LABELS.AdmNode, config.adm.nodes.healthCheck.threshold],
+    [NODE_LABELS.EthNode, config.eth.nodes.healthCheck.threshold],
+    [
+      NODE_LABELS.EthIndexer,
+      resolveServiceSyncThreshold(
+        config.eth.services.ethIndexer.healthCheck,
+        config.eth.nodes.healthCheck
+      )
+    ],
+    [NODE_LABELS.BtcNode, config.btc.nodes.healthCheck.threshold],
+    [
+      NODE_LABELS.BtcIndexer,
+      resolveServiceSyncThreshold(
+        config.btc.services.btcIndexer.healthCheck,
+        config.btc.nodes.healthCheck
+      )
+    ],
+    [NODE_LABELS.DogeNode, config.doge.nodes.healthCheck.threshold],
+    [
+      NODE_LABELS.DogeIndexer,
+      resolveServiceSyncThreshold(
+        config.doge.services.dogeIndexer.healthCheck,
+        config.doge.nodes.healthCheck
+      )
+    ],
+    [NODE_LABELS.DashNode, config.dash.nodes.healthCheck.threshold],
+    [
+      NODE_LABELS.IpfsNode,
+      resolveServiceSyncThreshold(
+        config.adm.services.ipfsNode.healthCheck,
+        config.adm.nodes.healthCheck
+      )
+    ],
+    [
+      NODE_LABELS.RatesInfo,
+      resolveServiceSyncThreshold(
+        config.adm.services.infoService.healthCheck,
+        config.adm.nodes.healthCheck
+      )
+    ]
   ])('uses the configured blockchain threshold for %s', (label, threshold) => {
     expect(getNodeSyncThreshold(label)).toBe(threshold)
   })

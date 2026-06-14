@@ -1,6 +1,7 @@
 import { testPassphrase } from './helpers/env'
 import { expect, test, type Page } from '@playwright/test'
 import { dismissAddressWarningIfVisible, loginWithPassphrase } from './helpers/auth'
+import { longRunningTestTitle } from './helpers/longRunning'
 
 const PICKER_VIEWPORT_TOLERANCE_PX = 8
 
@@ -103,7 +104,7 @@ test.describe('Chat message emoji picker regressions', () => {
       }
     })
 
-  test('keeps the message emoji picker inside the viewport near the right edge', async ({
+  test(longRunningTestTitle('keeps the message emoji picker inside the viewport near the right edge', 52_800), async ({
     page
   }) => {
     test.setTimeout(180_000)
@@ -148,7 +149,7 @@ test.describe('Chat message emoji picker regressions', () => {
       })
   })
 
-  test('keeps the message emoji picker inside the viewport near the top edge', async ({ page }) => {
+  test(longRunningTestTitle('keeps the message emoji picker inside the viewport near the top edge', 54_300), async ({ page }) => {
     test.setTimeout(180_000)
     test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
 

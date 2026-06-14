@@ -155,6 +155,13 @@ Run the smoke suite:
 npm run test:e2e
 ```
 
+Tests observed to exceed the 40-second long-running threshold are skipped by default. Include
+them explicitly:
+
+```bash
+npm run test:e2e -- --perform-long-running
+```
+
 Run with extended artifacts:
 
 ```bash

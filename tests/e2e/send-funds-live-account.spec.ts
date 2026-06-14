@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { dismissAddressWarningIfVisible, loginWithPassphrase } from './helpers/auth'
 import { testPassphrase } from './helpers/env'
+import { longRunningTestTitle } from './helpers/longRunning'
 
 const LIVE_TIMEOUT = 180_000
 
@@ -442,7 +443,7 @@ test.describe('Send funds live-account no-broadcast regressions', () => {
     await runNoToggleFlow(page, 'DASH')
   })
 
-  test('shows validation errors for below-min and above-balance amounts without opening confirmation', async ({
+  test(longRunningTestTitle('shows validation errors for below-min and above-balance amounts without opening confirmation', 108_000), async ({
     page
   }) => {
     test.slow()

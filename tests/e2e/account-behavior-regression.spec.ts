@@ -1,13 +1,14 @@
 import { testPassphrase } from './helpers/env'
 import { expect, test, type Page } from '@playwright/test'
 import { loginWithNewAccount, loginWithPassphrase } from './helpers/auth'
+import { longRunningTestTitle } from './helpers/longRunning'
 import { openTransactionListFromHome } from './helpers/openTransactionListFromHome'
 
 const testDetailsCrypto = 'DOGE'
 const testTransactionId = '723a8f9d1f0083b5da91c2aae1df6434d854828d8e9fac5f11b30f021af3ba86'
 
 test.describe('Account behavior regressions', () => {
-  test('shows cached transaction list without spinner when returning from chats', async ({
+  test(longRunningTestTitle('shows cached transaction list without spinner when returning from chats', 44_100), async ({
     page
   }) => {
     test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
