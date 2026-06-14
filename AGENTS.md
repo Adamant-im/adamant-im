@@ -274,6 +274,10 @@ For any non-trivial change, report exactly what was run.
 - For transaction list screens like `/transactions/ADM` and `/transactions/DOGE`, do not navigate by direct URL in e2e tests
 - Open transaction lists through the user flow `Home -> Balance` for the target wallet, because direct `/transactions/:crypto` navigation may redirect to `/home`
 - Direct transaction details URLs like `/transactions/:crypto/:txId` are still valid when the details route is the thing being tested
+- Playwright tests marked with `@long-running` are excluded from default local and CI runs
+- Run the complete Playwright suite with `npm run test:e2e -- --perform-long-running`
+- Mark tests whose observed runtime exceeds `LONG_RUNNING_TEST_THRESHOLD_MS` by using `longRunningTestTitle()` from `tests/e2e/helpers/longRunning.ts`
+- When changing `LONG_RUNNING_TEST_THRESHOLD_MS`, reassess the existing `@long-running` tests against recent CI durations
 
 ### Build validation
 

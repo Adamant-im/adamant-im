@@ -58,7 +58,7 @@ describe('node sync thresholds', () => {
         config.adm.nodes.healthCheck
       )
     ]
-  ])('uses the configured blockchain threshold for %s', (label, threshold) => {
+  ])('uses the effective configured threshold for %s', (label, threshold) => {
     expect(getNodeSyncThreshold(label)).toBe(threshold)
   })
 
