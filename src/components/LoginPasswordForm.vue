@@ -77,6 +77,8 @@ import {
   AUTH_FORM_TOGGLE_BUTTON_SIZE,
   AUTH_FORM_TOGGLE_ICON_SIZE
 } from '@/components/Login/helpers/uiMetrics'
+import { NotificationType } from '@/lib/constants'
+import { pushService } from '@/lib/notifications/pushServiceFactory'
 
 const className = 'login-form'
 const classes = {
@@ -163,10 +165,15 @@ const submit = () => {
     })
 }
 
-const removePassword = () => {
+const removePassword = async () => {
   clearDb().finally(() => {
     store.dispatch('removePassword')
   })
+  store.commit('options/updateOption', {
+    key: 'allowNotificationType',
+    value: NotificationType['NoNotifications']
+  })
+  await pushService.revokeLocalSubscription()
 }
 </script>
 

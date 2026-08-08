@@ -7,13 +7,19 @@ import { formatMessageBasic } from '@/lib/markdown'
 import { isAdamantChat } from '@/lib/chat/meta/utils'
 import { joinUrl } from '@/lib/urlFormatter.js'
 import { logger } from '@/utils/devTools/logger'
+import { NotificationType } from '@/lib/constants'
 
 let _this
 
 class Notification {
   constructor(ctx) {
     _this = ctx
-    this.i18n = ctx.$i18n
+    this.i18n = ctx.$i18n?.global || ctx.$i18n || {}
+
+    if (typeof this.i18n.t !== 'function') {
+      this.i18n.t = (ctx.$t || ctx.$i18n?.t || ((k) => k)).bind(this.i18n)
+    }
+
     this.router = ctx.$router
     this.store = ctx.$store
     this.interval = null
@@ -41,8 +47,8 @@ class Notification {
     return isAdmChat ? this.i18n.t(name) : name
   }
 
-  get pushAllowed() {
-    return this.store.state.options.allowPushNotifications
+  get bgFetchNotificationAllowed() {
+    return this.store.state.options.allowNotificationType === NotificationType['BackgroundFetch']
   }
 
   get soundAllowed() {
@@ -92,6 +98,9 @@ class PushNotification extends Notification {
   }
 
   notify(messageArrived) {
+    if (!this.bgFetchNotificationAllowed) {
+      return
+    }
     try {
       Notify.requestPermission(
         // Permission granted
@@ -129,8 +138,8 @@ class PushNotification extends Notification {
             message: this.i18n.t('options.push_denied')
           })
           this.store.commit('options/updateOption', {
-            key: 'allowPushNotifications',
-            value: false
+            key: 'allowNotificationType',
+            value: NotificationType['NoNotifications'] // = 0
           })
         }
       )
@@ -141,8 +150,8 @@ class PushNotification extends Notification {
         message: this.i18n.t('options.push_not_supported')
       })
       this.store.commit('options/updateOption', {
-        key: 'allowPushNotifications',
-        value: false
+        key: 'allowNotificationType',
+        value: NotificationType['NoNotifications'] // = 0
       })
     }
   }
@@ -216,7 +225,7 @@ export default class extends Notification {
 
   start() {
     this.interval = window.setInterval(() => {
-      if (this.pushAllowed) {
+      if (this.bgFetchNotificationAllowed) {
         this.push.notify(this.messageArrived)
       }
       if (this.soundAllowed) {

@@ -1,7 +1,13 @@
 import Queue from 'promise-queue'
 import { Base64 } from 'js-base64'
 
-import constants, { Transactions, Delegates, MessageType } from '@/lib/constants'
+import constants, {
+  Transactions,
+  Delegates,
+  MessageType,
+  ADAMANT_NOTIFICATION_SERVICE_ADDRESS,
+  ADAMANT_NOTIFICATION_SERVICE_PUBLIC_KEY
+} from '@/lib/constants'
 import utils from '@/lib/adamant'
 import client from '@/lib/nodes/adm'
 import { encryptPassword } from '@/lib/idb/crypto'
@@ -236,9 +242,23 @@ export async function encodeFile(file, params) {
  * Sends special message with the specified payload
  * @param {string} to recipient address
  * @param {object} payload message payload
+ * @param {number} messageType message type
  */
-export function sendSpecialMessage(to, payload) {
-  return sendMessage({ to, message: payload, type: MessageType.RICH_CONTENT_MESSAGE })
+export function sendSpecialMessage(to, payload, messageType) {
+  // Cache ANS public key to avoid redundant API calls
+  if (to === ADAMANT_NOTIFICATION_SERVICE_ADDRESS) {
+    store.commit('setPublicKey', {
+      adamantAddress: to,
+      publicKey: ADAMANT_NOTIFICATION_SERVICE_PUBLIC_KEY
+    })
+
+    return sendMessage({ to, message: payload, type: messageType })
+  }
+
+  // For other addresses, fetch public key from API before sending
+  return getPublicKey(to).then(() => {
+    return sendMessage({ to, message: payload, type: messageType })
+  })
 }
 
 /**
@@ -805,4 +825,11 @@ export async function getChatRoomMessages(address1, address2, paramsArg, recursi
   }
 
   return loadMessages(lastOffset)
+}
+
+export function getMyPrivateKey() {
+  if (!myKeypair || !myKeypair.privateKey) {
+    return ''
+  }
+  return myKeypair.privateKey.toString('hex')
 }

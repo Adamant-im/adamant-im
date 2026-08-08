@@ -1,0 +1,130 @@
+import { BasePushService } from './pushServiceBase'
+import { sendSpecialMessage } from '../adamant-api'
+import { ADAMANT_NOTIFICATION_SERVICE_ADDRESS, VAPID_KEY, MessageType } from '../constants'
+import { signalAsset } from '../adamant-api/asset'
+import { fcm } from '@/firebase'
+import { getToken, deleteToken } from 'firebase/messaging'
+import { firebaseSwRegistrationPromise } from '@/main'
+
+export class WebPushService extends BasePushService {
+  private token: string | null = null
+
+  async initialize(): Promise<boolean> {
+    if (!fcm) {
+      console.warn('Firebase Messaging not available - Web Push unavailable')
+      return false
+    }
+
+    const baseInitialized = await super.initialize()
+    if (!baseInitialized) {
+      return false
+    }
+
+    return true
+  }
+
+  async requestPermissions(): Promise<boolean> {
+    const permission = await Notification.requestPermission()
+    return permission === 'granted'
+  }
+
+  async registerDevice(): Promise<void> {
+    if (!fcm) {
+      throw new Error('Firebase Messaging not available')
+    }
+
+    try {
+      if (!firebaseSwRegistrationPromise) {
+        throw new Error('Service Workers not supported')
+      }
+
+      const swRegistration = await firebaseSwRegistrationPromise
+
+      if (!swRegistration) {
+        throw new Error('Firebase Service Worker registration failed')
+      }
+
+      this.token = await getToken(fcm, {
+        vapidKey: VAPID_KEY,
+        serviceWorkerRegistration: swRegistration
+      })
+    } catch (error) {
+      console.error('Failed to get FCM token:', error)
+      throw error
+    }
+
+    if (!this.token) {
+      throw new Error('Failed to get Web Push token')
+    }
+
+    if (this.deviceId) {
+      try {
+        const signalData = signalAsset(this.deviceId, this.token, 'FCM', 'add')
+        console.log('[Push-Reg] Web: Sending registration transaction to blockchain - add')
+        await sendSpecialMessage(
+          ADAMANT_NOTIFICATION_SERVICE_ADDRESS,
+          signalData,
+          MessageType.SIGNAL_MESSAGE
+        )
+        console.log('[Push-Reg] Web: Registration transaction SUCCESS')
+      } catch (error) {
+        console.error('Failed to register device with notification service:', error)
+        throw error
+      }
+    }
+  }
+
+  async unregisterDevice(): Promise<boolean> {
+    if (!this.token || !this.deviceId) return false
+    const signalData = signalAsset(this.deviceId, this.token, 'FCM', 'remove')
+    console.log('[Push-Reg] Web: Sending registration transaction to blockchain - remove')
+    try {
+      await sendSpecialMessage(
+        ADAMANT_NOTIFICATION_SERVICE_ADDRESS,
+        signalData,
+        MessageType.SIGNAL_MESSAGE
+      )
+
+      await this.revokeLocalSubscription()
+
+      this.token = null
+      console.error('[Push-Reg] Web: Unregistration FAILED')
+      return true
+    } catch (error) {
+      console.error('Failed to unregister device:', error)
+      return false
+    }
+  }
+
+  async revokeLocalSubscription(): Promise<void> {
+    if (!fcm) return
+
+    const swRegistration = await firebaseSwRegistrationPromise
+
+    if (swRegistration) {
+      ;(fcm as any).swRegistration = swRegistration
+    }
+
+    try {
+      await deleteToken(fcm)
+    } catch {
+      throw new Error('Failed to revoke FCM token')
+    }
+  }
+
+  setPrivateKey(): void {}
+
+  clearPrivateKey(): void {}
+
+  isInitialized(): boolean {
+    return super.isInitialized()
+  }
+
+  getDeviceId(): string | null {
+    return super.getDeviceId()
+  }
+
+  reset(): void {
+    super.reset()
+  }
+}

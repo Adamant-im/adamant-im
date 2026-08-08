@@ -8,7 +8,7 @@ import {
   sendSpecialMessage,
   getCurrentAccount
 } from '@/lib/adamant-api'
-import { CryptosInfo, Fees, FetchStatus } from '@/lib/constants'
+import { CryptosInfo, Fees, FetchStatus, MessageType } from '@/lib/constants'
 import { encryptPassword } from '@/lib/idb/crypto'
 import { flushCryptoAddresses, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import { registerCryptoModules } from './utils/registerCryptoModules'
@@ -190,12 +190,14 @@ const store = {
         ? replyWithCryptoTransferAsset(payload.replyToId, transferPayload)
         : cryptoTransferAsset(transferPayload)
 
-      return sendSpecialMessage(payload.address, asset).then((result) => {
-        if (!result.success) {
-          throw new Error(`Failed to send "${asset.type}"`)
+      return sendSpecialMessage(payload.address, asset, MessageType.RICH_CONTENT_MESSAGE).then(
+        (result) => {
+          if (!result.success) {
+            throw new Error(`Failed to send "${asset.type}"`)
+          }
+          return result.success
         }
-        return result.success
-      })
+      )
     },
     reset({ commit }) {
       commit('reset', null, { root: true })
@@ -260,6 +262,17 @@ const store = {
       handler() {
         clearTimeout(interval)
       }
+    },
+    async getPrivateKeyForPush({ state }) {
+      if (!state.passphrase) return ''
+
+      const { getMyPrivateKey, isReady } = await import('@/lib/adamant-api')
+
+      if (!isReady()) {
+        return ''
+      }
+
+      return getMyPrivateKey()
     }
   },
   modules: {
