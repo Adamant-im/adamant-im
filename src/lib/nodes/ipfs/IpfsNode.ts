@@ -5,6 +5,9 @@ import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import type { NodeInfo } from '@/types/wallets'
 
+/** Matches the axios instance below, so a streamed download is not held to a stricter clock */
+const DOWNLOAD_TIMEOUT_MS = 60 * 10 * 1000
+
 type FetchNodeInfoResult = {
   availableSizeInMb: number
   blockstoreSizeMb: number
@@ -27,8 +30,6 @@ export type RequestConfig<P extends Payload> = {
   onUploadProgress?: (progress: AxiosProgressEvent) => void
   responseType?: ResponseType
   signal?: AbortSignal
-  /** Abort the transfer once the response exceeds this many bytes. See `enforceSizeLimit`. */
-  maxContentLength?: number
 }
 
 /** Raised when a response is cut short for exceeding its declared size */
@@ -62,17 +63,8 @@ export class IpfsNode extends Node<AxiosInstance> {
    * accepts `ApiNode` as a first argument and returns an object.
    */
   request<P extends Payload = Payload, R = any>(cfg: RequestConfig<P>): Promise<R> {
-    const {
-      url,
-      headers,
-      method = 'get',
-      payload,
-      signal,
-      onUploadProgress,
-      maxContentLength
-    } = cfg
+    const { url, headers, method = 'get', payload, signal, onUploadProgress } = cfg
     const baseURL = this.getBaseURL(this)
-    const limit = this.enforceSizeLimit(maxContentLength, signal)
 
     const config: AxiosRequestConfig = {
       baseURL,
@@ -83,12 +75,8 @@ export class IpfsNode extends Node<AxiosInstance> {
       [method === 'get' ? 'params' : 'data']:
         typeof payload === 'function' ? payload(this) : payload,
       responseType: cfg.responseType,
-      signal: limit ? limit.signal : signal,
-      onUploadProgress,
-      ...(limit ? { onDownloadProgress: limit.onDownloadProgress } : {}),
-      // Honoured only by the Node adapter, which is what the tests and the Electron main
-      // process use. The browser adapters ignore it entirely — hence the progress-based abort.
-      ...(typeof maxContentLength === 'number' ? { maxContentLength } : {})
+      signal,
+      onUploadProgress
     }
 
     return this.client.request(config).then(
@@ -102,12 +90,6 @@ export class IpfsNode extends Node<AxiosInstance> {
         return body
       },
       (error) => {
-        // Checked before the offline branch: an oversized answer means the node responded, and
-        // marking it offline would rotate away from a node that is merely misbehaving here.
-        if (limit?.exceeded) {
-          throw new ResponseTooLargeError(limit.max)
-        }
-
         // According to https://github.com/axios/axios#handling-errors this means, that request was sent,
         // but server could not respond.
         if (!error.response && error.request) {
@@ -120,44 +102,105 @@ export class IpfsNode extends Node<AxiosInstance> {
   }
 
   /**
-   * Bounds a response by aborting the transfer, rather than by inspecting it afterwards.
+   * Downloads a file, refusing to hold more than `maxBytes` of it in memory.
    *
-   * axios only implements `maxContentLength` in its Node adapter (`lib/adapters/http.js`); the
-   * XHR and fetch adapters used by the PWA and the Electron renderer ignore it. In those
-   * environments the option alone leaves a hostile node free to stream an unbounded body into
-   * memory, and the size check afterwards is far too late. Download progress is reported by
-   * every adapter, so the limit is enforced from there and the request is aborted through an
-   * `AbortController`.
+   * This does not go through axios. Both browser adapters route `onDownloadProgress` through
+   * `progressEventReducer(..., true)`, which throttles to 3 Hz, and `responseType:
+   * 'arraybuffer'` has XHR accumulate the body internally regardless — so by the time a
+   * progress callback reports the overrun, the allocation this is meant to prevent has already
+   * happened. Aborting from progress events bounds the *transfer*, not the memory.
    *
-   * @returns `undefined` when no limit applies
+   * A streamed `fetch` gives the one guarantee that matters: each chunk is counted as it is
+   * pulled, before it is retained, so the peak is the limit plus a single chunk.
+   *
+   * @throws {ResponseTooLargeError} as soon as the body exceeds `maxBytes`
+   * @throws {NodeOfflineError} when the node cannot be reached
    */
-  private enforceSizeLimit(maxContentLength: number | undefined, externalSignal?: AbortSignal) {
-    if (typeof maxContentLength !== 'number' || maxContentLength < 0) return undefined
-
+  async downloadBounded(url: string, maxBytes: number, signal?: AbortSignal) {
     const controller = new AbortController()
-    const state = {
-      max: maxContentLength,
-      exceeded: false,
-      signal: controller.signal,
-      onDownloadProgress: (progress: AxiosProgressEvent) => {
-        // `total` comes from Content-Length when the node sends one, which lets an oversized
-        // body be rejected before its first chunk is kept.
-        const announced = Math.max(progress.loaded ?? 0, progress.total ?? 0)
+    const abort = () => controller.abort()
 
-        if (state.exceeded || announced <= maxContentLength) return
+    if (signal) {
+      if (signal.aborted) abort()
+      else signal.addEventListener('abort', abort, { once: true })
+    }
 
-        state.exceeded = true
-        controller.abort()
+    const timeout = setTimeout(abort, DOWNLOAD_TIMEOUT_MS)
+    let exceeded = false
+
+    try {
+      const response = await fetch(new URL(url, this.getBaseURL(this)).toString(), {
+        signal: controller.signal
+      })
+
+      if (!response.ok) {
+        throw new Error(`Request to ${url} failed with status ${response.status}`)
       }
-    }
 
-    // An abort requested by the caller still has to reach the request
-    if (externalSignal) {
-      if (externalSignal.aborted) controller.abort()
-      else externalSignal.addEventListener('abort', () => controller.abort(), { once: true })
-    }
+      // A declared length over the bound is refused before a single byte is read
+      const declared = Number(response.headers.get('content-length'))
 
-    return state
+      if (Number.isFinite(declared) && declared > maxBytes) {
+        exceeded = true
+        abort()
+        throw new ResponseTooLargeError(maxBytes)
+      }
+
+      if (!response.body) {
+        // No streams here (jsdom, and any exotic runtime). Nothing can be bounded during the
+        // transfer, so this is the old post-hoc check — correct, just later than we would like.
+        const buffer = await response.arrayBuffer()
+
+        if (buffer.byteLength > maxBytes) throw new ResponseTooLargeError(maxBytes)
+
+        return buffer
+      }
+
+      const reader = response.body.getReader()
+      const chunks: Uint8Array[] = []
+      let received = 0
+
+      for (;;) {
+        const { done, value } = await reader.read()
+
+        if (done) break
+        if (!value) continue
+
+        received += value.byteLength
+
+        if (received > maxBytes) {
+          exceeded = true
+          // `cancel` releases the connection; the chunk that crossed the line is dropped
+          void reader.cancel()
+          abort()
+          throw new ResponseTooLargeError(maxBytes)
+        }
+
+        chunks.push(value)
+      }
+
+      const body = new Uint8Array(received)
+      let offset = 0
+
+      for (const chunk of chunks) {
+        body.set(chunk, offset)
+        offset += chunk.byteLength
+      }
+
+      return body.buffer
+    } catch (error) {
+      if (exceeded || error instanceof ResponseTooLargeError) {
+        // Deliberately not a NodeOfflineError: the node answered, it just answered with too
+        // much. Marking it offline would rotate away from a node that is merely misbehaving.
+        throw error instanceof ResponseTooLargeError ? error : new ResponseTooLargeError(maxBytes)
+      }
+
+      this.online = false
+      throw new NodeOfflineError()
+    } finally {
+      clearTimeout(timeout)
+      signal?.removeEventListener('abort', abort)
+    }
   }
 
   /**
