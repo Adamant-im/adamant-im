@@ -20,11 +20,17 @@ export class IpfsClient extends Client<IpfsNode> {
     void this.watchNodeStatusChange()
   }
 
-  async downloadFile(cid: string) {
+  /**
+   * @param maxContentLength abort the transfer once this many bytes have arrived, instead of
+   *   buffering the whole response and rejecting it afterwards. A hostile IPFS node can
+   *   otherwise exhaust memory before any size check runs.
+   */
+  async downloadFile(cid: string, maxContentLength?: number) {
     return this.request({
       method: 'get',
       url: `api/file/${cid}`,
-      responseType: 'arraybuffer'
+      responseType: 'arraybuffer',
+      maxContentLength
     })
   }
 

@@ -1,4 +1,7 @@
-import { CryptosInfo } from '@/lib/constants'
+// Imported from the cryptos module rather than the `constants` barrel: the barrel also pulls
+// in icon paths and other UI-only values, and this list is consumed by the Electron main
+// process, which has no business loading any of that.
+import { CryptosInfo } from '@/lib/constants/cryptos'
 
 /**
  * The single source of truth for which URI schemes the application is willing to render as a
@@ -33,11 +36,20 @@ const BASE_SCHEMES = [
  * `qqPrefix` — note the spelling, it is `qq` in the wallet specification — is the URI scheme a
  * coin uses in QR codes and share links. Every ERC-20 token maps to `ethereum`.
  */
+/** A URI scheme, per RFC 3986. Anything else would change the meaning of the regexes below */
+const VALID_SCHEME = /^[a-z][a-z0-9+.-]*$/
+
 function collectCoinSchemes(): string[] {
-  return Object.values(CryptosInfo)
-    .map((crypto) => crypto.qqPrefix)
-    .filter((prefix): prefix is string => typeof prefix === 'string' && prefix.length > 0)
-    .map((prefix) => prefix.toLowerCase())
+  return (
+    Object.values(CryptosInfo)
+      .map((crypto) => crypto.qqPrefix)
+      .filter((prefix): prefix is string => typeof prefix === 'string' && prefix.length > 0)
+      .map((prefix) => prefix.toLowerCase())
+      // The values are interpolated into regexes. They come from a bundled specification, so this
+      // is a guard against a future typo rather than against an attacker — but a stray metacharacter
+      // would silently change what the allowlist matches.
+      .filter((prefix) => VALID_SCHEME.test(prefix))
+  )
 }
 
 export const ALLOWED_URI_SCHEMES: readonly string[] = [

@@ -42,8 +42,20 @@ export function usePublicKeyFetch(partnerId: string) {
       .catch((error: unknown) => {
         vibrate.long()
         isGettingPublicKey.value = false
-        if ((error as Error).message === t('chats.no_public_key')) {
+
+        const message = (error as Error).message
+
+        if (message === t('chats.no_public_key')) {
           isKeyMissing.value = true
+          return
+        }
+
+        // A key that does not derive the address it was returned for is a security failure, not
+        // a transient one: the input stays disabled because nothing was cached, so without this
+        // the user would be left with a dead composer and no explanation.
+        if (message === t('chats.public_key_mismatch')) {
+          isKeyMissing.value = true
+          store.dispatch('snackbar/show', { message, timeout: 0 })
         }
       })
   }

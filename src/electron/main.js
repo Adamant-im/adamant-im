@@ -4,6 +4,11 @@ import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import path from 'node:path'
 import { readFile } from 'node:fs/promises'
 
+// The one place URI schemes are defined, shared with the renderer and derived from
+// `adamant-wallets`. Hardcoding a second copy here is what silently blocked the `ethereum:`,
+// `dash:` and `doge:` links the app itself generates.
+import { ALLOWED_URI_PROTOCOLS } from '@/lib/uriSchemes'
+
 const SCHEME = 'app'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -133,23 +138,6 @@ function createProtocol(scheme, customProtocol) {
   })
 }
 
-/**
- * Protocols a chat message or a UI link is allowed to hand to the operating system.
- * Mirrors the allowlist used by the markdown renderer.
- */
-const EXTERNAL_URL_SCHEMES = new Set([
-  'http:',
-  'https:',
-  'mailto:',
-  'ftp:',
-  'sftp:',
-  'magnet:',
-  'bitcoin:',
-  'eth:',
-  'bch:',
-  'tg:'
-])
-
 function isInternalUrl(url) {
   if (url.startsWith(`${SCHEME}://`)) return true
 
@@ -168,7 +156,7 @@ function isInternalUrl(url) {
 function restrictNavigation(webContents) {
   webContents.setWindowOpenHandler(({ url }) => {
     try {
-      if (EXTERNAL_URL_SCHEMES.has(new URL(url).protocol)) {
+      if (ALLOWED_URI_PROTOCOLS.has(new URL(url).protocol)) {
         void shell.openExternal(url)
       } else {
         logInfo('Blocked window.open for an unsupported protocol:', url)
@@ -186,7 +174,7 @@ function restrictNavigation(webContents) {
     event.preventDefault()
 
     try {
-      if (EXTERNAL_URL_SCHEMES.has(new URL(url).protocol)) {
+      if (ALLOWED_URI_PROTOCOLS.has(new URL(url).protocol)) {
         void shell.openExternal(url)
         return
       }

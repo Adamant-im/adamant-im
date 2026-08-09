@@ -547,8 +547,19 @@ export function getChats(from = 0, offset = 0, orderBy = 'desc') {
     const { count, transactions, nodeTimestamp } = response
 
     const promises = transactions.map((transaction) => {
-      const promise = isStringEqualCI(transaction.recipientId, myAddress)
-        ? Promise.resolve(transaction.senderPublicKey)
+      const isIncoming = isStringEqualCI(transaction.recipientId, myAddress)
+      // The polling path accepts keys from the node just like the socket does, so it needs the
+      // same binding check. Without it a compromised node could substitute its own key together
+      // with a matching ciphertext here, and the message would decode as if a trusted contact
+      // had sent it. The check is local, so this stays at zero extra requests.
+      const promise = isIncoming
+        ? cacheVerifiedPublicKey(transaction.senderId, transaction.senderPublicKey)
+          ? Promise.resolve(transaction.senderPublicKey)
+          : Promise.reject(
+              new Error(
+                `Public key does not derive the address it is claimed for: ${transaction.senderId}`
+              )
+            )
         : queue.add(() => getPublicKey(transaction.recipientId))
 
       return promise

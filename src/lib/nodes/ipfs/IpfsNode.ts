@@ -27,6 +27,8 @@ export type RequestConfig<P extends Payload> = {
   onUploadProgress?: (progress: AxiosProgressEvent) => void
   responseType?: ResponseType
   signal?: AbortSignal
+  /** Axios aborts the transfer once the response exceeds this many bytes */
+  maxContentLength?: number
 }
 
 /**
@@ -52,7 +54,15 @@ export class IpfsNode extends Node<AxiosInstance> {
    * accepts `ApiNode` as a first argument and returns an object.
    */
   request<P extends Payload = Payload, R = any>(cfg: RequestConfig<P>): Promise<R> {
-    const { url, headers, method = 'get', payload, signal, onUploadProgress } = cfg
+    const {
+      url,
+      headers,
+      method = 'get',
+      payload,
+      signal,
+      onUploadProgress,
+      maxContentLength
+    } = cfg
     const baseURL = this.getBaseURL(this)
 
     const config: AxiosRequestConfig = {
@@ -65,7 +75,8 @@ export class IpfsNode extends Node<AxiosInstance> {
         typeof payload === 'function' ? payload(this) : payload,
       responseType: cfg.responseType,
       signal,
-      onUploadProgress
+      onUploadProgress,
+      ...(typeof maxContentLength === 'number' ? { maxContentLength } : {})
     }
 
     return this.client.request(config).then(

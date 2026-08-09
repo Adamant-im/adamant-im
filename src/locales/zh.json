@@ -15,7 +15,7 @@
     "date_yesterday": "昨天",
     "incorrect_address": "ADM地址不正确",
     "no_public_key": "此地址尚未激活。无法启动聊天",
-    "public_key_mismatch": "\u516c\u94a5\u4e0d\u5339\u914d\uff1a\u8282\u70b9\u4e3a\u8be5\u5730\u5740\u8fd4\u56de\u4e86\u4e0d\u540c\u7684\u516c\u94a5\u3002\u6d88\u606f\u672a\u53d1\u9001\u3002\u8bf7\u68c0\u67e5\u8282\u70b9\u5217\u8868\u3002",
+    "public_key_mismatch": "节点返回的公钥与该地址不匹配。消息未发送。请尝试其他节点。",
     "unable_to_retrieve_no_public_key": "`无法解密消息：没有合作伙伴的公钥`",
     "me": "我",
     "message": "键入消息",

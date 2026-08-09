@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeAll } from 'vitest'
-import { config as loadEnv } from 'dotenv'
+import { readLiveEnv, warnMissingLiveEnv } from '../../tests/shared/liveEnv'
 
 import nacl from 'tweetnacl'
 
@@ -8,10 +8,8 @@ import { renderMarkdown, renderPlainText } from '@/lib/markdown'
 import { renderSafeHtml } from '@/components/common/SafeHtml'
 import { XSS_PAYLOADS, findExecutableMarkup } from '@/lib/__fixtures__/xssPayloads'
 
-loadEnv({ path: '.env.local', quiet: true })
-
-const senderPassphrase = process.env.ADM_AGENT1_PK?.trim()
-const recipientPassphrase = process.env.ADM_AGENT2_PK?.trim()
+const senderPassphrase = readLiveEnv('ADM_AGENT1_PK')
+const recipientPassphrase = readLiveEnv('ADM_AGENT2_PK')
 const liveDescribe = senderPassphrase && recipientPassphrase ? describe : describe.skip
 
 /**
@@ -23,11 +21,11 @@ const liveDescribe = senderPassphrase && recipientPassphrase ? describe : descri
  * broadcast only when a new payload is added to `LIVE_PAYLOADS` and is not on chain yet.
  */
 
-if (!(senderPassphrase && recipientPassphrase)) {
-  console.warn(
-    '\n[vitest] ADM_AGENT1_PK / ADM_AGENT2_PK are not set — the live XSS pipeline test is skipped.\n'
-  )
-}
+warnMissingLiveEnv(
+  'vitest',
+  ['ADM_AGENT1_PK', 'ADM_AGENT2_PK'],
+  'To enable it, add both agent passphrases to .env.local.'
+)
 
 const NODE = 'https://endless.adamant.im'
 

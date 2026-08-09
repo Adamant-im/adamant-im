@@ -105,6 +105,28 @@ describe('renderMarkdown', () => {
     expect(rendered).not.toContain('evil.example')
   })
 
+  it('runs headings through the same escaping as the rest of the message', () => {
+    // `renderer.heading` used to emit the raw source text, so raw HTML in a heading reached the
+    // output as markup while the same HTML in a paragraph was escaped
+    const rendered = renderMarkdown('# <b>hi</b>')
+
+    expect(rendered).toContain('&lt;b&gt;')
+    expect(new DOMParser().parseFromString(rendered, 'text/html').querySelector('h1 b')).toBeNull()
+  })
+
+  it('renders inline markdown inside headings', () => {
+    const rendered = renderMarkdown('# **bold** and `code`')
+
+    expect(rendered).toContain('<strong>bold</strong>')
+    expect(rendered).toContain('<code>code</code>')
+  })
+
+  it('never emits executable markup from a heading', () => {
+    for (const payload of [XSS_PAYLOADS.headingWithTag, XSS_PAYLOADS.headingWithEntities]) {
+      expect(findExecutableMarkup(renderMarkdown(payload)), payload).toEqual([])
+    }
+  })
+
   it('normalizes the U+2028 line separator', () => {
     expect(renderMarkdown('a\u2028b')).toContain('<br>')
   })

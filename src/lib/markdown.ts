@@ -136,8 +136,11 @@ renderer.link = function ({ href, text }) {
   return `<a href="${safeHref}" target="_blank" rel="noopener noreferrer">${safeHref}</a>`
 }
 
-renderer.heading = function ({ text, depth }) {
-  return `<h${depth}>${text}</h${depth}>`
+renderer.heading = function ({ tokens, depth }) {
+  // Inline tokens, not the raw source text. Using `text` meant inline markdown never rendered
+  // inside a heading, and — more importantly — raw HTML in a heading skipped `renderer.html`
+  // and reached the output as markup, unlike the same HTML in a paragraph.
+  return `<h${depth}>${this.parser.parseInline(tokens)}</h${depth}>`
 }
 
 marked.use({ renderer })

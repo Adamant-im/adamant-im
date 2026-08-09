@@ -96,7 +96,13 @@ const VOID_TAGS = new Set(['br', 'hr'])
 /** Wrapper added around tables so they can scroll horizontally inside a chat bubble */
 const TABLE_SCROLL_CLASS = 'a-chat__message-table'
 
-/** Relative links are safe: they cannot introduce a new scheme */
+/**
+ * Relative links are safe: they cannot introduce a new scheme.
+ *
+ * This also admits protocol-relative URLs (`//evil.com`), which do lead off-site. That is
+ * deliberate — the risk is the same as the plain `https:` links already on the allowlist, and
+ * `SafeHtml` forces `rel="noopener noreferrer"` on every anchor regardless.
+ */
 const RELATIVE_URI = /^(?:[/#?]|$)/
 
 function isSafeHref(href: string): boolean {

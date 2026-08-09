@@ -1,9 +1,12 @@
 import { defineConfig, mergeConfig } from 'vite'
 import { createRequire } from 'node:module'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import viteBaseConfig from './vite-base.config'
 import { excludeScreenshotsPlugin } from './vite-config/plugins/excludeScreenshotsPlugin'
 
 const require = createRequire(import.meta.url)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const electron = require('vite-plugin-electron')
   .default as typeof import('vite-plugin-electron').default
 const electronDevCspHeader = [
@@ -39,7 +42,17 @@ export default mergeConfig(
     },
     plugins: [
       electron({
-        entry: 'src/electron/main.js'
+        entry: 'src/electron/main.js',
+        // The main process bundle is built separately and does not inherit the base config's
+        // aliases. It needs `@` so that the URI scheme allowlist can be imported from the same
+        // module the renderer uses, instead of being duplicated and drifting.
+        vite: {
+          resolve: {
+            alias: {
+              '@': path.resolve(__dirname, './src')
+            }
+          }
+        }
       }),
       excludeScreenshotsPlugin()
     ]

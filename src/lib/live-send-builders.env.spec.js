@@ -1,7 +1,7 @@
 // @vitest-environment node
 
 import { beforeAll, describe, expect, it, vi } from 'vitest'
-import { config as loadEnv } from 'dotenv'
+import { readLiveEnv, warnMissingLiveEnv } from '../../tests/shared/liveEnv'
 import BigNumber from 'bignumber.js'
 import * as bitcoin from 'bitcoinjs-lib'
 import EthContract from 'web3-eth-contract'
@@ -47,17 +47,14 @@ import { getAccountFromPassphrase, calculateReliableValue, calculateFee } from '
 import Erc20 from '@/store/modules/erc20/erc20.abi.json'
 import { Cryptos, CryptosInfo, Fees, Transactions, getMinAmount } from '@/lib/constants'
 
-loadEnv({ path: '.env.local', quiet: true })
-
-const testPassphrase = process.env.ADM_TEST_ACCOUNT_PK?.trim()
+const testPassphrase = readLiveEnv('ADM_TEST_ACCOUNT_PK')
 const liveDescribe = testPassphrase ? describe : describe.skip
 
-if (!process.env.CI && !testPassphrase) {
-  console.warn(
-    '\n[vitest] ADM_TEST_ACCOUNT_PK is not set — live wallet build tests will be skipped.\n' +
-      'To enable them, add the test account passphrase to .env.local.\n'
-  )
-}
+warnMissingLiveEnv(
+  'vitest',
+  ['ADM_TEST_ACCOUNT_PK'],
+  'To enable them, add the test account passphrase to .env.local.'
+)
 
 const ADM_RECIPIENT = 'U12345678901234567890'
 const ETH_RECIPIENT = '0x000000000000000000000000000000000000dEaD'
