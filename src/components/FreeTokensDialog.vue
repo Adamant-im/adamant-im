@@ -42,6 +42,7 @@ import { watch } from 'vue'
 import { websiteUriToOnion } from '@/lib/uri'
 import { mdiGift } from '@mdi/js'
 import { vibrate } from '@/lib/vibrate'
+import { openExternalLink } from '@/lib/openExternalLink'
 
 export default {
   props: {
@@ -81,12 +82,12 @@ export default {
       const link = websiteUriToOnion(
         this.$t('home.free_tokens_link') + '?wallet=' + this.$store.state.address
       )
-      window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
+      openExternalLink(link)
       this.show = false
     },
     showArticle() {
       const link = this.$t('chats.how_to_use_messenger_link')
-      window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
+      openExternalLink(link)
     },
     onEnter() {
       if (this.show) {

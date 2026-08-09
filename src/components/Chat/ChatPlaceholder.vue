@@ -31,6 +31,7 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import { joinUrl } from '@/lib/urlFormatter'
+import { openExternalLink } from '@/lib/openExternalLink'
 
 const CHAT_PLACEHOLDER_PUBLIC_KEY_SPINNER_SIZE = 20
 const { t } = useI18n()
@@ -56,7 +57,7 @@ const keys = ['encrypted', 'ipfs', 'anonymous', 'censorship']
 
 function openLink() {
   const link = t('chats.placeholder.what_does_it_mean.link')
-  window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
+  openExternalLink(link)
 }
 </script>
 

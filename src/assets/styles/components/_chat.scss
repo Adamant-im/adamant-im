@@ -248,7 +248,7 @@ $scroll-bar-width: 4px;
 
     code {
       font-weight: inherit;
-      font-size: 14px;
+      font-size: 1em;
       padding: calc(var(--a-space-1) / 2) var(--a-space-1);
       border-radius: 6px;
       overflow-x: auto;
@@ -290,6 +290,77 @@ $scroll-bar-width: 4px;
       code {
         padding: 0;
       }
+    }
+
+    blockquote {
+      margin: 0 0 var(--a-space-2);
+      padding: var(--a-space-1) 0 var(--a-space-1) var(--a-space-3);
+      border-left: var(--a-border-width-strong) solid;
+
+      // Every nesting level keeps its own bar
+      blockquote {
+        margin-top: var(--a-space-2);
+      }
+
+      > :last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    ul,
+    ol {
+      margin: 0 0 var(--a-space-2);
+      padding-left: var(--a-space-5);
+    }
+
+    hr {
+      margin: var(--a-space-3) 0;
+      border: none;
+      border-top: var(--a-border-width-thin) solid;
+    }
+
+    /**
+     * 1. The wrapper is the scroll container, not the table. A chat bubble sizes to its
+     *    content, so `overflow-x` on the table itself makes the table shrink to the available
+     *    width and the columns collapse instead of scrolling.
+     * 2. Cells opt out of the aggressive `word-break` set on the message body. Without this a
+     *    wide table breaks every heading mid-word and becomes unreadable.
+     */
+    .a-chat__message-table {
+      max-width: 100%;
+      margin-bottom: var(--a-space-2);
+      overflow-x: auto;
+    }
+
+    table {
+      width: max-content;
+      max-width: none;
+      border-collapse: collapse;
+      font-size: 0.95em;
+    }
+
+    /**
+     * 1. `min-width` stops a column of short values collapsing to a couple of characters.
+     * 2. `max-width` caps how much a single long cell can contribute to the column, so the
+     *    cell wraps onto a second line instead of making one enormous column.
+     * 3. `word-break: normal` opts out of the aggressive breaking set on the message body,
+     *    which used to split every heading mid-word; `overflow-wrap` still breaks a token
+     *    that cannot fit on its own.
+     */
+    th,
+    td {
+      min-width: var(--a-chat-message-table-cell-min-width);
+      max-width: var(--a-chat-message-table-cell-max-width);
+      padding: var(--a-space-1) var(--a-space-2);
+      border: var(--a-border-width-thin) solid;
+      text-align: left;
+      vertical-align: top;
+      word-break: normal;
+      overflow-wrap: break-word;
+    }
+
+    th {
+      font-weight: 500;
     }
   }
 
@@ -508,6 +579,17 @@ $scroll-bar-width: 4px;
         border-color: map.get(settings.$grey, 'lighten-2');
       }
 
+      blockquote {
+        border-left-color: map.get(colors.$adm-colors, 'primary2');
+        color: map.get(colors.$adm-colors, 'muted');
+      }
+
+      hr,
+      th,
+      td {
+        border-color: map.get(settings.$grey, 'lighten-2');
+      }
+
       pre {
         background-color: map.get(settings.$grey, 'lighten-4');
         color: map.get(settings.$grey, 'darken-3');
@@ -618,6 +700,17 @@ $scroll-bar-width: 4px;
         color: map.get(settings.$shades, 'white');
         border-color: map.get(settings.$grey, 'darken-2');
         background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
+      }
+
+      blockquote {
+        border-left-color: map.get(settings.$grey, 'base');
+        color: map.get(settings.$grey, 'lighten-1');
+      }
+
+      hr,
+      th,
+      td {
+        border-color: map.get(settings.$grey, 'darken-2');
       }
       pre {
         color: inherit;

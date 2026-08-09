@@ -45,7 +45,12 @@
     padding: var(--a-secondary-dialog-actions-padding) !important;
   }
 
-  &__list {
+  /**
+   * Scoped to Vuetify lists on purpose. The reset exists to undo `v-list`'s own padding; while
+   * it matched any element carrying a `__list` class it also silently flattened plain `<ul>`
+   * markup in dialogs that happened to reuse the name, pushing the bullets outside the text.
+   */
+  &__list.v-list {
     padding: 0 !important;
   }
 

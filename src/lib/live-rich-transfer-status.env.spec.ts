@@ -5,7 +5,7 @@ import { mount } from '@vue/test-utils'
 import { computed, defineComponent, h, PropType } from 'vue'
 import { createStore } from 'vuex'
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query'
-import { config as loadEnv } from 'dotenv'
+import { readLiveEnv, warnMissingLiveEnv } from '../../tests/shared/liveEnv'
 import BigNumber from 'bignumber.js'
 import nacl from 'tweetnacl'
 
@@ -74,17 +74,14 @@ import {
   TransactionStatus
 } from '@/lib/constants'
 
-loadEnv({ path: '.env.local', quiet: true })
-
-const testPassphrase = process.env.ADM_TEST_ACCOUNT_PK?.trim()
+const testPassphrase = readLiveEnv('ADM_TEST_ACCOUNT_PK')
 const liveDescribe = testPassphrase ? describe : describe.skip
 
-if (!process.env.CI && !testPassphrase) {
-  console.warn(
-    '\n[vitest] ADM_TEST_ACCOUNT_PK is not set — live rich transfer status tests will be skipped.\n' +
-      'To enable them, add the test account passphrase to .env.local.\n'
-  )
-}
+warnMissingLiveEnv(
+  'vitest',
+  ['ADM_TEST_ACCOUNT_PK'],
+  'To enable them, add the test account passphrase to .env.local.'
+)
 
 const RECIPIENT_ADM = 'U6386412615727665758'
 const TEST_FETCH_INFO = {

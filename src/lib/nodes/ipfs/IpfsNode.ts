@@ -5,6 +5,9 @@ import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import type { NodeInfo } from '@/types/wallets'
 
+/** Matches the axios instance below, so a streamed download is not held to a stricter clock */
+const DOWNLOAD_TIMEOUT_MS = 60 * 10 * 1000
+
 type FetchNodeInfoResult = {
   availableSizeInMb: number
   blockstoreSizeMb: number
@@ -27,6 +30,38 @@ export type RequestConfig<P extends Payload> = {
   onUploadProgress?: (progress: AxiosProgressEvent) => void
   responseType?: ResponseType
   signal?: AbortSignal
+}
+
+/** Raised when a response is cut short for exceeding its declared size */
+export class ResponseTooLargeError extends Error {
+  constructor(limit: number) {
+    super(`Response exceeds the allowed size of ${limit} bytes`)
+    this.name = 'ResponseTooLargeError'
+  }
+}
+
+/** Raised when the node answered, but with an error status */
+export class ResponseStatusError extends Error {
+  public readonly status: number
+
+  constructor(url: string, status: number) {
+    super(`Request to ${url} failed with status ${status}`)
+    this.name = 'ResponseStatusError'
+    this.status = status
+  }
+}
+
+/**
+ * Joins a base URL with a relative path, keeping any path prefix the base carries.
+ *
+ * `new URL('api/file/x', 'https://host/ipfs')` resolves to `https://host/api/file/x` — the last
+ * segment of a base without a trailing slash is treated as a file and replaced. A self-hosted
+ * endpoint published at `https://host/ipfs` would therefore have had its downloads sent to the
+ * wrong path while its health checks, which still go through axios, kept succeeding: the node
+ * would look perfectly healthy and never serve a file. Mirrors axios `combineURLs`.
+ */
+function combineURLs(baseURL: string, relativeURL: string): string {
+  return relativeURL ? `${baseURL.replace(/\/+$/, '')}/${relativeURL.replace(/^\/+/, '')}` : baseURL
 }
 
 /**
@@ -88,6 +123,134 @@ export class IpfsNode extends Node<AxiosInstance> {
         throw error
       }
     )
+  }
+
+  /**
+   * Downloads a file, refusing to hold more than `maxBytes` of it in memory.
+   *
+   * This does not go through axios. Both browser adapters route `onDownloadProgress` through
+   * `progressEventReducer(..., true)`, which throttles to 3 Hz, and `responseType:
+   * 'arraybuffer'` has XHR accumulate the body internally regardless — so by the time a
+   * progress callback reports the overrun, the allocation this is meant to prevent has already
+   * happened. Aborting from progress events bounds the *transfer*, not the memory.
+   *
+   * A streamed `fetch` gives the one guarantee that matters: each chunk is counted as it is
+   * pulled, before it is retained, so the peak is the limit plus a single chunk.
+   *
+   * @throws {ResponseTooLargeError} as soon as the body exceeds `maxBytes`
+   * @throws {ResponseStatusError} when the node answers with a 4xx
+   * @throws {NodeOfflineError} when the node cannot be reached, times out, or fails with a 5xx
+   */
+  async downloadBounded(url: string, maxBytes: number, signal?: AbortSignal) {
+    const controller = new AbortController()
+    const abort = () => controller.abort()
+
+    if (signal) {
+      if (signal.aborted) abort()
+      else signal.addEventListener('abort', abort, { once: true })
+    }
+
+    let exceeded = false
+    // A timeout is the node's fault; an abort from the caller is not. They arrive at the same
+    // `catch` as the same `AbortError`, so they have to be told apart here.
+    let timedOut = false
+    const timeout = setTimeout(() => {
+      timedOut = true
+      abort()
+    }, DOWNLOAD_TIMEOUT_MS)
+
+    try {
+      const response = await fetch(combineURLs(this.getBaseURL(this), url), {
+        signal: controller.signal
+      })
+
+      if (!response.ok) {
+        throw new ResponseStatusError(url, response.status)
+      }
+
+      // A declared length over the bound is refused before a single byte is read
+      const declared = Number(response.headers.get('content-length'))
+
+      if (Number.isFinite(declared) && declared > maxBytes) {
+        exceeded = true
+        abort()
+        throw new ResponseTooLargeError(maxBytes)
+      }
+
+      if (!response.body) {
+        // No streams here (jsdom, and any exotic runtime). Nothing can be bounded during the
+        // transfer, so this is the old post-hoc check — correct, just later than we would like.
+        const buffer = await response.arrayBuffer()
+
+        if (buffer.byteLength > maxBytes) throw new ResponseTooLargeError(maxBytes)
+
+        return buffer
+      }
+
+      const reader = response.body.getReader()
+      const chunks: Uint8Array[] = []
+      let received = 0
+
+      for (;;) {
+        const { done, value } = await reader.read()
+
+        if (done) break
+        if (!value) continue
+
+        received += value.byteLength
+
+        if (received > maxBytes) {
+          exceeded = true
+          // `cancel` releases the connection; the chunk that crossed the line is dropped
+          void reader.cancel()
+          abort()
+          throw new ResponseTooLargeError(maxBytes)
+        }
+
+        chunks.push(value)
+      }
+
+      const body = new Uint8Array(received)
+      let offset = 0
+
+      for (const chunk of chunks) {
+        body.set(chunk, offset)
+        offset += chunk.byteLength
+      }
+
+      return body.buffer
+    } catch (error) {
+      // Only a genuine failure to reach the node may mark it offline. The axios path this
+      // replaced was already careful about that — it required `!error.response && error.request`
+      // — and collapsing every failure into `NodeOfflineError` here would drop a healthy node
+      // out of the pool over a missing CID, or over the user cancelling a download.
+
+      if (exceeded || error instanceof ResponseTooLargeError) {
+        // The node answered, it just answered with too much. Rotating away from it would be
+        // wrong, and retrying the same oversized fetch on every other node doubly so.
+        throw error instanceof ResponseTooLargeError ? error : new ResponseTooLargeError(maxBytes)
+      }
+
+      if (error instanceof ResponseStatusError) {
+        // 4xx is about the request, not the node: a 404 for an unpinned CID says nothing about
+        // its health. 5xx is the node failing, so it rotates.
+        if (error.status < 500) throw error
+
+        this.online = false
+        throw new NodeOfflineError()
+      }
+
+      if (signal?.aborted && !timedOut) {
+        // Cancelled by the caller. Nothing was learned about the node.
+        throw error
+      }
+
+      this.online = false
+      throw new NodeOfflineError()
+    } finally {
+      clearTimeout(timeout)
+      signal?.removeEventListener('abort', abort)
+    }
   }
 
   /**

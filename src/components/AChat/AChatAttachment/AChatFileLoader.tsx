@@ -41,7 +41,8 @@ export const AChatFileLoader = defineComponent(
         const fileUrl = await store.dispatch('attachment/getAttachmentUrl', {
           cid: file.id,
           publicKey: publicKey.value,
-          nonce: file.nonce
+          nonce: file.nonce,
+          size: file.size
         })
 
         return fileUrl

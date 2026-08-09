@@ -50,6 +50,7 @@ import QrcodeRendererDialog from '@/components/QrcodeRendererDialog.vue'
 import copyToClipboard from 'copy-to-clipboard'
 import { generateURI } from '@/lib/uri'
 import { getExplorerAddressUrl } from '@/config/utils'
+import { openExternalLink } from '@/lib/openExternalLink'
 
 const className = 'share-uri-dialog'
 const classes = {
@@ -120,7 +121,7 @@ export default defineComponent({
     const openInExplorer = () => {
       const crypto = isErc.value ? Cryptos.ETH : props.crypto
       const explorerLink = getExplorerAddressUrl(crypto, props.address)
-      window.open(explorerLink, '_blank', 'resizable,scrollbars,status,noopener')
+      openExternalLink(explorerLink)
     }
 
     return {

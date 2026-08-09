@@ -75,6 +75,7 @@ import CoingeckoIcon from '@/components/icons/common/Coingecko.vue'
 import CoinmarketcapIcon from '@/components/icons/common/Coinmarketcap.vue'
 import ExchangerIcon from '@/components/icons/common/Exchanger.vue'
 import Icon from '@/components/icons/BaseIcon.vue'
+import { openExternalLink } from '@/lib/openExternalLink'
 
 const className = 'buy-tokens-dialog'
 const classes = {
@@ -131,7 +132,7 @@ const openLink = (link: string) => {
       params: { partnerId: link }
     })
   } else {
-    window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
+    openExternalLink(link)
   }
 
   closeDialog()

@@ -64,6 +64,38 @@ test.describe('Transactions layout regressions', () => {
 
     await openTransactionListFromHome(page, testRestorableListCrypto)
 
+    const readScrollPane = () =>
+      page.evaluate(() => {
+        const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+
+        if (!scrollPane) return null
+
+        return {
+          top: Math.ceil(scrollPane.scrollTop),
+          scrollHeight: scrollPane.scrollHeight,
+          clientHeight: scrollPane.clientHeight,
+          rows: document.querySelectorAll('.transaction-item__tile').length
+        }
+      })
+
+    // The list keeps appending rows for a while after the route settles, and `scrollTo` clamps
+    // to whatever height exists at the moment it runs. Scrolling before the height stops
+    // changing silently lands on a smaller offset than the one requested, while the
+    // `canScroll` check a few frames later sees the grown list and passes.
+    let previousHeight = -1
+    await expect
+      .poll(
+        async () => {
+          const metrics = await readScrollPane()
+          const settled = metrics !== null && metrics.scrollHeight === previousHeight
+          previousHeight = metrics?.scrollHeight ?? -1
+
+          return settled
+        },
+        { timeout: 20_000, intervals: [250] }
+      )
+      .toBe(true)
+
     const routeState = await page.evaluate(async () => {
       const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
       const rows = document.querySelectorAll('.transaction-item__tile')
@@ -105,41 +137,41 @@ test.describe('Transactions layout regressions', () => {
     await expect(page).toHaveURL(new RegExp(`/transactions/${testRestorableListCrypto}$`))
     await expect(page.locator('.transactions-view__list')).toBeVisible()
 
-    const restoredState = await page.evaluate(async (path) => {
-      const scrollPane = document.querySelector('.sidebar__layout') as HTMLElement | null
+    if (routeState.canScroll) {
+      expect(routeState.top).toBeGreaterThan(100)
+      expect(savedTopAfterLeaving).toBe(routeState.top)
+
+      // The list remounts on the way back and the saved offset is applied once its rows are
+      // laid out, which is several frames after the route and the container settle. Reading
+      // once raced that and saw a scrollTop of 0. Polling waits for the restore without
+      // excusing its absence — a position that is never restored still fails here.
+      await expect
+        .poll(async () => Math.abs(((await readScrollPane())?.top ?? -999) - routeState.top), {
+          timeout: 15_000
+        })
+        .toBeLessThanOrEqual(1)
+    } else {
+      await expect
+        .poll(async () => (await readScrollPane())?.top ?? 999, { timeout: 5_000 })
+        .toBeLessThanOrEqual(1)
+    }
+
+    // The stored position must survive the round trip, not just the scroll container
+    const savedAfterReturn = await page.evaluate((path) => {
       const store = (
         window as Window & {
           store?: { getters?: Record<string, unknown> }
         }
       ).store
 
-      if (!scrollPane) {
-        return null
-      }
+      const getter = store?.getters?.['options/accountScrollPosition'] as
+        | ((routePath: string) => number)
+        | undefined
 
-      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
-      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
-
-      return {
-        top: Math.ceil(scrollPane.scrollTop),
-        savedTop:
-          (
-            store?.getters?.['options/accountScrollPosition'] as
-              | ((routePath: string) => number)
-              | undefined
-          )?.(path) ?? null
-      }
+      return getter ? getter(path) : null
     }, `/transactions/${testRestorableListCrypto}`)
 
-    expect(restoredState).not.toBeNull()
-
-    if (routeState.canScroll) {
-      expect(routeState.top).toBeGreaterThan(100)
-      expect(savedTopAfterLeaving).toBe(routeState.top)
-      expect(Math.abs((restoredState?.top ?? 0) - routeState.top)).toBeLessThanOrEqual(1)
-    } else {
-      expect(restoredState?.top ?? 999).toBeLessThanOrEqual(1)
-    }
+    expect(savedAfterReturn).toBe(savedTopAfterLeaving)
   })
 
   test('keeps the transaction list mounted and restores its scroll after opening a transaction and going back', async ({

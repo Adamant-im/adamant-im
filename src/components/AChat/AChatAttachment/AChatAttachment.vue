@@ -56,10 +56,9 @@
         </div>
 
         <div class="a-chat__message-card-body">
-          <!-- eslint-disable vue/no-v-html -- Safe with DOMPurify.sanitize() content -->
-          <!-- AChatMessage :message <- Chat.vue :message="formatMessage(message)" <- formatMessage <- DOMPurify.sanitize() -->
-          <div v-if="html" class="a-chat__message-text" v-html="formattedMessage" />
-          <!-- eslint-enable vue/no-v-html -->
+          <!-- `formattedMessage` is sanitized HTML from formatMarkdown(); SafeHtml rebuilds it
+               from an allowlist instead of assigning it to innerHTML -->
+          <safe-html v-if="html" class="a-chat__message-text" :html="formattedMessage" />
           <div v-else class="a-chat__message-text" v-text="formattedMessage" />
         </div>
       </div>
@@ -116,6 +115,7 @@ import { isLocalFile } from '@/lib/files'
 import { downloadFile, isStringEqualCI } from '@/lib/textHelpers'
 import { TransactionStatus, tsIcon } from '@/lib/constants'
 import QuotedMessage from '../QuotedMessage.vue'
+import SafeHtml from '@/components/common/SafeHtml'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
 import formatDate from '@/filters/date'
 import { isWelcomeChat } from '@/lib/chat/meta/utils'
@@ -130,7 +130,8 @@ export default defineComponent({
     InlineLayout,
     ImageLayout,
     QuotedMessage,
-    AChatImageModal
+    AChatImageModal,
+    SafeHtml
   },
   props: {
     transaction: {

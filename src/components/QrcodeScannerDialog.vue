@@ -82,9 +82,11 @@
             <h3 :class="`${classes.root}__state-title`">
               {{ t('scan.no_camera_stream') }}
             </h3>
-            <p
+            <safe-html
+              tag="p"
               :class="`${classes.root}__state-message`"
-              v-html="t('scan.no_stream_details', { noStreamDetails })"
+              :html="noStreamDetailsMessage"
+              profile="ui"
             />
           </template>
         </v-col>
@@ -109,6 +111,8 @@ import { useStore } from 'vuex'
 import type { IScannerControls } from '@zxing/browser'
 
 import { Scanner } from '@/lib/zxing'
+import SafeHtml from '@/components/common/SafeHtml'
+import { escapeHtml } from '@/lib/markdown'
 import { mdiCamera } from '@mdi/js'
 import { logger } from '@/utils/devTools/logger'
 import { QRCODE_SCANNER_WAITING_SPINNER_SIZE } from '@/components/Qrcode/helpers/uiMetrics'
@@ -123,6 +127,9 @@ const classes = {
 type CameraStatus = 'waiting' | 'active' | 'nocamera' | 'noaccess' | 'nostream'
 
 export default defineComponent({
+  components: {
+    SafeHtml
+  },
   props: {
     modelValue: {
       type: Boolean,
@@ -150,6 +157,14 @@ export default defineComponent({
         emit('update:modelValue', value)
       }
     })
+
+    // The message carries markup from the locale file, so the interpolated browser error
+    // text has to be escaped before it is placed into it.
+    const noStreamDetailsMessage = computed(() =>
+      t('scan.no_stream_details', {
+        noStreamDetails: escapeHtml(noStreamDetails.value ?? '')
+      })
+    )
 
     const init = async () => {
       try {
@@ -229,6 +244,7 @@ export default defineComponent({
       classes,
       currentCamera,
       noStreamDetails,
+      noStreamDetailsMessage,
       props,
       QRCODE_SCANNER_WAITING_SPINNER_SIZE,
       show,

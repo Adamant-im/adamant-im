@@ -1,0 +1,76 @@
+import { describe, expect, it } from 'vitest'
+
+import { CryptosInfo } from '@/lib/constants'
+import {
+  ALLOWED_URI_PROTOCOLS,
+  ALLOWED_URI_SCHEMES,
+  hasAllowedUriScheme,
+  stripIgnoredUriChars
+} from '@/lib/uriSchemes'
+
+describe('uriSchemes', () => {
+  it('covers every scheme the wallet specification defines', () => {
+    // `qqPrefix` — the spelling really is `qq` — is what a coin uses in QR codes and share
+    // links. Hardcoded copies of this list had already fallen behind it.
+    const specSchemes = Object.values(CryptosInfo)
+      .map((crypto) => crypto.qqPrefix)
+      .filter((prefix): prefix is string => typeof prefix === 'string' && prefix.length > 0)
+
+    expect(specSchemes.length).toBeGreaterThan(0)
+
+    for (const scheme of specSchemes) {
+      expect(ALLOWED_URI_SCHEMES, `missing scheme from adamant-wallets: ${scheme}`).toContain(
+        scheme.toLowerCase()
+      )
+    }
+  })
+
+  it("accepts the app's own scheme and the coin schemes it generates", () => {
+    for (const uri of [
+      'adm:U15423595369615486571',
+      'bitcoin:1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2',
+      'ethereum:0x0000000000000000000000000000000000000000',
+      'dash:XdAUuJ8Jrf5AR6mB2Bx9AWDHQKKMB7Nqfx',
+      'doge:DPQAKMS3zMBFHRXcgxDPdt5D2ExYZq2rFB',
+      'https://adamant.im',
+      'mailto:devs@adamant.im',
+      'magnet:?xt=urn:btih:abc',
+      'tg://resolve'
+    ]) {
+      expect(hasAllowedUriScheme(uri), uri).toBe(true)
+    }
+  })
+
+  it('rejects schemes that can execute or read local data', () => {
+    for (const uri of [
+      'javascript:alert(1)',
+      'data:text/html,<script>alert(1)</script>',
+      'vbscript:msgbox(1)',
+      'file:///etc/passwd',
+      'blob:https://evil.example/x',
+      'ms-msdt:/id',
+      'search-ms:query=x'
+    ]) {
+      expect(hasAllowedUriScheme(uri), uri).toBe(false)
+    }
+  })
+
+  it('is not fooled by characters browsers ignore when resolving a URL', () => {
+    expect(stripIgnoredUriChars('java\nscript:alert(1)')).toBe('javascript:alert(1)')
+    expect(hasAllowedUriScheme('java\tscript:alert(1)')).toBe(false)
+    expect(hasAllowedUriScheme('  javascript:alert(1)')).toBe(false)
+    expect(hasAllowedUriScheme('java\u0000script:alert(1)')).toBe(false)
+  })
+
+  it('does not let a shorter scheme shadow a longer one', () => {
+    // `eth` must not match the start of `ethereum` and cut the pattern short
+    expect(hasAllowedUriScheme('ethereum:0xabc')).toBe(true)
+    expect(hasAllowedUriScheme('ethermine:0xabc')).toBe(false)
+  })
+
+  it('exposes the protocol form used for URL.protocol comparisons', () => {
+    expect(ALLOWED_URI_PROTOCOLS.has('https:')).toBe(true)
+    expect(ALLOWED_URI_PROTOCOLS.has('adm:')).toBe(true)
+    expect(ALLOWED_URI_PROTOCOLS.has('javascript:')).toBe(false)
+  })
+})

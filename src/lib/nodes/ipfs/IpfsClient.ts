@@ -20,12 +20,14 @@ export class IpfsClient extends Client<IpfsNode> {
     void this.watchNodeStatusChange()
   }
 
-  async downloadFile(cid: string) {
-    return this.request({
-      method: 'get',
-      url: `api/file/${cid}`,
-      responseType: 'arraybuffer'
-    })
+  /**
+   * @param maxBytes stop reading and drop the connection once this many bytes have arrived. A
+   *   hostile IPFS node can otherwise exhaust memory long before any size check runs. Counted
+   *   per chunk as the body streams in — see `IpfsNode.downloadBounded` for why axios cannot do
+   *   this in a browser.
+   */
+  async downloadFile(cid: string, maxBytes: number) {
+    return this.requestWithRetry((node) => node.downloadBounded(`api/file/${cid}`, maxBytes))
   }
 
   async upload(

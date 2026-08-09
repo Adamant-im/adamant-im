@@ -54,6 +54,32 @@ const ensureMessagesScrollable = async (textarea: Locator, messagesContainer: Lo
   await expect.poll(isScrollable, { timeout: 5_000 }).toBe(true)
 }
 
+/**
+ * Waits until the chat stops scrolling itself.
+ *
+ * The room performs its own scrolling after the messages load, and it can still be moving
+ * well after the composer becomes editable. Forcing the list to the bottom before that
+ * settles gets silently undone, so the baseline the test then measures against is not the
+ * bottom at all — in CI this surfaced as a 366px offset on the very first assertion, before
+ * the behaviour under test had been exercised.
+ */
+const waitForScrollToSettle = async (messagesContainer: Locator) => {
+  let previousTop = Number.NaN
+
+  await expect
+    .poll(
+      async () => {
+        const top = await messagesContainer.evaluate((element) => Math.round(element.scrollTop))
+        const settled = top === previousTop
+        previousTop = top
+
+        return settled
+      },
+      { timeout: 15_000, intervals: [250] }
+    )
+    .toBe(true)
+}
+
 const openChatWithEditableComposer = async (page: Page): Promise<Locator> => {
   await loginWithNewAccount(page)
 
@@ -524,13 +550,14 @@ test.describe('Chat composer mobile scrolling regressions', () => {
 
     await expect(messagesContainer).toBeVisible()
     await ensureMessagesScrollable(textarea, messagesContainer)
+    await waitForScrollToSettle(messagesContainer)
 
     await messagesContainer.evaluate((element) => {
       element.scrollTop = element.scrollHeight
     })
 
     await expect
-      .poll(() => getMessagesBottomOffset(messagesContainer), { timeout: 5_000 })
+      .poll(() => getMessagesBottomOffset(messagesContainer), { timeout: 10_000 })
       .toBeLessThanOrEqual(MOBILE_BOTTOM_PIN_TOLERANCE_PX)
 
     await textarea.fill('line1')
@@ -542,7 +569,7 @@ test.describe('Chat composer mobile scrolling regressions', () => {
       .toBe('line1')
 
     await expect
-      .poll(() => getMessagesBottomOffset(messagesContainer), { timeout: 5_000 })
+      .poll(() => getMessagesBottomOffset(messagesContainer), { timeout: 10_000 })
       .toBeLessThanOrEqual(MOBILE_BOTTOM_PIN_TOLERANCE_PX)
 
     await attachPageScreenshot(

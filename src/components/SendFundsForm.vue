@@ -171,8 +171,11 @@
         <v-divider class="a-divider" />
 
         <v-card-text class="send-funds-confirm-dialog__dialog-body">
-          <!-- eslint-disable-next-line vue/no-v-html -- Safe internal content -->
-          <div class="send-funds-confirm-dialog__message" v-html="confirmMessage" />
+          <safe-html
+            class="send-funds-confirm-dialog__message"
+            :html="confirmMessage"
+            profile="ui"
+          />
         </v-card-text>
 
         <v-card-actions class="send-funds-confirm-dialog__dialog-actions">
@@ -243,6 +246,8 @@ import { formatNumber, isNumeric, trimTrailingZeros } from '@/lib/numericHelpers
 import partnerName from '@/mixins/partnerName'
 
 import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressDialog.vue'
+import SafeHtml from '@/components/common/SafeHtml'
+import { escapeHtml } from '@/lib/markdown'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { formatSendTxError } from '@/lib/txVerify'
 import { AllCryptos } from '@/lib/constants/cryptos'
@@ -273,7 +278,8 @@ export default {
   components: {
     QrcodeCapture,
     QrcodeScannerDialog,
-    WarningOnPartnerAddressDialog
+    WarningOnPartnerAddressDialog,
+    SafeHtml
   },
   mixins: [partnerName],
   props: {
@@ -525,12 +531,14 @@ export default {
           ? 'transfer.confirm_message_with_name'
           : 'transfer.confirm_message'
 
+      // The locale strings carry markup, so every interpolated value has to be escaped:
+      // `recipientName` is a contact name that can originate from the network.
       return this.$t(msgType, {
-        amount: BigNumber(this.amount).toFixed(),
-        crypto: this.currency,
-        name: this.recipientName,
-        address: this.cryptoAddress,
-        fee: this.transferFee
+        amount: escapeHtml(BigNumber(this.amount).toFixed()),
+        crypto: escapeHtml(this.currency),
+        name: escapeHtml(this.recipientName ?? ''),
+        address: escapeHtml(this.cryptoAddress ?? ''),
+        fee: escapeHtml(String(this.transferFee ?? ''))
       })
     },
     validationRules() {
