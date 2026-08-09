@@ -26,7 +26,8 @@ export class AttachmentApi {
 
     const file = (await ipfs.downloadFile(cid, sizeLimit)) as ArrayBuffer
 
-    // Kept as a backstop for a transport that cannot report progress at all
+    // Backstop for a runtime with no ReadableStream, where the bound cannot be applied while
+    // the body arrives
     if (file.byteLength > sizeLimit) {
       throw new Error(
         `Downloaded file size ${file.byteLength} exceeds the allowed limit of ${sizeLimit} bytes`

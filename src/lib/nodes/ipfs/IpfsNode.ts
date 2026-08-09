@@ -40,6 +40,30 @@ export class ResponseTooLargeError extends Error {
   }
 }
 
+/** Raised when the node answered, but with an error status */
+export class ResponseStatusError extends Error {
+  public readonly status: number
+
+  constructor(url: string, status: number) {
+    super(`Request to ${url} failed with status ${status}`)
+    this.name = 'ResponseStatusError'
+    this.status = status
+  }
+}
+
+/**
+ * Joins a base URL with a relative path, keeping any path prefix the base carries.
+ *
+ * `new URL('api/file/x', 'https://host/ipfs')` resolves to `https://host/api/file/x` — the last
+ * segment of a base without a trailing slash is treated as a file and replaced. A self-hosted
+ * endpoint published at `https://host/ipfs` would therefore have had its downloads sent to the
+ * wrong path while its health checks, which still go through axios, kept succeeding: the node
+ * would look perfectly healthy and never serve a file. Mirrors axios `combineURLs`.
+ */
+function combineURLs(baseURL: string, relativeURL: string): string {
+  return relativeURL ? `${baseURL.replace(/\/+$/, '')}/${relativeURL.replace(/^\/+/, '')}` : baseURL
+}
+
 /**
  * Encapsulates a node. Provides methods to send API-requests
  * to the node and verify is status (online/offline, version, ping, etc.)
@@ -114,7 +138,8 @@ export class IpfsNode extends Node<AxiosInstance> {
    * pulled, before it is retained, so the peak is the limit plus a single chunk.
    *
    * @throws {ResponseTooLargeError} as soon as the body exceeds `maxBytes`
-   * @throws {NodeOfflineError} when the node cannot be reached
+   * @throws {ResponseStatusError} when the node answers with a 4xx
+   * @throws {NodeOfflineError} when the node cannot be reached, times out, or fails with a 5xx
    */
   async downloadBounded(url: string, maxBytes: number, signal?: AbortSignal) {
     const controller = new AbortController()
@@ -125,16 +150,22 @@ export class IpfsNode extends Node<AxiosInstance> {
       else signal.addEventListener('abort', abort, { once: true })
     }
 
-    const timeout = setTimeout(abort, DOWNLOAD_TIMEOUT_MS)
     let exceeded = false
+    // A timeout is the node's fault; an abort from the caller is not. They arrive at the same
+    // `catch` as the same `AbortError`, so they have to be told apart here.
+    let timedOut = false
+    const timeout = setTimeout(() => {
+      timedOut = true
+      abort()
+    }, DOWNLOAD_TIMEOUT_MS)
 
     try {
-      const response = await fetch(new URL(url, this.getBaseURL(this)).toString(), {
+      const response = await fetch(combineURLs(this.getBaseURL(this), url), {
         signal: controller.signal
       })
 
       if (!response.ok) {
-        throw new Error(`Request to ${url} failed with status ${response.status}`)
+        throw new ResponseStatusError(url, response.status)
       }
 
       // A declared length over the bound is refused before a single byte is read
@@ -189,10 +220,29 @@ export class IpfsNode extends Node<AxiosInstance> {
 
       return body.buffer
     } catch (error) {
+      // Only a genuine failure to reach the node may mark it offline. The axios path this
+      // replaced was already careful about that — it required `!error.response && error.request`
+      // — and collapsing every failure into `NodeOfflineError` here would drop a healthy node
+      // out of the pool over a missing CID, or over the user cancelling a download.
+
       if (exceeded || error instanceof ResponseTooLargeError) {
-        // Deliberately not a NodeOfflineError: the node answered, it just answered with too
-        // much. Marking it offline would rotate away from a node that is merely misbehaving.
+        // The node answered, it just answered with too much. Rotating away from it would be
+        // wrong, and retrying the same oversized fetch on every other node doubly so.
         throw error instanceof ResponseTooLargeError ? error : new ResponseTooLargeError(maxBytes)
+      }
+
+      if (error instanceof ResponseStatusError) {
+        // 4xx is about the request, not the node: a 404 for an unpinned CID says nothing about
+        // its health. 5xx is the node failing, so it rotates.
+        if (error.status < 500) throw error
+
+        this.online = false
+        throw new NodeOfflineError()
+      }
+
+      if (signal?.aborted && !timedOut) {
+        // Cancelled by the caller. Nothing was learned about the node.
+        throw error
       }
 
       this.online = false

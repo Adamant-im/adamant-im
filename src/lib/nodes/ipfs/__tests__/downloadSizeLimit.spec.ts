@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { IpfsNode, ResponseTooLargeError } from '../IpfsNode'
+import { IpfsNode, ResponseStatusError, ResponseTooLargeError } from '../IpfsNode'
 import { NodeOfflineError } from '@/lib/nodes/utils/errors'
 
 /**
@@ -64,6 +64,7 @@ const chunkedResponse = (totalBytes: number, headers: Record<string, string> = {
 
 afterEach(() => {
   vi.unstubAllGlobals()
+  vi.useRealTimers()
 })
 
 describe('IpfsNode.downloadBounded', () => {
@@ -138,7 +139,29 @@ describe('IpfsNode.downloadBounded', () => {
     expect(node.online).toBe(false)
   })
 
-  it('treats an error status as an unavailable node', async () => {
+  it('keeps the node in the pool when it answers 404 for a missing CID', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 404,
+        headers: { get: () => null },
+        body: null
+      })
+    )
+
+    const node = buildNode()
+    const error = await node.downloadBounded('api/file/cid', 1024).catch((e) => e)
+
+    // The node answered. An unpinned CID says nothing about its health, and turning this into
+    // a NodeOfflineError would drop it from the pool and walk `requestWithRetry` through every
+    // remaining node to collect the same 404.
+    expect(error).toBeInstanceOf(ResponseStatusError)
+    expect(error.status).toBe(404)
+    expect(node.online).not.toBe(false)
+  })
+
+  it('takes the node offline on a 5xx', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({
@@ -149,9 +172,11 @@ describe('IpfsNode.downloadBounded', () => {
       })
     )
 
-    await expect(buildNode().downloadBounded('api/file/cid', 1024)).rejects.toBeInstanceOf(
+    const node = buildNode()
+    await expect(node.downloadBounded('api/file/cid', 1024)).rejects.toBeInstanceOf(
       NodeOfflineError
     )
+    expect(node.online).toBe(false)
   })
 
   it('still bounds the response where streams are unavailable', async () => {
@@ -172,7 +197,7 @@ describe('IpfsNode.downloadBounded', () => {
     )
   })
 
-  it("aborts when the caller's signal fires", async () => {
+  it("aborts when the caller's signal fires, without blaming the node", async () => {
     const controller = new AbortController()
     const fetchMock = vi.fn().mockImplementation((_url: string, init: RequestInit) => {
       controller.abort()
@@ -183,11 +208,42 @@ describe('IpfsNode.downloadBounded', () => {
     })
     vi.stubGlobal('fetch', fetchMock)
 
-    await expect(
-      buildNode().downloadBounded('api/file/cid', 1024 * 1024, controller.signal)
-    ).rejects.toBeInstanceOf(Error)
+    const node = buildNode()
+    const error = await node
+      .downloadBounded('api/file/cid', 1024 * 1024, controller.signal)
+      .catch((e) => e)
 
     expect(fetchMock.mock.calls[0][1].signal.aborted).toBe(true)
+    // The user cancelling a download tells us nothing about the node
+    expect(error).not.toBeInstanceOf(NodeOfflineError)
+    expect(node.online).not.toBe(false)
+  })
+
+  it('takes the node offline when the download times out', async () => {
+    vi.useFakeTimers()
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockImplementation(
+        (_url: string, init: RequestInit) =>
+          new Promise((_resolve, reject) => {
+            init.signal?.addEventListener('abort', () =>
+              reject(new DOMException('Aborted', 'AbortError'))
+            )
+          })
+      )
+    )
+
+    const node = buildNode()
+    // A timeout is the node failing to deliver, unlike a caller-initiated abort. The assertion
+    // is attached before the clock moves, otherwise the rejection lands with no handler.
+    const rejects = expect(node.downloadBounded('api/file/cid', 1024)).rejects.toBeInstanceOf(
+      NodeOfflineError
+    )
+
+    await vi.advanceTimersByTimeAsync(10 * 60 * 1000 + 1)
+
+    await rejects
+    expect(node.online).toBe(false)
   })
 
   it('requests the file from the node it belongs to', async () => {
@@ -197,5 +253,27 @@ describe('IpfsNode.downloadBounded', () => {
     await buildNode().downloadBounded('api/file/cid', 1024)
 
     expect(fetchMock.mock.calls[0][0]).toBe('https://ipfs.example/api/file/cid')
+  })
+
+  it('keeps the path prefix of a self-hosted endpoint', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(chunkedResponse(128).response)
+    vi.stubGlobal('fetch', fetchMock)
+
+    const node = new IpfsNode({ url: 'https://host/ipfs', alt_ip: undefined } as never, '0.0.0')
+    await node.downloadBounded('api/file/cid', 1024)
+
+    // `new URL('api/file/cid', 'https://host/ipfs')` would drop `/ipfs`, sending downloads to
+    // the wrong path while axios-based health checks kept the node looking fine
+    expect(fetchMock.mock.calls[0][0]).toBe('https://host/ipfs/api/file/cid')
+  })
+
+  it('does not double the separator when the endpoint ends in a slash', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(chunkedResponse(128).response)
+    vi.stubGlobal('fetch', fetchMock)
+
+    const node = new IpfsNode({ url: 'https://host/ipfs/', alt_ip: undefined } as never, '0.0.0')
+    await node.downloadBounded('/api/file/cid', 1024)
+
+    expect(fetchMock.mock.calls[0][0]).toBe('https://host/ipfs/api/file/cid')
   })
 })
