@@ -45,22 +45,41 @@ function collectCoinSchemes(): string[] {
       .map((crypto) => crypto.qqPrefix)
       .filter((prefix): prefix is string => typeof prefix === 'string' && prefix.length > 0)
       .map((prefix) => prefix.toLowerCase())
-      // The values are interpolated into regexes. They come from a bundled specification, so this
-      // is a guard against a future typo rather than against an attacker — but a stray metacharacter
-      // would silently change what the allowlist matches.
+      // Rejects a value that is not a scheme at all. This is a sanity filter, not the defence
+      // against metacharacters — `+` and `.` are both legal in a scheme and special in a regex,
+      // so a perfectly valid `foo+bar` would still pass here. Escaping below handles that.
       .filter((prefix) => VALID_SCHEME.test(prefix))
   )
+}
+
+/**
+ * Escapes a scheme for literal use inside a regex.
+ *
+ * RFC 3986 allows `+`, `.` and `-` in a scheme, and the first two are regex metacharacters:
+ * an unescaped `foo.bar` would match `fooXbar`, and `foo+bar` would match `fooooobar`. Both are
+ * legal values for `qqPrefix` to grow into, so the alternation is built from escaped forms
+ * rather than trusting the input to contain nothing special.
+ */
+function escapeForRegExp(scheme: string): string {
+  return scheme.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 export const ALLOWED_URI_SCHEMES: readonly string[] = [
   ...new Set([...BASE_SCHEMES, ...collectCoinSchemes()])
 ].sort()
 
-/** Matches a URI whose scheme is on the allowlist. Longest first so `eth` cannot shadow `ethereum` */
-export const ALLOWED_URI_SCHEME_PATTERN = new RegExp(
-  `^(${[...ALLOWED_URI_SCHEMES].sort((a, b) => b.length - a.length).join('|')}):`,
-  'i'
-)
+/**
+ * Alternation of every allowed scheme, escaped and ordered longest first so that `eth` cannot
+ * shadow `ethereum` and cut a match short. Exported so that other modules building a pattern
+ * (the markdown link renderer) share exactly this string instead of re-deriving it.
+ */
+export const ALLOWED_URI_SCHEME_ALTERNATION = [...ALLOWED_URI_SCHEMES]
+  .sort((a, b) => b.length - a.length)
+  .map(escapeForRegExp)
+  .join('|')
+
+/** Matches a URI whose scheme is on the allowlist */
+export const ALLOWED_URI_SCHEME_PATTERN = new RegExp(`^(${ALLOWED_URI_SCHEME_ALTERNATION}):`, 'i')
 
 /** Colon-suffixed form, for comparing against `URL.protocol` */
 export const ALLOWED_URI_PROTOCOLS: ReadonlySet<string> = new Set(

@@ -1,7 +1,7 @@
 import { Marked } from 'marked'
 import DOMPurify, { type Config as DOMPurifyConfig } from 'dompurify'
 
-import { ALLOWED_URI_SCHEMES, hasAllowedUriScheme } from '@/lib/uriSchemes'
+import { ALLOWED_URI_SCHEME_ALTERNATION, hasAllowedUriScheme } from '@/lib/uriSchemes'
 
 // The U+2028 character (LINE SEPARATOR) is sometimes used as a line break, but it is treated as a space in some web environments,
 // causing unexpected rendering issues. To avoid this, it's recommended to replace it with a standard line break character such as `\n`.
@@ -68,7 +68,7 @@ const MARKDOWN_SANITIZE_CONFIG: DOMPurifyConfig = {
   // Extend the built-in URI allowlist to the same protocols `renderer.link` accepts, so that
   // `eth:`, `bitcoin:`, `magnet:`, `tg:`, `tor:`, `onion:` and `sftp:` links survive.
   ALLOWED_URI_REGEXP: new RegExp(
-    `^(?:(?:${[...ALLOWED_URI_SCHEMES].sort((a, b) => b.length - a.length).join('|')}):|[^a-z]|[a-z+.-]+(?:[^a-z+.\\-:]|$))`,
+    `^(?:(?:${ALLOWED_URI_SCHEME_ALTERNATION}):|[^a-z]|[a-z+.-]+(?:[^a-z+.\\-:]|$))`,
     'i'
   )
 }

@@ -17,15 +17,16 @@ export class AttachmentApi {
    *   still cannot be made to buffer an unbounded response.
    */
   async getFile(cid: string, nonce: string, publicKey: string, maxSize?: number) {
-    const file = (await ipfs.downloadFile(cid)) as ArrayBuffer
-
     // The IPFS node is not trusted to return what the transaction says it will return, and
-    // image previews are fetched automatically, so the size has to be checked before the
-    // payload is decrypted.
+    // image previews are fetched automatically, so the bound has to be computed before the
+    // request and enforced while the bytes arrive — not after a full response is in memory.
     const declaredLimit =
       typeof maxSize === 'number' && maxSize > 0 ? maxSize : UPLOAD_MAX_FILE_SIZE
     const sizeLimit = Math.min(declaredLimit, UPLOAD_MAX_FILE_SIZE) + NACL_BOX_OVERHEAD
 
+    const file = (await ipfs.downloadFile(cid, sizeLimit)) as ArrayBuffer
+
+    // Kept as a backstop for a transport that cannot report progress at all
     if (file.byteLength > sizeLimit) {
       throw new Error(
         `Downloaded file size ${file.byteLength} exceeds the allowed limit of ${sizeLimit} bytes`

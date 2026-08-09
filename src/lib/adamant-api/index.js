@@ -635,21 +635,47 @@ export function decodeChat(transaction, key) {
 }
 
 /**
+ * Returns the counterparty public key carried by a transaction, after checking that it derives
+ * the address it is attributed to.
+ *
+ * Single-transaction fetches (`/api/transactions/get`) take the key straight from the node's
+ * answer, exactly as the chat list and the socket handler used to. Without this check a node
+ * can supply its own key together with a ciphertext it encrypted itself, and the result decodes
+ * cleanly — the message renders as if the counterparty had written it. The check is local, so it
+ * costs no request.
+ *
+ * @param transaction transaction as returned by the node
+ * @param address ADM address of the current user account
+ * @returns {string} the verified public key
+ * @throws {Error} when the key does not belong to the address it is claimed for
+ */
+export function getVerifiedCounterpartyPublicKey(transaction, address) {
+  const isOutgoing = isStringEqualCI(transaction.senderId, address)
+  const publicKey = isOutgoing ? transaction.recipientPublicKey : transaction.senderPublicKey
+  const claimedAddress = isOutgoing ? transaction.recipientId : transaction.senderId
+
+  if (!isPublicKeyBoundToAddress(claimedAddress, publicKey)) {
+    throw new Error(
+      `Public key does not derive the address it is claimed for: ${claimedAddress} (tx ${transaction.id})`
+    )
+  }
+
+  return publicKey
+}
+
+/**
  * Decode transaction.
  * This function must be used in favor of `decodeChat` since it also handles ADM transfers.
  * @param transaction Transaction
  * @param address ADM address of the current user account
  */
 export function decodeTransaction(transaction, address) {
-  const publicKey =
-    transaction.senderId === address ? transaction.recipientPublicKey : transaction.senderPublicKey
-
   if (transaction.type === 0) {
     // ADM transfer transaction doesn't have `asset` property, nothing to decode
     return transaction
   }
 
-  return decodeChat(transaction, publicKey)
+  return decodeChat(transaction, getVerifiedCounterpartyPublicKey(transaction, address))
 }
 
 /**

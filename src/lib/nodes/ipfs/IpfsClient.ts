@@ -23,7 +23,8 @@ export class IpfsClient extends Client<IpfsNode> {
   /**
    * @param maxContentLength abort the transfer once this many bytes have arrived, instead of
    *   buffering the whole response and rejecting it afterwards. A hostile IPFS node can
-   *   otherwise exhaust memory before any size check runs.
+   *   otherwise exhaust memory before any size check runs. Enforced from download progress, so
+   *   it works in the browser too — see `IpfsNode.enforceSizeLimit`.
    */
   async downloadFile(cid: string, maxContentLength?: number) {
     return this.request({

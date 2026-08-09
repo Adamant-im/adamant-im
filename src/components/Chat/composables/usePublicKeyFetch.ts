@@ -12,6 +12,7 @@ import { vibrate } from '@/lib/vibrate'
  * Exposes:
  *  - `isGettingPublicKey` — true while the key fetch is in-flight
  *  - `isKeyMissing`       — true if partner has no key on-chain (permanent)
+ *  - `isKeyMismatch`      — true if a node answered with a key that is not this partner's
  *  - `shouldDisableInput` — combined "input must be disabled" flag
  *  - `createChat`         — triggers the fetch; safe to call multiple times
  *
@@ -24,9 +25,18 @@ export function usePublicKeyFetch(partnerId: string) {
 
   const isGettingPublicKey = ref(false)
   const isKeyMissing = ref(false)
+  // Deliberately not folded into `isKeyMissing`. That flag means "this account has never been
+  // initialised on chain" — it drives the placeholder text and permanently suppresses further
+  // fetches. A mismatch is the opposite situation: the account exists and the answer was wrong,
+  // so the advice we now show the user ("try another node") has to remain actionable.
+  const isKeyMismatch = ref(false)
 
   const shouldDisableInput = computed(
-    () => isGettingPublicKey.value || isKeyMissing.value || !store.state.publicKeys[partnerId]
+    () =>
+      isGettingPublicKey.value ||
+      isKeyMissing.value ||
+      isKeyMismatch.value ||
+      !store.state.publicKeys[partnerId]
   )
 
   const admNodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
@@ -34,6 +44,9 @@ export function usePublicKeyFetch(partnerId: string) {
 
   const createChat = (partnerName: string = '') => {
     isGettingPublicKey.value = true
+    // Cleared on every attempt: the previous answer came from whichever node was current then,
+    // and this attempt may well reach a different one.
+    isKeyMismatch.value = false
     store
       .dispatch('chat/createChat', { partnerId, partnerName })
       .then(() => {
@@ -54,7 +67,7 @@ export function usePublicKeyFetch(partnerId: string) {
         // a transient one: the input stays disabled because nothing was cached, so without this
         // the user would be left with a dead composer and no explanation.
         if (message === t('chats.public_key_mismatch')) {
-          isKeyMissing.value = true
+          isKeyMismatch.value = true
           store.dispatch('snackbar/show', { message, timeout: 0 })
         }
       })
@@ -63,6 +76,8 @@ export function usePublicKeyFetch(partnerId: string) {
   watch(areAdmNodesOnline, async (nodesOnline) => {
     if (!nodesOnline) return
 
+    // `isKeyMismatch` is intentionally absent from this condition: a bad answer from one node
+    // is exactly the case that should be retried once the node set changes.
     const needsKeyFetch =
       !isKeyMissing.value && !isWelcomeChat(partnerId) && !store.state.publicKeys[partnerId]
 
@@ -75,6 +90,7 @@ export function usePublicKeyFetch(partnerId: string) {
   return {
     isGettingPublicKey,
     isKeyMissing,
+    isKeyMismatch,
     shouldDisableInput,
     createChat
   }

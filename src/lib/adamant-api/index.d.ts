@@ -169,6 +169,12 @@ export function decodeTransaction(
   address: string
 ): DecodedChatMessageTransaction
 
+/** @throws when the node-supplied key does not derive the address it is claimed for */
+export function getVerifiedCounterpartyPublicKey(
+  transaction: AnyTransaction | QueuedTransaction,
+  address: string
+): string
+
 export function getI18nMessage(message: string, senderId: string): string
 
 export function loginOrRegister(): Promise<ReturnType<typeof getCurrentAccount>>
