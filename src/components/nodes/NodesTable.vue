@@ -72,9 +72,7 @@
           {{ t('nodes.use_socket_connection_tooltip') }}
         </div>
 
-        <!-- eslint-disable vue/no-v-html -- Safe internal content -->
-        <div :class="classes.info" v-html="t('nodes.nodeLabelDescription')" />
-        <!-- eslint-enable vue/no-v-html -->
+        <safe-html :class="classes.info" :html="t('nodes.nodeLabelDescription')" profile="ui" />
 
         <div>&nbsp;<br />&nbsp;</div>
       </div>
@@ -93,6 +91,7 @@ import { ServiceNodesTable } from './services'
 import { IpfsNodesTable } from './ipfs'
 import { Tab } from '@/components/nodes/types'
 import SettingsTableShell from '@/components/common/SettingsTableShell.vue'
+import SafeHtml from '@/components/common/SafeHtml'
 
 const className = 'nodes-table'
 const classes = {

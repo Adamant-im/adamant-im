@@ -66,6 +66,7 @@
     "attach_file": "Datei senden",
     "attach_image": "Medien verschicken",
     "no_public_key": "Diese Adresse ist noch nicht aktiv. Es kann kein Chat gestartet werden",
+    "public_key_mismatch": "Abweichung des \u00f6ffentlichen Schl\u00fcssels: Die Knoten haben unterschiedliche \u00f6ffentliche Schl\u00fcssel f\u00fcr diese Adresse zur\u00fcckgegeben. Die Nachricht wurde nicht gesendet. \u00dcberpr\u00fcfen Sie die Knotenliste.",
     "unable_to_retrieve_no_public_key": "`Nachricht kann nicht entschlüsselt werden: Öffentlicher Schlüssel des Partners fehlt`",
     "max_files": "Laden Sie nicht mehr als {count} Dateien hoch",
     "max_file_size": "Maximal zulässige Dateigröße: 250 MB",

@@ -323,7 +323,10 @@ describe('Secondary dialogs UI contract', () => {
     expect(httpProtocolInfoContent).toContain('`${className}__dialog-body')
     expect(httpProtocolInfoContent).toContain('`${className}__paragraph`')
     expect(httpProtocolInfoContent).toContain('`${className}__section-title')
-    expect(httpProtocolInfoContent).toContain('`${className}__list`')
+    // Deliberately not `__list`: `a-secondary-dialog-card-frame()` resets that class with
+    // `padding: 0 !important` for Vuetify list dialogs, which flattened this plain `<ul>`
+    expect(httpProtocolInfoContent).toContain('`${className}__steps`')
+    expect(httpProtocolInfoContent).not.toContain('`${className}__list`')
     expect(httpProtocolInfoContent).toContain('`${className}__dialog-actions')
     expect(httpProtocolInfoContent).toContain('width="var(--a-secondary-dialog-width)"')
     expect(httpProtocolInfoContent).toContain('@include mixins.a-text-header();')

@@ -87,6 +87,7 @@ import {
   AUTH_FORM_TOGGLE_BUTTON_SIZE,
   AUTH_FORM_TOGGLE_ICON_SIZE
 } from '@/components/Login/helpers/uiMetrics'
+import { openExternalLink } from '@/lib/openExternalLink'
 
 const props = defineProps<{
   modelValue: boolean
@@ -117,7 +118,7 @@ const show = computed({
 const isValidForm = computed(() => password.value.length > 0)
 
 const openLink = (link: string) => {
-  window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
+  openExternalLink(link)
 }
 
 const togglePasswordVisibility = () => {

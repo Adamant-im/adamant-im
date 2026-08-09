@@ -179,7 +179,9 @@ adamant.getBytes = function (transaction) {
       assetSize = assetBytes.length
       break
     default:
-      alert('Not supported yet')
+      // Falling through here used to produce bytes with an empty asset, so an unknown
+      // transaction type would be signed over an incomplete representation of itself.
+      throw new Error(`Unsupported transaction type: ${transaction.type}`)
   }
 
   const bb = new ByteBuffer(1 + 4 + 32 + 8 + 8 + 64 + 64 + assetSize, true)
@@ -406,11 +408,25 @@ adamant.decodeMessage = function (msg, senderPublicKey, privateKey, nonce) {
  * @returns {{message: string, nonce: string}} encoded value and nonce (both as HEX-strings)
  */
 adamant.encodeValue = function (value, privateKey) {
-  const randomString = () =>
-    Math.random()
-      .toString(36)
-      .replace(/[^a-z]+/g, '')
-      .substr(0, Math.ceil(Math.random() * 10))
+  // The padding hides the length of the payload, so it has to come from a CSPRNG.
+  // `crypto.getRandomValues` is not used here: the `crypto-browserify` polyfill that Vite
+  // aliases `crypto` to does not implement it, while `randomFillSync` works in both the
+  // polyfill and Node.
+  const randomString = () => {
+    const lengthBuffer = new Uint8Array(1)
+    crypto.randomFillSync(lengthBuffer)
+
+    const length = (lengthBuffer[0] % 10) + 1
+    const charactersBuffer = new Uint8Array(length)
+    crypto.randomFillSync(charactersBuffer)
+
+    return (
+      Array.from(charactersBuffer)
+        // 97 is the ASCII code of 'a', 26 is the number of letters in the English alphabet
+        .map((byte) => String.fromCharCode(97 + (byte % 26)))
+        .join('')
+    )
+  }
 
   const nonce = Buffer.allocUnsafe(24)
   sodium.randombytes(nonce)

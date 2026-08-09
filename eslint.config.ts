@@ -59,6 +59,10 @@ export default defineConfig([
       'import/named': 'off',
       'import/no-unresolved': 'off',
       'vue/multi-word-component-names': 'off',
+      // `v-html` assigns to innerHTML, which makes the sink itself able to create any
+      // element and any event handler. Render HTML through `components/common/SafeHtml`
+      // instead: it rebuilds the tree from an explicit allowlist.
+      'vue/no-v-html': 'error',
       'prettier/prettier': 'warn',
       'import/no-named-as-default': 'off',
       'import/no-named-as-default-member': 'off'

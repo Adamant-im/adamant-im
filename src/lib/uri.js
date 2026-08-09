@@ -113,9 +113,12 @@ export function generateURI(crypto = Cryptos.ADM, address, name = '') {
     return `${hostname}?address=${address}${label}`
   }
 
-  const { qrPrefix } = CryptosInfo[crypto]
-  if (qrPrefix) {
-    return `${qrPrefix}:${address}`
+  // The wallet specification spells this `qqPrefix`. Reading `qrPrefix` here silently produced
+  // `undefined` for every coin, so QR codes and share links carried a bare address with no URI
+  // scheme and external wallets could not recognize them as payment URIs.
+  const { qqPrefix } = CryptosInfo[crypto]
+  if (qqPrefix) {
+    return `${qqPrefix}:${address}`
   } else {
     return address
   }

@@ -11,9 +11,11 @@
 
     <transition name="slide-fade">
       <div v-if="showPassphrase" :class="classes.box">
-        <!-- eslint-disable vue/no-v-html -- Safe internal content -->
-        <div ref="el" :class="classes.passphraseLabel" v-html="t('login.new_passphrase_label')" />
-        <!-- eslint-enable vue/no-v-html -->
+        <safe-html
+          :class="classes.passphraseLabel"
+          :html="t('login.new_passphrase_label')"
+          profile="ui"
+        />
 
         <v-textarea
           ref="textarea"
@@ -87,6 +89,7 @@ import { useI18n } from 'vue-i18n'
 import { downloadFile } from '@/lib/textHelpers'
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog.vue'
 import Icon from '@/components/icons/BaseIcon.vue'
+import SafeHtml from '@/components/common/SafeHtml'
 import CopyIcon from '@/components/icons/common/Copy.vue'
 import SaveIcon from '@/components/icons/common/Save.vue'
 import QrCodeIcon from '@/components/icons/common/QrCode.vue'
@@ -117,7 +120,6 @@ const showPassphrase = ref(false)
 const showQrcodeRendererDialog = ref(false)
 const showSuggestedPassphrase = ref(false)
 const textarea = ref<InstanceType<typeof VTextarea> | null>(null)
-const el = ref<HTMLElement | null>(null)
 
 const displayedPassphrase = computed(() => {
   return showSuggestedPassphrase.value

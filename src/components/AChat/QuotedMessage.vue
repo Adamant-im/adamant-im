@@ -28,7 +28,7 @@
       </span>
 
       <span v-else>
-        <span v-html="messageLabel"></span>
+        <preview-text :text="messageLabel" />
       </span>
     </div>
   </div>
@@ -43,6 +43,7 @@ import { getTransaction, decodeChat } from '@/lib/adamant-api'
 import { NormalizedChatMessageTransaction, normalizeMessage } from '@/lib/chat/helpers'
 import { Cryptos } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
+import PreviewText from '@/components/common/PreviewText'
 import { formatChatPreviewMessage } from '@/lib/markdown'
 import { ChatMessageTransaction } from '@/lib/schema/client/api'
 import { logger } from '@/utils/devTools/logger'
@@ -99,6 +100,9 @@ async function fetchTransaction(transactionId: string, address: string) {
 }
 
 export default defineComponent({
+  components: {
+    PreviewText
+  },
   props: {
     /**
      * Quoted message ID (see AIP-16: `replyto_id`)

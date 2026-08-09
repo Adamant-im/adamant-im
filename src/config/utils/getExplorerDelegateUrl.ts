@@ -6,5 +6,7 @@ import config from '../index'
  * @param username Delegate username
  */
 export function getExplorerDelegateUrl(username: string): string {
-  return `${config.adm.explorer}/delegate/${username}`
+  // The delegate name comes from a node response, so it is encoded before it becomes
+  // part of a URL.
+  return `${config.adm.explorer}/delegate/${encodeURIComponent(username)}`
 }

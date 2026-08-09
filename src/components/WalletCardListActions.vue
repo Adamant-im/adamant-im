@@ -61,6 +61,7 @@ import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { openExternalLink } from '@/lib/openExternalLink'
 
 const className = 'wallet-actions'
 
@@ -120,7 +121,7 @@ const buyTokens = () => {
 
 const getFreeTokens = () => {
   const link = websiteUriToOnion(t('home.free_tokens_link') + '?wallet=' + store.state.address)
-  window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
+  openExternalLink(link)
 }
 </script>
 

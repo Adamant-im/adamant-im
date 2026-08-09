@@ -13,7 +13,7 @@
           class="a-input"
           color="primary"
         />
-        <div :class="`${className}__info`" v-html="t('votes.stake_info')" />
+        <safe-html :class="`${className}__info`" :html="t('votes.stake_info')" profile="ui" />
       </template>
 
       <delegates-table
@@ -62,9 +62,11 @@
             >,&nbsp; {{ t('votes.total_votes') }}:
             <strong>{{ totalVotes }} / {{ delegates.length }}</strong>
           </div>
-          <!-- eslint-disable vue/no-v-html -- Safe internal content -->
-          <div :class="`${summaryDialogClass}__dialog-info`" v-html="t('votes.summary_info')" />
-          <!-- eslint-enable vue/no-v-html -->
+          <safe-html
+            :class="`${summaryDialogClass}__dialog-info`"
+            :html="t('votes.summary_info')"
+            profile="ui"
+          />
         </v-card-text>
 
         <v-card-actions :class="`${summaryDialogClass}__dialog-actions`">
@@ -92,6 +94,7 @@ import { useI18n } from 'vue-i18n'
 import { mdiMagnify } from '@mdi/js'
 import { DelegateDto } from '@/lib/schema/client'
 import SettingsTableShell from '@/components/common/SettingsTableShell.vue'
+import SafeHtml from '@/components/common/SafeHtml'
 
 const VOTE_REQUEST_LIMIT = 30
 const summaryDialogClass = 'delegates-summary-dialog'
