@@ -776,7 +776,6 @@ export async function getChatRooms(address, params) {
     ...params
   })
   const fetchedCount = chats.length
-  const lastMessageHeight = chats[0]?.lastTransaction?.height || 0
 
   const messages = chats.flatMap((chat) => {
     if (!isChatTransactionVisible(chat.lastTransaction)) {
@@ -813,6 +812,13 @@ export async function getChatRooms(address, params) {
       return []
     }
   })
+  // This watermark drives the account-wide getChats() poll. It must not advance past a room
+  // transaction that was hidden or rejected above: the chatrooms response contains only one last
+  // transaction per room, so doing so could skip an earlier visible message in the same room.
+  const lastMessageHeight = messages.reduce(
+    (highest, message) => Math.max(highest, message.height || 0),
+    0
+  )
 
   return {
     messages,

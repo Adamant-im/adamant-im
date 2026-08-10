@@ -125,3 +125,29 @@ describe('getChats key binding', () => {
     expect(requests).toHaveLength(1)
   })
 })
+
+describe('getChatRooms polling watermark', () => {
+  it('does not advance past a hidden signal transaction', async () => {
+    const signal = {
+      ...incomingTransaction(PARTNER_KEY, 3),
+      id: 'signal',
+      height: 1000
+    }
+    const visible = {
+      ...incomingTransaction(PARTNER_KEY),
+      id: 'visible',
+      height: 800
+    }
+    chatsResponse = {
+      count: 2,
+      chats: [{ lastTransaction: signal }, { lastTransaction: visible }]
+    }
+
+    const result = await api.getChatRooms(OWN_ADDRESS)
+
+    expect(result.messages.map(({ id }) => id)).toEqual(['visible'])
+    expect(result.lastMessageHeight).toBe(800)
+    expect(result.fetchedCount).toBe(2)
+    expect(requests).toHaveLength(1)
+  })
+})
