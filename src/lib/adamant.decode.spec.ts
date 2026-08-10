@@ -7,6 +7,21 @@ type AdamantKeypair = {
 }
 
 describe('adamant utf8 decode flows', () => {
+  it('preserves the ADM key and address derivation vector', () => {
+    const passphrase =
+      'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+    const hash = adamant.createPassphraseHash(passphrase)
+    const keypair = adamant.makeKeypair(hash) as AdamantKeypair
+
+    expect(Buffer.from(hash).toString('hex')).toBe(
+      '62a772f85e4be6226108b56c0b1cf935c2490e434adec864fe47b189f1ed517d'
+    )
+    expect(Buffer.from(keypair.publicKey).toString('hex')).toBe(
+      '58032e75cd5ee0bbcacbed1e38c3da4bf0f162aba2d7513d2d2fba2184327bd3'
+    )
+    expect(adamant.getAddressFromPublicKey(keypair.publicKey)).toBe('U5450667915320866213')
+  })
+
   it('decodes encrypted chat messages with utf8 payload', () => {
     const sender = adamant.makeKeypair(Buffer.alloc(32, 11)) as AdamantKeypair
     const recipient = adamant.makeKeypair(Buffer.alloc(32, 22)) as AdamantKeypair

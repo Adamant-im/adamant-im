@@ -81,7 +81,8 @@
 </template>
 
 <script setup lang="ts">
-import * as bip39 from 'bip39'
+import { generateMnemonic } from '@scure/bip39'
+import { wordlist } from '@scure/bip39/wordlists/english.js'
 import copyToClipboard from 'copy-to-clipboard'
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -157,7 +158,7 @@ const selectText = () => {
 }
 
 const generatePassphrase = () => {
-  passphrase.value = bip39.generateMnemonic()
+  passphrase.value = generateMnemonic(wordlist)
   showPassphrase.value = true
 
   // callback after Vue rerender

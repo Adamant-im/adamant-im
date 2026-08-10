@@ -20,7 +20,7 @@ export class EthIndexerClient extends Client<EthIndexer> {
   private async request<E extends keyof Endpoints>(
     endpoint: E,
     params?: Endpoints[E]['params'],
-    axiosRequestConfig?: AxiosRequestConfig
+    axiosRequestConfig?: AxiosRequestConfig<Endpoints[E]['params'], Endpoints[E]['params']>
   ): Promise<Endpoints[E]['result']> {
     return this.requestWithRetry((node) => node.request(endpoint, params, axiosRequestConfig))
   }

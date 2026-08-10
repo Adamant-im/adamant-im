@@ -2,8 +2,8 @@ import { defineConfig, mergeConfig } from 'vite'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import viteBaseConfig from './vite-base.config'
-import { excludeScreenshotsPlugin } from './vite-config/plugins/excludeScreenshotsPlugin'
+import viteBaseConfig from './vite-base.config.ts'
+import { excludeScreenshotsPlugin } from './vite-config/plugins/excludeScreenshotsPlugin.ts'
 
 const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))

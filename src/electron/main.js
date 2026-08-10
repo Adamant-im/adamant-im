@@ -95,6 +95,8 @@ function createProtocol(scheme, customProtocol) {
     }
 
     try {
+      // The canonical path was confined to staticRoot immediately above.
+      // eslint-disable-next-line security/detect-non-literal-fs-filename
       const data = await readFile(filePath)
       const extension = path.extname(filePath).toLowerCase()
       const mimeType = mimeTypes[extension] || 'text/plain'

@@ -5,7 +5,9 @@
  */
 'use strict'
 
-import md5 from 'js-md5'
+import { md5 } from '@noble/hashes/legacy.js'
+import { utf8ToBytes } from '@noble/hashes/utils.js'
+import { bytesToHex } from '@/lib/hex'
 
 export default class Identicon {
   constructor() {
@@ -219,7 +221,7 @@ export default class Identicon {
   }
 
   triangleColors(id, key, lines) {
-    const keyHash = md5(key)
+    const keyHash = bytesToHex(md5(utf8ToBytes(key)))
     /* if (keyHash.length !== 32) {
       throw new Error('AdamantIdenticon: Wrong md5 hash')
     } */

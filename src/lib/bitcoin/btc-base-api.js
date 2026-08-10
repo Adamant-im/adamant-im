@@ -1,5 +1,6 @@
 import * as bitcoin from 'bitcoinjs-lib'
 import BigNumber from 'bignumber.js'
+import { Buffer } from 'buffer'
 
 import networks from './networks'
 import { CryptosInfo } from '../constants'

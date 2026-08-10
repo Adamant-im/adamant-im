@@ -77,7 +77,8 @@ describe('Secondary dialogs UI contract', () => {
     expect(mixinContent).toContain('@mixin a-secondary-dialog-action-block($padding: 0)')
     expect(mixinContent).toContain('@mixin a-secondary-dialog-primary-action-button()')
     expect(mixinContent).toContain('@mixin a-secondary-dialog-footer-link-block()')
-    expect(mixinContent).toContain('@mixin a-secondary-dialog-card-frame()')
+    expect(mixinContent).toContain('@mixin a-secondary-dialog-card-frame($is-scoped: true)')
+    expect(mixinContent).toContain('@if $is-scoped')
     expect(mixinContent).toContain('@mixin a-secondary-dialog-warning-frame()')
     expect(mixinContent).toContain('@include mixins.a-text-header();')
     expect(mixinContent).toContain('@include mixins.a-text-regular-enlarged();')
@@ -227,7 +228,9 @@ describe('Secondary dialogs UI contract', () => {
     expect(shareUriContent).toContain(
       'padding: var(--a-secondary-dialog-content-padding-reset) !important;'
     )
-    expect(shareUriContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
+    expect(shareUriContent).toContain(
+      'secondaryDialog.a-secondary-dialog-card-frame($is-scoped: false)'
+    )
     expect(shareUriContent).not.toContain('class="pa-0"')
     expect(shareUriContent).toContain("map.get(colors.$adm-colors, 'regular')")
     expect(shareUriContent).toContain("map.get(settings.$shades, 'white')")
@@ -248,7 +251,9 @@ describe('Secondary dialogs UI contract', () => {
     expect(buyTokensContent).toContain(
       'padding: var(--a-secondary-dialog-content-padding-reset) !important;'
     )
-    expect(buyTokensContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
+    expect(buyTokensContent).toContain(
+      'secondaryDialog.a-secondary-dialog-card-frame($is-scoped: false)'
+    )
     expect(buyTokensContent).not.toContain('class="pa-0"')
     expect(buyTokensContent).toContain("map.get(colors.$adm-colors, 'regular')")
     expect(buyTokensContent).toContain("map.get(settings.$shades, 'white')")

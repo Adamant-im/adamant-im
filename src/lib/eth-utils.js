@@ -1,4 +1,4 @@
-import hdkey from 'hdkey'
+import { HDKey } from '@scure/bip32'
 import * as web3Utils from 'web3-utils'
 import { privateKeyToAccount } from 'web3-eth-accounts'
 import BigNumber from 'bignumber.js'
@@ -30,9 +30,13 @@ export function toWei(eth, unit = 'ether') {
  */
 export function getAccountFromPassphrase(passphrase, api) {
   const seed = cache.mnemonicToSeedSync(passphrase)
-  const privateKey = web3Utils.bytesToHex(
-    hdkey.fromMasterSeed(seed).derive(HD_KEY_PATH)._privateKey
-  )
+  const derivedPrivateKey = HDKey.fromMasterSeed(seed).derive(HD_KEY_PATH).privateKey
+
+  if (!derivedPrivateKey) {
+    throw new Error(`Failed to derive an Ethereum private key at ${HD_KEY_PATH}`)
+  }
+
+  const privateKey = web3Utils.bytesToHex(derivedPrivateKey)
   // web3Account is for user wallet; We don't need it, when exporting a private key
   const web3Account = api ? privateKeyToAccount(privateKey) : undefined
 

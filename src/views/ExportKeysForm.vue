@@ -122,7 +122,8 @@
   </v-form>
 </template>
 <script>
-import { validateMnemonic } from 'bip39'
+import { validateMnemonic } from '@scure/bip39'
+import { wordlist } from '@scure/bip39/wordlists/english.js'
 import copyToClipboard from 'copy-to-clipboard'
 import { getAccountFromPassphrase as getEthAccount } from '@/lib/eth-utils'
 import { getAccount as getBtcAccount } from '@/lib/bitcoin/btc-base-api'
@@ -183,7 +184,7 @@ export default defineComponent({
     const revealKeys = () => {
       keys.value = []
 
-      if (!validateMnemonic(passphrase.value)) {
+      if (!validateMnemonic(passphrase.value, wordlist)) {
         store.dispatch('snackbar/show', {
           message: t('login.invalid_passphrase')
         })

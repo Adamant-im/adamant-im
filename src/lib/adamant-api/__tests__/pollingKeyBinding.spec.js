@@ -26,9 +26,8 @@ const store = {
 
 vi.mock('@/store', () => ({ default: store }))
 
-// `unlock()` derives a keypair through sodium, whose `instanceof Uint8Array` check fails across
-// the Buffer realms vitest sets up. Only the resulting address matters here, so the derivation
-// is stubbed and everything else comes from the real module.
+// Key derivation is unrelated to this binding test. Keep its account fixture deterministic and
+// use the real module for the address/key validation under test.
 vi.mock('@/lib/adamant', async () => {
   const actual = await vi.importActual('@/lib/adamant')
   const publicKey = Buffer.from('ab'.repeat(32), 'hex')

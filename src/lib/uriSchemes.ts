@@ -79,6 +79,8 @@ export const ALLOWED_URI_SCHEME_ALTERNATION = [...ALLOWED_URI_SCHEMES]
   .join('|')
 
 /** Matches a URI whose scheme is on the allowlist */
+// The alternation is assembled from escaped internal metadata immediately above.
+// eslint-disable-next-line security/detect-non-literal-regexp
 export const ALLOWED_URI_SCHEME_PATTERN = new RegExp(`^(${ALLOWED_URI_SCHEME_ALTERNATION}):`, 'i')
 
 /** Colon-suffixed form, for comparing against `URL.protocol` */

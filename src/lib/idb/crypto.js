@@ -1,6 +1,5 @@
 import ed2curve from 'ed2curve'
 import nacl from 'tweetnacl/nacl-fast'
-import { decode } from '@stablelib/utf8'
 
 import { hexToBytes } from '@/lib/hex'
 import store from '@/store'
@@ -8,6 +7,7 @@ import { Buffer } from 'buffer'
 import { derivePasswordHash } from './passwordKdf'
 
 const NONCE_LENGTH = 24
+const textDecoder = new TextDecoder()
 
 function getPasswordHash(password) {
   if (password && typeof password === 'object' && password.hash) {
@@ -73,7 +73,7 @@ export function decrypt(encryptedData) {
     throw new Error('Failed to decrypt IDB record: wrong password, old format, or corrupted data')
   }
 
-  return JSON.parse(decode(decrypted))
+  return JSON.parse(textDecoder.decode(decrypted))
 }
 
 export function encryptPassword(password, descriptor) {

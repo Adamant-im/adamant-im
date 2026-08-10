@@ -1,4 +1,5 @@
 import BtcBaseApi from './btc-base-api'
+import { Buffer } from 'buffer'
 import { Cryptos } from '../constants'
 import { BigNumber } from '../bignumber'
 import * as bitcoin from 'bitcoinjs-lib'

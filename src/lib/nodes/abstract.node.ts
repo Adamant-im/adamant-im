@@ -477,6 +477,8 @@ export abstract class Node<C = unknown> {
   }
 
   formatHeight(height: number) {
+    // Input is a finite JavaScript number converted to a short decimal string.
+    // eslint-disable-next-line security/detect-unsafe-regex
     return height.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }
 

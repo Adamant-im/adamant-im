@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { existsSync } from 'node:fs'
 import { defineConfig, devices } from '@playwright/test'
-import { LONG_RUNNING_TEST_TAG } from './tests/e2e/helpers/longRunning'
+import { LONG_RUNNING_TEST_TAG } from './tests/e2e/helpers/longRunning.ts'
 
 const formatRunStamp = (date: Date) => {
   const pad = (value: number) => value.toString().padStart(2, '0')

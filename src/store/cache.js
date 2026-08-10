@@ -1,7 +1,10 @@
-import * as bip39 from 'bip39'
-import crypto from 'crypto'
+import { sha256 } from '@noble/hashes/sha2.js'
+import { utf8ToBytes } from '@noble/hashes/utils.js'
+import { mnemonicToSeedSync } from '@scure/bip39'
 
-let cachedSeed = []
+import { bytesToHex } from '@/lib/hex'
+
+let cachedSeed = new Map()
 
 export default {
   /**
@@ -12,11 +15,15 @@ export default {
    * @return {string} seed
    */
   mnemonicToSeedSync(passphrase) {
-    const passphraseHash = crypto.createHash('sha256').update(passphrase).digest('hex')
-    cachedSeed[passphraseHash] = cachedSeed[passphraseHash] || bip39.mnemonicToSeedSync(passphrase)
-    return cachedSeed[passphraseHash]
+    const passphraseHash = bytesToHex(sha256(utf8ToBytes(passphrase)))
+
+    if (!cachedSeed.has(passphraseHash)) {
+      cachedSeed.set(passphraseHash, mnemonicToSeedSync(passphrase))
+    }
+
+    return cachedSeed.get(passphraseHash)
   },
   resetCachedSeed() {
-    cachedSeed = []
+    cachedSeed = new Map()
   }
 }

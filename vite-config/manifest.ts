@@ -1,5 +1,5 @@
 import { ManifestOptions } from 'vite-plugin-pwa'
-import { joinUrl } from '../src/lib/urlFormatter'
+import { joinUrl } from '../src/lib/urlFormatter.ts'
 import { loadEnv } from 'vite'
 
 const env = loadEnv('production', process.cwd())

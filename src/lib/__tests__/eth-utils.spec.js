@@ -4,6 +4,8 @@
 import { describe, it, expect } from 'vitest'
 import Web3Eth from 'web3-eth'
 import { toEther, toWei, getAccountFromPassphrase, calculateFee } from '@/lib/eth-utils'
+import { bytesToHex } from '@/lib/hex'
+import cache from '@/store/cache'
 
 describe('eth-utils', () => {
   describe('toEther', () => {
@@ -48,6 +50,26 @@ describe('eth-utils', () => {
     it('should generate account from passphrase without "web3Account"', () => {
       expect(getAccountFromPassphrase(passphrase)).toEqual({
         privateKey: '0x344854fa2184c252bdcc09daf8fe7fbcc960aed8f4da68de793f9fbc50b5a686'
+      })
+    })
+
+    it('preserves the standard BIP39 seed vector without a mnemonic password', () => {
+      const bip39Vector =
+        'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+
+      expect(bytesToHex(cache.mnemonicToSeedSync(bip39Vector))).toBe(
+        '5eb00bbddcf069084889a8ab9155568165f5c453ccb85e70811aaed6f6da5fc19' +
+          'a5ac40b389cd370d086206dec8aa6c43daea6690f20ad3d8d48b2d2ce9e38e4'
+      )
+    })
+
+    it('derives the expected application-path key from the standard BIP39 vector', () => {
+      const bip39Vector =
+        'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+
+      expect(getAccountFromPassphrase(bip39Vector, api)).toMatchObject({
+        address: '0x55a1354836b9D44F668ED5B3c66aA7Fd6a002b99',
+        privateKey: '0xeb39edc33d0a45d141154fe985a760b03ac4054239d958fa02d3c198a393574b'
       })
     })
   })

@@ -1,0 +1,82 @@
+name: Security
+
+on:
+  pull_request:
+  push:
+    branches:
+      - dev
+      - master
+  schedule:
+    - cron: '23 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  HUSKY: 0
+
+jobs:
+  dependency-audit:
+    name: Verify dependency integrity and advisories
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts
+
+      - name: Verify registry signatures and provenance
+        run: npm audit signatures
+
+      - name: Block high-severity runtime advisories
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Block high-severity advisories in the full toolchain
+        run: npm audit --audit-level=high
+
+  dependency-review:
+    name: Review dependency changes
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Review dependency changes
+        uses: actions/dependency-review-action@v5
+        with:
+          fail-on-severity: high
+
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      actions: read
+      contents: read
+      packages: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: javascript-typescript
+
+      - name: Analyze source
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:javascript-typescript

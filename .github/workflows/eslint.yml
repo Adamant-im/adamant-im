@@ -1,4 +1,4 @@
-name: ESLint
+name: Quality
 
 on:
   pull_request:
@@ -19,17 +19,27 @@ env:
 
 jobs:
   check:
-    name: Check source code with ESLint and fix problems
+    name: Lint, typecheck and unit tests
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout repository 🛎️
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Setup Node.js 🍀
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
+          cache: npm
       - name: Install dependencies 📦
         run: npm ci
       - name: Run ESLint 🛠️
-        run: |
-          npm run lint
+        run: npm run lint
+
+      - name: Verify ESLint produced no changes
+        run: git diff --exit-code
+
+      - name: Run typecheck
+        run: npm run typecheck
+
+      - name: Run unit tests
+        run: npm run test -- --run

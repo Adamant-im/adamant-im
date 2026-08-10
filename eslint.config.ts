@@ -7,6 +7,7 @@ import js from '@eslint/js'
 import typescriptEslint from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
 import vue from 'eslint-plugin-vue'
+import security from 'eslint-plugin-security'
 import { defineConfig, globalIgnores } from 'eslint/config'
 import globals from 'globals'
 import vueParser from 'vue-eslint-parser'
@@ -24,6 +25,8 @@ export default defineConfig([
   js.configs.recommended,
 
   ...vue.configs['flat/essential'],
+
+  security.configs.recommended,
 
   ...fixupConfigRules(
     compat.extends(
@@ -58,6 +61,9 @@ export default defineConfig([
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '_' }],
       'import/named': 'off',
       'import/no-unresolved': 'off',
+      // This syntax-only rule reports every dynamic lookup in Vuex stores and metadata maps.
+      // It cannot distinguish validated keys from attacker-controlled object properties.
+      'security/detect-object-injection': 'off',
       'vue/multi-word-component-names': 'off',
       // `v-html` assigns to innerHTML, which makes the sink itself able to create any
       // element and any event handler. Render HTML through `components/common/SafeHtml`
@@ -73,6 +79,15 @@ export default defineConfig([
           project: ['./tsconfig.json']
         }
       }
+    }
+  },
+
+  {
+    files: ['**/*.{spec,test}.{js,jsx,ts,tsx}', '**/__tests__/**/*.{js,jsx,ts,tsx}'],
+    rules: {
+      // Contract tests intentionally resolve fixtures and source files assembled from the
+      // repository root; none of these paths comes from an application user.
+      'security/detect-non-literal-fs-filename': 'off'
     }
   },
 

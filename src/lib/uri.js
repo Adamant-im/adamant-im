@@ -1,4 +1,5 @@
 import { isAddress as isEthAddress, isHexStrict } from 'web3-validator'
+import process from 'process'
 import { Cryptos, CryptosInfo } from './constants'
 
 /**
@@ -83,6 +84,8 @@ export function parseURIasAIP(uri = getAddressBarURI()) {
     address = origin
 
     for (const [symbol, { regexAddress }] of Object.entries(CryptosInfo)) {
+      // Address patterns come from the pinned adamant-wallets specification, not user input.
+      // eslint-disable-next-line security/detect-non-literal-regexp
       if (new RegExp(regexAddress).test(address)) {
         crypto = symbol
       }

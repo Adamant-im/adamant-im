@@ -42,7 +42,7 @@ export class BtcIndexer extends Node<AxiosInstance> {
     method: 'GET' | 'POST',
     path: string,
     params?: Params,
-    requestConfig?: AxiosRequestConfig
+    requestConfig?: AxiosRequestConfig<Params, Params>
   ): Promise<Response> {
     const baseURL = this.getBaseURL(this)
 

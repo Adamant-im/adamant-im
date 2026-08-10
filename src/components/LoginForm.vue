@@ -59,7 +59,8 @@
 </template>
 
 <script setup lang="ts">
-import { validateMnemonic } from 'bip39'
+import { validateMnemonic } from '@scure/bip39'
+import { wordlist } from '@scure/bip39/wordlists/english.js'
 import { computed, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
@@ -120,7 +121,7 @@ const passphrase = computed({
 })
 
 const submit = () => {
-  if (!validateMnemonic(passphrase.value)) {
+  if (!validateMnemonic(passphrase.value, wordlist)) {
     return emit('error', t('login.invalid_passphrase'))
   }
   freeze()
