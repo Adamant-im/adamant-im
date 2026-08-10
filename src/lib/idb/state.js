@@ -1,9 +1,9 @@
-import cloneDeep from 'lodash-es/cloneDeep'
 import merge from 'deepmerge'
 import Modules from './stores/Modules'
 import Chats from './stores/Chats'
 import Security from './stores/Security'
 import { Cryptos } from '@/lib/constants'
+import { cloneState } from '@/lib/cloneState'
 
 /** Modules that will be stored in IDB **/
 const modules = ['adm', 'eth', 'doge', 'bnb', 'dash', 'usds', 'res', 'partners', 'delegates']
@@ -40,7 +40,7 @@ function cloneModules(state) {
 
   // clone `chat` module, except `chats` key
   if (state.chat) {
-    const chat = cloneDeep(state.chat)
+    const chat = cloneState(state.chat)
     notSavedStates.chat.forEach((field) => {
       delete chat[field]
     })

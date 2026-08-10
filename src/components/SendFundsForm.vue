@@ -219,7 +219,6 @@ import { computed, nextTick } from 'vue'
 
 import QrcodeCapture from '@/components/QrcodeCapture.vue'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
-import get from 'lodash-es/get'
 import { BigNumber } from 'bignumber.js'
 import { logger } from '@/utils/devTools/logger'
 
@@ -817,7 +816,7 @@ export default {
           const formattedError = formatSendTxError(error)
           logger.log('SendFundsForm', 'warn', 'Error while sending transaction', formattedError)
           let message = formattedError.errorMessage
-          if (/dust/i.test(message) || get(error, 'response.data.error.code') === -26) {
+          if (/dust/i.test(message) || error?.response?.data?.error?.code === -26) {
             message = this.$t('transfer.error_dust_amount')
           } else if (/Invalid JSON RPC Response/i.test(message)) {
             message = this.$t('transfer.error_unknown')

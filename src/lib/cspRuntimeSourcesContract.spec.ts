@@ -18,4 +18,17 @@ describe('CSP runtime source contract', () => {
     expect(walletsSource).toContain("from 'vuedraggable/src/vuedraggable.js'")
     expect(walletsSource).not.toMatch(/from ['"]vuedraggable['"]/)
   })
+
+  it('keeps lodash out of browser runtime modules', () => {
+    const runtimeSources = [
+      readSource('../components/AChat/AChat.vue'),
+      readSource('../components/SendFundsForm.vue'),
+      readSource('../lib/idb/state.js'),
+      readSource('../lib/sockets.js'),
+      readSource('../mixins/scrollPosition.js'),
+      readSource('../store/plugins/indexedDb.js')
+    ]
+
+    expect(runtimeSources.join('\n')).not.toContain('lodash-es')
+  })
 })

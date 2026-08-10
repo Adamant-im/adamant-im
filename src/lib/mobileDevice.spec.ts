@@ -37,6 +37,20 @@ describe('mobile device detection', () => {
     expect(isMobileDevice()).toBe(true)
   })
 
+  it('preserves the mobile layout for Android tablets', () => {
+    setNavigatorValue('userAgentData', { mobile: false })
+    setNavigatorValue('userAgent', 'Mozilla/5.0 (Linux; Android 14; Pixel Tablet)')
+
+    expect(isMobileDevice()).toBe(true)
+  })
+
+  it('keeps desktop devices on the desktop path when the structured flag is false', () => {
+    setNavigatorValue('userAgentData', { mobile: false })
+    setNavigatorValue('userAgent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X)')
+
+    expect(isMobileDevice()).toBe(false)
+  })
+
   it.each(['Android', 'iPhone', 'iPad', 'BlackBerry'])('recognizes %s user agents', (device) => {
     Reflect.deleteProperty(navigator, 'userAgentData')
     setNavigatorValue('userAgent', `Mozilla/5.0 (${device})`)

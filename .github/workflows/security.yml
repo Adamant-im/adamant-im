@@ -26,10 +26,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-          cache: npm
+        uses: ./.github/actions/setup-node
 
       - name: Install locked dependencies without lifecycle scripts
         run: npm ci --ignore-scripts

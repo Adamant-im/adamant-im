@@ -1,5 +1,4 @@
 import throttle from 'throttle-promise'
-import cloneDeep from 'lodash-es/cloneDeep'
 import { Base64 } from 'js-base64'
 
 import { router } from '@/router'
@@ -9,6 +8,7 @@ import { Cryptos } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { logger } from '@/utils/devTools/logger'
 import { loadPasswordKdfDescriptor } from '@/lib/idb/passwordKdf'
+import { cloneState } from '@/lib/cloneState'
 
 const chatModuleMutations = ['setHeight', 'setFulfilled']
 const multipleChatMutations = ['markAllAsRead', 'createEmptyChat', 'createAdamantChats']
@@ -72,7 +72,7 @@ function createThrottles() {
   // throttle chat module
   throttles.chat = throttle(
     ({ name, value }) => {
-      const chat = cloneDeep(value)
+      const chat = cloneState(value)
       delete chat.chats
 
       return Modules.set({ name, value: chat })

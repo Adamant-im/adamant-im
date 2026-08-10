@@ -113,9 +113,12 @@ npm run dev-https
 
 ### CSP hardening on Vercel builds
 
-Vercel preview/dev hosts use the same soft CSP profile as production domains (including current `unsafe-inline` and `unsafe-eval` allowances) to avoid behavior drift between environments.
+Production builds inject a CSP meta policy that blocks JavaScript `eval` and `Function` constructors
+on every static hosting target. Vercel also delivers the same script policy as a response header.
+`wasm-unsafe-eval` remains narrowly enabled for the bundled secp256k1 WebAssembly module.
 
-Strict CSP hardening (removing `unsafe-eval`) is tracked separately and must be done only after runtime dependency cleanup.
+The build fails if a generated JavaScript chunk contains a direct `eval` or a `Function`
+constructor. Keep runtime dependencies compatible with this gate instead of adding `unsafe-eval`.
 
 ## Validation
 

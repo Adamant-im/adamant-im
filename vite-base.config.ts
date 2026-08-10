@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url'
 import { deferScripsPlugin } from './vite-config/plugins/deferScriptsPlugin.ts'
 import { preloadCSSPlugin } from './vite-config/plugins/preloadCSSPlugin.ts'
 import { ecpairBufferImportPlugin } from './vite-config/plugins/ecpairBufferImportPlugin.ts'
+import { cspHardeningPlugin } from './vite-config/plugins/cspHardeningPlugin.ts'
 import VueDevTools from 'vite-plugin-vue-devtools'
 
 const env = loadEnv('production', process.cwd())
@@ -20,9 +21,10 @@ const __dirname = path.dirname(__filename)
 export default defineConfig({
   base: basePublicPath,
   plugins: [
+    cspHardeningPlugin(),
     wasm(),
     ecpairBufferImportPlugin(),
-    VueDevTools(),
+    process.env.VITE_DISABLE_DEVTOOLS === '1' ? undefined : VueDevTools(),
     vue(),
     vueJsx(),
     deferScripsPlugin(),
@@ -50,7 +52,8 @@ export default defineConfig({
       stream: 'stream-browserify',
       util: 'util/',
       path: 'path-browserify',
-      vm: path.resolve(__dirname, './src/lib/polyfills/vm.js')
+      vm: path.resolve(__dirname, './src/lib/polyfills/vm.js'),
+      setimmediate: path.resolve(__dirname, './src/lib/polyfills/setImmediate.js')
     },
     extensions: ['.tsx', '.ts', '.js', '.json', '.vue']
   },

@@ -17,6 +17,12 @@ jobs:
     permissions:
       pull-requests: write
     steps:
+      - name: Checkout repository 🛠️
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js 🍀
+        uses: ./.github/actions/setup-node
+
       - name: Tear down ${{ env.PREVIEW_DOMAIN }} preview domain 🥲
         run: |
           npm install --global surge

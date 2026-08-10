@@ -1,12 +1,21 @@
 import { Cryptos, Rates } from '@/lib/constants'
 
+export function getInitialDarkTheme() {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return true
+  }
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+}
+
 const state = () => ({
   stayLoggedIn: false, // if true, messages and passphrase will be stored encrypted. If false, localStorage will be cleared after logout
   sendMessageOnEnter: true,
   allowSoundNotifications: true,
   allowTabNotifications: true,
   allowPushNotifications: false,
-  darkTheme: true,
+  // vuex-persist restores an explicit user choice over this first-run system preference.
+  darkTheme: getInitialDarkTheme(),
   formatMessages: true,
   useFullDate: false,
   currentWallet: Cryptos.ADM, // current Wallet Tab on Account view (this is not an option)
