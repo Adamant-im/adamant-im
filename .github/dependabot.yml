@@ -7,7 +7,7 @@ updates:
     schedule:
       interval: weekly
       day: monday
-      time: '06:00'
+      time: '06:22'
       timezone: Etc/UTC
     open-pull-requests-limit: 10
     groups:
@@ -26,7 +26,7 @@ updates:
     schedule:
       interval: weekly
       day: monday
-      time: '06:30'
+      time: '06:52'
       timezone: Etc/UTC
     groups:
       github-actions:

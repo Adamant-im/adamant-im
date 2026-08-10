@@ -34,6 +34,18 @@ const HASH_HEX_PATTERN = /^[0-9a-f]{64}$/
 
 type KdfStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
 type PasswordKdfWorkerFactory = () => Worker
+type PasswordKdfFallback = (
+  password: string,
+  descriptor: PasswordKdfDescriptor
+) => string | Promise<string>
+
+type PasswordKdfRuntimeOptions = {
+  workerFactory?: PasswordKdfWorkerFactory
+  fallback?: PasswordKdfFallback
+  timeoutMs?: number
+}
+
+export const PASSWORD_KDF_WORKER_TIMEOUT_MS = 30_000
 
 function getStorage(storage?: KdfStorage): KdfStorage {
   if (storage) return storage
@@ -108,10 +120,24 @@ function createPasswordKdfWorker(): Worker {
   return new Worker(new URL('./passwordKdf.worker.ts', import.meta.url), { type: 'module' })
 }
 
+async function derivePasswordHashFallback(
+  password: string,
+  descriptor: PasswordKdfDescriptor
+): Promise<string> {
+  // Keep scrypt out of the main bundle unless the platform cannot start or complete the worker.
+  const { derivePasswordHashSync } = await import('./passwordKdfCore')
+
+  return derivePasswordHashSync(password, descriptor)
+}
+
 export function derivePasswordHash(
   password: string,
   descriptor: PasswordKdfDescriptor,
-  workerFactory: PasswordKdfWorkerFactory = createPasswordKdfWorker
+  {
+    workerFactory = createPasswordKdfWorker,
+    fallback = derivePasswordHashFallback,
+    timeoutMs = PASSWORD_KDF_WORKER_TIMEOUT_MS
+  }: PasswordKdfRuntimeOptions = {}
 ): Promise<string> {
   if (typeof password !== 'string') {
     return Promise.reject(new TypeError('Password must be a string'))
@@ -122,22 +148,47 @@ export function derivePasswordHash(
   }
 
   return new Promise((resolve, reject) => {
-    let worker: Worker
+    let worker: Worker | null = null
+    let settled = false
+    let timeout: ReturnType<typeof setTimeout> | undefined = undefined
 
-    try {
-      worker = workerFactory()
-    } catch (error) {
-      reject(error)
-      return
+    const terminateWorker = () => {
+      if (timeout) clearTimeout(timeout)
+      worker?.terminate()
+      worker = null
     }
 
-    let settled = false
     const finish = (callback: () => void) => {
       if (settled) return
 
       settled = true
-      worker.terminate()
+      terminateWorker()
       callback()
+    }
+
+    const useFallback = () => {
+      if (settled) return
+
+      settled = true
+      terminateWorker()
+
+      Promise.resolve()
+        .then(() => fallback(password, descriptor))
+        .then((hash) => {
+          if (!HASH_HEX_PATTERN.test(hash)) {
+            throw new Error('Password derivation fallback returned an invalid hash')
+          }
+
+          resolve(hash)
+        })
+        .catch(reject)
+    }
+
+    try {
+      worker = workerFactory()
+    } catch {
+      useFallback()
+      return
     }
 
     worker.onmessage = ({ data }: MessageEvent<PasswordKdfResponse>) => {
@@ -151,15 +202,17 @@ export function derivePasswordHash(
 
     worker.onerror = (event) => {
       event.preventDefault()
-      finish(() => reject(new Error(event.message || 'Password derivation worker failed')))
+      useFallback()
     }
+
+    timeout = setTimeout(useFallback, timeoutMs)
 
     const request: PasswordKdfRequest = { password, descriptor }
 
     try {
       worker.postMessage(request)
-    } catch (error) {
-      finish(() => reject(error))
+    } catch {
+      useFallback()
     }
   })
 }

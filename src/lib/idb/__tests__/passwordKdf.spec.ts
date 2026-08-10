@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import {
+  PASSWORD_KDF_WORKER_TIMEOUT_MS,
   PASSWORD_KDF_STORAGE_KEY,
   clearPasswordKdfDescriptor,
   createPasswordKdfDescriptor,
@@ -96,7 +97,9 @@ describe('password KDF', () => {
     const worker = createWorker({ ok: true, hash })
 
     await expect(
-      derivePasswordHash('password', ZERO_SALT_DESCRIPTOR, () => worker as unknown as Worker)
+      derivePasswordHash('password', ZERO_SALT_DESCRIPTOR, {
+        workerFactory: () => worker as unknown as Worker
+      })
     ).resolves.toBe(hash)
     expect(worker.postMessage).toHaveBeenCalledWith({
       password: 'password',
@@ -109,8 +112,63 @@ describe('password KDF', () => {
     const worker = createWorker({ ok: false, error: 'scrypt failed' })
 
     await expect(
-      derivePasswordHash('password', ZERO_SALT_DESCRIPTOR, () => worker as unknown as Worker)
+      derivePasswordHash('password', ZERO_SALT_DESCRIPTOR, {
+        workerFactory: () => worker as unknown as Worker
+      })
     ).rejects.toThrow('scrypt failed')
+    expect(worker.terminate).toHaveBeenCalledOnce()
+  })
+
+  it('uses the same KDF fallback when the worker cannot be created', async () => {
+    const fallback = vi.fn().mockReturnValue('cd'.repeat(32))
+
+    await expect(
+      derivePasswordHash('password', ZERO_SALT_DESCRIPTOR, {
+        workerFactory: () => {
+          throw new Error('Worker is unavailable')
+        },
+        fallback
+      })
+    ).resolves.toBe('cd'.repeat(32))
+    expect(fallback).toHaveBeenCalledWith('password', ZERO_SALT_DESCRIPTOR)
+  })
+
+  it('terminates an unresponsive worker and falls back after the timeout', async () => {
+    vi.useFakeTimers()
+    const worker = createWorker({ ok: true, hash: 'ef'.repeat(32) })
+    worker.postMessage.mockImplementation(() => undefined)
+    const fallback = vi.fn().mockReturnValue('ef'.repeat(32))
+
+    const hashPromise = derivePasswordHash('password', ZERO_SALT_DESCRIPTOR, {
+      workerFactory: () => worker as unknown as Worker,
+      fallback
+    })
+
+    await vi.advanceTimersByTimeAsync(PASSWORD_KDF_WORKER_TIMEOUT_MS)
+    await expect(hashPromise).resolves.toBe('ef'.repeat(32))
+    expect(worker.terminate).toHaveBeenCalledOnce()
+    expect(fallback).toHaveBeenCalledOnce()
+    vi.useRealTimers()
+  })
+
+  it('uses the fallback after a worker runtime error', async () => {
+    const worker = createWorker(null)
+    worker.postMessage.mockImplementation(function (this: typeof worker) {
+      queueMicrotask(() =>
+        this.onerror?.({
+          preventDefault: vi.fn(),
+          message: 'Worker failed'
+        } as unknown as ErrorEvent)
+      )
+    })
+    const fallback = vi.fn().mockReturnValue('12'.repeat(32))
+
+    await expect(
+      derivePasswordHash('password', ZERO_SALT_DESCRIPTOR, {
+        workerFactory: () => worker as unknown as Worker,
+        fallback
+      })
+    ).resolves.toBe('12'.repeat(32))
     expect(worker.terminate).toHaveBeenCalledOnce()
   })
 })

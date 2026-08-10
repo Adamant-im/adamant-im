@@ -29,7 +29,7 @@ function isModuleMutation(mutation) {
 
   // should module be synchronized with the IDB?
   const isModuleInIDB = modules.includes(moduleName)
-  const isChatModuleMutation = chatModuleMutations.includes(mutationName)
+  const isChatModuleMutation = moduleName === 'chat' && chatModuleMutations.includes(mutationName)
 
   return isModuleInIDB || isChatModuleMutation
 }
@@ -46,7 +46,7 @@ function isChatMutation(mutation) {
 
 /**
  * Create throttle wrapper for every module.
- * @returns {Array<{[key]: Function}>}
+ * @returns {{[key: string]: Function}}
  */
 function createThrottles() {
   const interval = 30000
@@ -93,13 +93,6 @@ function createThrottles() {
   return throttles
 }
 
-const throttles = createThrottles()
-
-/**
- * Dynamic throttles creation for each `chat`.
- */
-const chatThrottles = {}
-
 async function fallBackToPassphraseLogin(store, warning) {
   logger.log('indexed-db-plugin', 'warn', warning)
 
@@ -114,24 +107,48 @@ async function fallBackToPassphraseLogin(store, warning) {
   return router.push('/')
 }
 
-function chatThrottle(chatId) {
-  const interval = 10000
+export default (store) => {
+  let throttles = createThrottles()
+  let chatThrottles = {}
+  let activePasswordHash = null
 
-  // create throttle wrapper if does not exists
-  if (!chatThrottles[chatId]) {
-    chatThrottles[chatId] = throttle(
-      ({ name, value }) => {
-        return Chats.set({ name, value })
-      },
-      1,
-      interval
-    )
+  const handlePersistenceError = (error) => {
+    if (error?.name === 'AbortError') return
+
+    logger.log('indexed-db-plugin', 'warn', error)
   }
 
-  return chatThrottles[chatId]
-}
+  const persist = (promise) => {
+    void promise.catch(handlePersistenceError)
+  }
 
-export default (store) => {
+  const resetThrottles = () => {
+    Object.values(throttles).forEach((throttled) => throttled.abort())
+    Object.values(chatThrottles).forEach((throttled) => throttled.abort())
+
+    // throttle-promise keeps its active counter after abort(), so aborted instances cannot be
+    // reused. Fresh wrappers also ensure that writes queued under one account never run in a
+    // later password session.
+    throttles = createThrottles()
+    chatThrottles = {}
+  }
+
+  const chatThrottle = (chatId) => {
+    const interval = 10000
+
+    if (!chatThrottles[chatId]) {
+      chatThrottles[chatId] = throttle(
+        ({ name, value }) => {
+          return Chats.set({ name, value })
+        },
+        1,
+        interval
+      )
+    }
+
+    return chatThrottles[chatId]
+  }
+
   if (store.getters['options/isLoginViaPassword']) {
     if (!loadPasswordKdfDescriptor()) {
       void fallBackToPassphraseLogin(
@@ -173,15 +190,30 @@ export default (store) => {
   }
 
   store.subscribe((mutation, state) => {
-    // start sync if state has been saved to IDB
-    if (state.IDBReady && store.getters['options/isLoginViaPassword']) {
+    const passwordHash =
+      state.IDBReady &&
+      store.getters['options/isLoginViaPassword'] &&
+      typeof state.password === 'string' &&
+      /^[0-9a-f]{64}$/.test(state.password)
+        ? state.password
+        : null
+
+    if (passwordHash !== activePasswordHash) {
+      resetThrottles()
+      activePasswordHash = passwordHash
+    }
+
+    // Start sync only after encrypted state and a valid key belong to the same password session.
+    if (passwordHash) {
       if (isModuleMutation(mutation.type)) {
         const [moduleName] = mutation.type.split('/')
 
-        throttles[moduleName]({
-          name: moduleName,
-          value: state[moduleName]
-        })
+        persist(
+          throttles[moduleName]({
+            name: moduleName,
+            value: state[moduleName]
+          })
+        )
       } else if (isChatMutation(mutation.type)) {
         const [, mutationName] = mutation.type.split('/')
 
@@ -197,7 +229,7 @@ export default (store) => {
             })
           })
 
-          Chats.saveAll(chats)
+          persist(Chats.saveAll(chats))
         } else if (singleChatMutations.includes(mutationName)) {
           // mutation affected single chat
           let chatId = ''
@@ -219,11 +251,11 @@ export default (store) => {
           if (chatId) {
             const chat = state.chat.chats[chatId]
 
-            chatThrottle(chatId)({ name: chatId, value: chat })
+            persist(chatThrottle(chatId)({ name: chatId, value: chat }))
           }
         }
       } else if (mutation.type === 'setPublicKey') {
-        throttles.security({ name: 'publicKeys', value: state.publicKeys })
+        persist(throttles.security({ name: 'publicKeys', value: state.publicKeys }))
       }
     }
   })

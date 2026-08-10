@@ -12,7 +12,7 @@ vi.mock('vuex', () => ({
   useStore: () => ({ commit: commitMock })
 }))
 
-const userAgentDescriptor = Object.getOwnPropertyDescriptor(navigator, 'userAgent')
+const desktopBridgeDescriptor = Object.getOwnPropertyDescriptor(window, 'adamantDesktop')
 const matchMediaDescriptor = Object.getOwnPropertyDescriptor(window, 'matchMedia')
 
 const TestHost = defineComponent({
@@ -25,8 +25,8 @@ const TestHost = defineComponent({
   template: '<div />'
 })
 
-function setUserAgent(value: string) {
-  Object.defineProperty(navigator, 'userAgent', {
+function setDesktopBridge(value: Window['adamantDesktop']) {
+  Object.defineProperty(window, 'adamantDesktop', {
     configurable: true,
     value
   })
@@ -43,8 +43,10 @@ describe('useElectronThemeSync', () => {
     wrapper?.unmount()
     wrapper = null
 
-    if (userAgentDescriptor) {
-      Object.defineProperty(navigator, 'userAgent', userAgentDescriptor)
+    if (desktopBridgeDescriptor) {
+      Object.defineProperty(window, 'adamantDesktop', desktopBridgeDescriptor)
+    } else {
+      Reflect.deleteProperty(window, 'adamantDesktop')
     }
 
     if (matchMediaDescriptor) {
@@ -54,8 +56,8 @@ describe('useElectronThemeSync', () => {
     }
   })
 
-  it('syncs Electron with the OS theme and removes its listener', () => {
-    setUserAgent('Mozilla/5.0 Electron/40.0.0')
+  it('preserves the saved Electron theme, reacts to later OS changes, and removes its listener', () => {
+    setDesktopBridge({ isElectron: true })
 
     const listeners: { change?: (event: MediaQueryListEvent) => void } = {}
     const mediaQuery = {
@@ -72,10 +74,7 @@ describe('useElectronThemeSync', () => {
 
     wrapper = mount(TestHost)
 
-    expect(commitMock).toHaveBeenCalledWith('options/updateOption', {
-      key: 'darkTheme',
-      value: true
-    })
+    expect(commitMock).not.toHaveBeenCalled()
 
     listeners.change?.({ matches: false } as MediaQueryListEvent)
     expect(commitMock).toHaveBeenLastCalledWith('options/updateOption', {
@@ -90,7 +89,7 @@ describe('useElectronThemeSync', () => {
   })
 
   it('does not override the saved theme in a browser', () => {
-    setUserAgent('Mozilla/5.0 Chrome/140.0.0.0')
+    setDesktopBridge(undefined)
     const matchMedia = vi.fn()
     Object.defineProperty(window, 'matchMedia', {
       configurable: true,

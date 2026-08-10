@@ -499,11 +499,12 @@ const onCheckStayLoggedIn = () => {
         })
       })
   } else {
-    clearDb()
-      .catch((err) => {
-        logger.log('options', 'warn', err)
-      })
-      .finally(() => store.dispatch('removePassword'))
+    // Invalidate the key first so the persistence plugin can cancel delayed writes before the
+    // encrypted stores are cleared.
+    store.dispatch('removePassword')
+    clearDb().catch((err) => {
+      logger.log('options', 'warn', err)
+    })
   }
 }
 

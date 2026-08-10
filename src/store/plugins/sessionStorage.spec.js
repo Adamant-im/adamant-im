@@ -43,6 +43,6 @@ describe('session storage persistence', () => {
     const storage = createStorage('{broken')
 
     expect(restoreSessionState('adm', storage)).toEqual({})
-    expect(storage.getItem('adm')).toBe('{}')
+    expect(storage.getItem('adm')).toBeNull()
   })
 })

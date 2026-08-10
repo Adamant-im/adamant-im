@@ -4,7 +4,15 @@ import type { Page } from '@playwright/test'
  * Navigates without reloading the document. Authenticated E2E flows must use the application router
  * because production deliberately no longer restores passphrases after a full page refresh.
  */
-export const navigateInApp = async (page: Page, target: string, _options?: unknown) => {
+type NavigateInAppOptions = {
+  waitUntil?: Parameters<Page['waitForLoadState']>[0]
+}
+
+export const navigateInApp = async (
+  page: Page,
+  target: string,
+  options: NavigateInAppOptions = {}
+) => {
   await page.evaluate(async (route) => {
     const appRoot = document.querySelector('#app') as HTMLElement & {
       __vue_app__?: {
@@ -12,7 +20,6 @@ export const navigateInApp = async (page: Page, target: string, _options?: unkno
           globalProperties: {
             $router?: {
               push: (target: string) => Promise<unknown>
-              isReady: () => Promise<void>
             }
           }
         }
@@ -25,6 +32,9 @@ export const navigateInApp = async (page: Page, target: string, _options?: unkno
     }
 
     await router.push(route)
-    await router.isReady()
   }, target)
+
+  if (options.waitUntil) {
+    await page.waitForLoadState(options.waitUntil)
+  }
 }

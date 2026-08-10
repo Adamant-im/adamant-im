@@ -1,6 +1,6 @@
 import { app, BrowserWindow, Menu, protocol, shell } from 'electron'
 import { fileURLToPath, URL } from 'node:url'
-import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+import { installExtension, VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import path from 'node:path'
 import { readFile } from 'node:fs/promises'
 
@@ -8,6 +8,7 @@ import { readFile } from 'node:fs/promises'
 // `adamant-wallets`. Hardcoding a second copy here is what silently blocked the `ethereum:`,
 // `dash:` and `doge:` links the app itself generates.
 import { ALLOWED_URI_PROTOCOLS } from '@/lib/uriSchemes'
+import { resolveProtocolFilePath } from './protocolPath.js'
 
 const SCHEME = 'app'
 const __filename = fileURLToPath(import.meta.url)
@@ -85,9 +86,9 @@ function createProtocol(scheme, customProtocol) {
     // path, and on Windows a percent-encoded backslash survives `decodeURI` and is treated
     // as a separator. `path.resolve` canonicalizes every form, and the prefix check rejects
     // anything that still lands outside the bundle.
-    const filePath = path.resolve(staticRoot, '.' + pathName)
+    const filePath = resolveProtocolFilePath(staticRoot, pathName)
 
-    if (filePath !== staticRoot && !filePath.startsWith(staticRoot + path.sep)) {
+    if (!filePath) {
       return new Response('Forbidden', {
         status: 403,
         headers: { 'content-type': 'text/plain' }
@@ -188,6 +189,7 @@ function createWindow() {
     // These are the current Electron defaults. They are stated explicitly so that a future
     // Electron upgrade, or a copy of this config, cannot silently relax them.
     webPreferences: {
+      preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,

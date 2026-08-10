@@ -3,7 +3,7 @@ name: Update Commits Badge
 on:
   push:
   schedule:
-    - cron: '0 2 * * *' # every day at 2:00 UTC
+    - cron: '17 2 * * *' # every day at 02:17 UTC
   workflow_dispatch: # manual run
 
 jobs:

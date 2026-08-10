@@ -33,7 +33,9 @@ export function restoreSessionState(key, storage = window.sessionStorage) {
     }
   }
 
-  storage.setItem(key, JSON.stringify(restored))
+  if (Object.keys(restored).length > 0) {
+    storage.setItem(key, JSON.stringify(restored))
+  }
 
   return restored
 }

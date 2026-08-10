@@ -164,8 +164,9 @@ const submit = () => {
 }
 
 const removePassword = () => {
-  clearDb().finally(() => {
-    store.dispatch('removePassword')
+  store.dispatch('removePassword')
+  clearDb().catch((err) => {
+    logger.log('LoginPasswordForm', 'warn', err)
   })
 }
 </script>

@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 
 import { BigNumber } from '@/lib/bignumber'
 import { FileOpener } from '@capacitor-community/file-opener'
-import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+import { installExtension, VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 
 type BigNumberWithBufferHelpers = typeof BigNumber & {
   fromBuffer: (
@@ -36,7 +36,7 @@ describe('major dependency batch 2 usage', () => {
     expect(modalSource).toContain('FileOpener.open({ filePath: fileResult.uri })')
   })
 
-  it('electron-devtools-installer keeps default installer function and Vue DevTools id', () => {
+  it('electron-devtools-installer keeps the installer function and Vue DevTools id', () => {
     const mainProcessSource = readFileSync(
       path.resolve(process.cwd(), 'src/electron/main.js'),
       'utf8'

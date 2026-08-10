@@ -15,10 +15,9 @@ export function useElectronThemeSync() {
   }
 
   onMounted(() => {
-    if (!navigator.userAgent.includes('Electron/')) return
+    if (!window.adamantDesktop?.isElectron) return
 
     mediaQuery = window.matchMedia(DARK_THEME_MEDIA_QUERY)
-    updateTheme(mediaQuery)
     mediaQuery.addEventListener('change', updateTheme)
   })
 

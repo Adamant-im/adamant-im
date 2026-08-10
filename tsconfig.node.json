@@ -1,11 +1,14 @@
 {
   "compilerOptions": {
-    "composite": true,
+    "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "noEmit": true
   },
   "include": [
     "vite-config/**/*.ts",
@@ -13,5 +16,6 @@
     "vite-pwa.config.ts",
     "vitest.config.ts",
     "electron-vite.config.ts",
+    "src/lib/urlFormatter.ts"
   ]
 }

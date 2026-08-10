@@ -1,4 +1,5 @@
 import * as bitcoin from 'bitcoinjs-lib'
+import { sha256 } from '@noble/hashes/sha2.js'
 import BigNumber from 'bignumber.js'
 import { Buffer } from 'buffer'
 
@@ -21,7 +22,7 @@ const getUnique = (values) => {
 
 export function getAccount(crypto, passphrase) {
   const network = networks[crypto]
-  const pwHash = bitcoin.crypto.sha256(Buffer.from(passphrase))
+  const pwHash = sha256(Buffer.from(passphrase))
   const keyPair = ECPairAPI.fromPrivateKey(pwHash, { network })
 
   return {
@@ -80,9 +81,8 @@ export default class BtcBaseApi {
 
     const hex = await this.buildTransaction(address, amount, unspents, fee)
 
-    let txid = Buffer.from(bitcoin.crypto.sha256(Buffer.from(hex, 'hex')))
-    txid = Buffer.from(bitcoin.crypto.sha256(txid))
-    txid = txid.toString('hex').match(/.{2}/g).reverse().join('')
+    const firstHash = sha256(Buffer.from(hex, 'hex'))
+    const txid = Buffer.from(sha256(firstHash)).reverse().toString('hex')
 
     return { hex, txid }
   }

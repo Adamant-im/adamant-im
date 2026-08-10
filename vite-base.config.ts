@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig, loadEnv, type UserConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import wasm from 'vite-plugin-wasm'
@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url'
 
 import { deferScripsPlugin } from './vite-config/plugins/deferScriptsPlugin.ts'
 import { preloadCSSPlugin } from './vite-config/plugins/preloadCSSPlugin.ts'
+import { ecpairBufferImportPlugin } from './vite-config/plugins/ecpairBufferImportPlugin.ts'
 import VueDevTools from 'vite-plugin-vue-devtools'
 
 const env = loadEnv('production', process.cwd())
@@ -18,7 +19,15 @@ const __dirname = path.dirname(__filename)
 
 export default defineConfig({
   base: basePublicPath,
-  plugins: [wasm(), VueDevTools(), vue(), vueJsx(), deferScripsPlugin(), preloadCSSPlugin()],
+  plugins: [
+    wasm(),
+    ecpairBufferImportPlugin(),
+    VueDevTools(),
+    vue(),
+    vueJsx(),
+    deferScripsPlugin(),
+    preloadCSSPlugin()
+  ],
   css: {
     preprocessorMaxWorkers: 0,
     postcss: {
@@ -26,8 +35,7 @@ export default defineConfig({
     },
     preprocessorOptions: {
       scss: {
-        api: 'legacy',
-        includePaths: ['./src']
+        loadPaths: ['./src']
       }
     }
   },
@@ -103,4 +111,4 @@ export default defineConfig({
       }
     }
   }
-})
+}) as UserConfig
