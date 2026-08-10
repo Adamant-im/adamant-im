@@ -138,5 +138,8 @@ describe('socketsPlugin request budget', () => {
     await flush()
 
     expect(store.dispatch).not.toHaveBeenCalled()
+    expect(cacheVerifiedPublicKey).not.toHaveBeenCalled()
+    expect(getPublicKey).not.toHaveBeenCalled()
+    expect(decodeChat).not.toHaveBeenCalled()
   })
 })

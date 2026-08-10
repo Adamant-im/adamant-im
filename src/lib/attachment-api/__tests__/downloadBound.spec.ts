@@ -3,11 +3,12 @@ import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { NACL_BOX_OVERHEAD, UPLOAD_MAX_FILE_SIZE } from '@/lib/constants'
 
 const downloadFile = vi.fn()
+const post = vi.fn()
 
 vi.mock('@/lib/nodes/ipfs', () => ({
   default: {
     downloadFile: (...args: unknown[]) => downloadFile(...args),
-    post: vi.fn()
+    post: (...args: unknown[]) => post(...args)
   }
 }))
 
@@ -15,7 +16,8 @@ vi.mock('@/lib/adamant', () => ({
   default: {
     createPassphraseHash: () => new Uint8Array(32),
     makeKeypair: () => ({ publicKey: new Uint8Array(32), privateKey: new Uint8Array(64) }),
-    decodeBinary: () => new Uint8Array([1, 2, 3])
+    decodeBinary: () => new Uint8Array([1, 2, 3]),
+    encodeBinary: () => ({ binary: new Uint8Array([0, 127, 128, 255]), nonce: 'nonce' })
   }
 }))
 
@@ -26,6 +28,27 @@ const api = new AttachmentApi('passphrase')
 beforeEach(() => {
   downloadFile.mockReset()
   downloadFile.mockResolvedValue(new ArrayBuffer(8))
+  post.mockReset()
+  post.mockResolvedValue({ cids: ['cid'] })
+})
+
+describe('AttachmentApi.uploadFile encrypted payload', () => {
+  it('uploads encrypted bytes as a binary blob without string coercion', async () => {
+    await expect(api.uploadFile(new Uint8Array([1, 2, 3]), 'ab'.repeat(32))).resolves.toEqual({
+      cids: ['cid'],
+      nonce: 'nonce'
+    })
+
+    const [path, formData] = post.mock.calls[0]
+    const encryptedFile = formData.get('file')
+
+    expect(path).toBe('api/file/upload')
+    expect(encryptedFile).toBeInstanceOf(Blob)
+    expect(encryptedFile.type).toBe('application/octet-stream')
+    expect(new Uint8Array(await encryptedFile.arrayBuffer())).toEqual(
+      new Uint8Array([0, 127, 128, 255])
+    )
+  })
 })
 
 /**

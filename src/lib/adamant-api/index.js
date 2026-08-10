@@ -13,6 +13,7 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import { parseCryptoAddressesKVStxs } from '@/lib/store-crypto-address'
 import { DEFAULT_TIME_DELTA } from '@/lib/nodes/constants.js'
 import { logger } from '@/utils/devTools/logger'
+import { isChatTransactionVisible } from '@/lib/chat/helpers/isChatTransactionVisible'
 
 Queue.configure(Promise)
 
@@ -544,8 +545,10 @@ export function getChats(from = 0, offset = 0, orderBy = 'desc') {
   // https://github.com/Adamant-im/adamant/wiki/API-Specification#get-chat-transactions
   return client.get('/api/chats/get/', params).then((response) => {
     const { count, transactions, nodeTimestamp } = response
+    const fetchedCount = transactions.length
+    const lastProcessedHeight = transactions[transactions.length - 1]?.height || 0
 
-    const promises = transactions.map((transaction) => {
+    const promises = transactions.filter(isChatTransactionVisible).map((transaction) => {
       const isIncoming = isStringEqualCI(transaction.recipientId, myAddress)
       // The polling path accepts keys from the node just like the socket does, so it needs the
       // same binding check. Without it a compromised node could substitute its own key together
@@ -580,7 +583,9 @@ export function getChats(from = 0, offset = 0, orderBy = 'desc') {
     return Promise.all(promises).then((decoded) => ({
       count,
       transactions: decoded.filter((v) => v),
-      nodeTimestamp
+      nodeTimestamp,
+      fetchedCount,
+      lastProcessedHeight
     }))
   })
 }
@@ -770,8 +775,13 @@ export async function getChatRooms(address, params) {
     ...defaultParams,
     ...params
   })
+  const fetchedCount = chats.length
 
   const messages = chats.flatMap((chat) => {
+    if (!isChatTransactionVisible(chat.lastTransaction)) {
+      return []
+    }
+
     const partner =
       chat.lastTransaction.senderId === address
         ? {
@@ -802,13 +812,19 @@ export async function getChatRooms(address, params) {
       return []
     }
   })
-
-  const lastMessageHeight = (messages[0] && messages[0].height) || 0
+  // This watermark drives the account-wide getChats() poll. It must not advance past a room
+  // transaction that was hidden or rejected above: the chatrooms response contains only one last
+  // transaction per room, so doing so could skip an earlier visible message in the same room.
+  const lastMessageHeight = messages.reduce(
+    (highest, message) => Math.max(highest, message.height || 0),
+    0
+  )
 
   return {
     messages,
     count,
-    lastMessageHeight
+    lastMessageHeight,
+    fetchedCount
   }
 }
 
@@ -852,6 +868,10 @@ export async function getChatRoomMessages(address1, address2, paramsArg, recursi
     }
 
     const decodedMessages = messages.flatMap((message) => {
+      if (!isChatTransactionVisible(message)) {
+        return []
+      }
+
       const counterpartyId = message.senderId === address1 ? message.recipientId : message.senderId
       const publicKey =
         message.senderId === address1 ? message.recipientPublicKey : message.senderPublicKey

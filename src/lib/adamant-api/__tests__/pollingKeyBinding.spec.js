@@ -62,14 +62,15 @@ const ATTACKER_KEY = 'ef'.repeat(32)
 const OWN_ADDRESS = utils.getAddressFromPublicKey(OWN_KEY)
 const PARTNER_ADDRESS = utils.getAddressFromPublicKey(PARTNER_KEY)
 
-function incomingTransaction(senderPublicKey) {
+function incomingTransaction(senderPublicKey, chatType = 1) {
   return {
     id: '1',
+    height: 42,
     type: 8,
     senderId: PARTNER_ADDRESS,
     recipientId: OWN_ADDRESS,
     senderPublicKey,
-    asset: { chat: { type: 1, message: 'ff', own_message: 'ee' } }
+    asset: { chat: { type: chatType, message: 'ff', own_message: 'ee' } }
   }
 }
 
@@ -105,6 +106,48 @@ describe('getChats key binding', () => {
     await api.getChats()
 
     expect(state.publicKeys[PARTNER_ADDRESS]).toBe(PARTNER_KEY)
+    expect(requests).toHaveLength(1)
+  })
+
+  it('drops signal messages before key handling while preserving the polling cursor', async () => {
+    chatsResponse = {
+      count: 1,
+      transactions: [incomingTransaction(PARTNER_KEY, 3)],
+      nodeTimestamp: 0
+    }
+
+    const result = await api.getChats()
+
+    expect(result.transactions).toEqual([])
+    expect(result.fetchedCount).toBe(1)
+    expect(result.lastProcessedHeight).toBe(42)
+    expect(state.publicKeys[PARTNER_ADDRESS]).toBeUndefined()
+    expect(requests).toHaveLength(1)
+  })
+})
+
+describe('getChatRooms polling watermark', () => {
+  it('does not advance past a hidden signal transaction', async () => {
+    const signal = {
+      ...incomingTransaction(PARTNER_KEY, 3),
+      id: 'signal',
+      height: 1000
+    }
+    const visible = {
+      ...incomingTransaction(PARTNER_KEY),
+      id: 'visible',
+      height: 800
+    }
+    chatsResponse = {
+      count: 2,
+      chats: [{ lastTransaction: signal }, { lastTransaction: visible }]
+    }
+
+    const result = await api.getChatRooms(OWN_ADDRESS)
+
+    expect(result.messages.map(({ id }) => id)).toEqual(['visible'])
+    expect(result.lastMessageHeight).toBe(800)
+    expect(result.fetchedCount).toBe(2)
     expect(requests).toHaveLength(1)
   })
 })

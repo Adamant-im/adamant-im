@@ -35,6 +35,31 @@ const toNaclBytes = (value) => {
   return Uint8Array.from(value)
 }
 
+const isHexadecimalString = (value) => {
+  if (value.length === 0 || value.length % 2 !== 0) return false
+
+  return Array.from(value).every((character) => {
+    const code = character.charCodeAt(0)
+
+    return (code >= 48 && code <= 57) || (code >= 65 && code <= 70) || (code >= 97 && code <= 102)
+  })
+}
+
+// Public crypto helpers historically accept both the hex representation used by the API and
+// byte arrays used internally. Normalize that documented boundary explicitly: Uint8Array.from()
+// would otherwise turn a hex string into zeroes instead of rejecting it.
+const normalizeCryptoBytes = (value, label) => {
+  if (typeof value === 'string') {
+    if (!isHexadecimalString(value)) {
+      throw new TypeError(`${label} must be an even-length hexadecimal string or Uint8Array`)
+    }
+
+    return toNaclBytes(hexToBytes(value))
+  }
+
+  return toNaclBytes(value)
+}
+
 /**
  * Converts provided `time` to Adamant's epoch timestamp
  * @param {number=} time timestamp to convert
@@ -136,9 +161,7 @@ adamant.getTransactionId = function (transaction) {
  * @returns {string}
  */
 adamant.getAddressFromPublicKey = function (publicKey) {
-  const publicKeyHash = sha256(
-    toNaclBytes(typeof publicKey === 'string' ? hexToBytes(publicKey) : publicKey)
-  )
+  const publicKeyHash = sha256(normalizeCryptoBytes(publicKey, 'Public key'))
   const temp = Buffer.alloc(8)
 
   for (let i = 0; i < 8; i++) {
@@ -368,20 +391,18 @@ adamant.verify = function (hash, signatureBuffer, publicKeyBuffer) {
 /**
  * Encodes a text message for sending to ADM
  * @param {string|Uint8Array} msg message to encode
- * @param {*} recipientPublicKey recipient's public key
- * @param {*} privateKey our private key
+ * @param {string|Uint8Array} recipientPublicKey recipient's public key
+ * @param {string|Uint8Array} privateKey our private key
  * @returns {{message: string, nonce: string}}
  */
 adamant.encodeMessage = function (msg, recipientPublicKey, privateKey) {
   const nonce = nacl.randomBytes(24)
 
-  if (typeof recipientPublicKey === 'string') {
-    recipientPublicKey = hexToBytes(recipientPublicKey)
-  }
-
   const plainText = typeof msg === 'string' ? textEncoder.encode(msg) : toNaclBytes(msg)
-  const DHPublicKey = ed2curve.convertPublicKey(toNaclBytes(recipientPublicKey))
-  const DHSecretKey = ed2curve.convertSecretKey(toNaclBytes(privateKey))
+  const DHPublicKey = ed2curve.convertPublicKey(
+    normalizeCryptoBytes(recipientPublicKey, 'Recipient public key')
+  )
+  const DHSecretKey = ed2curve.convertSecretKey(normalizeCryptoBytes(privateKey, 'Private key'))
 
   const encrypted = nacl.box(
     toNaclBytes(plainText),
@@ -405,27 +426,13 @@ adamant.encodeMessage = function (msg, recipientPublicKey, privateKey) {
  * @returns {string}
  */
 adamant.decodeMessage = function (msg, senderPublicKey, privateKey, nonce) {
-  if (typeof msg === 'string') {
-    msg = hexToBytes(msg)
-  }
-
-  if (typeof nonce === 'string') {
-    nonce = hexToBytes(nonce)
-  }
-
-  if (typeof senderPublicKey === 'string') {
-    senderPublicKey = hexToBytes(senderPublicKey)
-  }
-
-  if (typeof privateKey === 'string') {
-    privateKey = hexToBytes(privateKey)
-  }
-
-  const DHPublicKey = ed2curve.convertPublicKey(toNaclBytes(senderPublicKey))
-  const DHSecretKey = ed2curve.convertSecretKey(toNaclBytes(privateKey))
+  const DHPublicKey = ed2curve.convertPublicKey(
+    normalizeCryptoBytes(senderPublicKey, 'Sender public key')
+  )
+  const DHSecretKey = ed2curve.convertSecretKey(normalizeCryptoBytes(privateKey, 'Private key'))
   const decrypted = nacl.box.open(
-    toNaclBytes(msg),
-    toNaclBytes(nonce),
+    normalizeCryptoBytes(msg, 'Encrypted message'),
+    normalizeCryptoBytes(nonce, 'Nonce'),
     toNaclBytes(DHPublicKey),
     toNaclBytes(DHSecretKey)
   )
@@ -485,18 +492,10 @@ adamant.encodeValue = function (value, privateKey) {
  * @returns {string} decoded value
  */
 adamant.decodeValue = function (source, privateKey, nonce) {
-  if (typeof source === 'string') {
-    source = hexToBytes(source)
-  }
-
-  if (typeof nonce === 'string') {
-    nonce = hexToBytes(nonce)
-  }
-
   const secretKey = ed2curve.convertSecretKey(sha256(toNaclBytes(privateKey)))
   const decrypted = nacl.secretbox.open(
-    toNaclBytes(source),
-    toNaclBytes(nonce),
+    normalizeCryptoBytes(source, 'Encrypted value'),
+    normalizeCryptoBytes(nonce, 'Nonce'),
     toNaclBytes(secretKey)
   )
 
@@ -517,17 +516,17 @@ adamant.decodeValue = function (source, privateKey, nonce) {
 /**
  * Encodes a secret binary (available for the owner only)
  * @param {Uint8Array} source value to encode
- * @param {Uint8Array} recipientPublicKey sender's public key
- * @param {Uint8Array|Buffer} privateKey private key
- * @returns {{binary: string, nonce: string}} encoded binary and nonce (both as HEX-strings)
+ * @param {string|Uint8Array} recipientPublicKey recipient's public key
+ * @param {string|Uint8Array} privateKey private key
+ * @returns {{binary: Uint8Array, nonce: string}} encoded binary and hex-encoded nonce
  */
 adamant.encodeBinary = function (source, recipientPublicKey, privateKey) {
   const nonce = nacl.randomBytes(24)
 
-  const publicKey = hexToBytes(recipientPublicKey)
-
-  const DHPublicKey = ed2curve.convertPublicKey(toNaclBytes(publicKey))
-  const DHSecretKey = ed2curve.convertSecretKey(toNaclBytes(privateKey))
+  const DHPublicKey = ed2curve.convertPublicKey(
+    normalizeCryptoBytes(recipientPublicKey, 'Recipient public key')
+  )
+  const DHSecretKey = ed2curve.convertSecretKey(normalizeCryptoBytes(privateKey, 'Private key'))
 
   const encrypted = nacl.box(
     toNaclBytes(source),
@@ -551,19 +550,14 @@ adamant.encodeBinary = function (source, recipientPublicKey, privateKey) {
  * @returns {string} decoded value
  */
 adamant.decodeBinary = function (source, senderPublicKey, privateKey, nonce) {
-  if (typeof nonce === 'string') {
-    nonce = hexToBytes(nonce)
-  }
-
-  const publicKey =
-    typeof senderPublicKey === 'string' ? hexToBytes(senderPublicKey) : senderPublicKey
-
-  const DHPublicKey = ed2curve.convertPublicKey(toNaclBytes(publicKey))
+  const DHPublicKey = ed2curve.convertPublicKey(
+    normalizeCryptoBytes(senderPublicKey, 'Sender public key')
+  )
   const DHSecretKey = ed2curve.convertSecretKey(toNaclBytes(privateKey))
 
   return nacl.box.open(
     toNaclBytes(source),
-    toNaclBytes(nonce),
+    normalizeCryptoBytes(nonce, 'Nonce'),
     toNaclBytes(DHPublicKey),
     toNaclBytes(DHSecretKey)
   )

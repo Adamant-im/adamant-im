@@ -40,7 +40,11 @@ import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
 import { getTransaction, decodeChat, getVerifiedCounterpartyPublicKey } from '@/lib/adamant-api'
-import { NormalizedChatMessageTransaction, normalizeMessage } from '@/lib/chat/helpers'
+import {
+  isChatTransactionVisible,
+  NormalizedChatMessageTransaction,
+  normalizeMessage
+} from '@/lib/chat/helpers'
 import { Cryptos } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import PreviewText from '@/components/common/PreviewText'
@@ -82,6 +86,13 @@ async function fetchTransaction(transactionId: string, address: string) {
   if (!rawTx) {
     throw new ValidationError(
       `QuotedMessage: Message not found: txId: ${transactionId}`,
+      ErrorCodes.MESSAGE_NOT_FOUND
+    )
+  }
+
+  if (!isChatTransactionVisible(rawTx)) {
+    throw new ValidationError(
+      `QuotedMessage: Signal messages are hidden: txId: ${transactionId}`,
       ErrorCodes.MESSAGE_NOT_FOUND
     )
   }

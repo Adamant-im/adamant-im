@@ -1,11 +1,13 @@
 import socketClient from '@/lib/sockets'
 import { cacheVerifiedPublicKey, decodeChat, getPublicKey } from '@/lib/adamant-api'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import { MessageType } from '@/lib/constants'
 import { logger } from '@/utils/devTools/logger'
+import { isChatTransactionVisible } from '@/lib/chat/helpers/isChatTransactionVisible'
 
 function subscribe(store) {
   socketClient.subscribe('newMessage', (transaction) => {
+    if (!isChatTransactionVisible(transaction)) return
+
     const isIncoming = isStringEqualCI(transaction.recipientId, store.state.address)
     const counterpartyId = isIncoming ? transaction.senderId : transaction.recipientId
     const counterpartyPublicKey = isIncoming
@@ -41,9 +43,7 @@ function subscribe(store) {
         // Currently, we don't update confirmations for direct transfers, see getChats() in adamant-api.js
         // So we'll update confirmations in getTransactionStatus()
 
-        if (transaction.asset?.chat?.type !== MessageType.SIGNAL_MESSAGE) {
-          store.dispatch('chat/pushMessages', [decoded])
-        }
+        store.dispatch('chat/pushMessages', [decoded])
       })
       .catch((error) => {
         logger.warn(
