@@ -46,7 +46,9 @@ test.describe('Password session regressions', () => {
   test('clears a legacy encrypted cache without a KDF descriptor and requires a passphrase', async ({
     page
   }) => {
-    await page.goto('/')
+    // Establish the application origin without booting Vue. A running persistence plugin could
+    // otherwise overwrite the legacy fixture before the navigation that exercises migration.
+    await page.goto('/favicon.ico')
 
     await page.evaluate(
       async ({ descriptorKey }) => {
@@ -75,15 +77,13 @@ test.describe('Password session regressions', () => {
         })
         db.close()
 
-        // Write the legacy persistence flag last. The already running application may persist its
-        // current default while the asynchronous IndexedDB fixture is being prepared.
         localStorage.setItem('adm', JSON.stringify({ options: { stayLoggedIn: true } }))
         localStorage.removeItem(descriptorKey)
       },
       { descriptorKey: PASSWORD_KDF_STORAGE_KEY }
     )
 
-    await page.reload({ waitUntil: 'domcontentloaded' })
+    await page.goto('/', { waitUntil: 'domcontentloaded' })
 
     await expect(page.locator('input[autocomplete="current-password"]')).toBeVisible()
     await expect(page.getByRole('button', { name: 'Login', exact: true })).toBeVisible()
