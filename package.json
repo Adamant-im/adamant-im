@@ -178,7 +178,7 @@
     "sass": "^1.102.0",
     "sinon": "^22.1.0",
     "swagger-typescript-api": "^13.12.6",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
     "user-agent-data-types": "^0.4.3",
     "uuid": "^14.0.1",
     "vite": "^8.2.1",
