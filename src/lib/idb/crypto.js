@@ -1,12 +1,11 @@
 import ed2curve from 'ed2curve'
 import nacl from 'tweetnacl/nacl-fast'
-import pbkdf2 from 'pbkdf2'
 import { decode } from '@stablelib/utf8'
 
-import { bytesToHex } from '@/lib/hex'
-import { UserPasswordHashSettings } from '@/lib/constants'
+import { hexToBytes } from '@/lib/hex'
 import store from '@/store'
 import { Buffer } from 'buffer'
+import { derivePasswordHash } from './passwordKdf'
 
 const NONCE_LENGTH = 24
 
@@ -19,7 +18,19 @@ function getPasswordHash(password) {
 }
 
 function getSecretKey() {
-  return ed2curve.convertSecretKey(getPasswordHash(store.state.password))
+  const passwordHash = getPasswordHash(store.state.password)
+
+  if (typeof passwordHash !== 'string' || !/^[0-9a-f]{64}$/.test(passwordHash)) {
+    throw new Error('Invalid password hash')
+  }
+
+  const secretKey = ed2curve.convertSecretKey(hexToBytes(passwordHash))
+
+  if (!secretKey) {
+    throw new Error('Failed to derive the IDB encryption key')
+  }
+
+  return secretKey
 }
 
 /**
@@ -65,21 +76,6 @@ export function decrypt(encryptedData) {
   return JSON.parse(decode(decrypted))
 }
 
-export function encryptPassword(password) {
-  return new Promise((resolve, reject) => {
-    pbkdf2.pbkdf2(
-      password,
-      UserPasswordHashSettings.SALT,
-      UserPasswordHashSettings.ITERATIONS,
-      UserPasswordHashSettings.KEYLEN,
-      UserPasswordHashSettings.DIGEST,
-      (err, encryptedPassword) => {
-        if (err) return reject(err)
-
-        const passwordString = bytesToHex(encryptedPassword)
-
-        resolve(passwordString)
-      }
-    )
-  })
+export function encryptPassword(password, descriptor) {
+  return derivePasswordHash(password, descriptor)
 }

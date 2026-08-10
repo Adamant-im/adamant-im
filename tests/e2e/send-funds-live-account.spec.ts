@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { navigateInApp } from './helpers/navigation'
 import { dismissAddressWarningIfVisible, loginWithPassphrase } from './helpers/auth'
 import { testPassphrase } from './helpers/env'
 import { longRunningTestTitle } from './helpers/longRunning'
@@ -55,17 +56,9 @@ const getRuntimeWalletState = async (
   page: Page,
   crypto: SpendableCrypto
 ): Promise<RuntimeWalletState> => {
-  return page.evaluate((symbol) => {
-    const runtime = window as Window & {
-      store?: {
-        state: Record<string, any>
-      }
-    }
-    const store = runtime.store
-
-    if (!store) {
-      throw new Error('window.store is not available')
-    }
+  return page.evaluate(async (symbol) => {
+    const storeModulePath = '/src/store/index.js'
+    const { default: store } = await import(/* @vite-ignore */ storeModulePath)
 
     if (symbol === 'ADM') {
       return {
@@ -170,7 +163,7 @@ const waitForWalletReady = async (page: Page, crypto: SpendableCrypto) => {
 }
 
 const openTransferScreen = async (page: Page, crypto: SpendableCrypto) => {
-  await page.goto(`/transfer/${crypto}`, { waitUntil: 'domcontentloaded' })
+  await navigateInApp(page, `/transfer/${crypto}`, { waitUntil: 'domcontentloaded' })
   await expect(page).toHaveURL(new RegExp(`/transfer/${crypto}$`))
   await dismissAddressWarningIfVisible(page, 8_000)
   await expect(page.locator('.send-funds-form')).toBeVisible()

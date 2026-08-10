@@ -5,6 +5,7 @@ import constants, { Transactions, Delegates, MessageType } from '@/lib/constants
 import utils from '@/lib/adamant'
 import client from '@/lib/nodes/adm'
 import { encryptPassword } from '@/lib/idb/crypto'
+import { loadPasswordKdfDescriptor } from '@/lib/idb/passwordKdf'
 import { restoreState } from '@/lib/idb/state'
 import { i18n } from '@/i18n'
 import store from '@/store'
@@ -725,7 +726,13 @@ export function loginOrRegister(passphrase) {
  * @returns {Promise} Encrypted password
  */
 export function loginViaPassword(password, store) {
-  return encryptPassword(password)
+  const descriptor = loadPasswordKdfDescriptor()
+
+  if (!descriptor) {
+    return Promise.reject(new Error('Password login data is unavailable'))
+  }
+
+  return encryptPassword(password, descriptor)
     .then((encryptedPassword) => {
       store.commit('setPassword', encryptedPassword)
 

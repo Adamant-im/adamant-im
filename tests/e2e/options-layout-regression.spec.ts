@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { navigateInApp } from './helpers/navigation'
 import { loginWithNewAccount } from './helpers/auth'
 
 const assertNoDocumentScrollLeak = async (page: Page) => {
@@ -54,7 +55,7 @@ test.describe('Options layout regressions', () => {
 
     await loginWithNewAccount(page)
 
-    await page.goto('/options')
+    await navigateInApp(page, '/options')
     await expect(page).toHaveURL(/\/options$/)
     await expect(page.locator('.settings-view')).toBeVisible()
 
@@ -70,7 +71,7 @@ test.describe('Options layout regressions', () => {
   test('keeps title and action list gutters consistent', async ({ page }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/options')
+    await navigateInApp(page, '/options')
     await expect(page).toHaveURL(/\/options$/)
     await expect(page.locator('.settings-view')).toBeVisible()
 
@@ -126,7 +127,7 @@ test.describe('Options layout regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await loginWithNewAccount(page)
 
-    await page.goto('/options')
+    await navigateInApp(page, '/options')
     await expect(page).toHaveURL(/\/options$/)
     await expect(page.locator('.settings-view')).toBeVisible()
 

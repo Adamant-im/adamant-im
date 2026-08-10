@@ -1,5 +1,6 @@
 import { testPassphrase } from './helpers/env'
 import { expect, test, type Page } from '@playwright/test'
+import { navigateInApp } from './helpers/navigation'
 import { dismissAddressWarningIfVisible, loginWithPassphrase } from './helpers/auth'
 import { longRunningTestTitle } from './helpers/longRunning'
 
@@ -14,7 +15,7 @@ test.describe('Chat message emoji picker regressions', () => {
   const openSelfChatAndWaitForMessages = async (page: Page) => {
     await loginWithPassphrase(page, testPassphrase!)
 
-    await page.goto('/chats')
+    await navigateInApp(page, '/chats')
     await expect(page).toHaveURL(/\/chats$/)
     await dismissLateAddressWarning(page)
 
@@ -104,102 +105,112 @@ test.describe('Chat message emoji picker regressions', () => {
       }
     })
 
-  test(longRunningTestTitle('keeps the message emoji picker inside the viewport near the right edge', 52_800), async ({
-    page
-  }) => {
-    test.setTimeout(180_000)
-    test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
+  test(
+    longRunningTestTitle(
+      'keeps the message emoji picker inside the viewport near the right edge',
+      52_800
+    ),
+    async ({ page }) => {
+      test.setTimeout(180_000)
+      test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
 
-    await page.setViewportSize({ width: 1366, height: 900 })
-    await openSelfChatAndWaitForMessages(page)
+      await page.setViewportSize({ width: 1366, height: 900 })
+      await openSelfChatAndWaitForMessages(page)
 
-    const outgoingMessage = page.locator('.a-chat__message-container--right').last()
-    await expect(outgoingMessage).toBeVisible()
-    await outgoingMessage.scrollIntoViewIfNeeded()
-    await dismissLateAddressWarning(page)
-    await outgoingMessage.hover()
+      const outgoingMessage = page.locator('.a-chat__message-container--right').last()
+      await expect(outgoingMessage).toBeVisible()
+      await outgoingMessage.scrollIntoViewIfNeeded()
+      await dismissLateAddressWarning(page)
+      await outgoingMessage.hover()
 
-    const actionsButton = outgoingMessage.locator('.a-chat__message-actions-icon').first()
-    await expect(actionsButton).toBeVisible()
-    await actionsButton.click()
+      const actionsButton = outgoingMessage.locator('.a-chat__message-actions-icon').first()
+      await expect(actionsButton).toBeVisible()
+      await actionsButton.click()
 
-    const moreButton = page.locator('.a-chat-reaction-select__more-button').last()
-    await expect(moreButton).toBeVisible()
-    await moreButton.click()
+      const moreButton = page.locator('.a-chat-reaction-select__more-button').last()
+      await expect(moreButton).toBeVisible()
+      await moreButton.click()
 
-    await expect(page.locator('.emoji-picker').last()).toBeVisible()
+      await expect(page.locator('.emoji-picker').last()).toBeVisible()
 
-    await expect
-      .poll(async () => {
-        const bounds = await readVisiblePickerBounds(page)
-        if (!bounds) {
-          return null
-        }
+      await expect
+        .poll(async () => {
+          const bounds = await readVisiblePickerBounds(page)
+          if (!bounds) {
+            return null
+          }
 
-        return {
-          withinHorizontalBounds:
-            bounds.left >= -PICKER_VIEWPORT_TOLERANCE_PX &&
-            bounds.right <= bounds.viewportWidth + PICKER_VIEWPORT_TOLERANCE_PX,
-          withinVerticalBounds: bounds.top >= 7 && bounds.bottom <= bounds.viewportHeight - 7
-        }
+          return {
+            withinHorizontalBounds:
+              bounds.left >= -PICKER_VIEWPORT_TOLERANCE_PX &&
+              bounds.right <= bounds.viewportWidth + PICKER_VIEWPORT_TOLERANCE_PX,
+            withinVerticalBounds: bounds.top >= 7 && bounds.bottom <= bounds.viewportHeight - 7
+          }
+        })
+        .toEqual({
+          withinHorizontalBounds: true,
+          withinVerticalBounds: true
+        })
+    }
+  )
+
+  test(
+    longRunningTestTitle(
+      'keeps the message emoji picker inside the viewport near the top edge',
+      54_300
+    ),
+    async ({ page }) => {
+      test.setTimeout(180_000)
+      test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
+
+      await page.setViewportSize({ width: 1366, height: 900 })
+      await openSelfChatAndWaitForMessages(page)
+
+      const messagesBody = page.locator('.a-chat__body-messages').first()
+      await messagesBody.evaluate((element) => {
+        element.scrollTop = 0
       })
-      .toEqual({
-        withinHorizontalBounds: true,
-        withinVerticalBounds: true
-      })
-  })
+      await page.waitForTimeout(500)
 
-  test(longRunningTestTitle('keeps the message emoji picker inside the viewport near the top edge', 54_300), async ({ page }) => {
-    test.setTimeout(180_000)
-    test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
+      const topMessageIndex = await getFirstFullyVisibleMessageIndex(page)
+      const topMessage = page.locator('.a-chat__message-container').nth(topMessageIndex)
+      await expect(topMessage).toBeVisible()
+      await topMessage.scrollIntoViewIfNeeded()
+      await dismissLateAddressWarning(page)
+      await topMessage.hover({ force: true })
 
-    await page.setViewportSize({ width: 1366, height: 900 })
-    await openSelfChatAndWaitForMessages(page)
+      const actionsButton = topMessage.locator('.a-chat__message-actions-icon').first()
+      await expect
+        .poll(async () => {
+          return actionsButton.evaluate((element) => window.getComputedStyle(element).visibility)
+        })
+        .toBe('visible')
+      await actionsButton.click()
 
-    const messagesBody = page.locator('.a-chat__body-messages').first()
-    await messagesBody.evaluate((element) => {
-      element.scrollTop = 0
-    })
-    await page.waitForTimeout(500)
+      const moreButton = page.locator('.a-chat-reaction-select__more-button').last()
+      await expect(moreButton).toBeVisible()
+      await moreButton.click()
 
-    const topMessageIndex = await getFirstFullyVisibleMessageIndex(page)
-    const topMessage = page.locator('.a-chat__message-container').nth(topMessageIndex)
-    await expect(topMessage).toBeVisible()
-    await topMessage.scrollIntoViewIfNeeded()
-    await dismissLateAddressWarning(page)
-    await topMessage.hover({ force: true })
+      await expect(page.locator('.emoji-picker').last()).toBeVisible()
 
-    const actionsButton = topMessage.locator('.a-chat__message-actions-icon').first()
-    await expect
-      .poll(async () => {
-        return actionsButton.evaluate((element) => window.getComputedStyle(element).visibility)
-      })
-      .toBe('visible')
-    await actionsButton.click()
+      await expect
+        .poll(async () => {
+          const bounds = await readVisiblePickerBounds(page)
+          if (!bounds) {
+            return null
+          }
 
-    const moreButton = page.locator('.a-chat-reaction-select__more-button').last()
-    await expect(moreButton).toBeVisible()
-    await moreButton.click()
-
-    await expect(page.locator('.emoji-picker').last()).toBeVisible()
-
-    await expect
-      .poll(async () => {
-        const bounds = await readVisiblePickerBounds(page)
-        if (!bounds) {
-          return null
-        }
-
-        return {
-          withinHorizontalBounds:
-            bounds.left >= -PICKER_VIEWPORT_TOLERANCE_PX &&
-            bounds.right <= bounds.viewportWidth + PICKER_VIEWPORT_TOLERANCE_PX,
-          withinVerticalBounds: bounds.top >= 7 && bounds.bottom <= bounds.viewportHeight - 7
-        }
-      })
-      .toEqual({
-        withinHorizontalBounds: true,
-        withinVerticalBounds: true
-      })
-  })
+          return {
+            withinHorizontalBounds:
+              bounds.left >= -PICKER_VIEWPORT_TOLERANCE_PX &&
+              bounds.right <= bounds.viewportWidth + PICKER_VIEWPORT_TOLERANCE_PX,
+            withinVerticalBounds: bounds.top >= 7 && bounds.bottom <= bounds.viewportHeight - 7
+          }
+        })
+        .toEqual({
+          withinHorizontalBounds: true,
+          withinVerticalBounds: true
+        })
+    }
+  )
 })

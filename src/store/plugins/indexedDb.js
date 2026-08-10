@@ -8,6 +8,7 @@ import { restoreState, modules } from '@/lib/idb/state'
 import { Cryptos } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { logger } from '@/utils/devTools/logger'
+import { loadPasswordKdfDescriptor } from '@/lib/idb/passwordKdf'
 
 const chatModuleMutations = ['setHeight', 'setFulfilled']
 const multipleChatMutations = ['markAllAsRead', 'createEmptyChat', 'createAdamantChats']
@@ -99,6 +100,20 @@ const throttles = createThrottles()
  */
 const chatThrottles = {}
 
+async function fallBackToPassphraseLogin(store, warning) {
+  logger.log('indexed-db-plugin', 'warn', warning)
+
+  try {
+    await clearDb()
+  } catch (error) {
+    logger.log('indexed-db-plugin', 'warn', error)
+  }
+
+  await store.dispatch('removePassword')
+  store.commit('reset')
+  return router.push('/')
+}
+
 function chatThrottle(chatId) {
   const interval = 10000
 
@@ -118,7 +133,12 @@ function chatThrottle(chatId) {
 
 export default (store) => {
   if (store.getters['options/isLoginViaPassword']) {
-    if (store.state.password) {
+    if (!loadPasswordKdfDescriptor()) {
+      void fallBackToPassphraseLogin(
+        store,
+        'Password KDF data is missing or invalid. Fallback to Login via Passphrase.'
+      )
+    } else if (store.state.password) {
       restoreState(store)
         .then(() => {
           store.dispatch('unlock')
@@ -136,26 +156,10 @@ export default (store) => {
           store.dispatch('startInterval')
         })
         .catch(() => {
-          logger.log(
-            'indexed-db-plugin',
-            'warn',
+          return fallBackToPassphraseLogin(
+            store,
             'Can not decode IDB with current password. Fallback to Login via Passphrase.'
           )
-
-          clearDb()
-            .then(() => {
-              store.commit('options/updateOption', {
-                key: 'stayLoggedIn',
-                value: false
-              })
-              store.commit('reset')
-            })
-            .catch((err) => {
-              logger.log('indexed-db-plugin', 'warn', err)
-            })
-            .finally(() => {
-              router.push('/')
-            })
         })
     }
   } else if (store.getters.isLogged) {

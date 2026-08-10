@@ -2,8 +2,13 @@ import data from './data.json'
 import { TokenGeneral } from '@/types/wallets'
 
 export type CryptoSymbol = keyof typeof data
+type RuntimeTokenInfo = Omit<TokenGeneral, 'type'> & {
+  // adamant-wallets blockchain metadata still uses this chain-specific marker after merging
+  // the general `token` metadata into the generated runtime data.
+  type: TokenGeneral['type'] | 'ERC20'
+}
 
-export const CryptosInfo = data as unknown as Record<CryptoSymbol, TokenGeneral>
+export const CryptosInfo = data as unknown as Record<CryptoSymbol, RuntimeTokenInfo>
 
 // Enum of all cryptos
 export const AllCryptos = Object.values(CryptosInfo).reduce(

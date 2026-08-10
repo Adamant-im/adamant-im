@@ -1,5 +1,6 @@
 import { testPassphrase } from './helpers/env'
 import { expect, test, type Page } from '@playwright/test'
+import { navigateInApp } from './helpers/navigation'
 import { loginWithNewAccount, loginWithPassphrase } from './helpers/auth'
 import { openTransactionListFromHome } from './helpers/openTransactionListFromHome'
 
@@ -119,14 +120,10 @@ test.describe('Transactions layout regressions', () => {
     await page.locator('.app-navigation .v-btn').nth(1).click()
     await expect(page).toHaveURL(/\/chats(?:\/)?$/)
 
-    const savedTopAfterLeaving = await page.evaluate((path) => {
-      const store = (
-        window as Window & {
-          store?: { getters?: Record<string, unknown> }
-        }
-      ).store
-
-      const getter = store?.getters?.['options/accountScrollPosition'] as
+    const savedTopAfterLeaving = await page.evaluate(async (path) => {
+      const storeModulePath = '/src/store/index.js'
+      const { default: store } = await import(/* @vite-ignore */ storeModulePath)
+      const getter = store.getters['options/accountScrollPosition'] as
         | ((routePath: string) => number)
         | undefined
 
@@ -157,14 +154,10 @@ test.describe('Transactions layout regressions', () => {
     }
 
     // The stored position must survive the round trip, not just the scroll container
-    const savedAfterReturn = await page.evaluate((path) => {
-      const store = (
-        window as Window & {
-          store?: { getters?: Record<string, unknown> }
-        }
-      ).store
-
-      const getter = store?.getters?.['options/accountScrollPosition'] as
+    const savedAfterReturn = await page.evaluate(async (path) => {
+      const storeModulePath = '/src/store/index.js'
+      const { default: store } = await import(/* @vite-ignore */ storeModulePath)
+      const getter = store.getters['options/accountScrollPosition'] as
         | ((routePath: string) => number)
         | undefined
 
@@ -245,7 +238,7 @@ test.describe('Transactions layout regressions', () => {
     await page.setViewportSize({ width: 390, height: 600 })
     await loginWithPassphrase(page, testPassphrase!)
 
-    await page.goto(`/transactions/${testDetailsCrypto}/${testTransactionId}`, {
+    await navigateInApp(page, `/transactions/${testDetailsCrypto}/${testTransactionId}`, {
       waitUntil: 'domcontentloaded'
     })
     await expect(page).toHaveURL(
@@ -309,7 +302,7 @@ test.describe('Transactions layout regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await loginWithPassphrase(page, testPassphrase!)
 
-    await page.goto(`/transactions/${testDetailsCrypto}/${testTransactionId}`, {
+    await navigateInApp(page, `/transactions/${testDetailsCrypto}/${testTransactionId}`, {
       waitUntil: 'domcontentloaded'
     })
     await expect(page).toHaveURL(
@@ -327,7 +320,7 @@ test.describe('Transactions layout regressions', () => {
     await page.setViewportSize({ width: 1366, height: 900 })
     await loginWithPassphrase(page, testPassphrase!)
 
-    await page.goto(`/transactions/${testDetailsCrypto}/${testTransactionId}`, {
+    await navigateInApp(page, `/transactions/${testDetailsCrypto}/${testTransactionId}`, {
       waitUntil: 'domcontentloaded'
     })
     await expect(page).toHaveURL(
@@ -343,7 +336,7 @@ test.describe('Transactions layout regressions', () => {
     await page.setViewportSize({ width: 1366, height: 900 })
     await loginWithPassphrase(page, testPassphrase!)
 
-    await page.goto(`/transactions/${testDetailsCrypto}/${testTransactionId}`, {
+    await navigateInApp(page, `/transactions/${testDetailsCrypto}/${testTransactionId}`, {
       waitUntil: 'domcontentloaded'
     })
     await expect(page).toHaveURL(
@@ -356,14 +349,9 @@ test.describe('Transactions layout regressions', () => {
     const before = await firstRow.boundingBox()
     expect(before).not.toBeNull()
 
-    await page.evaluate(() => {
-      const store = (
-        window as Window & { store?: { commit: (type: string, payload: boolean) => void } }
-      ).store
-
-      if (!store) {
-        throw new Error('window.store is not available')
-      }
+    await page.evaluate(async () => {
+      const storeModulePath = '/src/store/index.js'
+      const { default: store } = await import(/* @vite-ignore */ storeModulePath)
 
       store.commit('doge/areRecentLoading', true)
     })

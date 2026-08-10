@@ -26,10 +26,12 @@ import { useI18n } from 'vue-i18n'
 import { useResendPendingMessages } from '@/hooks/useResendPendingMessages'
 import { useTrackConnection } from '@/hooks/useTrackConnection'
 import { useHealthcheckResume } from '@/hooks/useHealthcheckResume'
+import { useElectronThemeSync } from '@/hooks/useElectronThemeSync'
 
 useResendPendingMessages()
 useTrackConnection()
 useHealthcheckResume()
+useElectronThemeSync()
 
 const store = useStore()
 const isSnackbarShowing = computed(() => store.state.snackbar.show)

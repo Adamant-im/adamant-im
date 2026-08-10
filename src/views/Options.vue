@@ -499,14 +499,11 @@ const onCheckStayLoggedIn = () => {
         })
       })
   } else {
-    clearDb().then(() => {
-      store.commit('options/updateOption', {
-        key: 'stayLoggedIn',
-        value: false
+    clearDb()
+      .catch((err) => {
+        logger.log('options', 'warn', err)
       })
-
-      store.commit('resetPassword')
-    })
+      .finally(() => store.dispatch('removePassword'))
   }
 }
 
@@ -522,8 +519,7 @@ const logout = () => {
         logger.log('options', 'warn', err)
       })
       .finally(() => {
-        // turn off `loginViaPassword` option
-        store.commit('options/updateOption', { key: 'stayLoggedIn', value: false })
+        store.dispatch('removePassword')
 
         router.push('/')
       })

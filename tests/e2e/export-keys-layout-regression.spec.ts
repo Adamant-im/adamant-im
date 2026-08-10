@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { navigateInApp } from './helpers/navigation'
 import { loginWithNewAccount } from './helpers/auth'
 
 const assertNoDocumentScrollLeak = async (page: Page) => {
@@ -21,7 +22,7 @@ test.describe('Export keys layout regressions', () => {
   test('keeps export keys spacing and revealed state stable', async ({ page }) => {
     const passphrase = await loginWithNewAccount(page)
 
-    await page.goto('/options/export-keys')
+    await navigateInApp(page, '/options/export-keys')
     await expect(page).toHaveURL(/\/options\/export-keys$/)
     await expect(page.locator('.export-keys-form')).toBeVisible()
 
@@ -107,7 +108,7 @@ test.describe('Export keys layout regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await loginWithNewAccount(page)
 
-    await page.goto('/options/export-keys')
+    await navigateInApp(page, '/options/export-keys')
     await expect(page).toHaveURL(/\/options\/export-keys$/)
     await expect(page.locator('.export-keys-form')).toBeVisible()
 

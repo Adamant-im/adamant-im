@@ -1,5 +1,6 @@
 import { testPassphrase } from './helpers/env'
 import { expect, test, type Page, type TestInfo } from '@playwright/test'
+import { navigateInApp } from './helpers/navigation'
 import { loginWithPassphrase } from './helpers/auth'
 
 const attachPageScreenshot = async (page: Page, testInfo: TestInfo, name: string) => {
@@ -16,7 +17,7 @@ const openControllableChat = async (page: Page) => {
 
   await loginWithPassphrase(page, testPassphrase!)
 
-  await page.goto('/chats')
+  await navigateInApp(page, '/chats')
   await expect(page).toHaveURL(/\/chats$/)
 
   const chatItems = page.locator('.chats-view__messages--chat .v-list-item')
@@ -67,6 +68,15 @@ type RuntimeMessage = {
   senderPublicKey?: string
 }
 
+const getStoreAddress = async (page: Page) => {
+  return page.evaluate(async () => {
+    const storeModulePath = '/src/store/index.js'
+    const { default: store } = await import(/* @vite-ignore */ storeModulePath)
+
+    return store.state.address as string
+  })
+}
+
 const setChatScenario = async (
   page: Page,
   {
@@ -84,18 +94,9 @@ const setChatScenario = async (
   }
 ) => {
   await page.evaluate(
-    ({ partnerId, messages, pendingMessageIds, admOnline, ipfsOnline }) => {
-      const runtime = window as typeof window & {
-        store?: {
-          state: Record<string, any>
-          commit: (type: string, payload?: unknown, options?: unknown) => void
-        }
-      }
-      const store = runtime.store
-
-      if (!store) {
-        throw new Error('window.store is not available')
-      }
+    async ({ partnerId, messages, pendingMessageIds, admOnline, ipfsOnline }) => {
+      const storeModulePath = '/src/store/index.js'
+      const { default: store } = await import(/* @vite-ignore */ storeModulePath)
 
       const userId = store.state.address
       const chatState = store.state.chat
@@ -159,7 +160,7 @@ test.describe('Chat send status regressions', () => {
     page
   }, testInfo) => {
     const partnerId = await openControllableChat(page)
-    const userId = await page.evaluate(() => (window as any).store.state.address as string)
+    const userId = await getStoreAddress(page)
     const base = Date.now() - 120_000
 
     await setChatScenario(page, {
@@ -244,7 +245,7 @@ test.describe('Chat send status regressions', () => {
     page
   }) => {
     const partnerId = await openControllableChat(page)
-    const userId = await page.evaluate(() => (window as any).store.state.address as string)
+    const userId = await getStoreAddress(page)
     const base = Date.now() - 120_000
 
     await setChatScenario(page, {
@@ -295,7 +296,7 @@ test.describe('Chat send status regressions', () => {
     page
   }, testInfo) => {
     const partnerId = await openControllableChat(page)
-    const userId = await page.evaluate(() => (window as any).store.state.address as string)
+    const userId = await getStoreAddress(page)
     const base = Date.now() - 180_000
 
     await setChatScenario(page, {
@@ -340,25 +341,24 @@ test.describe('Chat send status regressions', () => {
       ipfsOnline: false
     })
 
-    await page.evaluate(() => {
+    await page.evaluate(async () => {
+      const storeModulePath = '/src/store/index.js'
+      const { default: store } = await import(/* @vite-ignore */ storeModulePath)
       const runtime = window as typeof window & {
-        store: {
-          dispatch: (type: string, payload?: unknown) => unknown
-        }
         __sendStatusSnackbarCalls?: unknown[]
       }
 
       runtime.__sendStatusSnackbarCalls = []
 
-      const originalDispatch = runtime.store.dispatch.bind(runtime.store)
+      const originalDispatch = store.dispatch.bind(store)
 
-      runtime.store.dispatch = ((type: string, payload?: unknown) => {
+      store.dispatch = ((type: string, payload?: unknown) => {
         if (type === 'snackbar/show') {
           runtime.__sendStatusSnackbarCalls?.push(payload)
         }
 
         return originalDispatch(type, payload)
-      }) as typeof runtime.store.dispatch
+      }) as typeof store.dispatch
     })
 
     const getSnackbarCallCount = async () =>
@@ -405,7 +405,7 @@ test.describe('Chat send status regressions', () => {
     page
   }, testInfo) => {
     const partnerId = await openControllableChat(page)
-    const userId = await page.evaluate(() => (window as any).store.state.address as string)
+    const userId = await getStoreAddress(page)
     const base = Date.now() - 90_000
 
     await setChatScenario(page, {
@@ -477,7 +477,7 @@ test.describe('Chat send status regressions', () => {
     page
   }, testInfo) => {
     const partnerId = await openControllableChat(page)
-    const userId = await page.evaluate(() => (window as any).store.state.address as string)
+    const userId = await getStoreAddress(page)
     const base = Date.now() - 90_000
 
     await setChatScenario(page, {
@@ -529,7 +529,7 @@ test.describe('Chat send status regressions', () => {
     page
   }, testInfo) => {
     const partnerId = await openControllableChat(page)
-    const userId = await page.evaluate(() => (window as any).store.state.address as string)
+    const userId = await getStoreAddress(page)
     const base = Date.now() - 300_000
 
     await setChatScenario(page, {

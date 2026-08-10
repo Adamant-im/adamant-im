@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, nativeTheme, protocol, shell } from 'electron'
+import { app, BrowserWindow, Menu, protocol, shell } from 'electron'
 import { fileURLToPath, URL } from 'node:url'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import path from 'node:path'
@@ -44,7 +44,6 @@ const electronRendererCsp = [
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected
 let appWindow
-let removeNativeThemeListener
 
 if (import.meta.env.DEV) {
   app.commandLine.appendSwitch(
@@ -55,22 +54,6 @@ if (import.meta.env.DEV) {
   if (suppressChromiumLogs) {
     app.commandLine.appendSwitch('log-level', '3')
   }
-}
-
-const syncDarkThemeWithRenderer = (value) => {
-  if (!appWindow || appWindow.isDestroyed() || appWindow.webContents.isDestroyed()) {
-    return
-  }
-
-  const darkTheme = value ? 'true' : 'false'
-  appWindow.webContents
-    .executeJavaScript(
-      `window.store?.commit?.('options/updateOption', { key: 'darkTheme', value: ${darkTheme} })`,
-      true
-    )
-    .catch((error) => {
-      logInfo('Failed to sync native theme with renderer store:', error)
-    })
 }
 
 // Standard scheme must be registered before the app is ready
@@ -224,11 +207,6 @@ function createWindow() {
   }
 
   appWindow.on('closed', () => {
-    if (removeNativeThemeListener) {
-      removeNativeThemeListener()
-      removeNativeThemeListener = undefined
-    }
-
     appWindow = null
   })
 
@@ -267,16 +245,6 @@ function createWindow() {
       ]
     }
   ]
-
-  appWindow.webContents.on('did-finish-load', () => {
-    syncDarkThemeWithRenderer(nativeTheme.shouldUseDarkColors)
-  })
-
-  const handleNativeThemeUpdate = () => {
-    syncDarkThemeWithRenderer(nativeTheme.shouldUseDarkColors)
-  }
-  nativeTheme.on('updated', handleNativeThemeUpdate)
-  removeNativeThemeListener = () => nativeTheme.off('updated', handleNativeThemeUpdate)
 
   if (process.platform === 'darwin') {
     Menu.setApplicationMenu(Menu.buildFromTemplate(template))

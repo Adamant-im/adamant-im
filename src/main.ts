@@ -36,6 +36,4 @@ registerGlobalComponents(app)
 
 app.mount('#app')
 
-window.ep = app
-
 document.title = i18n.global.t('app_title')

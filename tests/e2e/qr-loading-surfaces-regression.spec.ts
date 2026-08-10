@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 
+import { navigateInApp } from './helpers/navigation'
 import { loginWithNewAccount } from './helpers/auth'
 
 test.describe('QR and loading surfaces regressions', () => {
@@ -8,7 +9,7 @@ test.describe('QR and loading surfaces regressions', () => {
   }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/transfer')
+    await navigateInApp(page, '/transfer')
     await expect(page).toHaveURL(/\/transfer(?:\/)?$/)
     await expect(page.locator('.send-funds-form')).toBeVisible()
 

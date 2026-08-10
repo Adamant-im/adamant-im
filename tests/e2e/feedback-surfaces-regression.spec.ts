@@ -5,18 +5,9 @@ test.describe('Feedback surfaces regressions', () => {
   test('keeps snackbar sizing and action layout stable', async ({ page }) => {
     await loginWithNewAccount(page)
 
-    await page.evaluate(() => {
-      const store = (
-        window as typeof window & {
-          store?: {
-            dispatch: (type: string, payload?: unknown) => unknown
-          }
-        }
-      ).store
-
-      if (!store) {
-        throw new Error('window.store is not available')
-      }
+    await page.evaluate(async () => {
+      const storeModulePath = '/src/store/index.js'
+      const { default: store } = await import(/* @vite-ignore */ storeModulePath)
 
       store.dispatch('snackbar/show', {
         message:
@@ -84,18 +75,9 @@ test.describe('Feedback surfaces regressions', () => {
     await chatItems.first().click()
     await page.waitForURL(/\/chats\/[^/?#]+$/, { timeout: 90_000 })
 
-    await page.evaluate(() => {
-      const store = (
-        window as typeof window & {
-          store?: {
-            commit: (type: string, payload?: unknown) => void
-          }
-        }
-      ).store
-
-      if (!store) {
-        throw new Error('window.store is not available')
-      }
+    await page.evaluate(async () => {
+      const storeModulePath = '/src/store/index.js'
+      const { default: store } = await import(/* @vite-ignore */ storeModulePath)
 
       store.commit('chat/setFulfilled', false)
     })
@@ -135,16 +117,11 @@ test.describe('Feedback surfaces regressions', () => {
     expect(metrics?.zIndex ?? 0).toBe(10)
     expect(metrics?.backgroundColor).toMatch(/^rgba?\(/)
 
-    await page.evaluate(() => {
-      const store = (
-        window as typeof window & {
-          store?: {
-            commit: (type: string, payload?: unknown) => void
-          }
-        }
-      ).store
+    await page.evaluate(async () => {
+      const storeModulePath = '/src/store/index.js'
+      const { default: store } = await import(/* @vite-ignore */ storeModulePath)
 
-      store?.commit('chat/setFulfilled', true)
+      store.commit('chat/setFulfilled', true)
     })
   })
 })
