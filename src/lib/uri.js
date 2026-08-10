@@ -62,7 +62,7 @@ export function parseURI(uri = getAddressBarURI()) {
  */
 export function parseURIasAIP(uri = getAddressBarURI()) {
   const [origin, query = ''] = uri.split('?')
-  let address = ''
+  let address
   let crypto = ''
   let params = Object.create(null)
   let protocol = ''

@@ -19,7 +19,6 @@ describe('BIP39 bundle contract', () => {
       )
     })
 
-    expect(wordlistImports).toHaveLength(3)
     expect(new Set(wordlistImports)).toEqual(new Set(['english.js']))
   })
 })

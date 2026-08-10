@@ -154,7 +154,7 @@ export function getChats(
   nodeTimestamp: number
 }>
 
-type DecodedChatMessageTransaction = ChatMessageTransaction & {
+export type DecodedChatMessageTransaction = ChatMessageTransaction & {
   message: string | object
   i18n: boolean
 }
@@ -174,6 +174,8 @@ export function getVerifiedCounterpartyPublicKey(
   transaction: AnyTransaction | QueuedTransaction,
   address: string
 ): string
+
+export function cacheVerifiedPublicKey(address: string, publicKey: string): boolean
 
 export function getI18nMessage(message: string, senderId: string): string
 

@@ -15,8 +15,10 @@
     "vite-config/**/*.ts",
     "vite-base.config.ts",
     "vite-pwa.config.ts",
+    "vite-android.config.ts",
     "vitest.config.ts",
     "electron-vite.config.ts",
+    "playwright.config.ts",
     "src/lib/urlFormatter.ts"
   ]
 }

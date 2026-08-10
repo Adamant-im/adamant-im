@@ -1,16 +1,11 @@
-import { detect } from 'detect-browser'
 import { ref, onMounted, onUnmounted } from 'vue'
+import { isMobileDevice, isNarrowMobileViewport } from '@/lib/mobileDevice'
 
 export function useIsMobile() {
   const isMobile = ref(false)
 
   const checkIsMobile = () => {
-    const browser = detect()
-    const isMobileDevice =
-      browser && browser.os
-        ? ['android os', 'ios', 'blackberry os'].includes(browser.os.toLowerCase())
-        : false
-    return isMobileDevice || window.innerWidth < 450
+    return isMobileDevice() || isNarrowMobileViewport()
   }
 
   const handleResize = () => {

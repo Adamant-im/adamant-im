@@ -6,6 +6,8 @@ import { FlatCompat } from '@eslint/eslintrc'
 import js from '@eslint/js'
 import typescriptEslint from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
+import importX, { createNodeResolver } from 'eslint-plugin-import-x'
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript'
 import vue from 'eslint-plugin-vue'
 import security from 'eslint-plugin-security'
 import { defineConfig, globalIgnores } from 'eslint/config'
@@ -28,16 +30,13 @@ export default defineConfig([
 
   security.configs.recommended,
 
-  ...fixupConfigRules(
-    compat.extends(
-      'plugin:@typescript-eslint/recommended',
-      'plugin:import/recommended',
-      'plugin:import/typescript'
-    )
-  ),
+  ...fixupConfigRules(compat.extends('plugin:@typescript-eslint/recommended')),
+
+  importX.flatConfigs.recommended,
+  importX.flatConfigs.typescript,
 
   {
-    files: ['**/*.{ts,tsx,js,jsx,vue}'],
+    files: ['**/*.{ts,tsx,js,jsx,mjs,cjs,vue}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -45,10 +44,7 @@ export default defineConfig([
         ...globals.browser,
         ...globals.node
       },
-      parser: vueParser,
       parserOptions: {
-        parser: tsParser,
-        extraFileExtensions: ['.vue'],
         ecmaFeatures: { jsx: true }
       }
     },
@@ -59,8 +55,6 @@ export default defineConfig([
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '_' }],
-      'import/named': 'off',
-      'import/no-unresolved': 'off',
       // This syntax-only rule reports every dynamic lookup in Vuex stores and metadata maps.
       // It cannot distinguish validated keys from attacker-controlled object properties.
       'security/detect-object-injection': 'off',
@@ -70,14 +64,36 @@ export default defineConfig([
       // instead: it rebuilds the tree from an explicit allowlist.
       'vue/no-v-html': 'error',
       'prettier/prettier': 'warn',
-      'import/no-named-as-default': 'off',
-      'import/no-named-as-default-member': 'off'
+      'import-x/no-named-as-default': 'off',
+      'import-x/no-named-as-default-member': 'off'
     },
     settings: {
-      'import/resolver': {
-        typescript: {
+      'import-x/resolver-next': [
+        createNodeResolver({ extensions: ['.js', '.mjs', '.cjs', '.json'] }),
+        createTypeScriptImportResolver({
           project: ['./tsconfig.json']
-        }
+        })
+      ]
+    }
+  },
+
+  {
+    files: ['**/*.{ts,tsx}'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaFeatures: { jsx: true }
+      }
+    }
+  },
+
+  {
+    files: ['**/*.vue'],
+    languageOptions: {
+      parser: vueParser,
+      parserOptions: {
+        parser: tsParser,
+        extraFileExtensions: ['.vue']
       }
     }
   },
@@ -88,6 +104,32 @@ export default defineConfig([
       // Contract tests intentionally resolve fixtures and source files assembled from the
       // repository root; none of these paths comes from an application user.
       'security/detect-non-literal-fs-filename': 'off'
+    }
+  },
+
+  {
+    files: ['**/*.{js,jsx,mjs,cjs}'],
+    rules: {
+      // TypeScript validates named imports itself. Keep the ESLint rule active for JavaScript,
+      // where the compiler does not provide the same coverage.
+      'import-x/named': 'error'
+    }
+  },
+
+  {
+    files: ['scripts/electron/sandboxFix.mjs'],
+    rules: {
+      // electron-builder supplies both paths during the trusted local packaging step.
+      'security/detect-non-literal-fs-filename': 'off'
+    }
+  },
+
+  {
+    files: ['playwright.config.ts'],
+    rules: {
+      // Report paths and the long-running marker are local configuration values, not user input.
+      'security/detect-non-literal-fs-filename': 'off',
+      'security/detect-non-literal-regexp': 'off'
     }
   },
 

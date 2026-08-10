@@ -26,9 +26,9 @@ exec "$SCRIPT_DIR/${params.packager.executableName}.bin" "--no-sandbox" "$@"
     await fs.rename(executable, executable + '.bin')
     await fs.writeFile(executable, loaderScript)
     await fs.chmod(executable, 0o755)
-  } catch (e) {
-    log('failed to create loader for sandbox fix: ' + e.message)
-    throw new Error('Failed to create loader for sandbox fix')
+  } catch (error) {
+    log('failed to create loader for sandbox fix: ' + error.message)
+    throw new Error('Failed to create loader for sandbox fix', { cause: error })
   }
 
   log('sandbox fix successfully applied')

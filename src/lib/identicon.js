@@ -64,8 +64,8 @@ export default class Identicon {
     const isRight = (v) => v % 2 !== 0
     const L = Math.trunc(lines)
     const hL = L / 2
-    let xL = 0
-    let yL = 0
+    let xL
+    let yL
     for (xL = 0; xL < hL; xL++) {
       for (yL = 0; yL < L; yL++) {
         /* if (this.isOutsideHexagon(xL, yL, Math.trunc(lines))) {
@@ -110,7 +110,6 @@ export default class Identicon {
           x11 = result.x1
           y11 = result.y1
           x12 = result.x2
-          y12 = result.y2
           y13 = result.y3
           // in order to have a perfect hexagon,
           // we make sure that the previous triangle and this one touch each other in this point.
@@ -120,7 +119,6 @@ export default class Identicon {
           x11 = result.x1
           y11 = result.y1
           x12 = result.x2
-          y12 = result.y2
           y13 = result.y3
           // in order to have a perfect hexagon,
           // we make sure that the previous triangle and this one touch each other in this point.

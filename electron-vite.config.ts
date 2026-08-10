@@ -56,7 +56,7 @@ export default mergeConfig(
             // electron-devtools-installer is CommonJS and calls require('electron'). Bundling it
             // into an ESM main process leaves a runtime require shim that cannot execute.
             build: {
-              rollupOptions: {
+              rolldownOptions: {
                 external: ['electron-devtools-installer']
               }
             }

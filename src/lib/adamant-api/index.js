@@ -304,7 +304,7 @@ export function storeValue(key, value, encode = false) {
 }
 
 function tryDecodeStoredValue(value) {
-  let json = null
+  let json
   try {
     json = JSON.parse(value)
   } catch {
@@ -344,8 +344,6 @@ export function getStored(key, ownerAddress, records = 1) {
   }
 
   return client.get('/api/states/get', params).then((response) => {
-    let value = null
-
     if (response.success && Array.isArray(response.transactions)) {
       if (records > 1) {
         // Return all records
@@ -353,8 +351,8 @@ export function getStored(key, ownerAddress, records = 1) {
         return response.transactions
       } else {
         const tx = response.transactions[0]
-        value = tx && tx.asset && tx.asset.state && tx.asset.state.value
-        return tryDecodeStoredValue(value)
+        const storedValue = tx && tx.asset && tx.asset.state && tx.asset.state.value
+        return tryDecodeStoredValue(storedValue)
       }
     }
 

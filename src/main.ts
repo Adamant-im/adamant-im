@@ -1,5 +1,3 @@
-import 'core-js/actual/object/group-by'
-
 import { createApp } from 'vue'
 import { VueQueryPlugin } from '@tanstack/vue-query'
 
