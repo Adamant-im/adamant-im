@@ -1,12 +1,15 @@
 import type { Plugin } from 'vite'
 
 export const PWA_CONTENT_SECURITY_POLICY = [
+  // `frame-ancestors` is intentionally absent: browsers ignore it in meta-delivered policies.
+  // Hosting targets that support response headers must enforce it there, as Vercel and Electron do.
   `default-src 'self'`,
   `base-uri 'self'`,
   `object-src 'none'`,
   `frame-src 'none'`,
   `script-src 'self' 'wasm-unsafe-eval'`,
   `style-src 'self' data: 'unsafe-inline'`,
+  // Scheme sources preserve user-configured and self-hosted nodes and their media endpoints.
   `img-src 'self' data: blob: http: https:`,
   `media-src 'self' data: blob: http: https:`,
   `font-src 'self' data:`,
@@ -53,6 +56,8 @@ export function replaceEngineIoGlobalFallback(code: string, id: string): string 
 }
 
 export function findUnsafeRuntimeSources(fileName: string, code: string): string[] {
+  // Defense in depth for reachable emitted chunks and direct lexical calls. Runtime CSP remains
+  // the enforcement boundary for indirect aliases or computed access to eval/Function.
   const violations = []
 
   if (hasUnqualifiedCall(code, 'Function')) {

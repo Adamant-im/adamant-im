@@ -40,3 +40,6 @@ jobs:
 
       - name: Run unit tests
         run: npm run test -- --run
+
+      - name: Build production PWA and enforce CSP gate
+        run: npm run build

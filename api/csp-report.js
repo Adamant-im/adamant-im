@@ -1,8 +1,15 @@
 const MAX_PAYLOAD_SIZE_BYTES = 64_000
 const MAX_VIOLATIONS_TO_LOG = 25
 
-function isAllowedHost(host) {
-  return host === 'dev.adamant.im' || host.endsWith('adamant-team.vercel.app')
+export function isAllowedHost(host) {
+  const normalizedHost = String(host).toLowerCase()
+
+  return (
+    normalizedHost === 'dev.adamant.im' ||
+    normalizedHost === 'adamant-team.vercel.app' ||
+    normalizedHost.endsWith('.adamant-team.vercel.app') ||
+    normalizedHost.endsWith('-adamant-team.vercel.app')
+  )
 }
 
 function normalizeReportEntry(entry) {
@@ -16,7 +23,7 @@ function normalizeReportEntry(entry) {
     return null
   }
 
-  return {
+  const normalized = {
     documentUri:
       candidate['document-uri'] ?? candidate.documentURI ?? candidate.documentUri ?? null,
     violatedDirective:
@@ -31,6 +38,8 @@ function normalizeReportEntry(entry) {
     disposition: candidate.disposition ?? null,
     originalPolicy: candidate['original-policy'] ?? candidate.originalPolicy ?? null
   }
+
+  return Object.values(normalized).some((value) => value !== null) ? normalized : null
 }
 
 function parseBody(body) {
@@ -42,8 +51,8 @@ function parseBody(body) {
     return body
   }
 
-  if (typeof body === 'string') {
-    const parsed = JSON.parse(body)
+  if (typeof body === 'string' || Buffer.isBuffer(body)) {
+    const parsed = JSON.parse(body.toString())
     return Array.isArray(parsed) ? parsed : [parsed]
   }
 
@@ -54,7 +63,43 @@ function parseBody(body) {
   return []
 }
 
-export default function handler(request, response) {
+async function readRequestBody(request) {
+  if (request.body !== undefined) {
+    return request.body
+  }
+
+  if (typeof request[Symbol.asyncIterator] !== 'function') {
+    return undefined
+  }
+
+  const chunks = []
+  let totalSize = 0
+
+  for await (const chunk of request) {
+    const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)
+    totalSize += buffer.byteLength
+
+    if (totalSize > MAX_PAYLOAD_SIZE_BYTES) {
+      const error = new Error('Payload Too Large')
+      error.code = 'PAYLOAD_TOO_LARGE'
+      throw error
+    }
+
+    chunks.push(buffer)
+  }
+
+  return Buffer.concat(chunks)
+}
+
+function getPayloadSize(body) {
+  if (body === undefined || body === null) return 0
+  if (Buffer.isBuffer(body)) return body.byteLength
+  if (typeof body === 'string') return Buffer.byteLength(body, 'utf8')
+
+  return Buffer.byteLength(JSON.stringify(body), 'utf8')
+}
+
+export default async function handler(request, response) {
   const hostHeader = request.headers.host ?? ''
   const host = String(hostHeader).split(':')[0]
 
@@ -69,18 +114,33 @@ export default function handler(request, response) {
     return
   }
 
-  const rawBody =
-    typeof request.body === 'string' ? request.body : JSON.stringify(request.body ?? {})
+  let body
 
-  if (Buffer.byteLength(rawBody, 'utf8') > MAX_PAYLOAD_SIZE_BYTES) {
-    response.status(413).json({ error: 'Payload Too Large' })
+  try {
+    body = await readRequestBody(request)
+  } catch (error) {
+    if (error?.code === 'PAYLOAD_TOO_LARGE') {
+      response.status(413).json({ error: 'Payload Too Large' })
+      return
+    }
+
+    response.status(400).json({ error: 'Invalid CSP report payload' })
+    return
+  }
+
+  try {
+    if (getPayloadSize(body) > MAX_PAYLOAD_SIZE_BYTES) {
+      response.status(413).json({ error: 'Payload Too Large' })
+      return
+    }
+  } catch {
+    response.status(400).json({ error: 'Invalid CSP report payload' })
     return
   }
 
   let reportEntries
-
   try {
-    reportEntries = parseBody(request.body)
+    reportEntries = parseBody(body)
   } catch {
     response.status(400).json({ error: 'Invalid JSON payload' })
     return
@@ -91,8 +151,13 @@ export default function handler(request, response) {
     .filter(Boolean)
     .slice(0, MAX_VIOLATIONS_TO_LOG)
 
+  if (violations.length === 0) {
+    response.status(400).json({ error: 'Invalid CSP report payload' })
+    return
+  }
+
   const payload = {
-    event: 'csp-report-only',
+    event: 'csp-violation',
     host: hostHeader || null,
     userAgent: request.headers['user-agent'] ?? null,
     count: violations.length,

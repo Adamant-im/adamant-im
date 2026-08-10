@@ -21,4 +21,8 @@ describe('cloneState', () => {
     cloned.chats[0].messages.push({ id: 2 })
     expect(original.chats[0].messages).toHaveLength(1)
   })
+
+  it('rejects values that cannot be persisted as structured data', () => {
+    expect(() => cloneState({ callback: () => undefined })).toThrow()
+  })
 })
