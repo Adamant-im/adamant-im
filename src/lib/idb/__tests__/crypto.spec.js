@@ -90,4 +90,18 @@ describe('idb/crypto', () => {
   it('throws on malformed input', () => {
     expect(() => decrypt(new Uint8Array([1, 2, 3]))).toThrow(/Failed to decrypt/)
   })
+
+  it('rejects authenticated records with malformed utf8', () => {
+    const secretKey = ed2curve.convertSecretKey(hexToBytes(PASSWORD_HASH))
+    const nonce = nacl.randomBytes(24)
+    const malformedJson = Buffer.concat([
+      Buffer.from('{"value":"'),
+      Buffer.from([0xff]),
+      Buffer.from('"}')
+    ])
+    const box = nacl.secretbox(malformedJson, nonce, secretKey)
+    const encrypted = Buffer.concat([Buffer.from(nonce), Buffer.from(box)])
+
+    expect(() => decrypt(encrypted)).toThrow()
+  })
 })

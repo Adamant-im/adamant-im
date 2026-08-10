@@ -50,10 +50,6 @@ export default defineConfig({
       stream: 'stream-browserify',
       util: 'util/',
       path: 'path-browserify',
-      http: 'stream-http',
-      https: 'https-browserify',
-      os: 'os-browserify/browser',
-      assert: 'assert',
       vm: path.resolve(__dirname, './src/lib/polyfills/vm.js')
     },
     extensions: ['.tsx', '.ts', '.js', '.json', '.vue']
@@ -90,7 +86,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name.startsWith('materialdesignicons-webfont')) {
+          if (assetInfo.name?.startsWith('materialdesignicons-webfont')) {
             return 'assets/[name][extname]'
           }
 

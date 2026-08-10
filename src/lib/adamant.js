@@ -18,11 +18,22 @@ import cache from '@/store/cache'
  */
 const adamant = {}
 const textDecoder = new TextDecoder()
+const strictTextDecoder = new TextDecoder('utf-8', { fatal: true })
 const textEncoder = new TextEncoder()
 
 // TweetNaCl rejects cross-realm typed arrays. Normalize imported Buffer instances and
-// other byte-like inputs at the cryptographic boundary without changing public return types.
-const toNaclBytes = (value) => Uint8Array.from(value)
+// cross-realm Uint8Arrays at the cryptographic boundary without accepting strings or other
+// values that Uint8Array.from() would silently coerce.
+const toNaclBytes = (value) => {
+  if (
+    !ArrayBuffer.isView(value) ||
+    Object.prototype.toString.call(value) !== '[object Uint8Array]'
+  ) {
+    throw new TypeError('Expected a Uint8Array at the cryptographic boundary')
+  }
+
+  return Uint8Array.from(value)
+}
 
 /**
  * Converts provided `time` to Adamant's epoch timestamp
@@ -356,7 +367,7 @@ adamant.verify = function (hash, signatureBuffer, publicKeyBuffer) {
 
 /**
  * Encodes a text message for sending to ADM
- * @param {string} msg message to encode
+ * @param {string|Uint8Array} msg message to encode
  * @param {*} recipientPublicKey recipient's public key
  * @param {*} privateKey our private key
  * @returns {{message: string, nonce: string}}
@@ -368,7 +379,7 @@ adamant.encodeMessage = function (msg, recipientPublicKey, privateKey) {
     recipientPublicKey = hexToBytes(recipientPublicKey)
   }
 
-  const plainText = textEncoder.encode(msg)
+  const plainText = typeof msg === 'string' ? textEncoder.encode(msg) : toNaclBytes(msg)
   const DHPublicKey = ed2curve.convertPublicKey(toNaclBytes(recipientPublicKey))
   const DHSecretKey = ed2curve.convertSecretKey(toNaclBytes(privateKey))
 
@@ -387,10 +398,10 @@ adamant.encodeMessage = function (msg, recipientPublicKey, privateKey) {
 
 /**
  * Decodes the incoming message
- * @param {any} msg encoded message
- * @param {string} senderPublicKey sender public key
- * @param {string} privateKey our private key
- * @param {any} nonce nonce
+ * @param {string|Uint8Array} msg encoded message
+ * @param {string|Uint8Array} senderPublicKey sender public key
+ * @param {string|Uint8Array} privateKey our private key
+ * @param {string|Uint8Array} nonce nonce
  * @returns {string}
  */
 adamant.decodeMessage = function (msg, senderPublicKey, privateKey, nonce) {
@@ -489,7 +500,7 @@ adamant.decodeValue = function (source, privateKey, nonce) {
     toNaclBytes(secretKey)
   )
 
-  const strValue = decrypted ? textDecoder.decode(decrypted) : ''
+  const strValue = decrypted ? strictTextDecoder.decode(decrypted) : ''
   if (!strValue) return null
 
   const from = strValue.indexOf('{')
@@ -533,7 +544,7 @@ adamant.encodeBinary = function (source, recipientPublicKey, privateKey) {
 
 /**
  * Decodes a secret binary
- * @param {string|Uint8Array} source source to decrypt
+ * @param {Uint8Array} source source to decrypt
  * @param {string|Uint8Array} senderPublicKey sender's public key
  * @param {Uint8Array|Buffer} privateKey private key
  * @param {string|Uint8Array} nonce nonce

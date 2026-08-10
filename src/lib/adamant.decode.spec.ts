@@ -41,6 +41,39 @@ describe('adamant utf8 decode flows', () => {
     expect(decoded).toBe(sourceMessage)
   })
 
+  it('preserves byte input when encoding a chat message', () => {
+    const sender = adamant.makeKeypair(Buffer.alloc(32, 44)) as AdamantKeypair
+    const recipient = adamant.makeKeypair(Buffer.alloc(32, 55)) as AdamantKeypair
+    const sourceMessage = 'Binary-compatible message'
+    const sourceBytes = new TextEncoder().encode(sourceMessage)
+
+    const encoded = adamant.encodeMessage(sourceBytes, recipient.publicKey, sender.privateKey)
+    const decoded = adamant.decodeMessage(
+      encoded.message,
+      sender.publicKey,
+      recipient.privateKey,
+      encoded.nonce
+    )
+
+    expect(decoded).toBe(sourceMessage)
+  })
+
+  it('rejects string input at byte-only cryptographic boundaries', () => {
+    const sender = adamant.makeKeypair(Buffer.alloc(32, 66)) as AdamantKeypair
+    const recipient = adamant.makeKeypair(Buffer.alloc(32, 77)) as AdamantKeypair
+    const decodeStringSource = () => {
+      return adamant.decodeBinary(
+        // @ts-expect-error The runtime guard must also protect JavaScript callers.
+        '00',
+        sender.publicKey,
+        recipient.privateKey,
+        new Uint8Array(24)
+      )
+    }
+
+    expect(decodeStringSource).toThrow(/Expected a Uint8Array/)
+  })
+
   it('decodes encrypted private values with utf8 payload', () => {
     const owner = adamant.makeKeypair(Buffer.alloc(32, 33)) as AdamantKeypair
     const sourceValue = 'données-secrètes 🔐'

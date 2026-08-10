@@ -7,7 +7,7 @@ import { Buffer } from 'buffer'
 import { derivePasswordHash } from './passwordKdf'
 
 const NONCE_LENGTH = 24
-const textDecoder = new TextDecoder()
+const textDecoder = new TextDecoder('utf-8', { fatal: true })
 
 function getPasswordHash(password) {
   if (password && typeof password === 'object' && password.hash) {

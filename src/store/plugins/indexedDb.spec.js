@@ -100,6 +100,24 @@ describe('indexed DB password startup', () => {
     expect(routerPushMock).not.toHaveBeenCalled()
   })
 
+  it('persists one mutation exactly once within a password session', async () => {
+    vi.useFakeTimers()
+    loadDescriptorMock.mockReturnValue({ v: 1 })
+    const store = createStore()
+
+    indexedDbPlugin(store)
+
+    store.state.password = '11'.repeat(32)
+    store.state.IDBReady = true
+    store.notify({ type: 'chat/setHeight' })
+
+    await vi.runAllTicks()
+    expect(modulesSetMock).toHaveBeenCalledTimes(1)
+
+    await vi.advanceTimersByTimeAsync(60000)
+    expect(modulesSetMock).toHaveBeenCalledTimes(1)
+  })
+
   it('cancels writes queued under a password after that password session ends', async () => {
     vi.useFakeTimers()
     loadDescriptorMock.mockReturnValue({ v: 1 })
