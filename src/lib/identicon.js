@@ -5,7 +5,9 @@
  */
 'use strict'
 
-import md5 from 'js-md5'
+import { md5 } from '@noble/hashes/legacy.js'
+import { utf8ToBytes } from '@noble/hashes/utils.js'
+import { bytesToHex } from '@/lib/hex'
 
 export default class Identicon {
   constructor() {
@@ -62,8 +64,8 @@ export default class Identicon {
     const isRight = (v) => v % 2 !== 0
     const L = Math.trunc(lines)
     const hL = L / 2
-    let xL = 0
-    let yL = 0
+    let xL
+    let yL
     for (xL = 0; xL < hL; xL++) {
       for (yL = 0; yL < L; yL++) {
         /* if (this.isOutsideHexagon(xL, yL, Math.trunc(lines))) {
@@ -108,7 +110,6 @@ export default class Identicon {
           x11 = result.x1
           y11 = result.y1
           x12 = result.x2
-          y12 = result.y2
           y13 = result.y3
           // in order to have a perfect hexagon,
           // we make sure that the previous triangle and this one touch each other in this point.
@@ -118,7 +119,6 @@ export default class Identicon {
           x11 = result.x1
           y11 = result.y1
           x12 = result.x2
-          y12 = result.y2
           y13 = result.y3
           // in order to have a perfect hexagon,
           // we make sure that the previous triangle and this one touch each other in this point.
@@ -219,7 +219,7 @@ export default class Identicon {
   }
 
   triangleColors(id, key, lines) {
-    const keyHash = md5(key)
+    const keyHash = bytesToHex(md5(utf8ToBytes(key)))
     /* if (keyHash.length !== 32) {
       throw new Error('AdamantIdenticon: Wrong md5 hash')
     } */

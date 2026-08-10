@@ -1,5 +1,6 @@
 import { testPassphrase } from './helpers/env'
 import { expect, test } from '@playwright/test'
+import { navigateInApp } from './helpers/navigation'
 import { loginWithPassphrase } from './helpers/auth'
 
 test.describe('Chat self reactions regressions', () => {
@@ -11,7 +12,7 @@ test.describe('Chat self reactions regressions', () => {
 
     await loginWithPassphrase(page, testPassphrase!)
 
-    await page.goto('/chats')
+    await navigateInApp(page, '/chats')
     await expect(page).toHaveURL(/\/chats$/)
 
     const chatItems = page.locator('.chats-view__messages--chat .v-list-item')

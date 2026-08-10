@@ -1,5 +1,6 @@
 import { testPassphrase } from './helpers/env'
 import { expect, test, type Page } from '@playwright/test'
+import { navigateInApp } from './helpers/navigation'
 import { loginWithNewAccount, loginWithPassphrase } from './helpers/auth'
 import { longRunningTestTitle } from './helpers/longRunning'
 import { openTransactionListFromHome } from './helpers/openTransactionListFromHome'
@@ -8,56 +9,60 @@ const testDetailsCrypto = 'DOGE'
 const testTransactionId = '723a8f9d1f0083b5da91c2aae1df6434d854828d8e9fac5f11b30f021af3ba86'
 
 test.describe('Account behavior regressions', () => {
-  test(longRunningTestTitle('shows cached transaction list without spinner when returning from chats', 44_100), async ({
-    page
-  }) => {
-    test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
+  test(
+    longRunningTestTitle(
+      'shows cached transaction list without spinner when returning from chats',
+      44_100
+    ),
+    async ({ page }) => {
+      test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
 
-    await page.setViewportSize({ width: 390, height: 844 })
-    await loginWithPassphrase(page, testPassphrase!)
+      await page.setViewportSize({ width: 390, height: 844 })
+      await loginWithPassphrase(page, testPassphrase!)
 
-    await openTransactionListFromHome(page, 'ADM')
+      await openTransactionListFromHome(page, 'ADM')
 
-    const txCount = await page.locator('.transaction-item__tile').count()
-    expect(txCount).toBeGreaterThan(0)
+      const txCount = await page.locator('.transaction-item__tile').count()
+      expect(txCount).toBeGreaterThan(0)
 
-    await page.locator('.app-navigation .v-btn').nth(1).click()
-    await expect(page).toHaveURL(/\/chats(?:\/)?$/)
+      await page.locator('.app-navigation .v-btn').nth(1).click()
+      await expect(page).toHaveURL(/\/chats(?:\/)?$/)
 
-    await page.locator('.app-navigation .v-btn').nth(0).click()
-    await expect(page).toHaveURL(/\/transactions\/ADM$/)
+      await page.locator('.app-navigation .v-btn').nth(0).click()
+      await expect(page).toHaveURL(/\/transactions\/ADM$/)
 
-    await expect(page.locator('.transactions-view__list')).toBeVisible()
-    await expect(page.locator('.transactions-view__empty-state')).toHaveCount(0)
+      await expect(page.locator('.transactions-view__list')).toBeVisible()
+      await expect(page.locator('.transactions-view__empty-state')).toHaveCount(0)
 
-    // Verify no loading spinner appears during cached restore
-    const spinnerVisibleDuringRestore = await page.evaluate(async () => {
-      let sawSpinner = false
+      // Verify no loading spinner appears during cached restore
+      const spinnerVisibleDuringRestore = await page.evaluate(async () => {
+        let sawSpinner = false
 
-      const checkSpinner = () => {
-        const spinner = document.querySelector(
-          '.transactions-view__loading-item--recent'
-        ) as HTMLElement | null
+        const checkSpinner = () => {
+          const spinner = document.querySelector(
+            '.transactions-view__loading-item--recent'
+          ) as HTMLElement | null
 
-        if (spinner && spinner.offsetParent !== null) {
-          sawSpinner = true
+          if (spinner && spinner.offsetParent !== null) {
+            sawSpinner = true
+          }
         }
-      }
 
-      checkSpinner()
-      await new Promise((r) => requestAnimationFrame(() => r(undefined)))
-      checkSpinner()
-      await new Promise((r) => requestAnimationFrame(() => r(undefined)))
-      checkSpinner()
+        checkSpinner()
+        await new Promise((r) => requestAnimationFrame(() => r(undefined)))
+        checkSpinner()
+        await new Promise((r) => requestAnimationFrame(() => r(undefined)))
+        checkSpinner()
 
-      return sawSpinner
-    })
+        return sawSpinner
+      })
 
-    expect(spinnerVisibleDuringRestore).toBe(false)
+      expect(spinnerVisibleDuringRestore).toBe(false)
 
-    const txCountAfter = await page.locator('.transaction-item__tile').count()
-    expect(txCountAfter).toBe(txCount)
-  })
+      const txCountAfter = await page.locator('.transaction-item__tile').count()
+      expect(txCountAfter).toBe(txCount)
+    }
+  )
 
   test('refreshes transaction list when switching to a different wallet from home', async ({
     page
@@ -91,7 +96,7 @@ test.describe('Account behavior regressions', () => {
     await page.setViewportSize({ width: 1366, height: 900 })
     await loginWithPassphrase(page, testPassphrase!)
 
-    await page.goto('/home', { waitUntil: 'domcontentloaded' })
+    await navigateInApp(page, '/home', { waitUntil: 'domcontentloaded' })
     await expect(page).toHaveURL(/\/home(?:\/)?$/)
     await expect(page.locator('.wallet-card')).toBeVisible()
 
@@ -112,7 +117,7 @@ test.describe('Account behavior regressions', () => {
     await page.setViewportSize({ width: 1366, height: 900 })
     await loginWithNewAccount(page)
 
-    await page.goto('/home', { waitUntil: 'domcontentloaded' })
+    await navigateInApp(page, '/home', { waitUntil: 'domcontentloaded' })
     await expect(page).toHaveURL(/\/home(?:\/)?$/)
     await expect(page.locator('.wallet-card')).toBeVisible()
 
@@ -176,7 +181,7 @@ test.describe('Account behavior regressions', () => {
     await page.setViewportSize({ width: 1366, height: 900 })
     await loginWithNewAccount(page)
 
-    await page.goto('/home', { waitUntil: 'domcontentloaded' })
+    await navigateInApp(page, '/home', { waitUntil: 'domcontentloaded' })
     await expect(page).toHaveURL(/\/home(?:\/)?$/)
     await expect(page.locator('.wallet-card')).toBeVisible()
 
@@ -219,9 +224,13 @@ test.describe('Account behavior regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await loginWithPassphrase(page, testPassphrase!)
 
-    await page.goto(`/transactions/${testDetailsCrypto}/${testTransactionId}?fromChat=true`, {
-      waitUntil: 'domcontentloaded'
-    })
+    await navigateInApp(
+      page,
+      `/transactions/${testDetailsCrypto}/${testTransactionId}?fromChat=true`,
+      {
+        waitUntil: 'domcontentloaded'
+      }
+    )
     await expect(page).toHaveURL(
       new RegExp(`/transactions/${testDetailsCrypto}/${testTransactionId}\\?fromChat=true$`)
     )
@@ -242,16 +251,20 @@ test.describe('Account behavior regressions', () => {
     await loginWithPassphrase(page, testPassphrase!)
 
     // First visit Account to establish a saved account route
-    await page.goto('/home', { waitUntil: 'domcontentloaded' })
+    await navigateInApp(page, '/home', { waitUntil: 'domcontentloaded' })
     await expect(page).toHaveURL(/\/home(?:\/)?$/)
 
     // Navigate to Chats then to transaction details from chat
     await page.locator('.app-navigation .v-btn').nth(1).click()
     await expect(page).toHaveURL(/\/chats(?:\/)?$/)
 
-    await page.goto(`/transactions/${testDetailsCrypto}/${testTransactionId}?fromChat=true`, {
-      waitUntil: 'domcontentloaded'
-    })
+    await navigateInApp(
+      page,
+      `/transactions/${testDetailsCrypto}/${testTransactionId}?fromChat=true`,
+      {
+        waitUntil: 'domcontentloaded'
+      }
+    )
     await expect(page).toHaveURL(
       new RegExp(`/transactions/${testDetailsCrypto}/${testTransactionId}\\?fromChat=true$`)
     )
@@ -268,12 +281,12 @@ test.describe('Account behavior regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await loginWithNewAccount(page)
 
-    await page.goto('/home', { waitUntil: 'domcontentloaded' })
+    await navigateInApp(page, '/home', { waitUntil: 'domcontentloaded' })
     await expect(page).toHaveURL(/\/home(?:\/)?$/)
     await expect(page.locator('.wallet-card')).toBeVisible()
 
     // Navigate to Votes via the wallet card Stake action
-    await page.goto('/votes', { waitUntil: 'domcontentloaded' })
+    await navigateInApp(page, '/votes', { waitUntil: 'domcontentloaded' })
     await expect(page).toHaveURL(/\/votes(?:\/)?$/)
 
     // Switch to Chats

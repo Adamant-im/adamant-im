@@ -1,6 +1,6 @@
-import { app, BrowserWindow, Menu, nativeTheme, protocol, shell } from 'electron'
+import { app, BrowserWindow, Menu, protocol, shell } from 'electron'
 import { fileURLToPath, URL } from 'node:url'
-import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+import { installExtension, VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import path from 'node:path'
 import { readFile } from 'node:fs/promises'
 
@@ -8,6 +8,7 @@ import { readFile } from 'node:fs/promises'
 // `adamant-wallets`. Hardcoding a second copy here is what silently blocked the `ethereum:`,
 // `dash:` and `doge:` links the app itself generates.
 import { ALLOWED_URI_PROTOCOLS } from '@/lib/uriSchemes'
+import { resolveProtocolFilePath } from './protocolPath.js'
 
 const SCHEME = 'app'
 const __filename = fileURLToPath(import.meta.url)
@@ -44,7 +45,6 @@ const electronRendererCsp = [
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected
 let appWindow
-let removeNativeThemeListener
 
 if (import.meta.env.DEV) {
   app.commandLine.appendSwitch(
@@ -55,22 +55,6 @@ if (import.meta.env.DEV) {
   if (suppressChromiumLogs) {
     app.commandLine.appendSwitch('log-level', '3')
   }
-}
-
-const syncDarkThemeWithRenderer = (value) => {
-  if (!appWindow || appWindow.isDestroyed() || appWindow.webContents.isDestroyed()) {
-    return
-  }
-
-  const darkTheme = value ? 'true' : 'false'
-  appWindow.webContents
-    .executeJavaScript(
-      `window.store?.commit?.('options/updateOption', { key: 'darkTheme', value: ${darkTheme} })`,
-      true
-    )
-    .catch((error) => {
-      logInfo('Failed to sync native theme with renderer store:', error)
-    })
 }
 
 // Standard scheme must be registered before the app is ready
@@ -102,9 +86,9 @@ function createProtocol(scheme, customProtocol) {
     // path, and on Windows a percent-encoded backslash survives `decodeURI` and is treated
     // as a separator. `path.resolve` canonicalizes every form, and the prefix check rejects
     // anything that still lands outside the bundle.
-    const filePath = path.resolve(staticRoot, '.' + pathName)
+    const filePath = resolveProtocolFilePath(staticRoot, pathName)
 
-    if (filePath !== staticRoot && !filePath.startsWith(staticRoot + path.sep)) {
+    if (!filePath) {
       return new Response('Forbidden', {
         status: 403,
         headers: { 'content-type': 'text/plain' }
@@ -112,6 +96,8 @@ function createProtocol(scheme, customProtocol) {
     }
 
     try {
+      // The canonical path was confined to staticRoot immediately above.
+      // eslint-disable-next-line security/detect-non-literal-fs-filename
       const data = await readFile(filePath)
       const extension = path.extname(filePath).toLowerCase()
       const mimeType = mimeTypes[extension] || 'text/plain'
@@ -203,6 +189,7 @@ function createWindow() {
     // These are the current Electron defaults. They are stated explicitly so that a future
     // Electron upgrade, or a copy of this config, cannot silently relax them.
     webPreferences: {
+      preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
@@ -224,11 +211,6 @@ function createWindow() {
   }
 
   appWindow.on('closed', () => {
-    if (removeNativeThemeListener) {
-      removeNativeThemeListener()
-      removeNativeThemeListener = undefined
-    }
-
     appWindow = null
   })
 
@@ -267,16 +249,6 @@ function createWindow() {
       ]
     }
   ]
-
-  appWindow.webContents.on('did-finish-load', () => {
-    syncDarkThemeWithRenderer(nativeTheme.shouldUseDarkColors)
-  })
-
-  const handleNativeThemeUpdate = () => {
-    syncDarkThemeWithRenderer(nativeTheme.shouldUseDarkColors)
-  }
-  nativeTheme.on('updated', handleNativeThemeUpdate)
-  removeNativeThemeListener = () => nativeTheme.off('updated', handleNativeThemeUpdate)
 
   if (process.platform === 'darwin') {
     Menu.setApplicationMenu(Menu.buildFromTemplate(template))

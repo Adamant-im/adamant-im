@@ -1,5 +1,6 @@
 import { testPassphrase } from './helpers/env'
 import { expect, test, type Locator, type Page, type TestInfo } from '@playwright/test'
+import { navigateInApp } from './helpers/navigation'
 import { loginWithNewAccount, loginWithPassphrase } from './helpers/auth'
 
 const MOBILE_BOTTOM_PIN_TOLERANCE_PX = 20
@@ -83,7 +84,7 @@ const waitForScrollToSettle = async (messagesContainer: Locator) => {
 const openChatWithEditableComposer = async (page: Page): Promise<Locator> => {
   await loginWithNewAccount(page)
 
-  await page.goto('/chats')
+  await navigateInApp(page, '/chats')
   await expect(page).toHaveURL(/\/chats$/)
 
   const chatItems = page.locator('.chats-view__messages--chat .v-list-item')
@@ -110,7 +111,7 @@ const openChatWithEditableComposer = async (page: Page): Promise<Locator> => {
       return textarea
     }
 
-    await page.goto('/chats')
+    await navigateInApp(page, '/chats')
     await expect(page).toHaveURL(/\/chats$/)
   }
 
@@ -122,7 +123,7 @@ const openSelfChatWithEditableComposer = async (page: Page): Promise<Locator> =>
 
   await loginWithPassphrase(page, testPassphrase!)
 
-  await page.goto('/chats')
+  await navigateInApp(page, '/chats')
   await expect(page).toHaveURL(/\/chats$/)
 
   const chatItems = page.locator('.chats-view__messages--chat .v-list-item')

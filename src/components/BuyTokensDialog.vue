@@ -147,7 +147,7 @@ const openLink = (link: string) => {
 @use 'vuetify/_settings.scss';
 
 .buy-tokens-dialog {
-  @include secondaryDialog.a-secondary-dialog-card-frame();
+  @include secondaryDialog.a-secondary-dialog-card-frame($is-scoped: false);
 
   &__dialog-title {
     @include mixins.a-text-header();

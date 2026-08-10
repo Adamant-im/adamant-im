@@ -148,7 +148,7 @@ export default defineComponent({
 @use 'vuetify/_settings.scss';
 
 .share-uri-dialog {
-  @include secondaryDialog.a-secondary-dialog-card-frame();
+  @include secondaryDialog.a-secondary-dialog-card-frame($is-scoped: false);
 
   &__dialog-title {
     @include mixins.a-text-header();

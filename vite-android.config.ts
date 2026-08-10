@@ -1,9 +1,9 @@
 import { mergeConfig, defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
-import viteBaseConfig from './vite-base.config'
-import { manifest } from './vite-config/manifest'
-import { excludeScreenshotsPlugin } from './vite-config/plugins/excludeScreenshotsPlugin'
+import viteBaseConfig from './vite-base.config.ts'
+import { manifest } from './vite-config/manifest.ts'
+import { excludeScreenshotsPlugin } from './vite-config/plugins/excludeScreenshotsPlugin.ts'
 
 export default mergeConfig(
   viteBaseConfig,

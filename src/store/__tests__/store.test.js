@@ -1,5 +1,7 @@
 import { vi, describe, it, beforeEach, expect } from 'vitest'
 import { loginOrRegister } from '@/lib/adamant-api'
+import { encryptPassword } from '@/lib/idb/crypto'
+import { loadPasswordKdfDescriptor, PASSWORD_KDF_STORAGE_KEY } from '@/lib/idb/passwordKdf'
 const createRecursiveProxy = () => {
   const proxy = new Proxy(() => {}, {
     get: (target, prop) => {
@@ -119,6 +121,8 @@ describe('store', () => {
 
   beforeEach(() => {
     state = store.state()
+    localStorage.removeItem(PASSWORD_KDF_STORAGE_KEY)
+    vi.mocked(encryptPassword).mockReset()
   })
 
   it('should return `true` when logged', () => {
@@ -203,5 +207,33 @@ describe('store', () => {
     expect(dispatch).toHaveBeenCalledWith('reset')
     expect(commit).toHaveBeenCalledWith('options/resetAccountViewState', null, { root: true })
     expect(commit).toHaveBeenCalledWith('options/resetSettingsViewState', null, { root: true })
+  })
+
+  it('derives a password with a fresh persisted KDF descriptor', async () => {
+    const hash = 'ab'.repeat(32)
+    vi.mocked(encryptPassword).mockResolvedValue(hash)
+    const commit = vi.fn()
+
+    await expect(actions.setPassword({ commit }, 'strong password')).resolves.toBe(hash)
+
+    const descriptor = loadPasswordKdfDescriptor()
+    expect(descriptor).toMatchObject({ v: 1, alg: 'scrypt', N: 32768, r: 8, p: 1, dkLen: 32 })
+    expect(encryptPassword).toHaveBeenCalledWith('strong password', descriptor)
+    expect(commit).toHaveBeenCalledWith('setPassword', hash)
+  })
+
+  it('clears the in-memory password and its KDF descriptor together', () => {
+    localStorage.setItem(PASSWORD_KDF_STORAGE_KEY, '{}')
+    const commit = vi.fn()
+
+    actions.removePassword({ commit })
+
+    expect(commit).toHaveBeenCalledWith('resetPassword')
+    expect(commit).toHaveBeenCalledWith('setIDBReady', false)
+    expect(commit).toHaveBeenCalledWith('options/updateOption', {
+      key: 'stayLoggedIn',
+      value: false
+    })
+    expect(localStorage.getItem(PASSWORD_KDF_STORAGE_KEY)).toBeNull()
   })
 })

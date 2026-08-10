@@ -1,5 +1,6 @@
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 /*
  * ---------------------------------------------------------------
  * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
@@ -53,12 +54,14 @@ export interface ServiceHealthcheck {
   crucialUpdateInterval: number
   /** On the node screen, the status update interval in ms */
   onScreenUpdateInterval: number
+  /** Permissible height difference between nodes or indexed services */
+  threshold?: number
 }
 
 /** Timeouts when sending messages in chat. See [README.md](https://github.com/Adamant-im/adamant-wallets/blob/master/README.md#message-sending) for details. */
 export interface MessageTimeout {
   /** Timeout for regular messages (in milliseconds) */
-  message: string
+  message: number
   /** Timeout for file transfers (in milliseconds) */
   attachment: number
 }
@@ -86,8 +89,8 @@ export interface TokenGeneral {
   research?: string
   /** Coin ticker */
   symbol: string
-  /** Coin or token mainly */
-  type: 'coin' | 'ERC20'
+  /** Asset type */
+  type: 'coin' | 'token'
   /** Decimal places */
   decimals: number
   /** Max precision for tx */
@@ -118,8 +121,22 @@ export interface TokenGeneral {
   blockTimeAvg?: number
   /** Balance checking interval in ms */
   balanceCheckInterval?: number
+  /** Balance checking interval in ms for newly created accounts */
+  balanceCheckIntervalNewAccount?: number
   /** Balance validation interval in ms */
   balanceValidInterval?: number
+  /** Fallback gas limit for Ethereum-like transfers */
+  defaultGasLimit?: number
+  /** Fallback gas price in Gwei for Ethereum-like transfers */
+  defaultGasPriceGwei?: number
+  /** Gas price in Gwei above which apps may show a warning */
+  warningGasPriceGwei?: number
+  /** Gas limit multiplier percent used to improve transfer reliability */
+  reliabilityGasLimitPercent?: number
+  /** Gas price multiplier percent used to improve transfer reliability */
+  reliabilityGasPricePercent?: number
+  /** Gas price or network fee multiplier percent for the Increase fee option */
+  increasedGasPricePercent?: number
   txFetchInfo?: {
     /** Interval between fetching Tx in ms when its current status is "Pending" for new transactions */
     newPendingInterval?: number
@@ -226,6 +243,8 @@ export interface TokenAsset {
   defaultVisibility?: boolean
   /** Default ordinal number in a wallet list. Coins with the same ordinal number are sorted alphabetically. Coins without an order are shown last, alphabetically */
   defaultOrdinalLevel?: number
+  /** Max precision for tx */
+  cryptoTransferDecimals?: number
   /** Decimal places */
   decimals: number
 }
@@ -239,5 +258,14 @@ export interface Blockchain {
   mainCoin: string
   /** Coin to pay fees in */
   fees: string
+  /** Fallback gas limit for Ethereum-like transfers */
   defaultGasLimit?: number
+  /** Fallback gas price in Gwei for Ethereum-like transfers */
+  defaultGasPriceGwei?: number
+  /** Gas limit multiplier percent used to improve transfer reliability */
+  reliabilityGasLimitPercent?: number
+  /** Gas price multiplier percent used to improve transfer reliability */
+  reliabilityGasPricePercent?: number
+  /** Gas price or network fee multiplier percent for the Increase fee option */
+  increasedGasPricePercent?: number
 }

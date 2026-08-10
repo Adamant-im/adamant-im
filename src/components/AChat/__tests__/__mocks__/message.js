@@ -1,5 +1,15 @@
-import loremIpsum from 'lorem-ipsum'
 import { v4 as uuidv4 } from 'uuid'
+
+const sampleWords = [
+  'adamant',
+  'private',
+  'message',
+  'wallet',
+  'secure',
+  'network',
+  'contact',
+  'transaction'
+]
 
 const user = {
   id: 'U9203183357885757380',
@@ -22,16 +32,13 @@ function randomTimestamp(startDate) {
 }
 
 function randomMessage() {
-  return loremIpsum({
-    count: 1,
-    units: 'sentences',
-    sentenceLowerBound: 5,
-    sentenceUpperBound: 15,
-    paragraphLowerBound: 3,
-    paragraphUpperBound: 7,
-    format: 'plain',
-    random: Math.random
-  })
+  const wordCount = randomInt(5, 15)
+  const words = Array.from(
+    { length: wordCount },
+    () => sampleWords[randomInt(0, sampleWords.length - 1)]
+  )
+
+  return `${words.join(' ')}.`
 }
 
 function randomInt(min, max) {

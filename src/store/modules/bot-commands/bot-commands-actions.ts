@@ -10,17 +10,21 @@ export const actions: ActionTree<BotCommandsState, RootState> = {
   },
   reInitCommands({ commit }, messages: NormalizedChatMessageTransaction[]) {
     if (messages && messages.length > 0) {
-      const chats = Object.groupBy(messages, ({ recipientId }) => recipientId)
-      for (const recipientId in chats) {
-        const chatMessages = chats[recipientId]
-        if (Array.isArray(chatMessages)) {
-          const commands = extractCommandsFromMessages(recipientId, chatMessages)
-          if (commands.length > 0) {
-            commit('initCommands', {
-              partnerId: recipientId,
-              commands
-            })
-          }
+      const chats = new Map<string, NormalizedChatMessageTransaction[]>()
+
+      for (const message of messages) {
+        const chatMessages = chats.get(message.recipientId) ?? []
+        chatMessages.push(message)
+        chats.set(message.recipientId, chatMessages)
+      }
+
+      for (const [recipientId, chatMessages] of chats) {
+        const commands = extractCommandsFromMessages(recipientId, chatMessages)
+        if (commands.length > 0) {
+          commit('initCommands', {
+            partnerId: recipientId,
+            commands
+          })
         }
       }
     }

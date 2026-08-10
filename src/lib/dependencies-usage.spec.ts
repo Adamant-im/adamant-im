@@ -54,9 +54,7 @@ describe('major-updated dependency usage', () => {
         globals?: Record<string, unknown>
       }
     }>
-    const targetEntry = typedConfig.find(
-      (entry) => Array.isArray(entry.files) && entry.files.includes('**/*.{ts,tsx,js,jsx,vue}')
-    )
+    const targetEntry = typedConfig.find((entry) => entry.languageOptions?.globals)
     const configuredGlobals = targetEntry?.languageOptions?.globals
 
     expect(configuredGlobals).toBeTruthy()

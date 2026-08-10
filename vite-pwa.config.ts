@@ -2,8 +2,8 @@ import { mergeConfig, defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import basicSsl from '@vitejs/plugin-basic-ssl'
 
-import viteBaseConfig from './vite-base.config'
-import { manifest } from './vite-config/manifest'
+import viteBaseConfig from './vite-base.config.ts'
+import { manifest } from './vite-config/manifest.ts'
 
 const useHttps = process.env.HTTPS === 'true'
 

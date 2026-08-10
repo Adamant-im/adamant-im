@@ -78,7 +78,9 @@ export const Fees = {
 }
 
 /** Regex for detecting of base64 encoded string */
+// Every repeated branch consumes exactly four characters, so backtracking is input-linear.
 export const base64regex =
+  // eslint-disable-next-line security/detect-unsafe-regex
   /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
 
 export const Symbols = {
@@ -121,13 +123,6 @@ export default {
 
 export const UserPasswordArticleLink =
   'https://medium.com/adamant-im/more-convenience-login-to-the-web-messenger-with-user-password-9d48a736dfd8'
-
-export const UserPasswordHashSettings = {
-  SALT: 'salt',
-  ITERATIONS: 100000,
-  KEYLEN: 64,
-  DIGEST: 'sha512'
-}
 
 export type TransactionStatusType =
   | 'CONFIRMED'

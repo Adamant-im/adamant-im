@@ -101,8 +101,7 @@ const getCurrentPageIndex = () => {
   }
 
   const currentPage = pages.find((page) => {
-    const pattern = new RegExp(`^${page.link}`)
-    return route.path.match(pattern)
+    return route.path.startsWith(page.link)
   })
 
   return (currentPage && pages.indexOf(currentPage)) || 0

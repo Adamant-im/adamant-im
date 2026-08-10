@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { navigateInApp } from './helpers/navigation'
 import { loginWithNewAccount } from './helpers/auth'
 
 const assertNoDocumentScrollLeak = async (page: Page) => {
@@ -46,7 +47,7 @@ test.describe('Votes layout regressions', () => {
   }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/votes')
+    await navigateInApp(page, '/votes')
     await expect(page).toHaveURL(/\/votes$/)
     await expect(page.locator('.delegates-view')).toBeVisible()
     await expect(page.locator('.settings-data-table')).toBeVisible()
@@ -136,7 +137,7 @@ test.describe('Votes layout regressions', () => {
   }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/votes')
+    await navigateInApp(page, '/votes')
     await expect(page).toHaveURL(/\/votes$/)
 
     const reviewButton = page.getByRole('button', { name: /review voting/i })
@@ -162,7 +163,7 @@ test.describe('Votes layout regressions', () => {
   test('keeps delegate details expander compact spacing tokenized on desktop', async ({ page }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/votes')
+    await navigateInApp(page, '/votes')
     await expect(page).toHaveURL(/\/votes$/)
     await openFirstDelegateDetails(page)
 
@@ -207,7 +208,7 @@ test.describe('Votes layout regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await loginWithNewAccount(page)
 
-    await page.goto('/votes')
+    await navigateInApp(page, '/votes')
     await expect(page).toHaveURL(/\/votes$/)
     await expect(page.locator('.delegates-view')).toBeVisible()
     await expect(page.locator('.settings-data-table')).toBeVisible()
@@ -266,7 +267,7 @@ test.describe('Votes layout regressions', () => {
     await page.setViewportSize({ width: 390, height: 600 })
     await loginWithNewAccount(page)
 
-    await page.goto('/options')
+    await navigateInApp(page, '/options')
     await expect(page).toHaveURL(/\/options$/)
     await expect(page.locator('.settings-view')).toBeVisible()
 
@@ -310,7 +311,7 @@ test.describe('Votes layout regressions', () => {
     await page.locator('.back-button').click()
     await expect(page).toHaveURL(/\/options$/)
 
-    await page.goto('/home')
+    await navigateInApp(page, '/home')
     await expect(page).toHaveURL(/\/home$/)
     await page.getByText(/stake and earn/i).click()
     await expect(page).toHaveURL(/\/votes$/)

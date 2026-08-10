@@ -5,6 +5,7 @@ import constants, { Transactions, Delegates, MessageType } from '@/lib/constants
 import utils from '@/lib/adamant'
 import client from '@/lib/nodes/adm'
 import { encryptPassword } from '@/lib/idb/crypto'
+import { loadPasswordKdfDescriptor } from '@/lib/idb/passwordKdf'
 import { restoreState } from '@/lib/idb/state'
 import { i18n } from '@/i18n'
 import store from '@/store'
@@ -303,7 +304,7 @@ export function storeValue(key, value, encode = false) {
 }
 
 function tryDecodeStoredValue(value) {
-  let json = null
+  let json
   try {
     json = JSON.parse(value)
   } catch {
@@ -343,8 +344,6 @@ export function getStored(key, ownerAddress, records = 1) {
   }
 
   return client.get('/api/states/get', params).then((response) => {
-    let value = null
-
     if (response.success && Array.isArray(response.transactions)) {
       if (records > 1) {
         // Return all records
@@ -352,8 +351,8 @@ export function getStored(key, ownerAddress, records = 1) {
         return response.transactions
       } else {
         const tx = response.transactions[0]
-        value = tx && tx.asset && tx.asset.state && tx.asset.state.value
-        return tryDecodeStoredValue(value)
+        const storedValue = tx && tx.asset && tx.asset.state && tx.asset.state.value
+        return tryDecodeStoredValue(storedValue)
       }
     }
 
@@ -725,7 +724,13 @@ export function loginOrRegister(passphrase) {
  * @returns {Promise} Encrypted password
  */
 export function loginViaPassword(password, store) {
-  return encryptPassword(password)
+  const descriptor = loadPasswordKdfDescriptor()
+
+  if (!descriptor) {
+    return Promise.reject(new Error('Password login data is unavailable'))
+  }
+
+  return encryptPassword(password, descriptor)
     .then((encryptedPassword) => {
       store.commit('setPassword', encryptedPassword)
 

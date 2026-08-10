@@ -80,6 +80,7 @@ import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useI18n } from 'vue-i18n'
 
 import { UserPasswordArticleLink } from '@/lib/constants'
+import { clearDb } from '@/lib/idb'
 import { saveState } from '@/lib/idb/state'
 import { logger } from '@/utils/devTools/logger'
 import {
@@ -134,13 +135,20 @@ const submit = () => {
   store
     .dispatch('setPassword', password.value)
     .then((encodedPassword) => {
+      return saveState(store).then(() => encodedPassword)
+    })
+    .then((encodedPassword) => {
       password.value = ''
       emit('password', encodedPassword)
-
-      return encodedPassword
     })
-    .then(() => saveState(store))
-    .catch((err) => {
+    .catch(async (err) => {
+      try {
+        await clearDb()
+      } catch (cleanupError) {
+        logger.log('password-set-dialog', 'warn', cleanupError)
+      }
+
+      await store.dispatch('removePassword')
       logger.log('password-set-dialog', 'warn', err)
     })
     .finally(() => {

@@ -18,12 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout target repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
+        uses: ./.github/actions/setup-node
 
       - name: Install dependencies
         run: npm install @octokit/rest @octokit/graphql

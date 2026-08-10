@@ -133,10 +133,13 @@ function inspectVNodes(nodes: unknown): { tags: string[]; attributes: string[] }
 }
 
 liveDescribe('live XSS pipeline against mainnet', () => {
-  const sender = accountFor(senderPassphrase as string)
-  const recipient = accountFor(recipientPassphrase as string)
+  let sender: ReturnType<typeof accountFor>
+  let recipient: ReturnType<typeof accountFor>
 
   beforeAll(() => {
+    sender = accountFor(senderPassphrase as string)
+    recipient = accountFor(recipientPassphrase as string)
+
     console.log(`[live] sender    ${sender.address}`)
     console.log(`[live] recipient ${recipient.address}`)
   })

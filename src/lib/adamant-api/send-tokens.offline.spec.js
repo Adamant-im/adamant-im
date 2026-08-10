@@ -45,33 +45,6 @@ vi.mock('@/utils/devTools/logger', () => ({
   }
 }))
 
-vi.mock('sodium-browserify-tweetnacl', async () => {
-  const nacl = await import('tweetnacl/nacl-fast')
-
-  return {
-    default: {
-      crypto_sign_seed_keypair(seed) {
-        const keyPair = nacl.sign.keyPair.fromSeed(
-          seed instanceof Uint8Array ? seed : new Uint8Array(seed)
-        )
-
-        return {
-          publicKey: Buffer.from(keyPair.publicKey),
-          secretKey: Buffer.from(keyPair.secretKey)
-        }
-      },
-      crypto_sign_detached(message, secretKey) {
-        return Buffer.from(
-          nacl.sign.detached(
-            message instanceof Uint8Array ? message : new Uint8Array(message),
-            secretKey instanceof Uint8Array ? secretKey : new Uint8Array(secretKey)
-          )
-        )
-      }
-    }
-  }
-})
-
 import { unlock, sendTokens } from './index'
 import { Transactions } from '@/lib/constants'
 

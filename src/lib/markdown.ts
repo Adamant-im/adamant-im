@@ -67,6 +67,8 @@ const MARKDOWN_SANITIZE_CONFIG: DOMPurifyConfig = {
   ADD_URI_SAFE_ATTR: ['target', 'rel'],
   // Extend the built-in URI allowlist to the same protocols `renderer.link` accepts, so that
   // `eth:`, `bitcoin:`, `magnet:`, `tg:`, `tor:`, `onion:` and `sftp:` links survive.
+  // The dynamic fragment is escaped and assembled from the internal scheme allowlist.
+  // eslint-disable-next-line security/detect-non-literal-regexp
   ALLOWED_URI_REGEXP: new RegExp(
     `^(?:(?:${ALLOWED_URI_SCHEME_ALTERNATION}):|[^a-z]|[a-z+.-]+(?:[^a-z+.\\-:]|$))`,
     'i'

@@ -20,6 +20,8 @@ export default function validateAddress(crypto: CryptoSymbol, address: string) {
 
   for (const [symbol, { regexAddress }] of Object.entries(CryptosInfo)) {
     if (crypto === symbol && regexAddress) {
+      // Address patterns come from the pinned adamant-wallets specification, not user input.
+      // eslint-disable-next-line security/detect-non-literal-regexp
       return new RegExp(regexAddress).test(address)
     }
   }

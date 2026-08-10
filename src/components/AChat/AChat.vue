@@ -50,7 +50,6 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
-import throttle from 'lodash-es/throttle'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import Styler from 'stylefire'
 import { animate } from 'popmotion'
@@ -60,6 +59,7 @@ import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { User } from '@/components/AChat/types'
 import { CHAT_CONNECTION_SPINNER_SIZE } from '@/components/Chat/helpers/uiMetrics'
 import { isWelcomeChat } from '@/lib/chat/meta/utils'
+import { throttle } from '@/lib/throttle'
 
 const className = 'a-chat'
 const classes = {

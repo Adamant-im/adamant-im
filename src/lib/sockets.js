@@ -1,5 +1,4 @@
 import { io } from 'socket.io-client'
-import random from 'lodash-es/random'
 import { logger } from '@/utils/devTools/logger'
 
 /**
@@ -99,7 +98,8 @@ export class SocketClient extends EventEmitter {
 
   get randomNode() {
     const onlineNodes = this.nodes.filter(this.isActiveSocketNode)
-    return onlineNodes[random(onlineNodes.length - 1)]
+    const index = Math.floor(Math.random() * onlineNodes.length)
+    return onlineNodes[index]
   }
 
   get hasActiveNodes() {
