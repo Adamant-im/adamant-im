@@ -701,7 +701,7 @@ const actions = {
 
     return admApi
       .getChatRooms(rootState.address, { offset, limit: perPage })
-      .then(({ messages, fetchedCount = perPage }) => {
+      .then(({ messages, fetchedCount = 0 }) => {
         dispatch('pushMessages', messages)
 
         if (fetchedCount <= 0) {

@@ -8,5 +8,5 @@ import { MessageType } from '@/lib/constants'
  * @returns {boolean}
  */
 export function isChatTransactionVisible(transaction) {
-  return transaction?.asset?.chat?.type !== MessageType.SIGNAL_MESSAGE
+  return Number(transaction?.asset?.chat?.type) !== MessageType.SIGNAL_MESSAGE
 }

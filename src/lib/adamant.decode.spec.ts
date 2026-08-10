@@ -102,6 +102,36 @@ describe('adamant utf8 decode flows', () => {
     )
   })
 
+  it('rejects malformed hexadecimal input on decode and address boundaries', () => {
+    const sender = adamant.makeKeypair(Buffer.alloc(32, 105)) as AdamantKeypair
+    const recipient = adamant.makeKeypair(Buffer.alloc(32, 106)) as AdamantKeypair
+    const encodedMessage = adamant.encodeMessage('message', recipient.publicKey, sender.privateKey)
+    const encodedValue = adamant.encodeValue('value', recipient.privateKey)
+    const encodedBinary = adamant.encodeBinary(
+      Uint8Array.from([1, 2, 3]),
+      recipient.publicKey,
+      sender.privateKey
+    )
+
+    expect(() =>
+      adamant.decodeMessage('not-hex', sender.publicKey, recipient.privateKey, encodedMessage.nonce)
+    ).toThrow(/Encrypted message must be an even-length hexadecimal string or Uint8Array/)
+    expect(() => adamant.decodeValue('not-hex', recipient.privateKey, encodedValue.nonce)).toThrow(
+      /Encrypted value must be an even-length hexadecimal string or Uint8Array/
+    )
+    expect(() =>
+      adamant.decodeBinary(
+        encodedBinary.binary,
+        'not-hex',
+        recipient.privateKey,
+        encodedBinary.nonce
+      )
+    ).toThrow(/Sender public key must be an even-length hexadecimal string or Uint8Array/)
+    expect(() => adamant.getAddressFromPublicKey('not-hex')).toThrow(
+      /Public key must be an even-length hexadecimal string or Uint8Array/
+    )
+  })
+
   it('rejects string input at byte-only cryptographic boundaries', () => {
     const sender = adamant.makeKeypair(Buffer.alloc(32, 66)) as AdamantKeypair
     const recipient = adamant.makeKeypair(Buffer.alloc(32, 77)) as AdamantKeypair

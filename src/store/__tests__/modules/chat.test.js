@@ -1299,7 +1299,8 @@ describe('Store: chat.js', () => {
         chatModule.__Rewire__('admApi', {
           getChatRooms: () =>
             Promise.resolve({
-              messages: [1, 2, 3]
+              messages: [1, 2, 3],
+              fetchedCount: 50
             })
         })
 
@@ -1350,6 +1351,25 @@ describe('Store: chat.js', () => {
 
         expect(dispatch.args).toEqual([['pushMessages', []]])
         expect(commit.args).toEqual([['setOffset', 35]])
+      })
+
+      it('stops pagination when the raw fetched count is missing', async () => {
+        chatModule.__Rewire__('admApi', {
+          getChatRooms: () => Promise.resolve({ messages: [] })
+        })
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+
+        await actions.loadChatsPaged({
+          commit,
+          dispatch,
+          rootState: { address: 'U123456' },
+          state: { offset: 10 }
+        })
+
+        expect(dispatch.args).toEqual([['pushMessages', []]])
+        expect(commit.args).toEqual([['setOffset', -1]])
       })
     })
 
