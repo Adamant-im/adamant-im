@@ -1214,7 +1214,8 @@ describe('Store: chat.js', () => {
           getChatRooms: () =>
             Promise.resolve({
               messages: [],
-              lastMessageHeight: 100
+              lastMessageHeight: 100,
+              fetchedCount: 12
             })
         })
 
@@ -1233,10 +1234,41 @@ describe('Store: chat.js', () => {
         expect(commit.args).toEqual([
           ['setFulfilled', false],
           ['setHeight', 100],
-          ['setOffset', 50],
+          ['setOffset', 12],
           ['setFulfilled', true]
         ])
 
+        expect(dispatch.args).toEqual([['pushMessages', []]])
+        expect(admApi.getChatRooms).toHaveBeenCalledWith('U123456', { limit: 50 })
+      })
+
+      it('advances the initial offset when the first page contains only hidden signals', async () => {
+        chatModule.__Rewire__('admApi', {
+          getChatRooms: () =>
+            Promise.resolve({
+              messages: [],
+              lastMessageHeight: 0,
+              fetchedCount: 25
+            })
+        })
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+
+        await actions.loadChats(
+          {
+            commit,
+            dispatch,
+            rootState: { address: 'U123456' }
+          },
+          { perPage: 25 }
+        )
+
+        expect(commit.args).toEqual([
+          ['setFulfilled', false],
+          ['setOffset', 25],
+          ['setFulfilled', true]
+        ])
         expect(dispatch.args).toEqual([['pushMessages', []]])
       })
 

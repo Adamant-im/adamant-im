@@ -671,15 +671,18 @@ const actions = {
     commit('setFulfilled', false)
 
     return admApi
-      .getChatRooms(rootState.address)
+      .getChatRooms(rootState.address, { limit: perPage })
       .then((result) => {
-        const { messages, lastMessageHeight } = result
+        const { messages, lastMessageHeight, fetchedCount = 0 } = result
 
         dispatch('pushMessages', messages)
 
         if (lastMessageHeight > 0) {
           commit('setHeight', lastMessageHeight)
-          commit('setOffset', perPage)
+        }
+
+        if (fetchedCount > 0) {
+          commit('setOffset', fetchedCount)
         }
 
         commit('setFulfilled', true)
