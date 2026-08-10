@@ -10,7 +10,8 @@ import {
   createReaction,
   normalizeMessage,
   createAttachment,
-  queueSignedMessage
+  queueSignedMessage,
+  isChatTransactionVisible
 } from '@/lib/chat/helpers'
 import { i18n } from '@/i18n'
 import { isNumeric } from '@/lib/numericHelpers'
@@ -35,6 +36,7 @@ import adamant from '@/lib/adamant'
 import { useConsiderOffline } from '@/hooks/useConsiderOffline.js'
 import { getConnectionAwareTimeout } from '@/lib/network/connection'
 import { logger } from '@/utils/devTools/logger'
+import { isVirtualChat } from '@/lib/chat/meta/utils'
 
 export let interval
 /**
@@ -699,13 +701,13 @@ const actions = {
 
     return admApi
       .getChatRooms(rootState.address, { offset, limit: perPage })
-      .then(({ messages }) => {
+      .then(({ messages, fetchedCount = perPage }) => {
         dispatch('pushMessages', messages)
 
-        if (messages.length <= 0) {
+        if (fetchedCount <= 0) {
           commit('setOffset', -1)
         } else {
-          commit('setOffset', offset + perPage)
+          commit('setOffset', offset + fetchedCount)
         }
       })
   },
@@ -718,6 +720,11 @@ const actions = {
    * @returns {Promise}
    */
   getChatRoomMessages({ rootState, dispatch, commit, getters }, { contactId, perPage = 25 } = {}) {
+    if (isVirtualChat(contactId)) {
+      commit('setChatOffset', { contactId, offset: -1 })
+      return Promise.resolve()
+    }
+
     let offset = getters.chatOffset(contactId)
     let page = getters.chatPage(contactId)
 
@@ -752,7 +759,7 @@ const actions = {
    * @param {Message[]} messages Array of messages
    */
   pushMessages({ commit, rootState, dispatch }, messages) {
-    const normalizedMessages = messages.map(normalizeMessage)
+    const normalizedMessages = messages.filter(isChatTransactionVisible).map(normalizeMessage)
     dispatch('botCommands/reInitCommands', normalizedMessages, { root: true })
     normalizedMessages.forEach((message) => {
       const { recipientId, senderId } = message
@@ -767,7 +774,7 @@ const actions = {
   },
 
   unshiftMessages({ commit, rootState, dispatch }, messages) {
-    const normalizedMessages = messages.map(normalizeMessage)
+    const normalizedMessages = messages.filter(isChatTransactionVisible).map(normalizeMessage)
     dispatch('botCommands/reInitCommands', normalizedMessages, { root: true })
     normalizedMessages.forEach((message) => {
       commit('pushMessage', {

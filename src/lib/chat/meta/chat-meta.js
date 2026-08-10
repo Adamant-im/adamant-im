@@ -12,6 +12,7 @@ export const ADAMANT_CHATS_META = {
     displayName: 'chats.virtual.welcome_message_title',
     ableToSendMessage: false,
     staticChat: true,
+    virtual: true,
     welcomeMessage: 'chats.virtual.welcome_message'
   },
 

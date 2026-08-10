@@ -29,6 +29,7 @@ import adamant from '@/lib/adamant'
 import { AllNodesDisabledError, AllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
 import { TransactionStatus as TS } from '@/lib/constants'
+import { WELCOME_CHAT_ID } from '@/lib/chat/meta/chat-meta'
 
 const { getters, mutations, actions } = chatModule
 
@@ -1328,6 +1329,28 @@ describe('Store: chat.js', () => {
 
         await expect(actions.loadChatsPaged({ state })).rejects.toEqual(new Error('No more chats'))
       })
+
+      it('advances the offset when a page contains only hidden protocol messages', async () => {
+        chatModule.__Rewire__('admApi', {
+          getChatRooms: () => Promise.resolve({ messages: [], fetchedCount: 25 })
+        })
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+
+        await actions.loadChatsPaged(
+          {
+            commit,
+            dispatch,
+            rootState: { address: 'U123456' },
+            state: { offset: 10 }
+          },
+          { perPage: 25 }
+        )
+
+        expect(dispatch.args).toEqual([['pushMessages', []]])
+        expect(commit.args).toEqual([['setOffset', 35]])
+      })
     })
 
     /**
@@ -1388,6 +1411,30 @@ describe('Store: chat.js', () => {
           actions.getChatRoomMessages({ rootState, getters }, { contactId })
         ).rejects.toEqual(new Error('No more messages'))
       })
+
+      it('does not request history for a client-side virtual chat', async () => {
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+        const request = vi.mocked(admApi.getChatRoomMessages)
+        request.mockClear()
+
+        await actions.getChatRoomMessages(
+          {
+            rootState,
+            dispatch,
+            commit,
+            getters: {
+              chatOffset: () => 0,
+              chatPage: () => 0
+            }
+          },
+          { contactId: WELCOME_CHAT_ID }
+        )
+
+        expect(request).not.toHaveBeenCalled()
+        expect(dispatch.notCalled).toBe(true)
+        expect(commit.args).toEqual([['setChatOffset', { contactId: WELCOME_CHAT_ID, offset: -1 }]])
+      })
     })
 
     /**
@@ -1428,6 +1475,30 @@ describe('Store: chat.js', () => {
         expect(dispatch.calledOnce).toBe(true)
         expect(dispatch.args[0][0]).toBe('botCommands/reInitCommands')
         expect(dispatch.args[0][2]).toEqual({ root: true })
+      })
+
+      it('filters signal messages before normalization and bot command processing', () => {
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+        const rootState = { address: 'U123456' }
+        const visibleMessage = {
+          id: 1,
+          senderId: 'U123456',
+          recipientId: 'U111111',
+          asset: { chat: { type: 1 } }
+        }
+        const signalMessage = {
+          id: 2,
+          senderId: 'U123456',
+          recipientId: 'U111111',
+          asset: { chat: { type: 3 } }
+        }
+
+        actions.pushMessages({ commit, rootState, dispatch }, [signalMessage, visibleMessage])
+
+        expect(commit.callCount).toBe(1)
+        expect(dispatch.args[0][1]).toHaveLength(1)
+        expect(dispatch.args[0][1][0].id).toBe(visibleMessage.id)
       })
     })
 

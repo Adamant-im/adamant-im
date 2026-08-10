@@ -10,6 +10,10 @@ export type AdamantChatMeta = {
    */
   staticChat: boolean
   /**
+   * The chat exists only in the client and has no address or node-side history.
+   */
+  virtual?: boolean
+  /**
    * First message displayed in the chat.
    * Can contain some information about the bot, e.g. list of commands.
    * Localized. Must be an i18n key

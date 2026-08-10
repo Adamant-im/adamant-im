@@ -44,7 +44,10 @@ export class AttachmentApi {
       hexToBytes(publicKey),
       this.myKeypair.privateKey
     )
-    formData.append('file', binary)
+    formData.append(
+      'file',
+      new Blob([new Uint8Array(binary)], { type: 'application/octet-stream' })
+    )
 
     const { cids } = await ipfs.post(`api/file/upload`, formData, {
       'Content-Type': 'multipart/form-data'
