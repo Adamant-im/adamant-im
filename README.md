@@ -70,14 +70,15 @@ Testnet app:
 
 Recommended environment:
 
-- Node.js `^20.19.0 || >=22.12.0`
-- npm `>=10`
+- Node.js `>=24.15.0`
+- npm `>=12`
 
 Clone and run the app locally:
 
 ```bash
 git clone --recursive https://github.com/Adamant-im/adamant-im.git
 cd adamant-im
+corepack enable npm
 npm install
 npm run dev
 ```
@@ -113,9 +114,20 @@ npm run dev-https
 
 ### CSP hardening on Vercel builds
 
-Vercel preview/dev hosts use the same soft CSP profile as production domains (including current `unsafe-inline` and `unsafe-eval` allowances) to avoid behavior drift between environments.
+Production builds inject a CSP meta policy that blocks JavaScript `eval` and `Function` constructors
+on every static hosting target. Vercel also delivers the same script policy as a response header.
+`wasm-unsafe-eval` remains narrowly enabled for the bundled secp256k1 WebAssembly module.
 
-Strict CSP hardening (removing `unsafe-eval`) is tracked separately and must be done only after runtime dependency cleanup.
+The policy intentionally allows HTTP(S) and WebSocket connections, images, and media from arbitrary
+origins so user-configured and self-hosted nodes keep working. This is broader than a fixed ADAMANT
+domain allowlist, while script execution is substantially narrower. Static meta policies cannot
+enforce `frame-ancestors`. Deployments with response-header support must deny framing there; the
+Vercel and Electron targets enforce `frame-ancestors 'none'` and `X-Frame-Options: DENY`.
+
+The build fails if a generated JavaScript chunk contains a direct `eval` or a `Function`
+constructor. This gate scans reachable emitted chunks and direct lexical calls; runtime CSP remains
+the enforcement boundary for indirect forms. Keep runtime dependencies compatible with this gate
+instead of adding `unsafe-eval`.
 
 ## Validation
 
@@ -154,6 +166,18 @@ Run the smoke suite:
 ```bash
 npm run test:e2e
 ```
+
+Tests explicitly marked with the `@long-running` tag are skipped by default. Use
+`longRunningTestTitle()` to mark tests whose observed runtime exceeds the configured threshold,
+then include them explicitly:
+
+```bash
+npm run test:e2e -- --perform-long-running
+```
+
+Change the threshold in
+`tests/e2e/helpers/longRunning.ts` (`LONG_RUNNING_TEST_THRESHOLD_MS = 40_000`) and reassess the
+tagged tests when updating it.
 
 Run with extended artifacts:
 

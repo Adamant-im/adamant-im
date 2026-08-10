@@ -2,12 +2,11 @@
 
 import fs from 'fs/promises'
 import path from 'path'
-import chalk from 'chalk'
 
-const log = (message, dotFormatting = chalk.blue) => {
+const log = (message) => {
   // This hook runs in Node build-time context where app logger dependencies
   // (Pinia/localStorage/browser runtime) are unavailable.
-  console.info(`[sandboxFix]   ${dotFormatting('•')} ${message}`)
+  console.info(`[sandboxFix]   • ${message}`)
 }
 
 const afterPackHook = async (params) => {
@@ -27,12 +26,12 @@ exec "$SCRIPT_DIR/${params.packager.executableName}.bin" "--no-sandbox" "$@"
     await fs.rename(executable, executable + '.bin')
     await fs.writeFile(executable, loaderScript)
     await fs.chmod(executable, 0o755)
-  } catch (e) {
-    log('failed to create loader for sandbox fix: ' + e.message, chalk.red)
-    throw new Error('Failed to create loader for sandbox fix')
+  } catch (error) {
+    log('failed to create loader for sandbox fix: ' + error.message)
+    throw new Error('Failed to create loader for sandbox fix', { cause: error })
   }
 
-  log('sandbox fix successfully applied', chalk.green)
+  log('sandbox fix successfully applied')
 }
 
 export default afterPackHook

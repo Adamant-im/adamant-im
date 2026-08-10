@@ -21,12 +21,10 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout repository 🛎️
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node version 🍀
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
+        uses: ./.github/actions/setup-node
 
       - name: Install dependencies ⚙️
         run: npm ci
@@ -37,7 +35,7 @@ jobs:
           npm run build
 
       - name: Archive artifacts 📁
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           path: dist
 
@@ -47,8 +45,8 @@ jobs:
           surge ./dist ${{ env.PREVIEW_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
 
       - name: Comment PR 💬
-        uses: thollander/actions-comment-pull-request@v2
+        uses: thollander/actions-comment-pull-request@v3
         with:
           message: |
             Deployed to ${{ env.PREVIEW_DOMAIN }} 🚀
-          comment_tag: deploy-message
+          comment-tag: deploy-message

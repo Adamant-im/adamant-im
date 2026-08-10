@@ -1,7 +1,9 @@
 import { createHash } from 'node:crypto'
 import { expect, test, type Page } from '@playwright/test'
+import { navigateInApp } from './helpers/navigation'
 import { loginWithPassphrase } from './helpers/auth'
 import { testPassphrase } from './helpers/env'
+import { longRunningTestTitle } from './helpers/longRunning'
 
 const LIVE_TIMEOUT = 120_000
 const RECIPIENT_ADM = 'U6386412615727665758'
@@ -12,17 +14,9 @@ const waitForBtcWalletReady = async (page: Page) => {
   await expect
     .poll(
       () =>
-        page.evaluate(() => {
-          const runtime = window as Window & {
-            store?: {
-              state: Record<string, any>
-            }
-          }
-          const store = runtime.store
-
-          if (!store) {
-            throw new Error('window.store is not available')
-          }
+        page.evaluate(async () => {
+          const storeModulePath = '/src/store/index.js'
+          const { default: store } = await import(/* @vite-ignore */ storeModulePath)
 
           return {
             address: String(store.state.btc?.address ?? ''),
@@ -35,17 +29,9 @@ const waitForBtcWalletReady = async (page: Page) => {
       balanceStatus: 'success'
     })
 
-  return page.evaluate(() => {
-    const runtime = window as Window & {
-      store?: {
-        state: Record<string, any>
-      }
-    }
-    const store = runtime.store
-
-    if (!store) {
-      throw new Error('window.store is not available')
-    }
+  return page.evaluate(async () => {
+    const storeModulePath = '/src/store/index.js'
+    const { default: store } = await import(/* @vite-ignore */ storeModulePath)
 
     return {
       admAddress: String(store.state.address ?? ''),
@@ -68,16 +54,8 @@ const sendFraudBtcTransferMessage = async (
 ) => {
   const success = await page.evaluate(
     async ({ recipientId, hash, amount, comments }) => {
-      const runtime = window as Window & {
-        store?: {
-          dispatch: (type: string, payload?: unknown) => Promise<unknown>
-        }
-      }
-      const store = runtime.store
-
-      if (!store) {
-        throw new Error('window.store is not available')
-      }
+      const storeModulePath = '/src/store/index.js'
+      const { default: store } = await import(/* @vite-ignore */ storeModulePath)
 
       return store.dispatch('sendCryptoTransferMessage', {
         address: recipientId,
@@ -143,17 +121,9 @@ const saveBrowserPendingBtc = async (
 
 const getChatTransferStatus = async (page: Page, comments: string) => {
   return page.evaluate(
-    ({ partnerId, comments }) => {
-      const runtime = window as Window & {
-        store?: {
-          state: Record<string, any>
-        }
-      }
-      const store = runtime.store
-
-      if (!store) {
-        throw new Error('window.store is not available')
-      }
+    async ({ partnerId, comments }) => {
+      const storeModulePath = '/src/store/index.js'
+      const { default: store } = await import(/* @vite-ignore */ storeModulePath)
 
       const messages = store.state.chat?.chats?.[partnerId]?.messages ?? []
       const transaction = [...messages]
@@ -177,70 +147,74 @@ const getChatTransferStatus = async (page: Page, comments: string) => {
 }
 
 test.describe('Live BTC pending chat status', () => {
-  test('keeps a newly sent invalid BTC rich message pending in the live browser session when browser PendingTxStore knows it', async ({
-    page
-  }) => {
-    test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
+  test(
+    longRunningTestTitle(
+      'keeps a newly sent invalid BTC rich message pending in the live browser session when browser PendingTxStore knows it',
+      43_800
+    ),
+    async ({ page }) => {
+      test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
 
-    test.slow()
+      test.slow()
 
-    await loginWithPassphrase(page, testPassphrase!)
+      await loginWithPassphrase(page, testPassphrase!)
 
-    const { admAddress, btcAddress } = await waitForBtcWalletReady(page)
-    expect(admAddress).not.toBe('')
-    expect(btcAddress).not.toBe('')
+      const { admAddress, btcAddress } = await waitForBtcWalletReady(page)
+      expect(admAddress).not.toBe('')
+      expect(btcAddress).not.toBe('')
 
-    await page.goto(`/chats/${RECIPIENT_ADM}`, { waitUntil: 'domcontentloaded' })
-    await expect(page).toHaveURL(new RegExp(`/chats/${RECIPIENT_ADM}$`))
-    await expect(page.locator('.a-chat__body-messages').first()).toBeVisible()
+      await navigateInApp(page, `/chats/${RECIPIENT_ADM}`, { waitUntil: 'domcontentloaded' })
+      await expect(page).toHaveURL(new RegExp(`/chats/${RECIPIENT_ADM}$`))
+      await expect(page.locator('.a-chat__body-messages').first()).toBeVisible()
 
-    const hash = createHash('sha256')
-      .update(`playwright-live-btc-pending-${Date.now()}`)
-      .digest('hex')
-    const comments = `Playwright live BTC pending ${Date.now()}`
+      const hash = createHash('sha256')
+        .update(`playwright-live-btc-pending-${Date.now()}`)
+        .digest('hex')
+      const comments = `Playwright live BTC pending ${Date.now()}`
 
-    await saveBrowserPendingBtc(page, {
-      hash,
-      senderId: btcAddress,
-      recipientId: btcAddress,
-      amount: 1
-    })
-
-    await sendFraudBtcTransferMessage(page, {
-      hash,
-      amount: '1',
-      comments
-    })
-
-    await expect
-      .poll(() => getChatTransferStatus(page, comments), {
-        timeout: LIVE_TIMEOUT
-      })
-      .toMatchObject({
+      await saveBrowserPendingBtc(page, {
         hash,
-        status: 'PENDING'
+        senderId: btcAddress,
+        recipientId: btcAddress,
+        amount: 1
       })
 
-    const messageBody = page
-      .locator('.a-chat__message-card-body')
-      .filter({ hasText: comments })
-      .last()
-    await expect(messageBody).toBeVisible({ timeout: LIVE_TIMEOUT })
-
-    await page.waitForTimeout(6_000)
-
-    await expect
-      .poll(() => getChatTransferStatus(page, comments), {
-        timeout: 15_000
-      })
-      .toMatchObject({
+      await sendFraudBtcTransferMessage(page, {
         hash,
-        status: 'PENDING'
+        amount: '1',
+        comments
       })
 
-    if (KEEP_OPEN) {
-      await page.pause()
-      await new Promise(() => {})
+      await expect
+        .poll(() => getChatTransferStatus(page, comments), {
+          timeout: LIVE_TIMEOUT
+        })
+        .toMatchObject({
+          hash,
+          status: 'PENDING'
+        })
+
+      const messageBody = page
+        .locator('.a-chat__message-card-body')
+        .filter({ hasText: comments })
+        .last()
+      await expect(messageBody).toBeVisible({ timeout: LIVE_TIMEOUT })
+
+      await page.waitForTimeout(6_000)
+
+      await expect
+        .poll(() => getChatTransferStatus(page, comments), {
+          timeout: 15_000
+        })
+        .toMatchObject({
+          hash,
+          status: 'PENDING'
+        })
+
+      if (KEEP_OPEN) {
+        await page.pause()
+        await new Promise(() => {})
+      }
     }
-  })
+  )
 })

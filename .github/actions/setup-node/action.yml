@@ -1,0 +1,19 @@
+name: Setup Node.js and npm
+description: Install the repository Node.js version and activate the pinned npm release
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v7
+      with:
+        node-version-file: .nvmrc
+        cache: npm
+
+    - name: Activate pinned npm
+      shell: bash
+      run: |
+        corepack enable npm
+        expected_version="$(node -p 'require("./package.json").packageManager.split("@").at(-1)')"
+        actual_version="$(npm --version)"
+        test "$actual_version" = "$expected_version"

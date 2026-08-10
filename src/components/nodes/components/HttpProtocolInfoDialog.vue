@@ -30,7 +30,7 @@
         <h3 :class="`${className}__section-title`">
           {{ t('nodes.popup.how_to_allow_title') }}
         </h3>
-        <ul :class="`${className}__list`">
+        <ul :class="`${className}__steps`">
           <li>{{ t('nodes.popup.how_to_allow_browser') }}</li>
           <li>{{ t('nodes.popup.how_to_allow_http_app') }}</li>
         </ul>
@@ -100,8 +100,19 @@ export default defineComponent({
     margin-bottom: var(--a-space-2);
   }
 
-  &__list {
-    padding-inline-start: var(--a-space-4);
+  /** A plain `<ul>`, not a Vuetify `v-list` — hence its own name and its own spacing */
+  &__steps {
+    padding-inline-start: var(--a-space-6);
+    margin-bottom: 0;
+
+    li {
+      padding-inline-start: var(--a-space-2);
+      margin-bottom: var(--a-space-2);
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
   }
 }
 </style>

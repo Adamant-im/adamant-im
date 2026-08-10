@@ -27,7 +27,7 @@
   text-align: center;
 }
 
-@mixin a-secondary-dialog-card-frame() {
+@mixin a-secondary-dialog-card-frame($is-scoped: true) {
   &__card-title,
   &__dialog-title {
     padding: var(--a-secondary-dialog-title-padding) !important;
@@ -45,7 +45,12 @@
     padding: var(--a-secondary-dialog-actions-padding) !important;
   }
 
-  &__list {
+  /**
+   * Scoped to Vuetify lists on purpose. The reset exists to undo `v-list`'s own padding; while
+   * it matched any element carrying a `__list` class it also silently flattened plain `<ul>`
+   * markup in dialogs that happened to reuse the name, pushing the bullets outside the text.
+   */
+  &__list.v-list {
     padding: 0 !important;
   }
 
@@ -55,9 +60,14 @@
     padding-inline: var(--a-secondary-dialog-padding-inline) !important;
   }
 
-  &__list .v-list-item,
-  &__list :deep(.v-list-item) {
+  &__list .v-list-item {
     padding-inline: var(--a-secondary-dialog-padding-inline) !important;
+  }
+
+  @if $is-scoped {
+    &__list :deep(.v-list-item) {
+      padding-inline: var(--a-secondary-dialog-padding-inline) !important;
+    }
   }
 }
 

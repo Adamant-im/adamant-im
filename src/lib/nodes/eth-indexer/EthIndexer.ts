@@ -28,7 +28,7 @@ export class EthIndexer extends Node<AxiosInstance> {
   async request<E extends keyof Endpoints>(
     endpoint: E,
     params?: Endpoints[E]['params'],
-    requestConfig?: AxiosRequestConfig
+    requestConfig?: AxiosRequestConfig<Endpoints[E]['params'], Endpoints[E]['params']>
   ): Promise<Endpoints[E]['result']> {
     const [method, path] = endpoint.split(' ')
     const baseURL = this.getBaseURL(this)

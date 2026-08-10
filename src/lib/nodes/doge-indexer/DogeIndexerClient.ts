@@ -32,7 +32,7 @@ export class DogeIndexerClient extends Client<DogeIndexer> {
     method: 'GET' | 'POST',
     path: string,
     params?: Params,
-    requestConfig?: AxiosRequestConfig
+    requestConfig?: AxiosRequestConfig<Params, Params>
   ): Promise<Response> {
     return this.requestWithRetry((node) =>
       node.request<Response, Params>(method, path, params, requestConfig)

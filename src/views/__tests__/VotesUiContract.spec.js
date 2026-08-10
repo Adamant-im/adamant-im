@@ -62,7 +62,7 @@ describe('Votes UI style contract', () => {
     expect(votesContent).toContain('<v-row align="center" :class="`${className}__review`">')
     expect(votesContent).toContain('`${className}__pagination`')
     expect(votesContent).toContain('<v-spacer />')
-    expect(votesContent).toContain('<div :class="`${className}__info`"')
+    expect(votesContent).toContain('<safe-html :class="`${className}__info`"')
     expect(votesContent).toContain('margin: 0;')
     expect(votesContent).toContain('width: 100%;')
     expect(votesContent).toContain('textContent.a-content-explanatory-copy()')

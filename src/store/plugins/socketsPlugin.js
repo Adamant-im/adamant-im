@@ -1,25 +1,56 @@
 import socketClient from '@/lib/sockets'
-import { decodeChat, getPublicKey } from '@/lib/adamant-api'
+import { cacheVerifiedPublicKey, decodeChat, getPublicKey } from '@/lib/adamant-api'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import { MessageType } from '@/lib/constants'
+import { logger } from '@/utils/devTools/logger'
+import { isChatTransactionVisible } from '@/lib/chat/helpers/isChatTransactionVisible'
 
 function subscribe(store) {
   socketClient.subscribe('newMessage', (transaction) => {
-    const promise = isStringEqualCI(transaction.recipientId, store.state.address)
-      ? Promise.resolve(transaction.senderPublicKey)
-      : getPublicKey(transaction.recipientId)
+    if (!isChatTransactionVisible(transaction)) return
 
-    promise.then((publicKey) => {
-      const decoded = transaction.type === 0 ? transaction : decodeChat(transaction, publicKey)
+    const isIncoming = isStringEqualCI(transaction.recipientId, store.state.address)
+    const counterpartyId = isIncoming ? transaction.senderId : transaction.recipientId
+    const counterpartyPublicKey = isIncoming
+      ? transaction.senderPublicKey
+      : transaction.recipientPublicKey
 
-      // All transactions we get via socket are shown in chats, including ADM direct transfers
-      // Currently, we don't update confirmations for direct transfers, see getChats() in adamant-api.js
-      // So we'll update confirmations in getTransactionStatus()
+    // The key still comes from the socket payload, but it is checked against the address it is
+    // claimed for before it is used or cached. A node that pushes its own key together with a
+    // message it encrypted itself would otherwise produce something that decrypts cleanly and
+    // appears in the chat as if a trusted contact had sent it.
+    //
+    // The check is local arithmetic, so the realtime path makes no request at all — one fewer
+    // than before, since resolving the key for an outgoing echo used to go through
+    // `getPublicKey`. The fallback only runs when a node omits the key from the payload, and
+    // even then `getPublicKey` answers from cache in the common case.
+    let resolveKey
 
-      if (transaction.asset?.chat?.type !== MessageType.SIGNAL_MESSAGE) {
+    if (!counterpartyPublicKey) {
+      resolveKey = getPublicKey(counterpartyId)
+    } else if (cacheVerifiedPublicKey(counterpartyId, counterpartyPublicKey)) {
+      resolveKey = Promise.resolve(counterpartyPublicKey)
+    } else {
+      resolveKey = Promise.reject(
+        new Error(`public key does not derive the address it is claimed for: ${counterpartyId}`)
+      )
+    }
+
+    resolveKey
+      .then((publicKey) => {
+        const decoded = transaction.type === 0 ? transaction : decodeChat(transaction, publicKey)
+
+        // All transactions we get via socket are shown in chats, including ADM direct transfers
+        // Currently, we don't update confirmations for direct transfers, see getChats() in adamant-api.js
+        // So we'll update confirmations in getTransactionStatus()
+
         store.dispatch('chat/pushMessages', [decoded])
-      }
-    })
+      })
+      .catch((error) => {
+        logger.warn(
+          'socketsPlugin',
+          `Dropped a socket message from ${transaction.senderId}: ${error.message}`
+        )
+      })
   })
 }
 

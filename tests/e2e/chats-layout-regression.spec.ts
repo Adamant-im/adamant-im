@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { navigateInApp } from './helpers/navigation'
 import { loginWithNewAccount } from './helpers/auth'
 
 const assertNoDocumentScrollLeak = async (page: Page) => {
@@ -56,7 +57,7 @@ test.describe('Chats layout regressions', () => {
 
   test('keeps chats action row controls aligned and inside toolbar height', async ({ page }) => {
     await loginWithNewAccount(page)
-    await page.goto('/chats')
+    await navigateInApp(page, '/chats')
     await expect(page).toHaveURL(/\/chats$/)
 
     const actionsRow = page.locator('.chats-view__chats-actions')
@@ -334,7 +335,7 @@ test.describe('Chats layout regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await loginWithNewAccount(page)
 
-    await page.goto('/chats')
+    await navigateInApp(page, '/chats')
     await expect(page).toHaveURL(/\/chats$/)
     await expect(page.locator('.chats-view__messages--chat')).toBeVisible()
 
@@ -465,7 +466,7 @@ test.describe('Chats layout regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await loginWithNewAccount(page)
 
-    await page.goto('/chats')
+    await navigateInApp(page, '/chats')
     await expect(page).toHaveURL(/\/chats$/)
 
     const newChatButton = page.locator('.chats-view__item')

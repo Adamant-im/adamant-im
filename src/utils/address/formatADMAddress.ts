@@ -5,11 +5,5 @@
  * @param chatName Chat name
  */
 export function formatADMAddress(admAddress: string, chatName = '') {
-  let result = ''
-  if (chatName !== '' && chatName !== undefined) {
-    result = chatName + ' (' + admAddress + ')'
-  } else {
-    result = admAddress
-  }
-  return result
+  return chatName !== '' && chatName !== undefined ? chatName + ' (' + admAddress + ')' : admAddress
 }

@@ -6,7 +6,7 @@
       </div>
 
       <div :class="classes.message">
-        <span v-if="!isCryptoTransfer" v-html="messageLabel"></span>
+        <preview-text v-if="!isCryptoTransfer" :text="messageLabel" />
         <span v-else>{{ cryptoTransferLabel }}</span>
       </div>
 
@@ -27,6 +27,7 @@ import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
+import PreviewText from '@/components/common/PreviewText'
 import { Cryptos } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { formatChatPreviewMessage } from '@/lib/markdown'

@@ -8,10 +8,9 @@
       <v-divider class="a-divider" />
 
       <v-card-text :class="`${className}__card-text`">
-        <div
-          :class="`${className}__disclaimer`"
-          v-html="t('chats.nodes_offline_dialog.text', { coin: nodeType.toUpperCase() })"
-        ></div>
+        <div :class="`${className}__disclaimer`">
+          {{ t('chats.nodes_offline_dialog.text', { coin: nodeType.toUpperCase() }) }}
+        </div>
       </v-card-text>
 
       <v-col cols="12" :class="`${className}__btn-block`">

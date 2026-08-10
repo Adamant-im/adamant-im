@@ -24,12 +24,9 @@ export function useFormatADMAddress(address: MaybeRef<string>) {
   return computed(() => {
     const addressValue = unref(address)
 
-    let name = ''
-    if (isStringEqualCI(addressValue, store.state.address)) {
-      name = t('transaction.me')
-    } else {
-      name = chatName.value
-    }
+    const name = isStringEqualCI(addressValue, store.state.address)
+      ? t('transaction.me')
+      : chatName.value
 
     return formatADMAddress(addressValue, name)
   })

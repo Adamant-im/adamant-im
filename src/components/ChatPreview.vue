@@ -101,7 +101,7 @@
             />
           </template>
 
-          <span v-html="lastMessageTextNoFormats"></span>
+          <preview-text :text="lastMessageTextNoFormats" />
         </v-list-item-subtitle>
       </template>
     </div>
@@ -116,6 +116,7 @@ import { useI18n } from 'vue-i18n'
 import AdmFillIcon from '@/components/icons/AdmFill.vue'
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 import Icon from '@/components/icons/BaseIcon.vue'
+import PreviewText from '@/components/common/PreviewText'
 import currency from '@/filters/currencyAmountWithSymbol'
 import formatDate from '@/filters/dateBrief'
 import { formatChatPreviewMessage } from '@/lib/markdown'

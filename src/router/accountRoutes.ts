@@ -32,6 +32,8 @@ export const resolveAccountRouteTarget = (path: string) => {
     }
   }
 
+  // The anchored route has three bounded, non-overlapping path segments.
+  // eslint-disable-next-line security/detect-unsafe-regex
   const sendFundsMatch = path.match(/^\/transfer(?:\/([^/]+))?(?:\/([^/]+))?(?:\/([^/]+))?$/)
 
   if (sendFundsMatch) {

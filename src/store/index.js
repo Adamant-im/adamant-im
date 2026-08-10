@@ -10,6 +10,11 @@ import {
 } from '@/lib/adamant-api'
 import { CryptosInfo, Fees, FetchStatus } from '@/lib/constants'
 import { encryptPassword } from '@/lib/idb/crypto'
+import {
+  clearPasswordKdfDescriptor,
+  createPasswordKdfDescriptor,
+  savePasswordKdfDescriptor
+} from '@/lib/idb/passwordKdf'
 import { flushCryptoAddresses, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import { registerCryptoModules } from './utils/registerCryptoModules'
 import { registerVuexPlugins } from './utils/registerVuexPlugins'
@@ -201,7 +206,10 @@ const store = {
       commit('reset', null, { root: true })
     },
     setPassword({ commit }, password) {
-      return encryptPassword(password).then((encryptedPassword) => {
+      const descriptor = createPasswordKdfDescriptor()
+
+      return encryptPassword(password, descriptor).then((encryptedPassword) => {
+        savePasswordKdfDescriptor(descriptor)
         commit('setPassword', encryptedPassword)
 
         return encryptedPassword
@@ -211,6 +219,12 @@ const store = {
       commit('resetPassword')
       commit('setIDBReady', false)
       commit('options/updateOption', { key: 'stayLoggedIn', value: false })
+
+      try {
+        clearPasswordKdfDescriptor()
+      } catch (error) {
+        logger.log('store', 'warn', 'Failed to clear password KDF data', error)
+      }
     },
     updateBalance({ commit }, payload = {}) {
       if (payload.requestedByUser) {
@@ -286,7 +300,6 @@ const store = {
 }
 
 const storeInstance = createStore(store)
-window.store = storeInstance
 
 // Need to init persistence plugin before other, because they use info from wallets
 registerVuexPlugins(storeInstance, [walletsPersistencePlugin])

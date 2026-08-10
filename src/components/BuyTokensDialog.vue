@@ -75,6 +75,7 @@ import CoingeckoIcon from '@/components/icons/common/Coingecko.vue'
 import CoinmarketcapIcon from '@/components/icons/common/Coinmarketcap.vue'
 import ExchangerIcon from '@/components/icons/common/Exchanger.vue'
 import Icon from '@/components/icons/BaseIcon.vue'
+import { openExternalLink } from '@/lib/openExternalLink'
 
 const className = 'buy-tokens-dialog'
 const classes = {
@@ -131,7 +132,7 @@ const openLink = (link: string) => {
       params: { partnerId: link }
     })
   } else {
-    window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
+    openExternalLink(link)
   }
 
   closeDialog()
@@ -146,7 +147,7 @@ const openLink = (link: string) => {
 @use 'vuetify/_settings.scss';
 
 .buy-tokens-dialog {
-  @include secondaryDialog.a-secondary-dialog-card-frame();
+  @include secondaryDialog.a-secondary-dialog-card-frame($is-scoped: false);
 
   &__dialog-title {
     @include mixins.a-text-header();

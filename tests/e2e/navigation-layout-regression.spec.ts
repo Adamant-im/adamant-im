@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { navigateInApp } from './helpers/navigation'
 import { loginWithNewAccount, loginWithPassphrase } from './helpers/auth'
 
 test.describe('Navigation layout regressions', () => {
@@ -6,7 +7,7 @@ test.describe('Navigation layout regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await loginWithNewAccount(page)
 
-    await page.goto('/chats')
+    await navigateInApp(page, '/chats')
     await expect(page).toHaveURL(/\/chats(?:\/)?$/)
     await expect(page.locator('.app-navigation')).toBeVisible()
 
@@ -57,7 +58,7 @@ test.describe('Navigation layout regressions', () => {
   test('keeps switcher dropdown rows stable on options screen', async ({ page }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/options')
+    await navigateInApp(page, '/options')
     await expect(page).toHaveURL(/\/options$/)
     await expect(page.locator('.settings-view')).toBeVisible()
 
@@ -158,7 +159,7 @@ test.describe('Navigation layout regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await loginWithNewAccount(page)
 
-    await page.goto('/options/nodes')
+    await navigateInApp(page, '/options/nodes')
     await expect(page).toHaveURL(/\/options\/nodes$/)
     await expect(page.locator('.settings-table-shell')).toBeVisible()
 
@@ -198,7 +199,7 @@ test.describe('Navigation layout regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await loginWithNewAccount(page)
 
-    await page.goto('/options')
+    await navigateInApp(page, '/options')
     await expect(page).toHaveURL(/\/options$/)
     await expect(page.locator('.settings-view')).toBeVisible()
 
@@ -235,7 +236,7 @@ test.describe('Navigation layout regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await loginWithNewAccount(page)
 
-    await page.goto('/options')
+    await navigateInApp(page, '/options')
     await expect(page).toHaveURL(/\/options$/)
     await expect(page.locator('.settings-view')).toBeVisible()
 
@@ -322,7 +323,7 @@ test.describe('Navigation layout regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     const passphrase = await loginWithNewAccount(page)
 
-    await page.goto('/options')
+    await navigateInApp(page, '/options')
     await expect(page).toHaveURL(/\/options$/)
     await expect(page.locator('.settings-view')).toBeVisible()
 
@@ -348,7 +349,7 @@ test.describe('Navigation layout regressions', () => {
 
     await loginWithPassphrase(page, passphrase)
 
-    await page.goto('/options')
+    await navigateInApp(page, '/options')
     await expect(page).toHaveURL(/\/options$/)
     await expect(page.locator('.settings-view')).toBeVisible()
 

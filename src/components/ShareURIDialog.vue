@@ -50,6 +50,7 @@ import QrcodeRendererDialog from '@/components/QrcodeRendererDialog.vue'
 import copyToClipboard from 'copy-to-clipboard'
 import { generateURI } from '@/lib/uri'
 import { getExplorerAddressUrl } from '@/config/utils'
+import { openExternalLink } from '@/lib/openExternalLink'
 
 const className = 'share-uri-dialog'
 const classes = {
@@ -120,7 +121,7 @@ export default defineComponent({
     const openInExplorer = () => {
       const crypto = isErc.value ? Cryptos.ETH : props.crypto
       const explorerLink = getExplorerAddressUrl(crypto, props.address)
-      window.open(explorerLink, '_blank', 'resizable,scrollbars,status,noopener')
+      openExternalLink(explorerLink)
     }
 
     return {
@@ -147,7 +148,7 @@ export default defineComponent({
 @use 'vuetify/_settings.scss';
 
 .share-uri-dialog {
-  @include secondaryDialog.a-secondary-dialog-card-frame();
+  @include secondaryDialog.a-secondary-dialog-card-frame($is-scoped: false);
 
   &__dialog-title {
     @include mixins.a-text-header();

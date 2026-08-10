@@ -1,3 +1,8 @@
-> 1%
-last 2 versions
-not ie > 0
+# Vite emits an ESNext bundle; only evergreen browsers and current Android WebViews are supported.
+Chrome >= 120
+ChromeAndroid >= 120
+Edge >= 120
+Firefox >= 128
+FirefoxAndroid >= 128
+Safari >= 17
+iOS >= 17

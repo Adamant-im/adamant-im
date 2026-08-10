@@ -28,7 +28,7 @@
       </span>
 
       <span v-else>
-        <span v-html="messageLabel"></span>
+        <preview-text :text="messageLabel" />
       </span>
     </div>
   </div>
@@ -39,10 +39,15 @@ import { computed, defineComponent, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
-import { getTransaction, decodeChat } from '@/lib/adamant-api'
-import { NormalizedChatMessageTransaction, normalizeMessage } from '@/lib/chat/helpers'
+import { getTransaction, decodeChat, getVerifiedCounterpartyPublicKey } from '@/lib/adamant-api'
+import {
+  isChatTransactionVisible,
+  NormalizedChatMessageTransaction,
+  normalizeMessage
+} from '@/lib/chat/helpers'
 import { Cryptos } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
+import PreviewText from '@/components/common/PreviewText'
 import { formatChatPreviewMessage } from '@/lib/markdown'
 import { ChatMessageTransaction } from '@/lib/schema/client/api'
 import { logger } from '@/utils/devTools/logger'
@@ -85,8 +90,27 @@ async function fetchTransaction(transactionId: string, address: string) {
     )
   }
 
-  const publicKey = rawTx.senderId === address ? rawTx.recipientPublicKey : rawTx.senderPublicKey
-  const decodedTransaction = rawTx.type === 0 ? rawTx : decodeChat(rawTx, publicKey)
+  if (!isChatTransactionVisible(rawTx)) {
+    throw new ValidationError(
+      `QuotedMessage: Signal messages are hidden: txId: ${transactionId}`,
+      ErrorCodes.MESSAGE_NOT_FOUND
+    )
+  }
+
+  // A quote is fetched by id straight from a node, so the key it hands back has to derive the
+  // address it is attributed to. Otherwise a node can answer with its own key and a ciphertext
+  // it wrote, and the quote renders as words the counterparty never said.
+  let decodedTransaction: ChatMessageTransaction | ReturnType<typeof decodeChat>
+
+  try {
+    decodedTransaction =
+      rawTx.type === 0 ? rawTx : decodeChat(rawTx, getVerifiedCounterpartyPublicKey(rawTx, address))
+  } catch (error) {
+    throw new ValidationError(
+      `QuotedMessage: ${(error as Error).message}`,
+      ErrorCodes.INVALID_MESSAGE
+    )
+  }
 
   if (!('message' in decodedTransaction)) {
     throw new ValidationError(
@@ -99,6 +123,9 @@ async function fetchTransaction(transactionId: string, address: string) {
 }
 
 export default defineComponent({
+  components: {
+    PreviewText
+  },
   props: {
     /**
      * Quoted message ID (see AIP-16: `replyto_id`)

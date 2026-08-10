@@ -269,11 +269,37 @@ For any non-trivial change, report exactly what was run.
 - `npm run typecheck`
 - `npm run test -- --run`
 
+### Live network tests
+
+Some specs talk to the real ADAMANT network. They are gated on passphrases in `.env.local`
+(`ADM_TEST_ACCOUNT_PK`, `ADM_AGENT1_PK`, `ADM_AGENT2_PK`) and skip when those are absent.
+
+ADM chat messages cost a fraction of an ADM and may be sent on a normal run. **Transfers of any
+other coin must never happen on a routine run**: BTC, ETH, DOGE and DASH fees are real money and
+are not recoverable.
+
+- A spec that sends a non-ADM transfer must be opt-in behind an explicit environment flag, and
+  must do nothing without it. `ADM_LIVE_BROADCAST=1` is the flag in use
+- Building and signing a transaction without broadcasting is free — prefer it. See
+  `src/lib/live-send-builders.env.spec.js`, which validates the whole send path and never posts
+- Prefer read-only verification even for ADM. Data written by an earlier run stays on chain, so a
+  spec can assert against what is already there and send only what is genuinely missing
+- Remember that anything broadcast is permanent and public. Keep test payloads few and purposeful
+- Use only the dedicated test accounts from `.env.local`, never a personal account
+- Name a broadcasting spec so the cost is obvious from the test title
+
+`src/lib/live-xss-pipeline.env.spec.ts` is the reference for the read-first pattern: it reads the
+chat, and sends only the payloads that are not on chain yet.
+
 ### Playwright route notes
 
 - For transaction list screens like `/transactions/ADM` and `/transactions/DOGE`, do not navigate by direct URL in e2e tests
 - Open transaction lists through the user flow `Home -> Balance` for the target wallet, because direct `/transactions/:crypto` navigation may redirect to `/home`
 - Direct transaction details URLs like `/transactions/:crypto/:txId` are still valid when the details route is the thing being tested
+- Playwright tests marked with `@long-running` are excluded from default local and CI runs
+- Run the complete Playwright suite with `npm run test:e2e -- --perform-long-running`
+- Mark tests whose observed runtime exceeds `LONG_RUNNING_TEST_THRESHOLD_MS` by using `longRunningTestTitle()` from `tests/e2e/helpers/longRunning.ts`
+- When changing `LONG_RUNNING_TEST_THRESHOLD_MS`, reassess the existing `@long-running` tests against recent CI durations
 
 ### Build validation
 

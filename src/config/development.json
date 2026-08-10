@@ -19,20 +19,13 @@
         },
         {
           "url": "https://debate.adamant.im",
-          "alt_ip": "http://147.93.10.209:36666"
-        },
-        {
-          "url": "http://78.47.205.206:36666"
+          "alt_ip": "http://62.72.43.66:36666"
         },
         {
           "url": "http://184.94.215.92:45555"
         },
         {
           "url": "https://node2.blockchain2fa.io"
-        },
-        {
-          "url": "https://phecda.adm.im",
-          "alt_ip": "http://46.250.234.248:36666"
         },
         {
           "url": "https://tegmine.adm.im"
@@ -45,20 +38,8 @@
           "url": "https://dschubba.adm.im"
         },
         {
-          "url": "https://tauri.bbry.org",
-          "alt_ip": "http://54.197.36.175:36666"
-        },
-        {
-          "url": "https://endless.bbry.org",
-          "alt_ip": "http://54.197.36.175:46666"
-        },
-        {
-          "url": "https://debate.bbry.org",
-          "alt_ip": "http://54.197.36.175:56666"
-        },
-        {
           "url": "https://lake.bbry.org",
-          "alt_ip": "http://100.42.184.57:27579"
+          "alt_ip": "http://147.93.132.93:31009"
         },
         {
           "url": "https://sunshine.bbry.org",
@@ -67,9 +48,6 @@
         {
           "url": "https://clown.bbry.org",
           "alt_ip": "http://65.108.52.254:6687"
-        },
-        {
-          "url": "http://100.42.184.57:27579"
         }
       ],
       "healthCheck": {
@@ -92,7 +70,7 @@
         "list": [
           {
             "url": "https://info.adamant.im",
-            "alt_ip": "http://5.161.98.136:33088"
+            "alt_ip": "http://46.4.37.157:33088"
           },
           {
             "url": "https://info2.adm.im",
@@ -101,10 +79,6 @@
           {
             "url": "https://currencyinfo1.bbry.org",
             "alt_ip": "http://147.93.132.93:1948"
-          },
-          {
-            "url": "https://currencyinfo2.bbry.org",
-            "alt_ip": "http://51.15.238.199:18958"
           }
         ],
         "healthCheck": {
@@ -124,7 +98,7 @@
         "list": [
           {
             "url": "https://ipfs4.adm.im",
-            "alt_ip": "http://95.216.45.88:44099"
+            "alt_ip": "http://209.188.7.216:44099"
           },
           {
             "url": "https://ipfs6.adamant.business",
@@ -133,10 +107,6 @@
           {
             "url": "https://ipfs4.bbry.org",
             "alt_ip": "http://65.108.52.254:61399"
-          },
-          {
-            "url": "https://ipfs6.bbry.org",
-            "alt_ip": "http://100.42.184.57:56777"
           }
         ],
         "healthCheck": {
@@ -157,15 +127,11 @@
       "list": [
         {
           "url": "https://btcnode1.adamant.im/bitcoind",
-          "alt_ip": "http://176.9.38.204:44099/bitcoind"
+          "alt_ip": "http://75.119.138.235:44100/bitcoind"
         },
         {
           "url": "https://btcnode3.adamant.im/bitcoind",
           "alt_ip": "http://195.201.242.108:44099/bitcoind"
-        },
-        {
-          "url": "https://btcnode1.bbry.org/bitcoind",
-          "alt_ip": "http://100.42.184.57:8617/bitcoind"
         },
         {
           "url": "https://btcnode3.bbry.org/bitcoind",
@@ -192,15 +158,11 @@
         "list": [
           {
             "url": "https://btcnode1.adamant.im",
-            "alt_ip": "http://176.9.38.204:44099"
+            "alt_ip": "http://75.119.138.235:44100"
           },
           {
             "url": "https://btcnode3.adamant.im",
             "alt_ip": "http://195.201.242.108:44099"
-          },
-          {
-            "url": "https://btcnode1.bbry.org",
-            "alt_ip": "http://100.42.184.57:8617"
           },
           {
             "url": "https://btcnode3.bbry.org",
@@ -231,10 +193,6 @@
         {
           "url": "https://dashnode1.bbry.org",
           "alt_ip": "http://147.93.131.80:45272"
-        },
-        {
-          "url": "https://dashnode2.bbry.org",
-          "alt_ip": "http://51.15.238.199:50353"
         }
       ],
       "healthCheck": {
@@ -254,15 +212,11 @@
       "list": [
         {
           "url": "https://dogenode2.adamant.im",
-          "alt_ip": "http://84.247.142.184:44098"
+          "alt_ip": "http://46.4.37.157:44098"
         },
         {
           "url": "https://dogenode3.adm.im",
-          "alt_ip": "http://95.216.45.88:44098"
-        },
-        {
-          "url": "https://dogenode2.bbry.org",
-          "alt_ip": "http://51.15.238.199:7954"
+          "alt_ip": "http://195.201.242.108:44098"
         },
         {
           "url": "https://dogenode3.bbry.org",
@@ -289,15 +243,11 @@
         "list": [
           {
             "url": "https://dogenode2.adamant.im/api",
-            "alt_ip": "http://84.247.142.184:44098/api"
+            "alt_ip": "http://46.4.37.157:44098/api"
           },
           {
             "url": "https://dogenode3.adm.im/api",
-            "alt_ip": "http://95.216.45.88:44098/api"
-          },
-          {
-            "url": "https://dogenode2.bbry.org/api",
-            "alt_ip": "http://51.15.238.199:7954/api"
+            "alt_ip": "http://195.201.242.108:44098/api"
           },
           {
             "url": "https://dogenode3.bbry.org/api",
@@ -329,10 +279,6 @@
         {
           "url": "https://ethnode2.bbry.org",
           "alt_ip": "http://65.108.52.254:41311"
-        },
-        {
-          "url": "https://ethnode3.bbry.org",
-          "alt_ip": "http://100.42.184.57:7318"
         }
       ],
       "healthCheck": {
@@ -364,10 +310,6 @@
           {
             "url": "https://ethnode2.bbry.org",
             "alt_ip": "http://65.108.52.254:41311"
-          },
-          {
-            "url": "https://ethnode3.bbry.org",
-            "alt_ip": "http://100.42.184.57:7318"
           }
         ],
         "healthCheck": {

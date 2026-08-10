@@ -1,9 +1,10 @@
-import cloneDeep from 'lodash-es/cloneDeep'
 import merge from 'deepmerge'
 import Modules from './stores/Modules'
 import Chats from './stores/Chats'
 import Security from './stores/Security'
 import { Cryptos } from '@/lib/constants'
+import { cloneState } from '@/lib/cloneState'
+import { logger } from '@/utils/devTools/logger'
 
 /** Modules that will be stored in IDB **/
 const modules = ['adm', 'eth', 'doge', 'bnb', 'dash', 'usds', 'res', 'partners', 'delegates']
@@ -12,6 +13,19 @@ const modules = ['adm', 'eth', 'doge', 'bnb', 'dash', 'usds', 'res', 'partners',
 /** noActiveNodesDialog - we need it to be reinitialized with default value in order to gain proper work **/
 const notSavedStates = {
   chat: ['noActiveNodesDialog']
+}
+
+function cloneModuleState(moduleName, value) {
+  try {
+    return cloneState(value)
+  } catch (error) {
+    logger.error(
+      'idb-state',
+      `Failed to clone "${moduleName}" module for IndexedDB persistence`,
+      error
+    )
+    throw error
+  }
 }
 
 /**
@@ -40,7 +54,7 @@ function cloneModules(state) {
 
   // clone `chat` module, except `chats` key
   if (state.chat) {
-    const chat = cloneDeep(state.chat)
+    const chat = cloneModuleState('chat', state.chat)
     notSavedStates.chat.forEach((field) => {
       delete chat[field]
     })
@@ -113,19 +127,15 @@ function cloneSecurity(state) {
  * @param store
  * @returns {Promise}
  */
-function saveState(store) {
+async function saveState(store) {
   const modules = cloneModules(store.state)
   const chats = cloneChats(store.state)
   const security = cloneSecurity(store.state)
 
-  return Promise.all([
-    Modules.saveAll(modules),
-    Chats.saveAll(chats),
-    Security.saveAll(security)
-  ]).then(() => {
-    // start Vuex => IDB sync
-    store.commit('setIDBReady', true)
-  })
+  await Promise.all([Modules.saveAll(modules), Chats.saveAll(chats), Security.saveAll(security)])
+
+  // start Vuex => IDB sync
+  store.commit('setIDBReady', true)
 }
 
 /**

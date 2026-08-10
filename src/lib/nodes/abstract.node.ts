@@ -1,3 +1,4 @@
+import semver from 'semver'
 import { NodeOfflineError } from '@/lib/nodes/utils/errors'
 import { getConnectionAwareTimeout } from '@/lib/network/connection'
 import type { NodeInfo } from '@/types/wallets/index.ts'
@@ -402,7 +403,14 @@ export abstract class Node<C = unknown> {
       return true
     }
 
-    return this.version >= this.minNodeVersion
+    const version = semver.coerce(this.version)
+    const minVersion = semver.coerce(this.minNodeVersion)
+
+    if (!version || !minVersion) {
+      return this.version >= this.minNodeVersion
+    }
+
+    return semver.gte(version, minVersion)
   }
 
   /**
@@ -469,6 +477,8 @@ export abstract class Node<C = unknown> {
   }
 
   formatHeight(height: number) {
+    // Input is a finite JavaScript number converted to a short decimal string.
+    // eslint-disable-next-line security/detect-unsafe-regex
     return height.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }
 

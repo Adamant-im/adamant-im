@@ -1,9 +1,10 @@
 import { expect, type Page } from '@playwright/test'
 
 import { dismissAddressWarningIfVisible } from './auth'
+import { navigateInApp } from './navigation'
 
 export const openTransactionListFromHome = async (page: Page, crypto: string) => {
-  await page.goto('/home', { waitUntil: 'domcontentloaded' })
+  await navigateInApp(page, '/home')
   await expect(page).toHaveURL(/\/home(?:\/)?$/)
   await dismissAddressWarningIfVisible(page, 8_000)
 

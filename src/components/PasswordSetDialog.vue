@@ -80,6 +80,7 @@ import { mdiEye, mdiEyeOff } from '@mdi/js'
 import { useI18n } from 'vue-i18n'
 
 import { UserPasswordArticleLink } from '@/lib/constants'
+import { clearDb } from '@/lib/idb'
 import { saveState } from '@/lib/idb/state'
 import { logger } from '@/utils/devTools/logger'
 import {
@@ -87,6 +88,7 @@ import {
   AUTH_FORM_TOGGLE_BUTTON_SIZE,
   AUTH_FORM_TOGGLE_ICON_SIZE
 } from '@/components/Login/helpers/uiMetrics'
+import { openExternalLink } from '@/lib/openExternalLink'
 
 const props = defineProps<{
   modelValue: boolean
@@ -117,7 +119,7 @@ const show = computed({
 const isValidForm = computed(() => password.value.length > 0)
 
 const openLink = (link: string) => {
-  window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
+  openExternalLink(link)
 }
 
 const togglePasswordVisibility = () => {
@@ -133,13 +135,20 @@ const submit = () => {
   store
     .dispatch('setPassword', password.value)
     .then((encodedPassword) => {
+      return saveState(store).then(() => encodedPassword)
+    })
+    .then((encodedPassword) => {
       password.value = ''
       emit('password', encodedPassword)
-
-      return encodedPassword
     })
-    .then(() => saveState(store))
-    .catch((err) => {
+    .catch(async (err) => {
+      try {
+        await clearDb()
+      } catch (cleanupError) {
+        logger.log('password-set-dialog', 'warn', cleanupError)
+      }
+
+      await store.dispatch('removePassword')
       logger.log('password-set-dialog', 'warn', err)
     })
     .finally(() => {

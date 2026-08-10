@@ -3,17 +3,17 @@ name: Update Commits Badge
 on:
   push:
   schedule:
-    - cron: "0 2 * * *"  # every day at 2:00 UTC
-  workflow_dispatch:      # manual run
+    - cron: '17 2 * * *' # every day at 02:17 UTC
+  workflow_dispatch: # manual run
 
 jobs:
   update-badge:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
-          fetch-depth: 0   # to have all branches and commits
+          fetch-depth: 0 # to have all branches and commits
 
       - name: Count commits in last 30 days
         run: |

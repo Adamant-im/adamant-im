@@ -12,6 +12,8 @@ package3.json
 /playwright-report/
 /test-results/
 
+.playwright-cli/
+
 # local env files
 .env.local
 .env.*.local
@@ -55,4 +57,8 @@ src/lib/schema/*
 !src/lib/schema/config.json
 
 # ai agents
+.ai-ignored/
 .ai-tasks/
+.ai-general/
+.claude/
+.cursor/

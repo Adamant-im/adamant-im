@@ -1,7 +1,7 @@
 // @vitest-environment node
 
 import { beforeAll, describe, expect, it, vi } from 'vitest'
-import { config as loadEnv } from 'dotenv'
+import { readLiveEnv, warnMissingLiveEnv } from '../../tests/shared/liveEnv'
 import BigNumber from 'bignumber.js'
 import * as bitcoin from 'bitcoinjs-lib'
 import EthContract from 'web3-eth-contract'
@@ -47,17 +47,14 @@ import { getAccountFromPassphrase, calculateReliableValue, calculateFee } from '
 import Erc20 from '@/store/modules/erc20/erc20.abi.json'
 import { Cryptos, CryptosInfo, Fees, Transactions, getMinAmount } from '@/lib/constants'
 
-loadEnv({ path: '.env.local', quiet: true })
-
-const testPassphrase = process.env.ADM_TEST_ACCOUNT_PK?.trim()
+const testPassphrase = readLiveEnv('ADM_TEST_ACCOUNT_PK')
 const liveDescribe = testPassphrase ? describe : describe.skip
 
-if (!process.env.CI && !testPassphrase) {
-  console.warn(
-    '\n[vitest] ADM_TEST_ACCOUNT_PK is not set — live wallet build tests will be skipped.\n' +
-      'To enable them, add the test account passphrase to .env.local.\n'
-  )
-}
+warnMissingLiveEnv(
+  'vitest',
+  ['ADM_TEST_ACCOUNT_PK'],
+  'To enable them, add the test account passphrase to .env.local.'
+)
 
 const ADM_RECIPIENT = 'U12345678901234567890'
 const ETH_RECIPIENT = '0x000000000000000000000000000000000000dEaD'
@@ -285,8 +282,9 @@ liveDescribe('live no-broadcast send builders from ADM_TEST_ACCOUNT_PK', () => {
     eth: {},
     usdt: {}
   }
+  let ethSetupPromise
 
-  beforeAll(async () => {
+  async function loadAdmState() {
     const admHash = adamant.createPassphraseHash(testPassphrase)
     const admKeypair = adamant.makeKeypair(admHash)
     const admAddress = adamant.getAddressFromPublicKey(admKeypair.publicKey)
@@ -300,7 +298,9 @@ liveDescribe('live no-broadcast send builders from ADM_TEST_ACCOUNT_PK', () => {
       address: admAddress,
       balance: Number(adamant.toAdm(admAccount.account.balance))
     }
+  }
 
+  async function loadBtcState() {
     const btcApi = new BitcoinApi(testPassphrase)
     const btcBalance = await btcApi.getBalance()
     const btcFeeRate = await btcApi.getFeeRate()
@@ -311,7 +311,9 @@ liveDescribe('live no-broadcast send builders from ADM_TEST_ACCOUNT_PK', () => {
       feeRate: btcFeeRate,
       unspents: btcUnspents
     }
+  }
 
+  async function loadDogeState() {
     const dogeApi = new DogeApi(testPassphrase)
     const dogeBalance = await dogeApi.getBalance()
     const dogeFeePerByte = await dogeApi.getFeePerByte()
@@ -322,7 +324,9 @@ liveDescribe('live no-broadcast send builders from ADM_TEST_ACCOUNT_PK', () => {
       feePerByte: dogeFeePerByte,
       unspents: dogeUnspents
     }
+  }
 
+  async function loadDashState() {
     const dashApi = new DashApi(testPassphrase)
     const dashBalance = await dashApi.getBalance()
     const dashUnspents = await fetchLiveUnspents(dashApi)
@@ -331,34 +335,44 @@ liveDescribe('live no-broadcast send builders from ADM_TEST_ACCOUNT_PK', () => {
       balance: dashBalance,
       unspents: dashUnspents
     }
+  }
 
-    const ethAccount = getAccountFromPassphrase(testPassphrase, eth)
-    const ethClient = eth.getClient()
-    const ethBalanceWei = await ethClient.getBalance(ethAccount.address, 'latest')
-    const gasPriceWei = await ethClient.getGasPrice()
-    const nonce = await ethClient.getTransactionCount(ethAccount.address)
+  function loadEthAndUsdtState() {
+    if (!ethSetupPromise) {
+      ethSetupPromise = (async () => {
+        const ethAccount = getAccountFromPassphrase(testPassphrase, eth)
+        const ethClient = eth.getClient()
+        const ethBalanceWei = await ethClient.getBalance(ethAccount.address, 'latest')
+        const gasPriceWei = await ethClient.getGasPrice()
+        const nonce = await ethClient.getTransactionCount(ethAccount.address)
 
-    const usdtContract = new EthContract(Erc20, CryptosInfo.USDT.contractId)
-    usdtContract.setProvider(ethClient.provider)
-    const usdtBalanceRaw = await usdtContract.methods.balanceOf(ethAccount.address).call()
+        const usdtContract = new EthContract(Erc20, CryptosInfo.USDT.contractId)
+        usdtContract.setProvider(ethClient.provider)
+        const usdtBalanceRaw = await usdtContract.methods.balanceOf(ethAccount.address).call()
 
-    live.eth = {
-      account: ethAccount,
-      client: ethClient,
-      balanceEth: new BigNumber(ethBalanceWei.toString()).div(1e18).toFixed(),
-      gasPriceWei: BigInt(gasPriceWei.toString()),
-      nonce: BigInt(nonce.toString())
+        live.eth = {
+          account: ethAccount,
+          client: ethClient,
+          balanceEth: new BigNumber(ethBalanceWei.toString()).div(1e18).toFixed(),
+          gasPriceWei: BigInt(gasPriceWei.toString()),
+          nonce: BigInt(nonce.toString())
+        }
+        live.usdt = {
+          contractAddress: CryptosInfo.USDT.contractId,
+          decimals: CryptosInfo.USDT.decimals,
+          balance: new BigNumber(usdtBalanceRaw.toString())
+            .div(new BigNumber(10).pow(CryptosInfo.USDT.decimals))
+            .toFixed()
+        }
+      })()
     }
-    live.usdt = {
-      contractAddress: CryptosInfo.USDT.contractId,
-      decimals: CryptosInfo.USDT.decimals,
-      balance: new BigNumber(usdtBalanceRaw.toString())
-        .div(new BigNumber(10).pow(CryptosInfo.USDT.decimals))
-        .toFixed()
-    }
-  }, 120000)
+
+    return ethSetupPromise
+  }
 
   describe('ADM', () => {
+    beforeAll(loadAdmState, 120000)
+
     it('builds a minTransferAmount ADM transaction from the real test account', () => {
       const amount = getMinAmount(Cryptos.ADM)
       expect(live.adm.balance).toBeGreaterThan(amount + Fees.ADM_TRANSFER)
@@ -418,6 +432,8 @@ liveDescribe('live no-broadcast send builders from ADM_TEST_ACCOUNT_PK', () => {
   })
 
   describe('BTC', () => {
+    beforeAll(loadBtcState, 120000)
+
     const feeForAmount = (amount, increaseFee) =>
       Number(
         btcGetters.fee({ utxo: live.btc.unspents, feeRate: live.btc.feeRate })(
@@ -505,6 +521,8 @@ liveDescribe('live no-broadcast send builders from ADM_TEST_ACCOUNT_PK', () => {
   })
 
   describe('DOGE', () => {
+    beforeAll(loadDogeState, 120000)
+
     const fee = CryptosInfo.DOGE.fixedFee
 
     it.each(Object.entries(DOGE_RECIPIENTS))(
@@ -566,6 +584,8 @@ liveDescribe('live no-broadcast send builders from ADM_TEST_ACCOUNT_PK', () => {
   })
 
   describe('DASH', () => {
+    beforeAll(loadDashState, 120000)
+
     const fee = CryptosInfo.DASH.fixedFee
 
     it.each(Object.entries(DASH_RECIPIENTS))(
@@ -626,6 +646,8 @@ liveDescribe('live no-broadcast send builders from ADM_TEST_ACCOUNT_PK', () => {
   })
 
   describe('ETH', () => {
+    beforeAll(loadEthAndUsdtState, 120000)
+
     it('builds a minTransferAmount ETH transaction from live balance and gas data', async () => {
       const amount = getMinAmount(Cryptos.ETH)
       const { transaction, signed, feeEth } = await buildEthTransfer({
@@ -719,6 +741,8 @@ liveDescribe('live no-broadcast send builders from ADM_TEST_ACCOUNT_PK', () => {
   })
 
   describe('USDT', () => {
+    beforeAll(loadEthAndUsdtState, 120000)
+
     it('builds a minTransferAmount USDT transaction from live balances and gas data', async () => {
       const amount = getMinAmount(Cryptos.USDT)
       const { transaction, signed, feeEth } = await buildUsdtTransfer({

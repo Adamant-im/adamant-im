@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { navigateInApp } from './helpers/navigation'
 import { loginWithNewAccount } from './helpers/auth'
 
 const assertNoDocumentScrollLeak = async (page: Page) => {
@@ -73,7 +74,7 @@ test.describe('Split-view layout regressions', () => {
   test('keeps independent pane scrolling on account and settings', async ({ page }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/home')
+    await navigateInApp(page, '/home')
     await expect(page).toHaveURL(/\/home$/)
     await expect(page.locator('.account-view')).toBeVisible()
 
@@ -81,7 +82,7 @@ test.describe('Split-view layout regressions', () => {
     await assertPaneScrollContract(page)
     await assertNoDocumentScrollLeak(page)
 
-    await page.goto('/options')
+    await navigateInApp(page, '/options')
     await expect(page).toHaveURL(/\/options$/)
     await expect(page.locator('.settings-view')).toBeVisible()
 

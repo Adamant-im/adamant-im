@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { navigateInApp } from './helpers/navigation'
 import { loginWithNewAccount } from './helpers/auth'
 
 const assertNoDocumentScrollLeak = async (page: Page) => {
@@ -24,21 +25,16 @@ test.describe('Transfer layout regressions', () => {
     await page.setViewportSize({ width: 390, height: 640 })
     await loginWithNewAccount(page)
 
-    const address = await page.evaluate(() => {
-      const runtime = window as typeof window & {
-        store?: {
-          state: {
-            address: string
-          }
-        }
-      }
+    const address = await page.evaluate(async () => {
+      const storeModulePath = '/src/store/index.js'
+      const { default: store } = await import(/* @vite-ignore */ storeModulePath)
 
-      return runtime.store?.state.address ?? ''
+      return store.state.address as string
     })
 
     expect(address).toMatch(/^U/i)
 
-    await page.goto(`/transfer/ADM/${address}`)
+    await navigateInApp(page, `/transfer/ADM/${address}`)
     await expect(page).toHaveURL(new RegExp(`/transfer/ADM/${address}$`))
     await expect(page.locator('.send-funds-form')).toBeVisible()
 
@@ -135,7 +131,7 @@ test.describe('Transfer layout regressions', () => {
 
     await loginWithNewAccount(page)
 
-    await page.goto('/transfer', { waitUntil: 'domcontentloaded' })
+    await navigateInApp(page, '/transfer', { waitUntil: 'domcontentloaded' })
     await expect(page).toHaveURL(/\/transfer(?:\/)?$/)
     await expect(page.locator('.send-funds-form')).toBeVisible()
 
@@ -178,7 +174,7 @@ test.describe('Transfer layout regressions', () => {
   test('blurs amount field on first Escape before leaving send funds screen', async ({ page }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/transfer')
+    await navigateInApp(page, '/transfer')
     await expect(page).toHaveURL(/\/transfer(?:\/)?$/)
     await expect(page.locator('.send-funds-form')).toBeVisible()
 
@@ -199,7 +195,7 @@ test.describe('Transfer layout regressions', () => {
   test('keeps send funds form spacing and sizing stable', async ({ page }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/transfer')
+    await navigateInApp(page, '/transfer')
     await expect(page).toHaveURL(/\/transfer(?:\/)?$/)
     await expect(page.locator('.send-funds-form')).toBeVisible()
     await page.locator('.send-funds-form__menu-activator').nth(1).click()
@@ -318,7 +314,7 @@ test.describe('Transfer layout regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await loginWithNewAccount(page)
 
-    await page.goto('/transfer')
+    await navigateInApp(page, '/transfer')
     await expect(page).toHaveURL(/\/transfer(?:\/)?$/)
     await expect(page.locator('.send-funds-form')).toBeVisible()
 

@@ -68,12 +68,6 @@ vi.mock('bitcoinjs-lib', async () => {
 
   return {
     ...actual,
-    crypto: {
-      ...actual.crypto,
-      sha256(value) {
-        return Buffer.from(actual.crypto.sha256(value))
-      }
-    },
     Psbt: FakePsbt
   }
 })
@@ -158,6 +152,7 @@ async function expectOfflineTransfer({
 
   expect(validateAddress(crypto, recipientAddress)).toBe(true)
   expect(transaction.txid).toMatch(/^[0-9a-f]{64}$/)
+  expect(transaction.txid).toBe(bitcoin.Transaction.fromHex(transaction.hex).getId())
   expect(calculateUtxoFee(transaction.hex, fundingAmount)).toBe(BigInt(Math.floor(fee * 1e8)))
   expect(outputs[0]).toEqual({
     address: recipientAddress,

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { navigateInApp } from './helpers/navigation'
 import { loginWithNewAccount } from './helpers/auth'
 
 const assertNoDocumentScrollLeak = async (page: Page) => {
@@ -23,7 +24,7 @@ test.describe('Home layout regressions', () => {
   }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/home')
+    await navigateInApp(page, '/home')
     await expect(page).toHaveURL(/\/home$/)
     await expect(page.locator('.wallet-card')).toBeVisible()
 
@@ -37,7 +38,7 @@ test.describe('Home layout regressions', () => {
   test('keeps wallet card spacing and typography stable on desktop', async ({ page }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/home')
+    await navigateInApp(page, '/home')
     await expect(page).toHaveURL(/\/home$/)
     await expect(page.locator('.wallet-card')).toBeVisible()
 
@@ -113,7 +114,7 @@ test.describe('Home layout regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await loginWithNewAccount(page)
 
-    await page.goto('/home')
+    await navigateInApp(page, '/home')
     await expect(page).toHaveURL(/\/home$/)
     await expect(page.locator('.wallet-card')).toBeVisible()
 
@@ -164,7 +165,7 @@ test.describe('Home layout regressions', () => {
   test('keeps branded ADAMANT title tracking on the home wallet card', async ({ page }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/home')
+    await navigateInApp(page, '/home')
     await expect(page).toHaveURL(/\/home$/)
 
     const brandTitle = page.locator('.wallet-card__brand-title').first()

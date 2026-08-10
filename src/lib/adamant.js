@@ -1,10 +1,9 @@
 'use strict'
 
-import sodium from 'sodium-browserify-tweetnacl'
-import crypto from 'crypto'
+import { sha256 } from '@noble/hashes/sha2.js'
+import { Buffer } from 'buffer'
 import nacl from 'tweetnacl/nacl-fast'
 import ed2curve from 'ed2curve'
-import { decode } from '@stablelib/utf8'
 import { BigNumber } from './bignumber.js'
 import ByteBuffer from 'bytebuffer'
 import constants from './constants'
@@ -18,6 +17,48 @@ import cache from '@/store/cache'
  * @namespace
  */
 const adamant = {}
+const textDecoder = new TextDecoder()
+const strictTextDecoder = new TextDecoder('utf-8', { fatal: true })
+const textEncoder = new TextEncoder()
+
+// TweetNaCl rejects cross-realm typed arrays. Normalize imported Buffer instances and
+// cross-realm Uint8Arrays at the cryptographic boundary without accepting strings or other
+// values that Uint8Array.from() would silently coerce.
+const toNaclBytes = (value) => {
+  if (
+    !ArrayBuffer.isView(value) ||
+    Object.prototype.toString.call(value) !== '[object Uint8Array]'
+  ) {
+    throw new TypeError('Expected a Uint8Array at the cryptographic boundary')
+  }
+
+  return Uint8Array.from(value)
+}
+
+const isHexadecimalString = (value) => {
+  if (value.length === 0 || value.length % 2 !== 0) return false
+
+  return Array.from(value).every((character) => {
+    const code = character.charCodeAt(0)
+
+    return (code >= 48 && code <= 57) || (code >= 65 && code <= 70) || (code >= 97 && code <= 102)
+  })
+}
+
+// Public crypto helpers historically accept both the hex representation used by the API and
+// byte arrays used internally. Normalize that documented boundary explicitly: Uint8Array.from()
+// would otherwise turn a hex string into zeroes instead of rejecting it.
+const normalizeCryptoBytes = (value, label) => {
+  if (typeof value === 'string') {
+    if (!isHexadecimalString(value)) {
+      throw new TypeError(`${label} must be an even-length hexadecimal string or Uint8Array`)
+    }
+
+    return toNaclBytes(hexToBytes(value))
+  }
+
+  return toNaclBytes(value)
+}
 
 /**
  * Converts provided `time` to Adamant's epoch timestamp
@@ -76,8 +117,7 @@ adamant.parseURIasAIP = function (uri) {
  * @return {string} hash
  */
 adamant.createPassphraseHash = function (passphrase) {
-  const seedHex = cache.mnemonicToSeedSync(passphrase).toString('hex')
-  return crypto.createHash('sha256').update(seedHex, 'hex').digest()
+  return Buffer.from(sha256(toNaclBytes(cache.mnemonicToSeedSync(passphrase))))
 }
 
 /**
@@ -87,11 +127,11 @@ adamant.createPassphraseHash = function (passphrase) {
  * @return {Object} publicKey, privateKey
  */
 adamant.makeKeypair = function (hash) {
-  const keypair = sodium.crypto_sign_seed_keypair(hash)
+  const keypair = nacl.sign.keyPair.fromSeed(toNaclBytes(hash))
 
   return {
-    publicKey: keypair.publicKey,
-    privateKey: keypair.secretKey
+    publicKey: Buffer.from(keypair.publicKey),
+    privateKey: Buffer.from(keypair.secretKey)
   }
 }
 
@@ -121,7 +161,7 @@ adamant.getTransactionId = function (transaction) {
  * @returns {string}
  */
 adamant.getAddressFromPublicKey = function (publicKey) {
-  const publicKeyHash = crypto.createHash('sha256').update(publicKey, 'hex').digest()
+  const publicKeyHash = sha256(normalizeCryptoBytes(publicKey, 'Public key'))
   const temp = Buffer.alloc(8)
 
   for (let i = 0; i < 8; i++) {
@@ -134,12 +174,12 @@ adamant.getAddressFromPublicKey = function (publicKey) {
 /**
  * Creates hash based on transaction bytes.
  * @implements {getBytes}
- * @implements {crypto.createHash}
+ * @implements {sha256}
  * @param {transaction} trs
  * @return {hash} sha256 crypto hash
  */
 adamant.getHash = function (trs) {
-  return crypto.createHash('sha256').update(this.getBytes(trs)).digest()
+  return Buffer.from(sha256(toNaclBytes(this.getBytes(trs))))
 }
 
 /**
@@ -179,7 +219,9 @@ adamant.getBytes = function (transaction) {
       assetSize = assetBytes.length
       break
     default:
-      alert('Not supported yet')
+      // Falling through here used to produce bytes with an empty asset, so an unknown
+      // transaction type would be signed over an incomplete representation of itself.
+      throw new Error(`Unsupported transaction type: ${transaction.type}`)
   }
 
   const bb = new ByteBuffer(1 + 4 + 32 + 8 + 8 + 64 + 64 + assetSize, true)
@@ -326,7 +368,9 @@ adamant.stateGetBytes = function (trs) {
  * @return {signature} signature
  */
 adamant.sign = function (hash, keypair) {
-  return sodium.crypto_sign_detached(hash, Buffer.from(keypair.privateKey, 'hex'))
+  return Buffer.from(
+    nacl.sign.detached(toNaclBytes(hash), toNaclBytes(Buffer.from(keypair.privateKey, 'hex')))
+  )
 }
 
 /**
@@ -337,29 +381,35 @@ adamant.sign = function (hash, keypair) {
  * @return {Boolean} true id verified
  */
 adamant.verify = function (hash, signatureBuffer, publicKeyBuffer) {
-  return sodium.crypto_sign_verify_detached(signatureBuffer, hash, publicKeyBuffer)
+  return nacl.sign.detached.verify(
+    toNaclBytes(hash),
+    toNaclBytes(signatureBuffer),
+    toNaclBytes(publicKeyBuffer)
+  )
 }
 
 /**
  * Encodes a text message for sending to ADM
- * @param {string} msg message to encode
- * @param {*} recipientPublicKey recipient's public key
- * @param {*} privateKey our private key
+ * @param {string|Uint8Array} msg message to encode
+ * @param {string|Uint8Array} recipientPublicKey recipient's public key
+ * @param {string|Uint8Array} privateKey our private key
  * @returns {{message: string, nonce: string}}
  */
 adamant.encodeMessage = function (msg, recipientPublicKey, privateKey) {
-  const nonce = Buffer.allocUnsafe(24)
-  sodium.randombytes(nonce)
+  const nonce = nacl.randomBytes(24)
 
-  if (typeof recipientPublicKey === 'string') {
-    recipientPublicKey = hexToBytes(recipientPublicKey)
-  }
+  const plainText = typeof msg === 'string' ? textEncoder.encode(msg) : toNaclBytes(msg)
+  const DHPublicKey = ed2curve.convertPublicKey(
+    normalizeCryptoBytes(recipientPublicKey, 'Recipient public key')
+  )
+  const DHSecretKey = ed2curve.convertSecretKey(normalizeCryptoBytes(privateKey, 'Private key'))
 
-  const plainText = Buffer.from(msg)
-  const DHPublicKey = ed2curve.convertPublicKey(recipientPublicKey)
-  const DHSecretKey = ed2curve.convertSecretKey(privateKey)
-
-  const encrypted = nacl.box(plainText, nonce, DHPublicKey, DHSecretKey)
+  const encrypted = nacl.box(
+    toNaclBytes(plainText),
+    toNaclBytes(nonce),
+    toNaclBytes(DHPublicKey),
+    toNaclBytes(DHSecretKey)
+  )
 
   return {
     message: bytesToHex(encrypted),
@@ -369,34 +419,25 @@ adamant.encodeMessage = function (msg, recipientPublicKey, privateKey) {
 
 /**
  * Decodes the incoming message
- * @param {any} msg encoded message
- * @param {string} senderPublicKey sender public key
- * @param {string} privateKey our private key
- * @param {any} nonce nonce
+ * @param {string|Uint8Array} msg encoded message
+ * @param {string|Uint8Array} senderPublicKey sender public key
+ * @param {string|Uint8Array} privateKey our private key
+ * @param {string|Uint8Array} nonce nonce
  * @returns {string}
  */
 adamant.decodeMessage = function (msg, senderPublicKey, privateKey, nonce) {
-  if (typeof msg === 'string') {
-    msg = hexToBytes(msg)
-  }
+  const DHPublicKey = ed2curve.convertPublicKey(
+    normalizeCryptoBytes(senderPublicKey, 'Sender public key')
+  )
+  const DHSecretKey = ed2curve.convertSecretKey(normalizeCryptoBytes(privateKey, 'Private key'))
+  const decrypted = nacl.box.open(
+    normalizeCryptoBytes(msg, 'Encrypted message'),
+    normalizeCryptoBytes(nonce, 'Nonce'),
+    toNaclBytes(DHPublicKey),
+    toNaclBytes(DHSecretKey)
+  )
 
-  if (typeof nonce === 'string') {
-    nonce = hexToBytes(nonce)
-  }
-
-  if (typeof senderPublicKey === 'string') {
-    senderPublicKey = hexToBytes(senderPublicKey)
-  }
-
-  if (typeof privateKey === 'string') {
-    privateKey = hexToBytes(privateKey)
-  }
-
-  const DHPublicKey = ed2curve.convertPublicKey(senderPublicKey)
-  const DHSecretKey = ed2curve.convertSecretKey(privateKey)
-  const decrypted = nacl.box.open(msg, nonce, DHPublicKey, DHSecretKey)
-
-  return decrypted ? decode(decrypted) : ''
+  return decrypted ? textDecoder.decode(decrypted) : ''
 }
 
 /**
@@ -406,22 +447,36 @@ adamant.decodeMessage = function (msg, senderPublicKey, privateKey, nonce) {
  * @returns {{message: string, nonce: string}} encoded value and nonce (both as HEX-strings)
  */
 adamant.encodeValue = function (value, privateKey) {
-  const randomString = () =>
-    Math.random()
-      .toString(36)
-      .replace(/[^a-z]+/g, '')
-      .substr(0, Math.ceil(Math.random() * 10))
+  // The padding hides the length of the payload, so it has to come from a CSPRNG.
+  const randomString = () => {
+    const lengthBuffer = new Uint8Array(1)
+    globalThis.crypto.getRandomValues(lengthBuffer)
 
-  const nonce = Buffer.allocUnsafe(24)
-  sodium.randombytes(nonce)
+    const length = (lengthBuffer[0] % 10) + 1
+    const charactersBuffer = new Uint8Array(length)
+    globalThis.crypto.getRandomValues(charactersBuffer)
+
+    return (
+      Array.from(charactersBuffer)
+        // 97 is the ASCII code of 'a', 26 is the number of letters in the English alphabet
+        .map((byte) => String.fromCharCode(97 + (byte % 26)))
+        .join('')
+    )
+  }
+
+  const nonce = nacl.randomBytes(24)
 
   // for some reason calling `JSON.stringify` directly breaks the module compilation.
   const padded = randomString() + JSON.stringify({ payload: value }) + randomString()
 
-  const plainText = Buffer.from(padded)
-  const secretKey = ed2curve.convertSecretKey(sodium.crypto_hash_sha256(privateKey))
+  const plainText = textEncoder.encode(padded)
+  const secretKey = ed2curve.convertSecretKey(sha256(toNaclBytes(privateKey)))
 
-  const encrypted = nacl.secretbox(plainText, nonce, secretKey)
+  const encrypted = nacl.secretbox(
+    toNaclBytes(plainText),
+    toNaclBytes(nonce),
+    toNaclBytes(secretKey)
+  )
 
   return {
     message: bytesToHex(encrypted),
@@ -437,18 +492,14 @@ adamant.encodeValue = function (value, privateKey) {
  * @returns {string} decoded value
  */
 adamant.decodeValue = function (source, privateKey, nonce) {
-  if (typeof source === 'string') {
-    source = hexToBytes(source)
-  }
+  const secretKey = ed2curve.convertSecretKey(sha256(toNaclBytes(privateKey)))
+  const decrypted = nacl.secretbox.open(
+    normalizeCryptoBytes(source, 'Encrypted value'),
+    normalizeCryptoBytes(nonce, 'Nonce'),
+    toNaclBytes(secretKey)
+  )
 
-  if (typeof nonce === 'string') {
-    nonce = hexToBytes(nonce)
-  }
-
-  const secretKey = ed2curve.convertSecretKey(sodium.crypto_hash_sha256(privateKey))
-  const decrypted = nacl.secretbox.open(source, nonce, secretKey)
-
-  const strValue = decrypted ? decode(decrypted) : ''
+  const strValue = decrypted ? strictTextDecoder.decode(decrypted) : ''
   if (!strValue) return null
 
   const from = strValue.indexOf('{')
@@ -465,20 +516,24 @@ adamant.decodeValue = function (source, privateKey, nonce) {
 /**
  * Encodes a secret binary (available for the owner only)
  * @param {Uint8Array} source value to encode
- * @param {Uint8Array} recipientPublicKey sender's public key
- * @param {Uint8Array|Buffer} privateKey private key
- * @returns {{binary: string, nonce: string}} encoded binary and nonce (both as HEX-strings)
+ * @param {string|Uint8Array} recipientPublicKey recipient's public key
+ * @param {string|Uint8Array} privateKey private key
+ * @returns {{binary: Uint8Array, nonce: string}} encoded binary and hex-encoded nonce
  */
 adamant.encodeBinary = function (source, recipientPublicKey, privateKey) {
-  const nonce = Buffer.allocUnsafe(24)
-  sodium.randombytes(nonce)
+  const nonce = nacl.randomBytes(24)
 
-  const publicKey = hexToBytes(recipientPublicKey)
+  const DHPublicKey = ed2curve.convertPublicKey(
+    normalizeCryptoBytes(recipientPublicKey, 'Recipient public key')
+  )
+  const DHSecretKey = ed2curve.convertSecretKey(normalizeCryptoBytes(privateKey, 'Private key'))
 
-  const DHPublicKey = ed2curve.convertPublicKey(publicKey)
-  const DHSecretKey = ed2curve.convertSecretKey(privateKey)
-
-  const encrypted = nacl.box(source, nonce, DHPublicKey, DHSecretKey)
+  const encrypted = nacl.box(
+    toNaclBytes(source),
+    toNaclBytes(nonce),
+    toNaclBytes(DHPublicKey),
+    toNaclBytes(DHSecretKey)
+  )
 
   return {
     binary: encrypted,
@@ -488,24 +543,24 @@ adamant.encodeBinary = function (source, recipientPublicKey, privateKey) {
 
 /**
  * Decodes a secret binary
- * @param {string|Uint8Array} source source to decrypt
+ * @param {Uint8Array} source source to decrypt
  * @param {string|Uint8Array} senderPublicKey sender's public key
  * @param {Uint8Array|Buffer} privateKey private key
  * @param {string|Uint8Array} nonce nonce
  * @returns {string} decoded value
  */
 adamant.decodeBinary = function (source, senderPublicKey, privateKey, nonce) {
-  if (typeof nonce === 'string') {
-    nonce = hexToBytes(nonce)
-  }
+  const DHPublicKey = ed2curve.convertPublicKey(
+    normalizeCryptoBytes(senderPublicKey, 'Sender public key')
+  )
+  const DHSecretKey = ed2curve.convertSecretKey(toNaclBytes(privateKey))
 
-  const publicKey =
-    typeof senderPublicKey === 'string' ? hexToBytes(senderPublicKey) : senderPublicKey
-
-  const DHPublicKey = ed2curve.convertPublicKey(publicKey)
-  const DHSecretKey = ed2curve.convertSecretKey(privateKey)
-
-  return nacl.box.open(source, nonce, DHPublicKey, DHSecretKey)
+  return nacl.box.open(
+    toNaclBytes(source),
+    normalizeCryptoBytes(nonce, 'Nonce'),
+    toNaclBytes(DHPublicKey),
+    toNaclBytes(DHSecretKey)
+  )
 }
 
 /**

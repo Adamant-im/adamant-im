@@ -1,4 +1,5 @@
 import { isAddress as isEthAddress, isHexStrict } from 'web3-validator'
+import process from 'process'
 import { Cryptos, CryptosInfo } from './constants'
 
 /**
@@ -61,7 +62,7 @@ export function parseURI(uri = getAddressBarURI()) {
  */
 export function parseURIasAIP(uri = getAddressBarURI()) {
   const [origin, query = ''] = uri.split('?')
-  let address = ''
+  let address
   let crypto = ''
   let params = Object.create(null)
   let protocol = ''
@@ -83,6 +84,8 @@ export function parseURIasAIP(uri = getAddressBarURI()) {
     address = origin
 
     for (const [symbol, { regexAddress }] of Object.entries(CryptosInfo)) {
+      // Address patterns come from the pinned adamant-wallets specification, not user input.
+      // eslint-disable-next-line security/detect-non-literal-regexp
       if (new RegExp(regexAddress).test(address)) {
         crypto = symbol
       }
@@ -113,9 +116,12 @@ export function generateURI(crypto = Cryptos.ADM, address, name = '') {
     return `${hostname}?address=${address}${label}`
   }
 
-  const { qrPrefix } = CryptosInfo[crypto]
-  if (qrPrefix) {
-    return `${qrPrefix}:${address}`
+  // The wallet specification spells this `qqPrefix`. Reading `qrPrefix` here silently produced
+  // `undefined` for every coin, so QR codes and share links carried a bare address with no URI
+  // scheme and external wallets could not recognize them as payment URIs.
+  const { qqPrefix } = CryptosInfo[crypto]
+  if (qqPrefix) {
+    return `${qqPrefix}:${address}`
   } else {
     return address
   }

@@ -1,13 +1,14 @@
 import { testPassphrase } from './helpers/env'
 import { expect, test } from '@playwright/test'
 
+import { navigateInApp } from './helpers/navigation'
 import { loginWithNewAccount, loginWithPassphrase } from './helpers/auth'
 
 test.describe('Secondary dialogs layout regressions', () => {
   test('keeps share address and trade dialogs on the shared compact width', async ({ page }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/home')
+    await navigateInApp(page, '/home')
     await expect(page).toHaveURL(/\/home$/)
     await expect(page.locator('.wallet-card')).toBeVisible()
 
@@ -104,7 +105,7 @@ test.describe('Secondary dialogs layout regressions', () => {
   test('keeps qr renderer dialog on the shared qrcode width', async ({ page }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/chats')
+    await navigateInApp(page, '/chats')
     await expect(page).toHaveURL(/\/chats$/)
 
     await page.locator('.chats-view__item').click()
@@ -157,7 +158,7 @@ test.describe('Secondary dialogs layout regressions', () => {
 
     await loginWithPassphrase(page, testPassphrase!)
 
-    await page.goto('/chats/U6386412615727665758')
+    await navigateInApp(page, '/chats/U6386412615727665758')
     await page.waitForURL(/\/chats\/U6386412615727665758$/, { timeout: 90_000 })
     await expect(page.locator('.chat-toolbar .chat-avatar')).toBeVisible()
 

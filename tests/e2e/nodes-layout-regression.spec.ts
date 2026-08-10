@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { navigateInApp } from './helpers/navigation'
 import { loginWithNewAccount } from './helpers/auth'
 
 const assertNoDocumentScrollLeak = async (page: Page) => {
@@ -21,7 +22,7 @@ test.describe('Nodes layout regressions', () => {
   test('keeps uppercase tabs using shared tracking', async ({ page }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/options/nodes')
+    await navigateInApp(page, '/options/nodes')
     await expect(page).toHaveURL(/\/options\/nodes$/)
 
     const firstTab = page.locator('.nodes-table .v-tab').first()
@@ -45,7 +46,7 @@ test.describe('Nodes layout regressions', () => {
   test('keeps nodes table gutters and row typography consistent', async ({ page }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/options/nodes')
+    await navigateInApp(page, '/options/nodes')
     await expect(page).toHaveURL(/\/options\/nodes$/)
     await expect(page.locator('.nodes-table')).toBeVisible()
 
@@ -166,7 +167,7 @@ test.describe('Nodes layout regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await loginWithNewAccount(page)
 
-    await page.goto('/options/nodes')
+    await navigateInApp(page, '/options/nodes')
     await expect(page).toHaveURL(/\/options\/nodes$/)
     await expect(page.locator('.nodes-table')).toBeVisible()
     await expect(page.locator('.settings-data-table')).toBeVisible()

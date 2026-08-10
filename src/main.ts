@@ -1,5 +1,3 @@
-import 'core-js/actual/object/group-by'
-
 import { createApp } from 'vue'
 import { VueQueryPlugin } from '@tanstack/vue-query'
 
@@ -35,7 +33,5 @@ app.directive('longpress', longPressDirective)
 registerGlobalComponents(app)
 
 app.mount('#app')
-
-window.ep = app
 
 document.title = i18n.global.t('app_title')

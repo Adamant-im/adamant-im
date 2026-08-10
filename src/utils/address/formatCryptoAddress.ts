@@ -16,17 +16,10 @@ export function formatCryptoAddress(
   admAddress = '',
   partnerName = ''
 ) {
-  let name = ''
-
   const isMineAddress = isStringEqualCI(cryptoAddress, ownCryptoAddress)
+  const name = isMineAddress ? t('transaction.me') : partnerName
 
-  if (isMineAddress) {
-    name = t('transaction.me')
-  } else {
-    name = partnerName
-  }
-
-  let result = ''
+  let result
   if (name) {
     result = cryptoAddress ? name + ' (' + cryptoAddress + ')' : name
   } else {

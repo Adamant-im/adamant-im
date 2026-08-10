@@ -1,8 +1,14 @@
-import { app, BrowserWindow, Menu, nativeTheme, protocol } from 'electron'
+import { app, BrowserWindow, Menu, protocol, shell } from 'electron'
 import { fileURLToPath, URL } from 'node:url'
-import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+import { installExtension, VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import path from 'node:path'
 import { readFile } from 'node:fs/promises'
+
+// The one place URI schemes are defined, shared with the renderer and derived from
+// `adamant-wallets`. Hardcoding a second copy here is what silently blocked the `ethereum:`,
+// `dash:` and `doge:` links the app itself generates.
+import { ALLOWED_URI_PROTOCOLS } from '@/lib/uriSchemes'
+import { resolveProtocolFilePath } from './protocolPath.js'
 
 const SCHEME = 'app'
 const __filename = fileURLToPath(import.meta.url)
@@ -39,7 +45,6 @@ const electronRendererCsp = [
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected
 let appWindow
-let removeNativeThemeListener
 
 if (import.meta.env.DEV) {
   app.commandLine.appendSwitch(
@@ -50,22 +55,6 @@ if (import.meta.env.DEV) {
   if (suppressChromiumLogs) {
     app.commandLine.appendSwitch('log-level', '3')
   }
-}
-
-const syncDarkThemeWithRenderer = (value) => {
-  if (!appWindow || appWindow.isDestroyed() || appWindow.webContents.isDestroyed()) {
-    return
-  }
-
-  const darkTheme = value ? 'true' : 'false'
-  appWindow.webContents
-    .executeJavaScript(
-      `window.store?.commit?.('options/updateOption', { key: 'darkTheme', value: ${darkTheme} })`,
-      true
-    )
-    .catch((error) => {
-      logInfo('Failed to sync native theme with renderer store:', error)
-    })
 }
 
 // Standard scheme must be registered before the app is ready
@@ -89,10 +78,26 @@ function createProtocol(scheme, customProtocol) {
   }
 
   targetProtocol.handle(scheme, async (request) => {
+    const staticRoot = path.resolve(__dirname)
     const pathName = decodeURI(new URL(request.url).pathname) // Needed in case URL contains spaces
-    const filePath = path.join(__dirname, pathName)
+
+    // `path.join(__dirname, pathName)` let a compromised renderer walk out of the bundle
+    // directory: `new URL('app://./../../etc/passwd').pathname` normalizes to an absolute
+    // path, and on Windows a percent-encoded backslash survives `decodeURI` and is treated
+    // as a separator. `path.resolve` canonicalizes every form, and the prefix check rejects
+    // anything that still lands outside the bundle.
+    const filePath = resolveProtocolFilePath(staticRoot, pathName)
+
+    if (!filePath) {
+      return new Response('Forbidden', {
+        status: 403,
+        headers: { 'content-type': 'text/plain' }
+      })
+    }
 
     try {
+      // The canonical path was confined to staticRoot immediately above.
+      // eslint-disable-next-line security/detect-non-literal-fs-filename
       const data = await readFile(filePath)
       const extension = path.extname(filePath).toLowerCase()
       const mimeType = mimeTypes[extension] || 'text/plain'
@@ -119,6 +124,59 @@ function createProtocol(scheme, customProtocol) {
   })
 }
 
+function isInternalUrl(url) {
+  if (url.startsWith(`${SCHEME}://`)) return true
+
+  return Boolean(process.env.VITE_DEV_SERVER_URL && url.startsWith(process.env.VITE_DEV_SERVER_URL))
+}
+
+/**
+ * Keeps remote content out of the application window.
+ *
+ * Without this, a link in a chat message — or a script that reached the renderer — can
+ * navigate the window itself to an arbitrary origin. The renderer CSP is attached to `.html`
+ * responses served over the `app://` protocol, so after such a navigation the desktop app
+ * would be showing remote content with no CSP at all. `window.open` would likewise spawn a
+ * second Electron window for the target site instead of handing it to the system browser.
+ */
+function restrictNavigation(webContents) {
+  webContents.setWindowOpenHandler(({ url }) => {
+    try {
+      if (ALLOWED_URI_PROTOCOLS.has(new URL(url).protocol)) {
+        void shell.openExternal(url)
+      } else {
+        logInfo('Blocked window.open for an unsupported protocol:', url)
+      }
+    } catch (error) {
+      logInfo('Blocked window.open for an unparsable URL:', url, error)
+    }
+
+    return { action: 'deny' }
+  })
+
+  webContents.on('will-navigate', (event, url) => {
+    if (isInternalUrl(url)) return
+
+    event.preventDefault()
+
+    try {
+      if (ALLOWED_URI_PROTOCOLS.has(new URL(url).protocol)) {
+        void shell.openExternal(url)
+        return
+      }
+    } catch {
+      // fall through to the log below
+    }
+
+    logInfo('Blocked in-app navigation to:', url)
+  })
+
+  webContents.on('will-attach-webview', (event) => {
+    // The application does not use <webview>; anything that tries to attach one is hostile
+    event.preventDefault()
+  })
+}
+
 function createWindow() {
   // Create the browser window
   appWindow = new BrowserWindow({
@@ -127,8 +185,19 @@ function createWindow() {
     height: 800,
     minWidth: 380,
     minHeight: 624,
-    icon: path.join(__dirname, '/icon.png')
+    icon: path.join(__dirname, '/icon.png'),
+    // These are the current Electron defaults. They are stated explicitly so that a future
+    // Electron upgrade, or a copy of this config, cannot silently relax them.
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.cjs'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+      webSecurity: true
+    }
   })
+
+  restrictNavigation(appWindow.webContents)
 
   // You can use `process.env.VITE_DEV_SERVER_URL` when the vite command is called `serve`
   if (process.env.VITE_DEV_SERVER_URL) {
@@ -142,11 +211,6 @@ function createWindow() {
   }
 
   appWindow.on('closed', () => {
-    if (removeNativeThemeListener) {
-      removeNativeThemeListener()
-      removeNativeThemeListener = undefined
-    }
-
     appWindow = null
   })
 
@@ -185,16 +249,6 @@ function createWindow() {
       ]
     }
   ]
-
-  appWindow.webContents.on('did-finish-load', () => {
-    syncDarkThemeWithRenderer(nativeTheme.shouldUseDarkColors)
-  })
-
-  const handleNativeThemeUpdate = () => {
-    syncDarkThemeWithRenderer(nativeTheme.shouldUseDarkColors)
-  }
-  nativeTheme.on('updated', handleNativeThemeUpdate)
-  removeNativeThemeListener = () => nativeTheme.off('updated', handleNativeThemeUpdate)
 
   if (process.platform === 'darwin') {
     Menu.setApplicationMenu(Menu.buildFromTemplate(template))

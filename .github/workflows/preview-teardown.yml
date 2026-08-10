@@ -17,14 +17,20 @@ jobs:
     permissions:
       pull-requests: write
     steps:
+      - name: Checkout repository 🛠️
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js 🍀
+        uses: ./.github/actions/setup-node
+
       - name: Tear down ${{ env.PREVIEW_DOMAIN }} preview domain 🥲
         run: |
           npm install --global surge
           surge teardown ${{ env.PREVIEW_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
 
       - name: Comment PR 💬
-        uses: thollander/actions-comment-pull-request@v2
+        uses: thollander/actions-comment-pull-request@v3
         with:
           message: |
             Successfully tore down ${{ env.PREVIEW_DOMAIN }} 🥲
-          comment_tag: teardown-message
+          comment-tag: teardown-message

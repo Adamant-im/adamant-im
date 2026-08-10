@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isAdamantChat } from '@/lib/chat/meta/utils'
+import { isAdamantChat, isVirtualChat } from '@/lib/chat/meta/utils'
 
 describe('isAdamantChat', () => {
   it('should return `true` when it is Bounty Wallet', () => {
@@ -16,5 +16,13 @@ describe('isAdamantChat', () => {
 
   it('should return `false` when is not an ADAMANT chat', () => {
     expect(isAdamantChat('U123456')).toBe(false)
+  })
+})
+
+describe('isVirtualChat', () => {
+  it('returns true only for client-side chats without node history', () => {
+    expect(isVirtualChat('chats.virtual.welcome_message_title')).toBe(true)
+    expect(isVirtualChat('U15423595369615486571')).toBe(false)
+    expect(isVirtualChat('U123456')).toBe(false)
   })
 })

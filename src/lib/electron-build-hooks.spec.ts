@@ -21,6 +21,7 @@ describe('electron build hooks', () => {
       const script = `
         const path = require('node:path')
         process.chdir(${JSON.stringify(tempDir)})
+        Object.defineProperty(process, 'platform', { value: 'darwin' })
         delete process.env.APPLE_NOTARIZE
         const notarizeHook = require(${JSON.stringify(notarizeHookPath)}).default
         const stapleHook = require(${JSON.stringify(stapleHookPath)}).default

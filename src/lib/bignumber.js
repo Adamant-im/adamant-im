@@ -7,6 +7,7 @@
  * @constructor
  */
 import BigNumber from 'bignumber.js'
+import { Buffer } from 'buffer'
 
 /**
  * Creates an instance from a Buffer.
@@ -101,9 +102,11 @@ BigNumber.prototype.toBuffer = function (opts) {
   // Zero-pad the hex string so the chunks are all `size` long
   while (hex.length < 2 * len) hex = '0' + hex
 
-  const hx = hex.split(new RegExp('(.{' + 2 * size + '})')).filter(function (s) {
-    return s.length > 0
-  })
+  const chunkLength = 2 * size
+  const hx = []
+  for (let offset = 0; offset < hex.length; offset += chunkLength) {
+    hx.push(hex.slice(offset, offset + chunkLength))
+  }
 
   hx.forEach(function (chunk, i) {
     for (let j = 0; j < size; j++) {

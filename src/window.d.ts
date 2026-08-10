@@ -1,9 +1,9 @@
-import { App } from 'vue'
-import { Store } from 'vuex'
+export {}
 
 declare global {
   interface Window {
-    ep: App<Element>
-    store: Store<any>
+    adamantDesktop?: Readonly<{
+      isElectron: true
+    }>
   }
 }

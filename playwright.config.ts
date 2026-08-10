@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { existsSync } from 'node:fs'
 import { defineConfig, devices } from '@playwright/test'
+import { LONG_RUNNING_TEST_TAG } from './tests/e2e/helpers/longRunning.ts'
 
 const formatRunStamp = (date: Date) => {
   const pad = (value: number) => value.toString().padStart(2, '0')
@@ -31,6 +32,7 @@ const resolveRunStamp = () => {
 
 const runStamp = resolveRunStamp()
 const isDetailedMode = process.env.PLAYWRIGHT_DETAILED === '1'
+const performLongRunningTests = process.env.PLAYWRIGHT_PERFORM_LONG_RUNNING === '1'
 const runRootDir = path.join('playwright-report', runStamp)
 const htmlOutputDir = path.join(runRootDir, 'html')
 const outputDir = path.join(runRootDir, 'artifacts')
@@ -43,6 +45,7 @@ export default defineConfig({
   },
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
+  grepInvert: performLongRunningTests ? undefined : new RegExp(LONG_RUNNING_TEST_TAG),
   retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 1 : 2,
   preserveOutput: isDetailedMode ? 'always' : 'failures-only',
@@ -73,7 +76,7 @@ export default defineConfig({
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
     : {
-        command: `npm run dev -- --host 127.0.0.1 --port ${port}`,
+        command: `npx cross-env VITE_DISABLE_DEVTOOLS=1 npm run dev -- --host 127.0.0.1 --port ${port}`,
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000

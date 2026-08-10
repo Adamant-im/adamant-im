@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { navigateInApp } from './helpers/navigation'
 import { loginWithNewAccount } from './helpers/auth'
 
 const assertNoDocumentScrollLeak = async (page: Page) => {
@@ -23,23 +24,13 @@ test.describe('Wallets layout regressions', () => {
   }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/options/wallets')
+    await navigateInApp(page, '/options/wallets')
     await expect(page).toHaveURL(/\/options\/wallets$/)
     await expect(page.locator('.wallets-view__list')).toBeVisible()
 
-    await page.evaluate(() => {
-      const runtime = window as typeof window & {
-        store?: {
-          getters: Record<string, unknown>
-          state: Record<string, unknown>
-        }
-      }
-
-      const store = runtime.store
-
-      if (!store) {
-        throw new Error('window.store is not available')
-      }
+    await page.evaluate(async () => {
+      const storeModulePath = '/src/store/index.js'
+      const { default: store } = await import(/* @vite-ignore */ storeModulePath)
 
       const allWallets = store.getters['wallets/getAllOrderedWalletSymbols'] as Array<{
         symbol: string
@@ -68,7 +59,7 @@ test.describe('Wallets layout regressions', () => {
   test('keeps wallets shell aligned to settings content on desktop', async ({ page }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/options/wallets')
+    await navigateInApp(page, '/options/wallets')
     await expect(page).toHaveURL(/\/options\/wallets$/)
     await expect(page.locator('div.wallets-view-page')).toBeVisible()
     await expect(page.locator('.wallets-view__list')).toBeVisible()
@@ -144,7 +135,7 @@ test.describe('Wallets layout regressions', () => {
     await page.setViewportSize({ width: 1280, height: 720 })
     await loginWithNewAccount(page)
 
-    await page.goto('/options/wallets')
+    await navigateInApp(page, '/options/wallets')
     await expect(page).toHaveURL(/\/options\/wallets$/)
     await expect(page.locator('div.wallets-view-page')).toBeVisible()
     await expect(page.locator('.sidebar__layout.a-scroll-pane')).toBeVisible()
@@ -232,7 +223,7 @@ test.describe('Wallets layout regressions', () => {
   test('keeps wallets search and list item sizing consistent', async ({ page }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/options/wallets')
+    await navigateInApp(page, '/options/wallets')
     await expect(page).toHaveURL(/\/options\/wallets$/)
 
     const searchField = page.locator('.wallets-view__search .v-field')
@@ -324,7 +315,7 @@ test.describe('Wallets layout regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await loginWithNewAccount(page)
 
-    await page.goto('/options/wallets')
+    await navigateInApp(page, '/options/wallets')
     await expect(page).toHaveURL(/\/options\/wallets$/)
     await expect(page.locator('.wallets-view__list')).toBeVisible()
 
@@ -379,7 +370,7 @@ test.describe('Wallets layout regressions', () => {
   test('keeps wallet tab content top-aligned when fiat line is absent', async ({ page }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/home')
+    await navigateInApp(page, '/home')
     await expect(page).toHaveURL(/\/home$/)
     await expect(page.locator('.account-view')).toBeVisible()
     await expect(page.locator('.wallet-tab__content').first()).toBeVisible()
@@ -432,7 +423,7 @@ test.describe('Wallets layout regressions', () => {
   test('keeps wallet tabs sizing and slider controls consistent on home', async ({ page }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/home')
+    await navigateInApp(page, '/home')
     await expect(page).toHaveURL(/\/home$/)
     await expect(page.locator('.account-view')).toBeVisible()
 
@@ -497,7 +488,7 @@ test.describe('Wallets layout regressions', () => {
   test('keeps branded ADAMANT title tracking on wallet list rows', async ({ page }) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/options/wallets')
+    await navigateInApp(page, '/options/wallets')
     await expect(page).toHaveURL(/\/options\/wallets$/)
 
     const brandTitle = page.locator('.wallets-view__crypto-brand-title').first()

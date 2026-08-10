@@ -188,6 +188,7 @@ import {
   type SplitDisplayValue
 } from '@/components/transactions/utils/splitDisplayValueByName'
 import { COMMON_COMPACT_ICON_SIZE } from '@/components/common/helpers/uiMetrics'
+import { openExternalLink } from '@/lib/openExternalLink'
 
 const className = 'transaction-view'
 
@@ -382,7 +383,7 @@ const handleCopyToClipboard = (text?: string) => {
 
 const openInExplorer = () => {
   if (props.explorerLink) {
-    window.open(props.explorerLink, '_blank', 'resizable,scrollbars,status,noopener')
+    openExternalLink(props.explorerLink)
   }
 }
 

@@ -39,7 +39,9 @@
 
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
-import draggable from 'vuedraggable'
+// The package's `module` field points to a UMD bundle that embeds another Vue runtime,
+// its runtime compiler, and legacy core-js. The published source entry is native ESM.
+import draggable from 'vuedraggable/src/vuedraggable.js'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { CryptosInfo, CryptoSymbol, isErc20 } from '@/lib/constants'
 import { useStore } from 'vuex'

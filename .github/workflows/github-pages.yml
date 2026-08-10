@@ -20,15 +20,13 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node version 🍀
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
+        uses: ./.github/actions/setup-node
 
       - name: Configure GitHub Pages ⚙️
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Install dependencies 📦
         run: npm ci
@@ -38,14 +36,14 @@ jobs:
           npm run schema:generate
           npm run build
         env:
-          VITE_PUBLIC_PATH: "/${{ github.event.repository.name }}/"
+          VITE_PUBLIC_PATH: '/${{ github.event.repository.name }}/'
           VITE_ROUTER_HISTORY_MODE: hash
 
       - name: Upload artifacts 📁
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
       - name: Deploy to GitHub Pages 🚀
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

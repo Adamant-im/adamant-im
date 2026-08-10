@@ -18,12 +18,7 @@ export function useFormattedDate() {
 
   const getTime = (date: Date) => {
     const hours = date.getHours()
-    let time = ''
-    if (hours < 10) {
-      time = '0' + hours
-    } else {
-      time = '' + hours
-    }
+    let time = hours < 10 ? '0' + hours : '' + hours
     time = time + ':'
     const minutes = date.getMinutes()
     if (minutes < 10) {

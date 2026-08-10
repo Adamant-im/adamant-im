@@ -67,6 +67,7 @@ import AChatImageModalItem from './AChatImageModalItem.vue'
 import AChatModalFile from './AChatModalFile.vue'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { FileAsset } from '@/lib/adamant-api/asset'
+import { getNativeAttachmentPath } from '@/lib/files/nativeAttachmentPath'
 import { mdiArrowCollapseDown, mdiChevronLeft, mdiChevronRight, mdiClose } from '@mdi/js'
 import { logger } from '@/utils/devTools/logger'
 
@@ -86,9 +87,10 @@ async function downloadFileNatively(blobUrl: string, filename: string): Promise<
       const base64Data = reader.result?.toString().split(',')[1]
 
       Filesystem.writeFile({
-        path: filename,
+        path: getNativeAttachmentPath(filename),
         data: base64Data!,
-        directory: Directory.Data
+        directory: Directory.Data,
+        recursive: true
       })
         .then(resolve)
         .catch(reject)
@@ -385,7 +387,8 @@ export default {
         const imageUrl = await store.dispatch('attachment/getAttachmentUrl', {
           cid: file.id,
           publicKey: publicKey.value,
-          nonce: file.nonce
+          nonce: file.nonce,
+          size: file.size
         })
 
         const fileName = file.name

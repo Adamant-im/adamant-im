@@ -1,4 +1,5 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test'
+import { navigateInApp } from './helpers/navigation'
 import { loginWithNewAccount } from './helpers/auth'
 
 const attachPageScreenshot = async (page: Page, testInfo: TestInfo, name: string) => {
@@ -37,7 +38,7 @@ test.describe('Chats core smoke checks', () => {
   test('returns to chats list and shows empty right pane logo', async ({ page }, testInfo) => {
     await loginWithNewAccount(page)
 
-    await page.goto('/chats')
+    await navigateInApp(page, '/chats')
     await expect(page).toHaveURL(/\/chats$/)
 
     await expect(page.locator('.chats-view__list')).toBeVisible()

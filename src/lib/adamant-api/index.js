@@ -5,6 +5,7 @@ import constants, { Transactions, Delegates, MessageType } from '@/lib/constants
 import utils from '@/lib/adamant'
 import client from '@/lib/nodes/adm'
 import { encryptPassword } from '@/lib/idb/crypto'
+import { loadPasswordKdfDescriptor } from '@/lib/idb/passwordKdf'
 import { restoreState } from '@/lib/idb/state'
 import { i18n } from '@/i18n'
 import store from '@/store'
@@ -12,6 +13,7 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import { parseCryptoAddressesKVStxs } from '@/lib/store-crypto-address'
 import { DEFAULT_TIME_DELTA } from '@/lib/nodes/constants.js'
 import { logger } from '@/utils/devTools/logger'
+import { isChatTransactionVisible } from '@/lib/chat/helpers/isChatTransactionVisible'
 
 Queue.configure(Promise)
 
@@ -106,36 +108,78 @@ export function isReady() {
 }
 
 /**
+ * Checks that a public key really belongs to an ADM address.
+ *
+ * An ADM address is derived from the public key: the first 8 bytes of `sha256(publicKey)`,
+ * reversed, read as a decimal number and prefixed with `U`. The binding is therefore
+ * verifiable offline, with a single hash and no network request.
+ *
+ * This closes public key substitution outright. A node cannot answer with a key of its own
+ * choosing for a given address, because a different key produces a different address — and
+ * finding a second key that hashes to the same address is a 64-bit preimage problem.
+ * Cross-checking the answer against a second node would be both slower and weaker: a second
+ * node can be compromised too, while arithmetic cannot.
+ * @param {string} address ADM address
+ * @param {string} publicKey public key in hex
+ * @returns {boolean}
+ */
+export function isPublicKeyBoundToAddress(address, publicKey) {
+  if (!address || !publicKey) return false
+
+  try {
+    return isStringEqualCI(utils.getAddressFromPublicKey(publicKey), address)
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Caches a public key after verifying that it belongs to the address it is claimed for.
+ * @returns {boolean} whether the key was accepted
+ */
+export function cacheVerifiedPublicKey(address, publicKey) {
+  if (!isPublicKeyBoundToAddress(address, publicKey)) {
+    logger.error('adamant-api', 'Rejected a public key that does not derive the claimed address', {
+      address
+    })
+
+    return false
+  }
+
+  store.commit('setPublicKey', { adamantAddress: address, publicKey })
+
+  return true
+}
+
+/**
  * Retrieves user public key by his address
  * @param {string} address ADM address
  * @returns {Promise<string>}
  */
-export function getPublicKey(address = '') {
+export async function getPublicKey(address = '') {
   if (address === store.state.address && myKeypair.publicKey) {
-    return Promise.resolve(myKeypair.publicKey.toString('hex'))
+    return myKeypair.publicKey.toString('hex')
   }
 
   // @todo remove returning cached keys and use getCachedPublicKey instead
   const publicKeyCached = store.getters.publicKey(address)
 
   if (publicKeyCached) {
-    return Promise.resolve(publicKeyCached)
+    return publicKeyCached
   }
 
-  return client.get('/api/accounts/getPublicKey', { address }).then((response) => {
-    const publicKey = response.publicKey
+  const response = await client.get('/api/accounts/getPublicKey', { address })
+  const publicKey = response.publicKey
 
-    if (publicKey) {
-      store.commit('setPublicKey', {
-        adamantAddress: address,
-        publicKey
-      })
-
-      return publicKey
-    }
-
+  if (!publicKey) {
     throw new Error(i18n.global.t('chats.no_public_key'))
-  })
+  }
+
+  if (!cacheVerifiedPublicKey(address, publicKey)) {
+    throw new Error(i18n.global.t('chats.public_key_mismatch'))
+  }
+
+  return publicKey
 }
 
 /**
@@ -261,7 +305,7 @@ export function storeValue(key, value, encode = false) {
 }
 
 function tryDecodeStoredValue(value) {
-  let json = null
+  let json
   try {
     json = JSON.parse(value)
   } catch {
@@ -301,8 +345,6 @@ export function getStored(key, ownerAddress, records = 1) {
   }
 
   return client.get('/api/states/get', params).then((response) => {
-    let value = null
-
     if (response.success && Array.isArray(response.transactions)) {
       if (records > 1) {
         // Return all records
@@ -310,8 +352,8 @@ export function getStored(key, ownerAddress, records = 1) {
         return response.transactions
       } else {
         const tx = response.transactions[0]
-        value = tx && tx.asset && tx.asset.state && tx.asset.state.value
-        return tryDecodeStoredValue(value)
+        const storedValue = tx && tx.asset && tx.asset.state && tx.asset.state.value
+        return tryDecodeStoredValue(storedValue)
       }
     }
 
@@ -503,10 +545,23 @@ export function getChats(from = 0, offset = 0, orderBy = 'desc') {
   // https://github.com/Adamant-im/adamant/wiki/API-Specification#get-chat-transactions
   return client.get('/api/chats/get/', params).then((response) => {
     const { count, transactions, nodeTimestamp } = response
+    const fetchedCount = transactions.length
+    const lastProcessedHeight = transactions[transactions.length - 1]?.height || 0
 
-    const promises = transactions.map((transaction) => {
-      const promise = isStringEqualCI(transaction.recipientId, myAddress)
-        ? Promise.resolve(transaction.senderPublicKey)
+    const promises = transactions.filter(isChatTransactionVisible).map((transaction) => {
+      const isIncoming = isStringEqualCI(transaction.recipientId, myAddress)
+      // The polling path accepts keys from the node just like the socket does, so it needs the
+      // same binding check. Without it a compromised node could substitute its own key together
+      // with a matching ciphertext here, and the message would decode as if a trusted contact
+      // had sent it. The check is local, so this stays at zero extra requests.
+      const promise = isIncoming
+        ? cacheVerifiedPublicKey(transaction.senderId, transaction.senderPublicKey)
+          ? Promise.resolve(transaction.senderPublicKey)
+          : Promise.reject(
+              new Error(
+                `Public key does not derive the address it is claimed for: ${transaction.senderId}`
+              )
+            )
         : queue.add(() => getPublicKey(transaction.recipientId))
 
       return promise
@@ -528,7 +583,9 @@ export function getChats(from = 0, offset = 0, orderBy = 'desc') {
     return Promise.all(promises).then((decoded) => ({
       count,
       transactions: decoded.filter((v) => v),
-      nodeTimestamp
+      nodeTimestamp,
+      fetchedCount,
+      lastProcessedHeight
     }))
   })
 }
@@ -582,21 +639,47 @@ export function decodeChat(transaction, key) {
 }
 
 /**
+ * Returns the counterparty public key carried by a transaction, after checking that it derives
+ * the address it is attributed to.
+ *
+ * Single-transaction fetches (`/api/transactions/get`) take the key straight from the node's
+ * answer, exactly as the chat list and the socket handler used to. Without this check a node
+ * can supply its own key together with a ciphertext it encrypted itself, and the result decodes
+ * cleanly — the message renders as if the counterparty had written it. The check is local, so it
+ * costs no request.
+ *
+ * @param transaction transaction as returned by the node
+ * @param address ADM address of the current user account
+ * @returns {string} the verified public key
+ * @throws {Error} when the key does not belong to the address it is claimed for
+ */
+export function getVerifiedCounterpartyPublicKey(transaction, address) {
+  const isOutgoing = isStringEqualCI(transaction.senderId, address)
+  const publicKey = isOutgoing ? transaction.recipientPublicKey : transaction.senderPublicKey
+  const claimedAddress = isOutgoing ? transaction.recipientId : transaction.senderId
+
+  if (!isPublicKeyBoundToAddress(claimedAddress, publicKey)) {
+    throw new Error(
+      `Public key does not derive the address it is claimed for: ${claimedAddress} (tx ${transaction.id})`
+    )
+  }
+
+  return publicKey
+}
+
+/**
  * Decode transaction.
  * This function must be used in favor of `decodeChat` since it also handles ADM transfers.
  * @param transaction Transaction
  * @param address ADM address of the current user account
  */
 export function decodeTransaction(transaction, address) {
-  const publicKey =
-    transaction.senderId === address ? transaction.recipientPublicKey : transaction.senderPublicKey
-
   if (transaction.type === 0) {
     // ADM transfer transaction doesn't have `asset` property, nothing to decode
     return transaction
   }
 
-  return decodeChat(transaction, publicKey)
+  return decodeChat(transaction, getVerifiedCounterpartyPublicKey(transaction, address))
 }
 
 /**
@@ -646,7 +729,13 @@ export function loginOrRegister(passphrase) {
  * @returns {Promise} Encrypted password
  */
 export function loginViaPassword(password, store) {
-  return encryptPassword(password)
+  const descriptor = loadPasswordKdfDescriptor()
+
+  if (!descriptor) {
+    return Promise.reject(new Error('Password login data is unavailable'))
+  }
+
+  return encryptPassword(password, descriptor)
     .then((encryptedPassword) => {
       store.commit('setPassword', encryptedPassword)
 
@@ -686,8 +775,13 @@ export async function getChatRooms(address, params) {
     ...defaultParams,
     ...params
   })
+  const fetchedCount = chats.length
 
   const messages = chats.flatMap((chat) => {
+    if (!isChatTransactionVisible(chat.lastTransaction)) {
+      return []
+    }
+
     const partner =
       chat.lastTransaction.senderId === address
         ? {
@@ -699,11 +793,12 @@ export async function getChatRooms(address, params) {
             address: chat.lastTransaction.senderId
           }
 
+    // Bulk chatroom responses are the main source of public keys in the app, so the binding
+    // check belongs here as much as in `getPublicKey`.
     if (partner.address && partner.publicKey) {
-      store.commit('setPublicKey', {
-        adamantAddress: partner.address,
-        publicKey: partner.publicKey
-      })
+      if (!cacheVerifiedPublicKey(partner.address, partner.publicKey)) {
+        return []
+      }
     }
 
     try {
@@ -717,13 +812,19 @@ export async function getChatRooms(address, params) {
       return []
     }
   })
-
-  const lastMessageHeight = (messages[0] && messages[0].height) || 0
+  // This watermark drives the account-wide getChats() poll. It must not advance past a room
+  // transaction that was hidden or rejected above: the chatrooms response contains only one last
+  // transaction per room, so doing so could skip an earlier visible message in the same room.
+  const lastMessageHeight = messages.reduce(
+    (highest, message) => Math.max(highest, message.height || 0),
+    0
+  )
 
   return {
     messages,
     count,
-    lastMessageHeight
+    lastMessageHeight,
+    fetchedCount
   }
 }
 
@@ -767,8 +868,26 @@ export async function getChatRoomMessages(address1, address2, paramsArg, recursi
     }
 
     const decodedMessages = messages.flatMap((message) => {
+      if (!isChatTransactionVisible(message)) {
+        return []
+      }
+
+      const counterpartyId = message.senderId === address1 ? message.recipientId : message.senderId
       const publicKey =
         message.senderId === address1 ? message.recipientPublicKey : message.senderPublicKey
+
+      if (publicKey && !isPublicKeyBoundToAddress(counterpartyId, publicKey)) {
+        logger.error(
+          'adamant-api',
+          'Dropped a message whose public key does not match its address',
+          {
+            counterpartyId,
+            messageId: message.id
+          }
+        )
+
+        return []
+      }
 
       try {
         if (message.type === 0) {

@@ -1,15 +1,30 @@
-import { describe, it, beforeEach, expect } from 'vitest'
-import module from '@/store/modules/options'
+import { afterEach, describe, it, beforeEach, expect, vi } from 'vitest'
+import module, { getInitialDarkTheme } from '@/store/modules/options'
 
 describe('Store: options.js', () => {
   let state = null
+  const originalMatchMedia = window.matchMedia
 
   beforeEach(() => {
     state = module.state()
   })
 
+  afterEach(() => {
+    window.matchMedia = originalMatchMedia
+  })
+
   it('should return initial state', () => {
     expect(typeof state === 'object').toBe(true)
+  })
+
+  it.each([
+    [true, true],
+    [false, false]
+  ])('uses the system theme before a user preference is restored', (matches, expected) => {
+    window.matchMedia = vi.fn(() => ({ matches }))
+
+    expect(getInitialDarkTheme()).toBe(expected)
+    expect(module.state().darkTheme).toBe(expected)
   })
 
   it('should mutate existing option', () => {
