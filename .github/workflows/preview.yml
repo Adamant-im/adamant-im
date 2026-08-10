@@ -49,4 +49,4 @@ jobs:
         with:
           message: |
             Deployed to ${{ env.PREVIEW_DOMAIN }} 🚀
-          comment_tag: deploy-message
+          comment-tag: deploy-message
