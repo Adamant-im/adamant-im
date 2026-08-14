@@ -1,6 +1,5 @@
 import { app, BrowserWindow, Menu, protocol, shell } from 'electron'
 import { fileURLToPath, URL } from 'node:url'
-import { installExtension, VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import path from 'node:path'
 import { readFile } from 'node:fs/promises'
 
@@ -272,6 +271,8 @@ app.on('activate', () => {
 app.on('ready', async () => {
   if (import.meta.env.DEV && useLegacyChromeDevtoolsExtension) {
     // Install Vue Devtools
+    const { installExtension, VUEJS_DEVTOOLS } = await import('electron-devtools-installer')
+
     installExtension(VUEJS_DEVTOOLS, { loadExtensionOptions: { allowFileAccess: true } })
       .then((name) => logInfo(`Electron extensions: added ${name}`))
       .catch((err) => logInfo('Electron extensions: an error occurred:', err))

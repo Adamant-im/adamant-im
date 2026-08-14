@@ -38,7 +38,7 @@
     "prettify": "prettier --write src/",
     "typecheck": "vue-tsc --noEmit && tsc -p tsconfig.node.json --noEmit",
     "schema:generate": "node scripts/adamant-schema/generate.mjs",
-    "electron:build:prepare": "vue-tsc && vite build --config electron-vite.config.ts",
+    "electron:build:prepare": "vue-tsc && vite build --config electron-vite.config.ts && node scripts/electron/verifyMainBundle.mjs",
     "electron:build": "npm run electron:build:prepare && electron-builder",
     "electron:build:mac:arm64": "npm run electron:build:prepare && electron-builder --config electron-builder.arm64.yml --mac",
     "electron:build:notarize": "cross-env APPLE_NOTARIZE=true npm run electron:build",
