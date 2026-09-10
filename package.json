@@ -186,7 +186,7 @@
     "vite-plugin-pwa": "^1.3.0",
     "vite-plugin-vue-devtools": "^8.2.1",
     "vite-plugin-wasm": "^3.6.0",
-    "vitest": "^4.1.10",
+    "vitest": "^4.1.11",
     "vue-eslint-parser": "^10.4.1",
     "vue-tsc": "^3.3.9",
     "web3-types": "^1.10.0"
