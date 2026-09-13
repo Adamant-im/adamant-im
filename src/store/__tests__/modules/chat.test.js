@@ -943,6 +943,44 @@ describe('Store: chat.js', () => {
         expect(state.chats.U111111.numOfNewMessages).toBe(0)
       })
 
+      it('marks an explicitly new incoming transfer as unread when its height is zero', () => {
+        const state = {
+          chats: {
+            U111111: {
+              messages: [],
+              numOfNewMessages: 0
+            }
+          },
+          lastMessageHeight: 0
+        }
+
+        mutations.pushMessage(state, {
+          message: {
+            id: 'direct-adm-id',
+            senderId: 'U111111',
+            recipientId: 'U123456',
+            type: 'ADM',
+            height: 0
+          },
+          userId: 'U123456',
+          markAsUnread: true
+        })
+
+        mutations.pushMessage(state, {
+          message: {
+            id: 'direct-adm-id',
+            senderId: 'U111111',
+            recipientId: 'U123456',
+            type: 'ADM',
+            height: 1
+          },
+          userId: 'U123456',
+          markAsUnread: true
+        })
+
+        expect(state.chats.U111111.numOfNewMessages).toBe(1)
+      })
+
       it('should not duplicate local messages added directly when `getNewMessages`', () => {
         const state = {
           chats: {
@@ -1552,6 +1590,75 @@ describe('Store: chat.js', () => {
         expect(dispatch.args[0][1]).toHaveLength(1)
         expect(dispatch.args[0][1][0].id).toBe(visibleMessage.id)
       })
+
+      it('normalizes an incoming direct ADM transfer for insertion into its chat', () => {
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+        const rootState = { address: 'U123456' }
+        const directAdmTransfer = {
+          id: 'direct-adm-id',
+          type: 0,
+          height: 100,
+          confirmations: 1,
+          timestamp: 1_710_000_000,
+          senderId: 'U222222',
+          recipientId: 'U123456',
+          amount: 100_000_000
+        }
+
+        actions.pushMessages({ commit, rootState, dispatch }, [directAdmTransfer])
+
+        expect(commit.args).toEqual([
+          [
+            'pushMessage',
+            {
+              message: expect.objectContaining({
+                id: 'direct-adm-id',
+                hash: 'direct-adm-id',
+                type: 'ADM',
+                status: TS.CONFIRMED,
+                senderId: 'U222222',
+                recipientId: 'U123456'
+              }),
+              userId: 'U123456'
+            }
+          ]
+        ])
+      })
+    })
+
+    describe('actions.pushNewMessages', () => {
+      it('marks incoming direct ADM transfers as unread explicitly', () => {
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+        const rootState = { address: 'U123456' }
+        const directAdmTransfer = {
+          id: 'direct-adm-id',
+          type: 0,
+          height: 0,
+          timestamp: 1_710_000_000,
+          senderId: 'U222222',
+          recipientId: 'U123456',
+          amount: 10_000_000
+        }
+
+        actions.pushNewMessages({ commit, rootState, dispatch }, [directAdmTransfer])
+
+        expect(commit.args).toEqual([
+          [
+            'pushMessage',
+            {
+              message: expect.objectContaining({
+                id: 'direct-adm-id',
+                type: 'ADM',
+                status: TS.REGISTERED
+              }),
+              userId: 'U123456',
+              markAsUnread: true
+            }
+          ]
+        ])
+      })
     })
 
     /**
@@ -1590,7 +1697,7 @@ describe('Store: chat.js', () => {
           undefined
         )
         expect(commit.args).toEqual([['setChatsActualUntil', expect.any(Number)]])
-        expect(dispatch.args).toEqual([['pushMessages', []]])
+        expect(dispatch.args).toEqual([['pushNewMessages', []]])
       })
 
       it('should dispatch `pushMessages` & commit `setHeight`', async () => {
@@ -1618,7 +1725,7 @@ describe('Store: chat.js', () => {
           ['setChatsActualUntil', expect.any(Number)],
           ['setHeight', 100]
         ])
-        expect(dispatch.args).toEqual([['pushMessages', []]])
+        expect(dispatch.args).toEqual([['pushNewMessages', []]])
       })
     })
 

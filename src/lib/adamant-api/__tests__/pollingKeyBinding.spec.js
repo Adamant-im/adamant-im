@@ -124,6 +124,37 @@ describe('getChats key binding', () => {
     expect(state.publicKeys[PARTNER_ADDRESS]).toBeUndefined()
     expect(requests).toHaveLength(1)
   })
+
+  it('requests and returns direct ADM transfers without trying to decode them', async () => {
+    const directTransfer = {
+      id: 'direct-transfer',
+      height: 43,
+      confirmations: 1,
+      type: 0,
+      senderId: PARTNER_ADDRESS,
+      recipientId: OWN_ADDRESS,
+      amount: 100_000_000
+    }
+    chatsResponse = {
+      count: 1,
+      transactions: [directTransfer],
+      nodeTimestamp: 0
+    }
+
+    const result = await api.getChats()
+
+    expect(result.transactions).toEqual([directTransfer])
+    expect(requests).toEqual([
+      {
+        url: '/api/chats/get',
+        params: {
+          inId: OWN_ADDRESS,
+          includeDirectTransfers: 1,
+          orderBy: 'timestamp:desc'
+        }
+      }
+    ])
+  })
 })
 
 describe('getChatRooms polling watermark', () => {
@@ -149,5 +180,24 @@ describe('getChatRooms polling watermark', () => {
     expect(result.lastMessageHeight).toBe(800)
     expect(result.fetchedCount).toBe(2)
     expect(requests).toHaveLength(1)
+    expect(requests[0].params.includeDirectTransfers).toBe(1)
+  })
+
+  it('includes direct ADM transfers when loading a chat history', async () => {
+    chatsResponse = { participants: [], messages: [] }
+
+    await api.getChatRoomMessages(OWN_ADDRESS, PARTNER_ADDRESS, { offset: 0, limit: 25 })
+
+    expect(requests).toEqual([
+      {
+        url: `/api/chatrooms/${OWN_ADDRESS}/${PARTNER_ADDRESS}`,
+        params: {
+          includeDirectTransfers: 1,
+          orderBy: 'timestamp:desc',
+          offset: 0,
+          limit: 25
+        }
+      }
+    ])
   })
 })

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import utils from '@/lib/adamant'
+import socketClient from '@/lib/sockets'
 
 /**
  * The realtime path must stay free of network round trips.
@@ -14,6 +15,8 @@ const handlers = {}
 const getPublicKey = vi.fn()
 const cacheVerifiedPublicKey = vi.fn()
 const decodeChat = vi.fn((transaction) => ({ ...transaction, decoded: true }))
+const mutationSubscribers = []
+let chatFulfilledWatcher
 
 vi.mock('@/lib/sockets', () => ({
   default: {
@@ -46,12 +49,17 @@ function createStore() {
     state: {
       address: OWN_ADDRESS,
       options: { useSocketConnection: true },
-      chat: { isFulfilled: false }
+      chat: { isFulfilled: false },
+      nodes: { useFastestAdmNode: true }
     },
     getters: { 'nodes/adm': [] },
     dispatch: vi.fn(() => Promise.resolve()),
-    watch: vi.fn(),
-    subscribe: vi.fn()
+    watch: vi.fn((source, callback) => {
+      chatFulfilledWatcher = callback
+    }),
+    subscribe: vi.fn((callback) => {
+      mutationSubscribers.push(callback)
+    })
   }
 }
 
@@ -84,6 +92,13 @@ beforeEach(() => {
   getPublicKey.mockReset()
   cacheVerifiedPublicKey.mockReset().mockReturnValue(true)
   decodeChat.mockClear()
+  socketClient.setSocketEnabled.mockClear()
+  socketClient.setNodes.mockClear()
+  socketClient.setUseFastest.mockClear()
+  socketClient.init.mockClear()
+  socketClient.destroy.mockClear()
+  mutationSubscribers.length = 0
+  chatFulfilledWatcher = undefined
   store = createStore()
   socketsPlugin(store)
 })
@@ -91,13 +106,33 @@ beforeEach(() => {
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 describe('socketsPlugin request budget', () => {
+  it('initializes the socket with the current ADM nodes and selection strategy', () => {
+    expect(socketClient.setNodes).toHaveBeenCalledWith(store.getters['nodes/adm'])
+    expect(socketClient.setUseFastest).toHaveBeenCalledWith(true)
+    expect(socketClient.setSocketEnabled).toHaveBeenCalledWith(true)
+  })
+
+  it('starts the socket for the current account as soon as chats are loaded', () => {
+    chatFulfilledWatcher(true)
+
+    expect(socketClient.init).toHaveBeenCalledWith(OWN_ADDRESS)
+  })
+
+  it('tracks the ADM fastest-node setting mutation', () => {
+    mutationSubscribers.forEach((subscriber) =>
+      subscriber({ type: 'nodes/useFastestAdmNode', payload: false })
+    )
+
+    expect(socketClient.setUseFastest).toHaveBeenLastCalledWith(false)
+  })
+
   it('makes no request for an incoming message', async () => {
     handlers.newMessage(incoming())
     await flush()
 
     expect(getPublicKey).not.toHaveBeenCalled()
     expect(cacheVerifiedPublicKey).toHaveBeenCalledWith(PARTNER_ADDRESS, PARTNER_KEY)
-    expect(store.dispatch).toHaveBeenCalledWith('chat/pushMessages', [expect.anything()])
+    expect(store.dispatch).toHaveBeenCalledWith('chat/pushNewMessages', [expect.anything()])
   })
 
   it('makes no request for the echo of an outgoing message', async () => {
@@ -128,7 +163,23 @@ describe('socketsPlugin request budget', () => {
     await flush()
 
     expect(getPublicKey).toHaveBeenCalledWith(PARTNER_ADDRESS)
-    expect(store.dispatch).toHaveBeenCalledWith('chat/pushMessages', [expect.anything()])
+    expect(store.dispatch).toHaveBeenCalledWith('chat/pushNewMessages', [expect.anything()])
+  })
+
+  it('pushes a direct ADM transfer immediately without resolving a public key', () => {
+    const transfer = incoming({
+      type: 0,
+      asset: undefined,
+      senderPublicKey: undefined,
+      recipientPublicKey: undefined
+    })
+
+    handlers.newMessage(transfer)
+
+    expect(getPublicKey).not.toHaveBeenCalled()
+    expect(cacheVerifiedPublicKey).not.toHaveBeenCalled()
+    expect(decodeChat).not.toHaveBeenCalled()
+    expect(store.dispatch).toHaveBeenCalledWith('chat/pushNewMessages', [transfer])
   })
 
   it('does not push signal messages into the chat', async () => {

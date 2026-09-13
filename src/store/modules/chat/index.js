@@ -458,7 +458,7 @@ const mutations = {
    * Push an message to a specific chat by senderId.
    * @param {string} userId Your address
    */
-  pushMessage(state, { message, userId, unshift = false }) {
+  pushMessage(state, { message, userId, unshift = false, markAsUnread = false }) {
     const partnerId = isStringEqualCI(message.senderId, userId)
       ? message.recipientId
       : message.senderId
@@ -500,11 +500,11 @@ const mutations = {
       chat.messages.push(message)
     }
 
-    // If this is a new message, increment `numOfNewMessages`.
-    // Exception only when `height = 0`, this means that the
-    // user cleared `localStorage` or logged in first time.
+    // Live socket and polling paths mark messages explicitly. Loaded history still falls back to
+    // the persisted height so a first login or cleared local storage does not mark history unread.
     if (
-      (message.height === undefined || // unconfirmed transaction (socket)
+      (markAsUnread ||
+        message.height === undefined || // legacy unconfirmed socket transaction
         (message.height > state.lastMessageHeight && state.lastMessageHeight > 0)) &&
       !isStringEqualCI(userId, message.senderId) // do not notify yourself when send message from other device
     ) {
@@ -658,6 +658,30 @@ const mutations = {
   }
 }
 
+/**
+ * Normalize and commit messages from one chat retrieval path.
+ *
+ * @param {object} context Vuex action context
+ * @param {Message[]} messages Raw or decoded ADM transactions
+ * @param {object} options
+ * @param {boolean} options.markAsUnread Whether incoming messages arrived after initial loading
+ */
+function commitMessages({ commit, rootState, dispatch }, messages, { markAsUnread = false } = {}) {
+  const normalizedMessages = messages.filter(isChatTransactionVisible).map(normalizeMessage)
+  dispatch('botCommands/reInitCommands', normalizedMessages, { root: true })
+  normalizedMessages.forEach((message) => {
+    const { recipientId, senderId } = message
+
+    if (recipientId === rootState.address || senderId === rootState.address) {
+      commit('pushMessage', {
+        message,
+        userId: rootState.address,
+        ...(markAsUnread && { markAsUnread: true })
+      })
+    }
+  })
+}
+
 const actions = {
   /**
    * Get chat rooms.
@@ -761,19 +785,16 @@ const actions = {
    * Push array of messages and sort by senderId.
    * @param {Message[]} messages Array of messages
    */
-  pushMessages({ commit, rootState, dispatch }, messages) {
-    const normalizedMessages = messages.filter(isChatTransactionVisible).map(normalizeMessage)
-    dispatch('botCommands/reInitCommands', normalizedMessages, { root: true })
-    normalizedMessages.forEach((message) => {
-      const { recipientId, senderId } = message
+  pushMessages(context, messages) {
+    commitMessages(context, messages)
+  },
 
-      if (recipientId === rootState.address || senderId === rootState.address) {
-        commit('pushMessage', {
-          message: message,
-          userId: rootState.address
-        })
-      }
-    })
+  /**
+   * Push messages received after the initial chat snapshot and mark incoming ones as unread.
+   * @param {Message[]} messages Array of live or reconciled messages
+   */
+  pushNewMessages(context, messages) {
+    commitMessages(context, messages, { markAsUnread: true })
   },
 
   unshiftMessages({ commit, rootState, dispatch }, messages) {
@@ -803,7 +824,7 @@ const actions = {
       const { messages, lastMessageHeight, nodeTimestamp } = result
       const chatsActualInterval = getters.chatsActualityTimeout
 
-      dispatch('pushMessages', messages)
+      dispatch('pushNewMessages', messages)
 
       const validUntil =
         adamant.toTimestamp(nodeTimestamp) + chatsActualInterval + CHAT_ACTUALITY_BUFFER_MS

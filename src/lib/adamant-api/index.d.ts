@@ -190,7 +190,10 @@ export function loginViaPassword(
   store: Store<RootState>
 ): Promise<CurrentAccountWithPassphrase>
 
-type GetChatRoomsParams = Pick<ChatsApiGetChatRoomsRequest, 'offset' | 'limit' | 'orderBy'>
+type GetChatRoomsParams = Pick<
+  ChatsApiGetChatRoomsRequest,
+  'offset' | 'limit' | 'orderBy' | 'includeDirectTransfers'
+>
 
 export function getChatRooms(
   address: string,
@@ -199,7 +202,7 @@ export function getChatRooms(
 
 type GetChatRoomMessagesParams = Pick<
   ChatsApiGetChatroomMessagesRequest,
-  'offset' | 'limit' | 'orderBy'
+  'offset' | 'limit' | 'orderBy' | 'includeDirectTransfers'
 >
 
 export function getChatRoomMessages(

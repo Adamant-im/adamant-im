@@ -160,7 +160,7 @@ export interface TokenGeneral {
     displayName: string
     /**
      * Minimal node API version
-     * @example "0.8.0"
+     * @example "0.10.0"
      */
     minVersion?: string
     /**
@@ -188,7 +188,7 @@ export interface TokenGeneral {
       displayName: string
       /**
        * Minimal node API version
-       * @example "0.8.0"
+       * @example "0.10.0"
        */
       minVersion?: string
       /**
@@ -215,7 +215,7 @@ export interface TokenGeneral {
       displayName: string
       /**
        * Minimal node API version
-       * @example "0.8.0"
+       * @example "0.10.0"
        */
       minVersion?: string
       /**

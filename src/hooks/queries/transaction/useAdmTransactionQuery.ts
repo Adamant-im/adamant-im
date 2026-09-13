@@ -5,7 +5,7 @@ import { refetchIntervalFactory, refetchOnMountFn, retryDelayFactory, retryFacto
 
 import { DecodedChatMessageTransaction, decodeTransaction } from '@/lib/adamant-api'
 import * as admApi from '@/lib/adamant-api'
-import { Cryptos, TransactionStatusType } from '@/lib/constants'
+import { Cryptos, TransactionStatus, TransactionStatusType } from '@/lib/constants'
 import { UseTransactionQueryParams } from './types'
 
 const fetchTransaction = async (transactionId: string, currentUserAdmAddress: string) => {
@@ -13,9 +13,14 @@ const fetchTransaction = async (transactionId: string, currentUserAdmAddress: st
   if (!rawTransaction) throw new Error('Transaction not found')
 
   const transaction = decodeTransaction(rawTransaction, currentUserAdmAddress)
+  const status =
+    transaction.height || transaction.confirmations > 0
+      ? TransactionStatus.CONFIRMED
+      : TransactionStatus.REGISTERED
 
   return {
     ...transaction,
+    status,
     amount: transaction.amount / 1e8,
     fee: transaction.fee / 1e8
   }

@@ -1,5 +1,6 @@
 import socketClient from '@/lib/sockets'
 import { cacheVerifiedPublicKey, decodeChat, getPublicKey } from '@/lib/adamant-api'
+import { Transactions } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { logger } from '@/utils/devTools/logger'
 import { isChatTransactionVisible } from '@/lib/chat/helpers/isChatTransactionVisible'
@@ -7,6 +8,11 @@ import { isChatTransactionVisible } from '@/lib/chat/helpers/isChatTransactionVi
 function subscribe(store) {
   socketClient.subscribe('newMessage', (transaction) => {
     if (!isChatTransactionVisible(transaction)) return
+
+    if (transaction.type === Transactions.SEND) {
+      store.dispatch('chat/pushNewMessages', [transaction])
+      return
+    }
 
     const isIncoming = isStringEqualCI(transaction.recipientId, store.state.address)
     const counterpartyId = isIncoming ? transaction.senderId : transaction.recipientId
@@ -37,13 +43,11 @@ function subscribe(store) {
 
     resolveKey
       .then((publicKey) => {
-        const decoded = transaction.type === 0 ? transaction : decodeChat(transaction, publicKey)
+        const decoded = decodeChat(transaction, publicKey)
 
-        // All transactions we get via socket are shown in chats, including ADM direct transfers
-        // Currently, we don't update confirmations for direct transfers, see getChats() in adamant-api.js
-        // So we'll update confirmations in getTransactionStatus()
+        // Socket transactions are provisional; polling reconciles their confirmed state.
 
-        store.dispatch('chat/pushMessages', [decoded])
+        store.dispatch('chat/pushNewMessages', [decoded])
       })
       .catch((error) => {
         logger.warn(
@@ -57,6 +61,8 @@ function subscribe(store) {
 export default (store) => {
   subscribe(store)
 
+  socketClient.setNodes(store.getters['nodes/adm'])
+  socketClient.setUseFastest(store.state.nodes.useFastestAdmNode)
   socketClient.setSocketEnabled(store.state.options.useSocketConnection)
 
   // open socket connection when chats are loaded
@@ -85,7 +91,7 @@ export default (store) => {
       socketClient.setNodes(store.getters['nodes/adm'])
     }
 
-    if (mutation.type === 'nodes/useFastest') {
+    if (mutation.type === 'nodes/useFastestAdmNode') {
       socketClient.setUseFastest(mutation.payload)
     }
   })

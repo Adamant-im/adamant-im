@@ -8,22 +8,33 @@ import mapValues from 'lodash-es/mapValues.js'
 import mergeWith from 'lodash-es/mergeWith.js'
 import omit from 'lodash-es/omit.js'
 
+import { resolveWalletsSourceBranch } from './wallets/sourceBranch.mjs'
+
 const CRYPTOS_DATA_FILE_PATH = resolve('src/lib/constants/cryptos/data.json')
 const CRYPTOS_ICONS_DIR_PATH = resolve('src/components/icons/cryptos')
 const GENERAL_ASSETS_PATH = resolve('adamant-wallets/assets/general')
-const BRANCH = process.argv[2]
+const REQUESTED_BRANCH = process.argv[2]
 
 // This script runs in plain Node.js context, so app logger aliases/stores are not available here.
 const logInfo = (...args) => console.info('[wallets]', ...args)
 
-void run(BRANCH)
+void run(REQUESTED_BRANCH)
 
 /**
  *
- * @param {string} branch The branch to sync from. E.g.: dev, master
+ * @param {string} requestedBranch The explicit branch to sync from. E.g.: dev, master
  * @return {Promise<void>}
  */
-async function run(branch = 'dev') {
+async function run(requestedBranch) {
+  const { stdout } = await $`git branch --show-current`
+  const pwaBranch = stdout.trim()
+  const branch = resolveWalletsSourceBranch({ pwaBranch, requestedBranch })
+
+  logInfo(
+    'Selecting `adamant-wallets` source:',
+    `PWA branch ${pwaBranch || '(detached HEAD)'} -> adamant-wallets/${branch}`
+  )
+
   // update adamant-wallets repo
   await $`git submodule update --init`
   await $`git -C adamant-wallets fetch origin ${branch}`
