@@ -23,6 +23,7 @@ import {
   MessageType
 } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import { BigNumber } from '@/lib/bignumber'
 import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
 import { uploadFile } from '../../../lib/files'
 import { generateAdamantChats } from './utils/generateAdamantChats'
@@ -463,6 +464,30 @@ const mutations = {
       ? message.recipientId
       : message.senderId
 
+    // Match native ADM transfers by ID across chats: a changed sender/recipient must be reported
+    // against the original record, not inserted into a second chat as an unrelated transfer.
+    let existingAdmTransfer
+    Object.values(state.chats).some((chat) => {
+      existingAdmTransfer = chat.messages.find(
+        (localMessage) => localMessage.type === Cryptos.ADM && localMessage.id === message.id
+      )
+      return !!existingAdmTransfer
+    })
+    if (existingAdmTransfer) {
+      const hasMismatch =
+        message.type !== Cryptos.ADM ||
+        !isNumeric(existingAdmTransfer.amount) ||
+        !isNumeric(message.amount) ||
+        !new BigNumber(existingAdmTransfer.amount).isEqualTo(message.amount) ||
+        !isStringEqualCI(existingAdmTransfer.senderId, message.senderId) ||
+        !isStringEqualCI(existingAdmTransfer.recipientId, message.recipientId)
+
+      existingAdmTransfer.status = hasMismatch ? TS.INVALID : message.status
+      existingAdmTransfer.height = message.height
+      existingAdmTransfer.confirmations = message.confirmations
+      return
+    }
+
     // Create chat if not exists
     if (!state.chats[partnerId]) {
       state.chats[partnerId] = createChat()
@@ -470,13 +495,12 @@ const mutations = {
 
     const chat = state.chats[partnerId]
 
-    // Shouldn't duplicate local messages added directly
-    // when dispatch('getNewMessages'). Just update `status, height`.
+    // Shouldn't duplicate local messages added directly or received through the socket.
     const localMessage = chat.messages.find((localMessage) => localMessage.id === message.id)
     if (localMessage) {
-      // is message in state
       localMessage.status = message.status
       localMessage.height = message.height
+      localMessage.confirmations = message.confirmations
       return
     }
 
@@ -824,7 +848,8 @@ const actions = {
       const { messages, lastMessageHeight, nodeTimestamp } = result
       const chatsActualInterval = getters.chatsActualityTimeout
 
-      dispatch('pushNewMessages', messages)
+      const hasReliableUnreadBaseline = state.lastMessageHeight > 0 || state.offset === 0
+      dispatch(hasReliableUnreadBaseline ? 'pushNewMessages' : 'pushMessages', messages)
 
       const validUntil =
         adamant.toTimestamp(nodeTimestamp) + chatsActualInterval + CHAT_ACTUALITY_BUFFER_MS

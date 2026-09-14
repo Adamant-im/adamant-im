@@ -32,7 +32,9 @@ async function run(requestedBranch) {
 
   logInfo(
     'Selecting `adamant-wallets` source:',
-    `PWA branch ${pwaBranch || '(detached HEAD)'} -> adamant-wallets/${branch}`
+    requestedBranch === undefined
+      ? `automatic mapping: PWA branch ${pwaBranch || '(detached HEAD)'} -> adamant-wallets/${branch}`
+      : `explicit override: adamant-wallets/${branch} (PWA branch ${pwaBranch || '(detached HEAD)'})`
   )
 
   // update adamant-wallets repo

@@ -117,12 +117,12 @@ npm run dev-https
 `npm run wallets:data:generate` explicitly refreshes the committed wallet metadata and generated
 assets from one `adamant-wallets` branch. It selects the source from the current PWA branch:
 
-| Current PWA branch | `adamant-wallets` source |
-| ------------------ | ------------------------ |
-| `master`           | `master`                 |
-| `dev`              | `dev`                    |
-| Any topic branch   | `dev`                    |
-| Detached HEAD      | `dev`                    |
+| Current PWA branch                     | `adamant-wallets` source |
+| -------------------------------------- | ------------------------ |
+| `master`                               | `master`                 |
+| `dev`                                  | `dev`                    |
+| Any topic branch, including `hotfix/*` | `dev`                    |
+| Detached HEAD                          | `dev`                    |
 
 Pass `dev` or `master` after `--` to override the automatic selection for a maintenance workflow:
 
@@ -130,12 +130,30 @@ Pass `dev` or `master` after `--` to override the automatic selection for a main
 npm run wallets:data:generate -- master
 ```
 
+Use this explicit `master` override when a production hotfix branch must consume production wallet
+metadata. The override applies only to `wallets:data:generate`; `wallets:generate` is a command chain
+and does not forward trailing arguments to its data step
+
 Other explicit source branches are rejected before the submodule is updated. Each generator run
 uses one branch for all shared wallet data, icons, and network configs
 
 Regular `npm run dev` and `npm run build` commands do not update `adamant-wallets`; they use the
 generated JSON and assets already committed to this repository. `npm run dev` starts only the local
 Vite server on `localhost:8080` and does not trigger the remote `pwa-dev` deployment
+
+### ADM transfer status
+
+Incoming value-bearing ADM socket transactions (types `0` and `8`) enter chats as `REGISTERED`.
+The REST query remains pending until it receives a transaction; an empty query cache is not a
+transaction and must not trigger an inconsistency warning. REST reconciliation checks the ID,
+amount, sender, and recipient against the first-seen chat record. Matching transfers become
+`CONFIRMED` only when REST reports `confirmations >= 1`; conflicting records display `INVALID`
+with the mismatch reason. Repeated socket events do not overwrite an existing transfer.
+
+The wallet transaction list uses its existing REST results without merging in chat-only transfers.
+Existing rows can be compared with a loaded chat record. These consistency checks do not verify
+transaction signatures; full cryptographic verification is tracked in
+[issue #959](https://github.com/Adamant-im/adamant-im/issues/959).
 
 ### CSP hardening on Vercel builds
 

@@ -11,12 +11,11 @@ import { UseTransactionQueryParams } from './types'
 const fetchTransaction = async (transactionId: string, currentUserAdmAddress: string) => {
   const rawTransaction = await admApi.getTransaction(transactionId, 1)
   if (!rawTransaction) throw new Error('Transaction not found')
+  if (!rawTransaction.id) throw new Error('Invalid transaction response: missing ID')
 
   const transaction = decodeTransaction(rawTransaction, currentUserAdmAddress)
   const status =
-    transaction.height || transaction.confirmations > 0
-      ? TransactionStatus.CONFIRMED
-      : TransactionStatus.REGISTERED
+    transaction.confirmations >= 1 ? TransactionStatus.CONFIRMED : TransactionStatus.REGISTERED
 
   return {
     ...transaction,
@@ -38,7 +37,6 @@ export function useAdmTransactionQuery(
   return useQuery({
     queryKey: ['transaction', Cryptos.ADM, transactionId],
     queryFn: () => fetchTransaction(unref(transactionId), store.state.address),
-    initialData: {} as DecodedChatMessageTransaction,
     retry: retryFactory(Cryptos.ADM, unref(transactionId)),
     retryDelay: retryDelayFactory(Cryptos.ADM, unref(transactionId)),
     refetchInterval: ({ state }) =>

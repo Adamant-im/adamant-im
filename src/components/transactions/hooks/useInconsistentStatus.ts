@@ -60,8 +60,8 @@ export function useInconsistentStatusState(
 
   const foundAdmTx = useFindAdmTransaction(transactionId)
   const admTx = computed(() => unref(knownAdmTransaction) || foundAdmTx.value)
-  const senderId = computed(() => admTx.value?.senderId)
-  const recipientId = computed(() => admTx.value?.recipientId)
+  const senderId = computed(() => (isAdmCrypto ? undefined : admTx.value?.senderId))
+  const recipientId = computed(() => (isAdmCrypto ? undefined : admTx.value?.recipientId))
   const senderCryptoAddressQuery = useKVSCryptoAddress(senderId, crypto)
   const recipientCryptoAddressQuery = useKVSCryptoAddress(recipientId, crypto)
   const senderCryptoAddress = computed(() => senderCryptoAddressQuery.data.value)
@@ -103,13 +103,16 @@ export function useInconsistentStatusState(
   })
 
   const status = computed<InconsistentStatus>(() => {
-    if (isAdmCrypto) {
+    if (!transaction.value?.id || !admTx.value) {
       return ''
     }
 
-    if (!transaction.value || !admTx.value || !mineCryptoAddress.value) {
-      return ''
+    if (isAdmCrypto) {
+      if (admTx.value.type !== Cryptos.ADM) return ''
+      return getInconsistentStatus(transaction.value, admTx.value, {})
     }
+
+    if (!mineCryptoAddress.value) return ''
 
     if ('status' in transaction.value && transaction.value.status === 'PENDING') {
       return ''

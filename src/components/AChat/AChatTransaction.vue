@@ -34,14 +34,14 @@
           </div>
           <div class="a-chat__status">
             <TransactionProvider :transaction="transaction">
-              <template #default="{ status, refetch }">
+              <template #default="{ status, inconsistentStatus, refetch }">
                 <v-icon
                   :class="{
                     'a-chat__status-icon--clickable': checkStatusUpdatable(status)
                   }"
                   :size="CHAT_STATUS_ICON_SIZE"
                   :icon="tsIcon(status)"
-                  :title="t(`chats.transaction_statuses.${status}`)"
+                  :title="transactionStatusTooltip(status, inconsistentStatus)"
                   :color="tsColor(status)"
                   @click="checkStatusUpdatable(status) ? refetch() : undefined"
                 />
@@ -155,6 +155,19 @@ export default defineComponent({
     const checkStatusUpdatable = (status: TransactionStatusType) => {
       return tsUpdatable(status, crypto.value as CryptoSymbol)
     }
+    const transactionStatusTooltip = (
+      status: TransactionStatusType,
+      inconsistentStatus: string
+    ) => {
+      const statusText = t(`chats.transaction_statuses.${status}`)
+
+      if (!inconsistentStatus) return statusText
+
+      const reason = t(`transaction.inconsistent_reasons.${inconsistentStatus}`, {
+        crypto: crypto.value
+      })
+      return `${statusText} ${reason}`
+    }
 
     const historyRate = computed(() => {
       const amount = currencyAmount(props.transaction.amount, crypto.value)
@@ -207,6 +220,7 @@ export default defineComponent({
       time,
       isCryptoSupported,
       checkStatusUpdatable,
+      transactionStatusTooltip,
 
       isStringEqualCI,
       currencyFormatter,

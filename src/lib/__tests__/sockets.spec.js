@@ -68,4 +68,40 @@ describe('SocketClient subscriptions', () => {
 
     client.destroy()
   })
+
+  it('keeps a healthy socket connected when the fastest-node ranking changes', () => {
+    vi.useFakeTimers()
+
+    const client = new SocketClient()
+    const currentNode = {
+      hostname: 'current.example',
+      ping: 100,
+      online: true,
+      active: true,
+      outOfSync: false,
+      socketSupport: true,
+      hasMinNodeVersion: true,
+      hasSupportedProtocol: true
+    }
+    const newlyFastestNode = {
+      ...currentNode,
+      hostname: 'fastest.example',
+      ping: 10
+    }
+
+    connection.connected = true
+    client.connection = connection
+    client.currentNode = currentNode
+    client.setNodes([currentNode, newlyFastestNode])
+    client.setUseFastest(true)
+    client.setSocketEnabled(true)
+    client.setSocketReady(true)
+
+    client.reviseConnection()
+
+    expect(connection.close).not.toHaveBeenCalled()
+    expect(io).not.toHaveBeenCalled()
+
+    client.destroy()
+  })
 })

@@ -44,6 +44,13 @@ describe('useAdmTransactionQuery', () => {
     vi.clearAllMocks()
   })
 
+  it('rejects an empty REST transaction instead of treating it as confirmed data', async () => {
+    vi.mocked(admApi.getTransaction).mockResolvedValueOnce({} as any)
+    useAdmTransactionQuery('adm-tx-id')
+    const query = useQueryMock.mock.calls[0]?.[0]
+    await expect(query.queryFn()).rejects.toThrow('missing ID')
+  })
+
   it('polls pending ADM transactions and re-fetches them on remount until finalized', () => {
     useAdmTransactionQuery('adm-tx-id')
     const query = useQueryMock.mock.calls[0]?.[0]
@@ -111,7 +118,7 @@ describe('useAdmTransactionQuery', () => {
 
     const registeredTransaction = {
       id: 'registered-adm-tx',
-      height: 0,
+      height: 42,
       confirmations: 0,
       amount: 100_000_000,
       fee: 50_000_000

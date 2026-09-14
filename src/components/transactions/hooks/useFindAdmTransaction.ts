@@ -13,6 +13,7 @@ export function useFindAdmTransaction(
 
   return computed(() => {
     const hashValue = unref(hash)
+    if (!hashValue) return undefined
     const preferredPartnerIdValue = unref(preferredPartnerId)
 
     let admTx: NormalizedChatMessageTransaction | undefined
@@ -28,8 +29,7 @@ export function useFindAdmTransaction(
 
     if (preferredPartnerIdValue) {
       const preferredMessages = store.state.chat.chats[preferredPartnerIdValue]?.messages as
-        | Record<string, any>[]
-        | undefined
+        Record<string, any>[] | undefined
 
       findInMessages(preferredMessages)
     }

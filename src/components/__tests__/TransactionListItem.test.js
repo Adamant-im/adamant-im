@@ -5,6 +5,7 @@ import { mount } from '@vue/test-utils'
 let queryData
 let queryIsFetching
 let queryStatus
+let inconsistentStatus
 
 vi.mock('@/hooks/queries/transaction', () => {
   const createMockQuery = () => ({
@@ -30,6 +31,14 @@ vi.mock('@/components/transactions/hooks/useClearPendingTransaction', () => ({
   useClearPendingTransaction: vi.fn()
 }))
 
+vi.mock('@/components/transactions/hooks/useFindAdmTransaction', () => ({
+  useFindAdmTransaction: vi.fn(() => ref(undefined))
+}))
+
+vi.mock('@/components/transactions/hooks/useInconsistentStatus', () => ({
+  useInconsistentStatus: vi.fn(() => inconsistentStatus)
+}))
+
 vi.mock('@/filters/date', () => ({
   default: vi.fn(() => 'Mar 09, 16:00')
 }))
@@ -41,6 +50,7 @@ describe('TransactionListItem.vue', () => {
     queryData = ref(undefined)
     queryIsFetching = ref(false)
     queryStatus = ref('success')
+    inconsistentStatus = ref('')
   })
 
   it('prefers live transaction fields over stale pending props and refetches history rates', async () => {
@@ -280,5 +290,59 @@ describe('TransactionListItem.vue', () => {
     expect(wrapper.text()).toContain('0.5 ADM')
     expect(wrapper.text()).not.toContain('0.000000005 ADM')
     expect(historyRateGetter).toHaveBeenCalledWith(1_773_654_195, '0.5', 'ADM')
+  })
+
+  it('shows an invalid ADM list item with an alert icon and inconsistency tooltip', () => {
+    inconsistentStatus.value = 'wrong_amount'
+
+    const wrapper = mount(TransactionListItem, {
+      shallow: true,
+      props: {
+        id: 'adm-tx-invalid',
+        senderId: 'U222222',
+        recipientId: 'U111111',
+        amount: 10_000_000,
+        status: 'CONFIRMED',
+        timestamp: 269_282_595,
+        crypto: 'ADM'
+      },
+      global: {
+        mocks: {
+          $t: (key) =>
+            ({
+              'transaction.statuses.INVALID': 'Inconsistent',
+              'chats.transaction_statuses.INVALID': 'Incorrect information.',
+              'transaction.inconsistent_reasons.wrong_amount': 'Amount mismatch'
+            })[key] || key,
+          $te: () => false,
+          $store: {
+            state: {
+              address: 'U111111',
+              partners: { list: {} },
+              adm: {
+                address: 'U111111',
+                transactions: {}
+              },
+              chat: {
+                chats: {}
+              }
+            },
+            getters: {
+              'rate/historyRate': () => '42.00 USD',
+              'partners/displayName': () => '',
+              'chat/isPartnerInChatList': () => false
+            },
+            dispatch: vi.fn()
+          }
+        }
+      }
+    })
+
+    expect(wrapper.vm.resolvedStatus).toBe('INVALID')
+    expect(wrapper.vm.isStatusVisibleTransaction).toBe(true)
+    expect(wrapper.find('.transaction-item__invalid-status-icon').exists()).toBe(true)
+    expect(wrapper.find('.transaction-item__invalid-status-icon').attributes('title')).toBe(
+      'Incorrect information. Amount mismatch'
+    )
   })
 })

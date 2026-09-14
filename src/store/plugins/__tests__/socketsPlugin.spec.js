@@ -3,14 +3,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import utils from '@/lib/adamant'
 import socketClient from '@/lib/sockets'
 
-/**
- * The realtime path must stay free of network round trips.
- *
- * Before the binding check existed, an incoming message used the key from the payload (no
- * request) while the echo of an outgoing one resolved the key through `getPublicKey` (a request
- * whenever the cache missed). Verifying the key locally removed that call, so the socket handler
- * now costs nothing in either direction — and these assertions keep it that way.
- */
 const handlers = {}
 const getPublicKey = vi.fn()
 const cacheVerifiedPublicKey = vi.fn()
@@ -106,6 +98,31 @@ beforeEach(() => {
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 describe('socketsPlugin request budget', () => {
+  it.each([0, 8])(
+    'does not overwrite a reconciled ADM transfer on a repeated type %s socket event',
+    async (type) => {
+      store.state.chat.chats = {
+        [PARTNER_ADDRESS]: {
+          messages: [{ id: '1', type: 'ADM', status: 'CONFIRMED', confirmations: 1 }]
+        }
+      }
+      handlers.newMessage(incoming({ type, amount: 10_000_000 }))
+      await flush()
+      expect(store.dispatch).not.toHaveBeenCalled()
+    }
+  )
+
+  it('drops an async socket decode if the active account changes', async () => {
+    handlers.newMessage(incoming({ amount: 10_000_000 }))
+    store.state.address = 'U333333'
+    await flush()
+    expect(store.dispatch).not.toHaveBeenCalled()
+  })
+
+  it('drops transactions that do not belong to the subscribed account', () => {
+    handlers.newMessage(incoming({ type: 0, recipientId: 'U333333', amount: 10_000_000 }))
+    expect(store.dispatch).not.toHaveBeenCalled()
+  })
   it('initializes the socket with the current ADM nodes and selection strategy', () => {
     expect(socketClient.setNodes).toHaveBeenCalledWith(store.getters['nodes/adm'])
     expect(socketClient.setUseFastest).toHaveBeenCalledWith(true)
@@ -166,9 +183,13 @@ describe('socketsPlugin request budget', () => {
     expect(store.dispatch).toHaveBeenCalledWith('chat/pushNewMessages', [expect.anything()])
   })
 
-  it('pushes a direct ADM transfer immediately without resolving a public key', () => {
+  it('pushes an incoming direct ADM transfer immediately as registered', () => {
     const transfer = incoming({
       type: 0,
+      amount: 10_000_000,
+      confirmations: 12,
+      height: 123,
+      status: 'CONFIRMED',
       asset: undefined,
       senderPublicKey: undefined,
       recipientPublicKey: undefined
@@ -179,7 +200,36 @@ describe('socketsPlugin request budget', () => {
     expect(getPublicKey).not.toHaveBeenCalled()
     expect(cacheVerifiedPublicKey).not.toHaveBeenCalled()
     expect(decodeChat).not.toHaveBeenCalled()
-    expect(store.dispatch).toHaveBeenCalledWith('chat/pushNewMessages', [transfer])
+    expect(store.dispatch).toHaveBeenCalledWith('chat/pushNewMessages', [
+      {
+        ...transfer,
+        confirmations: 0,
+        height: 0,
+        status: 'REGISTERED'
+      }
+    ])
+  })
+
+  it('pushes an incoming type 8 ADM transfer immediately as registered', async () => {
+    const transfer = incoming({
+      amount: 10_000_000,
+      confirmations: 12,
+      height: 123,
+      status: 'CONFIRMED'
+    })
+
+    handlers.newMessage(transfer)
+    await flush()
+
+    expect(store.dispatch).toHaveBeenCalledWith('chat/pushNewMessages', [
+      expect.objectContaining({
+        id: transfer.id,
+        amount: transfer.amount,
+        confirmations: 0,
+        height: 0,
+        status: 'REGISTERED'
+      })
+    ])
   })
 
   it('does not push signal messages into the chat', async () => {

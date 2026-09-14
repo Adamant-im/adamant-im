@@ -9,6 +9,8 @@ import { KnownCryptos, UnsupportedCryptos } from './constants'
  * @returns {Message} See `components/AChat/types.ts`
  */
 export function normalizeMessage(abstract) {
+  // Direct transfers cannot contain rich chat payloads, including replies and reactions.
+  if (abstract.type === Transactions.SEND) abstract = { ...abstract, message: '' }
   const transaction = {}
 
   // common properties for all transaction types
@@ -112,7 +114,9 @@ export function normalizeMessage(abstract) {
     abstract.amount > 0
   ) {
     // ADM transaction or Message
-    transaction.message = abstract.message || ''
+    // A direct transfer has no on-chain chat comment. Ignore any `message` field supplied by a
+    // non-canonical projection instead of presenting it as part of the transfer.
+    transaction.message = abstract.type === Transactions.SEND ? '' : abstract.message || ''
     transaction.hash = abstract.id // adm transaction id (hash)
 
     transaction.type = abstract.amount > 0 ? 'ADM' : 'message'
@@ -129,6 +133,14 @@ export function normalizeMessage(abstract) {
     transaction.i18n = true
     transaction.hash = abstract.id // adm transaction id (hash)
     transaction.type = 'message'
+  }
+
+  if (
+    transaction.type === 'ADM' &&
+    Number(abstract.amount) > 0 &&
+    [Transactions.SEND, Transactions.CHAT_MESSAGE].includes(Number(abstract.type))
+  ) {
+    transaction.status = Number(abstract.confirmations) >= 1 ? TS.CONFIRMED : TS.REGISTERED
   }
 
   return transaction
