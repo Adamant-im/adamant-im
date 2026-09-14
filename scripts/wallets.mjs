@@ -1,7 +1,7 @@
 import { $ } from 'execa'
 
 import { copyFile, readdir, readFile, writeFile, mkdir, rm } from 'fs/promises'
-import { resolve, join } from 'path'
+import { isAbsolute, join, relative, resolve, sep } from 'path'
 import capitalize from 'lodash-es/capitalize.js'
 import isArray from 'lodash-es/isArray.js'
 import mapValues from 'lodash-es/mapValues.js'
@@ -12,18 +12,24 @@ import { resolveWalletsSourceBranch } from './wallets/sourceBranch.mjs'
 
 const CRYPTOS_DATA_FILE_PATH = resolve('src/lib/constants/cryptos/data.json')
 const CRYPTOS_ICONS_DIR_PATH = resolve('src/components/icons/cryptos')
+const CONFIGS_DIR_PATH = resolve('src/config')
 const GENERAL_ASSETS_PATH = resolve('adamant-wallets/assets/general')
 const REQUESTED_BRANCH = process.argv[2]
+// Coin symbols become generated file names, so they must not contain path separators or dots.
+const COIN_SYMBOL_PATTERN = /^[A-Za-z0-9]+$/
 
 // This script runs in plain Node.js context, so app logger aliases/stores are not available here.
 const logInfo = (...args) => console.info('[wallets]', ...args)
+const logError = (...args) => console.error('[wallets]', ...args)
 
-void run(REQUESTED_BRANCH)
+run(REQUESTED_BRANCH).catch((error) => {
+  logError(error)
+  process.exitCode = 1
+})
 
 /**
- *
- * @param {string} requestedBranch The explicit branch to sync from. E.g.: dev, master
- * @return {Promise<void>}
+ * @param {string | undefined} requestedBranch The explicit branch to sync from. E.g.: dev, master
+ * @returns {Promise<void>}
  */
 async function run(requestedBranch) {
   const { stdout } = await $`git branch --show-current`
@@ -74,6 +80,8 @@ async function initCoins() {
       return
     }
 
+    assertCoinSymbol(coin.symbol, path)
+
     coinDirNames[coin.symbol] = name
     coinSymbols[name] = coin.symbol
 
@@ -111,6 +119,7 @@ async function applyBlockchains(coins, coinSymbols) {
     await forEachDir(blockchainPath, async ({ name: coinName }) => {
       const coinPath = join(blockchainPath, coinName, 'info.json')
       const coin = await parseJsonFile(coinPath)
+      assertCoinSymbol(coin.symbol, coinPath)
 
       let tokenData = coins[coin.symbol] || {}
 
@@ -148,9 +157,9 @@ async function copyIcons(coins, coinDirNames) {
   for (const [name, coin] of Object.entries(coins)) {
     const iconComponentName = `${capitalize(coin.symbol)}Icon.vue`
 
-    const iconPathDestination = join(CRYPTOS_ICONS_DIR_PATH, iconComponentName)
+    const iconPathDestination = resolveInside(CRYPTOS_ICONS_DIR_PATH, iconComponentName)
     await copyFile(
-      join(GENERAL_ASSETS_PATH, coinDirNames[name], 'images', 'icon.vue'),
+      resolveInside(GENERAL_ASSETS_PATH, coinDirNames[name], 'images', 'icon.vue'),
       iconPathDestination
     )
     await $`git add ${iconPathDestination}` // git track newly added icon
@@ -195,7 +204,7 @@ function updateTorConfig(configs) {
  * Updates the config inside src/config
  */
 async function updateConfig(configs, configName) {
-  const configPath = resolve(`src/config/${configName}.json`)
+  const configPath = resolveInside(CONFIGS_DIR_PATH, `${configName}.json`)
   const configFile = await parseJsonFile(configPath)
 
   // Remove obsolete coins that no longer exist in configs
@@ -220,10 +229,12 @@ async function updateConfig(configs, configName) {
     configFile[configKey].services = config.services
   }
 
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- confined to src/config by resolveInside()
   await writeFile(configPath, JSON.stringify(configFile, null, 2))
 }
 
 async function forEachDir(path, callback) {
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- lists only adamant-wallets asset directories
   const dirents = await readdir(path, {
     withFileTypes: true
   })
@@ -234,7 +245,41 @@ async function forEachDir(path, callback) {
 }
 
 async function parseJsonFile(path) {
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- reads only repository-local JSON files
   const json = await readFile(path, 'utf-8')
 
   return JSON.parse(json)
+}
+
+/**
+ * Resolves a path and rejects the result when it escapes `baseDir`.
+ *
+ * @param {string} baseDir Trusted base directory
+ * @param {...string} segments Path segments that may come from wallet metadata
+ * @returns {string}
+ */
+function resolveInside(baseDir, ...segments) {
+  const target = resolve(baseDir, ...segments)
+  const relativePath = relative(baseDir, target)
+
+  if (
+    !relativePath ||
+    relativePath === '..' ||
+    relativePath.startsWith(`..${sep}`) ||
+    isAbsolute(relativePath)
+  ) {
+    throw new Error(`Refusing to access a path outside ${baseDir}: ${target}`)
+  }
+
+  return target
+}
+
+/**
+ * @param {unknown} symbol Coin symbol declared in `info.json`
+ * @param {string} sourcePath File that declares the symbol
+ */
+function assertCoinSymbol(symbol, sourcePath) {
+  if (typeof symbol !== 'string' || !COIN_SYMBOL_PATTERN.test(symbol)) {
+    throw new Error(`Unsupported coin symbol ${JSON.stringify(symbol)} in ${sourcePath}`)
+  }
 }

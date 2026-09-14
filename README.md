@@ -141,20 +141,6 @@ Regular `npm run dev` and `npm run build` commands do not update `adamant-wallet
 generated JSON and assets already committed to this repository. `npm run dev` starts only the local
 Vite server on `localhost:8080` and does not trigger the remote `pwa-dev` deployment
 
-### ADM transfer status
-
-Incoming value-bearing ADM socket transactions (types `0` and `8`) enter chats as `REGISTERED`.
-The REST query remains pending until it receives a transaction; an empty query cache is not a
-transaction and must not trigger an inconsistency warning. REST reconciliation checks the ID,
-amount, sender, and recipient against the first-seen chat record. Matching transfers become
-`CONFIRMED` only when REST reports `confirmations >= 1`; conflicting records display `INVALID`
-with the mismatch reason. Repeated socket events do not overwrite an existing transfer.
-
-The wallet transaction list uses its existing REST results without merging in chat-only transfers.
-Existing rows can be compared with a loaded chat record. These consistency checks do not verify
-transaction signatures; full cryptographic verification is tracked in
-[issue #959](https://github.com/Adamant-im/adamant-im/issues/959).
-
 ### CSP hardening on Vercel builds
 
 Production builds inject a CSP meta policy that blocks JavaScript `eval` and `Function` constructors
