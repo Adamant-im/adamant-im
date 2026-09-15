@@ -1327,6 +1327,7 @@ describe('Store: chat.js', () => {
           lastMessageHeight: 0,
           isFulfilled: false,
           offset: 0,
+          isInitialChatListEmpty: false,
           noActiveNodesDialog: undefined,
           newChats: {},
           chatsActualUntil: 0
@@ -1395,6 +1396,7 @@ describe('Store: chat.js', () => {
           ['setFulfilled', false],
           ['setHeight', 100],
           ['setOffset', 12],
+          ['setInitialChatListEmpty', false],
           ['setFulfilled', true]
         ])
 
@@ -1427,6 +1429,30 @@ describe('Store: chat.js', () => {
         expect(commit.args).toEqual([
           ['setFulfilled', false],
           ['setOffset', 25],
+          ['setInitialChatListEmpty', false],
+          ['setFulfilled', true]
+        ])
+        expect(dispatch.args).toEqual([['pushMessages', []]])
+      })
+
+      it('remembers that the first chat list page of a new account is empty', async () => {
+        chatModule.__Rewire__('admApi', {
+          getChatRooms: () =>
+            Promise.resolve({
+              messages: [],
+              lastMessageHeight: 0,
+              fetchedCount: 0
+            })
+        })
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+
+        await actions.loadChats({ commit, dispatch, rootState: { address: 'U123456' } })
+
+        expect(commit.args).toEqual([
+          ['setFulfilled', false],
+          ['setInitialChatListEmpty', true],
           ['setFulfilled', true]
         ])
         expect(dispatch.args).toEqual([['pushMessages', []]])
@@ -1848,7 +1874,7 @@ describe('Store: chat.js', () => {
         )
       })
 
-      it('marks polling results as new for a genuinely empty initial snapshot', async () => {
+      it('marks polling results as new after an empty initial chat list was paged to the end', async () => {
         chatModule.__Rewire__('getChats', () =>
           Promise.resolve({
             messages: [],
@@ -1860,7 +1886,8 @@ describe('Store: chat.js', () => {
         const state = {
           isFulfilled: true,
           lastMessageHeight: 0,
-          offset: 0
+          offset: -1,
+          isInitialChatListEmpty: true
         }
         const getters = {
           chatsActualityTimeout: 1000
@@ -1887,7 +1914,8 @@ describe('Store: chat.js', () => {
         const state = {
           isFulfilled: true,
           lastMessageHeight: 0,
-          offset: 25
+          offset: 25,
+          isInitialChatListEmpty: false
         }
         const getters = {
           chatsActualityTimeout: 1000

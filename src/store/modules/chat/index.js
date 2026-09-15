@@ -56,7 +56,8 @@ const SOCKET_DISABLED_TIMEOUT = 3000
  *     [senderId: string]: Chat
  *   },
  *   lastMessageHeight: number,
- *   isFulfilled: boolean
+ *   isFulfilled: boolean,
+ *   isInitialChatListEmpty: boolean
  * }
  *
  * type Chat = {
@@ -74,6 +75,9 @@ const state = () => ({
   lastMessageHeight: 0, // `height` value of the last message
   isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
   offset: 0, // for loading chat list with pagination. -1 if all of chats loaded
+  // true when the first chat list page had no rooms: until a message height is known, everything
+  // that polling returns is new for the account
+  isInitialChatListEmpty: false,
   noActiveNodesDialog: undefined, // true - visible dialog, false - hidden dialog, but shown before, undefined - not shown
   newChats: {}, // { [partnerId]: partnerName }, for pointing if a chat needs further handling after being opened
   chatsActualUntil: 0,
@@ -420,6 +424,10 @@ const mutations = {
     state.offset = offset
   },
 
+  setInitialChatListEmpty(state, value) {
+    state.isInitialChatListEmpty = value
+  },
+
   /**
    * When chats are loaded, set to `true`.
    * @param {boolean} value
@@ -676,6 +684,7 @@ const mutations = {
     state.lastMessageHeight = 0
     state.isFulfilled = false
     state.offset = 0
+    state.isInitialChatListEmpty = false
     state.noActiveNodesDialog = undefined
     state.newChats = {}
     state.chatsActualUntil = 0
@@ -733,6 +742,7 @@ const actions = {
           commit('setOffset', fetchedCount)
         }
 
+        commit('setInitialChatListEmpty', fetchedCount === 0)
         commit('setFulfilled', true)
       })
       .catch((err) => {
@@ -848,7 +858,9 @@ const actions = {
       const { messages, lastMessageHeight, nodeTimestamp } = result
       const chatsActualInterval = getters.chatsActualityTimeout
 
-      const hasReliableUnreadBaseline = state.lastMessageHeight > 0 || state.offset === 0
+      // `offset` is not a baseline: paging an empty chat list moves it to -1 before the first
+      // transfer of a new account arrives
+      const hasReliableUnreadBaseline = state.lastMessageHeight > 0 || state.isInitialChatListEmpty
       dispatch(hasReliableUnreadBaseline ? 'pushNewMessages' : 'pushMessages', messages)
 
       const validUntil =
