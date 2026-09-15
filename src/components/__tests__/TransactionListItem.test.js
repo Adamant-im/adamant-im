@@ -292,7 +292,7 @@ describe('TransactionListItem.vue', () => {
     expect(historyRateGetter).toHaveBeenCalledWith(1_773_654_195, '0.5', 'ADM')
   })
 
-  it('shows an invalid ADM list item with an alert icon and inconsistency tooltip', () => {
+  it('shows an invalid ADM list item with an alert icon and inconsistency tooltip', async () => {
     inconsistentStatus.value = 'wrong_amount'
 
     const wrapper = mount(TransactionListItem, {
@@ -344,5 +344,11 @@ describe('TransactionListItem.vue', () => {
     expect(wrapper.find('.transaction-item__invalid-status-icon').attributes('title')).toBe(
       'Incorrect information. Amount mismatch'
     )
+
+    const { useFindAdmTransaction } =
+      await import('@/components/transactions/hooks/useFindAdmTransaction')
+    const [, participants, options] = vi.mocked(useFindAdmTransaction).mock.lastCall
+    expect(participants.value).toEqual(['U222222', 'U111111'])
+    expect(options).toEqual({ searchAllChats: false })
   })
 })

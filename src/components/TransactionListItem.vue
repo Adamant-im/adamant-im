@@ -147,8 +147,16 @@ export default {
     } = useTransactionQuery(toRef(props, 'id'), props.crypto, {
       enabled: hasLiveStatusTracking
     })
+    // A wallet row can only have a chat record in the chats of its own participants. Scanning every
+    // chat for every row would walk all loaded messages again on each new chat message.
     const knownAdmTransaction =
-      props.crypto === Cryptos.ADM ? useFindAdmTransaction(toRef(props, 'id')) : ref(undefined)
+      props.crypto === Cryptos.ADM
+        ? useFindAdmTransaction(
+            toRef(props, 'id'),
+            computed(() => [props.senderId, props.recipientId]),
+            { searchAllChats: false }
+          )
+        : ref(undefined)
     const admTransactionForConsistency = computed(() => {
       if (props.crypto !== Cryptos.ADM) return undefined
       if (liveTransaction.value?.id) return liveTransaction.value

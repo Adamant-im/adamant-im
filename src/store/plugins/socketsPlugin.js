@@ -18,9 +18,9 @@ function subscribe(store) {
     const accountAddress = store.state.address
     const isIncoming = isStringEqualCI(transaction.recipientId, accountAddress)
     if (!isIncoming && !isStringEqualCI(transaction.senderId, accountAddress)) return
-    const isIncomingAdmTransfer = isIncoming && Number(transaction.amount) > 0
+    const isValueBearingTransaction = Number(transaction.amount) > 0
     const asProvisionalTransaction = (decodedTransaction) =>
-      isIncomingAdmTransfer
+      isValueBearingTransaction
         ? {
             ...decodedTransaction,
             confirmations: 0,
@@ -47,9 +47,9 @@ function subscribe(store) {
     }
 
     if (transaction.type === Transactions.SEND) {
-      // Realtime value-bearing transactions are provisional. Show incoming transfers immediately,
-      // but never trust socket-supplied confirmation metadata; REST reconciliation decides whether
-      // they become confirmed or invalid.
+      // Realtime value-bearing transactions are provisional in both directions. Show them
+      // immediately, but never trust socket-supplied confirmation metadata; REST reconciliation
+      // decides whether they become confirmed or invalid.
       pushSocketTransaction(transaction)
       return
     }

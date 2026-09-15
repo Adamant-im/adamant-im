@@ -58,8 +58,13 @@ export function useInconsistentStatusState(
   })
   const transactionId = computed(() => transaction.value?.id)
 
-  const foundAdmTx = useFindAdmTransaction(transactionId)
-  const admTx = computed(() => unref(knownAdmTransaction) || foundAdmTx.value)
+  // A caller that passes its own chat record lookup decides where to search. Falling back to a scan
+  // of every chat would undo a scoped lookup, such as the one used by wallet list rows.
+  const foundAdmTx =
+    knownAdmTransaction === undefined ? useFindAdmTransaction(transactionId) : undefined
+  const admTx = computed(() =>
+    knownAdmTransaction === undefined ? foundAdmTx?.value : unref(knownAdmTransaction)
+  )
   const senderId = computed(() => (isAdmCrypto ? undefined : admTx.value?.senderId))
   const recipientId = computed(() => (isAdmCrypto ? undefined : admTx.value?.recipientId))
   const senderCryptoAddressQuery = useKVSCryptoAddress(senderId, crypto)

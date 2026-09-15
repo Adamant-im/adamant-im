@@ -20,7 +20,7 @@ vi.mock('vuex', () => ({
 }))
 
 vi.mock('./useFindAdmTransaction', () => ({
-  useFindAdmTransaction: () => computed(() => admTransaction.value)
+  useFindAdmTransaction: vi.fn(() => computed(() => admTransaction.value))
 }))
 
 vi.mock('@/hooks/queries/useKVSCryptoAddress', () => ({
@@ -230,5 +230,34 @@ describe('useInconsistentStatus', () => {
     )
 
     expect(result.value).toBe('')
+  })
+
+  it('uses only the ADM record lookup passed by the caller', async () => {
+    const { useFindAdmTransaction } = await import('./useFindAdmTransaction')
+    vi.mocked(useFindAdmTransaction).mockClear()
+    admTransaction.value = {
+      ...admTransaction.value,
+      id: 'adm-1',
+      hash: 'adm-1',
+      amount: 200_000_000,
+      type: Cryptos.ADM
+    }
+
+    const result = useInconsistentStatus(
+      ref({
+        id: 'adm-1',
+        fee: 0.5,
+        amount: 1,
+        senderId: 'sender-adm',
+        recipientId: 'recipient-adm',
+        status: TransactionStatus.CONFIRMED,
+        timestamp: Date.now()
+      }) as any,
+      Cryptos.ADM,
+      ref(undefined)
+    )
+
+    expect(result.value).toBe('')
+    expect(useFindAdmTransaction).not.toHaveBeenCalled()
   })
 })

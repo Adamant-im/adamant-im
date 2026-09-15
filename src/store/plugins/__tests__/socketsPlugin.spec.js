@@ -232,6 +232,23 @@ describe('socketsPlugin request budget', () => {
     ])
   })
 
+  it.each([0, 8])('pushes an outgoing type %s ADM transfer echo as registered', async (type) => {
+    handlers.newMessage(
+      outgoing({ type, amount: 10_000_000, confirmations: 12, height: 123, status: 'CONFIRMED' })
+    )
+    await flush()
+
+    expect(store.dispatch).toHaveBeenCalledWith('chat/pushNewMessages', [
+      expect.objectContaining({
+        id: '1',
+        amount: 10_000_000,
+        confirmations: 0,
+        height: 0,
+        status: 'REGISTERED'
+      })
+    ])
+  })
+
   it('does not push signal messages into the chat', async () => {
     handlers.newMessage(
       incoming({ asset: { chat: { type: 3, message: 'ff', own_message: 'ee' } } })
