@@ -127,14 +127,12 @@ describe('resolveNetworkConfigVariant', () => {
     )
   })
 
-  it('explains that tor-dev is a Tor mode deployment', () => {
-    expect(() => resolveNetworkConfigVariant('pwa', 'tor-dev')).toThrow('built with "--mode tor"')
-  })
-
-  it.each(['staging', 'test', '', 'constructor', '__proto__'])(
+  it.each(['tor-dev', 'staging', 'test', '', 'constructor', '__proto__'])(
     'rejects the unknown PWA mode %j',
     (mode) => {
-      expect(() => resolveNetworkConfigVariant('pwa', mode)).toThrow('Unsupported Vite mode')
+      expect(() => resolveNetworkConfigVariant('pwa', mode)).toThrow(
+        'The mode has no generated network configuration.'
+      )
     }
   )
 })

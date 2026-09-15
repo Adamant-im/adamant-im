@@ -50,7 +50,7 @@ This repository is a client application, so agent decisions must:
 
 Use these sources when implementing or reviewing changes:
 
-- This repository: `README.md`, current code, and passing tests
+- This repository: `README.md`, `CONTRIBUTING.md`, current code, and passing tests
 - About ADAMANT: Description and Details: <https://docs.google.com/document/d/e/2PACX-1vR_SndPoXvRvntay9Pn9A_xbI1n940GvSAENiU5SuYcznFT-6a7X0RqH50vCgJR-QmXPLe1s_1DRtl6/pub>
 - ADAMANT Node guidelines baseline: <https://github.com/Adamant-im/adamant/blob/dev/AGENTS.md>
 - Org-wide issue/label governance: <https://github.com/Adamant-im/.github>

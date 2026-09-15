@@ -69,11 +69,9 @@ export function resolveNetworkConfigVariant(
   const reason =
     mode === 'tor-testnet'
       ? 'The Tor network configuration describes mainnet endpoints and cannot be combined with testnet.'
-      : mode === 'tor-dev' && Object.hasOwn(modes, 'tor')
-        ? 'tor-dev is a deployment of the dev branch built with "--mode tor", not a separate mode.'
-        : Object.hasOwn(SUPPORTED_NETWORK_MODES.pwa, mode)
-          ? 'Testnet and Tor network configurations are built only for the PWA target.'
-          : 'The mode has no generated network configuration.'
+      : Object.hasOwn(SUPPORTED_NETWORK_MODES.pwa, mode)
+        ? 'Testnet and Tor network configurations are built only for the PWA target.'
+        : 'The mode has no generated network configuration.'
 
   throw new Error(
     `Unsupported Vite mode "${mode}" for the ${target} build target. ${reason} ` +
