@@ -103,9 +103,7 @@ describe('buildWalletArtifacts', () => {
 
     expect(await buildWalletArtifacts(paths)).toEqual(artifacts)
     expect(artifacts.configFiles.map((file) => file.path)).toEqual(
-      ['development', 'production', 'testnet', 'tor'].map((name) =>
-        join(paths.configsDir, `${name}.json`)
-      )
+      ['mainnet', 'testnet', 'tor'].map((name) => join(paths.configsDir, `${name}.json`))
     )
     expect(artifacts.iconFiles.map((file) => file.path)).toEqual(
       ['AdmIcon.vue', 'EthIcon.vue', 'UsdtIcon.vue'].map((name) => join(paths.cryptoIconsDir, name))
@@ -115,17 +113,14 @@ describe('buildWalletArtifacts', () => {
     expect(Object.keys(data)).toEqual(['ADM', 'ETH', 'USDT'])
     expect(data.USDT).toMatchObject({ mainCoin: 'ETH', type: 'ERC20', decimals: 6 })
 
-    const [development, production, testnet, tor] = artifacts.configFiles.map((file) =>
-      JSON.parse(file.contents)
-    )
-    expect(Object.keys(production)).toEqual(['adm', 'eth'])
-    expect(development).toEqual(production)
+    const [mainnet, testnet, tor] = artifacts.configFiles.map((file) => JSON.parse(file.contents))
+    expect(Object.keys(mainnet)).toEqual(['adm', 'eth'])
     expect(testnet.adm).toMatchObject({
       explorer: 'https://explorer.testnet.example',
       nodes: { list: [{ url: 'https://adm.testnet.example' }] },
       services: { ipfsNode: { list: [{ url: 'https://ipfs.testnet.example' }] } }
     })
-    expect(testnet.eth).toEqual(production.eth)
+    expect(testnet.eth).toEqual(mainnet.eth)
     expect(tor.adm.nodes.list).toEqual([{ url: 'http://adm.onion' }])
     expect(tor.eth.explorer).toBe('https://eth-explorer.example')
   })
@@ -177,6 +172,26 @@ describe('findWalletArtifactDrift', () => {
     await writeWalletArtifacts(artifacts, paths)
     await writeFile(paths.cryptosDataFile, artifacts.dataFile.contents.replace(/\n/g, '\r\n'))
 
+    expect(await findWalletArtifactDrift(artifacts, paths)).toEqual([])
+  })
+
+  it('reports and removes network configurations that are no longer generated', async () => {
+    const artifacts = await buildWalletArtifacts(paths)
+    await writeWalletArtifacts(artifacts, paths)
+
+    const retiredConfigPath = join(paths.configsDir, 'production.json')
+    const runtimeModulePath = join(paths.configsDir, 'index.js')
+    await writeFile(retiredConfigPath, '{}')
+    await writeFile(runtimeModulePath, 'export {}\n')
+
+    expect(await findWalletArtifactDrift(artifacts, paths)).toEqual([
+      { path: retiredConfigPath, reason: 'unexpected' }
+    ])
+
+    await writeWalletArtifacts(artifacts, paths)
+
+    await expect(readFile(retiredConfigPath, 'utf8')).rejects.toThrow('ENOENT')
+    expect(await readFile(runtimeModulePath, 'utf8')).toBe('export {}\n')
     expect(await findWalletArtifactDrift(artifacts, paths)).toEqual([])
   })
 })

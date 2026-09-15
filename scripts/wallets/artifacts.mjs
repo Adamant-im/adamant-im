@@ -107,6 +107,11 @@ export async function writeWalletArtifacts(artifacts, paths) {
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- fixed generated icons directory
   await mkdir(paths.cryptoIconsDir, { recursive: true })
 
+  // A network configuration that is no longer generated must not stay importable
+  for (const path of await findUnexpectedConfigFiles(artifacts, paths)) {
+    await rm(path)
+  }
+
   for (const file of [...artifacts.iconFiles, artifacts.dataFile, ...artifacts.configFiles]) {
     // eslint-disable-next-line security/detect-non-literal-fs-filename -- generated destinations are fixed repository paths
     await writeFile(file.path, file.contents)
@@ -144,7 +149,27 @@ export async function findWalletArtifactDrift(artifacts, paths) {
     }
   }
 
+  for (const path of await findUnexpectedConfigFiles(artifacts, paths)) {
+    drift.push({ path, reason: 'unexpected' })
+  }
+
   return drift
+}
+
+/**
+ * Lists JSON files in the configuration directory that are not generated network configurations.
+ *
+ * @param {WalletArtifacts} artifacts
+ * @param {WalletArtifactPaths} paths
+ * @returns {Promise<string[]>}
+ */
+async function findUnexpectedConfigFiles(artifacts, paths) {
+  const expectedConfigPaths = new Set(artifacts.configFiles.map((file) => file.path))
+
+  return (await readOptionalDirectory(paths.configsDir))
+    .filter((name) => name.endsWith('.json'))
+    .map((name) => join(paths.configsDir, name))
+    .filter((path) => !expectedConfigPaths.has(path))
 }
 
 async function readGeneralCoins(generalAssetsDir) {

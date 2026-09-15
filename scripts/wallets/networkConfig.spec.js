@@ -158,10 +158,10 @@ describe('resolveCoinNetworkConfig', () => {
     expect(config.services.ipfsNode.list).toEqual([{ url: 'http://ipfs.onion' }])
   })
 
-  it.each(['development', 'production'])('uses base network fields for %s', (variant) => {
+  it('uses base network fields for mainnet', () => {
     const metadata = createAdmMetadata()
 
-    expect(resolveCoinNetworkConfig(metadata, variant)).toEqual({
+    expect(resolveCoinNetworkConfig(metadata, 'mainnet')).toEqual({
       explorer: metadata.explorer,
       explorerTx: metadata.explorerTx,
       explorerAddress: metadata.explorerAddress,
@@ -191,7 +191,7 @@ describe('resolveCoinNetworkConfig', () => {
     const metadata = createBtcMetadata()
 
     expect(resolveCoinNetworkConfig(metadata, 'testnet')).toEqual(
-      resolveCoinNetworkConfig(metadata, 'production')
+      resolveCoinNetworkConfig(metadata, 'mainnet')
     )
   })
 
@@ -238,25 +238,24 @@ describe('resolveNetworkConfig', () => {
   it('resolves variants independently of resolution order', () => {
     const coins = { adm: createAdmMetadata(), btc: createBtcMetadata() }
     const torFirst = resolveNetworkConfig(coins, 'tor')
-    const productionFirst = resolveNetworkConfig(coins, 'production')
+    const mainnetFirst = resolveNetworkConfig(coins, 'mainnet')
 
     resolveNetworkConfig(coins, 'testnet')
 
     expect(resolveNetworkConfig(coins, 'tor')).toEqual(torFirst)
-    expect(resolveNetworkConfig(coins, 'production')).toEqual(productionFirst)
+    expect(resolveNetworkConfig(coins, 'mainnet')).toEqual(mainnetFirst)
   })
 
   it('sorts coins by key', () => {
     const coins = { eth: createBtcMetadata(), adm: createAdmMetadata(), btc: createBtcMetadata() }
 
-    expect(Object.keys(resolveNetworkConfig(coins, 'production'))).toEqual(['adm', 'btc', 'eth'])
+    expect(Object.keys(resolveNetworkConfig(coins, 'mainnet'))).toEqual(['adm', 'btc', 'eth'])
   })
 })
 
 describe('getNetworkOverrideKey', () => {
   it.each([
-    ['development', null],
-    ['production', null],
+    ['mainnet', null],
     ['testnet', 'testnet'],
     ['tor', 'tor']
   ])('supports the %s variant', (variant, overrideKey) => {
@@ -273,14 +272,20 @@ describe('getNetworkOverrideKey', () => {
     )
   })
 
-  it.each(['staging', 'tor-dev', 'test', '', 'constructor', '__proto__'])(
-    'rejects the unknown variant %j',
-    (variant) => {
-      expect(() => getNetworkOverrideKey(variant)).toThrow(
-        'Unsupported network configuration variant'
-      )
-    }
-  )
+  it.each([
+    'development',
+    'production',
+    'staging',
+    'tor-dev',
+    'test',
+    '',
+    'constructor',
+    '__proto__'
+  ])('rejects the unknown variant %j', (variant) => {
+    expect(() => getNetworkOverrideKey(variant)).toThrow(
+      'Unsupported network configuration variant'
+    )
+  })
 })
 
 describe('mergeNetworkOverride', () => {

@@ -1,13 +1,13 @@
 /**
  * Generated network configuration variants mapped to the `adamant-wallets` override they apply.
- * `null` means that the variant uses the base (mainnet clearnet) metadata unchanged.
+ * Variants are named after networks, not Vite modes: the `development` and `production` modes
+ * both bundle `mainnet`, which uses the base (clearnet) metadata unchanged.
  *
  * `tor-testnet` is intentionally absent: the `tor` override describes mainnet endpoints, so it
  * must never be composed with the `testnet` override.
  */
 export const NETWORK_CONFIG_VARIANTS = Object.freeze({
-  development: null,
-  production: null,
+  mainnet: null,
   testnet: 'testnet',
   tor: 'tor'
 })

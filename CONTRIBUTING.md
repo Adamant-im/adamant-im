@@ -135,12 +135,15 @@ Each network configuration variant starts from a fresh copy of the base metadata
 complete selected override. Nested objects are merged, while arrays such as endpoint lists replace
 the base array as a whole. Resolving one variant never changes the input of another variant.
 
-| Variant       | Override  | Network                                                              |
-| ------------- | --------- | -------------------------------------------------------------------- |
-| `development` | None      | Mainnet                                                              |
-| `production`  | None      | Mainnet                                                              |
-| `testnet`     | `testnet` | ADM testnet nodes, IPFS nodes, and explorer; other coins use mainnet |
-| `tor`         | `tor`     | Mainnet through onion node and service endpoints                     |
+| Variant   | Override  | Network                                                              |
+| --------- | --------- | -------------------------------------------------------------------- |
+| `mainnet` | None      | Mainnet                                                              |
+| `testnet` | `testnet` | ADM testnet nodes, IPFS nodes, and explorer; other coins use mainnet |
+| `tor`     | `tor`     | Mainnet through onion node and service endpoints                     |
+
+Variants are named after networks rather than Vite modes. Branches differ only in the pinned
+metadata revision: `mainnet.json` on `dev` comes from `adamant-wallets/dev`, and on `master` it
+comes from `adamant-wallets/master`.
 
 `npm run wallets:data:check` rebuilds every generated file in memory from the pinned revision and
 fails when a committed file is changed, missing, or unexpected. It does not fetch, write files, or
@@ -167,14 +170,17 @@ configuration is resolved, before anything is bundled.
 
 | Target            | Commands                                                                             | Vite mode     | Network configuration |
 | ----------------- | ------------------------------------------------------------------------------------ | ------------- | --------------------- |
-| PWA               | `npm run dev`                                                                        | `development` | `development.json`    |
-| PWA               | `npm run build`, `npm run serve`                                                     | `production`  | `production.json`     |
+| PWA               | `npm run dev`                                                                        | `development` | `mainnet.json`        |
+| PWA               | `npm run build`, `npm run serve`                                                     | `production`  | `mainnet.json`        |
 | PWA testnet       | `npm run dev:testnet`, `npm run build:testnet`, `npm run serve:testnet`              | `testnet`     | `testnet.json`        |
 | PWA Tor           | `npm run dev:tor`, `npm run build:tor`                                               | `tor`         | `tor.json`            |
-| Electron          | `npm run electron:dev`                                                               | `development` | `development.json`    |
-| Electron          | `npm run electron:build:prepare`, `npm run electron:build`, `npm run electron:serve` | `production`  | `production.json`     |
-| Capacitor Android | `npm run android:prebuild`, `npm run android:build`                                  | `production`  | `production.json`     |
-| Unit tests        | `npm run test`                                                                       | `test`        | `development.json`    |
+| Electron          | `npm run electron:dev`                                                               | `development` | `mainnet.json`        |
+| Electron          | `npm run electron:build:prepare`, `npm run electron:build`, `npm run electron:serve` | `production`  | `mainnet.json`        |
+| Capacitor Android | `npm run android:prebuild`, `npm run android:build`                                  | `production`  | `mainnet.json`        |
+| Unit tests        | `npm run test`                                                                       | `test`        | `mainnet.json`        |
+
+The `development` and `production` modes change build behavior, such as minification and developer
+tooling, but bundle the same `mainnet.json`.
 
 Electron and Capacitor Android support only the `development` and `production` modes and have no
 separate testnet or Tor target. The `tor-testnet` mode is intentionally unsupported for every target
@@ -197,13 +203,13 @@ endpoints of other networks; the build gate inspects the bundled runtime network
 
 | Deployment                                        | Branches        | Vite mode    | Network configuration |
 | ------------------------------------------------- | --------------- | ------------ | --------------------- |
-| GitHub Pages and Massa DeWeb                      | `master`        | `production` | `production.json`     |
-| Pull request previews on Surge                    | Pull requests   | `production` | `production.json`     |
-| Vercel and server-side web deployments            | `master`, `dev` | `production` | `production.json`     |
+| GitHub Pages and Massa DeWeb                      | `master`        | `production` | `mainnet.json`        |
+| Pull request previews on Surge                    | Pull requests   | `production` | `mainnet.json`        |
+| Vercel and server-side web deployments            | `master`, `dev` | `production` | `mainnet.json`        |
 | Surge testnet and its HTTP mirrors                | `master`, `dev` | `testnet`    | `testnet.json`        |
 | Server-side Tor build of `master`                 | `master`        | `tor`        | `tor.json`            |
 | Server-side Tor build of `dev` (`tor-dev`)        | `dev`           | `tor`        | `tor.json`            |
-| Electron and Capacitor Android workflow artifacts | `master`, `dev` | `production` | `production.json`     |
+| Electron and Capacitor Android workflow artifacts | `master`, `dev` | `production` | `mainnet.json`        |
 
 The Quality workflow runs `npm run wallets:data:check` for pull requests and pushes to `dev` and
 `master`. GitHub Actions workflows that deploy or package the app run it again before building, so

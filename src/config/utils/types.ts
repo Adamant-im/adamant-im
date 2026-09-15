@@ -1,4 +1,4 @@
-import config from '../production.json'
+import config from '../mainnet.json'
 
 export type Config = typeof config
 export type BlockchainSymbol = keyof Config

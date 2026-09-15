@@ -135,12 +135,23 @@ describe('resolveNetworkConfigVariant', () => {
       )
     }
   )
+
+  it.each(['pwa', 'electron', 'android'])(
+    'bundles mainnet in development and production modes for the %s target',
+    (target) => {
+      expect(resolveNetworkConfigVariant(target as NetworkBuildTarget, 'development')).toBe(
+        'mainnet'
+      )
+      expect(resolveNetworkConfigVariant(target as NetworkBuildTarget, 'production')).toBe(
+        'mainnet'
+      )
+    }
+  )
 })
 
 describe('findNetworkConfigViolations', () => {
   it('accepts isolated mainnet, testnet, and Tor configurations', () => {
-    expect(findNetworkConfigViolations('production', mainnet, references)).toEqual([])
-    expect(findNetworkConfigViolations('development', mainnet, references)).toEqual([])
+    expect(findNetworkConfigViolations('mainnet', mainnet, references)).toEqual([])
     expect(findNetworkConfigViolations('testnet', testnet, references)).toEqual([])
     expect(findNetworkConfigViolations('tor', tor, references)).toEqual([])
   })
@@ -165,7 +176,7 @@ describe('findNetworkConfigViolations', () => {
   it('rejects testnet ADM endpoints in mainnet configurations', () => {
     const config = withAdm(mainnet, { nodes: { list: [{ url: 'https://adm.testnet.example' }] } })
 
-    expect(findNetworkConfigViolations('production', config, references)).toEqual([
+    expect(findNetworkConfigViolations('mainnet', config, references)).toEqual([
       'adm.nodes.list[0].url: mainnet configuration uses the testnet origin https://adm.testnet.example'
     ])
   })
@@ -189,7 +200,7 @@ describe('findNetworkConfigViolations', () => {
   it('rejects onion endpoints outside Tor', () => {
     const config = withAdm(mainnet, { nodes: { list: [{ url: 'http://adm.onion' }] } })
 
-    expect(findNetworkConfigViolations('production', config, references)).toEqual([
+    expect(findNetworkConfigViolations('mainnet', config, references)).toEqual([
       'adm.nodes.list[0].url: mainnet endpoints must not use onion hosts, found http://adm.onion'
     ])
   })
@@ -202,7 +213,7 @@ describe('findNetworkConfigViolations', () => {
       }
     }
 
-    expect(findNetworkConfigViolations('production', config, references)).toEqual([
+    expect(findNetworkConfigViolations('mainnet', config, references)).toEqual([
       'btc.explorer: invalid HTTP(S) URL "javascript:alert(1)"',
       'btc.nodes.list[0].url: invalid HTTP(S) endpoint "ftp://btc.example"',
       'btc.nodes.list[1].url: invalid HTTP(S) endpoint undefined'
@@ -228,21 +239,21 @@ describe('findBundledNetworkConfigViolations', () => {
     expect(
       findBundledNetworkConfigViolations(
         'tor',
-        [moduleId('tor'), moduleId('production'), moduleId('testnet')],
+        [moduleId('tor'), moduleId('mainnet'), moduleId('testnet')],
         configsDir
       )
     ).toEqual([
-      'the bundle includes the production network configuration',
+      'the bundle includes the mainnet network configuration',
       'the bundle includes the testnet network configuration'
     ])
   })
 
   it('rejects a bundle without the expected configuration', () => {
     expect(
-      findBundledNetworkConfigViolations('testnet', [moduleId('production')], configsDir)
+      findBundledNetworkConfigViolations('testnet', [moduleId('mainnet')], configsDir)
     ).toEqual([
       'the bundle does not include the testnet network configuration',
-      'the bundle includes the production network configuration'
+      'the bundle includes the mainnet network configuration'
     ])
   })
 })
@@ -279,15 +290,15 @@ describe('networkConfigPlugin', () => {
     expect(() =>
       generateBundle(plugin, [
         path.resolve('src', 'config', 'tor.json'),
-        path.resolve('src', 'config', 'production.json')
+        path.resolve('src', 'config', 'mainnet.json')
       ])
-    ).toThrow('the bundle includes the production network configuration')
+    ).toThrow('the bundle includes the mainnet network configuration')
   })
 })
 
 describe('committed network configurations', () => {
   const committedReferences = {
-    mainnet: readCommittedConfig('production'),
+    mainnet: readCommittedConfig('mainnet'),
     testnet: readCommittedConfig('testnet')
   }
 
@@ -295,9 +306,5 @@ describe('committed network configurations', () => {
     expect(
       findNetworkConfigViolations(variant, readCommittedConfig(variant), committedReferences)
     ).toEqual([])
-  })
-
-  it('use the same base metadata for development and production', () => {
-    expect(readCommittedConfig('development')).toEqual(readCommittedConfig('production'))
   })
 })

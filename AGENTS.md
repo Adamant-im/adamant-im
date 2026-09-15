@@ -177,7 +177,7 @@ Attachments and IPFS:
 Build and platform targets:
 
 - Base Vite config and browser polyfills: `vite-base.config.ts`
-- PWA web/tor builds: `vite-pwa.config.ts`, `src/config/production.json`, `src/config/tor.json`
+- PWA web/tor builds: `vite-pwa.config.ts`, `src/config/mainnet.json`, `src/config/tor.json`
 - Testnet build mode: `src/config/testnet.json`
 - Build mode to network configuration mapping and bundle gate: `vite-config/plugins/networkConfigPlugin.ts`
 - Wallet metadata generation and drift check: `scripts/wallets.mjs`, `scripts/wallets/*`
