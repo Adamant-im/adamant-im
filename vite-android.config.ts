@@ -4,6 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 import viteBaseConfig from './vite-base.config.ts'
 import { manifest } from './vite-config/manifest.ts'
 import { excludeScreenshotsPlugin } from './vite-config/plugins/excludeScreenshotsPlugin.ts'
+import { networkConfigPlugin } from './vite-config/plugins/networkConfigPlugin.ts'
 
 export default mergeConfig(
   viteBaseConfig,
@@ -12,6 +13,7 @@ export default mergeConfig(
       outDir: './dist-android'
     },
     plugins: [
+      networkConfigPlugin('android'),
       VitePWA({
         registerType: 'autoUpdate',
         srcDir: 'src',
