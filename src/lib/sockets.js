@@ -1,5 +1,8 @@
 import { io } from 'socket.io-client'
+import { Transactions } from '@/lib/constants'
 import { logger } from '@/utils/devTools/logger'
+
+const CHAT_TRANSACTION_TYPES = [Transactions.SEND, Transactions.CHAT_MESSAGE]
 
 /**
  * interface Events {
@@ -150,7 +153,7 @@ export class SocketClient extends EventEmitter {
   subscribeToEvents() {
     if (this.connection) {
       this.connection.on('newTrans', (transaction) => {
-        if (transaction.type === 0 || transaction.type === 8) this.emit('newMessage', transaction)
+        if (CHAT_TRANSACTION_TYPES.includes(transaction.type)) this.emit('newMessage', transaction)
       })
     }
   }
@@ -159,9 +162,10 @@ export class SocketClient extends EventEmitter {
    * @param address ADAMANT address
    */
   init(address) {
+    clearTimeout(this.interval)
     this.setAdamantAddress(address)
     this.setSocketReady(true)
-    this.interval = setTimeout(() => this.reviseConnection(), this.REVISE_CONNECTION_TIMEOUT)
+    this.reviseConnection()
   }
 
   destroy() {
@@ -182,6 +186,7 @@ export class SocketClient extends EventEmitter {
         `[Socket] Connected to ${node.socketAddress} and subscribed to transactions of ${this.adamantAddress}`
       )
       this.connection.emit('address', this.adamantAddress)
+      this.connection.emit('types', CHAT_TRANSACTION_TYPES)
     })
 
     this.connection.on('disconnect', (reason) => {
@@ -210,13 +215,8 @@ export class SocketClient extends EventEmitter {
       return
     }
 
-    const node = this.socketNode
-
-    if (
-      (this.isOnline && this.useFastest && this.currentNode.hostname !== node.hostname) ||
-      !this.isOnline ||
-      !this.isCurrentNodeActive
-    ) {
+    if (!this.isOnline || !this.isCurrentNodeActive) {
+      const node = this.socketNode
       this.disconnect()
       this.connect(node)
       this.subscribeToEvents()

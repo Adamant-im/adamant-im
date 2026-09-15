@@ -23,6 +23,7 @@ import {
   MessageType
 } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import { BigNumber } from '@/lib/bignumber'
 import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
 import { uploadFile } from '../../../lib/files'
 import { generateAdamantChats } from './utils/generateAdamantChats'
@@ -55,7 +56,8 @@ const SOCKET_DISABLED_TIMEOUT = 3000
  *     [senderId: string]: Chat
  *   },
  *   lastMessageHeight: number,
- *   isFulfilled: boolean
+ *   isFulfilled: boolean,
+ *   isInitialChatListEmpty: boolean
  * }
  *
  * type Chat = {
@@ -73,6 +75,9 @@ const state = () => ({
   lastMessageHeight: 0, // `height` value of the last message
   isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
   offset: 0, // for loading chat list with pagination. -1 if all of chats loaded
+  // true when the first chat list page had no rooms: until a message height is known, everything
+  // that polling returns is new for the account
+  isInitialChatListEmpty: false,
   noActiveNodesDialog: undefined, // true - visible dialog, false - hidden dialog, but shown before, undefined - not shown
   newChats: {}, // { [partnerId]: partnerName }, for pointing if a chat needs further handling after being opened
   chatsActualUntil: 0,
@@ -419,6 +424,10 @@ const mutations = {
     state.offset = offset
   },
 
+  setInitialChatListEmpty(state, value) {
+    state.isInitialChatListEmpty = value
+  },
+
   /**
    * When chats are loaded, set to `true`.
    * @param {boolean} value
@@ -458,10 +467,34 @@ const mutations = {
    * Push an message to a specific chat by senderId.
    * @param {string} userId Your address
    */
-  pushMessage(state, { message, userId, unshift = false }) {
+  pushMessage(state, { message, userId, unshift = false, markAsUnread = false }) {
     const partnerId = isStringEqualCI(message.senderId, userId)
       ? message.recipientId
       : message.senderId
+
+    // Match native ADM transfers by ID across chats: a changed sender/recipient must be reported
+    // against the original record, not inserted into a second chat as an unrelated transfer.
+    let existingAdmTransfer
+    Object.values(state.chats).some((chat) => {
+      existingAdmTransfer = chat.messages.find(
+        (localMessage) => localMessage.type === Cryptos.ADM && localMessage.id === message.id
+      )
+      return !!existingAdmTransfer
+    })
+    if (existingAdmTransfer) {
+      const hasMismatch =
+        message.type !== Cryptos.ADM ||
+        !isNumeric(existingAdmTransfer.amount) ||
+        !isNumeric(message.amount) ||
+        !new BigNumber(existingAdmTransfer.amount).isEqualTo(message.amount) ||
+        !isStringEqualCI(existingAdmTransfer.senderId, message.senderId) ||
+        !isStringEqualCI(existingAdmTransfer.recipientId, message.recipientId)
+
+      existingAdmTransfer.status = hasMismatch ? TS.INVALID : message.status
+      existingAdmTransfer.height = message.height
+      existingAdmTransfer.confirmations = message.confirmations
+      return
+    }
 
     // Create chat if not exists
     if (!state.chats[partnerId]) {
@@ -470,13 +503,12 @@ const mutations = {
 
     const chat = state.chats[partnerId]
 
-    // Shouldn't duplicate local messages added directly
-    // when dispatch('getNewMessages'). Just update `status, height`.
+    // Shouldn't duplicate local messages added directly or received through the socket.
     const localMessage = chat.messages.find((localMessage) => localMessage.id === message.id)
     if (localMessage) {
-      // is message in state
       localMessage.status = message.status
       localMessage.height = message.height
+      localMessage.confirmations = message.confirmations
       return
     }
 
@@ -500,11 +532,11 @@ const mutations = {
       chat.messages.push(message)
     }
 
-    // If this is a new message, increment `numOfNewMessages`.
-    // Exception only when `height = 0`, this means that the
-    // user cleared `localStorage` or logged in first time.
+    // Live socket and polling paths mark messages explicitly. Loaded history still falls back to
+    // the persisted height so a first login or cleared local storage does not mark history unread.
     if (
-      (message.height === undefined || // unconfirmed transaction (socket)
+      (markAsUnread ||
+        message.height === undefined || // legacy unconfirmed socket transaction
         (message.height > state.lastMessageHeight && state.lastMessageHeight > 0)) &&
       !isStringEqualCI(userId, message.senderId) // do not notify yourself when send message from other device
     ) {
@@ -652,10 +684,35 @@ const mutations = {
     state.lastMessageHeight = 0
     state.isFulfilled = false
     state.offset = 0
+    state.isInitialChatListEmpty = false
     state.noActiveNodesDialog = undefined
     state.newChats = {}
     state.chatsActualUntil = 0
   }
+}
+
+/**
+ * Normalize and commit messages from one chat retrieval path.
+ *
+ * @param {object} context Vuex action context
+ * @param {Message[]} messages Raw or decoded ADM transactions
+ * @param {object} options
+ * @param {boolean} options.markAsUnread Whether incoming messages arrived after initial loading
+ */
+function commitMessages({ commit, rootState, dispatch }, messages, { markAsUnread = false } = {}) {
+  const normalizedMessages = messages.filter(isChatTransactionVisible).map(normalizeMessage)
+  dispatch('botCommands/reInitCommands', normalizedMessages, { root: true })
+  normalizedMessages.forEach((message) => {
+    const { recipientId, senderId } = message
+
+    if (recipientId === rootState.address || senderId === rootState.address) {
+      commit('pushMessage', {
+        message,
+        userId: rootState.address,
+        ...(markAsUnread && { markAsUnread: true })
+      })
+    }
+  })
 }
 
 const actions = {
@@ -685,6 +742,7 @@ const actions = {
           commit('setOffset', fetchedCount)
         }
 
+        commit('setInitialChatListEmpty', fetchedCount === 0)
         commit('setFulfilled', true)
       })
       .catch((err) => {
@@ -761,19 +819,16 @@ const actions = {
    * Push array of messages and sort by senderId.
    * @param {Message[]} messages Array of messages
    */
-  pushMessages({ commit, rootState, dispatch }, messages) {
-    const normalizedMessages = messages.filter(isChatTransactionVisible).map(normalizeMessage)
-    dispatch('botCommands/reInitCommands', normalizedMessages, { root: true })
-    normalizedMessages.forEach((message) => {
-      const { recipientId, senderId } = message
+  pushMessages(context, messages) {
+    commitMessages(context, messages)
+  },
 
-      if (recipientId === rootState.address || senderId === rootState.address) {
-        commit('pushMessage', {
-          message: message,
-          userId: rootState.address
-        })
-      }
-    })
+  /**
+   * Push messages received after the initial chat snapshot and mark incoming ones as unread.
+   * @param {Message[]} messages Array of live or reconciled messages
+   */
+  pushNewMessages(context, messages) {
+    commitMessages(context, messages, { markAsUnread: true })
   },
 
   unshiftMessages({ commit, rootState, dispatch }, messages) {
@@ -803,7 +858,10 @@ const actions = {
       const { messages, lastMessageHeight, nodeTimestamp } = result
       const chatsActualInterval = getters.chatsActualityTimeout
 
-      dispatch('pushMessages', messages)
+      // `offset` is not a baseline: paging an empty chat list moves it to -1 before the first
+      // transfer of a new account arrives
+      const hasReliableUnreadBaseline = state.lastMessageHeight > 0 || state.isInitialChatListEmpty
+      dispatch(hasReliableUnreadBaseline ? 'pushNewMessages' : 'pushMessages', messages)
 
       const validUntil =
         adamant.toTimestamp(nodeTimestamp) + chatsActualInterval + CHAT_ACTUALITY_BUFFER_MS

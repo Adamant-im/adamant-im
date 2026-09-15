@@ -110,12 +110,15 @@ function createStoreMock() {
   })
 }
 
-function createTransaction(status: (typeof TransactionStatus)[keyof typeof TransactionStatus]) {
+function createTransaction(
+  status: (typeof TransactionStatus)[keyof typeof TransactionStatus],
+  incoming = false
+) {
   return {
     id: 'tx-1',
     hash: 'tx-1',
-    senderId: 'U1111111111111111111',
-    recipientId: 'U2222222222222222222',
+    senderId: incoming ? 'U2222222222222222222' : 'U1111111111111111111',
+    recipientId: incoming ? 'U1111111111111111111' : 'U2222222222222222222',
     admTimestamp: 1,
     timestamp: Date.now(),
     confirmations: 0,
@@ -134,14 +137,17 @@ function createTransaction(status: (typeof TransactionStatus)[keyof typeof Trans
   }
 }
 
-function mountPreview(status: (typeof TransactionStatus)[keyof typeof TransactionStatus]) {
+function mountPreview(
+  status: (typeof TransactionStatus)[keyof typeof TransactionStatus],
+  incoming = false
+) {
   const store = createStoreMock()
 
   return mount(ChatPreview, {
     props: {
       userId: 'U1111111111111111111',
       contactId: 'U2222222222222222222',
-      transaction: createTransaction(status)
+      transaction: createTransaction(status, incoming)
     },
     global: {
       plugins: [store, i18n],
@@ -173,5 +179,15 @@ describe('ChatPreview status colors', () => {
     )
     expect(confirmedWrapper.text()).toContain('Sent 1 DOGE')
     expect(confirmedWrapper.text()).not.toContain(' Sent 1 DOGE ')
+  })
+
+  it('uses logical token-based spacing on both sides of transfer preview content', () => {
+    const outgoingIcon = mountPreview(TransactionStatus.REGISTERED).find('.v-icon')
+    const incomingIcon = mountPreview(TransactionStatus.REGISTERED, true).find('.v-icon')
+
+    expect(outgoingIcon.classes()).toContain('chat-brief__status-icon--leading')
+    expect(outgoingIcon.classes()).not.toContain('chat-brief__status-icon--trailing')
+    expect(incomingIcon.classes()).toContain('chat-brief__status-icon--trailing')
+    expect(incomingIcon.classes()).not.toContain('chat-brief__status-icon--leading')
   })
 })

@@ -27,6 +27,11 @@ export function useTransactionStatus(
         : transactionStatus?.value
     const hasRecoverableError = isTransactionQueryRecoverableError(queryError?.value)
 
+    // A failed refresh does not invalidate the comparison made against the last REST response.
+    if (inconsistentStatus?.value && !isInconsistentStatusResolving?.value) {
+      return TransactionStatus.INVALID
+    }
+
     if (hasRecoverableError) {
       return resolvedKnownStatus || TransactionStatus.PENDING
     }
@@ -56,8 +61,6 @@ export function useTransactionStatus(
           ? TransactionStatus.PENDING
           : resolvedKnownStatus || TransactionStatus.PENDING
       }
-
-      if (inconsistentStatus?.value) return TransactionStatus.INVALID
 
       return resolvedKnownStatus || TransactionStatus.CONFIRMED
     }

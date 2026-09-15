@@ -237,6 +237,7 @@ import {
 } from '@/lib/constants'
 
 import { parseURI } from '@/lib/uri'
+import adamant from '@/lib/adamant'
 import { sendMessage } from '@/lib/adamant-api'
 import { replyMessageAsset } from '@/lib/adamant-api/asset'
 
@@ -906,9 +907,10 @@ export default {
     pushTransactionToChat(transactionId, adamantAddress) {
       let amount = this.amount
 
-      // unformat ADM `amount`
+      // Store ADM in the integer units of the broadcast transaction. `amount * 1e8` is not an
+      // integer for amounts like 0.29, and REST reconciliation compares ADM amounts exactly
       if (this.currency === Cryptos.ADM) {
-        amount = amount * 1e8
+        amount = adamant.prepareAmount(amount)
       }
 
       this.$store.dispatch('chat/pushTransaction', {

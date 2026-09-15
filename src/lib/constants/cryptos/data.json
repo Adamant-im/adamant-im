@@ -87,7 +87,7 @@
         "onScreenUpdateInterval": 10000,
         "threshold": 10
       },
-      "minVersion": "0.8.0",
+      "minVersion": "0.10.0",
       "nodeTimeCorrection": 500
     },
     "services": {
@@ -188,7 +188,7 @@
           "onScreenUpdateInterval": 10000,
           "threshold": 10
         },
-        "minVersion": "0.9.0",
+        "minVersion": "0.10.0",
         "nodeTimeCorrection": 500
       },
       "services": {
@@ -280,7 +280,7 @@
           "onScreenUpdateInterval": 10000,
           "threshold": 10
         },
-        "minVersion": "0.8.0",
+        "minVersion": "0.10.0",
         "nodeTimeCorrection": 500
       },
       "services": {

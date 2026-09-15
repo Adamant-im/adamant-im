@@ -112,6 +112,35 @@ npm run dev-https
 | Open Android Studio project             | `npm run android:open`     |
 | Run Android app on device/emulator      | `npm run android:run`      |
 
+### Wallet metadata synchronization
+
+`npm run wallets:data:generate` explicitly refreshes the committed wallet metadata and generated
+assets from one `adamant-wallets` branch. It selects the source from the current PWA branch:
+
+| Current PWA branch                     | `adamant-wallets` source |
+| -------------------------------------- | ------------------------ |
+| `master`                               | `master`                 |
+| `dev`                                  | `dev`                    |
+| Any topic branch, including `hotfix/*` | `dev`                    |
+| Detached HEAD                          | `dev`                    |
+
+Pass `dev` or `master` after `--` to override the automatic selection for a maintenance workflow:
+
+```bash
+npm run wallets:data:generate -- master
+```
+
+Use this explicit `master` override when a production hotfix branch must consume production wallet
+metadata. The override applies only to `wallets:data:generate`; `wallets:generate` is a command chain
+and does not forward trailing arguments to its data step
+
+Other explicit source branches are rejected before the submodule is updated. Each generator run
+uses one branch for all shared wallet data, icons, and network configs
+
+Regular `npm run dev` and `npm run build` commands do not update `adamant-wallets`; they use the
+generated JSON and assets already committed to this repository. `npm run dev` starts only the local
+Vite server on `localhost:8080` and does not trigger the remote `pwa-dev` deployment
+
 ### CSP hardening on Vercel builds
 
 Production builds inject a CSP meta policy that blocks JavaScript `eval` and `Function` constructors

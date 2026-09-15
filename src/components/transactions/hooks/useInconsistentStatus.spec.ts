@@ -12,6 +12,7 @@ const recipientCryptoAddressStatus = ref<'pending' | 'success' | 'error'>('succe
 vi.mock('vuex', () => ({
   useStore: () => ({
     state: {
+      address: 'current-adm',
       btc: { address: 'my-btc-address' },
       eth: { address: 'my-eth-address' }
     }
@@ -19,7 +20,7 @@ vi.mock('vuex', () => ({
 }))
 
 vi.mock('./useFindAdmTransaction', () => ({
-  useFindAdmTransaction: () => computed(() => admTransaction.value)
+  useFindAdmTransaction: vi.fn(() => computed(() => admTransaction.value))
 }))
 
 vi.mock('@/hooks/queries/useKVSCryptoAddress', () => ({
@@ -147,16 +148,29 @@ describe('useInconsistentStatus', () => {
     expect(result.value).toBe('')
   })
 
-  it('never marks native ADM transactions as inconsistent', () => {
+  it('marks a native ADM transaction as inconsistent when canonical fields differ', () => {
     recipientCryptoAddress.value = undefined
     senderCryptoAddress.value = undefined
+    admTransaction.value = {
+      id: 'adm-1',
+      hash: 'adm-1',
+      senderId: 'sender-adm',
+      recipientId: 'recipient-adm',
+      amount: 100_000_000,
+      timestamp: Date.now(),
+      confirmations: 0,
+      status: TransactionStatus.REGISTERED,
+      type: Cryptos.ADM,
+      message: '',
+      asset: {}
+    }
 
     const result = useInconsistentStatus(
       ref({
-        id: 'tx-1',
+        id: 'adm-1',
         fee: 0.5,
         amount: 1,
-        senderId: 'sender-adm',
+        senderId: 'different-sender-adm',
         recipientId: 'recipient-adm',
         message: 'hello',
         status: TransactionStatus.CONFIRMED,
@@ -165,7 +179,7 @@ describe('useInconsistentStatus', () => {
       Cryptos.ADM
     )
 
-    expect(result.value).toBe('')
+    expect(result.value).toBe(TransactionInconsistentReason.SENDER_CRYPTO_ADDRESS_MISMATCH)
   })
 
   it('prefers the explicitly provided ADM transaction over a global hash match', () => {
@@ -216,5 +230,34 @@ describe('useInconsistentStatus', () => {
     )
 
     expect(result.value).toBe('')
+  })
+
+  it('uses only the ADM record lookup passed by the caller', async () => {
+    const { useFindAdmTransaction } = await import('./useFindAdmTransaction')
+    vi.mocked(useFindAdmTransaction).mockClear()
+    admTransaction.value = {
+      ...admTransaction.value,
+      id: 'adm-1',
+      hash: 'adm-1',
+      amount: 200_000_000,
+      type: Cryptos.ADM
+    }
+
+    const result = useInconsistentStatus(
+      ref({
+        id: 'adm-1',
+        fee: 0.5,
+        amount: 1,
+        senderId: 'sender-adm',
+        recipientId: 'recipient-adm',
+        status: TransactionStatus.CONFIRMED,
+        timestamp: Date.now()
+      }) as any,
+      Cryptos.ADM,
+      ref(undefined)
+    )
+
+    expect(result.value).toBe('')
+    expect(useFindAdmTransaction).not.toHaveBeenCalled()
   })
 })

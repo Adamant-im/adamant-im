@@ -56,7 +56,7 @@
                 :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
                 :icon="tsIcon(status)"
                 :color="tsColor(status)"
-                :class="`${className}__status-icon`"
+                :class="[`${className}__status-icon`, `${className}__status-icon--leading`]"
               />
               <span>{{ transactionPreviewText }}</span>
               <v-icon
@@ -64,7 +64,7 @@
                 :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
                 :icon="tsIcon(status)"
                 :color="tsColor(status)"
-                :class="`${className}__status-icon`"
+                :class="[`${className}__status-icon`, `${className}__status-icon--trailing`]"
               />
             </v-list-item-subtitle>
           </template>
@@ -91,13 +91,13 @@
               v-if="transaction.isReply && isConfirmed"
               :icon="mdiArrowLeftTop"
               :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
-              :class="`${className}__status-icon`"
+              :class="[`${className}__status-icon`, `${className}__status-icon--leading`]"
             />
             <v-icon
               v-else
               :icon="admStatusIcon"
               :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
-              :class="`${className}__status-icon`"
+              :class="[`${className}__status-icon`, `${className}__status-icon--leading`]"
             />
           </template>
 
@@ -333,7 +333,14 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
     display: inline-flex;
     vertical-align: middle;
     transform: translateY(var(--a-chat-preview-status-icon-shift-y));
-    margin-inline-end: var(--a-space-1);
+
+    &--leading {
+      margin-inline-end: var(--a-space-1);
+    }
+
+    &--trailing {
+      margin-inline-start: var(--a-space-1);
+    }
   }
 
   &__badge {

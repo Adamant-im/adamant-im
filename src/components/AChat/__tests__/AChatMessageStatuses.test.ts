@@ -130,7 +130,12 @@ vi.mock('@/providers/TransactionProvider', () => ({
       }
     },
     setup(props, { slots }) {
-      return () => slots.default?.({ status: props.transaction.status, refetch: vi.fn() })
+      return () =>
+        slots.default?.({
+          status: props.transaction.status,
+          inconsistentStatus: props.transaction.inconsistentStatus || '',
+          refetch: vi.fn()
+        })
     }
   })
 }))
@@ -180,6 +185,11 @@ const i18n = createI18n({
           CONFIRMED: 'Confirmed',
           REJECTED: 'Rejected',
           INVALID: 'Invalid'
+        }
+      },
+      transaction: {
+        inconsistent_reasons: {
+          wrong_amount: 'Amount mismatch'
         }
       }
     }
@@ -483,6 +493,24 @@ describe('AChat sending status UI', () => {
     )
     expect(invalidWrapper.find('.a-chat__status .v-icon').attributes('data-color')).toBe(
       tsColor(TransactionStatus.INVALID)
+    )
+  })
+
+  it('adds the ADM inconsistency reason to the invalid status icon tooltip', () => {
+    const store = createTestStore()
+    const wrapper = mount(AChatTransaction, {
+      props: {
+        transaction: createCryptoTransaction({
+          type: 'ADM',
+          status: TransactionStatus.INVALID,
+          inconsistentStatus: 'wrong_amount'
+        })
+      },
+      global: globalMountOptions(store)
+    })
+
+    expect(wrapper.find('.a-chat__status .v-icon').attributes('title')).toBe(
+      'Invalid Amount mismatch'
     )
   })
 

@@ -7,6 +7,20 @@ import { useTransactionStatus } from './useTransactionStatus'
 const boolRef = (value: boolean) => ref<boolean | undefined>(value)
 
 describe('useTransactionStatus', () => {
+  it('retains a proven inconsistency when refreshing the REST response fails', () => {
+    const status = useTransactionStatus(
+      ref(false),
+      ref('error'),
+      ref(TransactionStatus.CONFIRMED),
+      ref('wrong_amount'),
+      undefined,
+      undefined,
+      ref(false),
+      ref(true),
+      ref(new AllNodesOfflineError('adm'))
+    )
+    expect(status.value).toBe(TransactionStatus.INVALID)
+  })
   it('rejects a pending status when a background refetch exhausts all retries', () => {
     const status = useTransactionStatus(
       ref(false),

@@ -103,7 +103,7 @@ describe('Store: chat actuality on slow connection', () => {
 
     await actions.getNewMessages({ state, getters: moduleGetters, commit, dispatch })
 
-    expect(dispatch).toHaveBeenCalledWith('pushMessages', [])
+    expect(dispatch).toHaveBeenCalledWith('pushNewMessages', [])
     expect(commit).toHaveBeenCalledWith(
       'setChatsActualUntil',
       adamant.toTimestamp(nodeTimestamp) +
