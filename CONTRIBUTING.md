@@ -186,6 +186,10 @@ Electron and Capacitor Android support only the `development` and `production` m
 separate testnet or Tor target. The `tor-testnet` mode is intentionally unsupported for every target
 because the `tor` override describes mainnet endpoints and must not be combined with `testnet`.
 
+A build also fails before bundling when `src/config` contains a JSON file that the generator does
+not create, such as a restored `production.json`. Deployment scripts must select the network with
+the Vite mode instead of replacing configuration files.
+
 Every `vite build` also inspects the emitted bundle and fails when:
 
 - The bundle includes a generated network configuration other than the selected one

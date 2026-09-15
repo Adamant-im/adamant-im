@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { normalizePath, type Plugin } from 'vite'
 
@@ -175,8 +175,32 @@ export function findBundledNetworkConfigViolations(
 }
 
 /**
+ * Lists JSON files that are not generated network configurations. Builds never read such files,
+ * so a deployment script that replaces or restores one would otherwise ship an unexpected network.
+ */
+export function findUnexpectedNetworkConfigFiles(fileNames: Iterable<string>): string[] {
+  const generatedFileNames = new Set(NETWORK_CONFIG_VARIANTS.map((variant) => `${variant}.json`))
+
+  return [...fileNames]
+    .filter((fileName) => fileName.endsWith('.json') && !generatedFileNames.has(fileName))
+    .sort()
+}
+
+function listDirectory(directory: string): string[] {
+  try {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- the configuration directory is derived from the Vite root
+    return readdirSync(directory)
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return []
+
+    throw error
+  }
+}
+
+/**
  * Resolves `virtual:adamant-network-config` to the generated configuration of the current mode,
- * rejects unsupported modes, and verifies the emitted bundle against the network contract.
+ * rejects unsupported modes and unexpected configuration files, and verifies the emitted bundle
+ * against the network contract.
  */
 export function networkConfigPlugin(target: NetworkBuildTarget): Plugin {
   let variant: NetworkConfigVariant
@@ -191,6 +215,16 @@ export function networkConfigPlugin(target: NetworkBuildTarget): Plugin {
       variant = resolveNetworkConfigVariant(target, config.mode)
       configsDir = path.resolve(config.root, 'src', 'config')
       isBuild = config.command === 'build'
+
+      const unexpectedFiles = findUnexpectedNetworkConfigFiles(listDirectory(configsDir))
+
+      if (unexpectedFiles.length > 0) {
+        throw new Error(
+          `Unexpected network configuration files in src/config: ${unexpectedFiles.join(', ')}. ` +
+            'Builds select a generated configuration by Vite mode and never read these files. ' +
+            'Remove them and build Tor with "npm run build:tor" instead of replacing configuration files.'
+        )
+      }
     },
 
     resolveId(id) {

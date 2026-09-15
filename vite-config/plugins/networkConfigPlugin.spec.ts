@@ -1,6 +1,7 @@
 // @vitest-environment node
 
-import { readFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { normalizePath } from 'vite'
 import { describe, expect, it } from 'vitest'
@@ -11,6 +12,7 @@ import {
   SUPPORTED_NETWORK_MODES,
   findBundledNetworkConfigViolations,
   findNetworkConfigViolations,
+  findUnexpectedNetworkConfigFiles,
   networkConfigPlugin,
   resolveNetworkConfigVariant,
   type NetworkBuildTarget,
@@ -270,6 +272,44 @@ describe('networkConfigPlugin', () => {
 
   it('fails while resolving the build configuration for unsupported modes', () => {
     expect(() => createPlugin('pwa', 'tor-testnet')).toThrow('Unsupported Vite mode "tor-testnet"')
+  })
+
+  it('lists JSON files that the generator does not create', () => {
+    expect(
+      findUnexpectedNetworkConfigFiles([
+        'index.js',
+        'utils',
+        'production.json',
+        'mainnet.json',
+        'testnet.json',
+        'tor.json',
+        'development.json'
+      ])
+    ).toEqual(['development.json', 'production.json'])
+  })
+
+  it('fails while resolving the build configuration when src/config has an unexpected JSON file', () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'adamant-network-config-'))
+
+    try {
+      const configsDir = path.join(root, 'src', 'config')
+      mkdirSync(configsDir, { recursive: true })
+
+      for (const fileName of ['index.js', 'mainnet.json', 'testnet.json', 'tor.json']) {
+        writeFileSync(path.join(configsDir, fileName), '{}')
+      }
+
+      expect(() => createPlugin('pwa', 'tor', root)).not.toThrow()
+
+      // A legacy deployment script copies the Tor configuration over the removed production file
+      writeFileSync(path.join(configsDir, 'production.json'), '{}')
+
+      expect(() => createPlugin('pwa', 'tor', root)).toThrow(
+        'Unexpected network configuration files in src/config: production.json'
+      )
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
   })
 
   it.each(Object.keys(SUPPORTED_NETWORK_MODES.pwa))(
