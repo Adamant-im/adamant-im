@@ -1,5 +1,8 @@
 {
   "adm": {
+    "explorer": "https://explorer.adamant.im",
+    "explorerTx": "https://explorer.adamant.im/tx/${ID}",
+    "explorerAddress": "https://explorer.adamant.im/address/${ID}",
     "nodes": {
       "displayName": "adm-node",
       "list": [
@@ -115,12 +118,12 @@
           "threshold": 6000000
         }
       }
-    },
-    "explorerTx": "https://explorer.adamant.im/tx/${ID}",
-    "explorer": "https://explorer.adamant.im",
-    "explorerAddress": "https://explorer.adamant.im/address/${ID}"
+    }
   },
   "btc": {
+    "explorer": "https://bitcoinexplorer.org",
+    "explorerTx": "https://bitcoinexplorer.org/tx/${ID}",
+    "explorerAddress": "https://bitcoinexplorer.org/address/${ID}",
     "nodes": {
       "displayName": "btc-node",
       "list": [
@@ -144,9 +147,6 @@
         "threshold": 2
       }
     },
-    "explorerTx": "https://bitcoinexplorer.org/tx/${ID}",
-    "explorer": "https://bitcoinexplorer.org",
-    "explorerAddress": "https://bitcoinexplorer.org/address/${ID}",
     "services": {
       "btcIndexer": {
         "displayName": "btc-indexer",
@@ -178,6 +178,9 @@
     }
   },
   "dash": {
+    "explorer": "https://dashblockexplorer.com",
+    "explorerTx": "https://dashblockexplorer.com/tx/${ID}",
+    "explorerAddress": "https://dashblockexplorer.com/address/${ID}",
     "nodes": {
       "displayName": "dash-node",
       "list": [
@@ -200,12 +203,12 @@
         "onScreenUpdateInterval": 10000,
         "threshold": 3
       }
-    },
-    "explorerTx": "https://dashblockexplorer.com/tx/${ID}",
-    "explorer": "https://dashblockexplorer.com",
-    "explorerAddress": "https://dashblockexplorer.com/address/${ID}"
+    }
   },
   "doge": {
+    "explorer": "https://dogechain.info",
+    "explorerTx": "https://dogechain.info/tx/${ID}",
+    "explorerAddress": "https://dogechain.info/address/${ID}",
     "nodes": {
       "displayName": "doge-node",
       "list": [
@@ -229,9 +232,6 @@
         "threshold": 3
       }
     },
-    "explorerTx": "https://dogechain.info/tx/${ID}",
-    "explorer": "https://dogechain.info",
-    "explorerAddress": "https://dogechain.info/address/${ID}",
     "services": {
       "dogeIndexer": {
         "displayName": "doge-indexer",
@@ -264,6 +264,9 @@
     }
   },
   "eth": {
+    "explorer": "https://etherscan.io",
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorerAddress": "https://etherscan.io/address/${ID}",
     "nodes": {
       "displayName": "eth-node",
       "list": [
@@ -287,9 +290,6 @@
         "threshold": 5
       }
     },
-    "explorerTx": "https://etherscan.io/tx/${ID}",
-    "explorer": "https://etherscan.io",
-    "explorerAddress": "https://etherscan.io/address/${ID}",
     "services": {
       "ethIndexer": {
         "displayName": "eth-indexer",

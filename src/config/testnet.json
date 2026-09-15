@@ -1,8 +1,8 @@
 {
   "adm": {
-    "explorer": "https://explorer.adamant.im",
-    "explorerTx": "https://explorer.adamant.im/tx/${ID}",
-    "explorerAddress": "https://explorer.adamant.im/address/${ID}",
+    "explorer": "https://testnet.adamant.im",
+    "explorerTx": "https://testnet.adamant.im/tx/${ID}",
+    "explorerAddress": "https://testnet.adamant.im/address/${ID}",
     "nodes": {
       "displayName": "adm-node",
       "list": [
@@ -65,16 +65,10 @@
         },
         "list": [
           {
-            "url": "https://ipfs4.adm.im",
-            "alt_ip": "http://209.188.7.216:44099"
+            "url": "https://ipfs1test.adamant.im"
           },
           {
-            "url": "https://ipfs6.adamant.business",
-            "alt_ip": "http://75.119.138.235:44099"
-          },
-          {
-            "url": "https://ipfs4.bbry.org",
-            "alt_ip": "http://65.108.52.254:61399"
+            "url": "https://ipfs2test.adamant.im"
           }
         ],
         "healthCheck": {
@@ -90,6 +84,29 @@
     "explorer": "https://bitcoinexplorer.org",
     "explorerTx": "https://bitcoinexplorer.org/tx/${ID}",
     "explorerAddress": "https://bitcoinexplorer.org/address/${ID}",
+    "nodes": {
+      "displayName": "btc-node",
+      "list": [
+        {
+          "url": "https://btcnode1.adamant.im/bitcoind",
+          "alt_ip": "http://75.119.138.235:44100/bitcoind"
+        },
+        {
+          "url": "https://btcnode3.adamant.im/bitcoind",
+          "alt_ip": "http://195.201.242.108:44099/bitcoind"
+        },
+        {
+          "url": "https://btcnode3.bbry.org/bitcoind",
+          "alt_ip": "http://147.93.131.80:39914/bitcoind"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 360000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 2
+      }
+    },
     "services": {
       "btcIndexer": {
         "displayName": "btc-indexer",
@@ -117,29 +134,6 @@
           "crucialUpdateInterval": 30000,
           "onScreenUpdateInterval": 10000
         }
-      }
-    },
-    "nodes": {
-      "displayName": "btc-node",
-      "list": [
-        {
-          "url": "https://btcnode1.adamant.im/bitcoind",
-          "alt_ip": "http://75.119.138.235:44100/bitcoind"
-        },
-        {
-          "url": "https://btcnode3.adamant.im/bitcoind",
-          "alt_ip": "http://195.201.242.108:44099/bitcoind"
-        },
-        {
-          "url": "https://btcnode3.bbry.org/bitcoind",
-          "alt_ip": "http://147.93.131.80:39914/bitcoind"
-        }
-      ],
-      "healthCheck": {
-        "normalUpdateInterval": 360000,
-        "crucialUpdateInterval": 30000,
-        "onScreenUpdateInterval": 10000,
-        "threshold": 2
       }
     }
   },
@@ -175,6 +169,29 @@
     "explorer": "https://dogechain.info",
     "explorerTx": "https://dogechain.info/tx/${ID}",
     "explorerAddress": "https://dogechain.info/address/${ID}",
+    "nodes": {
+      "displayName": "doge-node",
+      "list": [
+        {
+          "url": "https://dogenode2.adamant.im",
+          "alt_ip": "http://46.4.37.157:44098"
+        },
+        {
+          "url": "https://dogenode3.adm.im",
+          "alt_ip": "http://195.201.242.108:44098"
+        },
+        {
+          "url": "https://dogenode3.bbry.org",
+          "alt_ip": "http://65.108.52.254:25556"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 390000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 3
+      }
+    },
     "services": {
       "dogeIndexer": {
         "displayName": "doge-indexer",
@@ -204,35 +221,35 @@
           "threshold": 3
         }
       }
-    },
-    "nodes": {
-      "displayName": "doge-node",
-      "list": [
-        {
-          "url": "https://dogenode2.adamant.im",
-          "alt_ip": "http://46.4.37.157:44098"
-        },
-        {
-          "url": "https://dogenode3.adm.im",
-          "alt_ip": "http://195.201.242.108:44098"
-        },
-        {
-          "url": "https://dogenode3.bbry.org",
-          "alt_ip": "http://65.108.52.254:25556"
-        }
-      ],
-      "healthCheck": {
-        "normalUpdateInterval": 390000,
-        "crucialUpdateInterval": 30000,
-        "onScreenUpdateInterval": 10000,
-        "threshold": 3
-      }
     }
   },
   "eth": {
     "explorer": "https://etherscan.io",
     "explorerTx": "https://etherscan.io/tx/${ID}",
     "explorerAddress": "https://etherscan.io/address/${ID}",
+    "nodes": {
+      "displayName": "eth-node",
+      "list": [
+        {
+          "url": "https://ethnode2.adamant.im",
+          "alt_ip": "http://95.216.114.252:44099"
+        },
+        {
+          "url": "https://ethnode3.adamant.im",
+          "alt_ip": "http://46.4.37.157:44099"
+        },
+        {
+          "url": "https://ethnode2.bbry.org",
+          "alt_ip": "http://65.108.52.254:41311"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
     "services": {
       "ethIndexer": {
         "displayName": "eth-indexer",
@@ -260,29 +277,6 @@
           "crucialUpdateInterval": 30000,
           "onScreenUpdateInterval": 10000
         }
-      }
-    },
-    "nodes": {
-      "displayName": "eth-node",
-      "list": [
-        {
-          "url": "https://ethnode2.adamant.im",
-          "alt_ip": "http://95.216.114.252:44099"
-        },
-        {
-          "url": "https://ethnode3.adamant.im",
-          "alt_ip": "http://46.4.37.157:44099"
-        },
-        {
-          "url": "https://ethnode2.bbry.org",
-          "alt_ip": "http://65.108.52.254:41311"
-        }
-      ],
-      "healthCheck": {
-        "normalUpdateInterval": 300000,
-        "crucialUpdateInterval": 30000,
-        "onScreenUpdateInterval": 10000,
-        "threshold": 5
       }
     }
   }

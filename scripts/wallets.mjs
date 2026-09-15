@@ -1,37 +1,85 @@
 import { $ } from 'execa'
+import { relative } from 'path'
 
-import { copyFile, readdir, readFile, writeFile, mkdir, rm } from 'fs/promises'
-import { isAbsolute, join, relative, resolve, sep } from 'path'
-import capitalize from 'lodash-es/capitalize.js'
-import isArray from 'lodash-es/isArray.js'
-import mapValues from 'lodash-es/mapValues.js'
-import mergeWith from 'lodash-es/mergeWith.js'
-import omit from 'lodash-es/omit.js'
-
+import {
+  buildWalletArtifacts,
+  findWalletArtifactDrift,
+  getWalletArtifactPaths,
+  writeWalletArtifacts
+} from './wallets/artifacts.mjs'
 import { resolveWalletsSourceBranch } from './wallets/sourceBranch.mjs'
+import { WALLETS_SUBMODULE_PATH, assertPinnedWalletsCheckout } from './wallets/submodule.mjs'
 
-const CRYPTOS_DATA_FILE_PATH = resolve('src/lib/constants/cryptos/data.json')
-const CRYPTOS_ICONS_DIR_PATH = resolve('src/components/icons/cryptos')
-const CONFIGS_DIR_PATH = resolve('src/config')
-const GENERAL_ASSETS_PATH = resolve('adamant-wallets/assets/general')
-const REQUESTED_BRANCH = process.argv[2]
-// Coin symbols become generated file names, so they must not contain path separators or dots.
-const COIN_SYMBOL_PATTERN = /^[A-Za-z0-9]+$/
+const REGENERATE_FROM_PINNED_COMMAND = 'npm run wallets:data:generate -- --pinned'
 
 // This script runs in plain Node.js context, so app logger aliases/stores are not available here.
 const logInfo = (...args) => console.info('[wallets]', ...args)
 const logError = (...args) => console.error('[wallets]', ...args)
 
-run(REQUESTED_BRANCH).catch((error) => {
+run(process.argv.slice(2)).catch((error) => {
   logError(error)
   process.exitCode = 1
 })
 
 /**
+ * Supported invocations:
+ *
+ * - no argument, `dev`, or `master` syncs `adamant-wallets` to a branch and regenerates artifacts
+ * - `--pinned` regenerates artifacts from the pinned submodule revision without fetching
+ * - `--check` compares committed artifacts with the pinned revision without writing anything
+ *
+ * @param {string[]} args Command line arguments
+ * @returns {Promise<void>}
+ */
+async function run(args) {
+  const { mode, requestedBranch } = parseArguments(args)
+  const paths = getWalletArtifactPaths()
+
+  if (mode === 'check') {
+    await checkArtifacts(paths)
+    return
+  }
+
+  if (mode === 'pinned') {
+    const revision = await assertPinnedWalletsCheckout()
+    logInfo('Regenerating from the pinned `adamant-wallets` revision:', revision)
+  } else {
+    await syncWalletsBranch(requestedBranch)
+  }
+
+  const artifacts = await buildWalletArtifacts(paths)
+  await writeWalletArtifacts(artifacts, paths)
+  await $`git add ${artifacts.iconFiles.map((file) => file.path)}` // git track newly added icons
+
+  logInfo('Coins updated successfully')
+}
+
+/**
+ * @param {string[]} args
+ * @returns {{ mode: 'sync' | 'pinned' | 'check', requestedBranch?: string }}
+ */
+function parseArguments(args) {
+  if (args.length > 1) {
+    throw new Error(`Expected at most one argument, received: ${args.join(' ')}`)
+  }
+
+  const [arg] = args
+
+  if (arg === '--check') return { mode: 'check' }
+  if (arg === '--pinned') return { mode: 'pinned' }
+
+  if (arg?.startsWith('-')) {
+    throw new Error(`Unsupported option ${arg}. Expected --check, --pinned, "dev", or "master".`)
+  }
+
+  return { mode: 'sync', requestedBranch: arg }
+}
+
+/**
  * @param {string | undefined} requestedBranch The explicit branch to sync from. E.g.: dev, master
  * @returns {Promise<void>}
  */
-async function run(requestedBranch) {
+async function syncWalletsBranch(requestedBranch) {
   const { stdout } = await $`git branch --show-current`
   const pwaBranch = stdout.trim()
   const branch = resolveWalletsSourceBranch({ pwaBranch, requestedBranch })
@@ -45,241 +93,34 @@ async function run(requestedBranch) {
 
   // update adamant-wallets repo
   await $`git submodule update --init`
-  await $`git -C adamant-wallets fetch origin ${branch}`
-  await $`git -C adamant-wallets checkout --detach origin/${branch}`
+  await $`git -C ${WALLETS_SUBMODULE_PATH} fetch origin ${branch}`
+  await $`git -C ${WALLETS_SUBMODULE_PATH} checkout --detach origin/${branch}`
 
   logInfo('Updating coins data from `adamant-wallets`. Using branch:', branch)
-
-  const { coins, config, coinDirNames, coinSymbols } = await initCoins()
-  await applyBlockchains(coins, coinSymbols)
-
-  await copyIcons(coins, coinDirNames)
-
-  await writeFile(CRYPTOS_DATA_FILE_PATH, JSON.stringify(coins, null, 2))
-
-  await updateProductionConfig(config)
-  await updateDevelopmentConfig(config)
-  await updateTestnetConfig(config)
-  await updateTorConfig(config)
-
-  logInfo('Coins updated successfully')
-}
-
-async function initCoins() {
-  const config = {}
-  const coins = {}
-
-  const coinDirNames = {}
-  const coinSymbols = {}
-
-  await forEachDir(GENERAL_ASSETS_PATH, async ({ name }) => {
-    const path = join(GENERAL_ASSETS_PATH, name, 'info.json')
-    const coin = await parseJsonFile(path)
-
-    if (coin.status !== 'active') {
-      return
-    }
-
-    assertCoinSymbol(coin.symbol, path)
-
-    coinDirNames[coin.symbol] = name
-    coinSymbols[name] = coin.symbol
-
-    coins[coin.symbol] = coin
-
-    if (coin.createCoin) {
-      const nodeName = coin.symbol.toLowerCase()
-      config[nodeName] = coin
-    }
-  })
-
-  // Sort by key (coin symbol)
-  const sortedCoins = Object.fromEntries(
-    Object.entries(coins).sort(([first], [second]) => first.localeCompare(second))
-  )
-
-  return {
-    coins: sortedCoins,
-    config,
-    coinDirNames,
-    coinSymbols
-  }
-}
-
-async function applyBlockchains(coins, coinSymbols) {
-  const blockchainsPath = resolve('adamant-wallets', 'assets', 'blockchains')
-
-  await forEachDir(blockchainsPath, async ({ name: blockchainName }) => {
-    const blockchainPath = join(blockchainsPath, blockchainName)
-    const infoPath = join(blockchainPath, 'info.json')
-
-    const info = await parseJsonFile(infoPath)
-    const mainCoinInfo = coinSymbols[info.mainCoin] ? coins[coinSymbols[info.mainCoin]] : {}
-
-    await forEachDir(blockchainPath, async ({ name: coinName }) => {
-      const coinPath = join(blockchainPath, coinName, 'info.json')
-      const coin = await parseJsonFile(coinPath)
-      assertCoinSymbol(coin.symbol, coinPath)
-
-      let tokenData = coins[coin.symbol] || {}
-
-      if (!coins[coin.symbol]) {
-        const generalTokenPath = join(GENERAL_ASSETS_PATH, coinName, 'info.json')
-        const generalTokenInfo = await parseJsonFile(generalTokenPath)
-        if (generalTokenInfo.status === 'active') {
-          tokenData = generalTokenInfo
-        }
-      }
-
-      const result = {
-        ...mainCoinInfo,
-        ...tokenData,
-        ...omit(info, ['mainCoin']),
-        ...coin
-      }
-
-      coins[coin.symbol] = {
-        ...result,
-        mainCoin: coinSymbols[info.mainCoin],
-        type: info.type,
-        defaultGasLimit: info.defaultGasLimit,
-        fees: info.fees
-      }
-    })
-  })
-}
-
-async function copyIcons(coins, coinDirNames) {
-  // remove all the icons
-  await rm(CRYPTOS_ICONS_DIR_PATH, { recursive: true })
-  await mkdir(CRYPTOS_ICONS_DIR_PATH)
-
-  for (const [name, coin] of Object.entries(coins)) {
-    const iconComponentName = `${capitalize(coin.symbol)}Icon.vue`
-
-    const iconPathDestination = resolveInside(CRYPTOS_ICONS_DIR_PATH, iconComponentName)
-    await copyFile(
-      resolveInside(GENERAL_ASSETS_PATH, coinDirNames[name], 'images', 'icon.vue'),
-      iconPathDestination
-    )
-    await $`git add ${iconPathDestination}` // git track newly added icon
-  }
-}
-
-function updateProductionConfig(configs) {
-  return updateConfig(configs, 'production')
-}
-
-function updateDevelopmentConfig(configs) {
-  return updateConfig(configs, 'development')
-}
-
-function updateTestnetConfig(configs) {
-  const testnetConfigs = mapValues(configs, (config) => {
-    if (config.testnet) config.nodes.list = config.testnet.nodes.list
-
-    return config
-  })
-
-  return updateConfig(testnetConfigs, 'testnet')
-}
-
-function updateTorConfig(configs) {
-  const torConfigs = mapValues(configs, (config) => {
-    const torConfig = mergeWith(config, config.tor, (value, srcValue) => {
-      // customizer overrides `nodes`, `services` and `links`
-      // instead of merging them
-      if (isArray(srcValue)) {
-        return srcValue
-      }
-    })
-
-    return torConfig
-  })
-
-  return updateConfig(torConfigs, 'tor')
 }
 
 /**
- * Updates the config inside src/config
- */
-async function updateConfig(configs, configName) {
-  const configPath = resolveInside(CONFIGS_DIR_PATH, `${configName}.json`)
-  const configFile = await parseJsonFile(configPath)
-
-  // Remove obsolete coins that no longer exist in configs
-  for (const existingKey in configFile) {
-    if (!configs[existingKey]) {
-      delete configFile[existingKey]
-    }
-  }
-
-  // Add/update coins from configs
-  for (const configKey in configs) {
-    const config = configs[configKey]
-
-    if (!configFile[configKey]) {
-      configFile[configKey] = {}
-    }
-
-    configFile[configKey].explorer = config.explorer
-    configFile[configKey].explorerTx = config.explorerTx
-    configFile[configKey].explorerAddress = config.explorerAddress
-    configFile[configKey].nodes = config.nodes
-    configFile[configKey].services = config.services
-  }
-
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- confined to src/config by resolveInside()
-  await writeFile(configPath, JSON.stringify(configFile, null, 2))
-}
-
-async function forEachDir(path, callback) {
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- lists only adamant-wallets asset directories
-  const dirents = await readdir(path, {
-    withFileTypes: true
-  })
-
-  const promises = dirents.filter((dir) => dir.isDirectory()).map(callback)
-
-  await Promise.all(promises)
-}
-
-async function parseJsonFile(path) {
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- reads only repository-local JSON files
-  const json = await readFile(path, 'utf-8')
-
-  return JSON.parse(json)
-}
-
-/**
- * Resolves a path and rejects the result when it escapes `baseDir`.
+ * Fails when committed generated files differ from the pinned `adamant-wallets` metadata.
  *
- * @param {string} baseDir Trusted base directory
- * @param {...string} segments Path segments that may come from wallet metadata
- * @returns {string}
+ * @param {import('./wallets/artifacts.mjs').WalletArtifactPaths} paths
+ * @returns {Promise<void>}
  */
-function resolveInside(baseDir, ...segments) {
-  const target = resolve(baseDir, ...segments)
-  const relativePath = relative(baseDir, target)
+async function checkArtifacts(paths) {
+  const revision = await assertPinnedWalletsCheckout()
+  const artifacts = await buildWalletArtifacts(paths)
+  const drift = await findWalletArtifactDrift(artifacts, paths)
 
-  if (
-    !relativePath ||
-    relativePath === '..' ||
-    relativePath.startsWith(`..${sep}`) ||
-    isAbsolute(relativePath)
-  ) {
-    throw new Error(`Refusing to access a path outside ${baseDir}: ${target}`)
+  if (drift.length === 0) {
+    logInfo('Generated wallet artifacts match the pinned `adamant-wallets` revision:', revision)
+    return
   }
 
-  return target
-}
+  const files = drift.map(({ path, reason }) => `  - ${relative(process.cwd(), path)}: ${reason}`)
 
-/**
- * @param {unknown} symbol Coin symbol declared in `info.json`
- * @param {string} sourcePath File that declares the symbol
- */
-function assertCoinSymbol(symbol, sourcePath) {
-  if (typeof symbol !== 'string' || !COIN_SYMBOL_PATTERN.test(symbol)) {
-    throw new Error(`Unsupported coin symbol ${JSON.stringify(symbol)} in ${sourcePath}`)
-  }
+  logError(
+    `Generated wallet artifacts differ from the pinned \`adamant-wallets\` revision ${revision}:\n` +
+      `${files.join('\n')}\n` +
+      `Run \`${REGENERATE_FROM_PINNED_COMMAND}\` and commit the result.`
+  )
+  process.exitCode = 1
 }

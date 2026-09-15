@@ -56,7 +56,7 @@ Mainnet app:
 - Server-side auto-build: [msg.adamant.im](https://msg.adamant.im) and [adm.im](https://adm.im) from `master`
 - Server-side auto-build: [msgtest.adamant.im](https://msgtest.adamant.im) from `dev`
 - Server-side Tor auto-build: <http://adamant6457join2rxdkr2y7iqatar7n4n72lordxeknj435i4cjhpyd.onion> from `master`
-- Server-side Tor auto-build: <http://il2fcw65jrrv4au7mtuvodzfwtc6hje6r4ooz7yoqu2jl422b44iofyd.onion> from `dev`
+- Server-side Tor auto-build (`tor-dev`): <http://il2fcw65jrrv4au7mtuvodzfwtc6hje6r4ooz7yoqu2jl422b44iofyd.onion> from `dev`, built outside GitHub Actions with `--mode tor` and the mainnet Tor network configuration
 - Vercel auto-build: [dev.adamant.im](https://dev.adamant.im) from the `dev` branch on Vercel US
 - Massa DeWeb auto-build: [adm.massahub.network](https://adm.massahub.network) from `master`, hosted on the Massa blockchain
 - GitHub Actions auto-build can also be configured by any user for their own `master` deployment
@@ -141,6 +141,112 @@ Regular `npm run dev` and `npm run build` commands do not update `adamant-wallet
 generated JSON and assets already committed to this repository. `npm run dev` starts only the local
 Vite server on `localhost:8080` and does not trigger the remote `pwa-dev` deployment
 
+### Generated wallet files and the pinned revision
+
+The `adamant-wallets` submodule revision recorded in a PWA commit is the pinned metadata revision of
+that commit. Running `wallets:data:generate` on `master` pins a revision of `adamant-wallets/master`;
+on `dev`, topic branches, and detached HEAD it pins a revision of `adamant-wallets/dev`. Every build
+uses the files generated from the revision pinned in the commit being built.
+
+The generator writes these files:
+
+- `src/lib/constants/cryptos/data.json` is the complete coin metadata snapshot, including the base,
+  `testnet`, and `tor` sections. Coin properties and the developer wallet metadata screen read it,
+  while node and service clients never take endpoints from it.
+- `src/components/icons/cryptos/*.vue` contains the coin icons
+- `src/config/<variant>.json` contains the runtime network configuration of every coin with
+  `createCoin: true`: `explorer`, `explorerTx`, `explorerAddress`, `nodes`, and `services`
+
+Each network configuration variant starts from a fresh copy of the base metadata and applies the
+complete selected override. Nested objects are merged, while arrays such as endpoint lists replace
+the base array as a whole. Resolving one variant never changes the input of another variant.
+
+| Variant       | Override  | Network                                                              |
+| ------------- | --------- | -------------------------------------------------------------------- |
+| `development` | None      | Mainnet                                                              |
+| `production`  | None      | Mainnet                                                              |
+| `testnet`     | `testnet` | ADM testnet nodes, IPFS nodes, and explorer; other coins use mainnet |
+| `tor`         | `tor`     | Mainnet through onion node and service endpoints                     |
+
+`npm run wallets:data:check` rebuilds every generated file in memory from the pinned revision and
+fails when a committed file is changed, missing, or unexpected. It does not fetch, write files, or
+move the submodule, so the submodule must be checked out at the pinned revision without local
+metadata changes:
+
+```bash
+git submodule update --init adamant-wallets
+npm run wallets:data:check
+```
+
+When the check fails without an intended metadata update, for example after a generator change,
+regenerate the files from the pinned revision instead of syncing a branch:
+
+```bash
+npm run wallets:data:generate -- --pinned
+```
+
+### Build modes and network isolation
+
+Each build bundles exactly one network configuration. The Vite mode selects it in
+`vite-config/plugins/networkConfigPlugin.ts`, and an unsupported mode fails while the build
+configuration is resolved, before anything is bundled.
+
+| Target            | Commands                                                                             | Vite mode     | Network configuration |
+| ----------------- | ------------------------------------------------------------------------------------ | ------------- | --------------------- |
+| PWA               | `npm run dev`                                                                        | `development` | `development.json`    |
+| PWA               | `npm run build`, `npm run serve`                                                     | `production`  | `production.json`     |
+| PWA testnet       | `npm run dev:testnet`, `npm run build:testnet`, `npm run serve:testnet`              | `testnet`     | `testnet.json`        |
+| PWA Tor           | `npm run dev:tor`, `npm run build:tor`                                               | `tor`         | `tor.json`            |
+| Electron          | `npm run electron:dev`                                                               | `development` | `development.json`    |
+| Electron          | `npm run electron:build:prepare`, `npm run electron:build`, `npm run electron:serve` | `production`  | `production.json`     |
+| Capacitor Android | `npm run android:prebuild`, `npm run android:build`                                  | `production`  | `production.json`     |
+| Unit tests        | `npm run test`                                                                       | `test`        | `development.json`    |
+
+Electron and Capacitor Android support only the `development` and `production` modes and have no
+separate testnet or Tor target. The `tor-testnet` mode is intentionally unsupported for every target
+because the `tor` override describes mainnet endpoints and must not be combined with `testnet`.
+`tor-dev` is not a mode either: it is a deployment of the `dev` branch built with `--mode tor`.
+
+Every `vite build` also inspects the emitted bundle and fails when:
+
+- The bundle includes a generated network configuration other than the selected one
+- A Tor node or service endpoint, including an alternative IP endpoint, is not an onion address
+- A mainnet or testnet node or service endpoint is an onion address
+- Mainnet and testnet share an ADM node, IPFS node, or ADM explorer origin
+- A node, service, or explorer URL is not a valid HTTP(S) URL
+
+Explorer links are user navigation targets rather than network endpoints, so the Tor configuration
+keeps the clearnet BTC, DASH, DOGE, and ETH explorer links inherited from the base metadata. Because
+`data.json` carries the complete metadata snapshot, a plain text search of any bundle also finds
+endpoints of other networks; the build gate inspects the bundled runtime network configuration.
+
+### Deployment build paths
+
+| Deployment                                        | Branches        | Vite mode    | Network configuration |
+| ------------------------------------------------- | --------------- | ------------ | --------------------- |
+| GitHub Pages and Massa DeWeb                      | `master`        | `production` | `production.json`     |
+| Pull request previews on Surge                    | Pull requests   | `production` | `production.json`     |
+| Vercel and server-side web deployments            | `master`, `dev` | `production` | `production.json`     |
+| Surge testnet and its HTTP mirrors                | `master`, `dev` | `testnet`    | `testnet.json`        |
+| Server-side Tor deployment                        | `master`        | `tor`        | `tor.json`            |
+| Server-side `tor-dev` deployment                  | `dev`           | `tor`        | `tor.json`            |
+| Electron and Capacitor Android workflow artifacts | `master`, `dev` | `production` | `production.json`     |
+
+GitHub Actions workflows that build these targets, as well as the Quality workflow for pull requests
+and pushes to `dev` and `master`, check out the pinned submodule and run `npm run wallets:data:check`
+before building. Deployment automation outside GitHub Actions, including the `tor-dev` server
+auto-build, must run the same check. For the Tor deployments:
+
+```bash
+git submodule update --init adamant-wallets
+npm ci
+npm run wallets:data:check
+npm run build:tor
+```
+
+Mode validation and the bundle gate run inside every Vite build, so they also protect builds that do
+not have the submodule checked out.
+
 ### CSP hardening on Vercel builds
 
 Production builds inject a CSP meta policy that blocks JavaScript `eval` and `Function` constructors
@@ -180,6 +286,14 @@ When changes affect schema-driven artifacts:
 ```bash
 npm run schema:generate
 npm run wallets:types:generate
+```
+
+When changes affect wallet metadata, the wallet generator, or generated network configuration:
+
+```bash
+npm run wallets:data:check
+npm run build:testnet
+npm run build:tor
 ```
 
 ## Playwright Smoke Checks

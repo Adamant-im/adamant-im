@@ -179,6 +179,8 @@ Build and platform targets:
 - Base Vite config and browser polyfills: `vite-base.config.ts`
 - PWA web/tor builds: `vite-pwa.config.ts`, `src/config/production.json`, `src/config/tor.json`
 - Testnet build mode: `src/config/testnet.json`
+- Build mode to network configuration mapping and bundle gate: `vite-config/plugins/networkConfigPlugin.ts`
+- Wallet metadata generation and drift check: `scripts/wallets.mjs`, `scripts/wallets/*`
 - Electron packaging: `electron-vite.config.ts`, `src/electron/main.js`
 - Android pipeline: `vite-android.config.ts`, `capacitor.config.ts`, `scripts/capacitor/build-android.mjs`
 
@@ -306,6 +308,7 @@ chat, and sends only the payloads that are not on chain yet.
 - Web PWA: `npm run build`
 - Testnet mode changes: `npm run build:testnet`
 - Tor mode changes: `npm run build:tor`
+- Wallet metadata, generator, or `src/config/*.json` changes: `npm run wallets:data:check`
 - Electron-related changes: `npm run electron:build` (or `npm run electron:dev` for local verification)
 - Android/Capacitor changes: at least `npm run android:prebuild`
 
