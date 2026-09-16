@@ -13,10 +13,21 @@ let _this
 class Notification {
   constructor(ctx) {
     _this = ctx
-    this.i18n = ctx.$i18n
+    this.t =
+      typeof ctx.$t === 'function'
+        ? (...args) => ctx.$t(...args)
+        : typeof ctx.$i18n?.t === 'function'
+          ? ctx.$i18n.t.bind(ctx.$i18n)
+          : typeof ctx.$i18n?.global?.t === 'function'
+            ? ctx.$i18n.global.t.bind(ctx.$i18n.global)
+            : null
     this.router = ctx.$router
     this.store = ctx.$store
     this.interval = null
+
+    if (!this.t) {
+      throw new TypeError('Notification context is missing a translation function')
+    }
   }
 
   get lastUnread() {
@@ -38,7 +49,7 @@ class Notification {
     const isAdmChat = isAdamantChat(this.partnerAddress)
     const name =
       this.store.getters['partners/displayName'](this.partnerAddress) || this.partnerAddress
-    return isAdmChat ? this.i18n.t(name) : name
+    return isAdmChat ? this.t(name) : name
   }
 
   get pushAllowed() {
@@ -72,9 +83,9 @@ class PushNotification extends Notification {
     let message
     if (this.lastUnread.type === 'reaction') {
       const emoji = this.lastUnread.asset.react_message
-      message = `${this.i18n.t('chats.partner_reacted')} ${emoji}`
+      message = `${this.t('chats.partner_reacted')} ${emoji}`
     } else if (this.lastUnread.type !== 'message') {
-      message = `${this.i18n.t('chats.received_label')} ${currency(
+      message = `${this.t('chats.received_label')} ${currency(
         this.lastUnread.amount,
         this.lastUnread.type
       )}`
@@ -101,7 +112,7 @@ class PushNotification extends Notification {
               const tag = this.lastUnread.id
               // Message not shown yet
               if (tag !== this.tag) {
-                const notification = new Notify(this.i18n.t('app_title'), {
+                const notification = new Notify(this.t('app_title'), {
                   body: this.messageBody,
                   closeOnClick: true,
                   icon: joinUrl(import.meta.env.BASE_URL, '/img/icons/android-chrome-192x192.png'),
@@ -126,7 +137,7 @@ class PushNotification extends Notification {
         // Permission denied
         () => {
           this.store.dispatch('snackbar/show', {
-            message: this.i18n.t('options.push_denied')
+            message: this.t('options.push_denied')
           })
           this.store.commit('options/updateOption', {
             key: 'allowPushNotifications',
@@ -138,7 +149,7 @@ class PushNotification extends Notification {
       // Notification API not supported or another error
       logger.log('notifications', 'warn', x)
       this.store.dispatch('snackbar/show', {
-        message: this.i18n.t('options.push_not_supported')
+        message: this.t('options.push_not_supported')
       })
       this.store.commit('options/updateOption', {
         key: 'allowPushNotifications',
@@ -180,9 +191,9 @@ class TabNotification extends Notification {
     this.interval = window.setInterval(() => {
       if (this.unreadAmount && this.showAmount) {
         if (this.unreadAmount < 100) {
-          document.title = this.i18n.t('notifications.tabMessage.few', this.unreadAmount)
+          document.title = this.t('notifications.tabMessage.few', this.unreadAmount)
         } else {
-          document.title = this.i18n.t('notifications.tabMessage.many')
+          document.title = this.t('notifications.tabMessage.many')
         }
       } else {
         this.stop()
@@ -195,7 +206,7 @@ class TabNotification extends Notification {
     if (this.interval) {
       window.clearInterval(this.interval)
       this.interval = null
-      document.title = this.i18n.t('app_title')
+      document.title = this.t('app_title')
     }
   }
 }
