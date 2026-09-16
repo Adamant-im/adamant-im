@@ -30,6 +30,7 @@
     "dev:tor": "vite --config vite-pwa.config.ts --mode tor",
     "wallets:generate": "npm run wallets:data:generate && npm run wallets:types:generate",
     "wallets:data:generate": "node scripts/wallets.mjs",
+    "wallets:data:check": "node scripts/wallets.mjs --check",
     "wallets:types:generate": "swagger-typescript-api generate -p ./adamant-wallets/specification/openapi.json -o ./src/types/wallets -n index.ts --no-client && prettier --write ./src/types/wallets/index.ts",
     "build": "vue-tsc && vite build --config vite-pwa.config.ts",
     "build:testnet": "vue-tsc && vite build --config vite-pwa.config.ts --mode testnet",
