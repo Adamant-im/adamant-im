@@ -3,7 +3,6 @@
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { normalizePath } from 'vite'
 import { describe, expect, it } from 'vitest'
 
 import {
@@ -21,21 +20,78 @@ import {
   type NetworkConfigVariant
 } from './networkConfigPlugin'
 
+const nodeHealthCheck = {
+  normalUpdateInterval: 300000,
+  crucialUpdateInterval: 30000,
+  onScreenUpdateInterval: 10000,
+  threshold: 10
+}
+
+const serviceHealthCheck = {
+  normalUpdateInterval: 300000,
+  crucialUpdateInterval: 30000,
+  onScreenUpdateInterval: 10000,
+  threshold: 10
+}
+
 const mainnet: NetworkConfig = {
   adm: {
     explorer: 'https://explorer.mainnet.example',
     explorerTx: 'https://explorer.mainnet.example/tx/${ID}',
+    explorerAddress: 'https://explorer.mainnet.example/address/${ID}',
     nodes: {
-      list: [{ url: 'https://adm.mainnet.example', alt_ip: 'http://192.0.2.1:36666' }]
+      list: [{ url: 'https://adm.mainnet.example', alt_ip: 'http://192.0.2.1:36666' }],
+      healthCheck: nodeHealthCheck
     },
     services: {
-      infoService: { list: [{ url: 'https://info.example' }] },
-      ipfsNode: { list: [{ url: 'https://ipfs.mainnet.example' }] }
+      infoService: { list: [{ url: 'https://info.example' }], healthCheck: serviceHealthCheck },
+      ipfsNode: {
+        list: [{ url: 'https://ipfs.mainnet.example' }],
+        healthCheck: serviceHealthCheck
+      }
     }
   },
   btc: {
     explorer: 'https://btc-explorer.example',
-    nodes: { list: [{ url: 'https://btc.example/bitcoind' }] }
+    explorerTx: 'https://btc-explorer.example/tx/${ID}',
+    explorerAddress: 'https://btc-explorer.example/address/${ID}',
+    nodes: { list: [{ url: 'https://btc.example/bitcoind' }], healthCheck: nodeHealthCheck },
+    services: {
+      btcIndexer: {
+        list: [{ url: 'https://btc-indexer.example' }],
+        healthCheck: serviceHealthCheck
+      }
+    }
+  },
+  dash: {
+    explorer: 'https://dash-explorer.example',
+    explorerTx: 'https://dash-explorer.example/tx/${ID}',
+    explorerAddress: 'https://dash-explorer.example/address/${ID}',
+    nodes: { list: [{ url: 'https://dash.example' }], healthCheck: nodeHealthCheck }
+  },
+  doge: {
+    explorer: 'https://doge-explorer.example',
+    explorerTx: 'https://doge-explorer.example/tx/${ID}',
+    explorerAddress: 'https://doge-explorer.example/address/${ID}',
+    nodes: { list: [{ url: 'https://doge.example' }], healthCheck: nodeHealthCheck },
+    services: {
+      dogeIndexer: {
+        list: [{ url: 'https://doge-indexer.example' }],
+        healthCheck: serviceHealthCheck
+      }
+    }
+  },
+  eth: {
+    explorer: 'https://eth-explorer.example',
+    explorerTx: 'https://eth-explorer.example/tx/${ID}',
+    explorerAddress: 'https://eth-explorer.example/address/${ID}',
+    nodes: { list: [{ url: 'https://eth.example' }], healthCheck: nodeHealthCheck },
+    services: {
+      ethIndexer: {
+        list: [{ url: 'https://eth-indexer.example' }],
+        healthCheck: serviceHealthCheck
+      }
+    }
   }
 }
 
@@ -43,28 +99,71 @@ const testnet: NetworkConfig = {
   adm: {
     explorer: 'https://explorer.testnet.example',
     explorerTx: 'https://explorer.testnet.example/tx/${ID}',
-    nodes: { list: [{ url: 'https://adm.testnet.example' }] },
+    explorerAddress: 'https://explorer.testnet.example/address/${ID}',
+    nodes: {
+      list: [{ url: 'https://adm.testnet.example' }],
+      healthCheck: nodeHealthCheck
+    },
     services: {
-      infoService: { list: [{ url: 'https://info.example' }] },
-      ipfsNode: { list: [{ url: 'https://ipfs.testnet.example' }] }
+      infoService: { list: [{ url: 'https://info.example' }], healthCheck: serviceHealthCheck },
+      ipfsNode: {
+        list: [{ url: 'https://ipfs.testnet.example' }],
+        healthCheck: serviceHealthCheck
+      }
     }
   },
-  btc: mainnet.btc
+  btc: mainnet.btc,
+  dash: mainnet.dash,
+  doge: mainnet.doge,
+  eth: mainnet.eth
 }
 
 const tor: NetworkConfig = {
   adm: {
     explorer: 'http://explorer.onion',
-    nodes: { list: [{ url: 'http://adm.onion' }] },
+    explorerTx: 'http://explorer.onion/tx/${ID}',
+    explorerAddress: 'http://explorer.onion/address/${ID}',
+    nodes: { list: [{ url: 'http://adm.onion' }], healthCheck: nodeHealthCheck },
     services: {
-      infoService: { list: [{ url: 'http://info.onion' }] },
-      ipfsNode: { list: [{ url: 'http://ipfs.onion' }] }
+      infoService: { list: [{ url: 'http://info.onion' }], healthCheck: serviceHealthCheck },
+      ipfsNode: { list: [{ url: 'http://ipfs.onion' }], healthCheck: serviceHealthCheck }
     }
   },
   btc: {
     explorer: 'https://btc-explorer.example',
     explorerTx: 'https://btc-explorer.example/tx/${ID}',
-    nodes: { list: [{ url: 'http://btc.onion/bitcoind' }] }
+    explorerAddress: 'https://btc-explorer.example/address/${ID}',
+    nodes: { list: [{ url: 'http://btc.onion/bitcoind' }], healthCheck: nodeHealthCheck },
+    services: {
+      btcIndexer: { list: [{ url: 'http://btc-indexer.onion' }], healthCheck: serviceHealthCheck }
+    }
+  },
+  dash: {
+    explorer: 'https://dash-explorer.example',
+    explorerTx: 'https://dash-explorer.example/tx/${ID}',
+    explorerAddress: 'https://dash-explorer.example/address/${ID}',
+    nodes: { list: [{ url: 'http://dash.onion' }], healthCheck: nodeHealthCheck }
+  },
+  doge: {
+    explorer: 'https://doge-explorer.example',
+    explorerTx: 'https://doge-explorer.example/tx/${ID}',
+    explorerAddress: 'https://doge-explorer.example/address/${ID}',
+    nodes: { list: [{ url: 'http://doge.onion' }], healthCheck: nodeHealthCheck },
+    services: {
+      dogeIndexer: {
+        list: [{ url: 'http://doge-indexer.onion' }],
+        healthCheck: serviceHealthCheck
+      }
+    }
+  },
+  eth: {
+    explorer: 'https://eth-explorer.example',
+    explorerTx: 'https://eth-explorer.example/tx/${ID}',
+    explorerAddress: 'https://eth-explorer.example/address/${ID}',
+    nodes: { list: [{ url: 'http://eth.onion' }], healthCheck: nodeHealthCheck },
+    services: {
+      ethIndexer: { list: [{ url: 'http://eth-indexer.onion' }], healthCheck: serviceHealthCheck }
+    }
   }
 }
 
@@ -81,6 +180,7 @@ function readCommittedConfig(variant: NetworkConfigVariant): NetworkConfig {
 type TestPlugin = {
   configResolved: (config: { mode: string; root: string; command: string }) => void
   resolveId: (id: string) => string | null
+  load: (id: string) => string | null
   generateBundle: (options: unknown, bundle: unknown) => void
 }
 
@@ -91,11 +191,7 @@ function createPlugin(target: NetworkBuildTarget, mode: string, root = process.c
   return plugin
 }
 
-function generateBundle(
-  plugin: TestPlugin,
-  moduleIds: string[],
-  modules: Record<string, { code: string | null }> = {}
-) {
+function generateBundle(plugin: TestPlugin, chunks: Array<{ moduleIds: string[]; code: string }>) {
   const context = {
     error(message: string): never {
       throw new Error(message)
@@ -105,21 +201,29 @@ function generateBundle(
   plugin.generateBundle.call(
     context,
     {},
-    { 'assets/index.js': { type: 'chunk', moduleIds, modules } }
+    Object.fromEntries(
+      chunks.map(({ moduleIds, code }, index) => [
+        `assets/chunk-${index}.js`,
+        { type: 'chunk', moduleIds, code, modules: {} }
+      ])
+    )
   )
 }
 
-function emittedModules(variant: NetworkConfigVariant, code?: string | null) {
-  const configPath = path.resolve('src', 'config', `${variant}.json`)
+function emittedChunk(plugin: TestPlugin) {
+  const configPath = plugin.resolveId(NETWORK_CONFIG_MODULE_ID)
 
-  return {
-    moduleIds: [configPath],
-    modules: {
-      [normalizePath(configPath)]: {
-        code: code === undefined ? readFileSync(configPath, 'utf8') : code
-      }
-    }
+  if (!configPath) {
+    throw new Error('The plugin did not resolve the virtual network config module')
   }
+
+  const code = plugin.load(configPath)
+
+  if (typeof code !== 'string') {
+    throw new Error('The plugin did not load the selected network config module')
+  }
+
+  return { moduleIds: [configPath], code }
 }
 
 describe('resolveNetworkConfigVariant', () => {
@@ -184,14 +288,19 @@ describe('findNetworkConfigViolations', () => {
     expect(findNetworkConfigViolations('tor', {}, references)).toEqual([
       'the network configuration has no coins',
       'adm: missing coin configuration',
-      'btc: missing coin configuration'
+      'btc: missing coin configuration',
+      'dash: missing coin configuration',
+      'doge: missing coin configuration',
+      'eth: missing coin configuration'
     ])
   })
 
   it('rejects missing, empty, and malformed endpoint lists', () => {
     const config = withAdm(mainnet, {
-      nodes: { list: [] },
-      services: { infoService: { list: [{ url: 42 }] } }
+      nodes: { list: [], healthCheck: nodeHealthCheck },
+      services: {
+        infoService: { list: [{ url: 42 }], healthCheck: serviceHealthCheck }
+      }
     })
 
     expect(findNetworkConfigViolations('mainnet', config, references)).toEqual([
@@ -202,20 +311,48 @@ describe('findNetworkConfigViolations', () => {
   })
 
   it('rejects endpoint sections that are not objects', () => {
-    const config = { ...mainnet, btc: { nodes: 'https://btc.example' } } as unknown as NetworkConfig
+    const config = {
+      ...mainnet,
+      btc: { ...mainnet.btc, nodes: 'https://btc.example' }
+    } as unknown as NetworkConfig
 
     expect(findNetworkConfigViolations('mainnet', config, references)).toEqual([
       'btc.nodes: expected an object'
     ])
   })
 
+  it('rejects required runtime fields independently of the generated references', () => {
+    const config = withAdm(tor, {
+      explorer: undefined,
+      nodes: { list: [{ url: 'http://adm.onion' }] }
+    })
+    const reducedReferences = {
+      mainnet: { adm: mainnet.adm } as NetworkConfig,
+      testnet: { adm: testnet.adm } as NetworkConfig
+    }
+
+    expect(findNetworkConfigViolations('tor', config, reducedReferences)).toEqual([
+      'adm.explorer: expected a string',
+      'adm.nodes.healthCheck: expected an object'
+    ])
+  })
+
   it('rejects mainnet ADM nodes, IPFS nodes, and explorer links in testnet', () => {
     const config = withAdm(testnet, {
       explorerTx: 'https://explorer.mainnet.example/tx/${ID}',
-      nodes: { list: [{ url: 'https://adm.testnet.example', alt_ip: 'http://192.0.2.1:36666' }] },
+      nodes: {
+        ...testnet.adm?.nodes,
+        list: [{ url: 'https://adm.testnet.example', alt_ip: 'http://192.0.2.1:36666' }]
+      },
       services: {
-        infoService: { list: [{ url: 'https://info.example' }] },
-        ipfsNode: { list: [{ url: 'https://ipfs.mainnet.example/' }] }
+        infoService: {
+          ...testnet.adm?.services?.infoService,
+          list: [{ url: 'https://info.example' }]
+        },
+        ipfsNode: {
+          ...testnet.adm?.services?.ipfsNode,
+          list: [{ url: 'https://ipfs.mainnet.example/' }]
+        }
       }
     })
 
@@ -227,7 +364,9 @@ describe('findNetworkConfigViolations', () => {
   })
 
   it('rejects testnet ADM endpoints in mainnet configurations', () => {
-    const config = withAdm(mainnet, { nodes: { list: [{ url: 'https://adm.testnet.example' }] } })
+    const config = withAdm(mainnet, {
+      nodes: { ...mainnet.adm?.nodes, list: [{ url: 'https://adm.testnet.example' }] }
+    })
 
     expect(findNetworkConfigViolations('mainnet', config, references)).toEqual([
       'adm.nodes.list[0].url: mainnet configuration uses the testnet origin https://adm.testnet.example'
@@ -236,10 +375,13 @@ describe('findNetworkConfigViolations', () => {
 
   it('rejects clearnet Tor node and service endpoints', () => {
     const config = withAdm(tor, {
-      nodes: { list: [{ url: 'http://adm.onion', alt_ip: 'http://192.0.2.1:36666' }] },
+      nodes: {
+        ...tor.adm?.nodes,
+        list: [{ url: 'http://adm.onion', alt_ip: 'http://192.0.2.1:36666' }]
+      },
       services: {
-        infoService: { list: [{ url: 'https://info.example' }] },
-        ipfsNode: { list: [{ url: 'http://ipfs.onion' }] }
+        infoService: { ...tor.adm?.services?.infoService, list: [{ url: 'https://info.example' }] },
+        ipfsNode: { ...tor.adm?.services?.ipfsNode, list: [{ url: 'http://ipfs.onion' }] }
       }
     })
 
@@ -262,7 +404,9 @@ describe('findNetworkConfigViolations', () => {
   })
 
   it('rejects onion endpoints outside Tor', () => {
-    const config = withAdm(mainnet, { nodes: { list: [{ url: 'http://adm.onion' }] } })
+    const config = withAdm(mainnet, {
+      nodes: { ...mainnet.adm?.nodes, list: [{ url: 'http://adm.onion' }] }
+    })
 
     expect(findNetworkConfigViolations('mainnet', config, references)).toEqual([
       'adm.nodes.list[0].url: mainnet endpoints must not use onion hosts, found http://adm.onion'
@@ -273,8 +417,9 @@ describe('findNetworkConfigViolations', () => {
     const config = {
       ...mainnet,
       btc: {
+        ...mainnet.btc,
         explorer: 'javascript:alert(1)',
-        nodes: { list: [{ url: 'ftp://btc.example' }] }
+        nodes: { ...mainnet.btc?.nodes, list: [{ url: 'ftp://btc.example' }] }
       }
     }
 
@@ -286,35 +431,80 @@ describe('findNetworkConfigViolations', () => {
 })
 
 describe('findEmittedNetworkConfigViolations', () => {
-  const emit = (config: NetworkConfig) => `const config = ${JSON.stringify(config)}`
+  const emittedConfig: NetworkConfig = {
+    adm: {
+      explorer: 'http://explorer.onion',
+      nodes: { list: [{ url: 'http://adm.onion' }] }
+    },
+    btc: {
+      explorer: 'https://btc-explorer.example'
+    }
+  }
+
+  const emit = (entries: Array<[string, string]>) =>
+    entries
+      .map(
+        ([fieldPath, url]) =>
+          `(globalThis.__ADAMANT_NETWORK_CONFIG_URLS__ ??= {}, globalThis.__ADAMANT_NETWORK_CONFIG_URLS__["__ADAMANT_NETWORK_CONFIG_URL__:${fieldPath}"] = ${JSON.stringify(url)})`
+      )
+      .join('\n')
 
   it('accepts emitted code with exactly the generated endpoints', () => {
-    expect(findEmittedNetworkConfigViolations('tor', tor, emit(tor))).toEqual([])
+    expect(
+      findEmittedNetworkConfigViolations(
+        'tor',
+        emittedConfig,
+        emit([
+          ['adm.explorer', 'http://explorer.onion'],
+          ['adm.nodes.list[0].url', 'http://adm.onion'],
+          ['btc.explorer', 'https://btc-explorer.example']
+        ])
+      )
+    ).toEqual([])
   })
 
-  it('rejects an endpoint that the generated file does not declare', () => {
-    const tampered = emit(
-      withAdm(tor, { nodes: { list: [{ url: 'https://adm.mainnet.example' }] } })
-    )
-
-    expect(findEmittedNetworkConfigViolations('tor', tor, tampered)).toEqual([
-      'the emitted tor configuration contains https://adm.mainnet.example, which the generated file does not declare',
-      'the emitted tor configuration does not contain http://adm.onion'
+  it('rejects a path that ships a different URL than the generated file', () => {
+    expect(
+      findEmittedNetworkConfigViolations(
+        'tor',
+        emittedConfig,
+        emit([
+          ['adm.explorer', 'http://explorer.onion'],
+          ['adm.nodes.list[0].url', 'https://adm.mainnet.example'],
+          ['btc.explorer', 'https://btc-explorer.example']
+        ])
+      )
+    ).toEqual([
+      'the emitted tor configuration sets adm.nodes.list[0].url to https://adm.mainnet.example, expected http://adm.onion'
     ])
   })
 
-  it('rejects emitted code that drops the generated endpoints', () => {
-    const violations = findEmittedNetworkConfigViolations('mainnet', mainnet, 'const config = {}')
+  it('rejects swapped URLs that keep the same set of strings', () => {
+    expect(
+      findEmittedNetworkConfigViolations(
+        'tor',
+        emittedConfig,
+        emit([
+          ['adm.explorer', 'http://explorer.onion'],
+          ['adm.nodes.list[0].url', 'https://btc-explorer.example'],
+          ['btc.explorer', 'http://adm.onion']
+        ])
+      )
+    ).toEqual([
+      'the emitted tor configuration sets adm.nodes.list[0].url to https://btc-explorer.example, expected http://adm.onion',
+      'the emitted tor configuration sets btc.explorer to http://adm.onion, expected https://btc-explorer.example'
+    ])
+  })
 
-    expect(violations).toContain(
-      'the emitted mainnet configuration does not contain https://adm.mainnet.example'
-    )
-    expect(violations).toHaveLength(8)
+  it('rejects emitted code that drops the marked config paths', () => {
+    expect(
+      findEmittedNetworkConfigViolations('mainnet', emittedConfig, 'const config = {}')
+    ).toEqual(['the final emitted chunk did not expose the marked mainnet network configuration'])
   })
 
   it('rejects emitted code that the bundler does not expose', () => {
-    expect(findEmittedNetworkConfigViolations('tor', tor, null)).toEqual([
-      'the bundler did not expose the emitted code of the tor network configuration'
+    expect(findEmittedNetworkConfigViolations('tor', emittedConfig, null)).toEqual([
+      'the final emitted chunk did not expose the marked tor network configuration'
     ])
   })
 })
@@ -360,9 +550,7 @@ describe('networkConfigPlugin', () => {
   it('resolves the virtual module to the configuration selected by the mode', () => {
     const plugin = createPlugin('pwa', 'testnet', '/workspace')
 
-    expect(plugin.resolveId(NETWORK_CONFIG_MODULE_ID)).toBe(
-      normalizePath(path.resolve('/workspace', 'src', 'config', 'testnet.json'))
-    )
+    expect(plugin.resolveId(NETWORK_CONFIG_MODULE_ID)).toBe('\0adamant-network-config:testnet')
     expect(plugin.resolveId('@/config')).toBeNull()
   })
 
@@ -412,39 +600,46 @@ describe('networkConfigPlugin', () => {
     'accepts the committed configuration bundle in %s mode',
     (mode) => {
       const plugin = createPlugin('pwa', mode)
-      const { moduleIds, modules } = emittedModules(resolveNetworkConfigVariant('pwa', mode))
+      const chunk = emittedChunk(plugin)
 
-      expect(() => generateBundle(plugin, moduleIds, modules)).not.toThrow()
+      expect(() => generateBundle(plugin, [chunk])).not.toThrow()
     }
   )
 
   it('fails the build when another configuration is bundled', () => {
     const plugin = createPlugin('pwa', 'tor')
-    const { moduleIds, modules } = emittedModules('tor')
+    const chunk = emittedChunk(plugin)
 
     expect(() =>
-      generateBundle(plugin, [...moduleIds, path.resolve('src', 'config', 'mainnet.json')], modules)
+      generateBundle(plugin, [
+        chunk,
+        { moduleIds: [path.resolve('src', 'config', 'mainnet.json')], code: 'const other = {}' }
+      ])
     ).toThrow('the bundle includes the mainnet network configuration')
   })
 
-  it('fails the build when the emitted module ships a different endpoint', () => {
+  it('fails the build when the final emitted chunk ships a different endpoint', () => {
     const plugin = createPlugin('pwa', 'tor')
-    const { moduleIds, modules } = emittedModules(
-      'tor',
-      'const config = {"adm":{"nodes":{"list":[{"url":"https://clown.adamant.im"}]}}}'
-    )
+    const chunk = emittedChunk(plugin)
+    const tamperedChunk = {
+      ...chunk,
+      code: chunk.code.replace(
+        'http://37g5to2z6bdoeegun4hms2hvkfbdxh4rcon4e3p267wtfkh4ji2ns6id.onion',
+        'https://clown.adamant.im'
+      )
+    }
 
-    expect(() => generateBundle(plugin, moduleIds, modules)).toThrow(
-      'the emitted tor configuration contains https://clown.adamant.im, which the generated file does not declare'
+    expect(() => generateBundle(plugin, [tamperedChunk])).toThrow(
+      'the emitted tor configuration sets adm.nodes.list[0].url to https://clown.adamant.im'
     )
   })
 
-  it('fails the build when the bundler does not expose the emitted module', () => {
+  it('fails the build when the final emitted chunk does not expose the marked config', () => {
     const plugin = createPlugin('pwa', 'production')
-    const { moduleIds, modules } = emittedModules('mainnet', null)
+    const chunk = emittedChunk(plugin)
 
-    expect(() => generateBundle(plugin, moduleIds, modules)).toThrow(
-      'the bundler did not expose the emitted code of the mainnet network configuration'
+    expect(() => generateBundle(plugin, [{ ...chunk, code: 'const config = {}' }])).toThrow(
+      'the final emitted chunk did not expose the marked mainnet network configuration'
     )
   })
 })

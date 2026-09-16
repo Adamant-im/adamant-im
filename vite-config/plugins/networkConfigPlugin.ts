@@ -6,7 +6,7 @@ export type NetworkBuildTarget = 'pwa' | 'electron' | 'android' | 'vitest'
 export type NetworkConfigVariant = 'mainnet' | 'testnet' | 'tor'
 
 type EndpointEntry = { url?: unknown; alt_ip?: unknown }
-type EndpointList = { list?: EndpointEntry[] }
+type EndpointList = { list?: EndpointEntry[]; healthCheck?: unknown }
 type CoinNetworkConfig = {
   explorer?: unknown
   explorerTx?: unknown
@@ -44,7 +44,27 @@ export const SUPPORTED_NETWORK_MODES: Readonly<
 
 const EXPLORER_FIELDS = ['explorer', 'explorerTx', 'explorerAddress'] as const
 
-const CODE_URL_PATTERN = /https?:\/\/[^\s"'`\\]+/g
+const NETWORK_CONFIG_URL_MARKER = '__ADAMANT_NETWORK_CONFIG_URL__:'
+const NETWORK_CONFIG_URL_REGISTRY = '__ADAMANT_NETWORK_CONFIG_URLS__'
+const STRING_DELIMITER_PATTERN = `["'\\x60]`
+const MARKED_NETWORK_CONFIG_URL_PATTERN = new RegExp(
+  `${NETWORK_CONFIG_URL_REGISTRY}\\[(?:${STRING_DELIMITER_PATTERN})${NETWORK_CONFIG_URL_MARKER}([^"'\\\\\x60]+)(?:${STRING_DELIMITER_PATTERN})\\]\\s*=\\s*(?:${STRING_DELIMITER_PATTERN})(https?:\\/\\/[^"'\\\\\x60]+)(?:${STRING_DELIMITER_PATTERN})`,
+  'g'
+)
+const MARKED_NETWORK_CONFIG_URL_EXPRESSION_PATTERN = new RegExp(
+  `\\(globalThis\\.${NETWORK_CONFIG_URL_REGISTRY}\\s*\\?\\?=\\s*\\{\\},\\s*globalThis\\.${NETWORK_CONFIG_URL_REGISTRY}\\[(?:${STRING_DELIMITER_PATTERN})${NETWORK_CONFIG_URL_MARKER}([^"'\\\\\x60]+)(?:${STRING_DELIMITER_PATTERN})\\]\\s*=\\s*((?:${STRING_DELIMITER_PATTERN})https?:\\/\\/[^"'\\\\\x60]+(?:${STRING_DELIMITER_PATTERN}))\\)`,
+  'g'
+)
+
+const REQUIRED_NETWORK_RUNTIME_CONTRACT: Readonly<
+  Record<string, { requiredServices?: readonly string[] }>
+> = {
+  adm: { requiredServices: ['infoService', 'ipfsNode'] },
+  btc: { requiredServices: ['btcIndexer'] },
+  dash: {},
+  doge: { requiredServices: ['dogeIndexer'] },
+  eth: { requiredServices: ['ethIndexer'] }
+}
 
 /**
  * Selects the generated network configuration for a build target and Vite mode.
@@ -96,10 +116,7 @@ export function collectNetworkEndpoints(config: NetworkConfig): { path: string; 
  * The mainnet configuration defines the required coins and services, so a testnet or Tor variant
  * cannot silently drop one of them.
  */
-export function findNetworkConfigSchemaViolations(
-  config: NetworkConfig,
-  reference: NetworkConfig
-): string[] {
+export function findNetworkConfigSchemaViolations(config: NetworkConfig): string[] {
   if (!isPlainObject(config)) {
     return ['the network configuration is not an object']
   }
@@ -107,7 +124,29 @@ export function findNetworkConfigSchemaViolations(
   const coins = Object.keys(config)
   const violations = coins.length === 0 ? ['the network configuration has no coins'] : []
 
-  for (const coin of new Set([...Object.keys(reference), ...coins])) {
+  for (const [coin, coinConfig] of Object.entries(config)) {
+    if (!isPlainObject(coinConfig)) {
+      violations.push(`${coin}: expected an object`)
+      continue
+    }
+
+    if (coinConfig.nodes !== undefined) {
+      violations.push(...findEndpointListViolations(`${coin}.nodes`, coinConfig.nodes))
+    }
+
+    if (coinConfig.services !== undefined && !isPlainObject(coinConfig.services)) {
+      violations.push(`${coin}.services: expected an object`)
+      continue
+    }
+
+    const services = getServices(coinConfig)
+
+    for (const [service, serviceConfig] of Object.entries(services)) {
+      violations.push(...findEndpointListViolations(`${coin}.services.${service}`, serviceConfig))
+    }
+  }
+
+  for (const [coin, contract] of Object.entries(REQUIRED_NETWORK_RUNTIME_CONTRACT)) {
     const coinConfig = config[coin]
 
     if (!isPlainObject(coinConfig)) {
@@ -115,24 +154,37 @@ export function findNetworkConfigSchemaViolations(
       continue
     }
 
+    for (const field of EXPLORER_FIELDS) {
+      if (typeof coinConfig[field] !== 'string') {
+        violations.push(`${coin}.${field}: expected a string`)
+      }
+    }
+
     violations.push(...findEndpointListViolations(`${coin}.nodes`, coinConfig.nodes))
+
+    if (isPlainObject(coinConfig.nodes) && !isPlainObject(coinConfig.nodes.healthCheck)) {
+      violations.push(`${coin}.nodes.healthCheck: expected an object`)
+    }
 
     if (coinConfig.services !== undefined && !isPlainObject(coinConfig.services)) {
       violations.push(`${coin}.services: expected an object`)
       continue
     }
 
-    const services = coinConfig.services ?? {}
-    const referenceServices = getServices(reference[coin])
+    const services = getServices(coinConfig)
 
-    for (const service of new Set([...Object.keys(referenceServices), ...Object.keys(services)])) {
-      violations.push(
-        ...findEndpointListViolations(`${coin}.services.${service}`, services[service])
-      )
+    for (const service of contract.requiredServices ?? []) {
+      const serviceConfig = services[service]
+
+      violations.push(...findEndpointListViolations(`${coin}.services.${service}`, serviceConfig))
+
+      if (isPlainObject(serviceConfig) && !isPlainObject(serviceConfig.healthCheck)) {
+        violations.push(`${coin}.services.${service}.healthCheck: expected an object`)
+      }
     }
   }
 
-  return violations
+  return [...new Set(violations)]
 }
 
 /**
@@ -149,7 +201,7 @@ export function findNetworkConfigViolations(
   config: NetworkConfig,
   references: NetworkConfigReferences
 ): string[] {
-  const schemaViolations = findNetworkConfigSchemaViolations(config, references.mainnet)
+  const schemaViolations = findNetworkConfigSchemaViolations(config)
 
   if (schemaViolations.length > 0) {
     return schemaViolations
@@ -217,11 +269,16 @@ export function findNetworkConfigViolations(
 export function findBundledNetworkConfigViolations(
   expectedVariant: NetworkConfigVariant,
   moduleIds: Iterable<string>,
-  configsDir: string
+  configsDir: string,
+  selectedModuleId = getNetworkConfigVirtualId(expectedVariant)
 ): string[] {
-  const variantsByPath = new Map(
-    NETWORK_CONFIG_VARIANTS.map((variant) => [getNetworkConfigPath(configsDir, variant), variant])
-  )
+  const variantsByPath = new Map<string, NetworkConfigVariant>()
+
+  for (const variant of NETWORK_CONFIG_VARIANTS) {
+    variantsByPath.set(getNetworkConfigPath(configsDir, variant), variant)
+  }
+
+  variantsByPath.set(selectedModuleId, expectedVariant)
   const bundledVariants = new Set<NetworkConfigVariant>()
 
   for (const moduleId of moduleIds) {
@@ -244,10 +301,9 @@ export function findBundledNetworkConfigViolations(
 }
 
 /**
- * Compares the endpoints of the emitted module with the generated file. Module identity alone does
- * not prove what a chunk ships, because a transform between `load` and `generateBundle` can still
- * rewrite endpoints. Emitted code that the bundler does not expose fails the gate instead of
- * silently narrowing it to source validation.
+ * Compares the path/value mapping of the final emitted runtime configuration with the generated
+ * file. The selected configuration module marks every HTTP(S) URL at load time so `generateBundle`
+ * can recover the final URL bound to each config path after every later output transform.
  */
 export function findEmittedNetworkConfigViolations(
   variant: NetworkConfigVariant,
@@ -255,25 +311,49 @@ export function findEmittedNetworkConfigViolations(
   emittedCode: string | null
 ): string[] {
   if (emittedCode === null) {
-    return [`the bundler did not expose the emitted code of the ${variant} network configuration`]
+    return [`the final emitted chunk did not expose the marked ${variant} network configuration`]
   }
 
-  const generatedUrls = new Set(collectConfigUrls(config))
-  const emittedUrls = new Set(emittedCode.match(CODE_URL_PATTERN) ?? [])
+  const generatedUrls = new Map(
+    collectConfigUrlEntries(config).map(({ path: fieldPath, url }) => [fieldPath, url])
+  )
+  const emittedUrls = new Map(
+    collectMarkedConfigUrlEntries(emittedCode).map(({ path: fieldPath, url }) => [fieldPath, url])
+  )
 
-  return [
-    ...[...emittedUrls]
-      .filter((url) => !generatedUrls.has(url))
-      .sort()
-      .map(
-        (url) =>
-          `the emitted ${variant} configuration contains ${url}, which the generated file does not declare`
-      ),
-    ...[...generatedUrls]
-      .filter((url) => !emittedUrls.has(url))
-      .sort()
-      .map((url) => `the emitted ${variant} configuration does not contain ${url}`)
-  ]
+  if (emittedUrls.size === 0) {
+    return [`the final emitted chunk did not expose the marked ${variant} network configuration`]
+  }
+
+  const fieldPaths = new Set([...generatedUrls.keys(), ...emittedUrls.keys()])
+  const violations: string[] = []
+
+  for (const fieldPath of [...fieldPaths].sort()) {
+    const generatedUrl = generatedUrls.get(fieldPath)
+    const emittedUrl = emittedUrls.get(fieldPath)
+
+    if (generatedUrl === undefined && emittedUrl !== undefined) {
+      violations.push(
+        `the emitted ${variant} configuration declares ${fieldPath} = ${emittedUrl}, which the generated file does not declare`
+      )
+      continue
+    }
+
+    if (generatedUrl !== undefined && emittedUrl === undefined) {
+      violations.push(
+        `the emitted ${variant} configuration does not declare ${fieldPath} = ${generatedUrl}`
+      )
+      continue
+    }
+
+    if (generatedUrl !== emittedUrl) {
+      violations.push(
+        `the emitted ${variant} configuration sets ${fieldPath} to ${emittedUrl}, expected ${generatedUrl}`
+      )
+    }
+  }
+
+  return violations
 }
 
 /**
@@ -307,6 +387,7 @@ function listDirectory(directory: string): string[] {
 export function networkConfigPlugin(target: NetworkBuildTarget): Plugin {
   let variant: NetworkConfigVariant
   let configsDir: string
+  let configModuleId: string
   let isBuild = false
 
   return {
@@ -316,6 +397,7 @@ export function networkConfigPlugin(target: NetworkBuildTarget): Plugin {
     configResolved(config) {
       variant = resolveNetworkConfigVariant(target, config.mode)
       configsDir = path.resolve(config.root, 'src', 'config')
+      configModuleId = getNetworkConfigVirtualId(variant)
       isBuild = config.command === 'build'
 
       const unexpectedFiles = findUnexpectedNetworkConfigFiles(listDirectory(configsDir))
@@ -330,44 +412,55 @@ export function networkConfigPlugin(target: NetworkBuildTarget): Plugin {
     },
 
     resolveId(id) {
-      return id === NETWORK_CONFIG_MODULE_ID ? getNetworkConfigPath(configsDir, variant) : null
+      return id === NETWORK_CONFIG_MODULE_ID ? configModuleId : null
+    },
+
+    load(id) {
+      if (id !== configModuleId) return null
+
+      return renderNetworkConfigModule(readNetworkConfig(configsDir, variant))
     },
 
     generateBundle(_options, bundle) {
       if (!isBuild) return
 
-      const configPath = getNetworkConfigPath(configsDir, variant)
       const moduleIds: string[] = []
-      let emittedCode: string | null | undefined
+      const emittedChunks: string[] = []
 
       for (const output of Object.values(bundle)) {
         if (output.type !== 'chunk') continue
 
         moduleIds.push(...output.moduleIds)
 
-        const emittedModule = output.modules[configPath]
-
-        if (emittedModule) {
-          emittedCode = emittedModule.code
+        if (output.moduleIds.includes(configModuleId)) {
+          emittedChunks.push(output.code)
         }
       }
 
       const config = readNetworkConfig(configsDir, variant)
       const violations = [
-        ...findBundledNetworkConfigViolations(variant, moduleIds, configsDir),
+        ...findBundledNetworkConfigViolations(variant, moduleIds, configsDir, configModuleId),
         ...findNetworkConfigViolations(variant, config, {
           mainnet: readNetworkConfig(configsDir, 'mainnet'),
           testnet: readNetworkConfig(configsDir, 'testnet')
         }),
-        ...(emittedCode === undefined
-          ? []
-          : findEmittedNetworkConfigViolations(variant, config, emittedCode))
+        ...findEmittedNetworkConfigViolations(
+          variant,
+          config,
+          emittedChunks.length > 0 ? emittedChunks.join('\n') : null
+        )
       ]
 
       if (violations.length > 0) {
         this.error(
           `Network configuration build gate rejected the ${variant} bundle:\n${violations.join('\n')}`
         )
+      }
+
+      for (const output of Object.values(bundle)) {
+        if (output.type !== 'chunk' || !output.moduleIds.includes(configModuleId)) continue
+
+        output.code = stripMarkedConfigUrlExpressions(output.code)
       }
     }
   }
@@ -377,9 +470,45 @@ function getNetworkConfigPath(configsDir: string, variant: NetworkConfigVariant)
   return normalizePath(path.join(configsDir, `${variant}.json`))
 }
 
+function getNetworkConfigVirtualId(variant: NetworkConfigVariant): string {
+  return `\0adamant-network-config:${variant}`
+}
+
 function readNetworkConfig(configsDir: string, variant: NetworkConfigVariant): NetworkConfig {
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- variant names come from a fixed allowlist
   return JSON.parse(readFileSync(getNetworkConfigPath(configsDir, variant), 'utf8'))
+}
+
+function renderNetworkConfigModule(config: NetworkConfig): string {
+  return [`const config = ${renderNetworkConfigValue(config)}`, 'export default config'].join('\n')
+}
+
+function renderNetworkConfigValue(value: unknown, currentPath = ''): string {
+  if (typeof value === 'string') {
+    if (currentPath && parseHttpUrl(value)) {
+      return `(globalThis.${NETWORK_CONFIG_URL_REGISTRY} ??= {}, globalThis.${NETWORK_CONFIG_URL_REGISTRY}[${JSON.stringify(`${NETWORK_CONFIG_URL_MARKER}${currentPath}`)}] = ${JSON.stringify(value)})`
+    }
+
+    return JSON.stringify(value)
+  }
+
+  if (Array.isArray(value)) {
+    return `[${value
+      .map((entry, index) => renderNetworkConfigValue(entry, `${currentPath}[${index}]`))
+      .join(', ')}]`
+  }
+
+  if (isPlainObject(value)) {
+    return `{${Object.entries(value)
+      .map(([key, entryValue]) => {
+        const nextPath = currentPath ? `${currentPath}.${key}` : key
+
+        return `${JSON.stringify(key)}: ${renderNetworkConfigValue(entryValue, nextPath)}`
+      })
+      .join(', ')}}`
+  }
+
+  return JSON.stringify(value)
 }
 
 function findEndpointListViolations(listPath: string, endpointList: unknown): string[] {
@@ -440,20 +569,38 @@ function collectAdmNetworkOrigins(config: NetworkConfig): { path: string; origin
   })
 }
 
-function collectConfigUrls(value: unknown): string[] {
+function collectConfigUrlEntries(
+  value: unknown,
+  currentPath = ''
+): { path: string; url: string }[] {
   if (typeof value === 'string') {
-    return parseHttpUrl(value) ? [value] : []
+    return currentPath && parseHttpUrl(value) ? [{ path: currentPath, url: value }] : []
   }
 
   if (Array.isArray(value)) {
-    return value.flatMap(collectConfigUrls)
+    return value.flatMap((entry, index) =>
+      collectConfigUrlEntries(entry, `${currentPath}[${index}]`)
+    )
   }
 
   if (isPlainObject(value)) {
-    return Object.values(value).flatMap(collectConfigUrls)
+    return Object.entries(value).flatMap(([key, entryValue]) =>
+      collectConfigUrlEntries(entryValue, currentPath ? `${currentPath}.${key}` : key)
+    )
   }
 
   return []
+}
+
+function collectMarkedConfigUrlEntries(code: string): { path: string; url: string }[] {
+  return [...code.matchAll(MARKED_NETWORK_CONFIG_URL_PATTERN)].map((match) => ({
+    path: match[1],
+    url: match[2]
+  }))
+}
+
+function stripMarkedConfigUrlExpressions(code: string): string {
+  return code.replace(MARKED_NETWORK_CONFIG_URL_EXPRESSION_PATTERN, '$2')
 }
 
 function getServices(coinConfig: unknown): Record<string, unknown> {
