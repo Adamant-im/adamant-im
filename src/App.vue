@@ -69,9 +69,9 @@ const { locale } = useI18n()
 onMounted(() => {
   const instance = getCurrentInstance()
 
-  if (instance) {
-    const notifications = new Notifications(instance.proxy)
-    notifications.start()
+  if (instance?.proxy) {
+    notifications.value = new Notifications(instance.proxy)
+    notifications.value.start()
   }
 })
 
