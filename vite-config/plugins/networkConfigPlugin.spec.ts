@@ -11,6 +11,7 @@ import {
   NETWORK_CONFIG_VARIANTS,
   SUPPORTED_NETWORK_MODES,
   findBundledNetworkConfigViolations,
+  findEmittedNetworkConfigViolations,
   findNetworkConfigViolations,
   findUnexpectedNetworkConfigFiles,
   networkConfigPlugin,
@@ -90,14 +91,35 @@ function createPlugin(target: NetworkBuildTarget, mode: string, root = process.c
   return plugin
 }
 
-function generateBundle(plugin: TestPlugin, moduleIds: string[]) {
+function generateBundle(
+  plugin: TestPlugin,
+  moduleIds: string[],
+  modules: Record<string, { code: string | null }> = {}
+) {
   const context = {
     error(message: string): never {
       throw new Error(message)
     }
   }
 
-  plugin.generateBundle.call(context, {}, { 'assets/index.js': { type: 'chunk', moduleIds } })
+  plugin.generateBundle.call(
+    context,
+    {},
+    { 'assets/index.js': { type: 'chunk', moduleIds, modules } }
+  )
+}
+
+function emittedModules(variant: NetworkConfigVariant, code?: string | null) {
+  const configPath = path.resolve('src', 'config', `${variant}.json`)
+
+  return {
+    moduleIds: [configPath],
+    modules: {
+      [normalizePath(configPath)]: {
+        code: code === undefined ? readFileSync(configPath, 'utf8') : code
+      }
+    }
+  }
 }
 
 describe('resolveNetworkConfigVariant', () => {
@@ -158,6 +180,35 @@ describe('findNetworkConfigViolations', () => {
     expect(findNetworkConfigViolations('tor', tor, references)).toEqual([])
   })
 
+  it('rejects a configuration without the coins of the mainnet configuration', () => {
+    expect(findNetworkConfigViolations('tor', {}, references)).toEqual([
+      'the network configuration has no coins',
+      'adm: missing coin configuration',
+      'btc: missing coin configuration'
+    ])
+  })
+
+  it('rejects missing, empty, and malformed endpoint lists', () => {
+    const config = withAdm(mainnet, {
+      nodes: { list: [] },
+      services: { infoService: { list: [{ url: 42 }] } }
+    })
+
+    expect(findNetworkConfigViolations('mainnet', config, references)).toEqual([
+      'adm.nodes.list: expected a non-empty array of endpoints',
+      'adm.services.infoService.list[0].url: expected a string',
+      'adm.services.ipfsNode: missing endpoint list'
+    ])
+  })
+
+  it('rejects endpoint sections that are not objects', () => {
+    const config = { ...mainnet, btc: { nodes: 'https://btc.example' } } as unknown as NetworkConfig
+
+    expect(findNetworkConfigViolations('mainnet', config, references)).toEqual([
+      'btc.nodes: expected an object'
+    ])
+  })
+
   it('rejects mainnet ADM nodes, IPFS nodes, and explorer links in testnet', () => {
     const config = withAdm(testnet, {
       explorerTx: 'https://explorer.mainnet.example/tx/${ID}',
@@ -183,9 +234,8 @@ describe('findNetworkConfigViolations', () => {
     ])
   })
 
-  it('rejects clearnet Tor node and service endpoints but allows clearnet explorer links', () => {
+  it('rejects clearnet Tor node and service endpoints', () => {
     const config = withAdm(tor, {
-      explorer: 'https://explorer.mainnet.example',
       nodes: { list: [{ url: 'http://adm.onion', alt_ip: 'http://192.0.2.1:36666' }] },
       services: {
         infoService: { list: [{ url: 'https://info.example' }] },
@@ -199,6 +249,18 @@ describe('findNetworkConfigViolations', () => {
     ])
   })
 
+  it('rejects clearnet ADM explorer links in Tor while allowing third-party explorer links', () => {
+    const config = withAdm(tor, {
+      explorer: 'https://explorer.mainnet.example',
+      explorerAddress: 'https://explorer.mainnet.example/address/${ID}'
+    })
+
+    expect(findNetworkConfigViolations('tor', config, references)).toEqual([
+      'adm.explorer: Tor ADM explorer links must use onion hosts, found https://explorer.mainnet.example',
+      'adm.explorerAddress: Tor ADM explorer links must use onion hosts, found https://explorer.mainnet.example/address/${ID}'
+    ])
+  })
+
   it('rejects onion endpoints outside Tor', () => {
     const config = withAdm(mainnet, { nodes: { list: [{ url: 'http://adm.onion' }] } })
 
@@ -208,17 +270,51 @@ describe('findNetworkConfigViolations', () => {
   })
 
   it('rejects invalid endpoints and explorer links', () => {
-    const config: NetworkConfig = {
+    const config = {
+      ...mainnet,
       btc: {
         explorer: 'javascript:alert(1)',
-        nodes: { list: [{ url: 'ftp://btc.example' }, {}] }
+        nodes: { list: [{ url: 'ftp://btc.example' }] }
       }
     }
 
     expect(findNetworkConfigViolations('mainnet', config, references)).toEqual([
       'btc.explorer: invalid HTTP(S) URL "javascript:alert(1)"',
-      'btc.nodes.list[0].url: invalid HTTP(S) endpoint "ftp://btc.example"',
-      'btc.nodes.list[1].url: invalid HTTP(S) endpoint undefined'
+      'btc.nodes.list[0].url: invalid HTTP(S) endpoint "ftp://btc.example"'
+    ])
+  })
+})
+
+describe('findEmittedNetworkConfigViolations', () => {
+  const emit = (config: NetworkConfig) => `const config = ${JSON.stringify(config)}`
+
+  it('accepts emitted code with exactly the generated endpoints', () => {
+    expect(findEmittedNetworkConfigViolations('tor', tor, emit(tor))).toEqual([])
+  })
+
+  it('rejects an endpoint that the generated file does not declare', () => {
+    const tampered = emit(
+      withAdm(tor, { nodes: { list: [{ url: 'https://adm.mainnet.example' }] } })
+    )
+
+    expect(findEmittedNetworkConfigViolations('tor', tor, tampered)).toEqual([
+      'the emitted tor configuration contains https://adm.mainnet.example, which the generated file does not declare',
+      'the emitted tor configuration does not contain http://adm.onion'
+    ])
+  })
+
+  it('rejects emitted code that drops the generated endpoints', () => {
+    const violations = findEmittedNetworkConfigViolations('mainnet', mainnet, 'const config = {}')
+
+    expect(violations).toContain(
+      'the emitted mainnet configuration does not contain https://adm.mainnet.example'
+    )
+    expect(violations).toHaveLength(8)
+  })
+
+  it('rejects emitted code that the bundler does not expose', () => {
+    expect(findEmittedNetworkConfigViolations('tor', tor, null)).toEqual([
+      'the bundler did not expose the emitted code of the tor network configuration'
     ])
   })
 })
@@ -316,23 +412,40 @@ describe('networkConfigPlugin', () => {
     'accepts the committed configuration bundle in %s mode',
     (mode) => {
       const plugin = createPlugin('pwa', mode)
-      const variant = resolveNetworkConfigVariant('pwa', mode)
+      const { moduleIds, modules } = emittedModules(resolveNetworkConfigVariant('pwa', mode))
 
-      expect(() =>
-        generateBundle(plugin, [path.resolve('src', 'config', `${variant}.json`)])
-      ).not.toThrow()
+      expect(() => generateBundle(plugin, moduleIds, modules)).not.toThrow()
     }
   )
 
   it('fails the build when another configuration is bundled', () => {
     const plugin = createPlugin('pwa', 'tor')
+    const { moduleIds, modules } = emittedModules('tor')
 
     expect(() =>
-      generateBundle(plugin, [
-        path.resolve('src', 'config', 'tor.json'),
-        path.resolve('src', 'config', 'mainnet.json')
-      ])
+      generateBundle(plugin, [...moduleIds, path.resolve('src', 'config', 'mainnet.json')], modules)
     ).toThrow('the bundle includes the mainnet network configuration')
+  })
+
+  it('fails the build when the emitted module ships a different endpoint', () => {
+    const plugin = createPlugin('pwa', 'tor')
+    const { moduleIds, modules } = emittedModules(
+      'tor',
+      'const config = {"adm":{"nodes":{"list":[{"url":"https://clown.adamant.im"}]}}}'
+    )
+
+    expect(() => generateBundle(plugin, moduleIds, modules)).toThrow(
+      'the emitted tor configuration contains https://clown.adamant.im, which the generated file does not declare'
+    )
+  })
+
+  it('fails the build when the bundler does not expose the emitted module', () => {
+    const plugin = createPlugin('pwa', 'production')
+    const { moduleIds, modules } = emittedModules('mainnet', null)
+
+    expect(() => generateBundle(plugin, moduleIds, modules)).toThrow(
+      'the bundler did not expose the emitted code of the mainnet network configuration'
+    )
   })
 })
 

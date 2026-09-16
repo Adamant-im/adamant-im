@@ -44,6 +44,8 @@ export const SUPPORTED_NETWORK_MODES: Readonly<
 
 const EXPLORER_FIELDS = ['explorer', 'explorerTx', 'explorerAddress'] as const
 
+const CODE_URL_PATTERN = /https?:\/\/[^\s"'`\\]+/g
+
 /**
  * Selects the generated network configuration for a build target and Vite mode.
  * Unsupported combinations fail instead of silently composing incompatible networks.
@@ -87,9 +89,58 @@ export function collectNetworkEndpoints(config: NetworkConfig): { path: string; 
 }
 
 /**
+ * Checks that the configuration has the shape the runtime node clients expect. An absent or
+ * malformed endpoint list would otherwise pass the endpoint rules as an empty list and ship a build
+ * without usable nodes or services.
+ *
+ * The mainnet configuration defines the required coins and services, so a testnet or Tor variant
+ * cannot silently drop one of them.
+ */
+export function findNetworkConfigSchemaViolations(
+  config: NetworkConfig,
+  reference: NetworkConfig
+): string[] {
+  if (!isPlainObject(config)) {
+    return ['the network configuration is not an object']
+  }
+
+  const coins = Object.keys(config)
+  const violations = coins.length === 0 ? ['the network configuration has no coins'] : []
+
+  for (const coin of new Set([...Object.keys(reference), ...coins])) {
+    const coinConfig = config[coin]
+
+    if (!isPlainObject(coinConfig)) {
+      violations.push(`${coin}: missing coin configuration`)
+      continue
+    }
+
+    violations.push(...findEndpointListViolations(`${coin}.nodes`, coinConfig.nodes))
+
+    if (coinConfig.services !== undefined && !isPlainObject(coinConfig.services)) {
+      violations.push(`${coin}.services: expected an object`)
+      continue
+    }
+
+    const services = coinConfig.services ?? {}
+    const referenceServices = getServices(reference[coin])
+
+    for (const service of new Set([...Object.keys(referenceServices), ...Object.keys(services)])) {
+      violations.push(
+        ...findEndpointListViolations(`${coin}.services.${service}`, services[service])
+      )
+    }
+  }
+
+  return violations
+}
+
+/**
  * Checks the runtime network contract of one generated configuration:
  *
- * - Tor node and service endpoints use onion hosts, while explorer links may stay clearnet
+ * - The configuration has the coins, node lists, and service lists the runtime expects
+ * - Tor node and service endpoints use onion hosts, and so do the ADM explorer links
+ * - Tor keeps the clearnet BTC, DASH, DOGE, and ETH explorer links of the base metadata
  * - Mainnet and testnet node and service endpoints do not use onion hosts
  * - Mainnet and testnet do not share ADM node, IPFS node, or ADM explorer origins
  */
@@ -98,6 +149,12 @@ export function findNetworkConfigViolations(
   config: NetworkConfig,
   references: NetworkConfigReferences
 ): string[] {
+  const schemaViolations = findNetworkConfigSchemaViolations(config, references.mainnet)
+
+  if (schemaViolations.length > 0) {
+    return schemaViolations
+  }
+
   const violations: string[] = []
 
   for (const [coin, coinConfig] of Object.entries(config)) {
@@ -121,6 +178,18 @@ export function findNetworkConfigViolations(
       violations.push(
         `${endpointPath}: ${variant} endpoints must not use onion hosts, found ${url}`
       )
+    }
+  }
+
+  if (variant === 'tor') {
+    // Only the third-party BTC, DASH, DOGE, and ETH explorers may stay clearnet in Tor
+    for (const field of EXPLORER_FIELDS) {
+      const value = config.adm?.[field]
+      const explorer = parseHttpUrl(value)
+
+      if (explorer && !isOnionHost(explorer)) {
+        violations.push(`adm.${field}: Tor ADM explorer links must use onion hosts, found ${value}`)
+      }
     }
   }
 
@@ -172,6 +241,39 @@ export function findBundledNetworkConfigViolations(
   }
 
   return violations
+}
+
+/**
+ * Compares the endpoints of the emitted module with the generated file. Module identity alone does
+ * not prove what a chunk ships, because a transform between `load` and `generateBundle` can still
+ * rewrite endpoints. Emitted code that the bundler does not expose fails the gate instead of
+ * silently narrowing it to source validation.
+ */
+export function findEmittedNetworkConfigViolations(
+  variant: NetworkConfigVariant,
+  config: NetworkConfig,
+  emittedCode: string | null
+): string[] {
+  if (emittedCode === null) {
+    return [`the bundler did not expose the emitted code of the ${variant} network configuration`]
+  }
+
+  const generatedUrls = new Set(collectConfigUrls(config))
+  const emittedUrls = new Set(emittedCode.match(CODE_URL_PATTERN) ?? [])
+
+  return [
+    ...[...emittedUrls]
+      .filter((url) => !generatedUrls.has(url))
+      .sort()
+      .map(
+        (url) =>
+          `the emitted ${variant} configuration contains ${url}, which the generated file does not declare`
+      ),
+    ...[...generatedUrls]
+      .filter((url) => !emittedUrls.has(url))
+      .sort()
+      .map((url) => `the emitted ${variant} configuration does not contain ${url}`)
+  ]
 }
 
 /**
@@ -234,15 +336,32 @@ export function networkConfigPlugin(target: NetworkBuildTarget): Plugin {
     generateBundle(_options, bundle) {
       if (!isBuild) return
 
-      const moduleIds = Object.values(bundle).flatMap((output) =>
-        output.type === 'chunk' ? output.moduleIds : []
-      )
+      const configPath = getNetworkConfigPath(configsDir, variant)
+      const moduleIds: string[] = []
+      let emittedCode: string | null | undefined
+
+      for (const output of Object.values(bundle)) {
+        if (output.type !== 'chunk') continue
+
+        moduleIds.push(...output.moduleIds)
+
+        const emittedModule = output.modules[configPath]
+
+        if (emittedModule) {
+          emittedCode = emittedModule.code
+        }
+      }
+
+      const config = readNetworkConfig(configsDir, variant)
       const violations = [
         ...findBundledNetworkConfigViolations(variant, moduleIds, configsDir),
-        ...findNetworkConfigViolations(variant, readNetworkConfig(configsDir, variant), {
+        ...findNetworkConfigViolations(variant, config, {
           mainnet: readNetworkConfig(configsDir, 'mainnet'),
           testnet: readNetworkConfig(configsDir, 'testnet')
-        })
+        }),
+        ...(emittedCode === undefined
+          ? []
+          : findEmittedNetworkConfigViolations(variant, config, emittedCode))
       ]
 
       if (violations.length > 0) {
@@ -261,6 +380,40 @@ function getNetworkConfigPath(configsDir: string, variant: NetworkConfigVariant)
 function readNetworkConfig(configsDir: string, variant: NetworkConfigVariant): NetworkConfig {
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- variant names come from a fixed allowlist
   return JSON.parse(readFileSync(getNetworkConfigPath(configsDir, variant), 'utf8'))
+}
+
+function findEndpointListViolations(listPath: string, endpointList: unknown): string[] {
+  if (endpointList === undefined) {
+    return [`${listPath}: missing endpoint list`]
+  }
+
+  if (!isPlainObject(endpointList)) {
+    return [`${listPath}: expected an object`]
+  }
+
+  const list = endpointList.list
+
+  if (!Array.isArray(list) || list.length === 0) {
+    return [`${listPath}.list: expected a non-empty array of endpoints`]
+  }
+
+  return list.flatMap((entry, index) => {
+    if (!isPlainObject(entry)) {
+      return [`${listPath}.list[${index}]: expected an endpoint object`]
+    }
+
+    const issues: string[] = []
+
+    if (typeof entry.url !== 'string') {
+      issues.push(`${listPath}.list[${index}].url: expected a string`)
+    }
+
+    if (entry.alt_ip !== undefined && typeof entry.alt_ip !== 'string') {
+      issues.push(`${listPath}.list[${index}].alt_ip: expected a string`)
+    }
+
+    return issues
+  })
 }
 
 function collectListEndpoints(listPath: string, endpointList: EndpointList | undefined) {
@@ -285,6 +438,32 @@ function collectAdmNetworkOrigins(config: NetworkConfig): { path: string; origin
 
     return parsedUrl ? [{ path: fieldPath, origin: parsedUrl.origin }] : []
   })
+}
+
+function collectConfigUrls(value: unknown): string[] {
+  if (typeof value === 'string') {
+    return parseHttpUrl(value) ? [value] : []
+  }
+
+  if (Array.isArray(value)) {
+    return value.flatMap(collectConfigUrls)
+  }
+
+  if (isPlainObject(value)) {
+    return Object.values(value).flatMap(collectConfigUrls)
+  }
+
+  return []
+}
+
+function getServices(coinConfig: unknown): Record<string, unknown> {
+  if (!isPlainObject(coinConfig) || !isPlainObject(coinConfig.services)) return {}
+
+  return coinConfig.services
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
 function parseHttpUrl(value: unknown): URL | null {

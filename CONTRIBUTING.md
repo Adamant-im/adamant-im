@@ -193,15 +193,20 @@ the Vite mode instead of replacing configuration files.
 Every `vite build` also inspects the emitted bundle and fails when:
 
 - The bundle includes a generated network configuration other than the selected one
+- The endpoints of the emitted configuration module differ from the generated file, or the bundler
+  does not expose that module code
+- A coin, node list, or service list of the mainnet configuration is missing, empty, or malformed
 - A Tor node or service endpoint, including an alternative IP endpoint, is not an onion address
+- A Tor ADM explorer link is not an onion address
 - A mainnet or testnet node or service endpoint is an onion address
 - Mainnet and testnet share an ADM node, IPFS node, or ADM explorer origin
 - A node, service, or explorer URL is not a valid HTTP(S) URL
 
-Explorer links are user navigation targets rather than network endpoints, so the Tor configuration
-keeps the clearnet BTC, DASH, DOGE, and ETH explorer links inherited from the base metadata. Because
-`data.json` carries the complete metadata snapshot, a plain text search of any bundle also finds
-endpoints of other networks; the build gate inspects the bundled runtime network configuration.
+Third-party explorer links are user navigation targets rather than network endpoints, so the Tor
+configuration keeps the clearnet BTC, DASH, DOGE, and ETH explorer links inherited from the base
+metadata, while the ADM explorer links stay on onion hosts. Because `data.json` carries the complete
+metadata snapshot, a plain text search of any bundle also finds endpoints of other networks; the
+build gate inspects the emitted runtime network configuration module instead.
 
 ### Deployment build paths
 
