@@ -311,6 +311,19 @@ const restoreSettingsViewState = async (path = route.path) => {
   const shouldReset = shouldResetSettingsViewState(path)
   const top = shouldReset ? 0 : store.getters['options/settingsScrollPosition'](path)
 
+  if (shouldReset || top <= 0) {
+    applySettingsScrollTop(0)
+    stopSettingsRestore()
+    activeSettingsScrollPath.value = path
+    store.commit('options/setSettingsScrollPosition', {
+      path,
+      top: 0
+    })
+    store.commit('options/setSettingsLastRoute', path)
+    isRestoringSettingsScroll.value = false
+    return
+  }
+
   applySettingsScrollTop(top)
   await waitForSettingsViewFrame()
   applySettingsScrollTop(top)
@@ -326,12 +339,6 @@ const restoreSettingsViewState = async (path = route.path) => {
     store.commit('options/setSettingsLastRoute', path)
     isRestoringSettingsScroll.value = false
   }
-
-  if (shouldReset || top <= 0) {
-    finalizeRestore(0)
-    return
-  }
-
   const restoreDeadline = window.performance.now() + 1500
   let stableFrames = 0
   let lastTop = -1
