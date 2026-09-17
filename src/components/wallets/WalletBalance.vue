@@ -31,7 +31,7 @@ import { Cryptos } from '@/lib/constants'
 import { useStore } from 'vuex'
 import smartNumber from '@/lib/smartNumber'
 import { useDisplay } from 'vuetify'
-import { useNow } from '@vueuse/core'
+import { useIntervalFn, useNow } from '@vueuse/core'
 import { mdiDotsHorizontal } from '@mdi/js'
 import { WALLET_TAB_LOADING_ICON_SIZE } from '@/components/wallets/helpers/uiMetrics'
 
@@ -56,7 +56,7 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore()
-    const now = useNow({ interval: 500 })
+    const now = useNow({ scheduler: (update) => useIntervalFn(update, 500) })
     const { xs } = useDisplay()
     const { symbol } = toRefs(props)
     const key = symbol.value.toLowerCase()
