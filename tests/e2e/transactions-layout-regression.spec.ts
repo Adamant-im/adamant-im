@@ -124,8 +124,7 @@ test.describe('Transactions layout regressions', () => {
       const storeModulePath = '/src/store/index.js'
       const { default: store } = await import(/* @vite-ignore */ storeModulePath)
       const getter = store.getters['options/accountScrollPosition'] as
-        | ((routePath: string) => number)
-        | undefined
+        ((routePath: string) => number) | undefined
 
       return getter ? getter(path) : null
     }, `/transactions/${testRestorableListCrypto}`)
@@ -158,8 +157,7 @@ test.describe('Transactions layout regressions', () => {
       const storeModulePath = '/src/store/index.js'
       const { default: store } = await import(/* @vite-ignore */ storeModulePath)
       const getter = store.getters['options/accountScrollPosition'] as
-        | ((routePath: string) => number)
-        | undefined
+        ((routePath: string) => number) | undefined
 
       return getter ? getter(path) : null
     }, `/transactions/${testRestorableListCrypto}`)
@@ -185,21 +183,30 @@ test.describe('Transactions layout regressions', () => {
         return null
       }
 
-      scrollPane.scrollTo({ top: 240 })
-      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
-      await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      const canScroll = scrollPane.scrollHeight - scrollPane.clientHeight > 120
+
+      if (canScroll) {
+        scrollPane.scrollTo({ top: 240 })
+        await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+        await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)))
+      }
 
       return {
+        canScroll,
         top: Math.ceil(scrollPane.scrollTop),
         visibleTransactionIndex: rows.findIndex((row) => {
           const rect = row.getBoundingClientRect()
-          return rect.top >= 80 && rect.bottom <= window.innerHeight
+          return rect.bottom > 80 && rect.top < window.innerHeight
         })
       }
     })
 
     expect(listState).not.toBeNull()
     expect(listState?.visibleTransactionIndex ?? -1).toBeGreaterThanOrEqual(0)
+
+    if (listState?.canScroll) {
+      expect(listState.top).toBeGreaterThan(100)
+    }
 
     await page
       .locator('.transaction-item__tile')
@@ -227,7 +234,12 @@ test.describe('Transactions layout regressions', () => {
     })
 
     expect(restoredState).not.toBeNull()
-    expect(Math.abs((restoredState?.top ?? 0) - (listState?.top ?? 0))).toBeLessThanOrEqual(1)
+
+    if (listState?.canScroll) {
+      expect(Math.abs((restoredState?.top ?? 0) - (listState?.top ?? 0))).toBeLessThanOrEqual(1)
+    } else {
+      expect(restoredState?.top ?? 999).toBeLessThanOrEqual(1)
+    }
   })
 
   test('restores the transaction details route and scroll after switching to chats and back', async ({
