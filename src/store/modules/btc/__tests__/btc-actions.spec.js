@@ -124,4 +124,37 @@ describe('btc-actions pagination', () => {
     // After both distinct pages are consumed the cursor stops advancing
     expect(getTransactionsMock.mock.calls.map((c) => c[1])).toEqual([undefined, 'x2', 'x4'])
   })
+
+  it('breaks out of a multi-cursor page cycle', async () => {
+    // The node alternates between two pages: neither cursor equals the
+    // immediately preceding one, so a one-step guard would never fire
+    Object.assign(context.state.transactions, { a: makeTx('a', 10) })
+    const pageA = [makeTx('x1', 9), makeTx('A', 8)]
+    const pageB = [makeTx('x2', 7), makeTx('B', 6)]
+    let call = 0
+    getTransactionsMock.mockImplementation(() => {
+      call += 1
+      // undefined -> A -> B -> A -> B ...
+      return Promise.resolve(call % 2 === 1 ? pageA : pageB)
+    })
+
+    await actions.getNewTransactions(context)
+
+    // First page, then cursor A, then cursor B, then A is recognized as visited
+    expect(getTransactionsMock.mock.calls.map((c) => c[1])).toEqual([undefined, 'A', 'B'])
+  })
+
+  it('bounds the walk when every page brings a fresh cursor', async () => {
+    // Nothing repeats and the local tx never shows up: only the page cap stops it
+    Object.assign(context.state.transactions, { a: makeTx('a', 1000) })
+    let call = 0
+    getTransactionsMock.mockImplementation(() => {
+      call += 1
+      return Promise.resolve([makeTx(`x${call}`, 100 - call), makeTx(`cursor${call}`, 99 - call)])
+    })
+
+    await actions.getNewTransactions(context)
+
+    expect(getTransactionsMock).toHaveBeenCalledTimes(20)
+  })
 })

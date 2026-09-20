@@ -27,11 +27,149 @@ const CHUNK_SIZE = 25
 const MAX_NEW_TX_PAGES = 20
 
 /**
- * Upper bound for a single-block-timestamp group of transactions. `time` is a
- * block timestamp, so it is not unique and a chunk may end in the middle of such
- * a group; the whole group is then requested at once to step over it safely.
+ * Hard cap on pages of one single-block-timestamp group. Reaching it means the
+ * group could not be proven complete, and the history boundary is then left
+ * below the group instead of stepping over an unread remainder.
  */
-const MAX_TIMESTAMP_GROUP_SIZE = CHUNK_SIZE * 20
+const MAX_TIMESTAMP_GROUP_PAGES = 40
+
+/**
+ * Reads every transaction with the exact block timestamp `time`.
+ *
+ * `time` is a block timestamp and is not unique, so a group sharing it may be
+ * larger than one chunk and cannot be walked with a `time` cursor at all. The
+ * group is paged by `offset` over a deterministic `(time, txhash)` order — every
+ * request stays bounded — until a short page proves the group is exhausted.
+ *
+ * @returns `true` when the whole group has been read
+ */
+const readTimestampGroup = async (context, { address, contract, decimals, time }) => {
+  for (let page = 0; page < MAX_TIMESTAMP_GROUP_PAGES; page++) {
+    const transactions = await ethIndexer.getTimestampGroup({
+      address,
+      contract,
+      time,
+      limit: CHUNK_SIZE,
+      offset: page * CHUNK_SIZE,
+      decimals
+    })
+
+    if (!transactions) return false
+
+    if (transactions.length > 0) {
+      // Every record shares `time`, so the boundaries are not affected here:
+      // they are advanced by the caller once the group is known to be complete
+      context.commit('transactions', transactions)
+    }
+
+    if (transactions.length < CHUNK_SIZE) return true
+  }
+
+  return false
+}
+
+/**
+ * First update for an address: there is no boundary yet, so take the newest chunk.
+ */
+const fetchNewestTransactions = async (context, { address, contract, decimals }) => {
+  const transactions = await ethIndexer.getTransactions({
+    address,
+    contract,
+    from: 0,
+    // Every history request must be bounded (see issue #975)
+    limit: CHUNK_SIZE,
+    order: 'time.desc',
+    decimals
+  })
+
+  if (!transactions || transactions.length === 0) return
+
+  context.commit('transactions', { transactions, updateTimestamps: true })
+
+  const times = transactions.map((tx) => tx.time ?? 0)
+  const newestTime = Math.max(...times)
+
+  // A full chunk confined to a single timestamp may have been truncated, and the
+  // boundary now points exactly at that timestamp: read the rest of the group so
+  // that the next update does not step over its unread part
+  if (transactions.length === CHUNK_SIZE && Math.min(...times) === newestTime) {
+    await readTimestampGroup(context, { address, contract, decimals, time: newestTime })
+  }
+}
+
+/**
+ * Pages forward through the transactions newer than the known boundary.
+ *
+ * Ordering is ascending, so every page is the oldest unread chunk and nothing
+ * between the boundary and the newest transaction can be skipped (the way ADM
+ * does it). `maxHeight` is advanced explicitly and only up to a timestamp proven
+ * to be fully read, so a run cut short by the page cap resumes exactly where it
+ * stopped instead of jumping over the unread part of a timestamp group.
+ */
+const catchUpNewTransactions = async (context, { address, contract, decimals, maxHeight }) => {
+  let from = maxHeight + 1
+  let readUpTo = maxHeight
+
+  for (let page = 0; page < MAX_NEW_TX_PAGES; page++) {
+    const transactions = await ethIndexer.getTransactions({
+      address,
+      contract,
+      from,
+      // Every history request must be bounded (see issue #975)
+      limit: CHUNK_SIZE,
+      order: 'time.asc',
+      decimals
+    })
+
+    if (!transactions || transactions.length === 0) break
+
+    context.commit('transactions', transactions)
+
+    const times = transactions.map((tx) => tx.time ?? 0)
+    const newestTime = Math.max(...times)
+    const oldestTime = Math.min(...times)
+
+    // The response does not respect the requested boundary: a stale or
+    // incompatible node, nothing to page through here
+    if (newestTime < from) break
+
+    // A short page means everything at or above `from` has been returned
+    if (transactions.length < CHUNK_SIZE) {
+      readUpTo = newestTime
+      break
+    }
+
+    if (oldestTime === newestTime) {
+      // The chunk is confined to one block timestamp: `time` cannot separate read
+      // from unread, so the group is resolved explicitly. While it is unresolved
+      // the boundary has to stay below it
+      const complete = await readTimestampGroup(context, {
+        address,
+        contract,
+        decimals,
+        time: newestTime
+      })
+
+      if (!complete) break
+
+      readUpTo = newestTime
+      from = newestTime + 1
+      continue
+    }
+
+    // Never repeat a request: the cursor has to move forward
+    if (newestTime <= from) break
+
+    // Ascending order guarantees every record below `newestTime` is in this page,
+    // while the `newestTime` group itself may be truncated: it is read again
+    readUpTo = newestTime - 1
+    from = newestTime
+  }
+
+  if (readUpTo > maxHeight) {
+    context.commit('setMaxHeight', readUpTo)
+  }
+}
 
 export default function createActions(config) {
   const { onInit = () => {}, initTransaction, createSpecificActions } = config
@@ -220,75 +358,17 @@ export default function createActions(config) {
         context.commit('bottom', false)
       }
       const { address, maxHeight, contractAddress, decimals } = context.state
-
-      // With no history yet, take the newest chunk. Otherwise page forward from
-      // the known boundary in ascending order (the way ADM does it): a descending
-      // page would return the newest CHUNK_SIZE records and advance `maxHeight`
-      // past everything in between, dropping those transactions for good
-      const ascending = maxHeight > 0
-      const order = ascending ? 'time.asc' : 'time.desc'
+      const options = { address, contract: contractAddress, decimals }
 
       context.commit('areRecentLoading', true)
 
-      let from = ascending ? maxHeight + 1 : 0
-
-      for (let page = 0; page < MAX_NEW_TX_PAGES; page++) {
-        const transactions = await ethIndexer.getTransactions({
-          address,
-          contract: contractAddress,
-          from,
-          // Every history request must be bounded (see issue #975)
-          limit: CHUNK_SIZE,
-          order,
-          decimals
-        })
-
-        if (!transactions || transactions.length === 0) break
-
-        context.commit('transactions', { transactions, updateTimestamps: true })
-
-        // A short page means the newest transaction has been reached. On the
-        // very first load a single descending chunk is all that is requested
-        if (!ascending || transactions.length < CHUNK_SIZE) break
-
-        const times = transactions.map((tx) => tx.time ?? 0)
-        const newestTime = Math.max(...times)
-        const oldestTime = Math.min(...times)
-
-        // The response does not respect the requested boundary: a stale or
-        // incompatible node, nothing to page through here
-        if (newestTime < from) break
-
-        let nextFrom
-        if (oldestTime === newestTime) {
-          // The whole chunk shares one block timestamp, so `time` alone cannot
-          // separate what has been read from what has not. Request that group as
-          // a whole — still a single bounded query — and step over it
-          const group = await ethIndexer.getTransactions({
-            address,
-            contract: contractAddress,
-            from: newestTime,
-            to: newestTime,
-            limit: MAX_TIMESTAMP_GROUP_SIZE,
-            order,
-            decimals
-          })
-
-          if (group && group.length > 0) {
-            context.commit('transactions', { transactions: group, updateTimestamps: true })
-          }
-
-          nextFrom = newestTime + 1
-        } else {
-          // Keep the boundary inclusive: transactions sharing `newestTime` may
-          // have been cut off by the limit. Known records are merged by hash
-          nextFrom = newestTime
-        }
-
-        // Never repeat a request: the cursor has to move forward
-        if (nextFrom <= from) break
-
-        from = nextFrom
+      // A descending page above the boundary would return the newest CHUNK_SIZE
+      // records and advance the boundary past everything in between, dropping
+      // those transactions for good, so the catch-up runs in ascending order
+      if (maxHeight > 0) {
+        await catchUpNewTransactions(context, { ...options, maxHeight })
+      } else {
+        await fetchNewestTransactions(context, options)
       }
 
       context.commit('areRecentLoading', false)

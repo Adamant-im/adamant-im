@@ -77,6 +77,19 @@ export default {
       state.maxHeight = maxHeight
     }
   },
+  /**
+   * Raises the upper boundary of the retrieved history.
+   *
+   * Unlike the `transactions` mutation this is explicit: `time` is a block
+   * timestamp, so a catch-up interrupted in the middle of a group sharing one
+   * timestamp must leave the boundary *below* that group. Otherwise the next
+   * update starts above it and the unread part is never requested again.
+   */
+  setMaxHeight(state, value) {
+    if (value > state.maxHeight) {
+      state.maxHeight = value
+    }
+  },
   areOlderLoading(state, areLoading) {
     state.areOlderLoading = areLoading
   },

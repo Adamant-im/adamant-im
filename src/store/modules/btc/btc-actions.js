@@ -6,6 +6,12 @@ import { logger } from '@/utils/devTools/logger'
 
 const TX_CHUNK_SIZE = 25
 
+/**
+ * Hard cap on pages walked back by a single `getNewTransactions` run. Anything
+ * left over is picked up by the next refresh tick.
+ */
+const MAX_NEW_TX_PAGES = 20
+
 const customActions = (getApi) => ({
   updateStatus(context) {
     const api = getApi()
@@ -49,22 +55,38 @@ const customActions = (getApi) => ({
   }
 })
 
-const retrieveNewTransactions = async (api, context, latestTxId, toTx) => {
-  const transactions = await btcIndexer.getTransactions(context.state.address, toTx)
+/**
+ * Walks history back until the latest locally known transaction shows up again.
+ *
+ * The indexer is paged by "everything older than this txid", which is not a
+ * monotonic cursor: a stale or misbehaving node can cycle pages (`A -> B -> A`)
+ * without ever repeating the immediately preceding cursor. Every visited cursor
+ * is therefore remembered, and the walk is bounded by a page cap on top of that.
+ */
+const retrieveNewTransactions = async (context, latestTxId) => {
+  const visitedCursors = new Set()
+  let toTx
 
-  // An empty page means the chain has no more transactions to scan:
-  // the latest locally known tx is gone (dropped from mempool, reorg)
-  if (transactions.length === 0) return
+  for (let page = 0; page < MAX_NEW_TX_PAGES; page++) {
+    const transactions = await btcIndexer.getTransactions(context.state.address, toTx)
 
-  context.commit('transactions', transactions)
+    // An empty page means the chain has no more transactions to scan:
+    // the latest locally known tx is gone (dropped from mempool, reorg)
+    if (transactions.length === 0) return
 
-  if (latestTxId && !transactions.some((x) => x.txid === latestTxId)) {
+    context.commit('transactions', transactions)
+
+    // History is continuous again: the locally known transaction is in the page
+    if (!latestTxId || transactions.some((x) => x.txid === latestTxId)) return
+
     const oldest = transactions[transactions.length - 1]
-    // Recurse with the oldest retrieved txid as the next cursor; stop when
-    // the cursor does not advance to avoid an infinite loop
-    if (oldest && oldest.txid && oldest.txid !== toTx) {
-      await retrieveNewTransactions(api, context, latestTxId, oldest.txid)
-    }
+    if (!oldest || !oldest.txid) return
+
+    // A cursor seen before means the node is cycling pages instead of paging back
+    if (visitedCursors.has(oldest.txid)) return
+
+    visitedCursors.add(oldest.txid)
+    toTx = oldest.txid
   }
 }
 
@@ -75,7 +97,7 @@ const getNewTransactions = async (api, context) => {
   const latestId = latestTransaction && latestTransaction.txid
   // Now fetch the transactions until we meet that latestId among the
   // retrieved results
-  await retrieveNewTransactions(api, context, latestId)
+  await retrieveNewTransactions(context, latestId)
   context.commit('areRecentLoading', false)
 }
 

@@ -226,3 +226,74 @@ describe('EthIndexerClient.getTransactions', () => {
     expect(result.map((tx) => tx.hash)).toEqual(['0xself', '0xother'])
   })
 })
+
+describe('EthIndexerClient.getTimestampGroup', () => {
+  let client: EthIndexerClient
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    client = new EthIndexerClient([])
+    ;(client as unknown as { request: unknown }).request = requestMock
+  })
+
+  it('queries one exact timestamp with a deterministic total order', async () => {
+    requestMock.mockResolvedValue([])
+
+    await client.getTimestampGroup({ address: ADDRESS, time: 1700000000, decimals: 18 })
+
+    // A single query: an offset into one direction is not an offset into the merge
+    expect(requestMock).toHaveBeenCalledTimes(1)
+    const [, params] = requestMock.mock.calls[0]
+    expect(params.and).toBe(
+      `(contract_to.eq.,or(txfrom.eq.${ADDRESS},txto.eq.${ADDRESS}),time.gte.1700000000,time.lte.1700000000)`
+    )
+    expect(params.order).toBe('time.asc,txhash.asc')
+    expect(params.limit).toBe(25)
+    expect(params.offset).toBe(0)
+  })
+
+  it('forwards limit and offset for group paging', async () => {
+    requestMock.mockResolvedValue([])
+
+    await client.getTimestampGroup({
+      address: ADDRESS,
+      time: 1700000000,
+      limit: 10,
+      offset: 30,
+      decimals: 18
+    })
+
+    const [, params] = requestMock.mock.calls[0]
+    expect(params.limit).toBe(10)
+    expect(params.offset).toBe(30)
+  })
+
+  it('constrains an ERC-20 group by the token contract', async () => {
+    requestMock.mockResolvedValue([])
+
+    await client.getTimestampGroup({
+      address: ADDRESS,
+      contract: TOKEN_CONTRACT,
+      time: 1700000000,
+      decimals: 6
+    })
+
+    const [, params] = requestMock.mock.calls[0]
+    expect(params.and).toContain(`txto.eq.${TOKEN_CONTRACT}`)
+    expect(params.and).toContain('time.gte.1700000000')
+    expect(params.and).toContain('time.lte.1700000000')
+  })
+
+  it('returns normalized transactions', async () => {
+    requestMock.mockResolvedValue([makeRawTx({ txhash: '0xabc', time: 1700000000 })])
+
+    const result = await client.getTimestampGroup({
+      address: ADDRESS,
+      time: 1700000000,
+      decimals: 18
+    })
+
+    expect(result).toHaveLength(1)
+    expect(result[0]).toMatchObject({ hash: '0xabc', time: 1700000000 })
+  })
+})
