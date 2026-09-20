@@ -44,26 +44,41 @@ const MAX_TIMESTAMP_GROUP_PAGES = 40
  * @returns `true` when the whole group has been read
  */
 const readTimestampGroup = async (context, { address, contract, decimals, time }) => {
+  const cursor = context.state.timestampGroupCursor
+  // Resume where a previous update ran out of pages. The group order is total and
+  // stable, so the records already read are exactly the prefix before `offset`
+  let offset = cursor && cursor.time === time ? cursor.offset : 0
+
   for (let page = 0; page < MAX_TIMESTAMP_GROUP_PAGES; page++) {
     const transactions = await ethIndexer.getTimestampGroup({
       address,
       contract,
       time,
       limit: CHUNK_SIZE,
-      offset: page * CHUNK_SIZE,
+      offset,
       decimals
     })
 
-    if (!transactions) return false
+    if (!transactions) break
 
     if (transactions.length > 0) {
       // Every record shares `time`, so the boundaries are not affected here:
-      // they are advanced by the caller once the group is known to be complete
+      // the caller moves them once the group is known to be complete
       context.commit('transactions', transactions)
     }
 
-    if (transactions.length < CHUNK_SIZE) return true
+    offset += transactions.length
+
+    if (transactions.length < CHUNK_SIZE) {
+      context.commit('setTimestampGroupCursor', null)
+
+      return true
+    }
   }
+
+  // Out of page budget: remember the progress so the next update continues
+  // instead of rereading the same records forever
+  context.commit('setTimestampGroupCursor', { time, offset })
 
   return false
 }
@@ -84,17 +99,43 @@ const fetchNewestTransactions = async (context, { address, contract, decimals })
 
   if (!transactions || transactions.length === 0) return
 
-  context.commit('transactions', { transactions, updateTimestamps: true })
+  context.commit('transactions', transactions)
 
   const times = transactions.map((tx) => tx.time ?? 0)
   const newestTime = Math.max(...times)
+  const oldestTime = Math.min(...times)
 
-  // A full chunk confined to a single timestamp may have been truncated, and the
-  // boundary now points exactly at that timestamp: read the rest of the group so
-  // that the next update does not step over its unread part
-  if (transactions.length === CHUNK_SIZE && Math.min(...times) === newestTime) {
-    await readTimestampGroup(context, { address, contract, decimals, time: newestTime })
+  if (transactions.length < CHUNK_SIZE) {
+    // The whole history fits into one chunk: both ends are proven
+    context.commit('setMaxHeight', newestTime)
+    context.commit('setMinHeight', oldestTime)
+
+    return
   }
+
+  if (oldestTime === newestTime) {
+    // The chunk is confined to one block timestamp, so neither boundary can be
+    // placed until that group is complete. Leaving them untouched makes the next
+    // update repeat this step and continue the group from where it stopped
+    const complete = await readTimestampGroup(context, {
+      address,
+      contract,
+      decimals,
+      time: newestTime
+    })
+
+    if (complete) {
+      context.commit('setMaxHeight', newestTime)
+      context.commit('setMinHeight', newestTime)
+    }
+
+    return
+  }
+
+  // Descending order guarantees the `newestTime` group is whole, while the
+  // `oldestTime` one may be cut by the limit: the bottom boundary stays above it
+  context.commit('setMaxHeight', newestTime)
+  context.commit('setMinHeight', oldestTime + 1)
 }
 
 /**
@@ -384,6 +425,7 @@ export default function createActions(config) {
         limit: CHUNK_SIZE,
         address,
         contract,
+        order: 'time.desc',
         decimals
       }
       if (minHeight > 1) {
@@ -395,10 +437,37 @@ export default function createActions(config) {
       const transactions = await ethIndexer.getTransactions(options)
 
       if (transactions) {
-        context.commit('transactions', { transactions, updateTimestamps: true })
-
         if (transactions.length === 0) {
           context.commit('bottom', true)
+        } else {
+          context.commit('transactions', transactions)
+
+          const times = transactions.map((tx) => tx.time ?? 0)
+          const newestTime = Math.max(...times)
+          const oldestTime = Math.min(...times)
+
+          if (transactions.length < CHUNK_SIZE) {
+            // Everything below the boundary has been returned
+            context.commit('setMinHeight', oldestTime)
+          } else if (oldestTime === newestTime) {
+            // The chunk is confined to one block timestamp: `time` cannot separate
+            // read from unread, so the group is resolved before stepping below it
+            const complete = await readTimestampGroup(context, {
+              address,
+              contract,
+              decimals,
+              time: oldestTime
+            })
+
+            if (complete) {
+              context.commit('setMinHeight', oldestTime)
+            }
+          } else {
+            // Descending order guarantees every record above `oldestTime` is in this
+            // page, while the `oldestTime` group itself may be cut by the limit:
+            // the boundary stays above it so the next page reads it again
+            context.commit('setMinHeight', oldestTime + 1)
+          }
         }
       }
 

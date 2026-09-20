@@ -41,17 +41,23 @@ vi.mock('../../../lib/bitcoin/bitcoin-api', () => ({
 
 import actions from '../btc-actions'
 
+const TX_CHUNK_SIZE = 25
+
 /**
  * Builds a Vuex-like context stub
  */
 function createContext(transactions = {}) {
   const committed = []
+  const state = {
+    address: 'btc-address',
+    transactions,
+    bottomReached: false,
+    newTxCatchUp: null
+  }
+
   return {
-    state: {
-      address: 'btc-address',
-      transactions,
-      bottomReached: false
-    },
+    state,
+    committed,
     getters: {
       get sortedTransactions() {
         return Object.values(transactions).sort((a, b) => b.timestamp - a.timestamp)
@@ -64,13 +70,17 @@ function createContext(transactions = {}) {
           transactions[tx.txid || tx.hash] = tx
         }
       }
+      if (type === 'newTxCatchUp') {
+        state.newTxCatchUp = payload
+      }
     },
     dispatch: vi.fn(() => Promise.resolve())
   }
 }
 
-function makeTx(txid, timestamp) {
-  return { txid, hash: txid, timestamp }
+/** Indexer-visible by default: that is what a history page can contain */
+function makeTx(txid, timestamp, status = 'CONFIRMED') {
+  return { txid, hash: txid, timestamp, status }
 }
 
 describe('btc-actions pagination', () => {
@@ -156,5 +166,50 @@ describe('btc-actions pagination', () => {
     await actions.getNewTransactions(context)
 
     expect(getTransactionsMock).toHaveBeenCalledTimes(20)
+  })
+
+  it('continues an interrupted walk instead of restarting it', async () => {
+    // 525 new transactions above the known one: more than the page cap allows,
+    // so the walk must resume from its own cursor on the next refresh
+    const known = makeTx('known', 0)
+    Object.assign(context.state.transactions, { known })
+
+    const chain = [...Array.from({ length: 525 }, (_, i) => makeTx(`new${i}`, 1000 - i)), known]
+    // The indexer pages by "everything older than this txid"
+    getTransactionsMock.mockImplementation((_address, toTx) => {
+      const start = toTx ? chain.findIndex((tx) => tx.txid === toTx) + 1 : 0
+      return Promise.resolve(chain.slice(start, start + TX_CHUNK_SIZE))
+    })
+
+    await actions.getNewTransactions(context)
+
+    // Interrupted by the cap, with the resume point kept
+    expect(context.state.newTxCatchUp).toMatchObject({ target: 'known' })
+    expect(Object.keys(context.state.transactions).length).toBeLessThan(chain.length)
+
+    // The pages already fetched are the newest ones, so recomputing the target
+    // would end the next walk immediately and leave the gap open forever
+    for (let run = 0; run < 5; run++) {
+      await actions.getNewTransactions(context)
+    }
+
+    expect(context.state.newTxCatchUp).toBe(null)
+    expect(Object.keys(context.state.transactions)).toHaveLength(chain.length)
+  })
+
+  it('ignores a local pending transaction when picking the walk target', async () => {
+    // A just-sent transfer is the newest record but no page can ever contain it
+    Object.assign(context.state.transactions, {
+      confirmed: makeTx('confirmed', 5),
+      pending: makeTx('pending', 10, 'PENDING'),
+      rejected: makeTx('rejected', 9, 'REJECTED')
+    })
+    getTransactionsMock.mockResolvedValue([makeTx('fresh', 6), makeTx('confirmed', 5)])
+
+    await actions.getNewTransactions(context)
+
+    // One page: it contains the newest indexed transaction, so history is continuous
+    expect(getTransactionsMock).toHaveBeenCalledTimes(1)
+    expect(context.state.newTxCatchUp).toBe(null)
   })
 })

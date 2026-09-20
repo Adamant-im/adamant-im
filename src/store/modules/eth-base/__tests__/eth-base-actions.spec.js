@@ -43,6 +43,7 @@ import mutations from '../eth-base-mutations'
 
 const CHUNK_SIZE = 25
 const MAX_NEW_TX_PAGES = 20
+const MAX_TIMESTAMP_GROUP_PAGES = 40
 const ADDRESS = '0x7e0Bd3F27EC0997A3B17045023097372b4c563B3'
 
 const actions = createActions({
@@ -64,6 +65,7 @@ function createContext(overrides = {}) {
     transactionsCount: 0,
     maxHeight: -1,
     minHeight: Infinity,
+    timestampGroupCursor: null,
     bottomReached: false,
     ...overrides
   }
@@ -250,7 +252,8 @@ describe('eth-base getNewTransactions', () => {
   it('completes a truncated single-timestamp first chunk', async () => {
     const tie = 1_700_000_100
     // The newest 30 transactions all share one timestamp, so the descending
-    // first chunk is truncated and the boundary lands exactly on it
+    // first chunk is truncated and neither boundary can be placed until the
+    // group is complete
     const all = Array.from({ length: 30 }, (_, i) => makeTx(tie, i))
     const context = createContext()
 
@@ -259,6 +262,117 @@ describe('eth-base getNewTransactions', () => {
     await actions.getNewTransactions(context)
 
     expect(Object.keys(context.state.transactions)).toHaveLength(30)
+    expect(context.state.maxHeight).toBe(tie)
+    expect(context.state.minHeight).toBe(tie)
+  })
+
+  it('leaves both boundaries unset while the first timestamp group is unfinished', async () => {
+    const tie = 1_700_000_100
+    const context = createContext()
+
+    getTransactionsMock.mockImplementation(
+      indexerOver(Array.from({ length: CHUNK_SIZE }, (_, i) => makeTx(tie, i)))
+    )
+    // Every group page stays full: the group never ends
+    getTimestampGroupMock.mockImplementation(({ limit, offset = 0 }) =>
+      Promise.resolve(Array.from({ length: limit }, (_, i) => makeTx(tie, offset + i)))
+    )
+
+    await actions.getNewTransactions(context)
+
+    // Advancing either boundary would make the unread part of the group
+    // unreachable from both directions
+    expect(context.state.maxHeight).toBe(-1)
+    expect(context.state.minHeight).toBe(Infinity)
+    expect(context.state.timestampGroupCursor).toMatchObject({ time: tie })
+  })
+
+  it('resumes a timestamp group larger than the page budget on the next update', async () => {
+    const tie = 1_700_000_100
+    // One record more than a single update can read
+    const groupSize = MAX_TIMESTAMP_GROUP_PAGES * CHUNK_SIZE + 1
+    const all = Array.from({ length: groupSize }, (_, i) => makeTx(tie, i))
+    const context = createContext({ maxHeight: 1_700_000_000 })
+
+    serveIndexer(all)
+
+    await actions.getNewTransactions(context)
+
+    // Out of budget: the progress is recorded and the boundary stays below the group
+    expect(context.state.timestampGroupCursor).toEqual({
+      time: tie,
+      offset: MAX_TIMESTAMP_GROUP_PAGES * CHUNK_SIZE
+    })
+    expect(context.state.maxHeight).toBe(1_700_000_000)
+
+    await actions.getNewTransactions(context)
+
+    // The second update continues from the stored offset instead of rereading
+    expect(Object.keys(context.state.transactions)).toHaveLength(groupSize)
+    expect(context.state.timestampGroupCursor).toBe(null)
+    expect(context.state.maxHeight).toBe(tie)
+  })
+})
+
+describe('eth-base getOldTransactions', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('does not step below a timestamp group cut by the page limit', async () => {
+    // 24 newer records plus a group of 30 sharing one timestamp: the descending
+    // page ends inside that group
+    const tie = 1_700_000_100
+    const all = [
+      ...Array.from({ length: 24 }, (_, i) => makeTx(tie + 10 + i, i)),
+      ...Array.from({ length: 30 }, (_, i) => makeTx(tie, 100 + i))
+    ]
+    const context = createContext()
+
+    serveIndexer(all)
+
+    await actions.getNewTransactions(context)
+    // Walk to the bottom
+    for (let page = 0; page < 5; page++) {
+      await actions.getOldTransactions(context)
+    }
+
+    expect(Object.keys(context.state.transactions)).toHaveLength(all.length)
+    expect(context.state.bottomReached).toBe(true)
+  })
+
+  it('keeps the bottom boundary above an unresolved timestamp group', async () => {
+    const tie = 1_700_000_100
+    const context = createContext({ minHeight: tie + 1, maxHeight: tie + 1 })
+
+    getTransactionsMock.mockImplementation(
+      indexerOver(Array.from({ length: CHUNK_SIZE }, (_, i) => makeTx(tie, i)))
+    )
+    getTimestampGroupMock.mockImplementation(({ limit, offset = 0 }) =>
+      Promise.resolve(Array.from({ length: limit }, (_, i) => makeTx(tie, offset + i)))
+    )
+
+    await actions.getOldTransactions(context)
+
+    expect(context.state.minHeight).toBe(tie + 1)
+    expect(context.state.bottomReached).toBe(false)
+  })
+
+  it('reports the bottom on an empty page', async () => {
+    const context = createContext({ minHeight: 1_700_000_000 })
+    getTransactionsMock.mockResolvedValue([])
+
+    await actions.getOldTransactions(context)
+
+    expect(context.commit).toHaveBeenCalledWith('bottom', true)
+  })
+
+  it('does not request anything once the bottom is reached', async () => {
+    const context = createContext({ bottomReached: true })
+
+    await actions.getOldTransactions(context)
+
+    expect(getTransactionsMock).not.toHaveBeenCalled()
   })
 
   it('stops when the indexer ignores the requested boundary', async () => {

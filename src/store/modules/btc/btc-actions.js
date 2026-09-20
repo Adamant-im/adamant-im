@@ -1,4 +1,4 @@
-import { FetchStatus } from '@/lib/constants'
+import { FetchStatus, TransactionStatus } from '@/lib/constants'
 import baseActions from '../btc-base/btc-base-actions'
 import BtcApi from '../../../lib/bitcoin/bitcoin-api'
 import { btcIndexer } from '../../../lib/nodes'
@@ -8,9 +8,30 @@ const TX_CHUNK_SIZE = 25
 
 /**
  * Hard cap on pages walked back by a single `getNewTransactions` run. Anything
- * left over is picked up by the next refresh tick.
+ * left over is continued by the next refresh tick from the stored cursor.
  */
 const MAX_NEW_TX_PAGES = 20
+
+/**
+ * Statuses the indexer itself reports. `PENDING` (a freshly broadcast transfer)
+ * and `REJECTED` (a failed broadcast) exist only locally, same as in DOGE
+ */
+const INDEXER_STATUSES = [TransactionStatus.REGISTERED, TransactionStatus.CONFIRMED]
+
+/**
+ * The newest transaction a history page can actually contain.
+ *
+ * `sortedTransactions[0]` may be a locally created record the indexer has never
+ * seen, and looking for it in the pages would walk the whole history on every
+ * refresh tick without ever finding it
+ */
+const latestIndexedTxId = (context) => {
+  const latest = context.getters.sortedTransactions.find((tx) =>
+    INDEXER_STATUSES.includes(tx.status)
+  )
+
+  return latest && latest.txid
+}
 
 const customActions = (getApi) => ({
   updateStatus(context) {
@@ -56,48 +77,60 @@ const customActions = (getApi) => ({
 })
 
 /**
- * Walks history back until the latest locally known transaction shows up again.
+ * Walks history back until `latestTxId` shows up again, which is what proves the
+ * newly fetched records join the history already in the store.
  *
  * The indexer is paged by "everything older than this txid", which is not a
  * monotonic cursor: a stale or misbehaving node can cycle pages (`A -> B -> A`)
  * without ever repeating the immediately preceding cursor. Every visited cursor
  * is therefore remembered, and the walk is bounded by a page cap on top of that.
+ *
+ * @returns `{ complete }`, and the cursor to resume from when it is not
  */
-const retrieveNewTransactions = async (context, latestTxId) => {
+const retrieveNewTransactions = async (context, latestTxId, startCursor) => {
   const visitedCursors = new Set()
-  let toTx
+  let toTx = startCursor
 
   for (let page = 0; page < MAX_NEW_TX_PAGES; page++) {
     const transactions = await btcIndexer.getTransactions(context.state.address, toTx)
 
     // An empty page means the chain has no more transactions to scan:
     // the latest locally known tx is gone (dropped from mempool, reorg)
-    if (transactions.length === 0) return
+    if (transactions.length === 0) return { complete: true }
 
     context.commit('transactions', transactions)
 
-    // History is continuous again: the locally known transaction is in the page
-    if (!latestTxId || transactions.some((x) => x.txid === latestTxId)) return
+    // History is continuous again: the known transaction is in the page
+    if (!latestTxId || transactions.some((x) => x.txid === latestTxId)) return { complete: true }
 
     const oldest = transactions[transactions.length - 1]
-    if (!oldest || !oldest.txid) return
+    if (!oldest || !oldest.txid) return { complete: true }
 
     // A cursor seen before means the node is cycling pages instead of paging back
-    if (visitedCursors.has(oldest.txid)) return
+    if (visitedCursors.has(oldest.txid)) return { complete: true }
 
     visitedCursors.add(oldest.txid)
     toTx = oldest.txid
   }
+
+  // Out of page budget with the gap still open
+  return { complete: false, cursor: toTx }
 }
 
 const getNewTransactions = async (api, context) => {
   context.commit('areRecentLoading', true)
-  // Determine the most recent transaction ID
-  const latestTransaction = context.getters.sortedTransactions[0]
-  const latestId = latestTransaction && latestTransaction.txid
-  // Now fetch the transactions until we meet that latestId among the
-  // retrieved results
-  await retrieveNewTransactions(context, latestId)
+
+  // A walk stopped by the page cap keeps its own target and cursor: the target
+  // cannot be recomputed once its own pages are in the store, because the newest
+  // record would then be one of them and the very first page would end the walk,
+  // leaving the gap down to the previously known history unloaded forever
+  const pending = context.state.newTxCatchUp
+  const target = pending ? pending.target : latestIndexedTxId(context)
+  const startCursor = pending ? pending.cursor : undefined
+
+  const { complete, cursor } = await retrieveNewTransactions(context, target, startCursor)
+
+  context.commit('newTxCatchUp', complete ? null : { target, cursor })
   context.commit('areRecentLoading', false)
 }
 

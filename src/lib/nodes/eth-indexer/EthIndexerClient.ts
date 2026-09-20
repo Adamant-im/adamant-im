@@ -19,6 +19,16 @@ const DEFAULT_LIMIT = 25
 
 type TimeOrder = 'time.asc' | 'time.desc'
 
+/**
+ * Plain code-unit comparison, on purpose: it is locale-independent, unlike
+ * `localeCompare`, so the resulting order is the same on every platform
+ */
+function compareHashes(a: string, b: string): number {
+  if (a === b) return 0
+
+  return a < b ? -1 : 1
+}
+
 export class EthIndexerClient extends Client<EthIndexer> {
   constructor(endpoints: NodeInfo[] = [], minNodeVersion = '0.0.0') {
     super('eth', 'service', NODE_LABELS.EthIndexer)
@@ -162,9 +172,16 @@ export class EthIndexerClient extends Client<EthIndexer> {
     }
 
     // Slice in the requested direction: for `time.asc` the caller expects the
-    // oldest `limit` records above the boundary, not the newest ones
+    // oldest `limit` records above the boundary, not the newest ones.
+    // `time` is a block timestamp, so records can tie: `txhash` breaks the tie to
+    // keep the merge — and therefore which records survive the slice —
+    // independent of the order the two queries happened to return in
     return transactions
-      .sort((a, b) => (ascending ? a.time - b.time : b.time - a.time))
+      .sort((a, b) =>
+        ascending
+          ? a.time - b.time || compareHashes(a.txhash, b.txhash)
+          : b.time - a.time || compareHashes(b.txhash, a.txhash)
+      )
       .slice(0, effectiveLimit)
       .map((transaction) => normalizeTransaction(transaction, address, decimals))
   }

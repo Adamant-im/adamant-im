@@ -14,5 +14,13 @@ export default {
 
   height(state, height) {
     state.height = height
+  },
+
+  /**
+   * Stores (or clears, with `null`) the resume point of an unfinished walk
+   * towards the previously known history
+   */
+  newTxCatchUp(state, value) {
+    state.newTxCatchUp = value
   }
 }
