@@ -73,6 +73,22 @@ describe('doge-actions pagination', () => {
     expect(getTransactionsMock).toHaveBeenCalledWith({ from: 2 })
   })
 
+  it('does not count a rejected local transaction in the offset', async () => {
+    // A failed broadcast is stored as REJECTED; that hash never reaches the
+    // indexer, so counting it would shift `from` and skip one real history item
+    Object.assign(context.state.transactions, {
+      tx1: { hash: 'tx1', status: 'CONFIRMED' },
+      tx2: { hash: 'tx2', status: 'REGISTERED' },
+      pending: { hash: 'pending', status: 'PENDING' },
+      rejected: { hash: 'rejected', status: 'REJECTED' }
+    })
+    getTransactionsMock.mockResolvedValue({ hasMore: false, items: [] })
+
+    await actions.getOldTransactions(context)
+
+    expect(getTransactionsMock).toHaveBeenCalledWith({ from: 2 })
+  })
+
   it('sets bottom when the indexer reports no more pages', async () => {
     getTransactionsMock.mockResolvedValue({ hasMore: false, items: [] })
 

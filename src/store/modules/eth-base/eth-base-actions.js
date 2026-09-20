@@ -19,6 +19,20 @@ import { logger } from '@/utils/devTools/logger'
 /** Interval between attempts to fetch the registered tx details */
 const CHUNK_SIZE = 25
 
+/**
+ * Hard cap on pages fetched by a single `getNewTransactions` run. Guards against
+ * a stale or misbehaving indexer turning the catch-up loop into a request storm.
+ * Anything left over is picked up by the next refresh tick.
+ */
+const MAX_NEW_TX_PAGES = 20
+
+/**
+ * Upper bound for a single-block-timestamp group of transactions. `time` is a
+ * block timestamp, so it is not unique and a chunk may end in the middle of such
+ * a group; the whole group is then requested at once to step over it safely.
+ */
+const MAX_TIMESTAMP_GROUP_SIZE = CHUNK_SIZE * 20
+
 export default function createActions(config) {
   const { onInit = () => {}, initTransaction, createSpecificActions } = config
 
@@ -206,29 +220,75 @@ export default function createActions(config) {
         context.commit('bottom', false)
       }
       const { address, maxHeight, contractAddress, decimals } = context.state
-      const from = maxHeight > 0 ? maxHeight + 1 : 0
 
-      const options = {
-        address,
-        contract: contractAddress,
-        from,
-        // Every history request must be bounded (see issue #975)
-        limit: CHUNK_SIZE,
-        decimals
-      }
+      // With no history yet, take the newest chunk. Otherwise page forward from
+      // the known boundary in ascending order (the way ADM does it): a descending
+      // page would return the newest CHUNK_SIZE records and advance `maxHeight`
+      // past everything in between, dropping those transactions for good
+      const ascending = maxHeight > 0
+      const order = ascending ? 'time.asc' : 'time.desc'
 
       context.commit('areRecentLoading', true)
 
-      const transactions = await ethIndexer.getTransactions(options)
+      let from = ascending ? maxHeight + 1 : 0
 
-      if (transactions) {
+      for (let page = 0; page < MAX_NEW_TX_PAGES; page++) {
+        const transactions = await ethIndexer.getTransactions({
+          address,
+          contract: contractAddress,
+          from,
+          // Every history request must be bounded (see issue #975)
+          limit: CHUNK_SIZE,
+          order,
+          decimals
+        })
+
+        if (!transactions || transactions.length === 0) break
+
         context.commit('transactions', { transactions, updateTimestamps: true })
 
-        // A full chunk means there may be more recent transactions:
-        // keep fetching until we reach the newest one
-        if (transactions.length === CHUNK_SIZE) {
-          await context.dispatch('getNewTransactions')
+        // A short page means the newest transaction has been reached. On the
+        // very first load a single descending chunk is all that is requested
+        if (!ascending || transactions.length < CHUNK_SIZE) break
+
+        const times = transactions.map((tx) => tx.time ?? 0)
+        const newestTime = Math.max(...times)
+        const oldestTime = Math.min(...times)
+
+        // The response does not respect the requested boundary: a stale or
+        // incompatible node, nothing to page through here
+        if (newestTime < from) break
+
+        let nextFrom
+        if (oldestTime === newestTime) {
+          // The whole chunk shares one block timestamp, so `time` alone cannot
+          // separate what has been read from what has not. Request that group as
+          // a whole — still a single bounded query — and step over it
+          const group = await ethIndexer.getTransactions({
+            address,
+            contract: contractAddress,
+            from: newestTime,
+            to: newestTime,
+            limit: MAX_TIMESTAMP_GROUP_SIZE,
+            order,
+            decimals
+          })
+
+          if (group && group.length > 0) {
+            context.commit('transactions', { transactions: group, updateTimestamps: true })
+          }
+
+          nextFrom = newestTime + 1
+        } else {
+          // Keep the boundary inclusive: transactions sharing `newestTime` may
+          // have been cut off by the limit. Known records are merged by hash
+          nextFrom = newestTime
         }
+
+        // Never repeat a request: the cursor has to move forward
+        if (nextFrom <= from) break
+
+        from = nextFrom
       }
 
       context.commit('areRecentLoading', false)

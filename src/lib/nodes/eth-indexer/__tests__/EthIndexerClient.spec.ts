@@ -170,6 +170,51 @@ describe('EthIndexerClient.getTransactions', () => {
     expect([...times].sort((a, b) => (b as number) - (a as number))).toEqual(times)
   })
 
+  it('forwards the requested order to both native ETH queries', async () => {
+    requestMock.mockResolvedValue([])
+
+    await client.getTransactions({ address: ADDRESS, decimals: 18, order: 'time.asc' })
+
+    expect(requestMock).toHaveBeenCalledTimes(2)
+    for (const call of requestMock.mock.calls) {
+      expect(call[1].order).toBe('time.asc')
+    }
+  })
+
+  it('forwards the requested order to the ERC-20 query', async () => {
+    requestMock.mockResolvedValue([])
+
+    await client.getTransactions({
+      address: ADDRESS,
+      contract: TOKEN_CONTRACT,
+      decimals: 6,
+      order: 'time.asc'
+    })
+
+    const [, params] = requestMock.mock.calls[0]
+    expect(params.order).toBe('time.asc')
+  })
+
+  it('keeps the oldest records when an ascending result is capped by limit', async () => {
+    // Both sides return their own oldest chunk; the merged page must be the
+    // oldest records overall, otherwise forward pagination skips history
+    requestMock.mockImplementation((_endpoint, params) => {
+      const isSender = params.and.includes('txfrom')
+      const base = isSender ? 1700000000 : 1700000100
+
+      return Promise.resolve(Array.from({ length: 5 }, (_, i) => makeRawTx({ time: base + i })))
+    })
+
+    const result = await client.getTransactions({
+      address: ADDRESS,
+      decimals: 18,
+      limit: 3,
+      order: 'time.asc'
+    })
+
+    expect(result.map((tx) => tx.time)).toEqual([1700000000, 1700000001, 1700000002])
+  })
+
   it('deduplicates self-transfers returned by both sender and recipient queries', async () => {
     requestMock.mockResolvedValue([
       makeRawTx({ txhash: '0xself', time: 1700000001 }),

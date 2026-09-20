@@ -27,4 +27,10 @@ export type GetTransactionsParams = {
    * Offset. Defaults to `0`
    */
   offset?: number
+  /**
+   * Sort order of the `time` column. Defaults to `time.desc` (newest first).
+   * Use `time.asc` to page forward from a known lower boundary without
+   * skipping anything in between
+   */
+  order?: 'time.asc' | 'time.desc'
 }

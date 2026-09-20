@@ -15,6 +15,8 @@ import { Client } from '../abstract.client'
  */
 const DEFAULT_LIMIT = 25
 
+type TimeOrder = 'time.asc' | 'time.desc'
+
 export class EthIndexerClient extends Client<EthIndexer> {
   constructor(endpoints: NodeInfo[] = [], minNodeVersion = '0.0.0') {
     super('eth', 'service', NODE_LABELS.EthIndexer)
@@ -39,6 +41,7 @@ export class EthIndexerClient extends Client<EthIndexer> {
   private buildNativeEthQuery(
     address: string,
     direction: 'txfrom' | 'txto',
+    order: TimeOrder,
     from?: number,
     to?: number
   ): GetTransactionsRequest {
@@ -53,7 +56,7 @@ export class EthIndexerClient extends Client<EthIndexer> {
 
     return {
       and: `(${filters.join(',')})`,
-      order: 'time.desc'
+      order
     }
   }
 
@@ -65,10 +68,11 @@ export class EthIndexerClient extends Client<EthIndexer> {
     address: string,
     direction: 'txfrom' | 'txto',
     limit: number,
+    order: TimeOrder,
     from?: number,
     to?: number
   ): Promise<Transaction[]> {
-    const requestParams = this.buildNativeEthQuery(address, direction, from, to)
+    const requestParams = this.buildNativeEthQuery(address, direction, order, from, to)
 
     return this.request('GET /ethtxs', {
       ...requestParams,
@@ -80,11 +84,12 @@ export class EthIndexerClient extends Client<EthIndexer> {
    * Query transactions history
    */
   async getTransactions(params: GetTransactionsParams) {
-    const { address, contract, from, to, limit, decimals } = params
+    const { address, contract, from, to, limit, decimals, order = 'time.desc' } = params
 
     // Every query must carry an explicit limit so PostgREST never scans
     // the whole matching set (see issue #975)
     const effectiveLimit = limit ?? DEFAULT_LIMIT
+    const ascending = order === 'time.asc'
 
     let transactions: Transaction[]
 
@@ -107,7 +112,7 @@ export class EthIndexerClient extends Client<EthIndexer> {
 
       transactions = await this.request('GET /ethtxs', {
         and: `(${filters.join(',')})`,
-        order: 'time.desc',
+        order,
         limit: effectiveLimit
       })
     } else {
@@ -116,8 +121,8 @@ export class EthIndexerClient extends Client<EthIndexer> {
       // `or(txfrom,txto)` + `order=time.desc` query may pick a backward
       // `time_index` scan and stall PostgREST on a large index
       const [sent, received] = await Promise.all([
-        this.fetchNativeEthSide(address, 'txfrom', effectiveLimit, from, to),
-        this.fetchNativeEthSide(address, 'txto', effectiveLimit, from, to)
+        this.fetchNativeEthSide(address, 'txfrom', effectiveLimit, order, from, to),
+        this.fetchNativeEthSide(address, 'txto', effectiveLimit, order, from, to)
       ])
 
       // Deduplicate self-transfers that appear in both sender and recipient queries
@@ -129,9 +134,11 @@ export class EthIndexerClient extends Client<EthIndexer> {
       })
     }
 
+    // Slice in the requested direction: for `time.asc` the caller expects the
+    // oldest `limit` records above the boundary, not the newest ones
     return transactions
-      .sort((a, b) => b.time - a.time)
-      .map((transaction) => normalizeTransaction(transaction, address, decimals))
+      .sort((a, b) => (ascending ? a.time - b.time : b.time - a.time))
       .slice(0, effectiveLimit)
+      .map((transaction) => normalizeTransaction(transaction, address, decimals))
   }
 }
