@@ -1,0 +1,99 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('ecpair', () => ({
+  ECPairFactory: () => ({})
+}))
+
+vi.mock('tiny-secp256k1', () => ({}))
+
+vi.mock('@/lib/bitcoin/btc-base-api', () => ({
+  default: class BtcBaseApiStub {
+    constructor() {
+      this.address = 'doge-address'
+      this.multiplier = 1e8
+    }
+  },
+  getUnique: (v) => v
+}))
+
+// Breaks the transitive import cycle: this module imports `@/store`
+vi.mock('@/lib/store-crypto-address', () => ({
+  storeCryptoAddress: vi.fn(),
+  validateStoredCryptoAddresses: vi.fn(),
+  flushCryptoAddresses: vi.fn()
+}))
+
+const getTransactionsMock = vi.fn()
+
+vi.mock('@/lib/bitcoin/doge-api', () => ({
+  default: class DogeApiStub {
+    getTransactions(options) {
+      return getTransactionsMock(options)
+    }
+  }
+}))
+
+import actions from '../doge-actions'
+
+function createContext(transactions = {}) {
+  return {
+    state: {
+      crypto: 'DOGE',
+      address: 'doge-address',
+      transactions,
+      bottomReached: false
+    },
+    getters: {},
+    commit: vi.fn(),
+    dispatch: vi.fn(() => Promise.resolve())
+  }
+}
+
+describe('doge-actions pagination', () => {
+  let context
+
+  beforeEach(async () => {
+    vi.clearAllMocks()
+    context = createContext()
+    await actions.afterLogin.handler(context, 'passphrase')
+  })
+
+  it('computes the offset from confirmed transactions only', async () => {
+    // Two confirmed + one locally created pending transaction:
+    // the pending tx does not exist for the indexer and must not shift the offset
+    Object.assign(context.state.transactions, {
+      tx1: { hash: 'tx1', status: 'CONFIRMED' },
+      tx2: { hash: 'tx2', status: 'REGISTERED' },
+      pending: { hash: 'pending', status: 'PENDING' }
+    })
+    getTransactionsMock.mockResolvedValue({ hasMore: false, items: [] })
+
+    await actions.getOldTransactions(context)
+
+    expect(getTransactionsMock).toHaveBeenCalledWith({ from: 2 })
+  })
+
+  it('sets bottom when the indexer reports no more pages', async () => {
+    getTransactionsMock.mockResolvedValue({ hasMore: false, items: [] })
+
+    await actions.getOldTransactions(context)
+
+    expect(context.commit).toHaveBeenCalledWith('bottom', true)
+  })
+
+  it('does not set bottom while more pages remain', async () => {
+    getTransactionsMock.mockResolvedValue({ hasMore: true, items: [{}] })
+
+    await actions.getOldTransactions(context)
+
+    expect(context.commit).not.toHaveBeenCalledWith('bottom', true)
+  })
+
+  it('skips fetching when bottom has already been reached', async () => {
+    context.state.bottomReached = true
+
+    await actions.getOldTransactions(context)
+
+    expect(getTransactionsMock).not.toHaveBeenCalled()
+  })
+})

@@ -207,13 +207,13 @@ export default function createActions(config) {
       }
       const { address, maxHeight, contractAddress, decimals } = context.state
       const from = maxHeight > 0 ? maxHeight + 1 : 0
-      const limit = from ? undefined : CHUNK_SIZE
 
       const options = {
         address,
         contract: contractAddress,
         from,
-        limit,
+        // Every history request must be bounded (see issue #975)
+        limit: CHUNK_SIZE,
         decimals
       }
 
@@ -223,6 +223,12 @@ export default function createActions(config) {
 
       if (transactions) {
         context.commit('transactions', { transactions, updateTimestamps: true })
+
+        // A full chunk means there may be more recent transactions:
+        // keep fetching until we reach the newest one
+        if (transactions.length === CHUNK_SIZE) {
+          await context.dispatch('getNewTransactions')
+        }
       }
 
       context.commit('areRecentLoading', false)

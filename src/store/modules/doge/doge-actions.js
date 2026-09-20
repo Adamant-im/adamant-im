@@ -15,7 +15,13 @@ const getOldTransactions = async (api, context) => {
   // If we already have the most old transaction for this address, no need to request anything
   if (context.state.bottomReached) return Promise.resolve()
 
-  const from = Object.keys(context.state.transactions).length
+  // Offset must be based on confirmed transactions only: locally created
+  // pending transactions are stored in the same map but never exist for
+  // the indexer, so counting them shifts the offset and skips real history
+  const from = Object.values(context.state.transactions).filter(
+    (tx) => tx.status !== 'PENDING'
+  ).length
+
   context.commit('areOlderLoading', true)
   const result = await api.getTransactions({ from })
   if (result) {

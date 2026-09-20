@@ -51,11 +51,20 @@ const customActions = (getApi) => ({
 
 const retrieveNewTransactions = async (api, context, latestTxId, toTx) => {
   const transactions = await btcIndexer.getTransactions(context.state.address, toTx)
+
+  // An empty page means the chain has no more transactions to scan:
+  // the latest locally known tx is gone (dropped from mempool, reorg)
+  if (transactions.length === 0) return
+
   context.commit('transactions', transactions)
 
   if (latestTxId && !transactions.some((x) => x.txid === latestTxId)) {
     const oldest = transactions[transactions.length - 1]
-    await getNewTransactions(api, context, latestTxId, oldest && oldest.txid)
+    // Recurse with the oldest retrieved txid as the next cursor; stop when
+    // the cursor does not advance to avoid an infinite loop
+    if (oldest && oldest.txid && oldest.txid !== toTx) {
+      await retrieveNewTransactions(api, context, latestTxId, oldest.txid)
+    }
   }
 }
 
