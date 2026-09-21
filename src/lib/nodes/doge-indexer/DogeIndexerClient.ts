@@ -16,6 +16,15 @@ import { AddressInfo } from './types/api/address'
 import { EstimatedFee, GetEstimatedFeeParams } from './types/api/estimated-fee'
 import { Balance } from './types/api/balance'
 
+/**
+ * Raw history reader bound to a single indexer for the whole walk it is passed to
+ */
+export type DogeIndexerHistorySession = {
+  /** URL of the indexer serving this walk. Offsets are only valid against it */
+  node: string
+  get<Response = any, Params = any>(path: string, params?: Params): Promise<Response>
+}
+
 export class DogeIndexerClient extends Client<DogeIndexer> {
   constructor(endpoints: NodeInfo[] = [], minNodeVersion = '0.0.0') {
     super('doge', 'service', NODE_LABELS.DogeIndexer)
@@ -88,5 +97,34 @@ export class DogeIndexerClient extends Client<DogeIndexer> {
     const { info } = await this.request<NodeStatus>('GET', '/api/status')
 
     return info.blocks
+  }
+
+  /**
+   * Runs a whole history walk against a single indexer. History is paged by an
+   * offset into the node's own list, and indexers order transactions sharing a
+   * timestamp differently and may even list different sets, so an offset is only
+   * meaningful on the node it was computed against.
+   */
+  async walkHistory<T>(walk: (session: DogeIndexerHistorySession) => Promise<T>): Promise<T> {
+    return this.requestWithRetry((node) => walk(this.createSession(node)))
+  }
+
+  /**
+   * Confirms that the history ends where `excludedUrl` says it does, since a node
+   * keeping a shorter list runs out of it early. `probe` repeats the older-history
+   * step on each other active node and resolves `true` when it has nothing more.
+   */
+  async confirmHistoryEnd(
+    excludedUrl: string,
+    probe: (session: DogeIndexerHistorySession) => Promise<boolean>
+  ): Promise<boolean> {
+    return this.confirmOnOtherNodes(excludedUrl, (node) => probe(this.createSession(node)))
+  }
+
+  private createSession(node: DogeIndexer): DogeIndexerHistorySession {
+    return {
+      node: node.url,
+      get: (path, params) => node.request('GET', path, params)
+    }
   }
 }

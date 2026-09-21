@@ -98,19 +98,34 @@ export class BtcIndexerClient extends Client<BtcIndexer> {
    * a cursor into a different dataset.
    */
   async walkHistory<T>(walk: (session: BtcIndexerHistorySession) => Promise<T>): Promise<T> {
-    return this.requestWithRetry((node) =>
-      walk({
-        node: node.url,
-        getTransactions: async (address, toTx) => {
-          const transactions = await node.request<Transaction[]>(
-            'GET',
-            this.historyEndpoint(address, toTx)
-          )
+    return this.requestWithRetry((node) => walk(this.createSession(node)))
+  }
 
-          return transactions.map((transaction) => normalizeTransaction(transaction, address))
-        }
-      })
-    )
+  /**
+   * Confirms that the history ends where `excludedUrl` says it does. A node that
+   * does not know the cursor, or keeps a shorter history, answers with a short page,
+   * which alone must not latch the end of history. `probe` repeats the older-history
+   * step on each other active node and resolves `true` when it has nothing more.
+   */
+  async confirmHistoryEnd(
+    excludedUrl: string,
+    probe: (session: BtcIndexerHistorySession) => Promise<boolean>
+  ): Promise<boolean> {
+    return this.confirmOnOtherNodes(excludedUrl, (node) => probe(this.createSession(node)))
+  }
+
+  private createSession(node: BtcIndexer): BtcIndexerHistorySession {
+    return {
+      node: node.url,
+      getTransactions: async (address, toTx) => {
+        const transactions = await node.request<Transaction[]>(
+          'GET',
+          this.historyEndpoint(address, toTx)
+        )
+
+        return transactions.map((transaction) => normalizeTransaction(transaction, address))
+      }
+    }
   }
 
   /**

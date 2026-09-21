@@ -25,7 +25,48 @@ vi.mock('@/utils/devTools/logger', () => ({
   logger: { error: loggerErrorMock }
 }))
 
-const { saveState } = await vi.importActual('./state')
+const { saveState, toPersistedModule } = await vi.importActual('./state')
+
+describe('toPersistedModule', () => {
+  it('drops the transactions of a crypto module and the bottom that depends on them', () => {
+    const doge = {
+      address: 'D-address',
+      transactions: { tx: { hash: 'tx' } },
+      bottomReached: true,
+      balance: 5
+    }
+
+    expect(toPersistedModule('doge', doge)).toEqual({
+      address: 'D-address',
+      transactions: {},
+      bottomReached: false,
+      balance: 5
+    })
+    // The live state is left alone
+    expect(doge.bottomReached).toBe(true)
+    expect(doge.transactions).toEqual({ tx: { hash: 'tx' } })
+  })
+
+  it('keeps the height boundaries the modules reset themselves', () => {
+    const eth = { transactions: {}, transactionsCount: 60, maxHeight: 5, minHeight: 1 }
+
+    expect(toPersistedModule('eth', eth)).toMatchObject({
+      transactionsCount: 60,
+      maxHeight: 5,
+      minHeight: 1
+    })
+  })
+
+  it('does not add a bottom to a module that has none', () => {
+    expect(toPersistedModule('eth', { transactions: {} })).not.toHaveProperty('bottomReached')
+  })
+
+  it('leaves a module that is not a crypto untouched', () => {
+    const delegates = { delegates: { a: 1 }, bottomReached: true }
+
+    expect(toPersistedModule('delegates', delegates)).toEqual(delegates)
+  })
+})
 
 describe('IndexedDB state persistence', () => {
   beforeEach(() => {
@@ -33,6 +74,29 @@ describe('IndexedDB state persistence', () => {
     loggerErrorMock.mockReset()
     modulesSaveAllMock.mockReset().mockResolvedValue(undefined)
     securitySaveAllMock.mockReset().mockResolvedValue(undefined)
+  })
+
+  it('persists crypto modules without the pagination state of their transactions', async () => {
+    const store = {
+      state: {
+        chat: { chats: {} },
+        doge: { transactions: { tx: { hash: 'tx' } }, bottomReached: true, address: 'D' },
+        passphrase: '',
+        balance: 0,
+        address: '',
+        publicKeys: {}
+      },
+      commit: vi.fn()
+    }
+
+    await saveState(store)
+
+    const saved = modulesSaveAllMock.mock.calls[0][0]
+    expect(saved.find((module) => module.name === 'doge').value).toEqual({
+      transactions: {},
+      bottomReached: false,
+      address: 'D'
+    })
   })
 
   it('rejects non-cloneable chat state and logs the affected module', async () => {

@@ -99,15 +99,32 @@ export class EthIndexerClient extends Client<EthIndexer> {
    * proven, instead of continuing a cursor into a different dataset.
    */
   async walkHistory<T>(walk: (session: EthIndexerHistorySession) => Promise<T>): Promise<T> {
-    return this.requestWithRetry((node) => {
-      const send: EthtxsSender = (params) => this.requestFrom(node, 'GET /ethtxs', params)
+    return this.requestWithRetry((node) => walk(this.createSession(node)))
+  }
 
-      return walk({
-        node: node.url,
-        getTransactions: (params) => this.queryTransactions(send, params),
-        getTimestampGroup: (params) => this.queryTimestampGroup(send, params)
-      })
-    })
+  /**
+   * Confirms that the history ends where `excludedUrl` says it does.
+   *
+   * A pruned indexer reaches the end of its own dataset early, and latching the
+   * end of history on its word would truncate the list for good. `probe` repeats
+   * the older-history step on each other active node and resolves `true` when that
+   * node has nothing more either; whatever it does find is kept by the caller.
+   */
+  async confirmHistoryEnd(
+    excludedUrl: string,
+    probe: (session: EthIndexerHistorySession) => Promise<boolean>
+  ): Promise<boolean> {
+    return this.confirmOnOtherNodes(excludedUrl, (node) => probe(this.createSession(node)))
+  }
+
+  private createSession(node: EthIndexer): EthIndexerHistorySession {
+    const send: EthtxsSender = (params) => this.requestFrom(node, 'GET /ethtxs', params)
+
+    return {
+      node: node.url,
+      getTransactions: (params) => this.queryTransactions(send, params),
+      getTimestampGroup: (params) => this.queryTimestampGroup(send, params)
+    }
   }
 
   /**

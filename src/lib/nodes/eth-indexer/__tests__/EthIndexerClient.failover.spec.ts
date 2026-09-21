@@ -81,6 +81,105 @@ function makeRawTx(time: number) {
   }
 }
 
+const THIRD_NODE = 'https://third.example.com'
+
+describe('EthIndexerClient.confirmHistoryEnd', () => {
+  let client: EthIndexerClient
+
+  /** A probe that asks the node for history and agrees when there is none */
+  const probe = async (session: { getTransactions: EthIndexerClient['getTransactions'] }) => {
+    const transactions = await session.getTransactions({ address: ADDRESS, decimals: 18 })
+
+    return transactions.length === 0
+  }
+
+  beforeEach(async () => {
+    vi.clearAllMocks()
+    client = new EthIndexerClient([
+      { url: SLOW_NODE },
+      { url: FAST_NODE },
+      { url: THIRD_NODE }
+    ] as never)
+    await client.ready
+  })
+
+  it('holds when every other node agrees', async () => {
+    nodeRequestMock.mockResolvedValue([])
+
+    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).resolves.toBe(true)
+
+    // Only the other two were asked, never the node that reached the conclusion
+    expect(new Set(nodeRequestMock.mock.calls.map(([url]) => url))).toEqual(
+      new Set([FAST_NODE, THIRD_NODE])
+    )
+  })
+
+  it('fails as soon as one node has more history', async () => {
+    nodeRequestMock.mockImplementation((url: string) =>
+      Promise.resolve(url === FAST_NODE ? [makeRawTx(1700000000)] : [])
+    )
+
+    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).resolves.toBe(false)
+  })
+
+  it('lets an unavailable node abstain while another one confirms', async () => {
+    nodeRequestMock.mockImplementation((url: string) =>
+      url === FAST_NODE ? Promise.reject(statementTimeoutError()) : Promise.resolve([])
+    )
+
+    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).resolves.toBe(true)
+  })
+
+  it('does not hold when no other node could answer at all', async () => {
+    // A pruned node alone must not decide the end of history for everyone
+    nodeRequestMock.mockRejectedValue(statementTimeoutError())
+
+    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).resolves.toBe(false)
+  })
+
+  it('holds when no other node can ever answer here', async () => {
+    // Disabled by the user: the remaining node is the whole network
+    for (const node of client.nodes) {
+      if (node.url !== SLOW_NODE) node.active = false
+    }
+
+    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).resolves.toBe(true)
+    expect(nodeRequestMock).not.toHaveBeenCalled()
+  })
+
+  it('does not count a node on an unsupported protocol', async () => {
+    for (const node of client.nodes) {
+      if (node.url !== SLOW_NODE) node.hasSupportedProtocol = false
+    }
+
+    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).resolves.toBe(true)
+  })
+
+  it('postpones the conclusion while the other nodes are merely offline', async () => {
+    // They may be the deep ones: the node that happens to be reachable does not
+    // get to decide for them
+    for (const node of client.nodes) {
+      if (node.url !== SLOW_NODE) node.online = false
+    }
+
+    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).resolves.toBe(false)
+    expect(nodeRequestMock).not.toHaveBeenCalled()
+  })
+
+  it('propagates an error that is not about availability', async () => {
+    nodeRequestMock.mockRejectedValue({
+      isAxiosError: true,
+      message: 'Request failed with status code 400',
+      request: {},
+      response: { status: 400, data: { code: '42703', message: 'column does not exist' } }
+    })
+
+    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).rejects.toMatchObject({
+      response: { status: 400 }
+    })
+  })
+})
+
 describe('EthIndexerClient node failover', () => {
   let client: EthIndexerClient
 

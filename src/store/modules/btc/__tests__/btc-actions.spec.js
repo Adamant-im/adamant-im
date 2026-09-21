@@ -2,17 +2,48 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const getTransactionsMock = vi.fn()
 
+/**
+ * A fake network of indexers. By default it is a single node served by
+ * `getTransactionsMock`; tests that need several nodes with different chains
+ * replace `network.nodes` and choose which one serves a walk via `network.pick`.
+ */
+const network = {
+  nodes: [],
+  pick: () => network.nodes[0]
+}
+
+function resetNetwork() {
+  network.nodes = [{ url: 'https://indexer.example.com' }]
+  network.pick = () => network.nodes[0]
+}
+
 vi.mock('@/lib/nodes', () => {
-  const session = {
-    node: 'https://indexer.example.com',
-    getTransactions: (...args) => getTransactionsMock(...args)
-  }
+  const sessionFor = (node) => ({
+    node: node.url,
+    getTransactions: (address, toTx) =>
+      node.getTransactions
+        ? node.getTransactions(address, toTx)
+        : getTransactionsMock(address, toTx, node.url)
+  })
 
   return {
     btcIndexer: {
-      ...session,
       // Mirrors the real client: every page of one walk gets the same node
-      walkHistory: (walk) => walk(session)
+      walkHistory: (walk) => walk(sessionFor(network.pick())),
+      // Mirrors `confirmOnOtherNodes`: `disabled` nodes do not count, `offline` ones abstain
+      confirmHistoryEnd: async (excludedUrl, probe) => {
+        const others = network.nodes.filter((n) => n.url !== excludedUrl && !n.disabled)
+        if (others.length === 0) return true
+
+        let answered = 0
+        for (const node of others) {
+          if (node.offline) continue
+          if (!(await probe(sessionFor(node)))) return false
+          answered += 1
+        }
+
+        return answered > 0
+      }
     }
   }
 })
@@ -51,6 +82,7 @@ vi.mock('../../../lib/bitcoin/bitcoin-api', () => ({
 import actions from '../btc-actions'
 
 const TX_CHUNK_SIZE = 25
+const MAX_NEW_TX_PAGES = 20
 
 /**
  * Builds a Vuex-like context stub
@@ -82,6 +114,9 @@ function createContext(transactions = {}) {
       if (type === 'newTxCatchUp') {
         state.newTxCatchUp = payload
       }
+      if (type === 'bottom') {
+        state.bottomReached = payload
+      }
     },
     dispatch: vi.fn(() => Promise.resolve())
   }
@@ -89,7 +124,7 @@ function createContext(transactions = {}) {
 
 /**
  * The shape `normalizeTransaction` actually produces: `id` and `hash`, and no
- * `txid`. Indexer-visible by default, since that is what a history page contains
+ * `txid`. Confirmed by default, since that is what most of a history consists of
  */
 function makeTx(hash, timestamp, status = 'CONFIRMED') {
   return {
@@ -108,89 +143,53 @@ function makeTx(hash, timestamp, status = 'CONFIRMED') {
   }
 }
 
-describe('btc-actions pagination', () => {
+/** `count` transactions, newest first */
+function makeChain(prefix, count, newest = 100_000) {
+  return Array.from({ length: count }, (_, i) => makeTx(`${prefix}${i}`, newest - i))
+}
+
+/**
+ * Esplora-style paging over one node's chain: the first page, or the page after
+ * `toTx`. A node that does not know `toTx` — a pruned one — answers empty
+ */
+function pagesOver(chain) {
+  return (_address, toTx) => {
+    if (!toTx) return Promise.resolve(chain.slice(0, TX_CHUNK_SIZE))
+
+    const at = chain.findIndex((tx) => tx.hash === toTx)
+    if (at < 0) return Promise.resolve([])
+
+    return Promise.resolve(chain.slice(at + 1, at + 1 + TX_CHUNK_SIZE))
+  }
+}
+
+function nodeOver(url, chain) {
+  return { url, getTransactions: pagesOver(chain) }
+}
+
+describe('btc-actions getNewTransactions', () => {
   let context
 
   beforeEach(async () => {
     vi.clearAllMocks()
+    resetNetwork()
     context = createContext()
     await actions.afterLogin.handler(context, 'passphrase')
   })
 
-  it('stops fetching older transactions once bottom is reached', async () => {
-    Object.assign(context.state.transactions, { a: makeTx('a', 3) })
-    context.state.bottomReached = true
+  it('walks past the first page towards the known transaction', async () => {
+    const known = makeTx('known', 0)
+    Object.assign(context.state.transactions, { known })
 
-    await actions.getOldTransactions(context)
-
-    expect(getTransactionsMock).not.toHaveBeenCalled()
-  })
-
-  it('uses the oldest txid as cursor for the next page', async () => {
-    Object.assign(context.state.transactions, { a: makeTx('a', 3) })
-    getTransactionsMock.mockResolvedValue([makeTx('b', 2), makeTx('c', 1)])
-
-    await actions.getOldTransactions(context)
-
-    expect(getTransactionsMock).toHaveBeenCalledWith('btc-address', 'a')
-  })
-
-  it('does not recurse when an empty page is returned', async () => {
-    // Latest locally known tx is unknown to the chain: previous implementation
-    // would repeat the same request forever
-    Object.assign(context.state.transactions, { a: makeTx('a', 10) })
-    getTransactionsMock.mockResolvedValue([])
+    const chain = [...makeChain('new', 40), known]
+    getTransactionsMock.mockImplementation(pagesOver(chain))
 
     await actions.getNewTransactions(context)
 
-    expect(getTransactionsMock).toHaveBeenCalledTimes(1)
-  })
-
-  it('does not repeat the same request when the cursor does not advance', async () => {
-    // The chain returns pages that never include the latest local tx: without
-    // the cursor guard this would loop forever
-    Object.assign(context.state.transactions, { a: makeTx('a', 10) })
-    const pages = [[makeTx('x1', 9), makeTx('x2', 8)], [makeTx('x3', 7), makeTx('x4', 6)], []]
-    let call = 0
-    getTransactionsMock.mockImplementation(() => Promise.resolve(pages[call++]))
-
-    await actions.getNewTransactions(context)
-
-    // After both distinct pages are consumed the cursor stops advancing
-    expect(getTransactionsMock.mock.calls.map((c) => c[1])).toEqual([undefined, 'x2', 'x4'])
-  })
-
-  it('breaks out of a multi-cursor page cycle', async () => {
-    // The node alternates between two pages: neither cursor equals the
-    // immediately preceding one, so a one-step guard would never fire
-    Object.assign(context.state.transactions, { a: makeTx('a', 10) })
-    const pageA = [makeTx('x1', 9), makeTx('A', 8)]
-    const pageB = [makeTx('x2', 7), makeTx('B', 6)]
-    let call = 0
-    getTransactionsMock.mockImplementation(() => {
-      call += 1
-      // undefined -> A -> B -> A -> B ...
-      return Promise.resolve(call % 2 === 1 ? pageA : pageB)
-    })
-
-    await actions.getNewTransactions(context)
-
-    // First page, then cursor A, then cursor B, then A is recognized as visited
-    expect(getTransactionsMock.mock.calls.map((c) => c[1])).toEqual([undefined, 'A', 'B'])
-  })
-
-  it('bounds the walk when every page brings a fresh cursor', async () => {
-    // Nothing repeats and the local tx never shows up: only the page cap stops it
-    Object.assign(context.state.transactions, { a: makeTx('a', 1000) })
-    let call = 0
-    getTransactionsMock.mockImplementation(() => {
-      call += 1
-      return Promise.resolve([makeTx(`x${call}`, 100 - call), makeTx(`cursor${call}`, 99 - call)])
-    })
-
-    await actions.getNewTransactions(context)
-
-    expect(getTransactionsMock).toHaveBeenCalledTimes(20)
+    // Two pages: the cursor is the oldest hash of the first one
+    expect(getTransactionsMock.mock.calls.map((c) => c[1])).toEqual([undefined, 'new24'])
+    expect(Object.keys(context.state.transactions)).toHaveLength(chain.length)
+    expect(context.state.newTxCatchUp).toBe(null)
   })
 
   it('continues an interrupted walk instead of restarting it', async () => {
@@ -199,16 +198,13 @@ describe('btc-actions pagination', () => {
     const known = makeTx('known', 0)
     Object.assign(context.state.transactions, { known })
 
-    const chain = [...Array.from({ length: 525 }, (_, i) => makeTx(`new${i}`, 1000 - i)), known]
-    // The indexer pages by "everything older than this txid"
-    getTransactionsMock.mockImplementation((_address, toTx) => {
-      const start = toTx ? chain.findIndex((tx) => tx.hash === toTx) + 1 : 0
-      return Promise.resolve(chain.slice(start, start + TX_CHUNK_SIZE))
-    })
+    const chain = [...makeChain('new', 525), known]
+    getTransactionsMock.mockImplementation(pagesOver(chain))
 
     await actions.getNewTransactions(context)
 
     // Interrupted by the cap, with the resume point kept
+    expect(getTransactionsMock).toHaveBeenCalledTimes(MAX_NEW_TX_PAGES)
     expect(context.state.newTxCatchUp).toMatchObject({
       target: 'known',
       node: 'https://indexer.example.com'
@@ -225,6 +221,195 @@ describe('btc-actions pagination', () => {
     expect(Object.keys(context.state.transactions)).toHaveLength(chain.length)
   })
 
+  it('keeps the target when the next refresh lands on another indexer', async () => {
+    // node A -> page cap -> node B: only the cursor belongs to node A
+    const known = makeTx('known', 0)
+    Object.assign(context.state.transactions, { known })
+
+    const chain = [...makeChain('new', 525), known]
+    network.nodes = [
+      nodeOver('https://node-a.example.com', chain),
+      nodeOver('https://node-b.example.com', chain)
+    ]
+
+    network.pick = () => network.nodes[0]
+    await actions.getNewTransactions(context)
+    expect(context.state.newTxCatchUp).toMatchObject({
+      target: 'known',
+      node: 'https://node-a.example.com'
+    })
+
+    // Node B restarts from its own first page, walking towards the same target
+    network.pick = () => network.nodes[1]
+    for (let run = 0; run < 5 && context.state.newTxCatchUp; run++) {
+      await actions.getNewTransactions(context)
+    }
+
+    expect(context.state.newTxCatchUp).toBe(null)
+    expect(Object.keys(context.state.transactions)).toHaveLength(chain.length)
+  })
+
+  it('does not treat a cursor cycle as continuity', async () => {
+    // The node alternates between two pages: neither cursor equals the
+    // immediately preceding one, so a one-step guard would never fire
+    Object.assign(context.state.transactions, { known: makeTx('known', 10) })
+    const pageA = [makeTx('x1', 9), makeTx('A', 8)]
+    const pageB = [makeTx('x2', 7), makeTx('B', 6)]
+    let call = 0
+    getTransactionsMock.mockImplementation(() => {
+      call += 1
+      // undefined -> A -> B -> A -> B ...
+      return Promise.resolve(call % 2 === 1 ? pageA : pageB)
+    })
+
+    await actions.getNewTransactions(context)
+
+    // First page, then cursor A, then cursor B, then A is recognized as visited
+    expect(getTransactionsMock.mock.calls.map((c) => c[1])).toEqual([undefined, 'A', 'B'])
+    // The target was never reached: it stays pending, and the next walk starts over
+    expect(context.state.newTxCatchUp).toMatchObject({ target: 'known', cursor: undefined })
+  })
+
+  it('fails over to another indexer when one cycles', async () => {
+    const known = makeTx('known', 0)
+    Object.assign(context.state.transactions, { known })
+    const chain = [...makeChain('new', 30), known]
+
+    const cycling = {
+      url: 'https://cycling.example.com',
+      // Always answers with the same page, whatever the cursor
+      getTransactions: () => Promise.resolve(chain.slice(0, TX_CHUNK_SIZE))
+    }
+    network.nodes = [cycling, nodeOver('https://healthy.example.com', chain)]
+    network.pick = () => cycling
+
+    await actions.getNewTransactions(context)
+
+    expect(Object.keys(context.state.transactions)).toHaveLength(chain.length)
+    expect(context.state.newTxCatchUp).toBe(null)
+  })
+
+  it('fails over when a pruned indexer runs out before the target', async () => {
+    const known = makeTx('known', 0)
+    Object.assign(context.state.transactions, { known })
+    const chain = [...makeChain('new', 60), known]
+
+    // Keeps only the newest 30: its history ends long before the known record
+    network.nodes = [
+      nodeOver('https://pruned.example.com', chain.slice(0, 30)),
+      nodeOver('https://full.example.com', chain)
+    ]
+    network.pick = () => network.nodes[0]
+
+    await actions.getNewTransactions(context)
+
+    expect(Object.keys(context.state.transactions)).toHaveLength(chain.length)
+    expect(context.state.newTxCatchUp).toBe(null)
+  })
+
+  it('keeps the target when no other indexer can answer right now', async () => {
+    const known = makeTx('known', 0)
+    Object.assign(context.state.transactions, { known })
+    const chain = [...makeChain('new', 60), known]
+
+    // The pruned node runs out, and the full one is offline at the moment
+    network.nodes = [
+      nodeOver('https://pruned.example.com', chain.slice(0, 30)),
+      { ...nodeOver('https://full.example.com', chain), offline: true }
+    ]
+    network.pick = () => network.nodes[0]
+
+    await actions.getNewTransactions(context)
+
+    // Nothing was proven: the target stays, so the gap can still be closed later
+    expect(context.state.newTxCatchUp).toMatchObject({ target: 'known', cursor: undefined })
+
+    // Once the full node is back, the next update closes it
+    network.nodes[1].offline = false
+    await actions.getNewTransactions(context)
+
+    expect(context.state.newTxCatchUp).toBe(null)
+    expect(Object.keys(context.state.transactions)).toHaveLength(chain.length)
+  })
+
+  it('gives the target up only when no indexer lists it any more', async () => {
+    // The known record was reorged away: every node's history ends without it
+    Object.assign(context.state.transactions, { gone: makeTx('gone', 0) })
+    const chain = makeChain('new', 30)
+    network.nodes = [
+      nodeOver('https://node-a.example.com', chain),
+      nodeOver('https://node-b.example.com', chain)
+    ]
+
+    await actions.getNewTransactions(context)
+
+    expect(context.state.newTxCatchUp).toBe(null)
+    expect(Object.keys(context.state.transactions)).toHaveLength(31)
+  })
+
+  it('bounds the walk when every page brings a fresh cursor', async () => {
+    // Nothing repeats and the local tx never shows up: only the page cap stops it
+    Object.assign(context.state.transactions, { known: makeTx('known', 0) })
+    let call = 0
+    getTransactionsMock.mockImplementation(() => {
+      call += 1
+      return Promise.resolve([
+        makeTx(`x${call}`, 100_000 - call * 2),
+        makeTx(`cursor${call}`, 99_999 - call * 2)
+      ])
+    })
+
+    await actions.getNewTransactions(context)
+
+    expect(getTransactionsMock).toHaveBeenCalledTimes(MAX_NEW_TX_PAGES)
+  })
+
+  it('targets the newest confirmed transaction', async () => {
+    // A just-sent transfer is the newest record but no page contains it, and a
+    // mempool one may still be dropped: neither can prove continuity
+    Object.assign(context.state.transactions, {
+      confirmed: makeTx('confirmed', 5),
+      registered: makeTx('registered', 8, 'REGISTERED'),
+      pending: makeTx('pending', 10, 'PENDING'),
+      rejected: makeTx('rejected', 9, 'REJECTED')
+    })
+    getTransactionsMock.mockResolvedValue([makeTx('fresh', 6), makeTx('confirmed', 5)])
+
+    await actions.getNewTransactions(context)
+
+    // One page: it contains the newest confirmed transaction, so history is continuous
+    expect(getTransactionsMock).toHaveBeenCalledTimes(1)
+    expect(context.state.newTxCatchUp).toBe(null)
+  })
+
+  it('resets the loading flag when the walk fails', async () => {
+    getTransactionsMock.mockRejectedValue(new Error('all indexers offline'))
+
+    await expect(actions.getNewTransactions(context)).rejects.toThrow('all indexers offline')
+
+    expect(context.committed.at(-1)).toEqual(['areRecentLoading', false])
+  })
+})
+
+describe('btc-actions getOldTransactions', () => {
+  let context
+
+  beforeEach(async () => {
+    vi.clearAllMocks()
+    resetNetwork()
+    context = createContext()
+    await actions.afterLogin.handler(context, 'passphrase')
+  })
+
+  it('stops fetching older transactions once bottom is reached', async () => {
+    Object.assign(context.state.transactions, { a: makeTx('a', 3) })
+    context.state.bottomReached = true
+
+    await actions.getOldTransactions(context)
+
+    expect(getTransactionsMock).not.toHaveBeenCalled()
+  })
+
   it('pages older history with the normalized identifier', async () => {
     // `normalizeTransaction` produces `hash`, never `txid`: reading the wrong
     // field left the cursor undefined and refetched the newest page forever
@@ -236,57 +421,78 @@ describe('btc-actions pagination', () => {
 
     await actions.getOldTransactions(context)
 
-    expect(getTransactionsMock).toHaveBeenCalledWith('btc-address', 'old1')
+    expect(getTransactionsMock).toHaveBeenCalledWith(
+      'btc-address',
+      'old1',
+      'https://indexer.example.com'
+    )
   })
 
-  it('walks past the first page towards the known transaction', async () => {
-    const known = makeTx('known', 0)
-    Object.assign(context.state.transactions, { known })
+  it('does not latch the bottom from a pruned indexer while a full one has more', async () => {
+    const chain = makeChain('tx', 141)
+    network.nodes = [
+      nodeOver('https://full-1.example.com', chain),
+      nodeOver('https://pruned.example.com', chain.slice(0, 30)),
+      nodeOver('https://full-2.example.com', chain)
+    ]
 
-    const chain = [...Array.from({ length: 40 }, (_, i) => makeTx(`new${i}`, 5000 - i)), known]
-    getTransactionsMock.mockImplementation((_address, toTx) => {
-      const start = toTx ? chain.findIndex((tx) => tx.hash === toTx) + 1 : 0
-      return Promise.resolve(chain.slice(start, start + TX_CHUNK_SIZE))
-    })
+    // The newest page came from a full node...
+    Object.assign(
+      context.state.transactions,
+      Object.fromEntries(chain.slice(0, TX_CHUNK_SIZE).map((tx) => [tx.hash, tx]))
+    )
 
-    await actions.getNewTransactions(context)
-
-    // Two pages: the cursor is the oldest hash of the first one
-    expect(getTransactionsMock.mock.calls.map((c) => c[1])).toEqual([undefined, 'new24'])
-    expect(Object.keys(context.state.transactions)).toHaveLength(chain.length)
-  })
-
-  it('ignores a catch-up cursor left by a different indexer', async () => {
-    const known = makeTx('known', 0)
-    Object.assign(context.state.transactions, { known })
-    context.state.newTxCatchUp = {
-      target: 'gone',
-      cursor: 'unknown-to-this-node',
-      node: 'https://other.example.com'
+    // ...and every older-history call lands on the pruned one
+    network.pick = () => network.nodes[1]
+    for (let call = 0; call < 20 && !context.state.bottomReached; call++) {
+      await actions.getOldTransactions(context)
     }
 
-    getTransactionsMock.mockResolvedValue([makeTx('fresh', 10), known])
-
-    await actions.getNewTransactions(context)
-
-    // Started over on this node instead of continuing a foreign cursor
-    expect(getTransactionsMock).toHaveBeenCalledWith('btc-address', undefined)
-    expect(context.state.newTxCatchUp).toBe(null)
+    expect(Object.keys(context.state.transactions)).toHaveLength(141)
+    expect(context.state.bottomReached).toBe(true)
   })
 
-  it('ignores a local pending transaction when picking the walk target', async () => {
-    // A just-sent transfer is the newest record but no page can ever contain it
-    Object.assign(context.state.transactions, {
-      confirmed: makeTx('confirmed', 5),
-      pending: makeTx('pending', 10, 'PENDING'),
-      rejected: makeTx('rejected', 9, 'REJECTED')
-    })
-    getTransactionsMock.mockResolvedValue([makeTx('fresh', 6), makeTx('confirmed', 5)])
+  it('does not latch the bottom while the full indexers are offline', async () => {
+    const chain = makeChain('tx', 141)
+    network.nodes = [
+      nodeOver('https://pruned.example.com', chain.slice(0, 30)),
+      { ...nodeOver('https://full.example.com', chain), offline: true }
+    ]
+    network.pick = () => network.nodes[0]
+    Object.assign(
+      context.state.transactions,
+      Object.fromEntries(chain.slice(0, TX_CHUNK_SIZE).map((tx) => [tx.hash, tx]))
+    )
 
-    await actions.getNewTransactions(context)
+    await actions.getOldTransactions(context)
+    await actions.getOldTransactions(context)
 
-    // One page: it contains the newest indexed transaction, so history is continuous
-    expect(getTransactionsMock).toHaveBeenCalledTimes(1)
-    expect(context.state.newTxCatchUp).toBe(null)
+    expect(context.state.bottomReached).toBe(false)
+  })
+
+  it('latches the bottom when every indexer agrees', async () => {
+    const chain = makeChain('tx', 30)
+    network.nodes = [
+      nodeOver('https://node-a.example.com', chain),
+      nodeOver('https://node-b.example.com', chain)
+    ]
+    Object.assign(
+      context.state.transactions,
+      Object.fromEntries(chain.slice(0, TX_CHUNK_SIZE).map((tx) => [tx.hash, tx]))
+    )
+
+    await actions.getOldTransactions(context)
+
+    expect(Object.keys(context.state.transactions)).toHaveLength(30)
+    expect(context.state.bottomReached).toBe(true)
+  })
+
+  it('resets the loading flag when the walk fails', async () => {
+    Object.assign(context.state.transactions, { a: makeTx('a', 3) })
+    getTransactionsMock.mockRejectedValue(new Error('all indexers offline'))
+
+    await expect(actions.getOldTransactions(context)).rejects.toThrow('all indexers offline')
+
+    expect(context.committed.at(-1)).toEqual(['areOlderLoading', false])
   })
 })

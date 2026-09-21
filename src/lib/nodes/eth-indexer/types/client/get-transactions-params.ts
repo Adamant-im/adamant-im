@@ -20,7 +20,7 @@ export type GetTransactionsParams = {
    */
   to?: number
   /**
-   * Limit the number of transactions returned. Default to `100`
+   * Limit the number of transactions returned. Defaults to `25`
    */
   limit?: number
   /**

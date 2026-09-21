@@ -29,6 +29,33 @@ function cloneModuleState(moduleName, value) {
 }
 
 /**
+ * What a module looks like in IndexedDB.
+ *
+ * The transactions of a crypto module are not persisted, so neither is what only
+ * holds relative to them. `bottomReached` says the oldest of those transactions
+ * has been loaded; kept on its own it survives a restart with an empty list and
+ * stops older history from ever loading again. Height boundaries are reset by the
+ * modules themselves, which detect the emptied list through `transactionsCount`.
+ *
+ * @param {string} name module name
+ * @param {object} value module state
+ * @returns {object}
+ */
+export function toPersistedModule(name, value) {
+  const module = { ...value }
+
+  if (Cryptos[name.toUpperCase()]) {
+    module.transactions = {}
+
+    if ('bottomReached' in module) {
+      module.bottomReached = false
+    }
+  }
+
+  return module
+}
+
+/**
  * Clone modules from state.
  * @param state
  * @returns {Array<{ name: string, value: string }>}
@@ -39,15 +66,9 @@ function cloneModules(state) {
   // clone all modules
   modules.forEach((moduleName) => {
     if (state[moduleName]) {
-      const module = { ...state[moduleName] }
-
-      if (Cryptos[moduleName.toUpperCase()]) {
-        module.transactions = {}
-      }
-
       modulesToStore.push({
         name: moduleName,
-        value: module
+        value: toPersistedModule(moduleName, state[moduleName])
       })
     }
   })

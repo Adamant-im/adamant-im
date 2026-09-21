@@ -254,6 +254,62 @@ export abstract class Client<N extends Node> {
     }
   }
 
+  /**
+   * Asks every other node to confirm a conclusion one node reached about its own
+   * data — typically "there is no older history".
+   *
+   * Indexers legitimately keep different history depths, so such a conclusion is
+   * only global once the rest of the network agrees. It holds when every node that
+   * answered agrees and at least one of them did.
+   *
+   * A node that is offline or out of sync right now abstains, and so does one that
+   * fails as unavailable: the conclusion is postponed rather than taken on the word
+   * of whichever node happens to be reachable, since that may be the shallow one.
+   * Only a node that can never answer here — disabled by the user, or on a protocol
+   * or API version this app cannot use — does not count; without any other node
+   * the one that reached the conclusion is the whole network, and it holds.
+   * Any error other than unavailability is a real failure and propagates.
+   *
+   * @param excludedUrl the node that reached the conclusion
+   * @param probe repeats the check on one node, resolving `true` when it agrees
+   */
+  protected async confirmOnOtherNodes(
+    excludedUrl: string,
+    probe: (node: N) => Promise<boolean>
+  ): Promise<boolean> {
+    const others = this.nodes.filter(
+      (node) =>
+        node.url !== excludedUrl &&
+        node.active &&
+        node.hasSupportedProtocol &&
+        node.hasMinNodeVersion()
+    )
+
+    if (others.length === 0) return true
+
+    let answered = 0
+
+    for (const node of others) {
+      if (!this.isActiveNode(node)) continue
+
+      let agrees: boolean
+
+      try {
+        agrees = await probe(node)
+      } catch (error) {
+        if (this.isNodeUnavailableError(error)) continue
+
+        throw error
+      }
+
+      if (!agrees) return false
+
+      answered += 1
+    }
+
+    return answered > 0
+  }
+
   private isNodeUnavailableError(error: unknown) {
     if (!error || typeof error !== 'object') {
       return false

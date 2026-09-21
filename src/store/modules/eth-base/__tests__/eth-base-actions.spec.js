@@ -3,17 +3,47 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const getTransactionsMock = vi.fn()
 const getTimestampGroupMock = vi.fn()
 
+/**
+ * A fake network of indexers. By default it is a single node served by the two
+ * mocks above; tests that need several nodes with different datasets replace
+ * `network.nodes` and choose which one serves a walk through `network.pick`.
+ */
+const network = {
+  nodes: [],
+  pick: () => network.nodes[0]
+}
+
+function resetNetwork() {
+  network.nodes = [{ url: 'https://indexer.example.com' }]
+  network.pick = () => network.nodes[0]
+}
+
 vi.mock('@/lib/nodes/eth-indexer', () => {
-  const session = {
-    node: 'https://indexer.example.com',
-    getTransactions: (...args) => getTransactionsMock(...args),
-    getTimestampGroup: (...args) => getTimestampGroupMock(...args)
-  }
+  const sessionFor = (node) => ({
+    node: node.url,
+    getTransactions: (params) =>
+      node.getTransactions ? node.getTransactions(params) : getTransactionsMock(params),
+    getTimestampGroup: (params) =>
+      node.getTimestampGroup ? node.getTimestampGroup(params) : getTimestampGroupMock(params)
+  })
 
   const stub = {
-    ...session,
     // Mirrors the real client: every request of one walk gets the same node
-    walkHistory: (walk) => walk(session)
+    walkHistory: (walk) => walk(sessionFor(network.pick())),
+    // Mirrors `confirmOnOtherNodes`: `disabled` nodes do not count, `offline` ones abstain
+    confirmHistoryEnd: async (excludedUrl, probe) => {
+      const others = network.nodes.filter((n) => n.url !== excludedUrl && !n.disabled)
+      if (others.length === 0) return true
+
+      let answered = 0
+      for (const node of others) {
+        if (node.offline) continue
+        if (!(await probe(sessionFor(node)))) return false
+        answered += 1
+      }
+
+      return answered > 0
+    }
   }
 
   return { ethIndexer: stub, default: stub }
@@ -131,6 +161,15 @@ function timestampGroupOver(allTransactions) {
   }
 }
 
+/** An indexer node holding its own dataset */
+function nodeOver(url, allTransactions) {
+  return {
+    url,
+    getTransactions: indexerOver(allTransactions),
+    getTimestampGroup: timestampGroupOver(allTransactions)
+  }
+}
+
 /** Wires both indexer methods over one fixed set of transactions */
 function serveIndexer(allTransactions) {
   getTransactionsMock.mockImplementation(indexerOver(allTransactions))
@@ -140,6 +179,7 @@ function serveIndexer(allTransactions) {
 describe('eth-base getNewTransactions', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    resetNetwork()
   })
 
   it('requests the newest chunk on the very first update', async () => {
@@ -322,6 +362,36 @@ describe('eth-base getNewTransactions', () => {
     expect(context.state.maxHeight).toBe(tie)
   })
 
+  it('drops the group cursor when the store has been wiped', async () => {
+    const tie = 1_700_000_100
+    // 60 records sharing one timestamp. The plain `time` order the first chunk uses
+    // lists them opposite to the `(time, txhash)` order the group is paged by, so
+    // the first chunk does not happen to cover the group's own prefix
+    const all = Array.from({ length: 60 }, (_, i) => makeTx(tie, 59 - i))
+    // The browser dropped the records but kept the counters and the cursor
+    const context = createContext({
+      transactionsCount: 60,
+      maxHeight: tie,
+      timestampGroupCursor: { time: tie, offset: 25, node: INDEXER_NODE }
+    })
+
+    serveIndexer(all)
+
+    await actions.getNewTransactions(context)
+
+    // The prefix before offset 25 is gone from the store, so it is read again
+    expect(Object.keys(context.state.transactions)).toHaveLength(60)
+  })
+
+  it('resets the loading flag when the walk fails', async () => {
+    const context = createContext({ maxHeight: 1_700_000_000 })
+    getTransactionsMock.mockRejectedValue(new Error('all indexers offline'))
+
+    await expect(actions.getNewTransactions(context)).rejects.toThrow('all indexers offline')
+
+    expect(context.commit).toHaveBeenLastCalledWith('areRecentLoading', false)
+  })
+
   it('ignores a group cursor left by a different indexer', async () => {
     const tie = 1_700_000_100
     const all = Array.from({ length: 30 }, (_, i) => makeTx(tie, i))
@@ -344,6 +414,7 @@ describe('eth-base getNewTransactions', () => {
 describe('eth-base getOldTransactions', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    resetNetwork()
   })
 
   it('does not step below a timestamp group cut by the page limit', async () => {
@@ -383,6 +454,96 @@ describe('eth-base getOldTransactions', () => {
 
     expect(context.state.minHeight).toBe(tie + 1)
     expect(context.state.bottomReached).toBe(false)
+  })
+
+  it('does not latch the bottom from a pruned indexer while a full one has more', async () => {
+    // Production shape: two full indexers with 53 records and a pruned one with 11
+    const all = Array.from({ length: 53 }, (_, i) => makeTx(1_750_000_000 + i * 1000, i))
+    const pruned = all.slice(-11)
+    network.nodes = [
+      nodeOver('https://full-1.example.com', all),
+      nodeOver('https://pruned.example.com', pruned),
+      nodeOver('https://full-2.example.com', all)
+    ]
+
+    const context = createContext()
+
+    // The first chunk comes from a full node...
+    network.pick = () => network.nodes[0]
+    await actions.getNewTransactions(context)
+    expect(Object.keys(context.state.transactions)).toHaveLength(25)
+
+    // ...and every older-history call lands on the pruned one, which has nothing
+    // below that boundary and answers with an empty page
+    network.pick = () => network.nodes[1]
+    for (let call = 0; call < 10 && !context.state.bottomReached; call++) {
+      await actions.getOldTransactions(context)
+    }
+
+    expect(Object.keys(context.state.transactions)).toHaveLength(53)
+    expect(context.state.bottomReached).toBe(true)
+  })
+
+  it('does not latch the bottom while the full indexers are offline', async () => {
+    const all = Array.from({ length: 53 }, (_, i) => makeTx(1_750_000_000 + i * 1000, i))
+    network.nodes = [
+      nodeOver('https://full.example.com', all),
+      nodeOver('https://pruned.example.com', all.slice(-11))
+    ]
+    const context = createContext()
+
+    network.pick = () => network.nodes[0]
+    await actions.getNewTransactions(context)
+
+    // The full node goes offline: the pruned one alone must not decide the bottom
+    network.nodes[0].offline = true
+    network.pick = () => network.nodes[1]
+    await actions.getOldTransactions(context)
+    await actions.getOldTransactions(context)
+
+    expect(context.state.bottomReached).toBe(false)
+  })
+
+  it('treats a single remaining node as the whole network', async () => {
+    const all = Array.from({ length: 10 }, (_, i) => makeTx(1_750_000_000 + i, i))
+    network.nodes = [
+      nodeOver('https://only.example.com', all),
+      // Disabled by the user: it can never answer, so it does not count
+      { ...nodeOver('https://disabled.example.com', all), disabled: true }
+    ]
+    const context = createContext()
+
+    await actions.getNewTransactions(context)
+    await actions.getOldTransactions(context)
+
+    expect(context.state.bottomReached).toBe(true)
+  })
+
+  it('latches the bottom on a confirmed short page without an extra round trip', async () => {
+    // 30 records: the first chunk takes 25, the next page is short
+    const all = Array.from({ length: 30 }, (_, i) => makeTx(1_750_000_000 + i * 10, i))
+    const context = createContext()
+
+    serveIndexer(all)
+
+    await actions.getNewTransactions(context)
+    getTransactionsMock.mockClear()
+
+    await actions.getOldTransactions(context)
+
+    // One request: the short page itself proves the end, no empty page needed
+    expect(getTransactionsMock).toHaveBeenCalledTimes(1)
+    expect(context.state.bottomReached).toBe(true)
+    expect(Object.keys(context.state.transactions)).toHaveLength(30)
+  })
+
+  it('resets the loading flag when the walk fails', async () => {
+    const context = createContext({ minHeight: 1_700_000_000 })
+    getTransactionsMock.mockRejectedValue(new Error('all indexers offline'))
+
+    await expect(actions.getOldTransactions(context)).rejects.toThrow('all indexers offline')
+
+    expect(context.commit).toHaveBeenLastCalledWith('areOlderLoading', false)
   })
 
   it('reports the bottom on an empty page', async () => {

@@ -86,6 +86,70 @@ const readTimestampGroup = async (context, session, { address, contract, decimal
 }
 
 /**
+ * Reads one page of history below the bottom boundary on the node `session` is
+ * pinned to, keeps it, and moves the boundary only as far as the page proves.
+ *
+ * @returns `{ end }` — `true` when this node has nothing below what it returned.
+ *   That is a statement about this node's dataset only: a pruned indexer reaches
+ *   its end early, so the caller confirms it elsewhere before latching the bottom
+ */
+const readOlderPage = async (context, session) => {
+  const { address, contractAddress: contract, minHeight, decimals } = context.state
+
+  const options = {
+    limit: CHUNK_SIZE,
+    address,
+    contract,
+    order: 'time.desc',
+    decimals
+  }
+  if (minHeight > 1) {
+    options.to = minHeight - 1
+  }
+
+  const transactions = await session.getTransactions(options)
+
+  if (!transactions || transactions.length === 0) return { end: true }
+
+  context.commit('transactions', transactions)
+
+  const times = transactions.map((tx) => tx.time ?? 0)
+  const newestTime = Math.max(...times)
+  const oldestTime = Math.min(...times)
+
+  if (transactions.length < CHUNK_SIZE) {
+    // Everything this node holds below the boundary has been returned
+    context.commit('setMinHeight', oldestTime)
+
+    return { end: true }
+  }
+
+  if (oldestTime === newestTime) {
+    // The chunk is confined to one block timestamp: `time` cannot separate read
+    // from unread, so the group is resolved before stepping below it
+    const complete = await readTimestampGroup(context, session, {
+      address,
+      contract,
+      decimals,
+      time: oldestTime
+    })
+
+    if (complete) {
+      context.commit('setMinHeight', oldestTime)
+    }
+
+    return { end: false }
+  }
+
+  // Descending order guarantees every record above `oldestTime` is in this page,
+  // while the `oldestTime` group itself may be cut by the limit: the boundary
+  // stays above it so the next page reads it again
+  context.commit('setMinHeight', oldestTime + 1)
+
+  return { end: false }
+}
+
+/**
  * First update for an address: there is no boundary yet, so take the newest chunk.
  */
 const fetchNewestTransactions = async (context, session, { address, contract, decimals }) => {
@@ -403,26 +467,31 @@ export default function createActions(config) {
         context.state.maxHeight = -1
         context.state.minHeight = Infinity
         context.commit('bottom', false)
+        // The group cursor claims the records before its offset are in the store,
+        // which no longer holds: resuming from it would skip that prefix for good
+        context.commit('setTimestampGroupCursor', null)
       }
       context.commit('areRecentLoading', true)
 
-      // One indexer for the whole walk. The state is read inside it so that a
-      // restart on another node starts from whatever has been proven by then
-      await ethIndexer.walkHistory(async (session) => {
-        const { address, maxHeight, contractAddress, decimals } = context.state
-        const options = { address, contract: contractAddress, decimals }
+      try {
+        // One indexer for the whole walk. The state is read inside it so that a
+        // restart on another node starts from whatever has been proven by then
+        await ethIndexer.walkHistory(async (session) => {
+          const { address, maxHeight, contractAddress, decimals } = context.state
+          const options = { address, contract: contractAddress, decimals }
 
-        // A descending page above the boundary would return the newest CHUNK_SIZE
-        // records and advance the boundary past everything in between, dropping
-        // those transactions for good, so the catch-up runs in ascending order
-        if (maxHeight > 0) {
-          await catchUpNewTransactions(context, session, { ...options, maxHeight })
-        } else {
-          await fetchNewestTransactions(context, session, options)
-        }
-      })
-
-      context.commit('areRecentLoading', false)
+          // A descending page above the boundary would return the newest CHUNK_SIZE
+          // records and advance the boundary past everything in between, dropping
+          // those transactions for good, so the catch-up runs in ascending order
+          if (maxHeight > 0) {
+            await catchUpNewTransactions(context, session, { ...options, maxHeight })
+          } else {
+            await fetchNewestTransactions(context, session, options)
+          }
+        })
+      } finally {
+        context.commit('areRecentLoading', false)
+      }
     },
 
     async getOldTransactions(context) {
@@ -431,63 +500,31 @@ export default function createActions(config) {
 
       context.commit('areOlderLoading', true)
 
-      // The page and the group resolution it may need must agree on one dataset,
-      // so they share a single indexer
-      await ethIndexer.walkHistory(async (session) => {
-        const { address, contractAddress: contract, minHeight, decimals } = context.state
+      try {
+        // The page and the group resolution it may need must agree on one dataset,
+        // so they share a single indexer
+        const { end, node } = await ethIndexer.walkHistory(async (session) => ({
+          ...(await readOlderPage(context, session)),
+          node: session.node
+        }))
 
-        const options = {
-          limit: CHUNK_SIZE,
-          address,
-          contract,
-          order: 'time.desc',
-          decimals
-        }
-        if (minHeight > 1) {
-          options.to = minHeight - 1
-        }
+        if (!end) return
 
-        const transactions = await session.getTransactions(options)
+        // Only the serving node has run out. Indexers keep different history
+        // depths, so the bottom is global only once the others have nothing below
+        // the boundary either — anything they do have is kept along the way
+        const confirmed = await ethIndexer.confirmHistoryEnd(node, async (session) => {
+          const { end: atEnd } = await readOlderPage(context, session)
 
-        if (!transactions) return
+          return atEnd
+        })
 
-        if (transactions.length === 0) {
+        if (confirmed) {
           context.commit('bottom', true)
-
-          return
         }
-
-        context.commit('transactions', transactions)
-
-        const times = transactions.map((tx) => tx.time ?? 0)
-        const newestTime = Math.max(...times)
-        const oldestTime = Math.min(...times)
-
-        if (transactions.length < CHUNK_SIZE) {
-          // Everything below the boundary has been returned
-          context.commit('setMinHeight', oldestTime)
-        } else if (oldestTime === newestTime) {
-          // The chunk is confined to one block timestamp: `time` cannot separate
-          // read from unread, so the group is resolved before stepping below it
-          const complete = await readTimestampGroup(context, session, {
-            address,
-            contract,
-            decimals,
-            time: oldestTime
-          })
-
-          if (complete) {
-            context.commit('setMinHeight', oldestTime)
-          }
-        } else {
-          // Descending order guarantees every record above `oldestTime` is in this
-          // page, while the `oldestTime` group itself may be cut by the limit:
-          // the boundary stays above it so the next page reads it again
-          context.commit('setMinHeight', oldestTime + 1)
-        }
-      })
-
-      context.commit('areOlderLoading', false)
+      } finally {
+        context.commit('areOlderLoading', false)
+      }
     },
 
     /**

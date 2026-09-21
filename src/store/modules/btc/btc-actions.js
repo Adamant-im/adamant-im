@@ -21,17 +21,20 @@ const INDEXER_STATUSES = [TransactionStatus.REGISTERED, TransactionStatus.CONFIR
 const isIndexed = (tx) => INDEXER_STATUSES.includes(tx.status)
 
 /**
- * The newest transaction a history page can actually contain.
+ * The newest transaction a catch-up walk can rely on finding again.
  *
  * `sortedTransactions[0]` may be a locally created record the indexer has never
- * seen, and looking for it in the pages would walk the whole history on every
- * refresh tick without ever finding it.
+ * seen. A `REGISTERED` one is not safe either: it can still be dropped from the
+ * mempool or replaced, and a target that no longer exists can never be found, so
+ * only a confirmed transaction proves the new pages join the known history.
  *
  * The identifier is `hash`: that is what `normalizeTransaction` produces, and it
  * is what the indexer paginates by
  */
-const latestIndexedHash = (context) => {
-  const latest = context.getters.sortedTransactions.find(isIndexed)
+const latestConfirmedHash = (context) => {
+  const latest = context.getters.sortedTransactions.find(
+    (tx) => tx.status === TransactionStatus.CONFIRMED
+  )
 
   return latest && latest.hash
 }
@@ -88,7 +91,7 @@ const customActions = (getApi) => ({
 })
 
 /**
- * Walks history back until `latestTxId` shows up again, which is what proves the
+ * Walks history back until `latestHash` shows up again, which is what proves the
  * newly fetched records join the history already in the store.
  *
  * The indexer is paged by "everything older than this txid", which is not a
@@ -96,7 +99,12 @@ const customActions = (getApi) => ({
  * without ever repeating the immediately preceding cursor. Every visited cursor
  * is therefore remembered, and the walk is bounded by a page cap on top of that.
  *
- * @returns `{ complete }`, and the cursor to resume from when it is not
+ * @returns how the walk ended:
+ *   - `reached` — continuity is proven (or there was nothing to prove);
+ *   - `budget` — out of pages, `cursor` is where this node continues;
+ *   - `exhausted` — this node's history ended without the target;
+ *   - `cycled` — this node repeated a cursor.
+ *   Only `reached` proves continuity: the last two are facts about one node
  */
 const retrieveNewTransactions = async (context, session, latestHash, startCursor) => {
   const visitedCursors = new Set()
@@ -105,72 +113,145 @@ const retrieveNewTransactions = async (context, session, latestHash, startCursor
   for (let page = 0; page < MAX_NEW_TX_PAGES; page++) {
     const transactions = await session.getTransactions(context.state.address, toTx)
 
-    // An empty page means the chain has no more transactions to scan:
-    // the latest locally known tx is gone (dropped from mempool, reorg)
-    if (transactions.length === 0) return { complete: true }
+    if (transactions.length === 0) {
+      // Nothing to prove on the very first page of an empty history
+      if (!latestHash && !toTx) return { outcome: 'reached' }
+
+      // This node ran out: it may keep a shorter history, or the target is gone
+      return { outcome: 'exhausted' }
+    }
 
     context.commit('transactions', transactions)
 
     // History is continuous again: the known transaction is in the page
-    if (!latestHash || transactions.some((x) => x.hash === latestHash)) return { complete: true }
+    if (!latestHash || transactions.some((x) => x.hash === latestHash)) {
+      return { outcome: 'reached' }
+    }
 
     const oldest = transactions[transactions.length - 1]
-    if (!oldest || !oldest.hash) return { complete: true }
+    if (!oldest || !oldest.hash) return { outcome: 'exhausted' }
 
     // A cursor seen before means the node is cycling pages instead of paging back
-    if (visitedCursors.has(oldest.hash)) return { complete: true }
+    if (visitedCursors.has(oldest.hash)) return { outcome: 'cycled' }
 
     visitedCursors.add(oldest.hash)
     toTx = oldest.hash
   }
 
   // Out of page budget with the gap still open
-  return { complete: false, cursor: toTx }
+  return { outcome: 'budget', cursor: toTx }
 }
 
 const getNewTransactions = async (api, context) => {
   context.commit('areRecentLoading', true)
 
-  // Every page of one walk is served by the same indexer: a cursor only means
-  // something within the dataset it came from
-  await btcIndexer.walkHistory(async (session) => {
-    // A walk stopped by the page cap keeps its own target and cursor: the target
-    // cannot be recomputed once its own pages are in the store, because the newest
-    // record would then be one of them and the very first page would end the walk,
-    // leaving the gap down to the previously known history unloaded forever
-    const pending =
-      context.state.newTxCatchUp && context.state.newTxCatchUp.node === session.node
-        ? context.state.newTxCatchUp
-        : null
-    const target = pending ? pending.target : latestIndexedHash(context)
-    const startCursor = pending ? pending.cursor : undefined
+  try {
+    // Every page of one walk is served by the same indexer: a cursor only means
+    // something within the dataset it came from
+    const { outcome, cursor, node, target } = await btcIndexer.walkHistory(async (session) => {
+      // A walk stopped by the page cap keeps its own target: it cannot be recomputed
+      // once its own pages are in the store, because the newest record would then be
+      // one of them and the very first page would end the walk, leaving the gap down
+      // to the previously known history unloaded forever. The target is a fact about
+      // the chain and survives a change of indexer; the cursor is a position in one
+      // node's list and does not, so on another node the walk restarts from the top
+      const pending = context.state.newTxCatchUp
+      const target = pending ? pending.target : latestConfirmedHash(context)
+      const startCursor = pending && pending.node === session.node ? pending.cursor : undefined
 
-    const { complete, cursor } = await retrieveNewTransactions(
-      context,
-      session,
-      target,
-      startCursor
-    )
+      const result = await retrieveNewTransactions(context, session, target, startCursor)
 
-    context.commit('newTxCatchUp', complete ? null : { target, cursor, node: session.node })
-  })
+      return { ...result, node: session.node, target }
+    })
 
-  context.commit('areRecentLoading', false)
+    if (outcome === 'reached') {
+      context.commit('newTxCatchUp', null)
+    } else if (outcome === 'budget') {
+      context.commit('newTxCatchUp', { target, cursor, node })
+    } else {
+      // Exhausted or cycling: this node cannot prove continuity, which does not mean
+      // it cannot be proven. Walk towards the same target on the other indexers
+      let settled = false
+      let progress = null
+      let anyCycled = outcome === 'cycled'
+
+      const unreachable = await btcIndexer.confirmHistoryEnd(node, async (session) => {
+        const other = await retrieveNewTransactions(context, session, target, undefined)
+
+        if (other.outcome === 'reached' || other.outcome === 'budget') {
+          settled = true
+          progress =
+            other.outcome === 'budget' ? { target, cursor: other.cursor, node: session.node } : null
+
+          return false
+        }
+
+        if (other.outcome === 'cycled') anyCycled = true
+
+        return true
+      })
+
+      if (settled) {
+        // Another node reached the target, or made progress towards it
+        context.commit('newTxCatchUp', progress)
+      } else if (unreachable && !anyCycled) {
+        // Every indexer's history ends without the target: it no longer exists
+        // (a reorg), and there is no continuity left to prove
+        context.commit('newTxCatchUp', null)
+      } else {
+        // Nothing proven: a node is misbehaving, or no other one could answer right
+        // now. Keep the target and start over on the next update
+        context.commit('newTxCatchUp', { target, cursor: undefined, node })
+      }
+    }
+  } finally {
+    context.commit('areRecentLoading', false)
+  }
+}
+
+/**
+ * Reads one page of history older than the oldest known transaction on the node
+ * `session` is pinned to, and keeps it.
+ *
+ * @returns `{ end }` — `true` when this node has nothing older than that page.
+ *   A node that keeps a shorter history, or does not know the cursor at all,
+ *   answers the same way, so the caller confirms it before latching the bottom
+ */
+const readOlderPage = async (context, session) => {
+  const chunk = await session.getTransactions(context.state.address, oldestIndexedHash(context))
+
+  context.commit('transactions', chunk)
+
+  return { end: chunk.length < TX_CHUNK_SIZE }
 }
 
 const getOldTransactions = async (api, context) => {
   // If we already have the most old transaction for this address, no need to request anything
   if (context.state.bottomReached) return Promise.resolve()
 
-  const toTx = oldestIndexedHash(context)
-
   context.commit('areOlderLoading', true)
-  const chunk = await btcIndexer.getTransactions(context.state.address, toTx)
-  context.commit('transactions', chunk)
-  context.commit('areOlderLoading', false)
 
-  if (chunk.length < TX_CHUNK_SIZE) {
-    context.commit('bottom', true)
+  try {
+    const { end, node } = await btcIndexer.walkHistory(async (session) => ({
+      ...(await readOlderPage(context, session)),
+      node: session.node
+    }))
+
+    if (!end) return
+
+    // The serving node ran out, which is only the end of history once the others
+    // have nothing older either — anything they do have is kept along the way
+    const confirmed = await btcIndexer.confirmHistoryEnd(node, async (session) => {
+      const { end: atEnd } = await readOlderPage(context, session)
+
+      return atEnd
+    })
+
+    if (confirmed) {
+      context.commit('bottom', true)
+    }
+  } finally {
+    context.commit('areOlderLoading', false)
   }
 }
 
