@@ -242,6 +242,21 @@ describe('EthIndexerClient node failover', () => {
     expect(urls).toEqual([SLOW_NODE])
   })
 
+  it('does not fan out address queries to secondary indexers during history pagination', async () => {
+    nodeRequestMock.mockResolvedValue([makeRawTx(1700000000)])
+
+    await client.walkHistory(async (session) => {
+      await session.getTransactions({ address: ADDRESS, decimals: 18 })
+    })
+
+    // Only the pinned node was contacted; secondary nodes received 0 address queries
+    const contactedNodes = new Set(nodeRequestMock.mock.calls.map(([url]) => url))
+    expect(contactedNodes.size).toBe(1)
+    expect(contactedNodes.has(SLOW_NODE)).toBe(true)
+    expect(contactedNodes.has(FAST_NODE)).toBe(false)
+    expect(contactedNodes.has(THIRD_NODE)).toBe(false)
+  })
+
   it('restarts the walk on another indexer instead of continuing across datasets', async () => {
     let failuresLeft = 1
     nodeRequestMock.mockImplementation((url: string) => {

@@ -274,7 +274,7 @@ describe('btc-actions getNewTransactions', () => {
     expect(context.state.newTxCatchUp).toMatchObject({ target: 'known', cursor: undefined })
   })
 
-  it('fails over to another indexer when one cycles', async () => {
+  it('keeps the target pending when an indexer cycles and recovers on another indexer', async () => {
     const known = makeTx('known', 0)
     Object.assign(context.state.transactions, { known })
     const chain = [...makeChain('new', 30), known]
@@ -289,11 +289,22 @@ describe('btc-actions getNewTransactions', () => {
 
     await actions.getNewTransactions(context)
 
+    // Cycling node keeps the target pending without fanning out
+    expect(context.state.newTxCatchUp).toMatchObject({
+      target: 'known',
+      node: cycling.url,
+      exhausted: true
+    })
+
+    // On failover to healthy node, continuity is restored
+    network.pick = () => network.nodes[1]
+    await actions.getNewTransactions(context)
+
     expect(Object.keys(context.state.transactions)).toHaveLength(chain.length)
     expect(context.state.newTxCatchUp).toBe(null)
   })
 
-  it('fails over when a pruned indexer runs out before the target', async () => {
+  it('keeps the target pending when a pruned indexer runs out and recovers on a full indexer', async () => {
     const known = makeTx('known', 0)
     Object.assign(context.state.transactions, { known })
     const chain = [...makeChain('new', 60), known]
@@ -307,33 +318,58 @@ describe('btc-actions getNewTransactions', () => {
 
     await actions.getNewTransactions(context)
 
+    expect(context.state.newTxCatchUp).toMatchObject({
+      target: 'known',
+      node: 'https://pruned.example.com',
+      exhausted: true
+    })
+    expect(Object.keys(context.state.transactions)).toHaveLength(31)
+
+    // On failover to full node, full chain is loaded
+    network.pick = () => network.nodes[1]
+    await actions.getNewTransactions(context)
+
     expect(Object.keys(context.state.transactions)).toHaveLength(chain.length)
     expect(context.state.newTxCatchUp).toBe(null)
   })
 
-  it('keeps the target when no other indexer can answer right now', async () => {
+  it('does not repeat the full network walk on consecutive refreshes when history is exhausted', async () => {
     const known = makeTx('known', 0)
     Object.assign(context.state.transactions, { known })
-    const chain = [...makeChain('new', 60), known]
+    const chain = makeChain('new', 30) // 30 records; 'known' is absent (reorg or pruned)
 
-    // The pruned node runs out, and the full one is offline at the moment
-    network.nodes = [
-      nodeOver('https://pruned.example.com', chain.slice(0, 30)),
-      { ...nodeOver('https://full.example.com', chain), offline: true }
-    ]
-    network.pick = () => network.nodes[0]
+    let requestCount = 0
+    const node = {
+      url: 'https://indexer.example.com',
+      getTransactions: (address, toTx) => {
+        requestCount += 1
+        return pagesOver(chain)(address, toTx)
+      }
+    }
+    network.nodes = [node]
+    network.pick = () => node
 
+    // First refresh: walks through chain (2 pages of 25 + 5, then empty page = 3 requests)
     await actions.getNewTransactions(context)
+    const requestsAfterFirstRefresh = requestCount
+    expect(requestsAfterFirstRefresh).toBe(3)
+    expect(context.state.newTxCatchUp).toMatchObject({
+      target: 'known',
+      node: node.url,
+      exhausted: true
+    })
 
-    // Nothing was proven: the target stays, so the gap can still be closed later
-    expect(context.state.newTxCatchUp).toMatchObject({ target: 'known', cursor: undefined })
-
-    // Once the full node is back, the next update closes it
-    network.nodes[1].offline = false
+    // Second consecutive refresh on the same node:
     await actions.getNewTransactions(context)
+    const requestsOnSecondRefresh = requestCount - requestsAfterFirstRefresh
 
-    expect(context.state.newTxCatchUp).toBe(null)
-    expect(Object.keys(context.state.transactions)).toHaveLength(chain.length)
+    // The second refresh checks only the head (1 request) rather than repeating the full 3-request walk
+    expect(requestsOnSecondRefresh).toBe(1)
+    expect(context.state.newTxCatchUp).toMatchObject({
+      target: 'known',
+      node: node.url,
+      exhausted: true
+    })
   })
 
   it('keeps the continuity gap pending when indexers are pruned and recovers on a full indexer', async () => {
@@ -445,12 +481,18 @@ describe('btc-actions getOldTransactions', () => {
     )
   })
 
-  it('does not latch the bottom from a pruned indexer while a full one has more', async () => {
+  it('latches the bottom when the serving indexer runs out without querying other nodes', async () => {
     const chain = makeChain('tx', 141)
+    const otherNodeSpy = vi.fn()
     network.nodes = [
-      nodeOver('https://full-1.example.com', chain),
       nodeOver('https://pruned.example.com', chain.slice(0, 30)),
-      nodeOver('https://full-2.example.com', chain)
+      {
+        url: 'https://full.example.com',
+        getTransactions: (...args) => {
+          otherNodeSpy(...args)
+          return nodeOver('https://full.example.com', chain).getTransactions(...args)
+        }
+      }
     ]
 
     // The newest page came from a full node...
@@ -459,40 +501,18 @@ describe('btc-actions getOldTransactions', () => {
       Object.fromEntries(chain.slice(0, TX_CHUNK_SIZE).map((tx) => [tx.hash, tx]))
     )
 
-    // ...and every older-history call lands on the pruned one
-    network.pick = () => network.nodes[1]
-    for (let call = 0; call < 20 && !context.state.bottomReached; call++) {
-      await actions.getOldTransactions(context)
-    }
-
-    expect(Object.keys(context.state.transactions)).toHaveLength(141)
-    expect(context.state.bottomReached).toBe(true)
-  })
-
-  it('does not latch the bottom while the full indexers are offline', async () => {
-    const chain = makeChain('tx', 141)
-    network.nodes = [
-      nodeOver('https://pruned.example.com', chain.slice(0, 30)),
-      { ...nodeOver('https://full.example.com', chain), offline: true }
-    ]
+    // Older history is read on the pruned node
     network.pick = () => network.nodes[0]
-    Object.assign(
-      context.state.transactions,
-      Object.fromEntries(chain.slice(0, TX_CHUNK_SIZE).map((tx) => [tx.hash, tx]))
-    )
-
-    await actions.getOldTransactions(context)
     await actions.getOldTransactions(context)
 
-    expect(context.state.bottomReached).toBe(false)
+    expect(Object.keys(context.state.transactions)).toHaveLength(30)
+    expect(context.state.bottomReached).toBe(true)
+    expect(otherNodeSpy).not.toHaveBeenCalled()
   })
 
-  it('latches the bottom when every indexer agrees', async () => {
+  it('latches the bottom when the end of history is reached', async () => {
     const chain = makeChain('tx', 30)
-    network.nodes = [
-      nodeOver('https://node-a.example.com', chain),
-      nodeOver('https://node-b.example.com', chain)
-    ]
+    network.nodes = [nodeOver('https://node-a.example.com', chain)]
     Object.assign(
       context.state.transactions,
       Object.fromEntries(chain.slice(0, TX_CHUNK_SIZE).map((tx) => [tx.hash, tx]))

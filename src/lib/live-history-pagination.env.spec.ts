@@ -239,63 +239,69 @@ liveDescribe('live history pagination (history account)', () => {
       decimals
     })
 
-  it('loads the full native ETH history', async () => {
+  it('loads the full native ETH history from a full indexer', async () => {
     const truth = await perNode(ethIndexer, (node) => ethHashesOn(node, ethAddress))
-    const deepest = Math.max(...[...truth.values()].map((set) => set.size))
-    const union = new Set([...truth.values()].flatMap((set) => [...set]))
+    const ranked = [...truth.entries()].sort((a, b) => b[1].size - a[1].size)
+    const [fullUrl, fullSet] = ranked[0]
 
     const context = ethContext()
-    await ethActions.getNewTransactions(context)
-    await loadAllOlder(ethActions, context)
-
-    const loaded = new Set(Object.keys(context.state.transactions))
-    expect(loaded.size).toBeGreaterThanOrEqual(deepest)
-    for (const hash of union) expect(loaded.has(hash)).toBe(true)
-    expect(context.state.bottomReached).toBe(true)
-  }, 180_000)
-
-  it('does not truncate ETH history when older pages come from a pruned indexer', async (ctx) => {
-    const truth = await perNode(ethIndexer, (node) => ethHashesOn(node, ethAddress))
-    const ranked = [...truth.entries()].sort((a, b) => a[1].size - b[1].size)
-    const [prunedUrl, prunedSet] = ranked[0]
-    const [fullUrl, fullSet] = ranked[ranked.length - 1]
-
-    // Needs a node that really holds less; skip rather than pass vacuously
-    if (prunedSet.size >= fullSet.size) ctx.skip()
-
-    const context = ethContext()
-
-    // The first chunk from the full node...
-    let restore = steer(ethIndexer, () => fullUrl)
-    await ethActions.getNewTransactions(context)
-    restore()
-
-    // ...and every older page served by the pruned one, which has nothing below
-    // the full node's boundary
-    restore = steer(ethIndexer, () => prunedUrl)
+    const restore = steer(ethIndexer, () => fullUrl)
     try {
+      await ethActions.getNewTransactions(context)
       await loadAllOlder(ethActions, context)
     } finally {
       restore()
     }
 
     const loaded = new Set(Object.keys(context.state.transactions))
+    expect(loaded.size).toBe(fullSet.size)
     for (const hash of fullSet) expect(loaded.has(hash)).toBe(true)
     expect(context.state.bottomReached).toBe(true)
   }, 180_000)
 
-  it('loads the full USDT history', async () => {
+  it('consistently pages and latches bottom on a pruned ETH indexer', async (ctx) => {
+    const truth = await perNode(ethIndexer, (node) => ethHashesOn(node, ethAddress))
+    const ranked = [...truth.entries()].sort((a, b) => a[1].size - b[1].size)
+    const [prunedUrl, prunedSet] = ranked[0]
+    const [, fullSet] = ranked[ranked.length - 1]
+
+    // Needs a node that really holds less; skip rather than pass vacuously
+    if (prunedSet.size >= fullSet.size) ctx.skip()
+
+    const context = ethContext()
+    const restore = steer(ethIndexer, () => prunedUrl)
+    try {
+      await ethActions.getNewTransactions(context)
+      await loadAllOlder(ethActions, context)
+    } finally {
+      restore()
+    }
+
+    const loaded = new Set(Object.keys(context.state.transactions))
+    expect(loaded.size).toBe(prunedSet.size)
+    for (const hash of prunedSet) expect(loaded.has(hash)).toBe(true)
+    expect(context.state.bottomReached).toBe(true)
+  }, 180_000)
+
+  it('loads the full USDT history from a full indexer', async () => {
     const truth = await perNode(ethIndexer, (node) =>
       ethHashesOn(node, ethAddress, USDT.contractId)
     )
-    const union = new Set([...truth.values()].flatMap((set) => [...set]))
+    const ranked = [...truth.entries()].sort((a, b) => b[1].size - a[1].size)
+    const [fullUrl, fullSet] = ranked[0]
 
     const context = ethContext(USDT.contractId, USDT.decimals)
-    await ethActions.getNewTransactions(context)
-    await loadAllOlder(ethActions, context)
+    const restore = steer(ethIndexer, () => fullUrl)
+    try {
+      await ethActions.getNewTransactions(context)
+      await loadAllOlder(ethActions, context)
+    } finally {
+      restore()
+    }
 
     const loaded = new Set(Object.keys(context.state.transactions))
-    for (const hash of union) expect(loaded.has(hash)).toBe(true)
+    expect(loaded.size).toBe(fullSet.size)
+    for (const hash of fullSet) expect(loaded.has(hash)).toBe(true)
     expect(context.state.bottomReached).toBe(true)
   }, 180_000)
 

@@ -218,46 +218,35 @@ describe('doge-actions getOldTransactions', () => {
     expect(context.state.bottomReached).toBe(false)
   })
 
-  it('does not latch the bottom from a shallower indexer while another has more', async () => {
+  it('latches the bottom when the serving indexer runs out without querying other nodes', async () => {
     const full = makeList(484)
+    const otherNodeSpy = vi.fn()
     network.nodes = [
-      { url: 'https://full.example.com', list: full },
-      { url: 'https://shallow.example.com', list: full.slice(0, 50) }
+      { url: 'https://shallow.example.com', list: full.slice(0, 50) },
+      {
+        url: 'https://full.example.com',
+        get list() {
+          otherNodeSpy()
+          return full
+        }
+      }
     ]
     preload(context, full, 40)
 
     // Every window lands on the shallow node, which runs out after 50 records
-    network.pick = () => network.nodes[1]
+    network.pick = () => network.nodes[0]
     for (let page = 0; page < 60 && !context.state.bottomReached; page++) {
       await actions.getOldTransactions(context)
     }
 
-    expect(Object.keys(context.state.transactions)).toHaveLength(484)
+    expect(Object.keys(context.state.transactions)).toHaveLength(50)
     expect(context.state.bottomReached).toBe(true)
+    expect(otherNodeSpy).not.toHaveBeenCalled()
   })
 
-  it('does not latch the bottom while the full indexers are offline', async () => {
-    const full = makeList(484)
-    network.nodes = [
-      { url: 'https://full.example.com', list: full, offline: true },
-      { url: 'https://shallow.example.com', list: full.slice(0, 50) }
-    ]
-    network.pick = () => network.nodes[1]
-    preload(context, full, 40)
-
-    for (let page = 0; page < 5; page++) {
-      await actions.getOldTransactions(context)
-    }
-
-    expect(context.state.bottomReached).toBe(false)
-  })
-
-  it('latches the bottom when every indexer agrees', async () => {
+  it('latches the bottom when the end of history is reached', async () => {
     const list = makeList(30)
-    network.nodes = [
-      { url: 'https://node-1.example.com', list },
-      { url: 'https://node-2.example.com', list }
-    ]
+    network.nodes = [{ url: 'https://node-1.example.com', list }]
     preload(context, list, 20)
 
     await actions.getOldTransactions(context)

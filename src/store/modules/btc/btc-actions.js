@@ -146,8 +146,8 @@ const getNewTransactions = async (api, context) => {
   context.commit('areRecentLoading', true)
 
   try {
-    // Every page of one walk is served by the same indexer: a cursor only means
-    // something within the dataset it came from
+    // Every page of one walk is served by the same indexer without cross-node fanout:
+    // a cursor only means something within the dataset it came from
     const { outcome, cursor, node, target } = await btcIndexer.walkHistory(async (session) => {
       // A walk stopped by the page cap keeps its own target: it cannot be recomputed
       // once its own pages are in the store, because the newest record would then be
@@ -156,47 +156,45 @@ const getNewTransactions = async (api, context) => {
       // the chain and survives a change of indexer; the cursor is a position in one
       // node's list and does not, so on another node the walk restarts from the top
       const pending = context.state.newTxCatchUp
-      const target = pending ? pending.target : latestConfirmedHash(context)
-      const startCursor = pending && pending.node === session.node ? pending.cursor : undefined
+      const isNodeExhausted = Boolean(pending && pending.node === session.node && pending.exhausted)
+      // If this node already exhausted its history without reaching target on a previous pass,
+      // do not repeat the full walk down to the missing target on consecutive refreshes;
+      // only check for new transactions above the newest known hash, while preserving the gap target.
+      const target = isNodeExhausted
+        ? latestConfirmedHash(context)
+        : pending
+          ? pending.target
+          : latestConfirmedHash(context)
+      const startCursor =
+        pending && pending.node === session.node && !pending.exhausted ? pending.cursor : undefined
 
       const result = await retrieveNewTransactions(context, session, target, startCursor)
 
-      return { ...result, node: session.node, target }
+      return {
+        ...result,
+        node: session.node,
+        target: pending ? pending.target : target,
+        isNodeExhausted
+      }
     })
 
     if (outcome === 'reached') {
-      context.commit('newTxCatchUp', null)
+      // If this node was previously exhausted, reaching latestConfirmedHash only proves
+      // that head is up to date — the historical continuity gap down to target is still pending
+      const pending = context.state.newTxCatchUp
+      if (pending && pending.node === node && pending.exhausted) {
+        context.commit('newTxCatchUp', { target, cursor: undefined, node, exhausted: true })
+      } else {
+        context.commit('newTxCatchUp', null)
+      }
     } else if (outcome === 'budget') {
       context.commit('newTxCatchUp', { target, cursor, node })
     } else {
-      // Exhausted or cycling: this node cannot prove continuity, which does not mean
-      // it cannot be proven. Walk towards the same target on the other indexers
-      let settled = false
-      let progress = null
-
-      await btcIndexer.confirmHistoryEnd(node, async (session) => {
-        const other = await retrieveNewTransactions(context, session, target, undefined)
-
-        if (other.outcome === 'reached' || other.outcome === 'budget') {
-          settled = true
-          progress =
-            other.outcome === 'budget' ? { target, cursor: other.cursor, node: session.node } : null
-
-          return false
-        }
-
-        return true
-      })
-
-      if (settled) {
-        // Another node reached the target, or made progress towards it
-        context.commit('newTxCatchUp', progress)
-      } else {
-        // Continuity could not be proven: either a node cycled or history ended
-        // without finding the target (which may simply be pruned). Keep the target
-        // pending rather than inferring a reorg, so a full indexer can close the gap later
-        context.commit('newTxCatchUp', { target, cursor: undefined, node })
-      }
+      // outcome is 'exhausted' or 'cycled':
+      // This node cannot prove continuity towards target (either pruned or reorged).
+      // Mark as exhausted on this node so subsequent refreshes on the same node do not
+      // repeat the walk, while keeping target so a different node can attempt catch-up on failover.
+      context.commit('newTxCatchUp', { target, cursor: undefined, node, exhausted: true })
     }
   } finally {
     context.commit('areRecentLoading', false)
@@ -207,9 +205,7 @@ const getNewTransactions = async (api, context) => {
  * Reads one page of history older than the oldest known transaction on the node
  * `session` is pinned to, and keeps it.
  *
- * @returns `{ end }` — `true` when this node has nothing older than that page.
- *   A node that keeps a shorter history, or does not know the cursor at all,
- *   answers the same way, so the caller confirms it before latching the bottom
+ * @returns `{ end }` — `true` when this node has nothing older than that page
  */
 const readOlderPage = async (context, session) => {
   const chunk = await session.getTransactions(context.state.address, oldestIndexedHash(context))
@@ -226,22 +222,14 @@ const getOldTransactions = async (api, context) => {
   context.commit('areOlderLoading', true)
 
   try {
-    const { end, node } = await btcIndexer.walkHistory(async (session) => ({
+    // An offset/cursor is a position in one node's list, so history is read on one node
+    // without fanning out address queries across other indexers
+    const { end } = await btcIndexer.walkHistory(async (session) => ({
       ...(await readOlderPage(context, session)),
       node: session.node
     }))
 
-    if (!end) return
-
-    // The serving node ran out, which is only the end of history once the others
-    // have nothing older either — anything they do have is kept along the way
-    const confirmed = await btcIndexer.confirmHistoryEnd(node, async (session) => {
-      const { end: atEnd } = await readOlderPage(context, session)
-
-      return atEnd
-    })
-
-    if (confirmed) {
+    if (end) {
       context.commit('bottom', true)
     }
   } finally {

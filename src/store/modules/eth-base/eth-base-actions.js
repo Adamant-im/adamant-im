@@ -502,24 +502,13 @@ export default function createActions(config) {
 
       try {
         // The page and the group resolution it may need must agree on one dataset,
-        // so they share a single indexer
-        const { end, node } = await ethIndexer.walkHistory(async (session) => ({
+        // so they share a single indexer and do not fan out address queries across operators
+        const { end } = await ethIndexer.walkHistory(async (session) => ({
           ...(await readOlderPage(context, session)),
           node: session.node
         }))
 
-        if (!end) return
-
-        // Only the serving node has run out. Indexers keep different history
-        // depths, so the bottom is global only once the others have nothing below
-        // the boundary either — anything they do have is kept along the way
-        const confirmed = await ethIndexer.confirmHistoryEnd(node, async (session) => {
-          const { end: atEnd } = await readOlderPage(context, session)
-
-          return atEnd
-        })
-
-        if (confirmed) {
+        if (end) {
           context.commit('bottom', true)
         }
       } finally {

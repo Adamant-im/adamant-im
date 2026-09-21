@@ -80,22 +80,13 @@ const getOldTransactions = async (api, context) => {
 
   try {
     // An offset is a position in one node's list, so a window is read on one node
-    const { end, node } = await dogeIndexer.walkHistory(async (session) => ({
+    // without fanning out address queries across other indexers
+    const { end } = await dogeIndexer.walkHistory(async (session) => ({
       ...(await readOlderWindow(api, context, session)),
       node: session.node
     }))
 
-    if (!end) return
-
-    // The serving node ran out of its own list, which is only the end of history
-    // once the others have nothing more either — whatever they have is kept
-    const confirmed = await dogeIndexer.confirmHistoryEnd(node, async (session) => {
-      const { end: atEnd } = await readOlderWindow(api, context, session)
-
-      return atEnd
-    })
-
-    if (confirmed) {
+    if (end) {
       context.commit('bottom', true)
     }
   } finally {

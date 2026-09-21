@@ -460,67 +460,36 @@ describe('eth-base getOldTransactions', () => {
     expect(context.state.bottomReached).toBe(false)
   })
 
-  it('does not latch the bottom from a pruned indexer while a full one has more', async () => {
+  it('latches the bottom when the serving indexer runs out without querying other nodes', async () => {
     // Production shape: two full indexers with 53 records and a pruned one with 11
     const all = Array.from({ length: 53 }, (_, i) => makeTx(1_750_000_000 + i * 1000, i))
     const pruned = all.slice(-11)
+    const otherNodeSpy = vi.fn()
     network.nodes = [
       nodeOver('https://full-1.example.com', all),
       nodeOver('https://pruned.example.com', pruned),
-      nodeOver('https://full-2.example.com', all)
+      {
+        url: 'https://full-2.example.com',
+        getTransactions: (...args) => {
+          otherNodeSpy(...args)
+          return nodeOver('https://full-2.example.com', all).getTransactions(...args)
+        }
+      }
     ]
 
     const context = createContext()
 
-    // The first chunk comes from a full node...
-    network.pick = () => network.nodes[0]
-    await actions.getNewTransactions(context)
-    expect(Object.keys(context.state.transactions)).toHaveLength(25)
-
-    // ...and every older-history call lands on the pruned one, which has nothing
-    // below that boundary and answers with an empty page
+    // The walk is pinned to the pruned node
     network.pick = () => network.nodes[1]
-    for (let call = 0; call < 10 && !context.state.bottomReached; call++) {
-      await actions.getOldTransactions(context)
-    }
-
-    expect(Object.keys(context.state.transactions)).toHaveLength(53)
-    expect(context.state.bottomReached).toBe(true)
-  })
-
-  it('does not latch the bottom while the full indexers are offline', async () => {
-    const all = Array.from({ length: 53 }, (_, i) => makeTx(1_750_000_000 + i * 1000, i))
-    network.nodes = [
-      nodeOver('https://full.example.com', all),
-      nodeOver('https://pruned.example.com', all.slice(-11))
-    ]
-    const context = createContext()
-
-    network.pick = () => network.nodes[0]
     await actions.getNewTransactions(context)
+    expect(Object.keys(context.state.transactions)).toHaveLength(11)
 
-    // The full node goes offline: the pruned one alone must not decide the bottom
-    network.nodes[0].offline = true
-    network.pick = () => network.nodes[1]
-    await actions.getOldTransactions(context)
+    // Older history runs out on the pruned node and latches bottom without fanning out
     await actions.getOldTransactions(context)
 
-    expect(context.state.bottomReached).toBe(false)
-  })
-
-  it('treats a single remaining node as the whole network', async () => {
-    const all = Array.from({ length: 10 }, (_, i) => makeTx(1_750_000_000 + i, i))
-    network.nodes = [
-      nodeOver('https://only.example.com', all),
-      // Disabled by the user: it can never answer, so it does not count
-      { ...nodeOver('https://disabled.example.com', all), disabled: true }
-    ]
-    const context = createContext()
-
-    await actions.getNewTransactions(context)
-    await actions.getOldTransactions(context)
-
+    expect(Object.keys(context.state.transactions)).toHaveLength(11)
     expect(context.state.bottomReached).toBe(true)
+    expect(otherNodeSpy).not.toHaveBeenCalled()
   })
 
   it('latches the bottom on a confirmed short page without an extra round trip', async () => {
