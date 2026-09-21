@@ -294,4 +294,86 @@ describe('EthIndexerClient node failover', () => {
     // A genuine query error must not take the node offline
     expect(client.nodes.every((node) => node.online)).toBe(true)
   })
+
+  it('maintains node affinity across successive walkHistory calls even when selection would alternate', async () => {
+    nodeRequestMock.mockResolvedValue([makeRawTx(1700000000)])
+
+    client.useFastest = true
+    const slow = client.nodes.find((n) => n.url === SLOW_NODE)!
+    const fast = client.nodes.find((n) => n.url === FAST_NODE)!
+
+    slow.ping = 1
+    fast.ping = 10
+
+    const pages: string[] = []
+
+    // Page 1 (e.g. initial walk)
+    await client.walkHistory(async (session) => {
+      pages.push(session.node)
+      await session.getTransactions({ address: ADDRESS, decimals: 18 })
+    })
+
+    expect(pages).toEqual([SLOW_NODE])
+    expect(client.getHistoryNodeUrl()).toBe(SLOW_NODE)
+
+    // Selection criteria changes in favor of FAST_NODE
+    slow.ping = 100
+    fast.ping = 1
+
+    // Page 2 and 3 (e.g. successive scroll actions)
+    await client.walkHistory(async (session) => {
+      pages.push(session.node)
+      await session.getTransactions({ address: ADDRESS, decimals: 18 })
+    })
+    await client.walkHistory(async (session) => {
+      pages.push(session.node)
+      await session.getTransactions({ address: ADDRESS, decimals: 18 })
+    })
+
+    // All calls remained pinned to the first serving node
+    expect(pages).toEqual([SLOW_NODE, SLOW_NODE, SLOW_NODE])
+    expect(client.getHistoryNodeUrl()).toBe(SLOW_NODE)
+  })
+
+  it('forces a real failure on the pinned node and verifies controlled failover to replacement node', async () => {
+    let failSlowNode = false
+    nodeRequestMock.mockImplementation((url: string) => {
+      if (url === SLOW_NODE && failSlowNode) {
+        return Promise.reject(statementTimeoutError())
+      }
+      return Promise.resolve([makeRawTx(1700000000)])
+    })
+
+    const pages: string[] = []
+
+    // Call 1 succeeds on SLOW_NODE
+    await client.walkHistory(async (session) => {
+      pages.push(session.node)
+      await session.getTransactions({ address: ADDRESS, decimals: 18 })
+    })
+    expect(pages).toEqual([SLOW_NODE])
+    expect(client.getHistoryNodeUrl()).toBe(SLOW_NODE)
+
+    // Now force SLOW_NODE to fail on the next call
+    failSlowNode = true
+
+    // Call 2 encounters availability failure on SLOW_NODE, marks it unavailable, and fails over to FAST_NODE
+    await client.walkHistory(async (session) => {
+      pages.push(session.node)
+      await session.getTransactions({ address: ADDRESS, decimals: 18 })
+    })
+    expect(pages).toEqual([SLOW_NODE, SLOW_NODE, FAST_NODE])
+    expect(client.getHistoryNodeUrl()).toBe(FAST_NODE)
+
+    const slowNode = client.nodes.find((n) => n.url === SLOW_NODE)
+    expect(slowNode?.online).toBe(false)
+
+    // Call 3 stays pinned to FAST_NODE without re-attempting SLOW_NODE
+    await client.walkHistory(async (session) => {
+      pages.push(session.node)
+      await session.getTransactions({ address: ADDRESS, decimals: 18 })
+    })
+    expect(pages).toEqual([SLOW_NODE, SLOW_NODE, FAST_NODE, FAST_NODE])
+    expect(client.getHistoryNodeUrl()).toBe(FAST_NODE)
+  })
 })

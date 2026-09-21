@@ -142,59 +142,101 @@ const retrieveNewTransactions = async (context, session, latestHash, startCursor
   return { outcome: 'budget', cursor: toTx }
 }
 
+/**
+ * Fetches new BTC transactions to catch up the store with the latest block tip.
+ *
+ * Implements a bounded catch-up walk with continuity guarantees:
+ * - Continuity target (`gapTarget`) is captured *before* entering `walkHistory`.
+ *   If node A commits partial pages and fails, retries inside `requestHistoryWithRetry`
+ *   receive the original target rather than `latestConfirmedHash` from newly committed pages,
+ *   preventing historical gaps from being skipped.
+ * - In exhausted mode (node ran out of history without reaching `gapTarget`), subsequent
+ *   refreshes on the same node check only the head (`headTarget`), while preserving `gapTarget`
+ *   in state so a failover to a different node can attempt full catch-up.
+ * - If head catch-up hits its budget limit, `exhausted: true` is preserved alongside `headTarget`
+ *   and `cursor`, ensuring multi-tick head catch-up continues smoothly.
+ * - Resets `areRecentLoading` in a `finally` block to ensure UI loaders never hang.
+ *
+ * @param {object} api BTC API instance
+ * @param {object} context Vuex action context
+ * @returns {Promise<void>}
+ */
 const getNewTransactions = async (api, context) => {
   context.commit('areRecentLoading', true)
 
   try {
+    // The continuity target is captured BEFORE entering walkHistory. If the first node
+    // commits partial pages and fails, retries inside requestHistoryWithRetry run
+    // against this pre-walk target rather than latestConfirmedHash from the just-committed
+    // records, which would silently leave the original historical gap open.
+    const pending = context.state.newTxCatchUp
+    const isExhaustedMode = Boolean(pending && pending.exhausted)
+    const gapTarget = pending ? pending.target : latestConfirmedHash(context)
+    const headTarget = isExhaustedMode
+      ? pending.headTarget || latestConfirmedHash(context)
+      : undefined
+    const pendingNode = pending ? pending.node : undefined
+    const pendingCursor = pending ? pending.cursor : undefined
+
     // Every page of one walk is served by the same indexer without cross-node fanout:
     // a cursor only means something within the dataset it came from
-    const { outcome, cursor, node, target } = await btcIndexer.walkHistory(async (session) => {
-      // A walk stopped by the page cap keeps its own target: it cannot be recomputed
-      // once its own pages are in the store, because the newest record would then be
-      // one of them and the very first page would end the walk, leaving the gap down
-      // to the previously known history unloaded forever. The target is a fact about
-      // the chain and survives a change of indexer; the cursor is a position in one
-      // node's list and does not, so on another node the walk restarts from the top
-      const pending = context.state.newTxCatchUp
-      const isNodeExhausted = Boolean(pending && pending.node === session.node && pending.exhausted)
-      // If this node already exhausted its history without reaching target on a previous pass,
-      // do not repeat the full walk down to the missing target on consecutive refreshes;
-      // only check for new transactions above the newest known hash, while preserving the gap target.
-      const target = isNodeExhausted
-        ? latestConfirmedHash(context)
-        : pending
-          ? pending.target
-          : latestConfirmedHash(context)
-      const startCursor =
-        pending && pending.node === session.node && !pending.exhausted ? pending.cursor : undefined
+    const { outcome, cursor, node, walkTarget, isNodeExhaustedOnSession } =
+      await btcIndexer.walkHistory(async (session) => {
+        // If this node already exhausted its history without reaching gapTarget on a previous pass,
+        // do not repeat the full walk down to the missing target on consecutive refreshes on this node;
+        // only check for new transactions above headTarget, while preserving gapTarget.
+        // If session.node switched to another node on failover, it restarts from the top towards gapTarget.
+        const isNodeExhaustedOnSession = Boolean(isExhaustedMode && pendingNode === session.node)
+        const walkTarget = isNodeExhaustedOnSession ? headTarget : gapTarget
+        const startCursor = session.node === pendingNode ? pendingCursor : undefined
 
-      const result = await retrieveNewTransactions(context, session, target, startCursor)
+        const result = await retrieveNewTransactions(context, session, walkTarget, startCursor)
 
-      return {
-        ...result,
-        node: session.node,
-        target: pending ? pending.target : target,
-        isNodeExhausted
-      }
-    })
+        return {
+          ...result,
+          node: session.node,
+          walkTarget,
+          isNodeExhaustedOnSession
+        }
+      })
 
     if (outcome === 'reached') {
-      // If this node was previously exhausted, reaching latestConfirmedHash only proves
-      // that head is up to date — the historical continuity gap down to target is still pending
-      const pending = context.state.newTxCatchUp
-      if (pending && pending.node === node && pending.exhausted) {
-        context.commit('newTxCatchUp', { target, cursor: undefined, node, exhausted: true })
+      // If this session was in exhausted mode, reaching the head target only proves
+      // that head is up to date — the historical gap down to gapTarget is still pending.
+      if (isNodeExhaustedOnSession) {
+        context.commit('newTxCatchUp', {
+          target: gapTarget,
+          cursor: undefined,
+          node,
+          exhausted: true
+        })
       } else {
         context.commit('newTxCatchUp', null)
       }
     } else if (outcome === 'budget') {
-      context.commit('newTxCatchUp', { target, cursor, node })
+      if (isNodeExhaustedOnSession) {
+        // Preserve exhausted state while a multi-tick head catch-up is in progress
+        context.commit('newTxCatchUp', {
+          target: gapTarget,
+          headTarget: walkTarget,
+          cursor,
+          node,
+          exhausted: true
+        })
+      } else {
+        context.commit('newTxCatchUp', { target: gapTarget, cursor, node })
+      }
     } else {
       // outcome is 'exhausted' or 'cycled':
       // This node cannot prove continuity towards target (either pruned or reorged).
       // Mark as exhausted on this node so subsequent refreshes on the same node do not
       // repeat the walk, while keeping target so a different node can attempt catch-up on failover.
-      context.commit('newTxCatchUp', { target, cursor: undefined, node, exhausted: true })
+      context.commit('newTxCatchUp', {
+        target: gapTarget,
+        cursor: undefined,
+        node,
+        exhausted: true
+      })
     }
   } finally {
     context.commit('areRecentLoading', false)
@@ -215,6 +257,18 @@ const readOlderPage = async (context, session) => {
   return { end: chunk.length < TX_CHUNK_SIZE }
 }
 
+/**
+ * Fetches a page of transactions older than the oldest indexed transaction in the store.
+ *
+ * Walks history using the pinned session node to prevent cross-node cursor contamination.
+ * When the serving node returns fewer than `TX_CHUNK_SIZE` transactions, it indicates
+ * the end of history on this node and latches `bottomReached`.
+ * Resets `areOlderLoading` in a `finally` block.
+ *
+ * @param {object} api BTC API instance
+ * @param {object} context Vuex action context
+ * @returns {Promise<void>}
+ */
 const getOldTransactions = async (api, context) => {
   // If we already have the most old transaction for this address, no need to request anything
   if (context.state.bottomReached) return Promise.resolve()
@@ -242,6 +296,7 @@ export default {
     apiCtor: BtcApi,
     getOldTransactions,
     getNewTransactions,
+    resetHistorySession: () => btcIndexer.resetHistorySession(),
     customActions
   })
 }

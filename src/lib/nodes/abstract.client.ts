@@ -185,6 +185,57 @@ export abstract class Client<N extends Node> {
   }
 
   /**
+   * The indexer node URL pinned for the active transaction history pagination session.
+   *
+   * Indexers legitimately maintain different history depths (e.g. pruned vs full nodes),
+   * different pagination offsets, or timestamp orderings. To avoid mixing incompatible
+   * cursors, premature bottom latching, or unnecessary metadata fanout across operators,
+   * all requests throughout an ongoing pagination session (both recent updates and older scrolls)
+   * stay pinned to this single node until availability failure or session reset.
+   */
+  protected historyNodeUrl?: string
+
+  /**
+   * Resets the pinned history session node URL.
+   *
+   * Called when an account or wallet state is reset (e.g. logout or account switch)
+   * or when a pagination session should re-evaluate node selection from scratch.
+   */
+  resetHistorySession() {
+    this.historyNodeUrl = undefined
+  }
+
+  /**
+   * Returns the URL of the currently pinned history session node, if one has been established.
+   */
+  getHistoryNodeUrl(): string | undefined {
+    return this.historyNodeUrl
+  }
+
+  /**
+   * Returns the node pinned for history pagination, or selects and pins a new active node.
+   *
+   * If a previously pinned node exists, remains active, and is not in `excludedUrls`,
+   * it is reused to guarantee session-wide node affinity. Otherwise, an active node
+   * is chosen via standard node selection and pinned as the session node.
+   *
+   * @param excludedUrls Set of node URLs that failed or must not be chosen
+   * @returns Active node instance pinned for this session
+   */
+  protected getHistoryNode(excludedUrls: Set<string> = new Set()): N {
+    if (this.historyNodeUrl && !excludedUrls.has(this.historyNodeUrl)) {
+      const pinned = this.nodes.find((node) => node.url === this.historyNodeUrl)
+      if (pinned && this.isActiveNode(pinned)) {
+        return pinned
+      }
+    }
+
+    const node = this.getNode(excludedUrls)
+    this.historyNodeUrl = node.url
+    return node
+  }
+
+  /**
    * Throws an error if all the nodes are offline.
    */
   assertAnyNodeOnline() {
@@ -250,6 +301,41 @@ export abstract class Client<N extends Node> {
 
         triedNodes.add(node.url)
         this.markNodeAsUnavailable(node)
+      }
+    }
+  }
+
+  /**
+   * Executes a transaction history request against the pinned session node,
+   * automatically failing over to an alternative active node upon availability failure.
+   *
+   * If the currently pinned node becomes unavailable (offline, network error, timeout),
+   * it is marked unavailable, unpinned from the history session, and excluded from
+   * immediate retries so the subsequent loop iteration selects and pins a replacement node.
+   *
+   * @param request Callback taking the active pinned node and returning a Promise or value
+   */
+  protected async requestHistoryWithRetry<T>(request: (node: N) => Promise<T> | T): Promise<T> {
+    await this.ready
+
+    const triedNodes = new Set<string>()
+
+    while (true) {
+      const node = this.getHistoryNode(triedNodes)
+
+      try {
+        return await Promise.resolve(request(node))
+      } catch (error) {
+        if (!this.isNodeUnavailableError(error)) {
+          throw error
+        }
+
+        triedNodes.add(node.url)
+        this.markNodeAsUnavailable(node)
+        // Clear affinity so the retry loop picks a replacement active node and pins it
+        if (this.historyNodeUrl === node.url) {
+          this.historyNodeUrl = undefined
+        }
       }
     }
   }
@@ -340,6 +426,12 @@ export abstract class Client<N extends Node> {
     }
 
     if (!networkError.response && networkError.request) {
+      return true
+    }
+
+    // Server or gateway error responses indicating that the node or its reverse proxy is down
+    const status = (networkError.response as { status?: number } | undefined)?.status
+    if (status && [502, 503, 504, 521, 522, 523, 524].includes(status)) {
       return true
     }
 

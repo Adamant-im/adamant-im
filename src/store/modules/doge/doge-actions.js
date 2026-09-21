@@ -15,11 +15,23 @@ import { CryptosInfo, TransactionStatus } from '@/lib/constants/index.js'
  */
 const OFFSET_OVERLAP = 5
 
+/**
+ * Fetches recent DOGE transactions.
+ *
+ * Runs through `dogeIndexer.walkHistory` to ensure node affinity matches the pinned
+ * session node used by `getOldTransactions`, avoiding multi-operator fanout and
+ * inconsistent node-specific views.
+ * Resets `areRecentLoading` in a `finally` block.
+ *
+ * @param {object} api DOGE API instance
+ * @param {object} context Vuex action context
+ * @returns {Promise<void>}
+ */
 const getNewTransactions = async (api, context) => {
   context.commit('areRecentLoading', true)
 
   try {
-    const result = await api.getTransactions({})
+    const result = await dogeIndexer.walkHistory((session) => api.getTransactionsVia(session, {}))
     if (result) {
       context.commit('transactions', result.items)
     }
@@ -72,6 +84,18 @@ const readOlderWindow = async (api, context, session) => {
   return { end: !result.hasMore }
 }
 
+/**
+ * Fetches an older window of DOGE transactions.
+ *
+ * Reads history windowed by offset on the pinned session node, using an overlap
+ * (`OFFSET_OVERLAP`) to prevent skipping transactions if ordering shifts slightly.
+ * Latches `bottomReached` when the pinned node has no further records beyond the window.
+ * Resets `areOlderLoading` in a `finally` block.
+ *
+ * @param {object} api DOGE API instance
+ * @param {object} context Vuex action context
+ * @returns {Promise<void>}
+ */
 const getOldTransactions = async (api, context) => {
   // If we already have the most old transaction for this address, no need to request anything
   if (context.state.bottomReached) return Promise.resolve()
@@ -100,6 +124,7 @@ export default {
     balanceCheckInterval: CryptosInfo.DOGE.balanceCheckInterval,
     balanceValidInterval: CryptosInfo.DOGE.balanceValidInterval,
     getOldTransactions,
-    getNewTransactions
+    getNewTransactions,
+    resetHistorySession: () => dogeIndexer.resetHistorySession()
   })
 }

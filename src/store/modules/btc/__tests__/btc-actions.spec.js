@@ -15,6 +15,7 @@ const network = {
 function resetNetwork() {
   network.nodes = [{ url: 'https://indexer.example.com' }]
   network.pick = () => network.nodes[0]
+  network.onWalkFail = null
 }
 
 vi.mock('@/lib/nodes', () => {
@@ -28,8 +29,21 @@ vi.mock('@/lib/nodes', () => {
 
   return {
     btcIndexer: {
-      // Mirrors the real client: every page of one walk gets the same node
-      walkHistory: (walk) => walk(sessionFor(network.pick())),
+      // Mirrors the real client: every page of one walk gets the same node, and retries on failure
+      walkHistory: async (walk) => {
+        while (true) {
+          const node = network.pick()
+          try {
+            return await walk(sessionFor(node))
+          } catch (error) {
+            if (network.onWalkFail) {
+              network.onWalkFail(error, node)
+              continue
+            }
+            throw error
+          }
+        }
+      },
       // Mirrors `confirmOnOtherNodes`: `disabled` nodes do not count, `offline` ones abstain
       confirmHistoryEnd: async (excludedUrl, probe) => {
         const others = network.nodes.filter((n) => n.url !== excludedUrl && !n.disabled)
@@ -441,6 +455,112 @@ describe('btc-actions getNewTransactions', () => {
     await expect(actions.getNewTransactions(context)).rejects.toThrow('all indexers offline')
 
     expect(context.committed.at(-1)).toEqual(['areRecentLoading', false])
+  })
+
+  it('preserves the original continuity target across an automatic retry when node A commits a page and fails', async () => {
+    const known = makeTx('known', 0)
+    Object.assign(context.state.transactions, { known })
+
+    // 40 new transactions, followed by 'known'
+    const chain = [...makeChain('new', 40), known]
+
+    const nodeAUrl = 'https://node-a.example.com'
+    const nodeBUrl = 'https://node-b.example.com'
+
+    // Node A returns the first page (25 txs), but fails on the second page
+    const nodeA = {
+      url: nodeAUrl,
+      getTransactions: (_address, toTx) => {
+        if (!toTx) {
+          return Promise.resolve(chain.slice(0, TX_CHUNK_SIZE))
+        }
+        return Promise.reject(new Error('connection timeout'))
+      }
+    }
+
+    // Node B has the entire chain and responds normally
+    const nodeB = nodeOver(nodeBUrl, chain)
+
+    network.nodes = [nodeA, nodeB]
+    network.pick = () => network.nodes[0]
+    network.onWalkFail = (_err, failedNode) => {
+      expect(failedNode.url).toBe(nodeAUrl)
+      network.pick = () => nodeB
+    }
+
+    await actions.getNewTransactions(context)
+
+    // Node B must have restarted from the top down to 'known' (the pre-walk target),
+    // loading all 41 records and closing the continuity gap.
+    expect(context.state.newTxCatchUp).toBe(null)
+    expect(Object.keys(context.state.transactions)).toHaveLength(41)
+    for (const tx of chain) {
+      expect(context.state.transactions[tx.hash]).toBeDefined()
+    }
+  })
+
+  it('preserves exhausted gap state and head target across multi-tick head catch-up exceeding 500 new transactions', async () => {
+    const head0 = makeTx('head-0', 1000)
+    Object.assign(context.state.transactions, { 'head-0': head0 })
+
+    // Exhausted mode: node previously ran out of history without finding 'missing-old-gap'
+    context.state.newTxCatchUp = {
+      target: 'missing-old-gap',
+      cursor: undefined,
+      node: 'https://indexer.example.com',
+      exhausted: true
+    }
+
+    // 525 new transactions arrive above head-0
+    const newTxs = makeChain('fresh', 525, 600_000)
+    const fullChain = [...newTxs, head0]
+
+    network.nodes = [nodeOver('https://indexer.example.com', fullChain)]
+    network.pick = () => network.nodes[0]
+
+    // Tick 1: retrieves 20 pages * 25 = 500 transactions, hitting budget
+    await actions.getNewTransactions(context)
+
+    expect(context.state.newTxCatchUp).toMatchObject({
+      target: 'missing-old-gap',
+      headTarget: 'head-0',
+      cursor: 'fresh499',
+      node: 'https://indexer.example.com',
+      exhausted: true
+    })
+    expect(Object.keys(context.state.transactions)).toHaveLength(501) // 500 fresh + head-0
+
+    // Tick 2: resumes head catch-up from cursor, completes head catch-up without re-entering historical gap
+    await actions.getNewTransactions(context)
+
+    expect(context.state.newTxCatchUp).toEqual({
+      target: 'missing-old-gap',
+      cursor: undefined,
+      node: 'https://indexer.example.com',
+      exhausted: true
+    })
+    expect(Object.keys(context.state.transactions)).toHaveLength(526) // all 525 fresh + head-0
+
+    // Tick 3: subsequent refresh on this exhausted node checks only the head (1 request) and does not scan for missing-old-gap
+    let tick3Calls = 0
+    const countingNode = {
+      url: 'https://indexer.example.com',
+      getTransactions: (_address, toTx) => {
+        tick3Calls += 1
+        return pagesOver(fullChain)(_address, toTx)
+      }
+    }
+    network.nodes = [countingNode]
+    network.pick = () => countingNode
+
+    await actions.getNewTransactions(context)
+    expect(tick3Calls).toBe(1)
+    expect(context.state.newTxCatchUp).toEqual({
+      target: 'missing-old-gap',
+      cursor: undefined,
+      node: 'https://indexer.example.com',
+      exhausted: true
+    })
   })
 })
 

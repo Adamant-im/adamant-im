@@ -86,7 +86,7 @@ export class EthIndexerClient extends Client<EthIndexer> {
   }
 
   /**
-   * Runs a whole history walk against a single indexer.
+   * Runs a whole history walk against the pinned session indexer.
    *
    * Indexers legitimately keep different history depths, and a pruned one answers
    * the same query with a shorter dataset. A boundary, cursor or offset proven
@@ -94,12 +94,15 @@ export class EthIndexerClient extends Client<EthIndexer> {
    * request — which is what `requestWithRetry` does — can mix two datasets inside
    * one page, since the sender and recipient halves are separate requests.
    *
-   * Every request of the walk goes to the same node. If it becomes unavailable
-   * the walk is restarted on another one from whatever the store has already
-   * proven, instead of continuing a cursor into a different dataset.
+   * Every request goes to the pinned session node via `requestHistoryWithRetry`.
+   * If the node becomes unavailable, session affinity is cleared and the walk
+   * is restarted on a replacement node from whatever the store has already proven,
+   * instead of continuing a cursor into a different dataset.
+   *
+   * @param walk Callback receiving the scoped session bound to the selected node
    */
   async walkHistory<T>(walk: (session: EthIndexerHistorySession) => Promise<T>): Promise<T> {
-    return this.requestWithRetry((node) => walk(this.createSession(node)))
+    return this.requestHistoryWithRetry((node) => walk(this.createSession(node)))
   }
 
   /**

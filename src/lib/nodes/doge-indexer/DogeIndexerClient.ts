@@ -100,13 +100,18 @@ export class DogeIndexerClient extends Client<DogeIndexer> {
   }
 
   /**
-   * Runs a whole history walk against a single indexer. History is paged by an
+   * Runs a whole history walk against the pinned session indexer. History is paged by an
    * offset into the node's own list, and indexers order transactions sharing a
    * timestamp differently and may even list different sets, so an offset is only
    * meaningful on the node it was computed against.
+   *
+   * All requests within the session share this pinned node. If the node becomes unavailable,
+   * session affinity is reset and fails over to an active replacement node.
+   *
+   * @param walk Callback receiving the scoped session bound to the selected node
    */
   async walkHistory<T>(walk: (session: DogeIndexerHistorySession) => Promise<T>): Promise<T> {
-    return this.requestWithRetry((node) => walk(this.createSession(node)))
+    return this.requestHistoryWithRetry((node) => walk(this.createSession(node)))
   }
 
   /**

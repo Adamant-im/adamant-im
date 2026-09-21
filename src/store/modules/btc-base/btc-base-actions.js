@@ -24,6 +24,7 @@ let interval
  * @property {number || undefined} balanceCheckInterval interval (ms) between balance updates for specific coins
  * @property {number || undefined} balanceValidInterval interval (ms) until specific balance becomes invalid
  * @property {number} fetchRetryTimeout interval (ms) between attempts to fetch the registered transaction details
+ * @property {function(): void} [resetHistorySession] optional callback to unpin the session indexer node on reset
  */
 
 /**
@@ -32,7 +33,12 @@ let interval
  */
 function createActions(options) {
   const Api = options.apiCtor || BtcBaseApi
-  const { getNewTransactions, getOldTransactions, customActions = DEFAULT_CUSTOM_ACTIONS } = options
+  const {
+    getNewTransactions,
+    getOldTransactions,
+    customActions = DEFAULT_CUSTOM_ACTIONS,
+    resetHistorySession
+  } = options
 
   /** @type {BtcBaseApi} */
   let api = null
@@ -54,11 +60,16 @@ function createActions(options) {
       }
     },
 
-    /** Resets module state */
+    /** Resets module state and unpins the indexer history session */
     reset: {
       root: true,
       handler(context) {
         api = null
+        // Unpin the history session node so subsequent logins or wallet resets
+        // start with a clean session rather than remaining pinned to an old node
+        if (resetHistorySession) {
+          resetHistorySession()
+        }
         context.commit('reset')
       }
     },

@@ -308,10 +308,13 @@ export default function createActions(config) {
       }
     },
 
-    /** Resets module state */
+    /** Resets module state and unpins the indexer history session */
     reset: {
       root: true,
       handler(context) {
+        // Unpin the history session node so subsequent logins or wallet resets
+        // start with a clean session rather than remaining pinned to an old node
+        ethIndexer.resetHistorySession()
         context.commit('reset')
       }
     },
@@ -460,6 +463,16 @@ export default function createActions(config) {
         })
     },
 
+    /**
+     * Fetches recent ETH or ERC-20 transactions to catch up with the latest block.
+     *
+     * Walks history in ascending order to prevent skipping unread transactions between
+     * boundaries, pinning all requests to the session indexer via `ethIndexer.walkHistory`.
+     * Resets `areRecentLoading` in a `finally` block.
+     *
+     * @param {object} context Vuex action context
+     * @returns {Promise<void>}
+     */
     async getNewTransactions(context) {
       // Magic here helps to refresh Tx list when browser deletes it
       if (Object.keys(context.state.transactions).length < context.state.transactionsCount) {
@@ -494,6 +507,16 @@ export default function createActions(config) {
       }
     },
 
+    /**
+     * Fetches a page of older ETH or ERC-20 transactions below the current minHeight boundary.
+     *
+     * Pins pagination requests to the session indexer via `ethIndexer.walkHistory`.
+     * When the node indicates the end of its dataset, `bottom` is latched.
+     * Resets `areOlderLoading` in a `finally` block.
+     *
+     * @param {object} context Vuex action context
+     * @returns {Promise<void>}
+     */
     async getOldTransactions(context) {
       // If we already have the most old transaction for this address, no need to request anything
       if (context.state.bottomReached) return Promise.resolve()

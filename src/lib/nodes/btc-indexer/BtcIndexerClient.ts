@@ -88,17 +88,19 @@ export class BtcIndexerClient extends Client<BtcIndexer> {
   }
 
   /**
-   * Runs a whole history walk against a single indexer.
+   * Runs a whole history walk against the pinned session indexer.
    *
    * History is paged by "everything older than this transaction", and indexers
    * legitimately keep different history depths: a pruned one does not know the
    * cursor at all and answers with an empty page, which reads as the end of
-   * history. Every page of one walk therefore goes to the same node, and if it
-   * becomes unavailable the walk restarts on another one instead of continuing
-   * a cursor into a different dataset.
+   * history. Every page of one walk therefore goes to the pinned session node,
+   * and if it becomes unavailable the session affinity is cleared and the walk
+   * restarts on another node instead of continuing a cursor into a different dataset.
+   *
+   * @param walk Callback receiving the scoped session bound to the selected node
    */
   async walkHistory<T>(walk: (session: BtcIndexerHistorySession) => Promise<T>): Promise<T> {
-    return this.requestWithRetry((node) => walk(this.createSession(node)))
+    return this.requestHistoryWithRetry((node) => walk(this.createSession(node)))
   }
 
   /**
