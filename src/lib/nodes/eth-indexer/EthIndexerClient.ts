@@ -10,6 +10,7 @@ import { isStatementTimeoutError, normalizeTransaction } from './utils'
 import { Transaction } from './types/api/get-transactions/transaction'
 import { Client } from '../abstract.client'
 import { NodeOfflineError } from '../utils/errors'
+import type { EthTransaction } from '@/lib/nodes/types/transaction'
 
 /**
  * Default number of transactions to fetch when the caller does not
@@ -18,6 +19,19 @@ import { NodeOfflineError } from '../utils/errors'
 const DEFAULT_LIMIT = 25
 
 type TimeOrder = 'time.asc' | 'time.desc'
+
+/** Issues one `/ethtxs` query, either with node failover or pinned to one node */
+type EthtxsSender = (params: GetTransactionsRequest) => Promise<Transaction[]>
+
+/**
+ * History reader bound to a single indexer for the whole walk it is passed to
+ */
+export type EthIndexerHistorySession = {
+  /** URL of the indexer serving this walk. Cursors are only valid against it */
+  node: string
+  getTransactions(params: GetTransactionsParams): Promise<EthTransaction[]>
+  getTimestampGroup(params: GetTimestampGroupParams): Promise<EthTransaction[]>
+}
 
 /**
  * Plain code-unit comparison, on purpose: it is locale-independent, unlike
@@ -38,24 +52,61 @@ export class EthIndexerClient extends Client<EthIndexer> {
     void this.watchNodeStatusChange()
   }
 
+  /**
+   * Performs a request against one specific indexer
+   */
+  private async requestFrom<E extends keyof Endpoints>(
+    node: EthIndexer,
+    endpoint: E,
+    params?: Endpoints[E]['params'],
+    axiosRequestConfig?: AxiosRequestConfig<Endpoints[E]['params'], Endpoints[E]['params']>
+  ): Promise<Endpoints[E]['result']> {
+    try {
+      return await node.request(endpoint, params, axiosRequestConfig)
+    } catch (error) {
+      // A statement timeout arrives as HTTP 500, which `requestWithRetry` does
+      // not treat as node unavailability. This indexer cannot serve the query,
+      // so report it as offline and let the retry pick another one
+      if (isStatementTimeoutError(error)) {
+        throw new NodeOfflineError()
+      }
+
+      throw error
+    }
+  }
+
   private async request<E extends keyof Endpoints>(
     endpoint: E,
     params?: Endpoints[E]['params'],
     axiosRequestConfig?: AxiosRequestConfig<Endpoints[E]['params'], Endpoints[E]['params']>
   ): Promise<Endpoints[E]['result']> {
-    return this.requestWithRetry(async (node) => {
-      try {
-        return await node.request(endpoint, params, axiosRequestConfig)
-      } catch (error) {
-        // A statement timeout arrives as HTTP 500, which `requestWithRetry` does
-        // not treat as node unavailability. This indexer cannot serve the query,
-        // so report it as offline and let the retry pick another one
-        if (isStatementTimeoutError(error)) {
-          throw new NodeOfflineError()
-        }
+    return this.requestWithRetry((node) =>
+      this.requestFrom(node, endpoint, params, axiosRequestConfig)
+    )
+  }
 
-        throw error
-      }
+  /**
+   * Runs a whole history walk against a single indexer.
+   *
+   * Indexers legitimately keep different history depths, and a pruned one answers
+   * the same query with a shorter dataset. A boundary, cursor or offset proven
+   * against one node therefore means nothing on another, and picking a node per
+   * request — which is what `requestWithRetry` does — can mix two datasets inside
+   * one page, since the sender and recipient halves are separate requests.
+   *
+   * Every request of the walk goes to the same node. If it becomes unavailable
+   * the walk is restarted on another one from whatever the store has already
+   * proven, instead of continuing a cursor into a different dataset.
+   */
+  async walkHistory<T>(walk: (session: EthIndexerHistorySession) => Promise<T>): Promise<T> {
+    return this.requestWithRetry((node) => {
+      const send: EthtxsSender = (params) => this.requestFrom(node, 'GET /ethtxs', params)
+
+      return walk({
+        node: node.url,
+        getTransactions: (params) => this.queryTransactions(send, params),
+        getTimestampGroup: (params) => this.queryTimestampGroup(send, params)
+      })
     })
   }
 
@@ -108,6 +159,7 @@ export class EthIndexerClient extends Client<EthIndexer> {
    * The query is always bounded by `limit` so PostgREST never scans an unbounded set
    */
   private async fetchNativeEthSide(
+    send: EthtxsSender,
     address: string,
     direction: 'txfrom' | 'txto',
     limit: number,
@@ -117,16 +169,21 @@ export class EthIndexerClient extends Client<EthIndexer> {
   ): Promise<Transaction[]> {
     const requestParams = this.buildNativeEthQuery(address, direction, order, from, to)
 
-    return this.request('GET /ethtxs', {
+    return send({
       ...requestParams,
       limit
     })
   }
 
   /**
-   * Query transactions history
+   * Query transactions history. Each request picks a node on its own: use
+   * `walkHistory` when several requests have to agree on one dataset
    */
   async getTransactions(params: GetTransactionsParams) {
+    return this.queryTransactions((request) => this.request('GET /ethtxs', request), params)
+  }
+
+  private async queryTransactions(send: EthtxsSender, params: GetTransactionsParams) {
     const { address, contract, from, to, limit, decimals, order = 'time.desc' } = params
 
     // Every query must carry an explicit limit so PostgREST never scans
@@ -147,7 +204,7 @@ export class EthIndexerClient extends Client<EthIndexer> {
         filters.push(`time.lte.${to}`)
       }
 
-      transactions = await this.request('GET /ethtxs', {
+      transactions = await send({
         and: `(${filters.join(',')})`,
         order,
         limit: effectiveLimit
@@ -158,8 +215,8 @@ export class EthIndexerClient extends Client<EthIndexer> {
       // `or(txfrom,txto)` + `order=time.desc` query may pick a backward
       // `time_index` scan and stall PostgREST on a large index
       const [sent, received] = await Promise.all([
-        this.fetchNativeEthSide(address, 'txfrom', effectiveLimit, order, from, to),
-        this.fetchNativeEthSide(address, 'txto', effectiveLimit, order, from, to)
+        this.fetchNativeEthSide(send, address, 'txfrom', effectiveLimit, order, from, to),
+        this.fetchNativeEthSide(send, address, 'txto', effectiveLimit, order, from, to)
       ])
 
       // Deduplicate self-transfers that appear in both sender and recipient queries
@@ -200,6 +257,10 @@ export class EthIndexerClient extends Client<EthIndexer> {
    * the scan to one block instead of the whole `time` index.
    */
   async getTimestampGroup(params: GetTimestampGroupParams) {
+    return this.queryTimestampGroup((request) => this.request('GET /ethtxs', request), params)
+  }
+
+  private async queryTimestampGroup(send: EthtxsSender, params: GetTimestampGroupParams) {
     const { address, contract, time, limit = DEFAULT_LIMIT, offset = 0, decimals } = params
 
     const filters = [
@@ -208,7 +269,7 @@ export class EthIndexerClient extends Client<EthIndexer> {
       `time.lte.${time}`
     ]
 
-    const transactions = await this.request('GET /ethtxs', {
+    const transactions = await send({
       and: `(${filters.join(',')})`,
       order: 'time.asc,txhash.asc',
       limit,

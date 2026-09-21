@@ -33,7 +33,16 @@ const getOldTransactions = async (api, context) => {
   const result = await api.getTransactions({ from })
   if (result) {
     context.commit('transactions', result.items)
-    if (!result.hasMore) {
+
+    // `from` is an offset into the responding node's own history, and indexers
+    // keep different depths. A node holding less than what has already been read
+    // reports `hasMore: false` for an offset it simply does not reach, which would
+    // latch `bottomReached` and truncate the history for good — so the end of
+    // history is only accepted from a node that reaches the current offset
+    const totalItems = Number(result.totalItems)
+    const reachesOffset = Number.isFinite(totalItems) ? totalItems >= from : true
+
+    if (!result.hasMore && reachesOffset) {
       context.commit('bottom', true)
     }
   }

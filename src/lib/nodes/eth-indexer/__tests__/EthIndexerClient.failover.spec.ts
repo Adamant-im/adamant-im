@@ -114,6 +114,45 @@ describe('EthIndexerClient node failover', () => {
     expect(slowNode?.online).toBe(false)
   })
 
+  it('pins every request of one walk to a single indexer', async () => {
+    nodeRequestMock.mockResolvedValue([makeRawTx(1700000000)])
+
+    const urls: string[] = []
+
+    await client.walkHistory(async (session) => {
+      urls.push(session.node)
+      // Native ETH: two halves, then an exact-timestamp group page
+      await session.getTransactions({ address: ADDRESS, decimals: 18 })
+      await session.getTimestampGroup({ address: ADDRESS, time: 1700000000, decimals: 18 })
+    })
+
+    // Three requests, one node: a boundary or offset is only valid within one dataset
+    expect(nodeRequestMock).toHaveBeenCalledTimes(3)
+    expect(new Set(nodeRequestMock.mock.calls.map(([url]) => url)).size).toBe(1)
+    expect(urls).toEqual([SLOW_NODE])
+  })
+
+  it('restarts the walk on another indexer instead of continuing across datasets', async () => {
+    let failuresLeft = 1
+    nodeRequestMock.mockImplementation((url: string) => {
+      if (url === SLOW_NODE && failuresLeft > 0) {
+        failuresLeft -= 1
+        return Promise.reject(statementTimeoutError())
+      }
+      return Promise.resolve([makeRawTx(1700000000)])
+    })
+
+    const attempts: string[] = []
+
+    await client.walkHistory(async (session) => {
+      attempts.push(session.node)
+      await session.getTransactions({ address: ADDRESS, decimals: 18 })
+    })
+
+    // The walk was re-entered from the beginning, with a fresh node
+    expect(attempts).toEqual([SLOW_NODE, FAST_NODE])
+  })
+
   it('does not swallow other indexer errors', async () => {
     const badRequest = {
       isAxiosError: true,

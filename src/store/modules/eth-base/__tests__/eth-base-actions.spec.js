@@ -4,9 +4,16 @@ const getTransactionsMock = vi.fn()
 const getTimestampGroupMock = vi.fn()
 
 vi.mock('@/lib/nodes/eth-indexer', () => {
-  const stub = {
+  const session = {
+    node: 'https://indexer.example.com',
     getTransactions: (...args) => getTransactionsMock(...args),
     getTimestampGroup: (...args) => getTimestampGroupMock(...args)
+  }
+
+  const stub = {
+    ...session,
+    // Mirrors the real client: every request of one walk gets the same node
+    walkHistory: (walk) => walk(session)
   }
 
   return { ethIndexer: stub, default: stub }
@@ -44,6 +51,7 @@ import mutations from '../eth-base-mutations'
 const CHUNK_SIZE = 25
 const MAX_NEW_TX_PAGES = 20
 const MAX_TIMESTAMP_GROUP_PAGES = 40
+const INDEXER_NODE = 'https://indexer.example.com'
 const ADDRESS = '0x7e0Bd3F27EC0997A3B17045023097372b4c563B3'
 
 const actions = createActions({
@@ -301,7 +309,8 @@ describe('eth-base getNewTransactions', () => {
     // Out of budget: the progress is recorded and the boundary stays below the group
     expect(context.state.timestampGroupCursor).toEqual({
       time: tie,
-      offset: MAX_TIMESTAMP_GROUP_PAGES * CHUNK_SIZE
+      offset: MAX_TIMESTAMP_GROUP_PAGES * CHUNK_SIZE,
+      node: INDEXER_NODE
     })
     expect(context.state.maxHeight).toBe(1_700_000_000)
 
@@ -311,6 +320,24 @@ describe('eth-base getNewTransactions', () => {
     expect(Object.keys(context.state.transactions)).toHaveLength(groupSize)
     expect(context.state.timestampGroupCursor).toBe(null)
     expect(context.state.maxHeight).toBe(tie)
+  })
+
+  it('ignores a group cursor left by a different indexer', async () => {
+    const tie = 1_700_000_100
+    const all = Array.from({ length: 30 }, (_, i) => makeTx(tie, i))
+    const context = createContext({
+      maxHeight: 1_700_000_000,
+      // Recorded against a node that may hold a different set of records
+      timestampGroupCursor: { time: tie, offset: 25, node: 'https://other.example.com' }
+    })
+
+    serveIndexer(all)
+
+    await actions.getNewTransactions(context)
+
+    // Restarted from the beginning of the group instead of trusting the offset
+    expect(getTimestampGroupMock.mock.calls[0][0].offset).toBe(0)
+    expect(Object.keys(context.state.transactions)).toHaveLength(30)
   })
 })
 

@@ -90,7 +90,38 @@ describe('doge-actions pagination', () => {
   })
 
   it('sets bottom when the indexer reports no more pages', async () => {
-    getTransactionsMock.mockResolvedValue({ hasMore: false, items: [] })
+    getTransactionsMock.mockResolvedValue({ hasMore: false, items: [], totalItems: 0 })
+
+    await actions.getOldTransactions(context)
+
+    expect(context.commit).toHaveBeenCalledWith('bottom', true)
+  })
+
+  it('does not accept the end of history from a node that does not reach the offset', async () => {
+    // 20 records already read from a deeper node; this one holds only 11, so its
+    // `hasMore: false` is about its own dataset, not about the end of history
+    Object.assign(
+      context.state.transactions,
+      Object.fromEntries(
+        Array.from({ length: 20 }, (_, i) => [`tx${i}`, { hash: `tx${i}`, status: 'CONFIRMED' }])
+      )
+    )
+    getTransactionsMock.mockResolvedValue({ hasMore: false, items: [], totalItems: 11 })
+
+    await actions.getOldTransactions(context)
+
+    expect(getTransactionsMock).toHaveBeenCalledWith({ from: 20 })
+    expect(context.commit).not.toHaveBeenCalledWith('bottom', true)
+  })
+
+  it('accepts the end of history from a node that reaches the offset', async () => {
+    Object.assign(
+      context.state.transactions,
+      Object.fromEntries(
+        Array.from({ length: 20 }, (_, i) => [`tx${i}`, { hash: `tx${i}`, status: 'CONFIRMED' }])
+      )
+    )
+    getTransactionsMock.mockResolvedValue({ hasMore: false, items: [], totalItems: 20 })
 
     await actions.getOldTransactions(context)
 

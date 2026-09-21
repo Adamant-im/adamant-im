@@ -2,11 +2,20 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const getTransactionsMock = vi.fn()
 
-vi.mock('@/lib/nodes', () => ({
-  btcIndexer: {
+vi.mock('@/lib/nodes', () => {
+  const session = {
+    node: 'https://indexer.example.com',
     getTransactions: (...args) => getTransactionsMock(...args)
   }
-}))
+
+  return {
+    btcIndexer: {
+      ...session,
+      // Mirrors the real client: every page of one walk gets the same node
+      walkHistory: (walk) => walk(session)
+    }
+  }
+})
 
 vi.mock('ecpair', () => ({
   ECPairFactory: () => ({})
@@ -67,7 +76,7 @@ function createContext(transactions = {}) {
       committed.push([type, payload])
       if (type === 'transactions') {
         for (const tx of payload) {
-          transactions[tx.txid || tx.hash] = tx
+          transactions[tx.hash] = tx
         }
       }
       if (type === 'newTxCatchUp') {
@@ -78,9 +87,25 @@ function createContext(transactions = {}) {
   }
 }
 
-/** Indexer-visible by default: that is what a history page can contain */
-function makeTx(txid, timestamp, status = 'CONFIRMED') {
-  return { txid, hash: txid, timestamp, status }
+/**
+ * The shape `normalizeTransaction` actually produces: `id` and `hash`, and no
+ * `txid`. Indexer-visible by default, since that is what a history page contains
+ */
+function makeTx(hash, timestamp, status = 'CONFIRMED') {
+  return {
+    id: hash,
+    hash,
+    timestamp,
+    time: Math.floor(timestamp / 1000),
+    status,
+    direction: 'to',
+    senderId: 'someone-else',
+    recipientId: 'btc-address',
+    amount: 1,
+    fee: 0.0001,
+    confirmations: status === 'CONFIRMED' ? 3 : 0,
+    height: 100
+  }
 }
 
 describe('btc-actions pagination', () => {
@@ -177,14 +202,17 @@ describe('btc-actions pagination', () => {
     const chain = [...Array.from({ length: 525 }, (_, i) => makeTx(`new${i}`, 1000 - i)), known]
     // The indexer pages by "everything older than this txid"
     getTransactionsMock.mockImplementation((_address, toTx) => {
-      const start = toTx ? chain.findIndex((tx) => tx.txid === toTx) + 1 : 0
+      const start = toTx ? chain.findIndex((tx) => tx.hash === toTx) + 1 : 0
       return Promise.resolve(chain.slice(start, start + TX_CHUNK_SIZE))
     })
 
     await actions.getNewTransactions(context)
 
     // Interrupted by the cap, with the resume point kept
-    expect(context.state.newTxCatchUp).toMatchObject({ target: 'known' })
+    expect(context.state.newTxCatchUp).toMatchObject({
+      target: 'known',
+      node: 'https://indexer.example.com'
+    })
     expect(Object.keys(context.state.transactions).length).toBeLessThan(chain.length)
 
     // The pages already fetched are the newest ones, so recomputing the target
@@ -195,6 +223,55 @@ describe('btc-actions pagination', () => {
 
     expect(context.state.newTxCatchUp).toBe(null)
     expect(Object.keys(context.state.transactions)).toHaveLength(chain.length)
+  })
+
+  it('pages older history with the normalized identifier', async () => {
+    // `normalizeTransaction` produces `hash`, never `txid`: reading the wrong
+    // field left the cursor undefined and refetched the newest page forever
+    Object.assign(context.state.transactions, {
+      new1: makeTx('new1', 3000),
+      old1: makeTx('old1', 1000)
+    })
+    getTransactionsMock.mockResolvedValue([])
+
+    await actions.getOldTransactions(context)
+
+    expect(getTransactionsMock).toHaveBeenCalledWith('btc-address', 'old1')
+  })
+
+  it('walks past the first page towards the known transaction', async () => {
+    const known = makeTx('known', 0)
+    Object.assign(context.state.transactions, { known })
+
+    const chain = [...Array.from({ length: 40 }, (_, i) => makeTx(`new${i}`, 5000 - i)), known]
+    getTransactionsMock.mockImplementation((_address, toTx) => {
+      const start = toTx ? chain.findIndex((tx) => tx.hash === toTx) + 1 : 0
+      return Promise.resolve(chain.slice(start, start + TX_CHUNK_SIZE))
+    })
+
+    await actions.getNewTransactions(context)
+
+    // Two pages: the cursor is the oldest hash of the first one
+    expect(getTransactionsMock.mock.calls.map((c) => c[1])).toEqual([undefined, 'new24'])
+    expect(Object.keys(context.state.transactions)).toHaveLength(chain.length)
+  })
+
+  it('ignores a catch-up cursor left by a different indexer', async () => {
+    const known = makeTx('known', 0)
+    Object.assign(context.state.transactions, { known })
+    context.state.newTxCatchUp = {
+      target: 'gone',
+      cursor: 'unknown-to-this-node',
+      node: 'https://other.example.com'
+    }
+
+    getTransactionsMock.mockResolvedValue([makeTx('fresh', 10), known])
+
+    await actions.getNewTransactions(context)
+
+    // Started over on this node instead of continuing a foreign cursor
+    expect(getTransactionsMock).toHaveBeenCalledWith('btc-address', undefined)
+    expect(context.state.newTxCatchUp).toBe(null)
   })
 
   it('ignores a local pending transaction when picking the walk target', async () => {

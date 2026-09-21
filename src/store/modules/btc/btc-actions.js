@@ -18,19 +18,30 @@ const MAX_NEW_TX_PAGES = 20
  */
 const INDEXER_STATUSES = [TransactionStatus.REGISTERED, TransactionStatus.CONFIRMED]
 
+const isIndexed = (tx) => INDEXER_STATUSES.includes(tx.status)
+
 /**
  * The newest transaction a history page can actually contain.
  *
  * `sortedTransactions[0]` may be a locally created record the indexer has never
  * seen, and looking for it in the pages would walk the whole history on every
- * refresh tick without ever finding it
+ * refresh tick without ever finding it.
+ *
+ * The identifier is `hash`: that is what `normalizeTransaction` produces, and it
+ * is what the indexer paginates by
  */
-const latestIndexedTxId = (context) => {
-  const latest = context.getters.sortedTransactions.find((tx) =>
-    INDEXER_STATUSES.includes(tx.status)
-  )
+const latestIndexedHash = (context) => {
+  const latest = context.getters.sortedTransactions.find(isIndexed)
 
-  return latest && latest.txid
+  return latest && latest.hash
+}
+
+/** The oldest known transaction, used as the cursor for older history */
+const oldestIndexedHash = (context) => {
+  const transactions = context.getters.sortedTransactions.filter(isIndexed)
+  const oldest = transactions[transactions.length - 1]
+
+  return oldest && oldest.hash
 }
 
 const customActions = (getApi) => ({
@@ -87,12 +98,12 @@ const customActions = (getApi) => ({
  *
  * @returns `{ complete }`, and the cursor to resume from when it is not
  */
-const retrieveNewTransactions = async (context, latestTxId, startCursor) => {
+const retrieveNewTransactions = async (context, session, latestHash, startCursor) => {
   const visitedCursors = new Set()
   let toTx = startCursor
 
   for (let page = 0; page < MAX_NEW_TX_PAGES; page++) {
-    const transactions = await btcIndexer.getTransactions(context.state.address, toTx)
+    const transactions = await session.getTransactions(context.state.address, toTx)
 
     // An empty page means the chain has no more transactions to scan:
     // the latest locally known tx is gone (dropped from mempool, reorg)
@@ -101,16 +112,16 @@ const retrieveNewTransactions = async (context, latestTxId, startCursor) => {
     context.commit('transactions', transactions)
 
     // History is continuous again: the known transaction is in the page
-    if (!latestTxId || transactions.some((x) => x.txid === latestTxId)) return { complete: true }
+    if (!latestHash || transactions.some((x) => x.hash === latestHash)) return { complete: true }
 
     const oldest = transactions[transactions.length - 1]
-    if (!oldest || !oldest.txid) return { complete: true }
+    if (!oldest || !oldest.hash) return { complete: true }
 
     // A cursor seen before means the node is cycling pages instead of paging back
-    if (visitedCursors.has(oldest.txid)) return { complete: true }
+    if (visitedCursors.has(oldest.hash)) return { complete: true }
 
-    visitedCursors.add(oldest.txid)
-    toTx = oldest.txid
+    visitedCursors.add(oldest.hash)
+    toTx = oldest.hash
   }
 
   // Out of page budget with the gap still open
@@ -120,17 +131,30 @@ const retrieveNewTransactions = async (context, latestTxId, startCursor) => {
 const getNewTransactions = async (api, context) => {
   context.commit('areRecentLoading', true)
 
-  // A walk stopped by the page cap keeps its own target and cursor: the target
-  // cannot be recomputed once its own pages are in the store, because the newest
-  // record would then be one of them and the very first page would end the walk,
-  // leaving the gap down to the previously known history unloaded forever
-  const pending = context.state.newTxCatchUp
-  const target = pending ? pending.target : latestIndexedTxId(context)
-  const startCursor = pending ? pending.cursor : undefined
+  // Every page of one walk is served by the same indexer: a cursor only means
+  // something within the dataset it came from
+  await btcIndexer.walkHistory(async (session) => {
+    // A walk stopped by the page cap keeps its own target and cursor: the target
+    // cannot be recomputed once its own pages are in the store, because the newest
+    // record would then be one of them and the very first page would end the walk,
+    // leaving the gap down to the previously known history unloaded forever
+    const pending =
+      context.state.newTxCatchUp && context.state.newTxCatchUp.node === session.node
+        ? context.state.newTxCatchUp
+        : null
+    const target = pending ? pending.target : latestIndexedHash(context)
+    const startCursor = pending ? pending.cursor : undefined
 
-  const { complete, cursor } = await retrieveNewTransactions(context, target, startCursor)
+    const { complete, cursor } = await retrieveNewTransactions(
+      context,
+      session,
+      target,
+      startCursor
+    )
 
-  context.commit('newTxCatchUp', complete ? null : { target, cursor })
+    context.commit('newTxCatchUp', complete ? null : { target, cursor, node: session.node })
+  })
+
   context.commit('areRecentLoading', false)
 }
 
@@ -138,9 +162,7 @@ const getOldTransactions = async (api, context) => {
   // If we already have the most old transaction for this address, no need to request anything
   if (context.state.bottomReached) return Promise.resolve()
 
-  const transactions = context.getters.sortedTransactions
-  const oldestTx = transactions[transactions.length - 1]
-  const toTx = oldestTx && oldestTx.txid
+  const toTx = oldestIndexedHash(context)
 
   context.commit('areOlderLoading', true)
   const chunk = await btcIndexer.getTransactions(context.state.address, toTx)
