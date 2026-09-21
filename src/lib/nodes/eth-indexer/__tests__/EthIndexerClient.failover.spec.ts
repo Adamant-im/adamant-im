@@ -122,12 +122,23 @@ describe('EthIndexerClient.confirmHistoryEnd', () => {
     await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).resolves.toBe(false)
   })
 
-  it('lets an unavailable node abstain while another one confirms', async () => {
+  it('postpones the conclusion when an eligible node is unavailable while another confirms', async () => {
     nodeRequestMock.mockImplementation((url: string) =>
       url === FAST_NODE ? Promise.reject(statementTimeoutError()) : Promise.resolve([])
     )
 
-    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).resolves.toBe(true)
+    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).resolves.toBe(false)
+  })
+
+  it('postpones the conclusion when an eligible node is out of sync while another confirms', async () => {
+    for (const node of client.nodes) {
+      if (node.url === FAST_NODE) node.outOfSync = true
+    }
+    nodeRequestMock.mockImplementation((url: string) =>
+      url === THIRD_NODE ? Promise.resolve([]) : Promise.reject(new Error('should not be called'))
+    )
+
+    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).resolves.toBe(false)
   })
 
   it('does not hold when no other node could answer at all', async () => {

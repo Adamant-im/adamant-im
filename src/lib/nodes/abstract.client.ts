@@ -259,15 +259,16 @@ export abstract class Client<N extends Node> {
    * data — typically "there is no older history".
    *
    * Indexers legitimately keep different history depths, so such a conclusion is
-   * only global once the rest of the network agrees. It holds when every node that
-   * answered agrees and at least one of them did.
+   * only global once the rest of the network agrees. It holds only when every
+   * eligible node answered and all of them agreed.
    *
-   * A node that is offline or out of sync right now abstains, and so does one that
-   * fails as unavailable: the conclusion is postponed rather than taken on the word
-   * of whichever node happens to be reachable, since that may be the shallow one.
-   * Only a node that can never answer here — disabled by the user, or on a protocol
-   * or API version this app cannot use — does not count; without any other node
-   * the one that reached the conclusion is the whole network, and it holds.
+   * A node that is offline, out of sync, or fails with an unavailability error
+   * abstains: the conclusion is postponed rather than taken on the word of
+   * whichever node happens to be reachable, since that may be the shallow one.
+   * Only a node that can never answer here — disabled by the user, or on a
+   * protocol or API version this app cannot use — does not count; without any
+   * other node the one that reached the conclusion is the whole network, and
+   * it holds.
    * Any error other than unavailability is a real failure and propagates.
    *
    * @param excludedUrl the node that reached the conclusion
@@ -288,16 +289,23 @@ export abstract class Client<N extends Node> {
     if (others.length === 0) return true
 
     let answered = 0
+    let abstained = 0
 
     for (const node of others) {
-      if (!this.isActiveNode(node)) continue
+      if (!this.isActiveNode(node)) {
+        abstained += 1
+        continue
+      }
 
       let agrees: boolean
 
       try {
         agrees = await probe(node)
       } catch (error) {
-        if (this.isNodeUnavailableError(error)) continue
+        if (this.isNodeUnavailableError(error)) {
+          abstained += 1
+          continue
+        }
 
         throw error
       }
@@ -307,7 +315,7 @@ export abstract class Client<N extends Node> {
       answered += 1
     }
 
-    return answered > 0
+    return answered > 0 && abstained === 0
   }
 
   private isNodeUnavailableError(error: unknown) {

@@ -36,13 +36,17 @@ vi.mock('@/lib/nodes', () => {
         if (others.length === 0) return true
 
         let answered = 0
+        let abstained = 0
         for (const node of others) {
-          if (node.offline) continue
+          if (node.offline) {
+            abstained += 1
+            continue
+          }
           if (!(await probe(sessionFor(node)))) return false
           answered += 1
         }
 
-        return answered > 0
+        return answered > 0 && abstained === 0
       }
     }
   }
@@ -332,19 +336,32 @@ describe('btc-actions getNewTransactions', () => {
     expect(Object.keys(context.state.transactions)).toHaveLength(chain.length)
   })
 
-  it('gives the target up only when no indexer lists it any more', async () => {
-    // The known record was reorged away: every node's history ends without it
-    Object.assign(context.state.transactions, { gone: makeTx('gone', 0) })
-    const chain = makeChain('new', 30)
+  it('keeps the continuity gap pending when indexers are pruned and recovers on a full indexer', async () => {
+    const known = makeTx('known', 0)
+    Object.assign(context.state.transactions, { known })
+    const chain = [...makeChain('new', 60), known]
+
+    // Both indexers initially expose only the newest 30
     network.nodes = [
-      nodeOver('https://node-a.example.com', chain),
-      nodeOver('https://node-b.example.com', chain)
+      nodeOver('https://pruned-a.example.com', chain.slice(0, 30)),
+      nodeOver('https://pruned-b.example.com', chain.slice(0, 30))
     ]
 
     await actions.getNewTransactions(context)
 
-    expect(context.state.newTxCatchUp).toBe(null)
+    // Continuity gap stays pending; target is NOT abandoned as a reorg
+    expect(context.state.newTxCatchUp).toMatchObject({ target: 'known' })
     expect(Object.keys(context.state.transactions)).toHaveLength(31)
+
+    // One indexer is restored to the full chain
+    network.nodes[1] = nodeOver('https://full-b.example.com', chain)
+    network.pick = () => network.nodes[1]
+
+    await actions.getNewTransactions(context)
+
+    // Continuity is restored across all 61 records
+    expect(context.state.newTxCatchUp).toBe(null)
+    expect(Object.keys(context.state.transactions)).toHaveLength(chain.length)
   })
 
   it('bounds the walk when every page brings a fresh cursor', async () => {

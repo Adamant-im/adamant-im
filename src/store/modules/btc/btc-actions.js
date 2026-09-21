@@ -173,9 +173,8 @@ const getNewTransactions = async (api, context) => {
       // it cannot be proven. Walk towards the same target on the other indexers
       let settled = false
       let progress = null
-      let anyCycled = outcome === 'cycled'
 
-      const unreachable = await btcIndexer.confirmHistoryEnd(node, async (session) => {
+      await btcIndexer.confirmHistoryEnd(node, async (session) => {
         const other = await retrieveNewTransactions(context, session, target, undefined)
 
         if (other.outcome === 'reached' || other.outcome === 'budget') {
@@ -186,21 +185,16 @@ const getNewTransactions = async (api, context) => {
           return false
         }
 
-        if (other.outcome === 'cycled') anyCycled = true
-
         return true
       })
 
       if (settled) {
         // Another node reached the target, or made progress towards it
         context.commit('newTxCatchUp', progress)
-      } else if (unreachable && !anyCycled) {
-        // Every indexer's history ends without the target: it no longer exists
-        // (a reorg), and there is no continuity left to prove
-        context.commit('newTxCatchUp', null)
       } else {
-        // Nothing proven: a node is misbehaving, or no other one could answer right
-        // now. Keep the target and start over on the next update
+        // Continuity could not be proven: either a node cycled or history ended
+        // without finding the target (which may simply be pruned). Keep the target
+        // pending rather than inferring a reorg, so a full indexer can close the gap later
         context.commit('newTxCatchUp', { target, cursor: undefined, node })
       }
     }

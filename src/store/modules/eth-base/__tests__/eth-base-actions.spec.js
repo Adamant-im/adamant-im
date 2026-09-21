@@ -36,13 +36,17 @@ vi.mock('@/lib/nodes/eth-indexer', () => {
       if (others.length === 0) return true
 
       let answered = 0
+      let abstained = 0
       for (const node of others) {
-        if (node.offline) continue
+        if (node.offline) {
+          abstained += 1
+          continue
+        }
         if (!(await probe(sessionFor(node)))) return false
         answered += 1
       }
 
-      return answered > 0
+      return answered > 0 && abstained === 0
     }
   }
 
