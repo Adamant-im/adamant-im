@@ -63,10 +63,12 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import { sidebarLayoutKey } from '@/lib/constants'
 import { filterRouteParams } from '@/router/filterRouteParams'
 import { useChatStateStore } from '@/stores/modal-state'
+import { useModalsStore } from '@/stores/modals'
 import { storeToRefs } from 'pinia'
 
 const store = useStore()
 const chatStateStore = useChatStateStore()
+const modalsStore = useModalsStore()
 const route = useRoute()
 const router = useRouter()
 
@@ -199,18 +201,14 @@ const {
   isChatMenuOpen,
   isEmojiPickerOpen
 } = storeToRefs(chatStateStore)
-const { setShowChatStartDialog } = chatStateStore
+const { hasOpenModals } = storeToRefs(modalsStore)
 const isSnackbarShowing = computed(() => store.state.snackbar.show)
 const noActiveNodesDialog = computed(() => store.state.chat.noActiveNodesDialog)
-const isShowChatStartDialog = computed({
-  get: () => chatStateStore.isShowChatStartDialog,
-  set: (value) => setShowChatStartDialog(value)
-})
 
 const canPressEscape = computed(() => {
   return (
     !noActiveNodesDialog.value &&
-    !isShowChatStartDialog.value &&
+    !hasOpenModals.value &&
     !isShowFreeTokensDialog.value &&
     !isShowSetPasswordDialog.value &&
     !isSnackbarShowing.value &&

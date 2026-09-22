@@ -11,6 +11,8 @@
         <component :is="Component" v-if="Component && !shouldCacheRootComponent(Component)" />
       </router-view>
     </v-main>
+
+    <ModalsHost />
   </v-app>
 </template>
 
@@ -19,6 +21,7 @@ import { computed, onBeforeUnmount, onMounted, getCurrentInstance, ref } from 'v
 import dayjs from 'dayjs'
 import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
 import UploadAttachmentExitPrompt from '@/components/UploadAttachmentExitPrompt.vue'
+import ModalsHost from '@/components/Modals/ModalsHost.vue'
 import Notifications from '@/lib/notifications'
 import { ThemeName } from './plugins/vuetify'
 import { useStore } from 'vuex'
