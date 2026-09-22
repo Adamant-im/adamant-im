@@ -96,6 +96,17 @@ export default {
   setTimestampGroupCursor(state, cursor) {
     state.timestampGroupCursor = cursor
   },
+  /** Stores the indexer session that owns the current history boundaries. */
+  setHistorySession(state, session) {
+    state.historySession = session
+  },
+  /** Discards every node-specific ETH pagination boundary. */
+  resetHistoryPagination(state) {
+    state.minHeight = Infinity
+    state.maxHeight = -1
+    state.timestampGroupCursor = null
+    state.bottomReached = false
+  },
   areOlderLoading(state, areLoading) {
     state.areOlderLoading = areLoading
   },

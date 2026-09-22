@@ -22,6 +22,8 @@ import { Balance } from './types/api/balance'
 export type DogeIndexerHistorySession = {
   /** URL of the indexer serving this walk. Offsets are only valid against it */
   node: string
+  /** Generation counter of the history session */
+  generation: number
   get<Response = any, Params = any>(path: string, params?: Params): Promise<Response>
 }
 
@@ -111,24 +113,15 @@ export class DogeIndexerClient extends Client<DogeIndexer> {
    * @param walk Callback receiving the scoped session bound to the selected node
    */
   async walkHistory<T>(walk: (session: DogeIndexerHistorySession) => Promise<T>): Promise<T> {
-    return this.requestHistoryWithRetry((node) => walk(this.createSession(node)))
+    return this.requestHistoryWithRetry((node, generation) =>
+      walk(this.createSession(node, generation))
+    )
   }
 
-  /**
-   * Confirms that the history ends where `excludedUrl` says it does, since a node
-   * keeping a shorter list runs out of it early. `probe` repeats the older-history
-   * step on each other active node and resolves `true` when it has nothing more.
-   */
-  async confirmHistoryEnd(
-    excludedUrl: string,
-    probe: (session: DogeIndexerHistorySession) => Promise<boolean>
-  ): Promise<boolean> {
-    return this.confirmOnOtherNodes(excludedUrl, (node) => probe(this.createSession(node)))
-  }
-
-  private createSession(node: DogeIndexer): DogeIndexerHistorySession {
+  private createSession(node: DogeIndexer, generation: number): DogeIndexerHistorySession {
     return {
       node: node.url,
+      generation,
       get: (path, params) => node.request('GET', path, params)
     }
   }

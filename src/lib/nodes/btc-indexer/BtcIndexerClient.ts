@@ -18,6 +18,8 @@ import type { BtcTransaction } from '@/lib/nodes/types/transaction'
 export type BtcIndexerHistorySession = {
   /** URL of the indexer serving this walk. Cursors are only valid against it */
   node: string
+  /** Generation counter of the history session */
+  generation: number
   getTransactions(address: string, toTx?: string): Promise<BtcTransaction[]>
 }
 
@@ -100,25 +102,15 @@ export class BtcIndexerClient extends Client<BtcIndexer> {
    * @param walk Callback receiving the scoped session bound to the selected node
    */
   async walkHistory<T>(walk: (session: BtcIndexerHistorySession) => Promise<T>): Promise<T> {
-    return this.requestHistoryWithRetry((node) => walk(this.createSession(node)))
+    return this.requestHistoryWithRetry((node, generation) =>
+      walk(this.createSession(node, generation))
+    )
   }
 
-  /**
-   * Confirms that the history ends where `excludedUrl` says it does. A node that
-   * does not know the cursor, or keeps a shorter history, answers with a short page,
-   * which alone must not latch the end of history. `probe` repeats the older-history
-   * step on each other active node and resolves `true` when it has nothing more.
-   */
-  async confirmHistoryEnd(
-    excludedUrl: string,
-    probe: (session: BtcIndexerHistorySession) => Promise<boolean>
-  ): Promise<boolean> {
-    return this.confirmOnOtherNodes(excludedUrl, (node) => probe(this.createSession(node)))
-  }
-
-  private createSession(node: BtcIndexer): BtcIndexerHistorySession {
+  private createSession(node: BtcIndexer, generation: number): BtcIndexerHistorySession {
     return {
       node: node.url,
+      generation,
       getTransactions: async (address, toTx) => {
         const transactions = await node.request<Transaction[]>(
           'GET',

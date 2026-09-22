@@ -50,6 +50,15 @@ export function toPersistedModule(name, value) {
     if ('bottomReached' in module) {
       module.bottomReached = false
     }
+    if ('oldTxState' in module) {
+      module.oldTxState = null
+    }
+    if ('newTxCatchUp' in module) {
+      module.newTxCatchUp = null
+    }
+    if ('historySession' in module) {
+      module.historySession = null
+    }
   }
 
   return module

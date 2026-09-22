@@ -20,5 +20,11 @@ export default () => ({
    * group can ever be pending: an unresolved one blocks the boundary it sits on
    */
   timestampGroupCursor: null,
-  bottomReached: false
+  bottomReached: false,
+  /**
+   * Identity of the indexer history session that owns the pagination boundaries,
+   * as `{ node, generation }`. ETH timestamp boundaries are meaningful only for
+   * the dataset that produced them and must be reset when affinity changes.
+   */
+  historySession: null
 })

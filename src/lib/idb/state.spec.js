@@ -33,6 +33,9 @@ describe('toPersistedModule', () => {
       address: 'D-address',
       transactions: { tx: { hash: 'tx' } },
       bottomReached: true,
+      oldTxState: { node: 'https://indexer.example.com', generation: 1, offset: 40 },
+      newTxCatchUp: { target: 'known', node: 'https://indexer.example.com' },
+      historySession: { node: 'https://indexer.example.com', generation: 1 },
       balance: 5
     }
 
@@ -40,10 +43,26 @@ describe('toPersistedModule', () => {
       address: 'D-address',
       transactions: {},
       bottomReached: false,
+      oldTxState: null,
+      newTxCatchUp: null,
+      historySession: null,
       balance: 5
     })
     // The live state is left alone
     expect(doge.bottomReached).toBe(true)
+    expect(doge.oldTxState).toEqual({
+      node: 'https://indexer.example.com',
+      generation: 1,
+      offset: 40
+    })
+    expect(doge.newTxCatchUp).toEqual({
+      target: 'known',
+      node: 'https://indexer.example.com'
+    })
+    expect(doge.historySession).toEqual({
+      node: 'https://indexer.example.com',
+      generation: 1
+    })
     expect(doge.transactions).toEqual({ tx: { hash: 'tx' } })
   })
 

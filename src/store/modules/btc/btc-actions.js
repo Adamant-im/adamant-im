@@ -13,14 +13,6 @@ const TX_CHUNK_SIZE = 25
 const MAX_NEW_TX_PAGES = 20
 
 /**
- * Statuses the indexer itself reports. `PENDING` (a freshly broadcast transfer)
- * and `REJECTED` (a failed broadcast) exist only locally, same as in DOGE
- */
-const INDEXER_STATUSES = [TransactionStatus.REGISTERED, TransactionStatus.CONFIRMED]
-
-const isIndexed = (tx) => INDEXER_STATUSES.includes(tx.status)
-
-/**
  * The newest transaction a catch-up walk can rely on finding again.
  *
  * `sortedTransactions[0]` may be a locally created record the indexer has never
@@ -37,14 +29,6 @@ const latestConfirmedHash = (context) => {
   )
 
   return latest && latest.hash
-}
-
-/** The oldest known transaction, used as the cursor for older history */
-const oldestIndexedHash = (context) => {
-  const transactions = context.getters.sortedTransactions.filter(isIndexed)
-  const oldest = transactions[transactions.length - 1]
-
-  return oldest && oldest.hash
 }
 
 const customActions = (getApi) => ({
@@ -244,15 +228,43 @@ const getNewTransactions = async (api, context) => {
 }
 
 /**
- * Reads one page of history older than the oldest known transaction on the node
- * `session` is pinned to, and keeps it.
+ * Reads one page of history older than the cursor on the node `session` is pinned to, and keeps it.
+ *
+ * The cursor is bound to the serving node and session generation rather than recomputed from the
+ * shared store. On a node-generation change (failover or session reset), any previous per-node
+ * bottomReached latch is cleared, the previous node's cursor is discarded, and the replacement node
+ * restarts from the safe boundary (`toTx: undefined`).
  *
  * @returns `{ end }` — `true` when this node has nothing older than that page
  */
 const readOlderPage = async (context, session) => {
-  const chunk = await session.getTransactions(context.state.address, oldestIndexedHash(context))
+  const current = context.state.oldTxState
+  const isSameNode =
+    current && current.node === session.node && current.generation === session.generation
+
+  let cursor
+  if (isSameNode) {
+    cursor = current.cursor
+  } else {
+    // Session node changed: clear per-node bottom latch and discard old cursor
+    context.commit('bottom', false)
+    // The merged store does not prove which node produced its oldest transaction.
+    // Start this node's pagination from its head and establish a local cursor.
+    cursor = undefined
+  }
+
+  const chunk = await session.getTransactions(context.state.address, cursor)
 
   context.commit('transactions', chunk)
+
+  const oldest = chunk[chunk.length - 1]
+  const nextCursor = oldest ? oldest.hash : undefined
+
+  context.commit('oldTxState', {
+    node: session.node,
+    generation: session.generation,
+    cursor: nextCursor
+  })
 
   return { end: chunk.length < TX_CHUNK_SIZE }
 }
@@ -270,8 +282,17 @@ const readOlderPage = async (context, session) => {
  * @returns {Promise<void>}
  */
 const getOldTransactions = async (api, context) => {
-  // If we already have the most old transaction for this address, no need to request anything
-  if (context.state.bottomReached) return Promise.resolve()
+  const currentHistoryNode = btcIndexer.getHistoryNodeUrl()
+  const currentGeneration = btcIndexer.getHistorySessionGeneration()
+  const oldState = context.state.oldTxState
+  const isNodeChanged =
+    oldState && (oldState.node !== currentHistoryNode || oldState.generation !== currentGeneration)
+
+  if (isNodeChanged) {
+    context.commit('bottom', false)
+  } else if (context.state.bottomReached) {
+    return Promise.resolve()
+  }
 
   context.commit('areOlderLoading', true)
 

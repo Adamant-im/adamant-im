@@ -196,20 +196,41 @@ export abstract class Client<N extends Node> {
   protected historyNodeUrl?: string
 
   /**
-   * Resets the pinned history session node URL.
+   * Generation counter for the history session. Incremented on session reset,
+   * unpinning, or whenever the active serving node changes.
+   */
+  protected historySessionGeneration = 0
+
+  /**
+   * Resets the pinned history session node URL and advances session generation.
    *
    * Called when an account or wallet state is reset (e.g. logout or account switch)
    * or when a pagination session should re-evaluate node selection from scratch.
    */
   resetHistorySession() {
     this.historyNodeUrl = undefined
+    this.historySessionGeneration += 1
   }
 
   /**
-   * Returns the URL of the currently pinned history session node, if one has been established.
+   * Returns the URL of the currently pinned history session node, if one has been established
+   * and remains active. Returns `undefined` if no node is pinned or if the pinned node is inactive.
    */
   getHistoryNodeUrl(): string | undefined {
+    if (this.historyNodeUrl) {
+      const pinned = this.nodes.find((node) => node.url === this.historyNodeUrl)
+      if (!pinned || !this.isActiveNode(pinned)) {
+        return undefined
+      }
+    }
     return this.historyNodeUrl
+  }
+
+  /**
+   * Returns the current generation counter of the history session.
+   */
+  getHistorySessionGeneration(): number {
+    return this.historySessionGeneration
   }
 
   /**
@@ -217,7 +238,7 @@ export abstract class Client<N extends Node> {
    *
    * If a previously pinned node exists, remains active, and is not in `excludedUrls`,
    * it is reused to guarantee session-wide node affinity. Otherwise, an active node
-   * is chosen via standard node selection and pinned as the session node.
+   * is chosen via standard node selection, pinned as the session node, and session generation advances.
    *
    * @param excludedUrls Set of node URLs that failed or must not be chosen
    * @returns Active node instance pinned for this session
@@ -231,7 +252,10 @@ export abstract class Client<N extends Node> {
     }
 
     const node = this.getNode(excludedUrls)
-    this.historyNodeUrl = node.url
+    if (this.historyNodeUrl !== node.url) {
+      this.historyNodeUrl = node.url
+      this.historySessionGeneration += 1
+    }
     return node
   }
 
@@ -313,18 +337,21 @@ export abstract class Client<N extends Node> {
    * it is marked unavailable, unpinned from the history session, and excluded from
    * immediate retries so the subsequent loop iteration selects and pins a replacement node.
    *
-   * @param request Callback taking the active pinned node and returning a Promise or value
+   * @param request Callback taking the active pinned node and generation, returning a Promise or value
    */
-  protected async requestHistoryWithRetry<T>(request: (node: N) => Promise<T> | T): Promise<T> {
+  protected async requestHistoryWithRetry<T>(
+    request: (node: N, generation: number) => Promise<T> | T
+  ): Promise<T> {
     await this.ready
 
     const triedNodes = new Set<string>()
 
     while (true) {
       const node = this.getHistoryNode(triedNodes)
+      const generation = this.historySessionGeneration
 
       try {
-        return await Promise.resolve(request(node))
+        return await Promise.resolve(request(node, generation))
       } catch (error) {
         if (!this.isNodeUnavailableError(error)) {
           throw error
@@ -335,73 +362,10 @@ export abstract class Client<N extends Node> {
         // Clear affinity so the retry loop picks a replacement active node and pins it
         if (this.historyNodeUrl === node.url) {
           this.historyNodeUrl = undefined
+          this.historySessionGeneration += 1
         }
       }
     }
-  }
-
-  /**
-   * Asks every other node to confirm a conclusion one node reached about its own
-   * data — typically "there is no older history".
-   *
-   * Indexers legitimately keep different history depths, so such a conclusion is
-   * only global once the rest of the network agrees. It holds only when every
-   * eligible node answered and all of them agreed.
-   *
-   * A node that is offline, out of sync, or fails with an unavailability error
-   * abstains: the conclusion is postponed rather than taken on the word of
-   * whichever node happens to be reachable, since that may be the shallow one.
-   * Only a node that can never answer here — disabled by the user, or on a
-   * protocol or API version this app cannot use — does not count; without any
-   * other node the one that reached the conclusion is the whole network, and
-   * it holds.
-   * Any error other than unavailability is a real failure and propagates.
-   *
-   * @param excludedUrl the node that reached the conclusion
-   * @param probe repeats the check on one node, resolving `true` when it agrees
-   */
-  protected async confirmOnOtherNodes(
-    excludedUrl: string,
-    probe: (node: N) => Promise<boolean>
-  ): Promise<boolean> {
-    const others = this.nodes.filter(
-      (node) =>
-        node.url !== excludedUrl &&
-        node.active &&
-        node.hasSupportedProtocol &&
-        node.hasMinNodeVersion()
-    )
-
-    if (others.length === 0) return true
-
-    let answered = 0
-    let abstained = 0
-
-    for (const node of others) {
-      if (!this.isActiveNode(node)) {
-        abstained += 1
-        continue
-      }
-
-      let agrees: boolean
-
-      try {
-        agrees = await probe(node)
-      } catch (error) {
-        if (this.isNodeUnavailableError(error)) {
-          abstained += 1
-          continue
-        }
-
-        throw error
-      }
-
-      if (!agrees) return false
-
-      answered += 1
-    }
-
-    return answered > 0 && abstained === 0
   }
 
   private isNodeUnavailableError(error: unknown) {
@@ -429,9 +393,10 @@ export abstract class Client<N extends Node> {
       return true
     }
 
-    // Server or gateway error responses indicating that the node or its reverse proxy is down
+    // Any server-side failure makes this node unsuitable for the current history
+    // walk. Retry on one replacement node instead of mixing pages across datasets.
     const status = (networkError.response as { status?: number } | undefined)?.status
-    if (status && [502, 503, 504, 521, 522, 523, 524].includes(status)) {
+    if (status && status >= 500 && status < 600) {
       return true
     }
 

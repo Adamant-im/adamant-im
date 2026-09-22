@@ -81,116 +81,6 @@ function makeRawTx(time: number) {
   }
 }
 
-const THIRD_NODE = 'https://third.example.com'
-
-describe('EthIndexerClient.confirmHistoryEnd', () => {
-  let client: EthIndexerClient
-
-  /** A probe that asks the node for history and agrees when there is none */
-  const probe = async (session: { getTransactions: EthIndexerClient['getTransactions'] }) => {
-    const transactions = await session.getTransactions({ address: ADDRESS, decimals: 18 })
-
-    return transactions.length === 0
-  }
-
-  beforeEach(async () => {
-    vi.clearAllMocks()
-    client = new EthIndexerClient([
-      { url: SLOW_NODE },
-      { url: FAST_NODE },
-      { url: THIRD_NODE }
-    ] as never)
-    await client.ready
-  })
-
-  it('holds when every other node agrees', async () => {
-    nodeRequestMock.mockResolvedValue([])
-
-    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).resolves.toBe(true)
-
-    // Only the other two were asked, never the node that reached the conclusion
-    expect(new Set(nodeRequestMock.mock.calls.map(([url]) => url))).toEqual(
-      new Set([FAST_NODE, THIRD_NODE])
-    )
-  })
-
-  it('fails as soon as one node has more history', async () => {
-    nodeRequestMock.mockImplementation((url: string) =>
-      Promise.resolve(url === FAST_NODE ? [makeRawTx(1700000000)] : [])
-    )
-
-    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).resolves.toBe(false)
-  })
-
-  it('postpones the conclusion when an eligible node is unavailable while another confirms', async () => {
-    nodeRequestMock.mockImplementation((url: string) =>
-      url === FAST_NODE ? Promise.reject(statementTimeoutError()) : Promise.resolve([])
-    )
-
-    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).resolves.toBe(false)
-  })
-
-  it('postpones the conclusion when an eligible node is out of sync while another confirms', async () => {
-    for (const node of client.nodes) {
-      if (node.url === FAST_NODE) node.outOfSync = true
-    }
-    nodeRequestMock.mockImplementation((url: string) =>
-      url === THIRD_NODE ? Promise.resolve([]) : Promise.reject(new Error('should not be called'))
-    )
-
-    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).resolves.toBe(false)
-  })
-
-  it('does not hold when no other node could answer at all', async () => {
-    // A pruned node alone must not decide the end of history for everyone
-    nodeRequestMock.mockRejectedValue(statementTimeoutError())
-
-    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).resolves.toBe(false)
-  })
-
-  it('holds when no other node can ever answer here', async () => {
-    // Disabled by the user: the remaining node is the whole network
-    for (const node of client.nodes) {
-      if (node.url !== SLOW_NODE) node.active = false
-    }
-
-    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).resolves.toBe(true)
-    expect(nodeRequestMock).not.toHaveBeenCalled()
-  })
-
-  it('does not count a node on an unsupported protocol', async () => {
-    for (const node of client.nodes) {
-      if (node.url !== SLOW_NODE) node.hasSupportedProtocol = false
-    }
-
-    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).resolves.toBe(true)
-  })
-
-  it('postpones the conclusion while the other nodes are merely offline', async () => {
-    // They may be the deep ones: the node that happens to be reachable does not
-    // get to decide for them
-    for (const node of client.nodes) {
-      if (node.url !== SLOW_NODE) node.online = false
-    }
-
-    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).resolves.toBe(false)
-    expect(nodeRequestMock).not.toHaveBeenCalled()
-  })
-
-  it('propagates an error that is not about availability', async () => {
-    nodeRequestMock.mockRejectedValue({
-      isAxiosError: true,
-      message: 'Request failed with status code 400',
-      request: {},
-      response: { status: 400, data: { code: '42703', message: 'column does not exist' } }
-    })
-
-    await expect(client.confirmHistoryEnd(SLOW_NODE, probe)).rejects.toMatchObject({
-      response: { status: 400 }
-    })
-  })
-})
-
 describe('EthIndexerClient node failover', () => {
   let client: EthIndexerClient
 
@@ -224,6 +114,29 @@ describe('EthIndexerClient node failover', () => {
     expect(slowNode?.online).toBe(false)
   })
 
+  it('fails over on a generic HTTP 5xx response during a history walk', async () => {
+    nodeRequestMock.mockImplementation((url: string) => {
+      if (url === SLOW_NODE) {
+        return Promise.reject({
+          message: 'Internal Server Error',
+          request: {},
+          response: { status: 500 }
+        })
+      }
+
+      return Promise.resolve([makeRawTx(1700000000)])
+    })
+
+    const attempts: string[] = []
+
+    await client.walkHistory(async (session) => {
+      attempts.push(session.node)
+      await session.getTransactions({ address: ADDRESS, decimals: 18 })
+    })
+
+    expect(attempts).toEqual([SLOW_NODE, FAST_NODE])
+  })
+
   it('pins every request of one walk to a single indexer', async () => {
     nodeRequestMock.mockResolvedValue([makeRawTx(1700000000)])
 
@@ -254,7 +167,6 @@ describe('EthIndexerClient node failover', () => {
     expect(contactedNodes.size).toBe(1)
     expect(contactedNodes.has(SLOW_NODE)).toBe(true)
     expect(contactedNodes.has(FAST_NODE)).toBe(false)
-    expect(contactedNodes.has(THIRD_NODE)).toBe(false)
   })
 
   it('restarts the walk on another indexer instead of continuing across datasets', async () => {
@@ -345,10 +257,12 @@ describe('EthIndexerClient node failover', () => {
     })
 
     const pages: string[] = []
+    const generations: number[] = []
 
     // Call 1 succeeds on SLOW_NODE
     await client.walkHistory(async (session) => {
       pages.push(session.node)
+      generations.push(session.generation)
       await session.getTransactions({ address: ADDRESS, decimals: 18 })
     })
     expect(pages).toEqual([SLOW_NODE])
@@ -360,9 +274,12 @@ describe('EthIndexerClient node failover', () => {
     // Call 2 encounters availability failure on SLOW_NODE, marks it unavailable, and fails over to FAST_NODE
     await client.walkHistory(async (session) => {
       pages.push(session.node)
+      generations.push(session.generation)
       await session.getTransactions({ address: ADDRESS, decimals: 18 })
     })
     expect(pages).toEqual([SLOW_NODE, SLOW_NODE, FAST_NODE])
+    expect(generations[1]).toBe(generations[0])
+    expect(generations[2]).not.toBe(generations[1])
     expect(client.getHistoryNodeUrl()).toBe(FAST_NODE)
 
     const slowNode = client.nodes.find((n) => n.url === SLOW_NODE)
@@ -371,9 +288,11 @@ describe('EthIndexerClient node failover', () => {
     // Call 3 stays pinned to FAST_NODE without re-attempting SLOW_NODE
     await client.walkHistory(async (session) => {
       pages.push(session.node)
+      generations.push(session.generation)
       await session.getTransactions({ address: ADDRESS, decimals: 18 })
     })
     expect(pages).toEqual([SLOW_NODE, SLOW_NODE, FAST_NODE, FAST_NODE])
+    expect(generations[3]).toBe(generations[2])
     expect(client.getHistoryNodeUrl()).toBe(FAST_NODE)
   })
 })

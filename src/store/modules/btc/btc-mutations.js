@@ -22,5 +22,12 @@ export default {
    */
   newTxCatchUp(state, value) {
     state.newTxCatchUp = value
+  },
+
+  /**
+   * Stores node-specific cursor state for older history pagination
+   */
+  oldTxState(state, value) {
+    state.oldTxState = value
   }
 }

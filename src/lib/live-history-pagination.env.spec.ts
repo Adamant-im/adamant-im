@@ -82,6 +82,7 @@ warnMissingLiveEnv(
 )
 
 const USDT = CryptosInfo.USDT as unknown as { contractId: string; decimals: number }
+const USDC = CryptosInfo.USDC as unknown as { contractId: string; decimals: number }
 const PAGE_BUDGET = 60
 
 type AnyClient = {
@@ -93,8 +94,7 @@ type AnyClient = {
 
 /**
  * Serves every walk from `pick()` whenever that node is available, and falls back
- * to the client's own selection otherwise. Confirmation still asks every other
- * active node, exactly as in production
+ * to the client's own selection otherwise
  */
 function steer(client: unknown, pick: () => string) {
   const target = client as AnyClient
@@ -241,10 +241,10 @@ liveDescribe('live history pagination (history account)', () => {
     await Promise.all([ethIndexer.ready, btcIndexer.ready, dogeIndexer.ready])
   }, 120_000)
 
-  const ethContext = (contractAddress?: string, decimals = 18) =>
+  const ethContext = (contractAddress?: string, decimals = 18, crypto = 'ETH') =>
     createContext(ethMutations, {
       ...ethBaseState(),
-      crypto: contractAddress ? 'USDT' : 'ETH',
+      crypto,
       address: ethAddress,
       contractAddress,
       decimals
@@ -294,27 +294,34 @@ liveDescribe('live history pagination (history account)', () => {
     expect(context.state.bottomReached).toBe(true)
   }, 180_000)
 
-  it('loads the full USDT history from a full indexer', async () => {
-    const truth = await perNode(ethIndexer, (node) =>
-      ethHashesOn(node, ethAddress, USDT.contractId)
-    )
-    const ranked = [...truth.entries()].sort((a, b) => b[1].size - a[1].size)
-    const [fullUrl, fullSet] = ranked[0]
+  it.each([
+    ['USDT', USDT],
+    ['USDC', USDC]
+  ])(
+    'loads the full %s history from a full indexer',
+    async (crypto, token) => {
+      const truth = await perNode(ethIndexer, (node) =>
+        ethHashesOn(node, ethAddress, token.contractId)
+      )
+      const ranked = [...truth.entries()].sort((a, b) => b[1].size - a[1].size)
+      const [fullUrl, fullSet] = ranked[0]
 
-    const context = ethContext(USDT.contractId, USDT.decimals)
-    const restore = steer(ethIndexer, () => fullUrl)
-    try {
-      await ethActions.getNewTransactions(context)
-      await loadAllOlder(ethActions, context)
-    } finally {
-      restore()
-    }
+      const context = ethContext(token.contractId, token.decimals, crypto)
+      const restore = steer(ethIndexer, () => fullUrl)
+      try {
+        await ethActions.getNewTransactions(context)
+        await loadAllOlder(ethActions, context)
+      } finally {
+        restore()
+      }
 
-    const loaded = new Set(Object.keys(context.state.transactions))
-    expect(loaded.size).toBe(fullSet.size)
-    for (const hash of fullSet) expect(loaded.has(hash)).toBe(true)
-    expect(context.state.bottomReached).toBe(true)
-  }, 180_000)
+      const loaded = new Set(Object.keys(context.state.transactions))
+      expect(loaded.size).toBe(fullSet.size)
+      for (const hash of fullSet) expect(loaded.has(hash)).toBe(true)
+      expect(context.state.bottomReached).toBe(true)
+    },
+    180_000
+  )
 
   it('loads the full BTC history and closes a gap to known history', async () => {
     const context = createContext(btcMutations, btcState(), btcBaseGetters)
@@ -374,6 +381,7 @@ liveDescribe('live history pagination (history account)', () => {
 
     const truth = await perNode(dogeIndexer, (node) => dogeHashesOn(node, address, false))
     const urls = [...truth.keys()]
+    expect(urls.length).toBeGreaterThan(0)
 
     // Pin the initial serving node for the entire getNewTransactions + loadAllOlder session
     // and verify against that specific node's dataset
@@ -391,6 +399,7 @@ liveDescribe('live history pagination (history account)', () => {
       }
 
       const expected = truth.get(url)!
+      expect(expected.length).toBeGreaterThan(0)
       const loaded = new Set(Object.keys(context.state.transactions))
       for (const hash of expected) {
         expect(loaded.has(hash)).toBe(true)
@@ -399,14 +408,14 @@ liveDescribe('live history pagination (history account)', () => {
     }
   }, 900_000)
 
-  it('fails over to replacement DOGE indexer when pinned node becomes unavailable', async () => {
+  it('fails over to replacement DOGE indexer when pinned node becomes unavailable', async (ctx) => {
     const probe = createContext(dogeMutations, dogeState(), btcBaseGetters)
     dogeActions.afterLogin.handler(probe, passphrase!)
     const address = probe.state.address
 
-    const truth = await perNode(dogeIndexer, (node) => dogeHashesOn(node, address))
+    const truth = await perNode(dogeIndexer, (node) => dogeHashesOn(node, address, false))
     const urls = [...truth.keys()]
-    if (urls.length < 2) return
+    if (urls.length < 2) ctx.skip()
 
     const [nodeAUrl, nodeBUrl] = urls
 
@@ -416,32 +425,49 @@ liveDescribe('live history pagination (history account)', () => {
     let currentServing = nodeAUrl
     const restore = steer(dogeIndexer, () => currentServing)
 
+    const nodeA = dogeIndexer.nodes.find((n) => n.url === nodeAUrl)
+    const nodeAWasOnline = nodeA?.online
+    const nodeB = dogeIndexer.nodes.find((n) => n.url === nodeBUrl)!
+    const nodeBRequestSpy = vi.spyOn(nodeB, 'request')
+
     try {
-      // Load initial window on node A
+      // Load history on node A until bottom is reached
       await dogeActions.getNewTransactions(context)
-      await dogeActions.getOldTransactions(context)
+      await loadAllOlder(dogeActions, context)
 
       expect(dogeIndexer.getHistoryNodeUrl()).toBe(nodeAUrl)
-      const countBeforeFailover = Object.keys(context.state.transactions).length
-      expect(countBeforeFailover).toBeGreaterThan(0)
+      expect(context.state.bottomReached).toBe(true)
 
       // Make pinned node A unavailable
-      const nodeA = dogeIndexer.nodes.find((n) => n.url === nodeAUrl)
       if (nodeA) nodeA.online = false
       currentServing = nodeBUrl
 
-      // Next page triggers failover to node B
+      // Next call triggers failover to node B, clearing bottomReached latch
       await dogeActions.getOldTransactions(context)
 
-      // Verifies that only then another node is selected and pinned
+      // Verifies that replacement node is selected and pinned
       expect(dogeIndexer.getHistoryNodeUrl()).toBe(nodeBUrl)
+
+      // Verifies that the replacement node's first request resets offset and uses from: 0
+      const firstNodeBCall = nodeBRequestSpy.mock.calls.find(
+        (call) => call[0] === 'GET' && typeof call[1] === 'string' && call[1].includes('/txs')
+      )
+      expect(firstNodeBCall).toBeDefined()
+      expect(firstNodeBCall![2]).toMatchObject({ from: 0 })
 
       // Complete pagination on node B
       await loadAllOlder(dogeActions, context)
       expect(context.state.bottomReached).toBe(true)
 
-      if (nodeA) nodeA.online = true
+      // Verifies history continuity: all hashes served by node B are loaded in store
+      const nodeBTruth = truth.get(nodeBUrl)!
+      const loaded = new Set(Object.keys(context.state.transactions))
+      for (const hash of nodeBTruth) {
+        expect(loaded.has(hash)).toBe(true)
+      }
     } finally {
+      if (nodeA && nodeAWasOnline !== undefined) nodeA.online = nodeAWasOnline
+      nodeBRequestSpy.mockRestore()
       restore()
       dogeIndexer.resetHistorySession()
     }
@@ -479,6 +505,16 @@ liveDescribe('live history pagination (history account)', () => {
 
     const restore = steer(dogeIndexer, () => flaggedUrl)
     try {
+      // Reproduce an existing pagination session whose next overlapped window
+      // begins at the raw list position of the flagged record.
+      await dogeIndexer.walkHistory(async (session) => {
+        context.state.oldTxState = {
+          node: session.node,
+          generation: session.generation,
+          offset: at + 5
+        }
+      })
+
       await expect(dogeActions.getOldTransactions(context)).resolves.toBeUndefined()
     } finally {
       restore()

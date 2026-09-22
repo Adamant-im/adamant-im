@@ -29,6 +29,8 @@ type EthtxsSender = (params: GetTransactionsRequest) => Promise<Transaction[]>
 export type EthIndexerHistorySession = {
   /** URL of the indexer serving this walk. Cursors are only valid against it */
   node: string
+  /** Generation counter of the history session */
+  generation: number
   getTransactions(params: GetTransactionsParams): Promise<EthTransaction[]>
   getTimestampGroup(params: GetTimestampGroupParams): Promise<EthTransaction[]>
 }
@@ -102,29 +104,17 @@ export class EthIndexerClient extends Client<EthIndexer> {
    * @param walk Callback receiving the scoped session bound to the selected node
    */
   async walkHistory<T>(walk: (session: EthIndexerHistorySession) => Promise<T>): Promise<T> {
-    return this.requestHistoryWithRetry((node) => walk(this.createSession(node)))
+    return this.requestHistoryWithRetry((node, generation) =>
+      walk(this.createSession(node, generation))
+    )
   }
 
-  /**
-   * Confirms that the history ends where `excludedUrl` says it does.
-   *
-   * A pruned indexer reaches the end of its own dataset early, and latching the
-   * end of history on its word would truncate the list for good. `probe` repeats
-   * the older-history step on each other active node and resolves `true` when that
-   * node has nothing more either; whatever it does find is kept by the caller.
-   */
-  async confirmHistoryEnd(
-    excludedUrl: string,
-    probe: (session: EthIndexerHistorySession) => Promise<boolean>
-  ): Promise<boolean> {
-    return this.confirmOnOtherNodes(excludedUrl, (node) => probe(this.createSession(node)))
-  }
-
-  private createSession(node: EthIndexer): EthIndexerHistorySession {
+  private createSession(node: EthIndexer, generation: number): EthIndexerHistorySession {
     const send: EthtxsSender = (params) => this.requestFrom(node, 'GET /ethtxs', params)
 
     return {
       node: node.url,
+      generation,
       getTransactions: (params) => this.queryTransactions(send, params),
       getTimestampGroup: (params) => this.queryTimestampGroup(send, params)
     }

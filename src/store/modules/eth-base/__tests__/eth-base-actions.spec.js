@@ -10,17 +10,22 @@ const getTimestampGroupMock = vi.fn()
  */
 const network = {
   nodes: [],
-  pick: () => network.nodes[0]
+  pick: () => network.nodes[0],
+  pinnedUrl: null,
+  generation: 0
 }
 
 function resetNetwork() {
   network.nodes = [{ url: 'https://indexer.example.com' }]
   network.pick = () => network.nodes[0]
+  network.pinnedUrl = network.nodes[0].url
+  network.generation = 0
 }
 
 vi.mock('@/lib/nodes/eth-indexer', () => {
   const sessionFor = (node) => ({
     node: node.url,
+    generation: network.generation,
     getTransactions: (params) =>
       node.getTransactions ? node.getTransactions(params) : getTransactionsMock(params),
     getTimestampGroup: (params) =>
@@ -29,24 +34,21 @@ vi.mock('@/lib/nodes/eth-indexer', () => {
 
   const stub = {
     // Mirrors the real client: every request of one walk gets the same node
-    walkHistory: (walk) => walk(sessionFor(network.pick())),
-    // Mirrors `confirmOnOtherNodes`: `disabled` nodes do not count, `offline` ones abstain
-    confirmHistoryEnd: async (excludedUrl, probe) => {
-      const others = network.nodes.filter((n) => n.url !== excludedUrl && !n.disabled)
-      if (others.length === 0) return true
+    walkHistory: (walk) => {
+      const node = network.pick()
+      network.pinnedUrl = node.url
 
-      let answered = 0
-      let abstained = 0
-      for (const node of others) {
-        if (node.offline) {
-          abstained += 1
-          continue
-        }
-        if (!(await probe(sessionFor(node)))) return false
-        answered += 1
-      }
+      return walk(sessionFor(node))
+    },
+    getHistoryNodeUrl: () => {
+      const pinned = network.nodes.find((node) => node.url === network.pinnedUrl)
 
-      return answered > 0 && abstained === 0
+      return pinned?.offline ? undefined : pinned?.url
+    },
+    getHistorySessionGeneration: () => network.generation,
+    resetHistorySession: () => {
+      network.pinnedUrl = null
+      network.generation += 1
     }
   }
 
@@ -109,6 +111,7 @@ function createContext(overrides = {}) {
     minHeight: Infinity,
     timestampGroupCursor: null,
     bottomReached: false,
+    historySession: { node: INDEXER_NODE, generation: 0 },
     ...overrides
   }
 
@@ -490,6 +493,46 @@ describe('eth-base getOldTransactions', () => {
     expect(Object.keys(context.state.transactions)).toHaveLength(11)
     expect(context.state.bottomReached).toBe(true)
     expect(otherNodeSpy).not.toHaveBeenCalled()
+  })
+
+  it('discards timestamp boundaries and restarts from the replacement node after failover', async () => {
+    const shallow = Array.from({ length: 11 }, (_, i) => makeTx(1_750_000_000 + i, i))
+    const replacement = Array.from({ length: 53 }, (_, i) => makeTx(1_850_000_000 + i, 100 + i))
+    network.nodes = [
+      nodeOver('https://shallow.example.com', shallow),
+      nodeOver('https://replacement.example.com', replacement)
+    ]
+    network.pick = () => network.nodes[0]
+    network.pinnedUrl = network.nodes[0].url
+
+    const context = createContext({
+      historySession: { node: network.nodes[0].url, generation: network.generation }
+    })
+
+    await actions.getNewTransactions(context)
+    await actions.getOldTransactions(context)
+
+    expect(context.state.bottomReached).toBe(true)
+    expect(Object.keys(context.state.transactions)).toHaveLength(shallow.length)
+
+    network.nodes[0].offline = true
+    network.generation += 1
+    network.pick = () => network.nodes[1]
+
+    // The old bottom latch must not suppress the first request to the replacement.
+    await actions.getOldTransactions(context)
+    for (let page = 0; page < 5 && !context.state.bottomReached; page++) {
+      await actions.getOldTransactions(context)
+    }
+
+    expect(context.state.historySession).toEqual({
+      node: network.nodes[1].url,
+      generation: network.generation
+    })
+    expect(context.state.bottomReached).toBe(true)
+    for (const tx of replacement) {
+      expect(context.state.transactions[tx.hash]).toBeDefined()
+    }
   })
 
   it('latches the bottom on a confirmed short page without an extra round trip', async () => {

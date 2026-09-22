@@ -33,6 +33,24 @@ const MAX_NEW_TX_PAGES = 20
  */
 const MAX_TIMESTAMP_GROUP_PAGES = 40
 
+const isSameHistorySession = (stored, session) =>
+  Boolean(stored && stored.node === session.node && stored.generation === session.generation)
+
+/**
+ * Makes the active indexer session the owner of all ETH pagination boundaries.
+ * Transactions already collected from another node remain safely deduplicated by
+ * hash, while cursors and bottom state restart against the replacement dataset.
+ */
+const syncHistorySession = (context, session) => {
+  if (isSameHistorySession(context.state.historySession, session)) return
+
+  context.commit('resetHistoryPagination')
+  context.commit('setHistorySession', {
+    node: session.node,
+    generation: session.generation
+  })
+}
+
 /**
  * Reads every transaction with the exact block timestamp `time`.
  *
@@ -91,7 +109,7 @@ const readTimestampGroup = async (context, session, { address, contract, decimal
  *
  * @returns `{ end }` — `true` when this node has nothing below what it returned.
  *   That is a statement about this node's dataset only: a pruned indexer reaches
- *   its end early, so the caller confirms it elsewhere before latching the bottom
+ *   its end early and the session remains pinned to that node
  */
 const readOlderPage = async (context, session) => {
   const { address, contractAddress: contract, minHeight, decimals } = context.state
@@ -490,6 +508,8 @@ export default function createActions(config) {
         // One indexer for the whole walk. The state is read inside it so that a
         // restart on another node starts from whatever has been proven by then
         await ethIndexer.walkHistory(async (session) => {
+          syncHistorySession(context, session)
+
           const { address, maxHeight, contractAddress, decimals } = context.state
           const options = { address, contract: contractAddress, decimals }
 
@@ -518,18 +538,29 @@ export default function createActions(config) {
      * @returns {Promise<void>}
      */
     async getOldTransactions(context) {
-      // If we already have the most old transaction for this address, no need to request anything
-      if (context.state.bottomReached) return Promise.resolve()
+      const storedSession = context.state.historySession
+      const currentNode = ethIndexer.getHistoryNodeUrl()
+      const currentGeneration = ethIndexer.getHistorySessionGeneration()
+      const sessionChanged =
+        storedSession &&
+        (storedSession.node !== currentNode || storedSession.generation !== currentGeneration)
+
+      if (sessionChanged) {
+        context.commit('resetHistoryPagination')
+      } else if (context.state.bottomReached) {
+        return Promise.resolve()
+      }
 
       context.commit('areOlderLoading', true)
 
       try {
         // The page and the group resolution it may need must agree on one dataset,
         // so they share a single indexer and do not fan out address queries across operators
-        const { end } = await ethIndexer.walkHistory(async (session) => ({
-          ...(await readOlderPage(context, session)),
-          node: session.node
-        }))
+        const { end } = await ethIndexer.walkHistory(async (session) => {
+          syncHistorySession(context, session)
+
+          return readOlderPage(context, session)
+        })
 
         if (end) {
           context.commit('bottom', true)

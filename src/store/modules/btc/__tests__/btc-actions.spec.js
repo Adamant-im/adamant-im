@@ -16,16 +16,20 @@ function resetNetwork() {
   network.nodes = [{ url: 'https://indexer.example.com' }]
   network.pick = () => network.nodes[0]
   network.onWalkFail = null
+  network.generation = 0
 }
 
 vi.mock('@/lib/nodes', () => {
   const sessionFor = (node) => ({
     node: node.url,
+    generation: network.generation ?? 0,
     getTransactions: (address, toTx) =>
       node.getTransactions
         ? node.getTransactions(address, toTx)
         : getTransactionsMock(address, toTx, node.url)
   })
+
+  let pinnedUrl = null
 
   return {
     btcIndexer: {
@@ -33,10 +37,12 @@ vi.mock('@/lib/nodes', () => {
       walkHistory: async (walk) => {
         while (true) {
           const node = network.pick()
+          pinnedUrl = node.url
           try {
             return await walk(sessionFor(node))
           } catch (error) {
             if (network.onWalkFail) {
+              network.generation = (network.generation ?? 0) + 1
               network.onWalkFail(error, node)
               continue
             }
@@ -44,23 +50,14 @@ vi.mock('@/lib/nodes', () => {
           }
         }
       },
-      // Mirrors `confirmOnOtherNodes`: `disabled` nodes do not count, `offline` ones abstain
-      confirmHistoryEnd: async (excludedUrl, probe) => {
-        const others = network.nodes.filter((n) => n.url !== excludedUrl && !n.disabled)
-        if (others.length === 0) return true
-
-        let answered = 0
-        let abstained = 0
-        for (const node of others) {
-          if (node.offline) {
-            abstained += 1
-            continue
-          }
-          if (!(await probe(sessionFor(node)))) return false
-          answered += 1
-        }
-
-        return answered > 0 && abstained === 0
+      getHistoryNodeUrl: () => {
+        const pinned = network.nodes.find((n) => n.url === pinnedUrl)
+        return pinned?.offline ? undefined : pinned?.url
+      },
+      getHistorySessionGeneration: () => network.generation ?? 0,
+      resetHistorySession: () => {
+        pinnedUrl = null
+        network.generation = (network.generation ?? 0) + 1
       }
     }
   }
@@ -111,7 +108,8 @@ function createContext(transactions = {}) {
     address: 'btc-address',
     transactions,
     bottomReached: false,
-    newTxCatchUp: null
+    newTxCatchUp: null,
+    oldTxState: null
   }
 
   return {
@@ -134,6 +132,9 @@ function createContext(transactions = {}) {
       }
       if (type === 'bottom') {
         state.bottomReached = payload
+      }
+      if (type === 'oldTxState') {
+        state.oldTxState = payload
       }
     },
     dispatch: vi.fn(() => Promise.resolve())
@@ -583,22 +584,16 @@ describe('btc-actions getOldTransactions', () => {
     expect(getTransactionsMock).not.toHaveBeenCalled()
   })
 
-  it('pages older history with the normalized identifier', async () => {
-    // `normalizeTransaction` produces `hash`, never `txid`: reading the wrong
-    // field left the cursor undefined and refetched the newest page forever
-    Object.assign(context.state.transactions, {
-      new1: makeTx('new1', 3000),
-      old1: makeTx('old1', 1000)
-    })
-    getTransactionsMock.mockResolvedValue([])
+  it('establishes a node-local cursor before paging by the normalized identifier', async () => {
+    const chain = makeChain('tx', 30)
+    getTransactionsMock.mockImplementation(pagesOver(chain))
 
     await actions.getOldTransactions(context)
+    await actions.getOldTransactions(context)
 
-    expect(getTransactionsMock).toHaveBeenCalledWith(
-      'btc-address',
-      'old1',
-      'https://indexer.example.com'
-    )
+    // The merged store cannot provide a safe first cursor. Once the first page
+    // establishes provenance, the normalized `hash` owns the next request.
+    expect(getTransactionsMock.mock.calls.map((call) => call[1])).toEqual([undefined, 'tx24'])
   })
 
   it('latches the bottom when the serving indexer runs out without querying other nodes', async () => {
@@ -624,6 +619,7 @@ describe('btc-actions getOldTransactions', () => {
     // Older history is read on the pruned node
     network.pick = () => network.nodes[0]
     await actions.getOldTransactions(context)
+    await actions.getOldTransactions(context)
 
     expect(Object.keys(context.state.transactions)).toHaveLength(30)
     expect(context.state.bottomReached).toBe(true)
@@ -639,6 +635,7 @@ describe('btc-actions getOldTransactions', () => {
     )
 
     await actions.getOldTransactions(context)
+    await actions.getOldTransactions(context)
 
     expect(Object.keys(context.state.transactions)).toHaveLength(30)
     expect(context.state.bottomReached).toBe(true)
@@ -651,5 +648,108 @@ describe('btc-actions getOldTransactions', () => {
     await expect(actions.getOldTransactions(context)).rejects.toThrow('all indexers offline')
 
     expect(context.committed.at(-1)).toEqual(['areOlderLoading', false])
+  })
+
+  it('binds cursor to node and restarts without toTx on failover', async () => {
+    const chainA = makeChain('nodeA-', 25)
+    const chainB = makeChain('nodeB-', 40)
+    const nodeAUrl = 'https://node-a.example.com'
+    const nodeBUrl = 'https://node-b.example.com'
+
+    // Node B does not know node A's transactions: if queried with node A's cursor, it returns []
+    const nodeBQueries = []
+    const nodeB = {
+      url: nodeBUrl,
+      getTransactions: (address, toTx) => {
+        nodeBQueries.push(toTx)
+        return pagesOver(chainB)(address, toTx)
+      }
+    }
+
+    let nodeAFailed = false
+    const nodeA = {
+      url: nodeAUrl,
+      getTransactions: (address, toTx) => {
+        if (nodeAFailed) {
+          return Promise.reject(new Error('connection timeout'))
+        }
+        return pagesOver(chainA)(address, toTx)
+      }
+    }
+
+    network.nodes = [nodeA, nodeB]
+    network.pick = () => network.nodes[0]
+    network.onWalkFail = (_err, failedNode) => {
+      expect(failedNode.url).toBe(nodeAUrl)
+      network.pick = () => nodeB
+    }
+
+    // First page on node A: reads all 25 records and sets oldTxState cursor to nodeA-24
+    await actions.getOldTransactions(context)
+    expect(Object.keys(context.state.transactions)).toHaveLength(25)
+    expect(context.state.oldTxState).toMatchObject({
+      node: nodeAUrl,
+      cursor: 'nodeA-24'
+    })
+
+    // Now node A fails. Failover retries on node B.
+    nodeAFailed = true
+    await actions.getOldTransactions(context)
+
+    // Node B must have been queried without toTx (undefined) rather than node A's cursor
+    expect(nodeBQueries[0]).toBeUndefined()
+    expect(context.state.bottomReached).toBe(false)
+    expect(context.state.oldTxState).toMatchObject({
+      node: nodeBUrl,
+      cursor: 'nodeB-24'
+    })
+
+    // Finish reading node B
+    await actions.getOldTransactions(context)
+    expect(nodeBQueries[1]).toBe('nodeB-24')
+    expect(context.state.bottomReached).toBe(true)
+
+    // All records of node B are reachable
+    for (const tx of chainB) {
+      expect(context.state.transactions[tx.hash]).toBeDefined()
+    }
+  })
+
+  it('clears bottomReached latch when session node fails over', async () => {
+    const chainA = makeChain('nodeA-', 20) // < 25 records, latches bottom
+    const chainB = makeChain('nodeB-', 40)
+    const nodeAUrl = 'https://node-a.example.com'
+    const nodeBUrl = 'https://node-b.example.com'
+
+    const nodeA = nodeOver(nodeAUrl, chainA)
+    const nodeB = nodeOver(nodeBUrl, chainB)
+
+    network.nodes = [nodeA, nodeB]
+    network.pick = () => network.nodes[0]
+
+    // Node A reaches bottom
+    await actions.getOldTransactions(context)
+    expect(Object.keys(context.state.transactions)).toHaveLength(20)
+    expect(context.state.bottomReached).toBe(true)
+
+    // Node A goes offline, failing over to node B
+    nodeA.offline = true
+    network.generation += 1
+    network.pick = () => nodeB
+
+    // Calling getOldTransactions must reset bottomReached and fetch from node B
+    await actions.getOldTransactions(context)
+    expect(context.state.bottomReached).toBe(false)
+    expect(context.state.oldTxState).toMatchObject({
+      node: nodeBUrl,
+      cursor: 'nodeB-24'
+    })
+
+    // Complete node B pagination
+    await actions.getOldTransactions(context)
+    expect(context.state.bottomReached).toBe(true)
+    for (const tx of chainB) {
+      expect(context.state.transactions[tx.hash]).toBeDefined()
+    }
   })
 })
