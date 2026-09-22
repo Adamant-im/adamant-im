@@ -1,6 +1,7 @@
 import { Transaction } from './transaction'
 
 type OrderBy = keyof Transaction
+type OrderClause = `${OrderBy}.asc` | `${OrderBy}.desc`
 
 export type GetTransactionsRequest = {
   /**
@@ -9,11 +10,16 @@ export type GetTransactionsRequest = {
    */
   and?: string
   /**
-   * Order by
+   * Order by. A second clause makes the order total, which is what `offset`
+   * paging needs to be deterministic: `time` is a block timestamp, not a key
    */
-  order?: `${OrderBy}.asc` | `${OrderBy}.desc`
+  order?: OrderClause | `${OrderClause},${OrderClause}`
   /**
    * Limit the number of transactions returned
    */
   limit?: number
+  /**
+   * Row offset. Only meaningful together with a deterministic `order`
+   */
+  offset?: number
 }

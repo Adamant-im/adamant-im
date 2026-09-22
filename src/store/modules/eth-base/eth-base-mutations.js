@@ -32,18 +32,17 @@ export default {
   },
 
   /**
-   * Adds new transactions
+   * Adds new transactions.
+   *
+   * Deliberately does not touch `minHeight` / `maxHeight`: `time` is a block
+   * timestamp and is not unique, so a page can be cut in the middle of a group
+   * of transactions sharing one timestamp. Only the caller knows whether a
+   * boundary is proven, and it moves it with `setMinHeight` / `setMaxHeight`.
+   *
    * @param {{transactions: object, minHeight: number, maxHeight: number}} state current state
    * @param {Array<{hash: string, time: number}>} transactions transactions list
    */
   transactions(state, transactions) {
-    const updateTimestamps = transactions.updateTimestamps
-    if (updateTimestamps) {
-      transactions = transactions.transactions
-    }
-    let minHeight = Infinity
-    let maxHeight = -1
-
     const address = state.address
 
     transactions.forEach((tx) => {
@@ -55,11 +54,6 @@ export default {
       const newTx = Object.assign({ direction, id: tx.hash }, state.transactions[tx.hash], tx)
 
       state.transactions[tx.hash] = newTx
-
-      if (tx.time && updateTimestamps) {
-        minHeight = Math.min(minHeight, tx.time)
-        maxHeight = Math.max(maxHeight, tx.time)
-      }
     })
 
     // Magic here helps to refresh Tx list when browser deletes it
@@ -68,14 +62,50 @@ export default {
       // We don't delete transactions, so they can't become in short
       state.transactionsCount = txCount
     }
-
-    if (minHeight < state.minHeight) {
-      state.minHeight = minHeight
+  },
+  /**
+   * Raises the upper boundary of the retrieved history.
+   *
+   * Unlike the `transactions` mutation this is explicit: `time` is a block
+   * timestamp, so a catch-up interrupted in the middle of a group sharing one
+   * timestamp must leave the boundary *below* that group. Otherwise the next
+   * update starts above it and the unread part is never requested again.
+   */
+  setMaxHeight(state, value) {
+    if (value > state.maxHeight) {
+      state.maxHeight = value
     }
+  },
 
-    if (maxHeight > state.maxHeight) {
-      state.maxHeight = maxHeight
+  /**
+   * Lowers the bottom boundary of the retrieved history. The mirror image of
+   * `setMaxHeight`: a page cut inside the group at its oldest timestamp must
+   * leave the boundary *above* that group, so that the next page reads it again
+   * instead of stepping below it.
+   */
+  setMinHeight(state, value) {
+    if (value < state.minHeight) {
+      state.minHeight = value
     }
+  },
+
+  /**
+   * Remembers how far a group sharing one block timestamp has been read, so that
+   * an update which ran out of its page budget continues instead of starting over.
+   */
+  setTimestampGroupCursor(state, cursor) {
+    state.timestampGroupCursor = cursor
+  },
+  /** Stores the indexer session that owns the current history boundaries. */
+  setHistorySession(state, session) {
+    state.historySession = session
+  },
+  /** Discards every node-specific ETH pagination boundary. */
+  resetHistoryPagination(state) {
+    state.minHeight = Infinity
+    state.maxHeight = -1
+    state.timestampGroupCursor = null
+    state.bottomReached = false
   },
   areOlderLoading(state, areLoading) {
     state.areOlderLoading = areLoading

@@ -16,6 +16,17 @@ import { AddressInfo } from './types/api/address'
 import { EstimatedFee, GetEstimatedFeeParams } from './types/api/estimated-fee'
 import { Balance } from './types/api/balance'
 
+/**
+ * Raw history reader bound to a single indexer for the whole walk it is passed to
+ */
+export type DogeIndexerHistorySession = {
+  /** URL of the indexer serving this walk. Offsets are only valid against it */
+  node: string
+  /** Generation counter of the history session */
+  generation: number
+  get<Response = any, Params = any>(path: string, params?: Params): Promise<Response>
+}
+
 export class DogeIndexerClient extends Client<DogeIndexer> {
   constructor(endpoints: NodeInfo[] = [], minNodeVersion = '0.0.0') {
     super('doge', 'service', NODE_LABELS.DogeIndexer)
@@ -88,5 +99,30 @@ export class DogeIndexerClient extends Client<DogeIndexer> {
     const { info } = await this.request<NodeStatus>('GET', '/api/status')
 
     return info.blocks
+  }
+
+  /**
+   * Runs a whole history walk against the pinned session indexer. History is paged by an
+   * offset into the node's own list, and indexers order transactions sharing a
+   * timestamp differently and may even list different sets, so an offset is only
+   * meaningful on the node it was computed against.
+   *
+   * All requests within the session share this pinned node. If the node becomes unavailable,
+   * session affinity is reset and fails over to an active replacement node.
+   *
+   * @param walk Callback receiving the scoped session bound to the selected node
+   */
+  async walkHistory<T>(walk: (session: DogeIndexerHistorySession) => Promise<T>): Promise<T> {
+    return this.requestHistoryWithRetry((node, generation) =>
+      walk(this.createSession(node, generation))
+    )
+  }
+
+  private createSession(node: DogeIndexer, generation: number): DogeIndexerHistorySession {
+    return {
+      node: node.url,
+      generation,
+      get: (path, params) => node.request('GET', path, params)
+    }
   }
 }

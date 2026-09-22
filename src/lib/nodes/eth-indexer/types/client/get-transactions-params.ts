@@ -20,11 +20,17 @@ export type GetTransactionsParams = {
    */
   to?: number
   /**
-   * Limit the number of transactions returned. Default to `100`
+   * Limit the number of transactions returned. Defaults to `25`
    */
   limit?: number
   /**
    * Offset. Defaults to `0`
    */
   offset?: number
+  /**
+   * Sort order of the `time` column. Defaults to `time.desc` (newest first).
+   * Use `time.asc` to page forward from a known lower boundary without
+   * skipping anything in between
+   */
+  order?: 'time.asc' | 'time.desc'
 }

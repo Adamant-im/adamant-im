@@ -10,6 +10,18 @@ import { GetAddressParams } from './types/api/get-address/get-address-params'
 import { GetAddressResult } from './types/api/get-address/get-address-result'
 import { GetUnspentsParams } from './types/api/get-unspents/get-unspents-params'
 import { logger } from '@/utils/devTools/logger'
+import type { BtcTransaction } from '@/lib/nodes/types/transaction'
+
+/**
+ * History reader bound to a single indexer for the whole walk it is passed to
+ */
+export type BtcIndexerHistorySession = {
+  /** URL of the indexer serving this walk. Cursors are only valid against it */
+  node: string
+  /** Generation counter of the history session */
+  generation: number
+  getTransactions(address: string, toTx?: string): Promise<BtcTransaction[]>
+}
 
 /**
  * Provides methods for calling the ADAMANT API.
@@ -65,11 +77,49 @@ export class BtcIndexerClient extends Client<BtcIndexer> {
    * @param toTx Until transaction ID. For pagination.
    */
   async getTransactions(address: string, toTx?: string) {
-    const endpoint = toTx ? `/address/${address}/txs/chain/${toTx}` : `/address/${address}/txs`
-
-    const transactions = await this.request<Transaction[]>('GET', endpoint)
+    const transactions = await this.request<Transaction[]>(
+      'GET',
+      this.historyEndpoint(address, toTx)
+    )
 
     return transactions.map((transaction) => normalizeTransaction(transaction, address))
+  }
+
+  private historyEndpoint(address: string, toTx?: string) {
+    return toTx ? `/address/${address}/txs/chain/${toTx}` : `/address/${address}/txs`
+  }
+
+  /**
+   * Runs a whole history walk against the pinned session indexer.
+   *
+   * History is paged by "everything older than this transaction", and indexers
+   * legitimately keep different history depths: a pruned one does not know the
+   * cursor at all and answers with an empty page, which reads as the end of
+   * history. Every page of one walk therefore goes to the pinned session node,
+   * and if it becomes unavailable the session affinity is cleared and the walk
+   * restarts on another node instead of continuing a cursor into a different dataset.
+   *
+   * @param walk Callback receiving the scoped session bound to the selected node
+   */
+  async walkHistory<T>(walk: (session: BtcIndexerHistorySession) => Promise<T>): Promise<T> {
+    return this.requestHistoryWithRetry((node, generation) =>
+      walk(this.createSession(node, generation))
+    )
+  }
+
+  private createSession(node: BtcIndexer, generation: number): BtcIndexerHistorySession {
+    return {
+      node: node.url,
+      generation,
+      getTransactions: async (address, toTx) => {
+        const transactions = await node.request<Transaction[]>(
+          'GET',
+          this.historyEndpoint(address, toTx)
+        )
+
+        return transactions.map((transaction) => normalizeTransaction(transaction, address))
+      }
+    }
   }
 
   /**

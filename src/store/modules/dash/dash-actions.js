@@ -13,14 +13,16 @@ const getNewTransactions = async (api, context) => {
 
   context.commit('areRecentLoading', true)
 
-  const result = await api.getTransactions({ excludes })
+  try {
+    const result = await api.getTransactions({ excludes })
 
-  if (result) {
-    context.commit('transactions', result.items)
-    context.commit('bottom', true)
+    if (result) {
+      context.commit('transactions', result.items)
+      context.commit('bottom', true)
+    }
+  } finally {
+    context.commit('areRecentLoading', false)
   }
-
-  context.commit('areRecentLoading', false)
 }
 
 const getOldTransactions = async (api, context) => {
@@ -31,14 +33,16 @@ const getOldTransactions = async (api, context) => {
 
   context.commit('areOlderLoading', true)
 
-  const result = await api.getTransactions({ excludes })
+  try {
+    const result = await api.getTransactions({ excludes })
 
-  if (result) {
-    context.commit('transactions', result.items)
-    context.commit('bottom', true)
+    if (result) {
+      context.commit('transactions', result.items)
+      context.commit('bottom', true)
+    }
+  } finally {
+    context.commit('areOlderLoading', false)
   }
-
-  context.commit('areOlderLoading', false)
 }
 
 export default {
