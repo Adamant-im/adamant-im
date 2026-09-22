@@ -2,17 +2,12 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useChatStateStore = defineStore('chatState', () => {
-  const isShowChatStartDialog = ref(false)
   const isShowPartnerInfoDialog = ref(false)
   const isShowFreeTokensDialog = ref(false)
   const isShowSetPasswordDialog = ref(false)
   const isChatMenuOpen = ref(false)
   const isEmojiPickerOpen = ref(false)
   const actionsDropdownMessageId = ref<number | string>(-1)
-
-  const setShowChatStartDialog = (value: boolean) => {
-    isShowChatStartDialog.value = value
-  }
 
   const setShowPartnerInfoDialog = (value: boolean) => {
     isShowPartnerInfoDialog.value = value
@@ -39,7 +34,6 @@ export const useChatStateStore = defineStore('chatState', () => {
   }
 
   const $reset = () => {
-    setShowChatStartDialog(false)
     setShowPartnerInfoDialog(false)
     setShowFreeTokensDialog(false)
     setShowSetPasswordDialog(false)
@@ -50,7 +44,6 @@ export const useChatStateStore = defineStore('chatState', () => {
 
   return {
     actionsDropdownMessageId,
-    isShowChatStartDialog,
     isShowPartnerInfoDialog,
     isShowFreeTokensDialog,
     isShowSetPasswordDialog,
@@ -58,7 +51,6 @@ export const useChatStateStore = defineStore('chatState', () => {
     isEmojiPickerOpen,
 
     setActionsDropdownMessageId,
-    setShowChatStartDialog,
     setShowPartnerInfoDialog,
     setShowFreeTokensDialog,
     setShowSetPasswordDialog,

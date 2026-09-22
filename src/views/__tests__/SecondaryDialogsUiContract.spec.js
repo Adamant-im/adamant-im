@@ -21,6 +21,7 @@ const warningOnPartnerAddressDialogPath = path.resolve(
 const freeTokensDialogPath = path.resolve(currentDir, '../../components/FreeTokensDialog.vue')
 const nodesOfflineDialogPath = path.resolve(currentDir, '../../components/NodesOfflineDialog.vue')
 const chatStartDialogPath = path.resolve(currentDir, '../../components/ChatStartDialog.vue')
+const chatsViewPath = path.resolve(currentDir, '../../components/Chat/Chats.vue')
 const walletResetDialogPath = path.resolve(
   currentDir,
   '../../components/wallets/WalletResetDialog.vue'
@@ -155,6 +156,9 @@ describe('Secondary dialogs UI contract', () => {
     const warningAddressesContent = readFileSync(warningOnAddressesDialogPath, 'utf8')
     const warningPartnerContent = readFileSync(warningOnPartnerAddressDialogPath, 'utf8')
     const chatStartContent = readFileSync(chatStartDialogPath, 'utf8')
+    // ChatStartDialog is rendered by the async modal system: its `v-dialog` width now
+    // lives in the `dialogProps` of the `modals.open()` call in Chats.vue.
+    const chatsContent = readFileSync(chatsViewPath, 'utf8')
     const walletResetContent = readFileSync(walletResetDialogPath, 'utf8')
     const passwordSetContent = readFileSync(passwordSetDialogPath, 'utf8')
     const shareUriContent = readFileSync(shareUriDialogPath, 'utf8')
@@ -175,7 +179,7 @@ describe('Secondary dialogs UI contract', () => {
     expect(chatStartContent).toContain('__menu-list')
     expect(chatStartContent).toContain('__menu-item')
     expect(chatStartContent).toContain('__menu-item-title')
-    expect(chatStartContent).toContain('width="var(--a-secondary-dialog-width)"')
+    expect(chatsContent).toContain("'var(--a-secondary-dialog-width)'")
     expect(chatStartContent).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
     expect(chatStartContent).toContain('var(--a-secondary-dialog-action-margin-top)')
     expect(chatStartContent).toContain('var(--a-secondary-dialog-link-margin-top)')
