@@ -480,8 +480,9 @@
     "author": "Author",
     "build_date": "Build date",
     "pull_request": "Pull Request",
-    "update_button": "Update app",
-    "updating": "Updating…",
+    "close": "Close",
+    "update_button": "Force refresh",
+    "updating": "Refreshing…",
     "link": "link"
   }
 }

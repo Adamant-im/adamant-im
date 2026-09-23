@@ -480,7 +480,8 @@
     "author": "Автор",
     "build_date": "Дата сборки",
     "pull_request": "Pull Request",
-    "update_button": "Обновить приложение",
+    "close": "Закрыть",
+    "update_button": "Принудительно обновить",
     "updating": "Обновляем…",
     "link": "ссылка"
   }

@@ -299,6 +299,7 @@ const onScanQrcode = (value: string) => {
 
   &__qr-action-button {
     margin: var(--a-login-qr-action-button-margin);
+    overflow: visible;
   }
 
   @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {

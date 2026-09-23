@@ -269,6 +269,7 @@ describe('BuildInfoDialog.vue', () => {
     expect(text).toContain('bludnic')
     expect(text).toContain('2025-02-25 13:44')
     expect(text).toContain('Testnet')
-    expect(text).toContain('Update app')
+    expect(text).toContain('Close')
+    expect(text).toContain('Force refresh')
   })
 })

@@ -19,16 +19,16 @@
           {{ t('build_info.info_title') }}
         </div>
 
-        <ul :class="`${className}__list`">
-          <li :class="`${className}__list-item`">
+        <div :class="`${className}__meta`">
+          <div :class="`${className}__meta-row`">
             {{ t('build_info.version') }}:
             <span :class="`${className}__value`">v{{ info.version }}</span>
-          </li>
-          <li v-if="info.isTestnet" :class="`${className}__list-item`">
+          </div>
+          <div v-if="info.isTestnet" :class="`${className}__meta-row`">
             {{ t('build_info.network') }}:
             <span :class="`${className}__testnet-badge`">{{ t('build_info.testnet') }}</span>
-          </li>
-          <li :class="`${className}__list-item`">
+          </div>
+          <div :class="`${className}__meta-row`">
             {{ t('build_info.branch') }}:
             <a
               v-if="info.branch"
@@ -39,8 +39,8 @@
               {{ info.branch }}
             </a>
             <span v-else :class="`${className}__value`">—</span>
-          </li>
-          <li v-if="info.prNumber" :class="`${className}__list-item`">
+          </div>
+          <div v-if="info.prNumber" :class="`${className}__meta-row`">
             {{ t('build_info.pull_request') }}:
             <a
               :class="[`${className}__link`, `${className}__value`]"
@@ -49,8 +49,8 @@
             >
               #{{ info.prNumber }}
             </a>
-          </li>
-          <li :class="`${className}__list-item`">
+          </div>
+          <div :class="`${className}__meta-row`">
             {{ t('build_info.commit') }}:
             <a
               v-if="info.commit"
@@ -61,8 +61,8 @@
               {{ info.commit }}
             </a>
             <span v-else :class="`${className}__value`">—</span>
-          </li>
-          <li :class="`${className}__list-item`">
+          </div>
+          <div :class="`${className}__meta-row`">
             {{ t('build_info.author') }}:
             <a
               v-if="info.author"
@@ -73,19 +73,19 @@
               {{ info.author }}
             </a>
             <span v-else :class="`${className}__value`">—</span>
-          </li>
-          <li :class="`${className}__list-item`">
+          </div>
+          <div :class="`${className}__meta-row`">
             {{ t('build_info.build_date') }}:
             <span :class="`${className}__value`">{{ info.buildDate }}</span>
-          </li>
-        </ul>
+          </div>
+        </div>
       </v-card-text>
 
       <v-card-actions :class="`${className}__actions`">
         <v-spacer />
 
         <v-btn variant="text" class="a-btn-regular" @click="show = false">
-          {{ t('transfer.confirm_cancel') }}
+          {{ t('build_info.close') }}
         </v-btn>
 
         <v-btn variant="text" class="a-btn-regular" :disabled="isUpdating" @click="handleUpdate">
@@ -193,23 +193,19 @@ const handleUpdate = async () => {
   }
 
   &__section-title {
-    font-size: var(--a-font-size-sm, 14px);
-    font-weight: var(--a-font-weight-light, 300);
-    margin-top: var(--a-space-3);
-    margin-bottom: var(--a-space-1);
+    word-break: break-word;
+    margin-top: var(--a-space-4);
+    margin-bottom: var(--a-space-3);
   }
 
-  &__list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  &__meta {
+    display: flex;
+    flex-direction: column;
   }
 
-  &__list-item {
-    font-size: var(--a-font-size-sm, 14px);
-    font-weight: var(--a-font-weight-light, 300);
+  &__meta-row {
     padding-block: 2px;
-    line-height: var(--a-line-height-normal, 1.4);
+    word-break: break-word;
   }
 
   &__value {
@@ -230,8 +226,7 @@ const handleUpdate = async () => {
 
   &__testnet-badge {
     color: map.get(colors.$adm-colors, 'attention');
-    font-weight: var(--a-font-weight-bold, 700);
-    letter-spacing: var(--a-letter-spacing-caps-small, 0.05em);
+    font-weight: inherit;
     text-transform: uppercase;
   }
 
