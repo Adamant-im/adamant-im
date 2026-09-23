@@ -316,6 +316,7 @@ chat, and sends only the payloads that are not on chain yet.
 
 - Prefer focused patches with explicit rationale
 - Preserve backward compatibility for user data and persisted state where possible
+- Do not edit generated files manually; regenerate them via corresponding npm scripts instead
 - When touching legacy code, improve locally without broad unrelated rewrites
 - Add or update tests near the changed behavior
 

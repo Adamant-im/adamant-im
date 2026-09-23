@@ -397,4 +397,19 @@ describe('Secondary dialogs UI contract', () => {
       '@include layoutPrimitives.a-flex-column-align-center();'
     )
   })
+
+  it('uses secondary dialog card frame and mixins in build info dialog', () => {
+    const buildInfoDialogPath = path.resolve(currentDir, '../../components/BuildInfoDialog.vue')
+    const content = readFileSync(buildInfoDialogPath, 'utf8')
+
+    expect(content).toContain("const className = 'build-info-dialog'")
+    expect(content).toContain('width="var(--a-secondary-dialog-width)"')
+    expect(content).toContain('secondaryDialog.a-secondary-dialog-card-frame()')
+    expect(content).toContain('secondaryDialog.a-secondary-dialog-title()')
+    expect(content).toContain('secondaryDialog.a-secondary-dialog-body-copy()')
+    expect(content).toContain('secondaryDialog.a-secondary-dialog-link-action()')
+    expect(content).toContain('`${className}__body`')
+    expect(content).toContain('`${className}__actions`')
+    expect(content).toContain('AUTH_FORM_SUBMIT_SPINNER_SIZE')
+  })
 })

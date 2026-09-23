@@ -18,6 +18,7 @@
                 <v-icon :icon="mdiCog" />
               </v-btn>
             </router-link>
+            <build-info :class="`${className}__build-info`" />
           </div>
         </div>
 
@@ -123,6 +124,7 @@ import QrCodeScanIcon from '@/components/icons/common/QrCodeScan.vue'
 import FileIcon from '@/components/icons/common/File.vue'
 import LoginPasswordForm from '@/components/LoginPasswordForm.vue'
 import Logo from '@/components/icons/common/Logo.vue'
+import BuildInfo from '@/components/BuildInfo.vue'
 import { navigateByURI } from '@/router/navigationGuard'
 import { logger } from '@/utils/devTools/logger'
 import { AUTH_FORM_SETTINGS_BUTTON_SIZE } from '@/components/Login/helpers/uiMetrics'
@@ -261,6 +263,9 @@ const onScanQrcode = (value: string) => {
     position: absolute;
     right: 0;
     margin-right: var(--a-login-settings-offset-inline);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
   }
   &__settings-button {
     &:hover > ::v-deep(.v-btn__overlay) {
@@ -272,6 +277,12 @@ const onScanQrcode = (value: string) => {
       box-shadow: var(--a-focus-ring);
       border-radius: var(--a-radius-round);
     }
+  }
+
+  &__build-info {
+    margin-top: var(--a-space-2);
+    margin-right: var(--a-login-settings-offset-inline);
+    width: max-content;
   }
 
   &__passphrase-row {

@@ -466,5 +466,22 @@
     "search": "Поиск",
     "summary_title": "Сброс настроек кошельков",
     "blockchain": "Мейннет"
+  },
+  "build_info": {
+    "dialog_title": "ADAMANT Messenger",
+    "about_text": "ADAMANT — децентрализованный мессенджер, созданный открытым сообществом независимых разработчиков. Вы можете собрать и запустить приложение из исходного кода:",
+    "info_title": "Информация об этой сборке:",
+    "version": "Версия",
+    "network": "Сеть",
+    "testnet": "Тестнет",
+    "mainnet": "Мейннет",
+    "branch": "Ветка",
+    "commit": "Коммит",
+    "author": "Автор",
+    "build_date": "Дата сборки",
+    "pull_request": "Pull Request",
+    "update_button": "Обновить приложение",
+    "updating": "Обновляем…",
+    "link": "ссылка"
   }
 }

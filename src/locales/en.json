@@ -466,5 +466,22 @@
     "search": "Search",
     "summary_title": "Reset wallet list",
     "blockchain": "Mainnet"
+  },
+  "build_info": {
+    "dialog_title": "ADAMANT Messenger",
+    "about_text": "ADAMANT is a decentralized messenger created by an open community of independent developers. You can build and run the application from the source code:",
+    "info_title": "Information about this build:",
+    "version": "Version",
+    "network": "Network",
+    "testnet": "Testnet",
+    "mainnet": "Mainnet",
+    "branch": "Branch",
+    "commit": "Commit",
+    "author": "Author",
+    "build_date": "Build date",
+    "pull_request": "Pull Request",
+    "update_button": "Update app",
+    "updating": "Updating…",
+    "link": "link"
   }
 }
