@@ -72,8 +72,15 @@ describe('Options UI style contract', () => {
     expect(content).toContain('textContent.a-content-explanatory-copy()')
     expect(content).toContain('&__title--first')
     expect(content).toContain('&__title--section')
-    expect(content).toContain('<button')
-    expect(content).toContain('type="button"')
+    expect(content).toContain('<BuildInfo')
+    expect(content).toContain(':class="`${className}__version_info`"')
+
+    const buildInfoPath = path.resolve(currentDir, '../../components/BuildInfo.vue')
+    const buildInfoContent = readFileSync(buildInfoPath, 'utf8')
+    expect(buildInfoContent).toContain('<button')
+    expect(buildInfoContent).toContain('type="button"')
+    expect(buildInfoContent).toContain('data-test-id="version-info"')
+
     expect(content).toContain("theme.change(isDarkTheme ? 'dark' : 'light')")
     expect(content).toContain('var(--a-space-6)')
     expect(content).not.toContain("theme.global.name.value = isDarkTheme ? 'dark' : 'light'")

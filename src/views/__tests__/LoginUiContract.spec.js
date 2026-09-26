@@ -83,6 +83,8 @@ describe('Login UI style contract', () => {
     expect(content).toContain('${className}__qr-actions-row')
     expect(content).toContain('${className}__qr-action-button')
     expect(content).toContain('${className}__logo')
+    expect(content).toContain('${className}__build-info')
+    expect(content).toContain('<build-info')
     expect(logoContent).toContain('width: var(--a-logo-size);')
     expect(logoContent).toContain('height: var(--a-logo-size);')
     expect(logoContent).toContain('width: var(--a-logo-size-lg);')
