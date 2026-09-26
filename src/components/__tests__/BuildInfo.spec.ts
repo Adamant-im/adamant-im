@@ -42,8 +42,11 @@ interface MockStoreState {
   }
 }
 
-function mockupStore(): Store<MockStoreState> {
+function mockupStore(options?: { isLogged?: boolean }): Store<MockStoreState> {
   return createStore<MockStoreState>({
+    getters: {
+      isLogged: () => options?.isLogged ?? false
+    },
     modules: {
       options: {
         namespaced: true,
@@ -199,58 +202,12 @@ describe('BuildInfo.vue', () => {
     expect(wrapper.classes()).toContain('build-info--testnet')
     const badge = wrapper.find('.build-info__testnet-badge')
     expect(badge.exists()).toBe(true)
-    expect(badge.text()).toBe('TESTNET')
+    expect(badge.text()).toBe('Testnet')
   })
 
-  it('triggers dev mode after 10 taps when allowDevModeUnlock is true', async () => {
+  it('opens BuildInfoDialog when trigger button is clicked', async () => {
     const store = mockupStore()
     const i18n = mockupI18n()
-    const commitSpy = vi.spyOn(store, 'commit')
-    const dispatchSpy = vi.spyOn(store, 'dispatch')
-
-    const wrapper = mount(BuildInfo, {
-      props: {
-        allowDevModeUnlock: true,
-        buildInfo: {
-          version: '4.8.1',
-          branch: 'master',
-          commit: '60e87c6',
-          prNumber: null,
-          author: 'bludnic',
-          buildDate: '2025-02-25 13:44',
-          isTestnet: false
-        }
-      },
-      global: {
-        plugins: [store, i18n, vuetify]
-      }
-    })
-
-    const button = wrapper.find('button[data-test-id="version-info"]')
-    for (let i = 0; i < 9; i++) {
-      await button.trigger('click')
-    }
-
-    expect(commitSpy).not.toHaveBeenCalledWith('options/devModeEnabled', true)
-    expect(store.state.options.devModeEnabled).toBe(false)
-
-    await button.trigger('click') // 10th tap
-
-    expect(commitSpy).toHaveBeenCalledWith('options/updateOption', {
-      key: 'devModeEnabled',
-      value: true
-    })
-    expect(store.state.options.devModeEnabled).toBe(true)
-    expect(dispatchSpy).toHaveBeenCalledWith('snackbar/show', {
-      message: 'Dev screens enabled',
-      timeout: 3000
-    })
-  })
-
-  it('does not trigger dev mode when allowDevModeUnlock is false (default)', async () => {
-    const store = mockupStore()
-    const i18n = mockupI18n()
-    const commitSpy = vi.spyOn(store, 'commit')
 
     const wrapper = mount(BuildInfo, {
       props: {
@@ -270,15 +227,11 @@ describe('BuildInfo.vue', () => {
     })
 
     const button = wrapper.find('button[data-test-id="version-info"]')
-    for (let i = 0; i < 12; i++) {
-      await button.trigger('click')
-    }
+    expect(wrapper.findComponent(BuildInfoDialog).props('modelValue')).toBe(false)
 
-    expect(commitSpy).not.toHaveBeenCalledWith('options/updateOption', {
-      key: 'devModeEnabled',
-      value: true
-    })
-    expect(store.state.options.devModeEnabled).toBe(false)
+    await button.trigger('click')
+
+    expect(wrapper.findComponent(BuildInfoDialog).props('modelValue')).toBe(true)
   })
 })
 
@@ -401,5 +354,95 @@ describe('BuildInfoDialog.vue', () => {
       value: true
     })
     expect(store.state.options.devModeEnabled).toBe(false)
+  })
+
+  it('requires in-dialog confirmation before reload when user is logged in', async () => {
+    const store = mockupStore({ isLogged: true })
+    const i18n = mockupI18n()
+
+    const wrapper = mount(BuildInfoDialog, {
+      attachTo: document.body,
+      props: {
+        modelValue: true,
+        buildInfo: {
+          version: '4.8.1',
+          branch: 'dev',
+          commit: '60e87c6',
+          prNumber: null,
+          author: 'bludnic',
+          buildDate: '2025-02-25 13:44',
+          isTestnet: false
+        }
+      },
+      global: {
+        plugins: [store, i18n, vuetify]
+      }
+    })
+
+    const buttons = Array.from(document.querySelectorAll('button'))
+    const refreshBtn = buttons.find((btn) => btn.textContent?.includes('Force refresh'))
+    expect(refreshBtn).toBeDefined()
+    refreshBtn!.click()
+    await wrapper.vm.$nextTick()
+
+    expect(document.querySelector('.build-info-dialog__confirm-warning')).not.toBeNull()
+    expect(document.body.textContent).toContain('Cancel')
+
+    const cancelBtn = Array.from(document.querySelectorAll('button')).find((btn) =>
+      btn.textContent?.includes('Cancel')
+    )
+    expect(cancelBtn).toBeDefined()
+    cancelBtn!.click()
+    await wrapper.vm.$nextTick()
+
+    expect(document.querySelector('.build-info-dialog__confirm-warning')).toBeNull()
+  })
+
+  it('shows offline snackbar feedback when user triggers refresh offline', async () => {
+    Object.defineProperty(window.navigator, 'onLine', {
+      configurable: true,
+      writable: true,
+      value: false
+    })
+
+    const store = mockupStore({ isLogged: false })
+    const dispatchSpy = vi.spyOn(store, 'dispatch')
+    const i18n = mockupI18n()
+
+    const wrapper = mount(BuildInfoDialog, {
+      attachTo: document.body,
+      props: {
+        modelValue: true,
+        buildInfo: {
+          version: '4.8.1',
+          branch: 'dev',
+          commit: '60e87c6',
+          prNumber: null,
+          author: 'bludnic',
+          buildDate: '2025-02-25 13:44',
+          isTestnet: false
+        }
+      },
+      global: {
+        plugins: [store, i18n, vuetify]
+      }
+    })
+
+    const buttons = Array.from(document.querySelectorAll('button'))
+    const refreshBtn = buttons.find((btn) => btn.textContent?.includes('Force refresh'))
+    expect(refreshBtn).toBeDefined()
+    refreshBtn!.click()
+    await wrapper.vm.$nextTick()
+
+    expect(dispatchSpy).toHaveBeenCalledWith('snackbar/show', {
+      message: 'You are offline. Try again when connected',
+      timeout: 3000
+    })
+
+    Object.defineProperty(window.navigator, 'onLine', {
+      configurable: true,
+      writable: true,
+      value: true
+    })
   })
 })

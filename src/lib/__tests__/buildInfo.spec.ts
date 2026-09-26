@@ -16,7 +16,7 @@ import { resolveBuildMetadata } from '../../../vite-config/plugins/buildInfoPlug
 
 describe('buildInfo helper', () => {
   describe('getBuildInfoLines', () => {
-    it('formats master branch as version on line 1 and empty string on line 2', () => {
+    it('formats master branch as version on line 1 and empty string on line 2 when commit is present', () => {
       const result = getBuildInfoLines({
         version: '4.12.0',
         branch: 'master',
@@ -29,6 +29,36 @@ describe('buildInfo helper', () => {
 
       expect(result.line1).toBe('v4.12.0')
       expect(result.line2).toBe('')
+    })
+
+    it('formats master branch without commit as unknown on line 2', () => {
+      const result = getBuildInfoLines({
+        version: '4.12.0',
+        branch: 'master',
+        commit: '',
+        prNumber: null,
+        author: '',
+        buildDate: '2025-02-25 13:44',
+        isTestnet: false
+      })
+
+      expect(result.line1).toBe('v4.12.0')
+      expect(result.line2).toBe('unknown')
+    })
+
+    it('formats unknown build identity as unknown on line 2', () => {
+      const result = getBuildInfoLines({
+        version: '4.12.0',
+        branch: '',
+        commit: '',
+        prNumber: null,
+        author: '',
+        buildDate: '2025-02-25 13:44',
+        isTestnet: false
+      })
+
+      expect(result.line1).toBe('v4.12.0')
+      expect(result.line2).toBe('unknown')
     })
 
     it('formats dev branch as dev and commit on line 2', () => {
@@ -46,6 +76,21 @@ describe('buildInfo helper', () => {
       expect(result.line2).toBe('dev 60e87c6')
     })
 
+    it('formats dev branch without commit as dev unknown on line 2', () => {
+      const result = getBuildInfoLines({
+        version: '4.12.0',
+        branch: 'dev',
+        commit: '',
+        prNumber: null,
+        author: '',
+        buildDate: '2025-02-25 13:44',
+        isTestnet: false
+      })
+
+      expect(result.line1).toBe('v4.12.0')
+      expect(result.line2).toBe('dev unknown')
+    })
+
     it('formats PR branch as prNumber and commit on line 2', () => {
       const result = getBuildInfoLines({
         version: '4.12.0',
@@ -59,6 +104,21 @@ describe('buildInfo helper', () => {
 
       expect(result.line1).toBe('v4.12.0')
       expect(result.line2).toBe('712 60e87c6')
+    })
+
+    it('formats PR branch without commit as prNumber unknown on line 2', () => {
+      const result = getBuildInfoLines({
+        version: '4.12.0',
+        branch: 'feature/pr-test',
+        commit: '',
+        prNumber: '712',
+        author: '',
+        buildDate: '2025-02-25 13:44',
+        isTestnet: false
+      })
+
+      expect(result.line1).toBe('v4.12.0')
+      expect(result.line2).toBe('712 unknown')
     })
 
     it('formats plain branch as commit on line 2', () => {
@@ -76,6 +136,7 @@ describe('buildInfo helper', () => {
       expect(result.line2).toBe('60e87c6')
     })
   })
+
   describe('getCompactBuildInfoString', () => {
     it('formats master branch as only version', () => {
       const result = getCompactBuildInfoString({
@@ -89,6 +150,34 @@ describe('buildInfo helper', () => {
       })
 
       expect(result).toBe('v4.8.1')
+    })
+
+    it('formats unknown build identity as version and unknown', () => {
+      const result = getCompactBuildInfoString({
+        version: '4.8.1',
+        branch: '',
+        commit: '',
+        prNumber: null,
+        author: '',
+        buildDate: '2025-02-25 13:44',
+        isTestnet: false
+      })
+
+      expect(result).toBe('v4.8.1 unknown')
+    })
+
+    it('formats master branch without commit as version and unknown', () => {
+      const result = getCompactBuildInfoString({
+        version: '4.8.1',
+        branch: 'master',
+        commit: '',
+        prNumber: null,
+        author: '',
+        buildDate: '2025-02-25 13:44',
+        isTestnet: false
+      })
+
+      expect(result).toBe('v4.8.1 unknown')
     })
 
     it('formats dev branch as version, dev, and commit', () => {
@@ -144,7 +233,7 @@ describe('buildInfo helper', () => {
         isTestnet: false
       })
 
-      expect(result).toBe('v4.8.1 dev')
+      expect(result).toBe('v4.8.1 dev unknown')
     })
   })
 
@@ -232,8 +321,9 @@ describe('buildInfo helper', () => {
         }
       })
 
-      await forceAppUpdate()
+      const result = await forceAppUpdate()
 
+      expect(result).toBe('reloaded')
       expect(global.fetch).toHaveBeenCalledWith('http://localhost/', {
         cache: 'reload',
         credentials: 'same-origin'
@@ -259,8 +349,9 @@ describe('buildInfo helper', () => {
         value: { keys: mockKeys }
       })
 
-      await forceAppUpdate()
+      const result = await forceAppUpdate()
 
+      expect(result).toBe('offline')
       expect(mockKeys).not.toHaveBeenCalled()
       expect(global.fetch).not.toHaveBeenCalled()
       expect(window.location.reload).not.toHaveBeenCalled()
@@ -270,8 +361,9 @@ describe('buildInfo helper', () => {
       Object.defineProperty(window, 'caches', { writable: true, value: undefined })
       Object.defineProperty(window.navigator, 'serviceWorker', { writable: true, value: undefined })
 
-      await forceAppUpdate()
+      const result = await forceAppUpdate()
 
+      expect(result).toBe('reloaded')
       expect(window.location.reload).toHaveBeenCalled()
     })
   })
@@ -394,7 +486,22 @@ describe('buildInfo helper', () => {
       expect(meta.buildDate).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/)
     })
 
-    it('resolves author from git config or git log when it is a valid GitHub username', () => {
+    it('prioritizes explicit BUILD_COMMIT over github event headSha', () => {
+      const meta = resolveBuildMetadata({
+        env: {
+          BUILD_COMMIT: 'bbbbbbb999999'
+        },
+        event: {
+          headSha: 'aaaaaaa111111'
+        },
+        git: () => '',
+        pkgVersion: '4.12.0'
+      })
+
+      expect(meta.commit).toBe('bbbbbbb')
+    })
+
+    it('resolves author from git config github.user, dropping %an fallback', () => {
       const metaWithGithubUser = resolveBuildMetadata({
         env: {},
         git: (cmd) => (cmd === 'git config github.user' ? 'octocat' : ''),
@@ -402,20 +509,13 @@ describe('buildInfo helper', () => {
       })
       expect(metaWithGithubUser.author).toBe('octocat')
 
+      // %an git log format is dropped to avoid attributing arbitrary display names to GitHub users
       const metaWithCommitAuthor = resolveBuildMetadata({
         env: {},
         git: (cmd) => (cmd === 'git log -1 --format=%an' ? 'octocat-dev' : ''),
         pkgVersion: '4.12.0'
       })
-      expect(metaWithCommitAuthor.author).toBe('octocat-dev')
-
-      // Real display names with spaces must NOT be resolved as GitHub authors
-      const metaWithDisplayName = resolveBuildMetadata({
-        env: {},
-        git: (cmd) => (cmd === 'git log -1 --format=%an' ? 'Ivan Petrov' : ''),
-        pkgVersion: '4.12.0'
-      })
-      expect(metaWithDisplayName.author).toBe('')
+      expect(metaWithCommitAuthor.author).toBe('')
     })
 
     it('resolves isTestnet according to network config', () => {

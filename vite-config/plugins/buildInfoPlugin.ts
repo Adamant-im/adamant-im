@@ -15,12 +15,20 @@ export interface BuildMetadata {
   isTestnet: boolean
 }
 
+export interface ParsedGithubEvent {
+  prNumber?: string
+  headSha?: string
+  headRef?: string
+  authorLogin?: string
+}
+
 export interface ResolveBuildMetadataOptions {
   mode?: string
   target?: NetworkBuildTarget
   env?: Record<string, string | undefined>
   git?: (cmd: string) => string
   pkgVersion?: string
+  event?: ParsedGithubEvent
 }
 
 export const BUILD_INFO_MODULE_ID = 'virtual:adamant-build-info'
@@ -76,13 +84,6 @@ function resolvePackageVersion(): string {
   } catch {
     return '0.0.0'
   }
-}
-
-interface ParsedGithubEvent {
-  prNumber?: string
-  headSha?: string
-  headRef?: string
-  authorLogin?: string
 }
 
 function parseGithubEvent(eventPath?: string): ParsedGithubEvent {
@@ -165,7 +166,7 @@ function resolveCommit(
   git: (cmd: string) => string,
   event: ParsedGithubEvent
 ): string {
-  const candidate = event.headSha || env.BUILD_COMMIT || env.VERCEL_GIT_COMMIT_SHA || env.GITHUB_SHA
+  const candidate = env.BUILD_COMMIT || event.headSha || env.VERCEL_GIT_COMMIT_SHA || env.GITHUB_SHA
 
   if (candidate) {
     const sanitized = sanitizeField(candidate.trim(), COMMIT_RE)
@@ -236,12 +237,6 @@ function resolveAuthor(
     if (sanitized) return sanitized
   }
 
-  const commitAuthor = git('git log -1 --format=%an')
-  if (commitAuthor) {
-    const sanitized = sanitizeField(commitAuthor, GITHUB_LOGIN_RE)
-    if (sanitized) return sanitized
-  }
-
   return ''
 }
 
@@ -278,7 +273,7 @@ export function resolveBuildMetadata(
   const env = options.env ?? process.env
   const git = options.git ?? runGit
   const pkgVersion = options.pkgVersion ?? resolvePackageVersion()
-  const event = parseGithubEvent(env.GITHUB_EVENT_PATH)
+  const event = options.event ?? parseGithubEvent(env.GITHUB_EVENT_PATH)
 
   return {
     version: pkgVersion,

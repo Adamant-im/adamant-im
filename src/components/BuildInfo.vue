@@ -11,7 +11,7 @@
         <span v-if="lines.line2" :class="`${className}__line`">{{ lines.line2 }}</span>
       </span>
       <span v-if="info.isTestnet" :class="`${className}__testnet-badge`">
-        {{ t('build_info.testnet').toUpperCase() }}
+        {{ t('build_info.testnet') }}
       </span>
     </button>
 
@@ -25,7 +25,6 @@
 
 <script setup lang="ts">
 import { computed, ref, type PropType } from 'vue'
-import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import BuildInfoDialog from '@/components/BuildInfoDialog.vue'
 import {
@@ -47,32 +46,14 @@ const props = defineProps({
 })
 
 const { t } = useI18n()
-const store = useStore()
 const className = 'build-info'
 const showDialog = ref(false)
-const tapCount = ref(0)
 
 const info = computed<BuildMetadata>(() => props.buildInfo || defaultBuildInfo)
 const lines = computed(() => getBuildInfoLines(info.value))
 const compactText = computed(() => getCompactBuildInfoString(info.value))
 
 const onTriggerClick = () => {
-  if (props.allowDevModeUnlock) {
-    tapCount.value++
-
-    if (tapCount.value === 10 && store) {
-      store.commit('options/updateOption', {
-        key: 'devModeEnabled',
-        value: true
-      })
-
-      store.dispatch('snackbar/show', {
-        message: 'Dev screens enabled',
-        timeout: 3000
-      })
-    }
-  }
-
   showDialog.value = true
 }
 
@@ -104,9 +85,7 @@ defineExpose({
     font-family: var(--a-font-family-sans, sans-serif);
     color: inherit;
     text-align: right;
-    transition:
-      opacity var(--a-motion-base, 0.2s) linear,
-      color var(--a-motion-base, 0.2s) linear;
+    transition: color var(--a-motion-base, 0.2s) linear;
 
     &:focus-visible {
       outline: none;
@@ -121,6 +100,9 @@ defineExpose({
     align-items: flex-end;
     text-align: right;
     color: inherit;
+    transition:
+      opacity var(--a-motion-base, 0.2s) linear,
+      color var(--a-motion-base, 0.2s) linear;
   }
 
   &__line {
@@ -143,29 +125,27 @@ defineExpose({
     border: 1px solid currentColor;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    opacity: 1 !important;
   }
 }
 
 .v-theme--light {
-  .build-info__trigger {
+  .build-info__text {
     color: map.get(colors.$adm-colors, 'black2');
     opacity: var(--a-opacity-icon-muted, 0.62);
+  }
 
-    &:hover {
-      opacity: 1;
-    }
+  .build-info__trigger:hover .build-info__text {
+    opacity: 1;
   }
 }
 
 .v-theme--dark {
-  .build-info__trigger {
+  .build-info__text {
     color: var(--a-color-text-muted-dark);
+  }
 
-    &:hover {
-      color: map.get(colors.$adm-colors, 'secondary');
-      opacity: 1;
-    }
+  .build-info__trigger:hover .build-info__text {
+    color: map.get(colors.$adm-colors, 'secondary');
   }
 }
 </style>

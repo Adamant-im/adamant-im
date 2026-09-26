@@ -33,9 +33,7 @@
           </h2>
 
           <div v-if="isTestnet" :class="`${className}__testnet-banner`">
-            <span :class="`${className}__testnet-chip`">{{
-              t('build_info.testnet').toUpperCase()
-            }}</span>
+            <span :class="`${className}__testnet-chip`">{{ t('build_info.testnet') }}</span>
           </div>
         </v-sheet>
 
@@ -280,9 +278,6 @@ const onScanQrcode = (value: string) => {
     letter-spacing: 0.08em;
     padding: var(--a-space-1, 4px) var(--a-space-3, 12px);
     border-radius: var(--a-radius-pill, 9999px);
-    color: map.get(colors.$adm-colors, 'attention');
-    border: 1px solid currentColor;
-    background: rgba(map.get(colors.$adm-colors, 'attention'), 0.1);
     text-transform: uppercase;
   }
 
@@ -350,6 +345,12 @@ const onScanQrcode = (value: string) => {
         opacity: 1;
       }
     }
+
+    &__testnet-chip {
+      background: map.get(colors.$adm-colors, 'attention');
+      color: rgba(0, 0, 0, 0.87);
+      border: 1px solid transparent;
+    }
   }
 }
 .v-theme--dark {
@@ -361,6 +362,12 @@ const onScanQrcode = (value: string) => {
         color: map.get(colors.$adm-colors, 'secondary');
         opacity: 1;
       }
+    }
+
+    &__testnet-chip {
+      color: map.get(colors.$adm-colors, 'attention');
+      border: 1px solid currentColor;
+      background: rgba(map.get(colors.$adm-colors, 'attention'), 0.15);
     }
   }
 }

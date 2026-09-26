@@ -86,31 +86,59 @@
             <span :class="`${className}__value`">{{ info.buildDate }}</span>
           </div>
         </div>
+
+        <div v-if="confirmingReload" :class="`${className}__confirm-warning`">
+          {{ t('build_info.confirm_reload_logged_in') }}
+        </div>
       </v-card-text>
 
       <v-card-actions :class="`${className}__actions`">
         <v-spacer />
 
-        <v-btn variant="text" class="a-btn-regular" @click="show = false">
-          {{ t('build_info.close') }}
-        </v-btn>
+        <template v-if="confirmingReload">
+          <v-btn
+            variant="text"
+            class="a-btn-regular"
+            :disabled="isUpdating"
+            @click="confirmingReload = false"
+          >
+            {{ t('build_info.cancel') }}
+          </v-btn>
 
-        <v-btn
-          v-if="canForceRefresh"
-          variant="text"
-          class="a-btn-regular"
-          :disabled="isUpdating"
-          @click="handleUpdate"
-        >
-          <v-progress-circular
-            v-show="isUpdating"
-            indeterminate
-            color="primary"
-            :size="AUTH_FORM_SUBMIT_SPINNER_SIZE"
-            :class="`${className}__submit-spinner`"
-          />
-          {{ isUpdating ? t('build_info.updating') : t('build_info.update_button') }}
-        </v-btn>
+          <v-btn variant="text" class="a-btn-regular" :disabled="isUpdating" @click="executeReload">
+            <v-progress-circular
+              v-show="isUpdating"
+              indeterminate
+              color="primary"
+              :size="AUTH_FORM_SUBMIT_SPINNER_SIZE"
+              :class="`${className}__submit-spinner`"
+            />
+            {{ isUpdating ? t('build_info.updating') : t('build_info.update_button') }}
+          </v-btn>
+        </template>
+
+        <template v-else>
+          <v-btn variant="text" class="a-btn-regular" @click="show = false">
+            {{ t('build_info.close') }}
+          </v-btn>
+
+          <v-btn
+            v-if="canForceRefresh"
+            variant="text"
+            class="a-btn-regular"
+            :disabled="isUpdating"
+            @click="handleUpdateClick"
+          >
+            <v-progress-circular
+              v-show="isUpdating"
+              indeterminate
+              color="primary"
+              :size="AUTH_FORM_SUBMIT_SPINNER_SIZE"
+              :class="`${className}__submit-spinner`"
+            />
+            {{ isUpdating ? t('build_info.updating') : t('build_info.update_button') }}
+          </v-btn>
+        </template>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -155,23 +183,24 @@ const store = useStore()
 const { t } = useI18n()
 const className = 'build-info-dialog'
 const isUpdating = ref(false)
+const confirmingReload = ref(false)
 const dialogTapCount = ref(0)
 
 const show = computed({
   get: () => props.modelValue,
-  set: (val: boolean) => emit('update:modelValue', val)
+  set: (val: boolean) => {
+    if (!val) {
+      confirmingReload.value = false
+    }
+    emit('update:modelValue', val)
+  }
 })
 
 const info = computed<BuildMetadata>(() => props.buildInfo || defaultBuildInfo)
 
 const canForceRefresh = computed(() => {
-  if (typeof window !== 'undefined') {
-    if (
-      window.adamantDesktop?.isElectron ||
-      (window as { electron?: { isElectron?: boolean } }).electron?.isElectron
-    ) {
-      return false
-    }
+  if (typeof window !== 'undefined' && window.adamantDesktop?.isElectron) {
+    return false
   }
   return !Capacitor.isNativePlatform()
 })
@@ -214,15 +243,34 @@ const onVersionRowClick = () => {
   }
 }
 
-const handleUpdate = async () => {
+const handleUpdateClick = () => {
   if (store?.getters?.isLogged) {
-    const confirmed = window.confirm(t('build_info.confirm_reload_logged_in'))
-    if (!confirmed) return
+    confirmingReload.value = true
+    return
+  }
+  executeReload()
+}
+
+const executeReload = async () => {
+  if (typeof navigator !== 'undefined' && 'onLine' in navigator && !navigator.onLine) {
+    if (store) {
+      store.dispatch('snackbar/show', {
+        message: t('build_info.offline_message'),
+        timeout: 3000
+      })
+    }
+    return
   }
 
   isUpdating.value = true
   try {
-    await forceAppUpdate()
+    const result = await forceAppUpdate()
+    if (result === 'offline' && store) {
+      store.dispatch('snackbar/show', {
+        message: t('build_info.offline_message'),
+        timeout: 3000
+      })
+    }
   } finally {
     isUpdating.value = false
   }
@@ -264,6 +312,17 @@ const handleUpdate = async () => {
   &__meta-row {
     padding-block: 2px;
     word-break: break-word;
+
+    &--clickable {
+      cursor: pointer;
+      user-select: none;
+    }
+  }
+
+  &__confirm-warning {
+    margin-top: var(--a-space-4);
+    word-break: break-word;
+    color: map.get(colors.$adm-colors, 'attention');
   }
 
   &__value {

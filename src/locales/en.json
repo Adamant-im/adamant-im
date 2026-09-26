@@ -479,8 +479,10 @@
     "build_date": "Build date",
     "pull_request": "Pull Request",
     "close": "Close",
+    "cancel": "Cancel",
     "update_button": "Force refresh",
     "updating": "Refreshing…",
-    "confirm_reload_logged_in": "The app will reload and you will need to sign in again. Continue?"
+    "confirm_reload_logged_in": "The app will reload and you will need to sign in again. Continue?",
+    "offline_message": "You are offline. Try again when connected"
   }
 }

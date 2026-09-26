@@ -30,14 +30,14 @@ export function getBuildInfoLines(info: BuildMetadata): BuildInfoLines {
   let line2: string
 
   if (info.prNumber) {
-    line2 = [info.prNumber, info.commit].filter(Boolean).join(' ')
+    line2 = [info.prNumber, info.commit || 'unknown'].join(' ')
   } else if (info.branch === 'dev') {
-    line2 = ['dev', info.commit].filter(Boolean).join(' ')
-  } else if (info.branch === 'master') {
+    line2 = ['dev', info.commit || 'unknown'].join(' ')
+  } else if (info.branch === 'master' && info.commit) {
     line2 = ''
   } else {
     // plain branch without PR, or unknown branch
-    line2 = info.commit || ''
+    line2 = info.commit || 'unknown'
   }
 
   return { line1, line2 }
@@ -80,10 +80,10 @@ export function getPrUrl(prNumber: string | number): string {
  * and hard-reloads the page so the browser fetches the latest build.
  * Note: Keeps user credentials and local state (IndexedDB, localStorage, sessionStorage) intact.
  */
-export async function forceAppUpdate(): Promise<void> {
+export async function forceAppUpdate(): Promise<'reloaded' | 'offline'> {
   // If offline, preserve precache and service worker registration
   if (typeof navigator !== 'undefined' && 'onLine' in navigator && !navigator.onLine) {
-    return
+    return 'offline'
   }
 
   try {
@@ -119,4 +119,6 @@ export async function forceAppUpdate(): Promise<void> {
   if (typeof window !== 'undefined' && window.location) {
     window.location.reload()
   }
+
+  return 'reloaded'
 }
