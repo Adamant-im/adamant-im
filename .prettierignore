@@ -4,7 +4,6 @@ src/config/mainnet.json
 src/config/testnet.json
 src/config/tor.json
 src/lib/constants/cryptos/data.json
-src/types/wallets/index.ts
 src/lib/schema/schema.json
 
 # Build and dependencies

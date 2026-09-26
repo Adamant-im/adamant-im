@@ -188,7 +188,7 @@
         </v-col>
       </v-row>
       <v-row gap="0">
-        <BuildInfo :class="`${className}__version_info`" />
+        <BuildInfo :class="`${className}__version_info`" allow-dev-mode-unlock />
       </v-row>
     </template>
   </navigation-wrapper>

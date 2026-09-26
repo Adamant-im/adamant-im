@@ -1,3 +1,6 @@
+import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import {
   getCompactBuildInfoString,
@@ -13,7 +16,7 @@ import { resolveBuildMetadata } from '../../../vite-config/plugins/buildInfoPlug
 
 describe('buildInfo helper', () => {
   describe('getBuildInfoLines', () => {
-    it('formats master branch as version on line 1 and commit on line 2', () => {
+    it('formats master branch as version on line 1 and empty string on line 2', () => {
       const result = getBuildInfoLines({
         version: '4.12.0',
         branch: 'master',
@@ -25,7 +28,7 @@ describe('buildInfo helper', () => {
       })
 
       expect(result.line1).toBe('v4.12.0')
-      expect(result.line2).toBe('f61f9e0')
+      expect(result.line2).toBe('')
     })
 
     it('formats dev branch as dev and commit on line 2', () => {
@@ -171,11 +174,12 @@ describe('buildInfo helper', () => {
 
   describe('forceAppUpdate', () => {
     const originalCaches = window.caches
-    const originalNavigator = window.navigator
     const originalLocation = window.location
+    const originalServiceWorker = window.navigator.serviceWorker
+    const originalFetch = global.fetch
 
     beforeEach(() => {
-      // Mock location.reload
+      // Mock location.reload and href
       Object.defineProperty(window, 'location', {
         writable: true,
         value: {
@@ -183,14 +187,28 @@ describe('buildInfo helper', () => {
           href: 'http://localhost/'
         }
       })
+
+      // Default online
+      Object.defineProperty(window.navigator, 'onLine', {
+        configurable: true,
+        writable: true,
+        value: true
+      })
+
+      global.fetch = vi.fn().mockResolvedValue(new Response())
     })
 
     afterEach(() => {
       Object.defineProperty(window, 'caches', { writable: true, value: originalCaches })
       Object.defineProperty(window, 'location', { writable: true, value: originalLocation })
+      Object.defineProperty(window.navigator, 'serviceWorker', {
+        writable: true,
+        value: originalServiceWorker
+      })
+      global.fetch = originalFetch
     })
 
-    it('clears caches, unregisters service workers, and reloads window', async () => {
+    it('clears caches, unregisters service workers, fetches with reload cache, and reloads window', async () => {
       const mockDelete = vi.fn().mockResolvedValue(true)
       const mockKeys = vi.fn().mockResolvedValue(['cache-v1', 'cache-v2'])
 
@@ -216,12 +234,36 @@ describe('buildInfo helper', () => {
 
       await forceAppUpdate()
 
+      expect(global.fetch).toHaveBeenCalledWith('http://localhost/', {
+        cache: 'reload',
+        credentials: 'same-origin'
+      })
       expect(mockKeys).toHaveBeenCalled()
       expect(mockDelete).toHaveBeenCalledWith('cache-v1')
       expect(mockDelete).toHaveBeenCalledWith('cache-v2')
       expect(mockGetRegistrations).toHaveBeenCalled()
       expect(mockUnregister).toHaveBeenCalledTimes(2)
       expect(window.location.reload).toHaveBeenCalled()
+    })
+
+    it('does not wipe caches or reload when navigator is offline', async () => {
+      Object.defineProperty(window.navigator, 'onLine', {
+        configurable: true,
+        writable: true,
+        value: false
+      })
+
+      const mockKeys = vi.fn()
+      Object.defineProperty(window, 'caches', {
+        writable: true,
+        value: { keys: mockKeys }
+      })
+
+      await forceAppUpdate()
+
+      expect(mockKeys).not.toHaveBeenCalled()
+      expect(global.fetch).not.toHaveBeenCalled()
+      expect(window.location.reload).not.toHaveBeenCalled()
     })
 
     it('tolerates environments without caches or serviceWorker', async () => {
@@ -235,26 +277,150 @@ describe('buildInfo helper', () => {
   })
 
   describe('resolveBuildMetadata', () => {
-    it('correctly resolves metadata without leaking sensitive machine info', () => {
-      const metadata = resolveBuildMetadata('production')
+    it('resolves master push metadata without PR number', () => {
+      const meta = resolveBuildMetadata({
+        env: { GITHUB_REF_NAME: 'master', GITHUB_SHA: 'f61f9e0123456789', GITHUB_ACTOR: 'octocat' },
+        git: () => '',
+        pkgVersion: '4.12.0'
+      })
 
-      expect(metadata.version).toMatch(/^\d+\.\d+\.\d+/)
-      expect(typeof metadata.branch).toBe('string')
-      expect(typeof metadata.commit).toBe('string')
-      expect(metadata.isTestnet).toBe(false)
-      expect(metadata.buildDate).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/)
-
-      // Ensure no file system paths or tokens leaked
-      const serialized = JSON.stringify(metadata)
-      expect(serialized).not.toContain('/Users/')
-      expect(serialized).not.toContain('/home/')
-      expect(serialized).not.toContain('ghp_')
-      expect(serialized).not.toContain('token')
+      expect(meta.version).toBe('4.12.0')
+      expect(meta.branch).toBe('master')
+      expect(meta.commit).toBe('f61f9e0')
+      expect(meta.author).toBe('octocat')
+      expect(meta.prNumber).toBeNull()
+      expect(meta.isTestnet).toBe(false)
     })
 
-    it('detects testnet mode', () => {
-      const metadata = resolveBuildMetadata('testnet')
-      expect(metadata.isTestnet).toBe(true)
+    it('resolves dev push metadata', () => {
+      const meta = resolveBuildMetadata({
+        env: { GITHUB_REF_NAME: 'dev', GITHUB_SHA: '60e87c6123456789', GITHUB_ACTOR: 'octocat' },
+        git: () => '',
+        pkgVersion: '4.12.0'
+      })
+
+      expect(meta.branch).toBe('dev')
+      expect(meta.commit).toBe('60e87c6')
+      expect(meta.author).toBe('octocat')
+      expect(meta.prNumber).toBeNull()
+    })
+
+    it('resolves PR preview metadata with head SHA from GITHUB_EVENT_PATH', () => {
+      const tmpDir = os.tmpdir()
+      const eventPath = path.join(tmpDir, `gh-event-${Date.now()}.json`)
+      fs.writeFileSync(
+        eventPath,
+        JSON.stringify({
+          pull_request: {
+            number: 712,
+            head: {
+              sha: 'abcdef1234567890',
+              ref: 'feature/pr-preview'
+            },
+            user: {
+              login: 'pr-author'
+            }
+          }
+        })
+      )
+
+      try {
+        const meta = resolveBuildMetadata({
+          env: {
+            GITHUB_EVENT_PATH: eventPath,
+            GITHUB_SHA: 'synthetic-merge-sha-that-should-be-ignored'
+          },
+          git: () => '',
+          pkgVersion: '4.12.0'
+        })
+
+        expect(meta.prNumber).toBe('712')
+        expect(meta.commit).toBe('abcdef1')
+        expect(meta.branch).toBe('feature/pr-preview')
+        expect(meta.author).toBe('pr-author')
+      } finally {
+        fs.unlinkSync(eventPath)
+      }
+    })
+
+    it('resolves Vercel preview metadata', () => {
+      const meta = resolveBuildMetadata({
+        env: {
+          VERCEL_GIT_COMMIT_REF: 'feature/vercel-test',
+          VERCEL_GIT_COMMIT_SHA: '9876543210abcdef',
+          VERCEL_GIT_PULL_REQUEST_ID: '820',
+          VERCEL_GIT_COMMIT_AUTHOR_LOGIN: 'vercel-dev'
+        },
+        git: () => '',
+        pkgVersion: '4.12.0'
+      })
+
+      expect(meta.branch).toBe('feature/vercel-test')
+      expect(meta.commit).toBe('9876543')
+      expect(meta.prNumber).toBe('820')
+      expect(meta.author).toBe('vercel-dev')
+    })
+
+    it('returns empty strings when no git or CI variables are present', () => {
+      const meta = resolveBuildMetadata({
+        env: {},
+        git: () => '',
+        pkgVersion: '4.12.0'
+      })
+
+      expect(meta.branch).toBe('')
+      expect(meta.commit).toBe('')
+      expect(meta.author).toBe('')
+      expect(meta.prNumber).toBeNull()
+    })
+
+    it('sanitizes hostile or invalid inputs and prevents injection', () => {
+      const meta = resolveBuildMetadata({
+        env: {
+          BUILD_BRANCH: '../../../etc/passwd',
+          BUILD_COMMIT: 'invalid_sha!',
+          PR_NUMBER: '123; rm -rf /',
+          BUILD_AUTHOR: 'Bad Actor <actor@evil.com>',
+          BUILD_DATE: 'yesterday'
+        },
+        git: () => '',
+        pkgVersion: '4.12.0'
+      })
+
+      expect(meta.branch).toBe('')
+      expect(meta.commit).toBe('')
+      expect(meta.prNumber).toBeNull()
+      expect(meta.author).toBe('')
+      expect(meta.buildDate).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/)
+    })
+
+    it('resolves author from git config or git log when it is a valid GitHub username', () => {
+      const metaWithGithubUser = resolveBuildMetadata({
+        env: {},
+        git: (cmd) => (cmd === 'git config github.user' ? 'octocat' : ''),
+        pkgVersion: '4.12.0'
+      })
+      expect(metaWithGithubUser.author).toBe('octocat')
+
+      const metaWithCommitAuthor = resolveBuildMetadata({
+        env: {},
+        git: (cmd) => (cmd === 'git log -1 --format=%an' ? 'octocat-dev' : ''),
+        pkgVersion: '4.12.0'
+      })
+      expect(metaWithCommitAuthor.author).toBe('octocat-dev')
+
+      // Real display names with spaces must NOT be resolved as GitHub authors
+      const metaWithDisplayName = resolveBuildMetadata({
+        env: {},
+        git: (cmd) => (cmd === 'git log -1 --format=%an' ? 'Ivan Petrov' : ''),
+        pkgVersion: '4.12.0'
+      })
+      expect(metaWithDisplayName.author).toBe('')
+    })
+
+    it('resolves isTestnet according to network config', () => {
+      expect(resolveBuildMetadata({ mode: 'testnet' }).isTestnet).toBe(true)
+      expect(resolveBuildMetadata({ mode: 'production' }).isTestnet).toBe(false)
     })
   })
 })

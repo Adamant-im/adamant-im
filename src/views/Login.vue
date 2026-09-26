@@ -31,6 +31,12 @@
           <h2 :class="`${className}__subtitle`">
             {{ t('login.subheader') }}
           </h2>
+
+          <div v-if="isTestnet" :class="`${className}__testnet-banner`">
+            <span :class="`${className}__testnet-chip`">{{
+              t('build_info.testnet').toUpperCase()
+            }}</span>
+          </div>
         </v-sheet>
 
         <v-sheet
@@ -125,6 +131,7 @@ import FileIcon from '@/components/icons/common/File.vue'
 import LoginPasswordForm from '@/components/LoginPasswordForm.vue'
 import Logo from '@/components/icons/common/Logo.vue'
 import BuildInfo from '@/components/BuildInfo.vue'
+import { buildInfo as defaultBuildInfo } from '@/lib/buildInfo'
 import { navigateByURI } from '@/router/navigationGuard'
 import { logger } from '@/utils/devTools/logger'
 import { AUTH_FORM_SETTINGS_BUTTON_SIZE } from '@/components/Login/helpers/uiMetrics'
@@ -134,6 +141,7 @@ const route = useRoute()
 const { t } = useI18n()
 
 const className = 'login-page'
+const isTestnet = computed(() => defaultBuildInfo.isTestnet)
 const passphrase = ref('')
 const password = ref('')
 const showQrcodeScanner = ref(false)
@@ -257,6 +265,25 @@ const onScanQrcode = (value: string) => {
 
   &__hero {
     margin-top: var(--a-login-hero-margin-top);
+  }
+
+  &__testnet-banner {
+    margin-top: var(--a-space-3);
+    display: flex;
+    justify-content: center;
+  }
+
+  &__testnet-chip {
+    display: inline-block;
+    font-size: var(--a-font-size-xs, 12px);
+    font-weight: var(--a-font-weight-bold, 700);
+    letter-spacing: 0.08em;
+    padding: var(--a-space-1, 4px) var(--a-space-3, 12px);
+    border-radius: var(--a-radius-pill, 9999px);
+    color: map.get(colors.$adm-colors, 'attention');
+    border: 1px solid currentColor;
+    background: rgba(map.get(colors.$adm-colors, 'attention'), 0.1);
+    text-transform: uppercase;
   }
 
   &__settings-button-container {

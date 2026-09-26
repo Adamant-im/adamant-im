@@ -23,7 +23,7 @@ export interface BuildInfoLines {
 /**
  * Returns two-line build identity string:
  * Line 1: "v{version}"
- * Line 2: "{commit}" (or "{prNumber} {commit}", "dev {commit}")
+ * Line 2: "{commit}" (or "{prNumber} {commit}", "dev {commit}", or "" for master)
  */
 export function getBuildInfoLines(info: BuildMetadata): BuildInfoLines {
   const line1 = `v${info.version}`
@@ -33,8 +33,10 @@ export function getBuildInfoLines(info: BuildMetadata): BuildInfoLines {
     line2 = [info.prNumber, info.commit].filter(Boolean).join(' ')
   } else if (info.branch === 'dev') {
     line2 = ['dev', info.commit].filter(Boolean).join(' ')
+  } else if (info.branch === 'master') {
+    line2 = ''
   } else {
-    // master or plain branch without PR
+    // plain branch without PR, or unknown branch
     line2 = info.commit || ''
   }
 
@@ -49,26 +51,8 @@ export function getBuildInfoLines(info: BuildMetadata): BuildInfoLines {
  * - plain branch without PR: "v4.8.1 60e87c6"
  */
 export function getCompactBuildInfoString(info: BuildMetadata): string {
-  const versionPrefix = `v${info.version}`
-  const commit = info.commit || ''
-
-  // 1. Branch with PR and a build
-  if (info.prNumber) {
-    return [versionPrefix, info.prNumber, commit].filter(Boolean).join(' ')
-  }
-
-  // 2. Master branch build (only version needed because every change comes with version bump)
-  if (info.branch === 'master') {
-    return versionPrefix
-  }
-
-  // 3. Dev branch build
-  if (info.branch === 'dev') {
-    return [versionPrefix, 'dev', commit].filter(Boolean).join(' ')
-  }
-
-  // 4. Plain branch without a PR or a build
-  return [versionPrefix, commit].filter(Boolean).join(' ')
+  const { line1, line2 } = getBuildInfoLines(info)
+  return [line1, line2].filter(Boolean).join(' ')
 }
 
 export function getBranchUrl(branch: string): string {
@@ -88,7 +72,7 @@ export function getAuthorUrl(author: string): string {
 
 export function getPrUrl(prNumber: string | number): string {
   if (!prNumber) return GITHUB_REPO_URL
-  return `${GITHUB_REPO_URL}/pull/${prNumber}`
+  return `${GITHUB_REPO_URL}/pull/${encodeURIComponent(String(prNumber))}`
 }
 
 /**
@@ -97,6 +81,11 @@ export function getPrUrl(prNumber: string | number): string {
  * Note: Keeps user credentials and local state (IndexedDB, localStorage, sessionStorage) intact.
  */
 export async function forceAppUpdate(): Promise<void> {
+  // If offline, preserve precache and service worker registration
+  if (typeof navigator !== 'undefined' && 'onLine' in navigator && !navigator.onLine) {
+    return
+  }
+
   try {
     if (typeof window !== 'undefined' && 'caches' in window && window.caches) {
       const keys = await window.caches.keys()
@@ -117,6 +106,14 @@ export async function forceAppUpdate(): Promise<void> {
     }
   } catch (error) {
     logger.warn('forceAppUpdate', 'Failed to unregister service workers', error)
+  }
+
+  try {
+    if (typeof window !== 'undefined' && window.location) {
+      await fetch(window.location.href, { cache: 'reload', credentials: 'same-origin' })
+    }
+  } catch {
+    // Offline or network error: proceed to plain reload below
   }
 
   if (typeof window !== 'undefined' && window.location) {

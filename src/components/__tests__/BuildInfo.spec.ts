@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi, afterEach } from 'vitest'
 import { mount } from '@vue/test-utils'
-import { createStore } from 'vuex'
+import { createStore, type Store } from 'vuex'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
@@ -36,22 +36,32 @@ const vuetify = createVuetify({
   directives
 })
 
-function mockupStore() {
-  return createStore({
+interface MockStoreState {
+  options: {
+    devModeEnabled: boolean
+  }
+}
+
+function mockupStore(): Store<MockStoreState> {
+  return createStore<MockStoreState>({
     modules: {
       options: {
         namespaced: true,
         state: () => ({
-          devMode: false
+          devModeEnabled: false
         }),
         mutations: {
-          updateOption: vi.fn()
+          updateOption(state: any, { key, value }: { key: string; value: any }) {
+            if (key in state) {
+              state[key] = value
+            }
+          }
         }
       },
       snackbar: {
         namespaced: true,
         actions: {
-          show: vi.fn()
+          show: vi.fn() as any
         }
       }
     }
@@ -82,7 +92,7 @@ describe('BuildInfo.vue', () => {
 
     const lines = wrapper.findAll('.build-info__line').map((el) => el.text())
     expect(lines[0]).toBe('v4.8.1')
-    expect(lines[1]).toBe('60e87c6')
+    expect(lines.length).toBe(1)
     expect(wrapper.find('.build-info__testnet-badge').exists()).toBe(false)
   })
 
@@ -192,7 +202,7 @@ describe('BuildInfo.vue', () => {
     expect(badge.text()).toBe('TESTNET')
   })
 
-  it('triggers dev mode after 10 taps', async () => {
+  it('triggers dev mode after 10 taps when allowDevModeUnlock is true', async () => {
     const store = mockupStore()
     const i18n = mockupI18n()
     const commitSpy = vi.spyOn(store, 'commit')
@@ -200,6 +210,7 @@ describe('BuildInfo.vue', () => {
 
     const wrapper = mount(BuildInfo, {
       props: {
+        allowDevModeUnlock: true,
         buildInfo: {
           version: '4.8.1',
           branch: 'master',
@@ -220,26 +231,64 @@ describe('BuildInfo.vue', () => {
       await button.trigger('click')
     }
 
-    expect(commitSpy).not.toHaveBeenCalledWith('options/updateOption', {
-      key: 'devMode',
-      value: true
-    })
+    expect(commitSpy).not.toHaveBeenCalledWith('options/devModeEnabled', true)
+    expect(store.state.options.devModeEnabled).toBe(false)
 
     await button.trigger('click') // 10th tap
 
     expect(commitSpy).toHaveBeenCalledWith('options/updateOption', {
-      key: 'devMode',
+      key: 'devModeEnabled',
       value: true
     })
+    expect(store.state.options.devModeEnabled).toBe(true)
     expect(dispatchSpy).toHaveBeenCalledWith('snackbar/show', {
       message: 'Dev screens enabled',
       timeout: 3000
     })
   })
+
+  it('does not trigger dev mode when allowDevModeUnlock is false (default)', async () => {
+    const store = mockupStore()
+    const i18n = mockupI18n()
+    const commitSpy = vi.spyOn(store, 'commit')
+
+    const wrapper = mount(BuildInfo, {
+      props: {
+        buildInfo: {
+          version: '4.8.1',
+          branch: 'master',
+          commit: '60e87c6',
+          prNumber: null,
+          author: 'bludnic',
+          buildDate: '2025-02-25 13:44',
+          isTestnet: false
+        }
+      },
+      global: {
+        plugins: [store, i18n, vuetify]
+      }
+    })
+
+    const button = wrapper.find('button[data-test-id="version-info"]')
+    for (let i = 0; i < 12; i++) {
+      await button.trigger('click')
+    }
+
+    expect(commitSpy).not.toHaveBeenCalledWith('options/updateOption', {
+      key: 'devModeEnabled',
+      value: true
+    })
+    expect(store.state.options.devModeEnabled).toBe(false)
+  })
 })
 
 describe('BuildInfoDialog.vue', () => {
+  afterEach(() => {
+    document.body.innerHTML = ''
+  })
+
   it('renders all build information correctly and localizes', () => {
+    const store = mockupStore()
     const i18n = mockupI18n()
 
     const wrapper = mount(BuildInfoDialog, {
@@ -256,7 +305,7 @@ describe('BuildInfoDialog.vue', () => {
         }
       },
       global: {
-        plugins: [i18n, vuetify]
+        plugins: [store, i18n, vuetify]
       }
     })
 
@@ -271,5 +320,86 @@ describe('BuildInfoDialog.vue', () => {
     expect(text).toContain('Testnet')
     expect(text).toContain('Close')
     expect(text).toContain('Force refresh')
+  })
+
+  it('triggers dev mode after 10 taps on Version row when allowDevModeUnlock is true', async () => {
+    const store = mockupStore()
+    const i18n = mockupI18n()
+    const commitSpy = vi.spyOn(store, 'commit')
+
+    mount(BuildInfoDialog, {
+      attachTo: document.body,
+      props: {
+        modelValue: true,
+        allowDevModeUnlock: true,
+        buildInfo: {
+          version: '4.8.1',
+          branch: 'dev',
+          commit: '60e87c6',
+          prNumber: null,
+          author: 'bludnic',
+          buildDate: '2025-02-25 13:44',
+          isTestnet: false
+        }
+      },
+      global: {
+        plugins: [store, i18n, vuetify]
+      }
+    })
+
+    const versionRow = document.querySelector('[data-test-id="dialog-version-row"]') as HTMLElement
+    expect(versionRow).not.toBeNull()
+    expect(versionRow.classList.contains('build-info-dialog__meta-row--clickable')).toBe(true)
+
+    for (let i = 0; i < 9; i++) {
+      versionRow.click()
+    }
+    expect(store.state.options.devModeEnabled).toBe(false)
+
+    versionRow.click() // 10th tap
+    expect(commitSpy).toHaveBeenCalledWith('options/updateOption', {
+      key: 'devModeEnabled',
+      value: true
+    })
+    expect(store.state.options.devModeEnabled).toBe(true)
+  })
+
+  it('does not trigger dev mode in dialog when allowDevModeUnlock is false', async () => {
+    const store = mockupStore()
+    const i18n = mockupI18n()
+    const commitSpy = vi.spyOn(store, 'commit')
+
+    mount(BuildInfoDialog, {
+      attachTo: document.body,
+      props: {
+        modelValue: true,
+        allowDevModeUnlock: false,
+        buildInfo: {
+          version: '4.8.1',
+          branch: 'dev',
+          commit: '60e87c6',
+          prNumber: null,
+          author: 'bludnic',
+          buildDate: '2025-02-25 13:44',
+          isTestnet: false
+        }
+      },
+      global: {
+        plugins: [store, i18n, vuetify]
+      }
+    })
+
+    const versionRow = document.querySelector('[data-test-id="dialog-version-row"]') as HTMLElement
+    expect(versionRow).not.toBeNull()
+    expect(versionRow.classList.contains('build-info-dialog__meta-row--clickable')).toBe(false)
+
+    for (let i = 0; i < 12; i++) {
+      versionRow.click()
+    }
+    expect(commitSpy).not.toHaveBeenCalledWith('options/updateOption', {
+      key: 'devModeEnabled',
+      value: true
+    })
+    expect(store.state.options.devModeEnabled).toBe(false)
   })
 })

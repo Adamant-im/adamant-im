@@ -20,7 +20,14 @@
         </div>
 
         <div :class="`${className}__meta`">
-          <div :class="`${className}__meta-row`">
+          <div
+            :class="[
+              `${className}__meta-row`,
+              { [`${className}__meta-row--clickable`]: allowDevModeUnlock }
+            ]"
+            data-test-id="dialog-version-row"
+            @click="onVersionRowClick"
+          >
             {{ t('build_info.version') }}:
             <span :class="`${className}__value`">v{{ info.version }}</span>
           </div>
@@ -88,7 +95,13 @@
           {{ t('build_info.close') }}
         </v-btn>
 
-        <v-btn variant="text" class="a-btn-regular" :disabled="isUpdating" @click="handleUpdate">
+        <v-btn
+          v-if="canForceRefresh"
+          variant="text"
+          class="a-btn-regular"
+          :disabled="isUpdating"
+          @click="handleUpdate"
+        >
           <v-progress-circular
             v-show="isUpdating"
             indeterminate
@@ -105,7 +118,9 @@
 
 <script setup lang="ts">
 import { computed, ref, type PropType } from 'vue'
+import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
+import { Capacitor } from '@capacitor/core'
 import { openExternalLink } from '@/lib/openExternalLink'
 import { AUTH_FORM_SUBMIT_SPINNER_SIZE } from '@/components/Login/helpers/uiMetrics'
 import {
@@ -127,14 +142,20 @@ const props = defineProps({
   buildInfo: {
     type: Object as PropType<BuildMetadata>,
     default: () => defaultBuildInfo
+  },
+  allowDevModeUnlock: {
+    type: Boolean,
+    default: false
   }
 })
 
 const emit = defineEmits(['update:modelValue'])
 
+const store = useStore()
 const { t } = useI18n()
 const className = 'build-info-dialog'
 const isUpdating = ref(false)
+const dialogTapCount = ref(0)
 
 const show = computed({
   get: () => props.modelValue,
@@ -142,6 +163,18 @@ const show = computed({
 })
 
 const info = computed<BuildMetadata>(() => props.buildInfo || defaultBuildInfo)
+
+const canForceRefresh = computed(() => {
+  if (typeof window !== 'undefined') {
+    if (
+      window.adamantDesktop?.isElectron ||
+      (window as { electron?: { isElectron?: boolean } }).electron?.isElectron
+    ) {
+      return false
+    }
+  }
+  return !Capacitor.isNativePlatform()
+})
 
 const openRepoLink = () => {
   openExternalLink(GITHUB_REPO_URL)
@@ -165,9 +198,34 @@ const openPrLink = () => {
   }
 }
 
+const onVersionRowClick = () => {
+  if (props.allowDevModeUnlock) {
+    dialogTapCount.value++
+    if (dialogTapCount.value === 10 && store) {
+      store.commit('options/updateOption', {
+        key: 'devModeEnabled',
+        value: true
+      })
+      store.dispatch('snackbar/show', {
+        message: 'Dev screens enabled',
+        timeout: 3000
+      })
+    }
+  }
+}
+
 const handleUpdate = async () => {
+  if (store?.getters?.isLogged) {
+    const confirmed = window.confirm(t('build_info.confirm_reload_logged_in'))
+    if (!confirmed) return
+  }
+
   isUpdating.value = true
-  await forceAppUpdate()
+  try {
+    await forceAppUpdate()
+  } finally {
+    isUpdating.value = false
+  }
 }
 </script>
 

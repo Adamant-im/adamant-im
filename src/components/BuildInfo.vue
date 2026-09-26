@@ -10,16 +10,23 @@
         <span :class="`${className}__line`">{{ lines.line1 }}</span>
         <span v-if="lines.line2" :class="`${className}__line`">{{ lines.line2 }}</span>
       </span>
-      <span v-if="info.isTestnet" :class="`${className}__testnet-badge`">TESTNET</span>
+      <span v-if="info.isTestnet" :class="`${className}__testnet-badge`">
+        {{ t('build_info.testnet').toUpperCase() }}
+      </span>
     </button>
 
-    <BuildInfoDialog v-model="showDialog" :build-info="info" />
+    <BuildInfoDialog
+      v-model="showDialog"
+      :build-info="info"
+      :allow-dev-mode-unlock="allowDevModeUnlock"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, type PropType } from 'vue'
 import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
 import BuildInfoDialog from '@/components/BuildInfoDialog.vue'
 import {
   buildInfo as defaultBuildInfo,
@@ -32,9 +39,14 @@ const props = defineProps({
   buildInfo: {
     type: Object as PropType<BuildMetadata>,
     default: () => defaultBuildInfo
+  },
+  allowDevModeUnlock: {
+    type: Boolean,
+    default: false
   }
 })
 
+const { t } = useI18n()
 const store = useStore()
 const className = 'build-info'
 const showDialog = ref(false)
@@ -45,18 +57,20 @@ const lines = computed(() => getBuildInfoLines(info.value))
 const compactText = computed(() => getCompactBuildInfoString(info.value))
 
 const onTriggerClick = () => {
-  tapCount.value++
+  if (props.allowDevModeUnlock) {
+    tapCount.value++
 
-  if (tapCount.value >= 10 && store) {
-    store.commit('options/updateOption', {
-      key: 'devMode',
-      value: true
-    })
+    if (tapCount.value === 10 && store) {
+      store.commit('options/updateOption', {
+        key: 'devModeEnabled',
+        value: true
+      })
 
-    store.dispatch('snackbar/show', {
-      message: 'Dev screens enabled',
-      timeout: 3000
-    })
+      store.dispatch('snackbar/show', {
+        message: 'Dev screens enabled',
+        timeout: 3000
+      })
+    }
   }
 
   showDialog.value = true
@@ -111,7 +125,7 @@ defineExpose({
 
   &__line {
     @include mixins.a-text-regular();
-    line-height: var(--a-line-height-tight, 1.25);
+    line-height: 1.25;
     letter-spacing: normal;
     text-align: right;
     color: inherit;
@@ -119,23 +133,24 @@ defineExpose({
 
   &__testnet-badge {
     display: inline-block;
-    font-size: 8px;
+    font-size: 11px;
     font-weight: var(--a-font-weight-bold, 700);
-    line-height: 1;
-    margin-top: 2px;
-    padding: 1px 3px;
-    border-radius: 2px;
+    line-height: 1.2;
+    margin-top: 4px;
+    padding: 2px 6px;
+    border-radius: var(--a-radius-xs, 4px);
     color: map.get(colors.$adm-colors, 'attention');
     border: 1px solid currentColor;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    opacity: 1 !important;
   }
 }
 
 .v-theme--light {
   .build-info__trigger {
     color: map.get(colors.$adm-colors, 'black2');
-    opacity: var(--a-login-icon-opacity, 0.4);
+    opacity: var(--a-opacity-icon-muted, 0.62);
 
     &:hover {
       opacity: 1;
