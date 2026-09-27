@@ -10,6 +10,7 @@ import { deferScripsPlugin } from './vite-config/plugins/deferScriptsPlugin.ts'
 import { preloadCSSPlugin } from './vite-config/plugins/preloadCSSPlugin.ts'
 import { ecpairBufferImportPlugin } from './vite-config/plugins/ecpairBufferImportPlugin.ts'
 import { cspHardeningPlugin } from './vite-config/plugins/cspHardeningPlugin.ts'
+import { buildInfoPlugin } from './vite-config/plugins/buildInfoPlugin.ts'
 import VueDevTools from 'vite-plugin-vue-devtools'
 
 const env = loadEnv('production', process.cwd())
@@ -22,6 +23,7 @@ export default defineConfig({
   base: basePublicPath,
   plugins: [
     cspHardeningPlugin(),
+    buildInfoPlugin(),
     wasm(),
     ecpairBufferImportPlugin(),
     process.env.VITE_DISABLE_DEVTOOLS === '1' ? undefined : VueDevTools(),

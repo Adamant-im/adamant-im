@@ -18,6 +18,7 @@
                 <v-icon :icon="mdiCog" />
               </v-btn>
             </router-link>
+            <build-info :class="`${className}__build-info`" />
           </div>
         </div>
 
@@ -30,6 +31,10 @@
           <h2 :class="`${className}__subtitle`">
             {{ t('login.subheader') }}
           </h2>
+
+          <div v-if="isTestnet" :class="`${className}__testnet-banner`">
+            <span :class="`${className}__testnet-chip`">{{ t('build_info.testnet') }}</span>
+          </div>
         </v-sheet>
 
         <v-sheet
@@ -123,6 +128,8 @@ import QrCodeScanIcon from '@/components/icons/common/QrCodeScan.vue'
 import FileIcon from '@/components/icons/common/File.vue'
 import LoginPasswordForm from '@/components/LoginPasswordForm.vue'
 import Logo from '@/components/icons/common/Logo.vue'
+import BuildInfo from '@/components/BuildInfo.vue'
+import { buildInfo as defaultBuildInfo } from '@/lib/buildInfo'
 import { navigateByURI } from '@/router/navigationGuard'
 import { logger } from '@/utils/devTools/logger'
 import { AUTH_FORM_SETTINGS_BUTTON_SIZE } from '@/components/Login/helpers/uiMetrics'
@@ -132,6 +139,7 @@ const route = useRoute()
 const { t } = useI18n()
 
 const className = 'login-page'
+const isTestnet = computed(() => defaultBuildInfo.isTestnet)
 const passphrase = ref('')
 const password = ref('')
 const showQrcodeScanner = ref(false)
@@ -257,10 +265,29 @@ const onScanQrcode = (value: string) => {
     margin-top: var(--a-login-hero-margin-top);
   }
 
+  &__testnet-banner {
+    margin-top: var(--a-space-3);
+    display: flex;
+    justify-content: center;
+  }
+
+  &__testnet-chip {
+    display: inline-block;
+    font-size: var(--a-font-size-xs, 12px);
+    font-weight: var(--a-font-weight-bold, 700);
+    letter-spacing: 0.08em;
+    padding: var(--a-space-1, 4px) var(--a-space-3, 12px);
+    border-radius: var(--a-radius-pill, 9999px);
+    text-transform: uppercase;
+  }
+
   &__settings-button-container {
     position: absolute;
     right: 0;
     margin-right: var(--a-login-settings-offset-inline);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
   }
   &__settings-button {
     &:hover > ::v-deep(.v-btn__overlay) {
@@ -272,6 +299,12 @@ const onScanQrcode = (value: string) => {
       box-shadow: var(--a-focus-ring);
       border-radius: var(--a-radius-round);
     }
+  }
+
+  &__build-info {
+    margin-top: var(--a-space-2);
+    margin-right: var(--a-login-settings-offset-inline);
+    width: max-content;
   }
 
   &__passphrase-row {
@@ -288,6 +321,7 @@ const onScanQrcode = (value: string) => {
 
   &__qr-action-button {
     margin: var(--a-login-qr-action-button-margin);
+    overflow: visible;
   }
 
   @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
@@ -311,6 +345,12 @@ const onScanQrcode = (value: string) => {
         opacity: 1;
       }
     }
+
+    &__testnet-chip {
+      background: map.get(colors.$adm-colors, 'attention');
+      color: rgba(0, 0, 0, 0.87);
+      border: 1px solid transparent;
+    }
   }
 }
 .v-theme--dark {
@@ -322,6 +362,12 @@ const onScanQrcode = (value: string) => {
         color: map.get(colors.$adm-colors, 'secondary');
         opacity: 1;
       }
+    }
+
+    &__testnet-chip {
+      color: map.get(colors.$adm-colors, 'attention');
+      border: 1px solid currentColor;
+      background: rgba(map.get(colors.$adm-colors, 'attention'), 0.15);
     }
   }
 }

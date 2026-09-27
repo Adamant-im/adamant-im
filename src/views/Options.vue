@@ -188,14 +188,7 @@
         </v-col>
       </v-row>
       <v-row gap="0">
-        <button
-          type="button"
-          :class="`${className}__version_info`"
-          @click="onVersionClick"
-          data-test-id="version-info"
-        >
-          {{ t('options.version') }} {{ appVersion }}
-        </button>
+        <BuildInfo :class="`${className}__version_info`" allow-dev-mode-unlock />
       </v-row>
     </template>
   </navigation-wrapper>
@@ -215,6 +208,7 @@ import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import { resetPinia } from '@/plugins/pinia'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
+import BuildInfo from '@/components/BuildInfo.vue'
 import { sidebarLayoutKey } from '@/lib/constants'
 import { useChatStateStore } from '@/stores/modal-state'
 import { logger } from '@/utils/devTools/logger'
@@ -229,10 +223,8 @@ const theme = useTheme()
 const className = 'settings-view'
 const hasView = computed(() => route.matched.length > 2)
 
-const appVersion = inject('appVersion')
 const sidebarLayoutRef = inject<Ref>(sidebarLayoutKey)
 
-const tapCount = ref(0)
 const SETTINGS_STATE_RESET_KEY = 'resetSettingsView'
 const SETTINGS_STATE_FORCE_RESET_KEY = 'forceResetSettingsView'
 const SETTINGS_PATH_PREFIX = '/options'
@@ -533,19 +525,6 @@ const logout = () => {
       })
   } else {
     return Promise.resolve(router.push('/'))
-  }
-}
-
-const onVersionClick = () => {
-  tapCount.value++
-
-  if (tapCount.value >= 10) {
-    isDevModeEnabled.value = true
-
-    store.dispatch('snackbar/show', {
-      message: 'Dev screens enabled',
-      timeout: 3000
-    })
   }
 }
 
