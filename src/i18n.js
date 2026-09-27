@@ -45,14 +45,20 @@ export function isRtlLocale(locale) {
 
 /**
  * Maps a BCP 47 tag such as `zh-CN`, `pt_BR` or `ar-EG` to a supported app locale.
- * Every Chinese tag maps to `zh`, which is Simplified Chinese.
+ * The saved `zh` preference still selects Simplified Chinese. Traditional Chinese
+ * browser preferences must fall through to the next supported language.
  * @param {unknown} tag
  * @returns {string | null} The supported locale, or `null` when there is none
  */
 export function matchSupportedLocale(tag) {
   if (typeof tag !== 'string') return null
 
-  const primary = tag.toLowerCase().split(/[-_]/)[0]
+  const parts = tag.toLowerCase().split(/[-_]/)
+  const primary = parts[0]
+
+  if (primary === 'zh' && parts.some((part) => ['hant', 'tw', 'hk', 'mo'].includes(part))) {
+    return null
+  }
 
   return SUPPORTED_LOCALES.includes(primary) ? primary : null
 }

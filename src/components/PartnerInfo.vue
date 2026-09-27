@@ -23,7 +23,7 @@
             </icon-box>
           </template>
           <v-list-item-title :class="`${className}__address`">
-            {{ address }}
+            <bdi dir="ltr">{{ address }}</bdi>
           </v-list-item-title>
           <v-list-item-subtitle :class="`${className}__username`">
             {{ isMe ? t('chats.me') : name }}

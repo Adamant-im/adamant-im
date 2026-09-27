@@ -207,6 +207,10 @@ defineExpose({
   }
 }
 
+[dir='rtl'] .login-form__textfield:deep(.v-field__append-inner) {
+  margin-left: 0;
+}
+
 /** Themes **/
 .v-theme--light {
   .login-form {

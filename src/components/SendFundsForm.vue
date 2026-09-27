@@ -28,12 +28,13 @@
           {{ readonlyRecipientLabel }}
         </div>
         <div class="fake-input__box">
-          <span class="fake-input__value">{{ cryptoAddress }}</span>
+          <span class="fake-input__value" dir="ltr">{{ cryptoAddress }}</span>
         </div>
       </div>
       <v-text-field
         v-else
         v-model.trim="cryptoAddress"
+        dir="ltr"
         class="a-input"
         type="text"
         variant="underlined"
@@ -74,6 +75,7 @@
 
       <v-text-field
         v-model="amountString"
+        dir="ltr"
         class="a-input"
         :class="`${className}__amount-input`"
         variant="underlined"
@@ -120,8 +122,12 @@
           {{ transferFeeLabel }}
         </div>
         <div class="fake-input__box">
-          <span class="fake-input__value"> {{ transferFeeFixed }} {{ transferFeeCurrency }} </span>
-          <span class="fake-input__value fake-input__value--rate"> ~{{ transferFeeRate }} </span>
+          <span class="fake-input__value" dir="ltr">
+            {{ transferFeeFixed }} {{ transferFeeCurrency }}
+          </span>
+          <span class="fake-input__value fake-input__value--rate" dir="ltr">
+            ~{{ transferFeeRate }}
+          </span>
         </div>
       </div>
       <div v-if="!hideFinalAmount" class="fake-input">
@@ -129,8 +135,10 @@
           {{ $t('transfer.final_amount_label') }}
         </div>
         <div class="fake-input__box">
-          <span class="fake-input__value"> {{ finalAmountFixed }} {{ currency }} </span>
-          <span class="fake-input__value fake-input__value--rate"> ~{{ finalAmountRate }} </span>
+          <span class="fake-input__value" dir="ltr"> {{ finalAmountFixed }} {{ currency }} </span>
+          <span class="fake-input__value fake-input__value--rate" dir="ltr">
+            ~{{ finalAmountRate }}
+          </span>
         </div>
       </div>
       <v-text-field
@@ -1041,6 +1049,14 @@ export default {
 
   &__message {
     @include textContent.a-content-body-copy();
+
+    // The amount and destination come from transaction data, not the surrounding language.
+    :deep(b),
+    :deep(.address-in-confirm),
+    :deep(.a-text-explanation-enlarged) {
+      direction: ltr;
+      unicode-bidi: isolate;
+    }
   }
 
   &__spinner {

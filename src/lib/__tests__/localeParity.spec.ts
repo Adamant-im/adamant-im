@@ -318,7 +318,9 @@ describe('locale helpers', () => {
   it('maps BCP 47 tags to supported locales and keeps saved codes such as `zh`', () => {
     expect(matchSupportedLocale('zh')).toBe('zh')
     expect(matchSupportedLocale('zh-CN')).toBe('zh')
-    expect(matchSupportedLocale('zh-Hant-TW')).toBe('zh')
+    expect(matchSupportedLocale('zh-Hans-CN')).toBe('zh')
+    expect(matchSupportedLocale('zh-Hant-TW')).toBeNull()
+    expect(matchSupportedLocale('zh-HK')).toBeNull()
     expect(matchSupportedLocale('ar-EG')).toBe('ar')
     expect(matchSupportedLocale('pt_BR')).toBeNull()
     expect(matchSupportedLocale(undefined)).toBeNull()
@@ -330,7 +332,8 @@ describe('locale helpers', () => {
 
   it('detects the first supported browser language and falls back to the default', () => {
     expect(detectLocale(['uk-UA', 'ru-RU', 'en-US'])).toBe('ru')
-    expect(detectLocale(['zh-TW'])).toBe('zh')
+    expect(detectLocale(['zh-TW', 'ja-JP'])).toBe('ja')
+    expect(detectLocale(['zh-Hant'])).toBe(DEFAULT_LOCALE)
     expect(detectLocale(['pt-BR', 'it'])).toBe(DEFAULT_LOCALE)
     expect(detectLocale([])).toBe(DEFAULT_LOCALE)
   })

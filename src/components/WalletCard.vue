@@ -13,7 +13,7 @@
           </template>
         </v-list-item-title>
         <v-list-item-subtitle :class="classes.walletCardSubtitle">
-          {{ address }}
+          <bdi dir="ltr">{{ address }}</bdi>
         </v-list-item-subtitle>
 
         <template #append>
@@ -33,9 +33,9 @@
         </v-list-item-title>
         <v-list-item-subtitle :class="classes.walletCardSubtitle">
           <p v-if="!allCoinNodesDisabled">
-            {{ xs ? calculatedBalance : calculatedFullBalance }} {{ crypto }}
+            <bdi dir="ltr">{{ xs ? calculatedBalance : calculatedFullBalance }} {{ crypto }}</bdi>
             <span v-if="showFiatRate" :class="classes.walletCardRate">
-              ~{{ rate }} {{ currentCurrency }}
+              <bdi dir="ltr">~{{ rate }} {{ currentCurrency }}</bdi>
             </span>
             <v-tooltip
               v-if="xs && calculatedFullBalance.toString().length > SIGNIFICANT_DIGITS"
