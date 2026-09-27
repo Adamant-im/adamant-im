@@ -258,7 +258,7 @@
     "nodeLabelDescription": "支持去中心化并提高隐私级别——<a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">运行您自己的 ADAMANT 节点</a>。若要将节点添加到连接列表，您需要<a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">在独立域名上部署 Web 应用</a>（受浏览器 CSP 策略限制）。",
     "offline": "离线",
     "coin": "币种",
-    "ping": "嗨",
+    "ping": "Ping",
     "service": "服务",
     "socket": "套接字",
     "tabs": {
@@ -437,7 +437,7 @@
   },
   "votes": {
     "delegate_description": "描述",
-    "delegate_forged": "伪造",
+    "delegate_forged": "锻造",
     "delegate_link": "链接",
     "delegate_uptime": "正常运行时间",
     "downvotes": "否决",

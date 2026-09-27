@@ -104,7 +104,7 @@ export const pluralizationRules = {
     if (choicesLength === 2) return choice <= 1 ? 0 : 1
     if (choice === 0) return 0
     if (choice === 1) return 1
-    return choicesLength < 4 ? 2 : Math.min(2, choicesLength - 1)
+    return 2
   }
 }
 
@@ -112,6 +112,10 @@ export const i18n = createI18n({
   locale: DEFAULT_LOCALE,
   fallbackLocale: FALLBACK_LOCALE,
   messages: loadLocaleMessages(),
+  // The remaining HTML-bearing messages are rendered by SafeHtml, which rebuilds an allowlisted
+  // VNode tree instead of injecting markup. vue-i18n cannot see that rendering boundary and would
+  // otherwise emit false-positive legacy HTML warnings for these messages. The
+  // i18nHtmlContract spec blocks new HTML-bearing messages without a SafeHtml consumer.
   warnHtmlMessage: false,
   fallbackRoot: true,
   pluralizationRules,
