@@ -6,7 +6,7 @@ import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 const projectRoot = fileURLToPath(new URL('../../', import.meta.url))
-const localeNames = ['de', 'en', 'ru', 'zh']
+const localeNames = ['ar', 'de', 'en', 'es', 'fr', 'ja', 'ru', 'zh']
 const safeHtmlConsumers = new Map([
   ['login.new_passphrase_label', 'src/components/PassphraseGenerator.vue'],
   ['nodes.nodeLabelDescription', 'src/components/nodes/NodesTable.vue'],

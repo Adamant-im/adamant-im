@@ -28,3 +28,38 @@ html {
   overflow-x: hidden;
   overscroll-behavior: contain;
 }
+
+/**
+ * RTL layout rules
+ */
+[dir='rtl'],
+.v-locale--is-rtl {
+  .back-btn .v-icon,
+  .back-button .v-icon,
+  .a-forward-icon {
+    transform: scaleX(-1);
+  }
+}
+
+/**
+ * Bidirectional isolation for cryptographic hashes, addresses, and code
+ */
+bdi,
+.address-in-confirm,
+.a-text-explanation-enlarged,
+.crypto-address,
+.tx-hash,
+code {
+  unicode-bidi: isolate;
+  direction: ltr;
+  text-align: left;
+}
+
+/**
+ * Chat messages content natural text direction
+ */
+.a-chat__message-text,
+.message-body {
+  unicode-bidi: plaintext;
+  text-align: start;
+}

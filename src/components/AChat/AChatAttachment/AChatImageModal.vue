@@ -5,11 +5,14 @@
         <v-toolbar color="transparent">
           <v-btn :icon="mdiClose" @click="closeModal" />
 
-          <div :class="classes.imageCounter">{{ slide + 1 }} of {{ files.length }}</div>
+          <div :class="classes.imageCounter">
+            {{ t('chats.image_counter', { current: slide + 1, total: files.length }) }}
+          </div>
 
           <v-btn
             :icon="mdiArrowCollapseDown"
             :class="classes.saveButton"
+            :aria-label="t('chats.download')"
             @click="downloadFile"
             :loading="downloading"
           />
@@ -33,7 +36,7 @@
                 @click="downloadFile"
                 :loading="downloading"
               >
-                Download
+                {{ t('chats.download') }}
               </v-btn>
             </AChatModalFile>
           </template>
@@ -425,7 +428,8 @@ export default {
       downloadFile,
       downloading,
       isTypeImage,
-      classes
+      classes,
+      t
     }
   }
 }

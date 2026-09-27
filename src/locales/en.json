@@ -13,6 +13,8 @@
     "date_today": "Today",
     "date_tomorrow": "Tomorrow",
     "date_yesterday": "Yesterday",
+    "download": "Download",
+    "image_counter": "{current} of {total}",
     "incorrect_address": "Incorrect ADM address",
     "no_public_key": "This address is not active yet. Cannot start a chat",
     "public_key_mismatch": "The node returned a public key that does not match this address. The message was not sent. Try another node.",

@@ -49,9 +49,20 @@ describe('useFormattedDate', () => {
   })
 
   it('keeps locale region tags valid for date formatting', () => {
-    const locales = ['en', 'ru', 'de', 'zh'].map((locale) => loadLocale(locale).region)
+    const locales = ['ar', 'de', 'en', 'es', 'fr', 'ja', 'ru', 'zh'].map(
+      (locale) => loadLocale(locale).region
+    )
 
-    expect(locales).toEqual(['en-US', 'ru-RU', 'de-DE', 'zh-CN'])
+    expect(locales).toEqual([
+      'ar-SA',
+      'de-DE',
+      'en-US',
+      'es-ES',
+      'fr-FR',
+      'ja-JP',
+      'ru-RU',
+      'zh-CN'
+    ])
 
     for (const locale of locales) {
       expect(() => Intl.getCanonicalLocales(locale)).not.toThrow()
