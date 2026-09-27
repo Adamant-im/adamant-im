@@ -31,6 +31,7 @@ const resolveRunStamp = () => {
 }
 
 const runStamp = resolveRunStamp()
+const isCI = Boolean(process.env.CI)
 const isDetailedMode = process.env.PLAYWRIGHT_DETAILED === '1'
 const performLongRunningTests = process.env.PLAYWRIGHT_PERFORM_LONG_RUNNING === '1'
 const runRootDir = path.join('playwright-report', runStamp)
@@ -44,24 +45,26 @@ export default defineConfig({
     timeout: 15_000
   },
   fullyParallel: false,
-  forbidOnly: !!process.env.CI,
+  forbidOnly: isCI,
   grepInvert: performLongRunningTests ? undefined : new RegExp(LONG_RUNNING_TEST_TAG),
-  retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 1 : 2,
+  retries: isCI ? 1 : 0,
+  workers: isCI ? 1 : 2,
   preserveOutput: isDetailedMode ? 'always' : 'failures-only',
   outputDir,
-  reporter: isDetailedMode
-    ? [
-        ['list'],
-        ['html', { open: 'never', outputFolder: htmlOutputDir }],
-        ['json', { outputFile: path.join(runRootDir, 'results.json') }]
-      ]
-    : [['list'], ['html', { open: 'never', outputFolder: htmlOutputDir }]],
+  reporter: isCI
+    ? [['list']]
+    : isDetailedMode
+      ? [
+          ['list'],
+          ['html', { open: 'never', outputFolder: htmlOutputDir }],
+          ['json', { outputFile: path.join(runRootDir, 'results.json') }]
+        ]
+      : [['list'], ['html', { open: 'never', outputFolder: htmlOutputDir }]],
   use: {
     baseURL,
-    trace: isDetailedMode ? 'on' : 'on-first-retry',
-    screenshot: isDetailedMode ? 'on' : 'only-on-failure',
-    video: isDetailedMode ? 'on' : 'retain-on-failure',
+    trace: isCI ? 'off' : isDetailedMode ? 'on' : 'on-first-retry',
+    screenshot: isCI ? 'off' : isDetailedMode ? 'on' : 'only-on-failure',
+    video: isCI ? 'off' : isDetailedMode ? 'on' : 'retain-on-failure',
     permissions: ['clipboard-read', 'clipboard-write'],
     viewport: { width: 1366, height: 900 }
   },
