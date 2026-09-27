@@ -22,7 +22,6 @@
         base-color="primary"
         color="primary"
         v-on="listeners"
-        :autofocus="isDesktopDevice"
         @focusin="isInputFocused = true"
         @focusout="isInputFocused = false"
       >
@@ -180,6 +179,12 @@ const listeners = computed(() => {
 onMounted(() => {
   if (props.messageText) {
     message.value = props.messageText
+  }
+
+  // Focus once when the chat opens. Vuetify's `autofocus` prop is not used: it refocuses the
+  // field every time it scrolls back into view, taking the focus back after the user dismissed
+  // it with Escape.
+  if (props.messageText || (isDesktopDevice && !props.shouldDisableInput)) {
     focus()
   }
   attachKeyCommandListener()
