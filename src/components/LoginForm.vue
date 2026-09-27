@@ -11,6 +11,7 @@
           @keydown.enter.prevent="submit"
           :label="t('login.password_label')"
           autocomplete="current-password"
+          dir="ltr"
           :class="[classes.textField, classes.textFieldCentered]"
           :type="showPassphrase ? 'text' : 'password'"
           variant="underlined"

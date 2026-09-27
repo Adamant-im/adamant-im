@@ -83,7 +83,7 @@
         </div>
 
         <div class="a-chat__message-card-body">
-          <div class="a-chat__message-text a-chat__transaction-note">
+          <div class="a-chat__message-text a-chat__transaction-note" dir="auto">
             {{ transaction.message }}
           </div>
         </div>

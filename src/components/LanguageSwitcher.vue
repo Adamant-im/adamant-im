@@ -45,7 +45,7 @@ defineProps({
   }
 })
 
-const { messages, locale } = useI18n()
+const { messages } = useI18n()
 const store = useStore()
 
 const languages = computed(() => messages.value)
@@ -54,7 +54,6 @@ const currentLocale = computed({
   get: () => store.state.language.currentLocale,
   set: (value) => {
     store.dispatch('language/changeLocale', value)
-    locale.value = value
   }
 })
 

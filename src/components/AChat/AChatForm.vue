@@ -8,6 +8,7 @@
     <div ref="messageInputRoot">
       <v-textarea
         v-model="message"
+        dir="auto"
         @input="onInput"
         :placeholder="placeholder"
         :disabled="shouldDisableInput"
@@ -414,6 +415,7 @@ defineExpose({
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_directional-icon.scss' as directionalIcon;
 @use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use '@/assets/styles/settings/_colors.scss';
 @use 'vuetify/settings';
@@ -477,6 +479,7 @@ defineExpose({
 
 .a-chat__form-send-area {
   position: relative;
+  @include directionalIcon.a-directional-icon();
 
   &::before {
     content: '';

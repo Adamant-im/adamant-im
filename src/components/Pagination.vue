@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pagination">
     <v-btn :icon="mdiChevronLeft" :disabled="page <= 1" variant="text" @click="page--" />
     <v-btn :icon="mdiChevronRight" :disabled="page >= pages" variant="text" @click="page++" />
   </div>
@@ -42,3 +42,11 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+@use '@/assets/styles/components/_directional-icon.scss' as directionalIcon;
+
+.pagination :deep(.v-icon) {
+  @include directionalIcon.a-directional-icon();
+}
+</style>

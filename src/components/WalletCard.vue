@@ -50,7 +50,11 @@
 
         <template #append>
           <v-btn icon ripple variant="text" :class="classes.walletCardAction">
-            <v-icon :class="classes.walletCardIcon" :icon="mdiChevronRight" size="small" />
+            <v-icon
+              :class="[classes.walletCardIcon, classes.walletCardForwardIcon]"
+              :icon="mdiChevronRight"
+              size="small"
+            />
           </v-btn>
         </template>
       </v-list-item>
@@ -99,6 +103,7 @@ const classes = {
   walletCardActions: `${className}__actions`,
   walletCardBrandTitle: `${className}__brand-title`,
   walletCardIcon: `${className}__icon`,
+  walletCardForwardIcon: `${className}__icon--forward`,
   walletCardList: `${className}__list`,
   walletCardRate: `${className}__rate`,
   walletCardSubtitle: `${className}__subtitle`,
@@ -161,6 +166,7 @@ const isBalanceActive = computed(() => {
 
 <style lang="scss" scoped>
 @use '@/assets/styles/components/_color-roles.scss' as colorRoles;
+@use '@/assets/styles/components/_directional-icon.scss' as directionalIcon;
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 .wallet-card {
@@ -201,6 +207,10 @@ const isBalanceActive = computed(() => {
 
   &__action {
     color: var(--a-wallet-card-action-color);
+  }
+
+  &__icon--forward {
+    @include directionalIcon.a-directional-icon();
   }
 }
 

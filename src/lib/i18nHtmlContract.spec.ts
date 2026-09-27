@@ -1,12 +1,15 @@
 // @vitest-environment node
 
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 const projectRoot = fileURLToPath(new URL('../../', import.meta.url))
-const localeNames = ['ar', 'de', 'en', 'es', 'fr', 'ja', 'ru', 'zh']
+// Every locale file is checked, so a new translation cannot bypass the SafeHtml boundary
+const localeNames = readdirSync(path.join(projectRoot, 'src/locales'))
+  .filter((file) => file.endsWith('.json'))
+  .map((file) => path.basename(file, '.json'))
 const safeHtmlConsumers = new Map([
   ['login.new_passphrase_label', 'src/components/PassphraseGenerator.vue'],
   ['nodes.nodeLabelDescription', 'src/components/nodes/NodesTable.vue'],

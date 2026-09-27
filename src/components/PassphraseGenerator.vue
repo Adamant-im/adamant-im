@@ -21,6 +21,7 @@
           ref="textarea"
           :value="displayedPassphrase"
           type="text"
+          dir="ltr"
           variant="plain"
           multi-line
           readonly

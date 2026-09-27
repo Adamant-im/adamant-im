@@ -11,20 +11,6 @@ import { registerGlobalComponents } from './plugins/layout'
 import { longPressDirective } from '@/directives/longPress'
 import '@/assets/styles/app.scss'
 
-import dayjs from 'dayjs'
-import 'dayjs/locale/ar'
-import 'dayjs/locale/de'
-import 'dayjs/locale/en'
-import 'dayjs/locale/es'
-import 'dayjs/locale/fr'
-import 'dayjs/locale/ja'
-import 'dayjs/locale/ru'
-import 'dayjs/locale/zh-cn'
-
-if (dayjs.Ls && dayjs.Ls['zh-cn']) {
-  dayjs.locale('zh', dayjs.Ls['zh-cn'])
-}
-
 const app = createApp(App)
 
 app.use(router)

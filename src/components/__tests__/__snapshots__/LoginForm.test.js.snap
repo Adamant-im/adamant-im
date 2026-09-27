@@ -23,6 +23,7 @@ exports[`LoginForm.vue > renders the correct markup 1`] = `
       autocomplete="current-password"
       class="login-form__textfield login-form__textfield--centered"
       data-v-ba684ca4=""
+      dir="ltr"
       label="Passphrase"
       modelvalue=""
       type="password"

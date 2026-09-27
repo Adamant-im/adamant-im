@@ -565,6 +565,7 @@ watch(
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_directional-icon.scss' as directionalIcon;
 @use '@/assets/styles/components/_text-content.scss' as textContent;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
@@ -660,6 +661,10 @@ watch(
     :deep(.v-list-item) {
       padding-inline-start: var(--a-settings-gutter);
       padding-inline-end: var(--a-settings-gutter);
+    }
+
+    :deep(.v-list-item__append .v-icon) {
+      @include directionalIcon.a-directional-icon();
     }
 
     :deep(.v-list-item--density-default.v-list-item--one-line) {

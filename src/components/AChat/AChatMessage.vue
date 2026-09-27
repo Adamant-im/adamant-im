@@ -75,8 +75,13 @@
         <div class="a-chat__message-card-body">
           <!-- `formattedMessage` is sanitized HTML from formatMarkdown(); SafeHtml rebuilds it
                from an allowlist instead of assigning it to innerHTML -->
-          <safe-html v-if="html" class="a-chat__message-text" :html="formattedMessage" />
-          <div v-else class="a-chat__message-text" v-text="formattedMessage" />
+          <safe-html
+            v-if="html"
+            class="a-chat__message-text"
+            :dir="textDirection"
+            :html="formattedMessage"
+          />
+          <div v-else class="a-chat__message-text" :dir="textDirection" v-text="formattedMessage" />
         </div>
       </div>
     </div>
@@ -165,6 +170,10 @@ export default defineComponent({
       Boolean(store.state.chat.pendingMessages[String(props.transaction.id)])
     )
     const formattedMessage = useFormatMessage(props.transaction)
+    // User messages keep the direction of the language they are written in. Localized app
+    // messages (welcome and bot texts) follow the UI direction, even when they start with a
+    // Latin brand name.
+    const textDirection = computed(() => (props.transaction.i18n ? undefined : 'auto'))
     const time = useTransactionTime(props.transaction)
     const pendingStatusDelayElapsed = ref(false)
 
@@ -241,6 +250,7 @@ export default defineComponent({
       statusIcon,
       isOutgoingMessage,
       formattedMessage,
+      textDirection,
       showAvatar,
       onMove,
       onSwipeEnd,

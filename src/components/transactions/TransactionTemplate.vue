@@ -133,7 +133,11 @@
       :title="t('transaction.explorer')"
       @click="openInExplorer"
     >
-      <v-icon :icon="mdiChevronRight" :size="COMMON_COMPACT_ICON_SIZE" />
+      <v-icon
+        class="transaction-view__forward-icon"
+        :icon="mdiChevronRight"
+        :size="COMMON_COMPACT_ICON_SIZE"
+      />
     </TransactionListItem>
 
     <v-divider v-if="partner && !ifComeFromChat" />
@@ -424,6 +428,7 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
 
 <style lang="scss" scoped>
 @use '@/assets/styles/components/_color-roles.scss' as colorRoles;
+@use '@/assets/styles/components/_directional-icon.scss' as directionalIcon;
 
 .transaction-view {
   --a-transaction-view-row-min-height: var(--a-list-row-min-height);
@@ -454,6 +459,9 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
 
   &__titlecontent {
     flex: 1 0 auto;
+  }
+  &__forward-icon {
+    @include directionalIcon.a-directional-icon();
   }
   &__toolbar {
     :deep(.v-toolbar__title) div {

@@ -194,6 +194,7 @@ const onScanQrcode = (value: string) => {
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_directional-icon.scss' as directionalIcon;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
@@ -279,6 +280,10 @@ const onScanQrcode = (value: string) => {
     padding: var(--a-space-1, 4px) var(--a-space-3, 12px);
     border-radius: var(--a-radius-pill, 9999px);
     text-transform: uppercase;
+  }
+
+  &__language-switcher-wrap :deep(.v-btn__prepend .v-icon) {
+    @include directionalIcon.a-directional-icon();
   }
 
   &__settings-button-container {

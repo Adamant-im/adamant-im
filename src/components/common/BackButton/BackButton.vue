@@ -12,12 +12,18 @@ const className = 'back-button'
 </script>
 
 <style lang="scss">
+@use '@/assets/styles/components/_directional-icon.scss' as directionalIcon;
+
 .back-button {
   &.v-btn:first-child {
     width: var(--a-back-button-size);
     height: var(--a-back-button-size);
     margin: 0 var(--a-back-button-margin-inline);
     border-radius: var(--a-radius-round);
+  }
+
+  .v-icon {
+    @include directionalIcon.a-directional-icon();
   }
 
   &:hover > .v-btn__overlay {

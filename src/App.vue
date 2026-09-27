@@ -16,15 +16,13 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, getCurrentInstance, ref, watch } from 'vue'
-import dayjs from 'dayjs'
 import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
 import UploadAttachmentExitPrompt from '@/components/UploadAttachmentExitPrompt.vue'
 import Notifications from '@/lib/notifications'
 import { ThemeName } from './plugins/vuetify'
 import { useStore } from 'vuex'
-import { useI18n } from 'vue-i18n'
 import { useLocale } from 'vuetify'
-import { applyLocaleToDocument, normalizeLocale } from '@/i18n'
+import { applyLocale } from '@/i18n'
 import { useResendPendingMessages } from '@/hooks/useResendPendingMessages'
 import { useTrackConnection } from '@/hooks/useTrackConnection'
 import { useHealthcheckResume } from '@/hooks/useHealthcheckResume'
@@ -66,8 +64,6 @@ const shouldCacheRootComponent = (component: unknown) => {
   return componentName !== null && cachedRootComponentNames.includes(componentName)
 }
 
-const { locale } = useI18n()
-
 onMounted(() => {
   const instance = getCurrentInstance()
 
@@ -91,34 +87,15 @@ const onKeydownHandler = (e: KeyboardEvent) => {
   }
 }
 
-const vuetifyLocale = useLocale()
+const { current: vuetifyLocale } = useLocale()
 
-const syncLocale = (targetLocale: string) => {
-  const normalized = normalizeLocale(targetLocale)
-  if (locale.value !== normalized) {
-    locale.value = normalized
-  }
-  if (vuetifyLocale?.current && vuetifyLocale.current.value !== normalized) {
-    vuetifyLocale.current.value = normalized
-  }
-  dayjs.locale(normalized === 'zh' ? 'zh-cn' : normalized)
-  applyLocaleToDocument(normalized)
-}
-
-const setLocale = () => {
-  // Set language from `localStorage` / store.
-  //
-  // This is required only when initializing the application.
-  // Subsequent mutations of `language.currentLocale`
-  // will be synchronized with `i18n.locale`, `vuetify.locale`, and DOM attributes.
-  syncLocale(store.state.language.currentLocale)
-}
-
+// The store holds the selected (or restored) locale; apply it on start and on every change.
 watch(
   () => store.state.language.currentLocale,
-  (newLocale) => {
-    syncLocale(newLocale)
-  }
+  (currentLocale) => {
+    vuetifyLocale.value = applyLocale(currentLocale)
+  },
+  { immediate: true }
 )
 
 onMounted(() => {
@@ -128,8 +105,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeydownHandler, true)
 })
-
-setLocale()
 </script>
 
 <style lang="scss" scoped>

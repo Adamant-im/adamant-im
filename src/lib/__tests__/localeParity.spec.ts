@@ -1,6 +1,6 @@
 // @vitest-environment node
 
-import { readFileSync, existsSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -8,10 +8,10 @@ import {
   SUPPORTED_LOCALES,
   RTL_LOCALES,
   DEFAULT_LOCALE,
+  detectLocale,
   isRtlLocale,
-  normalizeLocale,
-  pluralizationRules,
-  i18n
+  matchSupportedLocale,
+  normalizeLocale
 } from '@/i18n'
 
 const projectRoot = fileURLToPath(new URL('../../../', import.meta.url))
@@ -30,19 +30,22 @@ function flattenObject(obj: Record<string, unknown>, prefix = ''): Record<string
   return result
 }
 
-const enRaw = JSON.parse(readFileSync(path.join(localesDir, 'en.json'), 'utf8')) as Record<
-  string,
-  unknown
->
-const enFlat = flattenObject(enRaw)
+const loadLocale = (locale: string) =>
+  flattenObject(JSON.parse(readFileSync(path.join(localesDir, `${locale}.json`), 'utf8')))
+
+const enFlat = loadLocale('en')
 const enKeys = Object.keys(enFlat).sort()
 
+/** Messages selected by count; every other message must not contain the `|` separator */
 const pluralKeys = new Set([
   'chats.file',
   'notifications.tabMessage.few',
   'transaction.addresses',
   'transaction.me_and_addresses'
 ])
+
+/** Plural forms a locale needs; other locales keep the English number of forms */
+const pluralFormCount: Record<string, number> = { ar: 6, ru: 4 }
 
 const allowedHtmlKeys = new Set([
   'login.new_passphrase_label',
@@ -54,146 +57,281 @@ const allowedHtmlKeys = new Set([
   'votes.summary_info'
 ])
 
-describe('locale parity and quality contract', () => {
-  it('registers all 8 languages in SUPPORTED_LOCALES', () => {
-    expect(SUPPORTED_LOCALES).toEqual(['ar', 'de', 'en', 'es', 'fr', 'ja', 'ru', 'zh'])
+/**
+ * Links a translation may use instead of the English one for the same message, because a
+ * localized page exists. Any other link in a translation fails the contract: translations are
+ * contributed by the community and must not be able to point users to a different site.
+ */
+const localizedLinks: Record<string, Record<string, string[]>> = {
+  de: {
+    'home.free_tokens_link': ['https://adamant.im/de-free-adm-tokens/']
+  },
+  ru: {
+    'chats.how_to_use_messenger_link': [
+      'https://vk.com/@adamant_im-kak-polzovatsya-messendzherom-na-blokcheine'
+    ],
+    'chats.virtual.welcome_message': ['https://adamant.im/ru-staysecured'],
+    'home.buy_tokens_btn_link': ['https://adamant.im/ru-buy-tokens/'],
+    'home.free_tokens_link': ['https://adamant.im/ru-free-adm-tokens/']
+  }
+}
+
+/** Messages that legitimately stay identical to English: names, tickers and loanwords */
+const untranslatedAllowlist: Record<string, string[]> = {
+  ar: ['app_title', 'login.brand_title', 'build_info.pull_request'],
+  de: [
+    'app_title',
+    'bottom.chats_button',
+    'build_info.branch',
+    'build_info.commit',
+    'build_info.dialog_title',
+    'build_info.pull_request',
+    'build_info.testnet',
+    'build_info.version',
+    'chats.title',
+    'chats.virtual.adelina_title',
+    'dev_screens.adamant_wallets',
+    'login.brand_title',
+    'login.password_label',
+    'nodes.coin',
+    'nodes.host',
+    'nodes.offline',
+    'nodes.ping',
+    'nodes.socket',
+    'options.chats_title',
+    'options.export_keys.passphrase',
+    'scan.no_stream_details',
+    'transaction.status',
+    'votes.delegate_link',
+    'votes.table_head_name',
+    'wallets.blockchain'
+  ],
+  es: [
+    'app_title',
+    'bottom.chats_button',
+    'build_info.commit',
+    'build_info.dialog_title',
+    'build_info.pull_request',
+    'build_info.testnet',
+    'chats.title',
+    'chats.virtual.adelina_title',
+    'dev_screens.adamant_wallets',
+    'error',
+    'login.brand_title',
+    'nodes.host',
+    'nodes.ping',
+    'nodes.socket',
+    'options.chats_title',
+    'options.general_title',
+    'transaction.statuses.REJECTED',
+    'wallets.blockchain'
+  ],
+  fr: [
+    'app_title',
+    'build_info.commit',
+    'build_info.dialog_title',
+    'build_info.pull_request',
+    'build_info.testnet',
+    'build_info.version',
+    'chats.message',
+    'chats.virtual.adelina_title',
+    'dev_screens.adamant_wallets',
+    'dev_vibrations.long',
+    'dev_wallets.configuration',
+    'login.brand_title',
+    'nodes.label',
+    'nodes.ping',
+    'nodes.service',
+    'nodes.socket',
+    'options.actions',
+    'options.notification_title',
+    'transaction.confirmations',
+    'transaction.date',
+    'transaction.transactions',
+    'votes.delegate_description',
+    'votes.page_title',
+    'votes.table_head_vote',
+    'wallets.blockchain'
+  ],
+  ja: [
+    'app_title',
+    'build_info.dialog_title',
+    'build_info.pull_request',
+    'build_info.testnet',
+    'chats.virtual.adelina_title',
+    'dev_screens.adamant_wallets',
+    'login.brand_title',
+    'nodes.ping',
+    'wallets.blockchain'
+  ],
+  ru: ['build_info.dialog_title', 'dev_screens.adamant_wallets'],
+  zh: [
+    'app_title',
+    'build_info.dialog_title',
+    'build_info.pull_request',
+    'chats.virtual.adelina_title',
+    'dev_screens.adamant_wallets',
+    'login.brand_title',
+    'nodes.ping'
+  ]
+}
+
+const placeholders = (message: string) =>
+  [...message.matchAll(/\{\s*([\w-]+)\s*\}/g)].map((match) => match[1]).sort()
+
+const markupTags = (message: string) =>
+  (message.match(/<[^>]*>/g) ?? []).map((tag) => tag.replace(/\s+/g, ' ')).sort()
+
+/**
+ * Everything a browser or the markdown renderer could turn into a link: URLs with a scheme,
+ * `www.` hosts and bare domains. Non-ASCII characters are kept, so a CJK full stop glued to a
+ * URL (which the markdown autolinker would include in the link) shows up as a different link.
+ */
+const LINK_PATTERN =
+  /(?:[a-z][a-z0-9+.-]*:\/\/|www\.)[^\s"'<>()[\]]+|(?<![@\w.-])(?:[a-z0-9-]+\.)+[a-z]{2,}(?![\w-])/gi
+
+/** vue-i18n literal interpolation, such as `{'@'}`, renders the quoted text as is */
+const unescapeLiterals = (message: string) => message.replace(/\{'([^']*)'\}/g, '$1')
+
+const links = (message: string) =>
+  (unescapeLiterals(message).match(LINK_PATTERN) ?? []).map((link) =>
+    link.replace(/[.,!?;:]+$/, '')
+  )
+
+describe('locale files', () => {
+  it('register exactly the locales that have a file in src/locales', () => {
+    const files = readdirSync(localesDir)
+      .filter((file) => file.endsWith('.json'))
+      .map((file) => path.basename(file, '.json'))
+      .sort()
+
+    expect(SUPPORTED_LOCALES).toEqual(files)
     expect(RTL_LOCALES).toEqual(['ar'])
   })
 
-  it('verifies canonical en.json contains 416 leaf keys', () => {
-    expect(enKeys.length).toBe(416)
+  it('use `|` only in the registered plural messages', () => {
+    const unexpectedPlurals = enKeys.filter((key) => enFlat[key].includes('|'))
+
+    expect(unexpectedPlurals.sort()).toEqual([...pluralKeys].sort())
   })
 
-  describe.each(SUPPORTED_LOCALES)('locale: %s', (locale) => {
-    const filePath = path.join(localesDir, `${locale}.json`)
+  it('have unique, non-empty language names', () => {
+    const titles = SUPPORTED_LOCALES.map((locale) => loadLocale(locale).title)
 
-    it('file exists on disk and is valid JSON', () => {
-      expect(existsSync(filePath), `Locale file ${filePath} must exist`).toBe(true)
-      expect(() => JSON.parse(readFileSync(filePath, 'utf8'))).not.toThrow()
-    })
+    expect(titles.every(Boolean)).toBe(true)
+    expect(new Set(titles).size).toBe(titles.length)
+  })
+})
 
-    const raw = JSON.parse(readFileSync(filePath, 'utf8')) as Record<string, unknown>
-    const flat = flattenObject(raw)
-    const keys = Object.keys(flat).sort()
+describe.each(SUPPORTED_LOCALES)('locale %s', (locale) => {
+  const flat = loadLocale(locale)
+  const keys = Object.keys(flat).sort()
 
-    it('has exact key count parity with en.json', () => {
-      expect(keys.length).toBe(enKeys.length)
-    })
+  it('has exactly the keys of en.json', () => {
+    const missing = enKeys.filter((key) => !(key in flat))
+    const extra = keys.filter((key) => !(key in enFlat))
 
-    it('contains no missing or extra keys compared to en.json', () => {
-      const missing = enKeys.filter((k) => !(k in flat))
-      const extra = keys.filter((k) => !(k in enFlat))
-
-      expect(missing, `Missing keys in ${locale}`).toEqual([])
-      expect(extra, `Extra keys in ${locale}`).toEqual([])
-    })
-
-    it('preserves all interpolation placeholders from en.json', () => {
-      const mismatches: { key: string; enPh: string[]; locPh: string[] }[] = []
-
-      for (const key of enKeys) {
-        if (pluralKeys.has(key)) continue
-
-        const enPh = (enFlat[key].match(/\{[a-zA-Z0-9_-]+\}/g) || []).sort()
-        const locPh = (flat[key]?.match(/\{[a-zA-Z0-9_-]+\}/g) || []).sort()
-
-        if (enPh.join(',') !== locPh.join(',')) {
-          mismatches.push({ key, enPh, locPh })
-        }
-      }
-
-      expect(mismatches, `Placeholder mismatches in ${locale}`).toEqual([])
-    })
-
-    it('contains HTML tags only in allowlisted SafeHtml keys', () => {
-      const htmlKeys = keys.filter(
-        (k) => typeof flat[k] === 'string' && /<\/?[a-z][^>]*>/i.test(flat[k])
-      )
-      const unauthorized = htmlKeys.filter((k) => !allowedHtmlKeys.has(k))
-
-      expect(unauthorized, `Unauthorized HTML in ${locale}`).toEqual([])
-    })
-
-    it('has valid non-empty title and canonical region', () => {
-      expect(flat.title).toBeTruthy()
-      expect(flat.region).toBeTruthy()
-      expect(() => Intl.getCanonicalLocales(flat.region)).not.toThrow()
-    })
+    expect(missing, `Missing keys in ${locale}`).toEqual([])
+    expect(extra, `Extra keys in ${locale}`).toEqual([])
   })
 
-  describe('RTL and locale helper functions', () => {
-    it('correctly identifies RTL locales', () => {
-      expect(isRtlLocale('ar')).toBe(true)
-      expect(isRtlLocale('en')).toBe(false)
-      expect(isRtlLocale('ru')).toBe(false)
-      expect(isRtlLocale('de')).toBe(false)
-      expect(isRtlLocale('es')).toBe(false)
-      expect(isRtlLocale('fr')).toBe(false)
-      expect(isRtlLocale('ja')).toBe(false)
-      expect(isRtlLocale('zh')).toBe(false)
-    })
+  it('keeps the interpolation placeholders of en.json', () => {
+    const mismatches = enKeys
+      .filter((key) => !pluralKeys.has(key))
+      .filter((key) => placeholders(enFlat[key]).join() !== placeholders(flat[key]).join())
+      .map((key) => ({ key, en: placeholders(enFlat[key]), [locale]: placeholders(flat[key]) }))
 
-    it('normalizes regional and standard locale strings', () => {
-      expect(normalizeLocale('zh-CN')).toBe('zh')
-      expect(normalizeLocale('zh-TW')).toBe('zh')
-      expect(normalizeLocale('zh')).toBe('zh')
-      expect(normalizeLocale('ru-RU')).toBe('ru')
-      expect(normalizeLocale('de-DE')).toBe('de')
-      expect(normalizeLocale('es-ES')).toBe('es')
-      expect(normalizeLocale('fr-FR')).toBe('fr')
-      expect(normalizeLocale('ja-JP')).toBe('ja')
-      expect(normalizeLocale('ar-SA')).toBe('ar')
-      expect(normalizeLocale('en-US')).toBe('en')
-      expect(normalizeLocale('unknown-locale')).toBe(DEFAULT_LOCALE)
-      expect(normalizeLocale(null as unknown as string)).toBe(DEFAULT_LOCALE)
-    })
+    expect(mismatches, `Placeholder mismatches in ${locale}`).toEqual([])
   })
 
-  describe('pluralization rules', () => {
-    const rules = pluralizationRules
+  it('has the plural forms its pluralization rule selects from', () => {
+    for (const key of pluralKeys) {
+      const forms = flat[key].split('|')
+      const expectedCount = pluralFormCount[locale] ?? enFlat[key].split('|').length
+      const allowedPlaceholders = new Set(placeholders(enFlat[key]))
 
-    it('evaluates Russian pluralization accurately', () => {
-      const ruRule = rules?.ru
-      expect(ruRule).toBeDefined()
-      if (!ruRule) return
+      expect(forms, `${locale}:${key}`).toHaveLength(expectedCount)
+      forms.forEach((form) => {
+        placeholders(form).forEach((name) => expect(allowedPlaceholders).toContain(name))
+      })
+    }
+  })
 
-      expect(ruRule(0, 4)).toBe(0) // 0 файлов
-      expect(ruRule(1, 4)).toBe(1) // 1 файл
-      expect(ruRule(2, 4)).toBe(2) // 2 файла
-      expect(ruRule(4, 4)).toBe(2) // 4 файла
-      expect(ruRule(5, 4)).toBe(3) // 5 файлов
-      expect(ruRule(11, 4)).toBe(3) // 11 файлов (teen)
-      expect(ruRule(21, 4)).toBe(1) // 21 файл
-      expect(ruRule(24, 4)).toBe(2) // 24 файла
-      expect(ruRule(111, 4)).toBe(3) // 111 файлов (teen modulo 100)
-    })
+  it('contains HTML only in allowlisted SafeHtml messages, with the markup of en.json', () => {
+    const htmlKeys = keys.filter((key) => /<\/?[a-z][^>]*>/i.test(flat[key]))
 
-    it('evaluates Arabic 6-form CLDR pluralization', () => {
-      const arRule = rules?.ar
-      expect(arRule).toBeDefined()
-      if (!arRule) return
+    expect(htmlKeys.filter((key) => !allowedHtmlKeys.has(key))).toEqual([])
 
-      expect(arRule(0, 6)).toBe(0) // zero
-      expect(arRule(1, 6)).toBe(1) // one
-      expect(arRule(2, 6)).toBe(2) // two
-      expect(arRule(3, 6)).toBe(3) // few (3..10)
-      expect(arRule(10, 6)).toBe(3) // few (3..10)
-      expect(arRule(11, 6)).toBe(4) // many (11..99)
-      expect(arRule(99, 6)).toBe(4) // many (11..99)
-      expect(arRule(100, 6)).toBe(5) // other (100+)
-      expect(arRule(103, 6)).toBe(3) // few (103 % 100 = 3)
-      expect(arRule(115, 6)).toBe(4) // many (115 % 100 = 15)
-    })
+    for (const key of allowedHtmlKeys) {
+      expect(markupTags(flat[key]), `${locale}:${key}`).toEqual(markupTags(enFlat[key]))
+    }
+  })
 
-    it('evaluates French pluralization (0 and 1 are singular)', () => {
-      const frRule = rules?.fr
-      expect(frRule).toBeDefined()
-      if (!frRule) return
+  it('links only to the destinations of en.json or to allowlisted localized pages', () => {
+    for (const key of enKeys) {
+      const allowed = new Set([...links(enFlat[key]), ...(localizedLinks[locale]?.[key] ?? [])])
+      const found = links(flat[key])
 
-      expect(frRule(0, 2)).toBe(0)
-      expect(frRule(1, 2)).toBe(0)
-      expect(frRule(2, 2)).toBe(1)
-      expect(frRule(10, 2)).toBe(1)
-    })
+      found.forEach((link) => expect(allowed, `${locale}:${key}`).toContain(link))
+      // A dropped link is a dropped instruction, such as the security tips in the welcome message
+      expect(found, `${locale}:${key}`).toHaveLength(links(enFlat[key]).length)
+    }
+  })
+
+  it('translates every message except explicitly allowlisted names and loanwords', () => {
+    if (locale === 'en') return
+
+    const identical = enKeys.filter(
+      (key) =>
+        flat[key] === enFlat[key] &&
+        /[A-Za-z]{3,}/.test(enFlat[key]) &&
+        links(enFlat[key]).join('') !== enFlat[key]
+    )
+
+    expect(identical).toEqual([...(untranslatedAllowlist[locale] ?? [])].sort())
+  })
+
+  it('keeps the section structure of the welcome message', () => {
+    const headings = (message: string) => message.match(/^# /gm)?.length ?? 0
+    const key = 'chats.virtual.welcome_message'
+
+    expect(headings(flat[key])).toBe(headings(enFlat[key]))
+  })
+
+  it('names the ADAMANT wallet without repeating the brand', () => {
+    const affixes =
+      flat['home.wallet_crypto_adamant_prefix'] + flat['home.wallet_crypto_adamant_suffix']
+
+    expect(affixes).not.toMatch(/adamant/i)
+  })
+
+  it('has a canonical date locale tag', () => {
+    expect(Intl.getCanonicalLocales(flat.region)).toEqual([flat.region])
+  })
+})
+
+describe('locale helpers', () => {
+  it('detects RTL locales', () => {
+    expect(SUPPORTED_LOCALES.filter(isRtlLocale)).toEqual(['ar'])
+  })
+
+  it('maps BCP 47 tags to supported locales and keeps saved codes such as `zh`', () => {
+    expect(matchSupportedLocale('zh')).toBe('zh')
+    expect(matchSupportedLocale('zh-CN')).toBe('zh')
+    expect(matchSupportedLocale('zh-Hant-TW')).toBe('zh')
+    expect(matchSupportedLocale('ar-EG')).toBe('ar')
+    expect(matchSupportedLocale('pt_BR')).toBeNull()
+    expect(matchSupportedLocale(undefined)).toBeNull()
+
+    expect(normalizeLocale('ja-JP')).toBe('ja')
+    expect(normalizeLocale('unknown-locale')).toBe(DEFAULT_LOCALE)
+    expect(normalizeLocale(null)).toBe(DEFAULT_LOCALE)
+  })
+
+  it('detects the first supported browser language and falls back to the default', () => {
+    expect(detectLocale(['uk-UA', 'ru-RU', 'en-US'])).toBe('ru')
+    expect(detectLocale(['zh-TW'])).toBe('zh')
+    expect(detectLocale(['pt-BR', 'it'])).toBe(DEFAULT_LOCALE)
+    expect(detectLocale([])).toBe(DEFAULT_LOCALE)
   })
 })
