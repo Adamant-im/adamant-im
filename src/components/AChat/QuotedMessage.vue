@@ -251,7 +251,8 @@ export default defineComponent({
 
 .v-theme--light {
   .quoted-message {
-    border-left: var(--a-quoted-message-border-width) solid map.get(colors.$adm-colors, 'attention');
+    border-inline-start: var(--a-quoted-message-border-width) solid
+      map.get(colors.$adm-colors, 'attention');
     background-color: map.get(colors.$adm-colors, 'secondary2');
     color: map.get(colors.$adm-colors, 'regular');
   }
@@ -259,7 +260,8 @@ export default defineComponent({
 
 .v-theme--dark {
   .quoted-message {
-    border-left: var(--a-quoted-message-border-width) solid map.get(colors.$adm-colors, 'attention');
+    border-inline-start: var(--a-quoted-message-border-width) solid
+      map.get(colors.$adm-colors, 'attention');
     background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');
     color: map.get(colors.$adm-colors, 'secondary');
   }

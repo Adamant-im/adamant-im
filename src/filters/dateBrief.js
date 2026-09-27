@@ -1,9 +1,9 @@
 import dayjs from 'dayjs'
-import { i18n } from '@/i18n'
+import { currentDayjsLocale, i18n } from '@/i18n'
 import { isToday, isYesterday, isCurrentWeek } from './helpers'
 
 export default (timestamp) => {
-  const date = dayjs(timestamp)
+  const date = dayjs(timestamp).locale(currentDayjsLocale())
 
   if (isToday(new Date(timestamp))) {
     return date.format(`[${i18n.global.t('chats.date_today')}], HH:mm`)

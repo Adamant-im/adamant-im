@@ -1,5 +1,6 @@
 <template>
-  <span :class="classes.root">
+  <!-- The URL parts are inline blocks, so the root keeps them in reading order in RTL locales -->
+  <span :class="classes.root" dir="ltr">
     <span :class="classes.protocol">{{ protocol }}//</span>
 
     <span v-if="isIP" :class="classes.nodeName">{{ hostname }}</span>

@@ -56,7 +56,7 @@ export default defineComponent({
   &__value {
     font-weight: var(--a-transaction-list-item-font-weight);
     font-size: var(--a-transaction-list-item-font-size);
-    text-align: right;
+    text-align: end;
     text-overflow: ellipsis;
     overflow: hidden;
     max-width: 100%;

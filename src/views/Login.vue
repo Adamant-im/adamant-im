@@ -194,6 +194,7 @@ const onScanQrcode = (value: string) => {
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_directional-icon.scss' as directionalIcon;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 @use 'vuetify/settings';
@@ -281,10 +282,14 @@ const onScanQrcode = (value: string) => {
     text-transform: uppercase;
   }
 
+  &__language-switcher-wrap :deep(.v-btn__prepend .v-icon) {
+    @include directionalIcon.a-directional-icon();
+  }
+
   &__settings-button-container {
     position: absolute;
-    right: 0;
-    margin-right: var(--a-login-settings-offset-inline);
+    inset-inline-end: 0;
+    margin-inline-end: var(--a-login-settings-offset-inline);
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -303,7 +308,7 @@ const onScanQrcode = (value: string) => {
 
   &__build-info {
     margin-top: var(--a-space-2);
-    margin-right: var(--a-login-settings-offset-inline);
+    margin-inline-end: var(--a-login-settings-offset-inline);
     width: max-content;
   }
 

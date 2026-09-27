@@ -176,7 +176,7 @@ const uploadProgress = computed(() => {
   --a-chat-file-name-color: #{map.get(colors.$adm-colors, 'regular')};
   --a-chat-file-size-color: #{map.get(colors.$adm-colors, 'muted')};
   display: flex;
-  margin-left: auto;
+  margin-inline-start: auto;
   width: var(--a-chat-file-width);
 
   &__placeholder {
@@ -204,7 +204,7 @@ const uploadProgress = computed(() => {
   }
 
   &__file-info {
-    margin-left: var(--a-chat-file-info-gap-inline);
+    margin-inline-start: var(--a-chat-file-info-gap-inline);
     overflow: hidden;
   }
 

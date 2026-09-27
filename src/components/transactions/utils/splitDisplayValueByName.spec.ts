@@ -7,7 +7,7 @@ describe('splitDisplayValueByName', () => {
 
     expect(result).toEqual({
       main: 'Alice',
-      muted: ' (U123)'
+      muted: '(U123)'
     })
   })
 
@@ -25,7 +25,7 @@ describe('splitDisplayValueByName', () => {
 
     expect(result).toEqual({
       main: 'U123',
-      muted: ' (U123)'
+      muted: '(U123)'
     })
   })
 })

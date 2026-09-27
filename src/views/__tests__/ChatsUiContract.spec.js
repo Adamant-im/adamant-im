@@ -125,7 +125,7 @@ describe('Chats UI style contract', () => {
       'margin-inline-start: var(--a-chats-connection-spinner-offset-inline-start);'
     )
     expect(content).toContain('padding-inline-end: 0;')
-    expect(content).toContain('text-align: right;')
+    expect(content).toContain('text-align: end;')
     expect(content).toContain('__title-wrap')
     expect(content).toContain('justify-content: flex-end;')
     expect(content).toContain(':size="CHATS_CONNECTION_SPINNER_SIZE"')
@@ -244,7 +244,7 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('.chat-avatar {')
     expect(content).toContain('CHAT_CONNECTION_SPINNER_SIZE')
     expect(content).toContain(':size="CHAT_CONNECTION_SPINNER_SIZE"')
-    expect(content).toContain('margin-right: var(--a-space-1);')
+    expect(content).toContain('margin-inline-end: var(--a-space-1);')
     expect(content).not.toMatch(/\.chat-avatar\s*\{[^}]*margin-right:\s*var\(--a-space-3\);/s)
   })
 

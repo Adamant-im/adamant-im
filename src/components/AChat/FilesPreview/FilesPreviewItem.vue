@@ -103,7 +103,7 @@ export default defineComponent({
   &__remove-icon {
     position: absolute;
     top: var(--a-chat-files-preview-remove-offset);
-    right: var(--a-chat-files-preview-remove-offset);
+    inset-inline-end: var(--a-chat-files-preview-remove-offset);
     border-radius: 50%;
   }
 }

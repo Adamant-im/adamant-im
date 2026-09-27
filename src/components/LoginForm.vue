@@ -11,6 +11,7 @@
           @keydown.enter.prevent="submit"
           :label="t('login.password_label')"
           autocomplete="current-password"
+          dir="ltr"
           :class="[classes.textField, classes.textFieldCentered]"
           :type="showPassphrase ? 'text' : 'password'"
           variant="underlined"
@@ -178,14 +179,13 @@ defineExpose({
 
   &__textfield {
     &:deep(.v-field__append-inner) {
-      padding-left: 0;
-      margin-left: var(--a-login-form-passphrase-toggle-offset);
+      padding-inline-start: 0;
+      margin-inline-start: var(--a-login-form-passphrase-toggle-offset);
     }
 
     &:deep(.v-field__input) {
       width: 100%;
-      padding-right: var(--a-login-form-passphrase-input-padding-inline);
-      padding-left: var(--a-login-form-passphrase-input-padding-inline);
+      padding-inline: var(--a-login-form-passphrase-input-padding-inline);
     }
   }
 

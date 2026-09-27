@@ -27,6 +27,7 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
       class="a-input"
       color="primary"
       data-v-7dc72237=""
+      dir="ltr"
       modelmodifiers="[object Object]"
       modelvalue=""
       type="text"
@@ -36,6 +37,7 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
       class="a-input send-funds-form__amount-input"
       color="primary"
       data-v-7dc72237=""
+      dir="ltr"
       max="9999.5"
       min="1e-8"
       modelvalue=""
@@ -61,13 +63,23 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
           class="fake-input__value"
           data-v-7dc72237=""
         >
-          0.5 ADM
+          <bdi
+            data-v-7dc72237=""
+            dir="ltr"
+          >
+            0.5 ADM
+          </bdi>
         </span>
         <span
           class="fake-input__value fake-input__value--rate"
           data-v-7dc72237=""
         >
-           ~0.00 USD
+          <bdi
+            data-v-7dc72237=""
+            dir="ltr"
+          >
+            ~0.00 USD
+          </bdi>
         </span>
       </div>
     </div>
@@ -89,13 +101,23 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
           class="fake-input__value"
           data-v-7dc72237=""
         >
-          0.5 ADM
+          <bdi
+            data-v-7dc72237=""
+            dir="ltr"
+          >
+            0.5 ADM
+          </bdi>
         </span>
         <span
           class="fake-input__value fake-input__value--rate"
           data-v-7dc72237=""
         >
-           ~0.00 USD
+          <bdi
+            data-v-7dc72237=""
+            dir="ltr"
+          >
+            ~0.00 USD
+          </bdi>
         </span>
       </div>
     </div>

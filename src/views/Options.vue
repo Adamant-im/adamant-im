@@ -565,6 +565,7 @@ watch(
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_directional-icon.scss' as directionalIcon;
 @use '@/assets/styles/components/_text-content.scss' as textContent;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
@@ -588,10 +589,8 @@ watch(
     @include mixins.a-text-caption();
     padding-top: var(--a-settings-title-padding-top);
     margin-top: 0;
-    margin-left: calc(var(--a-settings-gutter) * -1);
-    margin-right: calc(var(--a-settings-gutter) * -1);
-    padding-left: var(--a-settings-gutter);
-    padding-right: var(--a-settings-gutter);
+    margin-inline: calc(var(--a-settings-gutter) * -1);
+    padding-inline: var(--a-settings-gutter);
   }
 
   &__title--first {
@@ -622,7 +621,7 @@ watch(
 
   &__version_info {
     @include mixins.a-text-explanation();
-    margin-left: auto;
+    margin-inline-start: auto;
     margin-top: var(--a-space-6);
     margin-bottom: var(--a-space-4);
     padding: 0;
@@ -654,12 +653,15 @@ watch(
     padding: 0;
   }
   .actions-list {
-    margin-left: calc(var(--a-settings-gutter) * -1);
-    margin-right: calc(var(--a-settings-gutter) * -1);
+    margin-inline: calc(var(--a-settings-gutter) * -1);
 
     :deep(.v-list-item) {
       padding-inline-start: var(--a-settings-gutter);
       padding-inline-end: var(--a-settings-gutter);
+    }
+
+    :deep(.v-list-item__append .v-icon) {
+      @include directionalIcon.a-directional-icon();
     }
 
     :deep(.v-list-item--density-default.v-list-item--one-line) {
@@ -672,7 +674,7 @@ watch(
     height: var(--a-control-size-lg);
   }
   :deep(.v-checkbox) {
-    margin-left: calc(var(--a-space-2) * -1);
+    margin-inline-start: calc(var(--a-space-2) * -1);
   }
 
   &__logout {

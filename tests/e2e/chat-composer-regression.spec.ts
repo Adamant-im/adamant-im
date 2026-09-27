@@ -149,14 +149,24 @@ const openSelfChatWithEditableComposer = async (page: Page): Promise<Locator> =>
   return textarea
 }
 
+/**
+ * Nothing may take the focus back once the user dismissed the composer. Vuetify's `autofocus`
+ * used to refocus it about 50 ms later, whenever the field re-entered the viewport.
+ */
+const expectComposerToStayBlurred = async (page: Page, textarea: Locator) => {
+  await page.waitForTimeout(500)
+  await expect(textarea).not.toBeFocused()
+}
+
 test.describe('Chat composer regressions', () => {
   test('focuses composer on first Enter after Escape and sends only on second Enter', async ({
     page
   }) => {
     const textarea = await openSelfChatWithEditableComposer(page)
 
-    const initialMessageCount = await page.locator('.a-chat__message-container').count()
     const draftMessage = `enter-focus-${Date.now()}`
+    // Counting every bubble races with the chat history that is still loading in the background
+    const sentDraft = page.locator('.a-chat__message-text', { hasText: draftMessage })
 
     await textarea.fill(draftMessage)
     await textarea.focus()
@@ -165,18 +175,17 @@ test.describe('Chat composer regressions', () => {
     await page.keyboard.press('Escape')
 
     await expect(textarea).not.toBeFocused()
+    await expectComposerToStayBlurred(page, textarea)
 
     await page.keyboard.press('Enter')
 
     await expect(textarea).toBeFocused()
     await expect(textarea).toHaveValue(draftMessage)
-    await expect(page.locator('.a-chat__message-container')).toHaveCount(initialMessageCount)
+    await expect(sentDraft).toHaveCount(0)
 
     await page.keyboard.press('Enter')
 
-    await expect
-      .poll(() => page.locator('.a-chat__message-container').count(), { timeout: 15_000 })
-      .toBeGreaterThan(initialMessageCount)
+    await expect(sentDraft).toHaveCount(1, { timeout: 15_000 })
 
     await expect(textarea).toHaveValue('')
   })
@@ -191,6 +200,7 @@ test.describe('Chat composer regressions', () => {
     await page.keyboard.press('Escape')
 
     await expect(textarea).not.toBeFocused()
+    await expectComposerToStayBlurred(page, textarea)
     await expect(page).toHaveURL(chatUrl)
 
     await page.keyboard.press('Escape')

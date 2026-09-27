@@ -58,8 +58,8 @@
         <div class="a-chat__message-card-body">
           <!-- `formattedMessage` is sanitized HTML from formatMarkdown(); SafeHtml rebuilds it
                from an allowlist instead of assigning it to innerHTML -->
-          <safe-html v-if="html" class="a-chat__message-text" :html="formattedMessage" />
-          <div v-else class="a-chat__message-text" v-text="formattedMessage" />
+          <safe-html v-if="html" class="a-chat__message-text" dir="auto" :html="formattedMessage" />
+          <div v-else class="a-chat__message-text" dir="auto" v-text="formattedMessage" />
         </div>
       </div>
     </div>

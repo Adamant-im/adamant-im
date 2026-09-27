@@ -89,6 +89,7 @@ const onSelectLevel = (level: LogLevel) => {
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_directional-icon.scss' as directionalIcon;
 @use '@/assets/styles/components/_switcher-menu.scss' as switcherMenu;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss' as mixins;
@@ -110,6 +111,10 @@ const onSelectLevel = (level: LogLevel) => {
     :deep(.v-list-item) {
       padding-inline-start: var(--a-dev-screen-item-padding-inline);
       padding-inline-end: var(--a-dev-screen-item-padding-inline);
+    }
+
+    :deep(.v-list-item__append .v-icon) {
+      @include directionalIcon.a-directional-icon();
     }
   }
 

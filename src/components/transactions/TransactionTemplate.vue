@@ -1,23 +1,23 @@
 <template>
   <v-list bg-color="transparent" :class="[className, `${className}__list`]">
     <TransactionListItem :title="t('transaction.amount')">
-      {{
+      <bdi dir="ltr">{{
         typeof transaction?.amount === 'number'
           ? formatAmount(transaction?.amount) + ` ${crypto}`
           : placeholder
-      }}
+      }}</bdi>
     </TransactionListItem>
 
     <v-divider />
 
     <TransactionListItem :title="t('transaction.currentVal')">
-      {{ rate }}
+      <bdi dir="ltr">{{ rate }}</bdi>
     </TransactionListItem>
 
     <v-divider />
 
     <TransactionListItem :title="t('transaction.valueTimeTxn')">
-      {{ historyRate }}
+      <bdi dir="ltr">{{ historyRate }}</bdi>
     </TransactionListItem>
 
     <v-divider />
@@ -72,9 +72,9 @@
     <v-divider />
 
     <TransactionListItem :title="t('transaction.commission')">
-      <span>{{ calculatedFeeDisplay.token }}</span>
+      <bdi dir="ltr">{{ calculatedFeeDisplay.token }}</bdi>
       <span v-if="calculatedFeeDisplay.fiat" :class="`${className}__value-muted`">
-        {{ ` ${calculatedFeeDisplay.fiat}` }}
+        <bdi dir="ltr">{{ calculatedFeeDisplay.fiat }}</bdi>
       </span>
     </TransactionListItem>
 
@@ -84,16 +84,16 @@
       :title="t('transaction.txid')"
       @click="handleCopyToClipboard(transaction?.id)"
     >
-      {{ transaction?.id || placeholder }}
+      <bdi dir="ltr">{{ transaction?.id || placeholder }}</bdi>
     </TransactionListItem>
 
     <v-divider />
 
     <TransactionListItem :title="t('transaction.sender')" @click="handleCopyToClipboard(sender)">
       <template v-if="senderDisplay.main">
-        <span>{{ senderDisplay.main }}</span>
+        <bdi dir="auto">{{ senderDisplay.main }}</bdi>
         <span v-if="senderDisplay.muted" :class="`${className}__value-muted`">
-          {{ senderDisplay.muted }}
+          <bdi dir="ltr">{{ senderDisplay.muted }}</bdi>
         </span>
       </template>
       <template v-else>{{ placeholder }}</template>
@@ -106,9 +106,9 @@
       @click="handleCopyToClipboard(recipient)"
     >
       <template v-if="recipientDisplay.main">
-        <span>{{ recipientDisplay.main }}</span>
+        <bdi dir="auto">{{ recipientDisplay.main }}</bdi>
         <span v-if="recipientDisplay.muted" :class="`${className}__value-muted`">
-          {{ recipientDisplay.muted }}
+          <bdi dir="ltr">{{ recipientDisplay.muted }}</bdi>
         </span>
       </template>
       <template v-else>{{ placeholder }}</template>
@@ -133,7 +133,11 @@
       :title="t('transaction.explorer')"
       @click="openInExplorer"
     >
-      <v-icon :icon="mdiChevronRight" :size="COMMON_COMPACT_ICON_SIZE" />
+      <v-icon
+        class="transaction-view__forward-icon"
+        :icon="mdiChevronRight"
+        :size="COMMON_COMPACT_ICON_SIZE"
+      />
     </TransactionListItem>
 
     <v-divider v-if="partner && !ifComeFromChat" />
@@ -424,6 +428,7 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
 
 <style lang="scss" scoped>
 @use '@/assets/styles/components/_color-roles.scss' as colorRoles;
+@use '@/assets/styles/components/_directional-icon.scss' as directionalIcon;
 
 .transaction-view {
   --a-transaction-view-row-min-height: var(--a-list-row-min-height);
@@ -455,6 +460,9 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
   &__titlecontent {
     flex: 1 0 auto;
   }
+  &__forward-icon {
+    @include directionalIcon.a-directional-icon();
+  }
   &__toolbar {
     :deep(.v-toolbar__title) div {
       text-overflow: ellipsis;
@@ -471,7 +479,7 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
   &__inconsistent-status {
     font-weight: var(--a-transaction-view-status-font-weight);
     font-size: var(--a-transaction-view-status-font-size);
-    text-align: right;
+    text-align: end;
     text-overflow: ellipsis;
     overflow: hidden;
     max-width: 100%;
@@ -480,6 +488,9 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
 
   &__value-muted {
     white-space: pre;
+    // A gap, not a space character: a space inside the isolated value would end up on the
+    // outer side of it in right-to-left locales
+    margin-inline-start: var(--a-space-1);
   }
 
   &__invalid-status-icon {

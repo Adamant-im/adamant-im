@@ -533,3 +533,34 @@ describe('AChat sending status UI', () => {
     )
   })
 })
+
+describe('AChat message text direction', () => {
+  it('lets user messages take the direction of their own text', () => {
+    const wrapper = mount(AChatMessage, {
+      props: { transaction: createTextTransaction({ message: 'مرحبا' }) },
+      global: globalMountOptions(createTestStore())
+    })
+
+    expect(wrapper.find('.a-chat__message-text').attributes('dir')).toBe('auto')
+  })
+
+  it('keeps localized app messages in the UI direction', () => {
+    const wrapper = mount(AChatMessage, {
+      props: {
+        html: true,
+        transaction: createTextTransaction({
+          senderId: 'U222222',
+          recipientId: 'U111111',
+          message: 'chats.retry_message',
+          i18n: true
+        })
+      },
+      global: globalMountOptions(createTestStore())
+    })
+
+    const text = wrapper.find('.a-chat__message-text')
+
+    expect(text.text()).toBe('Retry message')
+    expect(text.attributes('dir')).toBeUndefined()
+  })
+})

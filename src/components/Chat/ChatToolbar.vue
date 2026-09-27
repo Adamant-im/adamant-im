@@ -137,7 +137,7 @@ const goBack = () => {
   &__messages-counter {
     position: relative;
     top: var(--a-chat-toolbar-counter-offset-top);
-    left: var(--a-chat-toolbar-counter-offset-left);
+    inset-inline-start: var(--a-chat-toolbar-counter-offset-left);
   }
   &__textfield-container {
     width: 100%;

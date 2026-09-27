@@ -11,12 +11,6 @@ import { registerGlobalComponents } from './plugins/layout'
 import { longPressDirective } from '@/directives/longPress'
 import '@/assets/styles/app.scss'
 
-import 'dayjs/locale/de'
-import 'dayjs/locale/en'
-import 'dayjs/locale/fr'
-import 'dayjs/locale/it'
-import 'dayjs/locale/ru'
-
 const app = createApp(App)
 
 app.use(router)

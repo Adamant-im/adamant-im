@@ -2,6 +2,7 @@
 @use 'vuetify/settings';
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/generic/_variables.scss';
+@use '@/assets/styles/components/_directional-icon.scss' as directionalIcon;
 @use '@/assets/styles/themes/adamant/_mixins.scss';
 
 
@@ -31,6 +32,8 @@ $scroll-bar-width: 4px;
   --a-chat-message-swipe-transition-ease: var(--a-ease-standard);
   --a-chat-message-actions-icon-transition-duration: var(--a-motion-slow);
   --a-chat-message-actions-icon-transition-ease: var(--a-ease-standard);
+  // Tilt of the outgoing bubble tail; incoming tails use the opposite tilt
+  --a-chat-message-tail-tilt: 15deg;
   display: block;
   text-decoration: none;
   height: 100%; // <-- Fallback for Chrome < v108
@@ -46,6 +49,10 @@ $scroll-bar-width: 4px;
     bottom: env(safe-area-inset-bottom);
     top: env(safe-area-inset-top);
     height: calc(100dvh - var(--v-layout-bottom) - env(safe-area-inset-bottom) - env(safe-area-inset-top));
+  }
+
+  [dir='rtl'] & {
+    --a-chat-message-tail-tilt: -15deg;
   }
 
   &__content {
@@ -94,11 +101,15 @@ $scroll-bar-width: 4px;
     }
   }
 
+  /**
+   * Incoming messages sit at the start of the line and outgoing ones (`--right`) at the end:
+   * left and right in LTR locales, mirrored in RTL locales.
+   */
   &__message-container {
     display: inline-block;
     position: relative;
     clear: both;
-    float: left;
+    float: inline-start;
     max-width: 80%;
     margin: unset; // resets margins of <v-row/>
     margin-bottom: var(--a-chat-message-container-gap);
@@ -131,7 +142,7 @@ $scroll-bar-width: 4px;
     }
 
     &--right {
-      float: right;
+      float: inline-end;
     }
 
     &--transition {
@@ -162,28 +173,30 @@ $scroll-bar-width: 4px;
   }
 
   &__message-container:not(&__message-container--right):not(&__message-container--grouped-left) .a-chat__message::after {
-    left: -6px;
-    border-right-color: white;
-    border-left: 0;
+    inset-inline-start: -6px;
+    border-inline-end-color: white;
+    border-inline-start: 0;
     border-bottom: 0;
-    transform: rotate(-15deg);
+    transform: rotate(calc(var(--a-chat-message-tail-tilt) * -1));
   }
 
   &__message-container--right:not(&__message-container--grouped) .a-chat__message::after {
-    right: -6px;
-    border-left-color: white;
-    border-right: 0;
+    inset-inline-end: -6px;
+    border-inline-start-color: white;
+    border-inline-end: 0;
     border-bottom: 0;
-    transform: rotate(15deg);
+    transform: rotate(var(--a-chat-message-tail-tilt));
   }
 
   &__message-actions-icon {
     visibility: hidden;
     position: absolute;
     top: 0;
-    right: 0;
+    inset-inline-end: 0;
     overflow: hidden;
     border-radius: 0 var(--a-radius-sm);
+    // Mirrors the corner rounding and the corner gradient together with the position
+    @include directionalIcon.a-directional-icon();
   }
 
   @keyframes flashing {
@@ -208,7 +221,7 @@ $scroll-bar-width: 4px;
     height: $chat-avatar-size;
     min-width: $chat-avatar-size;
     min-height: $chat-avatar-size;
-    margin-right: var(--a-space-2);
+    margin-inline-end: var(--a-space-2);
     border-radius: var(--a-radius-xs);
 
     img {
@@ -217,8 +230,8 @@ $scroll-bar-width: 4px;
 
     &--right {
       order: 2;
-      margin-right: 0;
-      margin-left: var(--a-space-2);
+      margin-inline-end: 0;
+      margin-inline-start: var(--a-space-2);
     }
   }
 
@@ -226,7 +239,7 @@ $scroll-bar-width: 4px;
    * 1. Element `pre` must not overflow the parent flex element.
    */
   &__message-card {
-    text-align: left;
+    text-align: start;
     display: inline-block;
     min-width: 0;
   }
@@ -294,8 +307,9 @@ $scroll-bar-width: 4px;
 
     blockquote {
       margin: 0 0 var(--a-space-2);
-      padding: var(--a-space-1) 0 var(--a-space-1) var(--a-space-3);
-      border-left: var(--a-border-width-strong) solid;
+      padding-block: var(--a-space-1);
+      padding-inline: var(--a-space-3) 0;
+      border-inline-start: var(--a-border-width-strong) solid;
 
       // Every nesting level keeps its own bar
       blockquote {
@@ -310,7 +324,7 @@ $scroll-bar-width: 4px;
     ul,
     ol {
       margin: 0 0 var(--a-space-2);
-      padding-left: var(--a-space-5);
+      padding-inline-start: var(--a-space-5);
     }
 
     hr {
@@ -353,7 +367,7 @@ $scroll-bar-width: 4px;
       max-width: var(--a-chat-message-table-cell-max-width);
       padding: var(--a-space-1) var(--a-space-2);
       border: var(--a-border-width-thin) solid;
-      text-align: left;
+      text-align: start;
       vertical-align: top;
       word-break: normal;
       overflow-wrap: break-word;
@@ -376,7 +390,7 @@ $scroll-bar-width: 4px;
     font-size: map.get($chat-sender, 'font-size');
     line-height: map.get($chat-sender, 'line-height');
     font-weight: 700;
-    margin-right: var(--a-space-2);
+    margin-inline-end: var(--a-space-2);
   }
 
   &__timestamp {
@@ -399,7 +413,7 @@ $scroll-bar-width: 4px;
   &__rates-column {
     display: flex;
     flex-direction: column;
-    margin-left: var(--a-space-4);
+    margin-inline-start: var(--a-space-4);
   }
 
   &__rates-amount {
@@ -415,7 +429,7 @@ $scroll-bar-width: 4px;
 
   &__status {
     line-height: 1;
-    margin-left: var(--a-chat-message-status-gap-inline);
+    margin-inline-start: var(--a-chat-message-status-gap-inline);
 
     i {
       line-height: 1.2;
@@ -425,7 +439,7 @@ $scroll-bar-width: 4px;
   &__blockchain-status {
     font-size: var(--a-space-3);
     line-height: 1;
-    margin-right: 5px;
+    margin-inline-end: 5px;
   }
 
   &__direction {
@@ -493,11 +507,11 @@ $scroll-bar-width: 4px;
     }
   }
   &__form-append {
-    margin-right: var(--a-space-2);
+    margin-inline-end: var(--a-space-2);
   }
   &__fab {
     position: absolute;
-    right: var(--a-space-4);
+    inset-inline-end: var(--a-space-4);
     bottom: var(--a-space-4);
     opacity: 0.7;
 
@@ -580,7 +594,7 @@ $scroll-bar-width: 4px;
       }
 
       blockquote {
-        border-left-color: map.get(colors.$adm-colors, 'primary2');
+        border-inline-start-color: map.get(colors.$adm-colors, 'primary2');
         color: map.get(colors.$adm-colors, 'muted');
       }
 
@@ -665,11 +679,11 @@ $scroll-bar-width: 4px;
     }
 
     &__message-container--right:not(&__message-container--grouped) .a-chat__message::after {
-      border-left-color: map.get(colors.$adm-colors, 'black3');
+      border-inline-start-color: map.get(colors.$adm-colors, 'black3');
     }
 
     &__message-container:not(&__message-container--right):not(&__message-container--grouped-left) .a-chat__message::after {
-      border-right-color: map.get(colors.$adm-colors, 'black3');
+      border-inline-end-color: map.get(colors.$adm-colors, 'black3');
     }
 
     &__message-actions-icon {
@@ -703,7 +717,7 @@ $scroll-bar-width: 4px;
       }
 
       blockquote {
-        border-left-color: map.get(settings.$grey, 'base');
+        border-inline-start-color: map.get(settings.$grey, 'base');
         color: map.get(settings.$grey, 'lighten-1');
       }
 
