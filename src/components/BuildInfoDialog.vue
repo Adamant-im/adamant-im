@@ -252,16 +252,6 @@ const handleUpdateClick = () => {
 }
 
 const executeReload = async () => {
-  if (typeof navigator !== 'undefined' && 'onLine' in navigator && !navigator.onLine) {
-    if (store) {
-      store.dispatch('snackbar/show', {
-        message: t('build_info.offline_message'),
-        timeout: 3000
-      })
-    }
-    return
-  }
-
   isUpdating.value = true
   try {
     const result = await forceAppUpdate()
@@ -322,7 +312,6 @@ const executeReload = async () => {
   &__confirm-warning {
     margin-top: var(--a-space-4);
     word-break: break-word;
-    color: map.get(colors.$adm-colors, 'attention');
   }
 
   &__value {
@@ -342,7 +331,6 @@ const executeReload = async () => {
   }
 
   &__testnet-badge {
-    color: map.get(colors.$adm-colors, 'attention');
     font-weight: inherit;
     text-transform: uppercase;
   }
@@ -357,6 +345,19 @@ const executeReload = async () => {
     &__card-title {
       color: map.get(colors.$adm-colors, 'regular');
     }
+
+    &__confirm-warning {
+      color: inherit;
+      border-inline-start: 3px solid map.get(colors.$adm-colors, 'attention');
+      padding-inline-start: var(--a-space-2);
+    }
+
+    &__testnet-badge {
+      background: map.get(colors.$adm-colors, 'attention');
+      color: rgba(0, 0, 0, 0.87);
+      padding: 1px 6px;
+      border-radius: var(--a-radius-xs, 4px);
+    }
   }
 }
 
@@ -364,6 +365,14 @@ const executeReload = async () => {
   .build-info-dialog {
     &__card-title {
       color: map.get(settings.$shades, 'white');
+    }
+
+    &__confirm-warning {
+      color: map.get(colors.$adm-colors, 'attention');
+    }
+
+    &__testnet-badge {
+      color: map.get(colors.$adm-colors, 'attention');
     }
   }
 }
