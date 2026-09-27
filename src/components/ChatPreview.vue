@@ -88,7 +88,12 @@
 
       <!-- Message -->
       <template v-else>
-        <v-list-item-subtitle :class="`${className}__subtitle`">
+        <!-- A user message keeps its own direction, so a long LTR message in an RTL list is
+             truncated at its end, not at its beginning -->
+        <v-list-item-subtitle
+          :class="`${className}__subtitle`"
+          :dir="isMessageI18n ? undefined : 'auto'"
+        >
           <template v-if="isOutgoingTransaction">
             <v-icon
               v-if="transaction.isReply && isConfirmed"
@@ -296,13 +301,13 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
   }
 
   &__chat-avatar {
-    margin-right: var(--a-chat-brief-avatar-gap);
+    margin-inline-end: var(--a-chat-brief-avatar-gap);
   }
 
   &__icon {
     width: var(--a-chat-brief-icon-size);
     height: var(--a-chat-brief-icon-size);
-    margin-right: var(--a-chat-brief-avatar-gap);
+    margin-inline-end: var(--a-chat-brief-avatar-gap);
 
     :deep(.svg-icon) {
       width: 100%;
@@ -357,7 +362,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 
   &__badge {
     :deep(.v-badge__badge) {
-      left: calc(100% - var(--a-space-3) - var(--a-space-4)) !important;
+      inset-inline-start: calc(100% - var(--a-space-3) - var(--a-space-4)) !important;
       font-size: var(--a-font-size-sm);
       width: var(--a-size-badge-md);
       height: var(--a-size-badge-md);

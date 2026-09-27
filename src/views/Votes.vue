@@ -242,8 +242,7 @@ const showConfirmationDialog = () => {
   }
   &__search {
     :deep(.v-field) {
-      padding-left: var(--a-space-4);
-      padding-right: var(--a-space-4);
+      padding-inline: var(--a-space-4);
     }
   }
 }

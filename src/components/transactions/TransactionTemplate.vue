@@ -479,7 +479,7 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
   &__inconsistent-status {
     font-weight: var(--a-transaction-view-status-font-weight);
     font-size: var(--a-transaction-view-status-font-size);
-    text-align: right;
+    text-align: end;
     text-overflow: ellipsis;
     overflow: hidden;
     max-width: 100%;

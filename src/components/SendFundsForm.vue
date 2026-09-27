@@ -88,9 +88,11 @@
         <template #label>
           <span :class="`${className}__field-label`">{{ $t('transfer.amount_label') }}</span>
           <span class="max-amount-label">
-            &nbsp;{{
-              $t('transfer.max_amount_label', { amount: maxToTransferFixed, crypto: currency })
-            }}
+            &nbsp;<i18n-t keypath="transfer.max_amount_label" tag="span">
+              <template #amount>
+                <bdi dir="ltr">{{ maxToTransferFixed }} {{ currency }}</bdi>
+              </template>
+            </i18n-t>
           </span>
         </template>
         <template #append-inner>
@@ -122,11 +124,11 @@
           {{ transferFeeLabel }}
         </div>
         <div class="fake-input__box">
-          <span class="fake-input__value" dir="ltr">
-            {{ transferFeeFixed }} {{ transferFeeCurrency }}
+          <span class="fake-input__value">
+            <bdi dir="ltr">{{ transferFeeFixed }} {{ transferFeeCurrency }}</bdi>
           </span>
-          <span class="fake-input__value fake-input__value--rate" dir="ltr">
-            ~{{ transferFeeRate }}
+          <span class="fake-input__value fake-input__value--rate">
+            <bdi dir="ltr">~{{ transferFeeRate }}</bdi>
           </span>
         </div>
       </div>
@@ -135,9 +137,11 @@
           {{ $t('transfer.final_amount_label') }}
         </div>
         <div class="fake-input__box">
-          <span class="fake-input__value" dir="ltr"> {{ finalAmountFixed }} {{ currency }} </span>
-          <span class="fake-input__value fake-input__value--rate" dir="ltr">
-            ~{{ finalAmountRate }}
+          <span class="fake-input__value">
+            <bdi dir="ltr">{{ finalAmountFixed }} {{ currency }}</bdi>
+          </span>
+          <span class="fake-input__value fake-input__value--rate">
+            <bdi dir="ltr">~{{ finalAmountRate }}</bdi>
           </span>
         </div>
       </div>

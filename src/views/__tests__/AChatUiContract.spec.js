@@ -290,8 +290,8 @@ describe('AChat UI style contract', () => {
     expect(replyPreviewContent).toContain('@include chatMessageContent.a-chat-message-body-copy();')
     expect(tokensContent).toContain('--a-chat-accent-border-width')
     expect(tokensContent).toContain('--a-color-text-inverse')
-    expect(replyPreviewContent).toContain(
-      "border-inline-start: var(--a-chat-accent-border-width) solid map.get(colors.$adm-colors, 'attention');"
+    expect(replyPreviewContent).toMatch(
+      /border-inline-start: var\(--a-chat-accent-border-width\) solid\s+map\.get\(colors\.\$adm-colors, 'attention'\);/
     )
     expect(replyPreviewContent).toContain(
       "background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');"
@@ -329,7 +329,9 @@ describe('AChat UI style contract', () => {
     expect(filesPreviewItemContent).toContain('width: var(--a-chat-files-preview-size);')
     expect(filesPreviewItemContent).toContain('height: var(--a-chat-files-preview-size);')
     expect(filesPreviewItemContent).toContain('top: var(--a-chat-files-preview-remove-offset);')
-    expect(filesPreviewItemContent).toContain('right: var(--a-chat-files-preview-remove-offset);')
+    expect(filesPreviewItemContent).toContain(
+      'inset-inline-end: var(--a-chat-files-preview-remove-offset);'
+    )
     expect(tokensContent).toContain('--a-chat-files-preview-size')
     expect(tokensContent).toContain('--a-chat-files-preview-remove-offset')
     expect(filesPreviewItemContent).not.toContain('const previewSize = 80')
@@ -416,8 +418,8 @@ describe('AChat UI style contract', () => {
     expect(content).toContain('--a-quoted-message-padding-inline')
     expect(content).toContain('--a-quoted-message-border-width')
     expect(content).toContain('--a-quoted-message-error-font-style')
-    expect(content).toContain(
-      "border-inline-start: var(--a-quoted-message-border-width) solid map.get(colors.$adm-colors, 'attention');"
+    expect(content).toMatch(
+      /border-inline-start: var\(--a-quoted-message-border-width\) solid\s+map\.get\(colors\.\$adm-colors, 'attention'\);/
     )
 
     expect(formContent).not.toContain('--a-chat-form-max-height: 230px;')

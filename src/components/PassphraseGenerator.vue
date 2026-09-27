@@ -277,7 +277,7 @@ const togglePassphraseVisibility = () => {
   &__icons {
     margin-top: var(--a-passphrase-icons-top-offset);
     > *:not(:first-child) {
-      margin-left: var(--a-passphrase-icons-gap);
+      margin-inline-start: var(--a-passphrase-icons-gap);
     }
   }
   &__passphrase-label {

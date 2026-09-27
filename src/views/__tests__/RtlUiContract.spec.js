@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
@@ -122,5 +122,37 @@ describe('RTL UI contract', () => {
         /(margin|padding|border)-(left|right)|(?<![\w-])(left|right): (?!0;|unset;)/
       )
     }
+  })
+
+  it('uses logical sides for spacing, borders, alignment and floats in every stylesheet', () => {
+    const srcRoot = path.resolve(currentDir, '../..')
+    const stylesheets = []
+    const collect = (dir) => {
+      for (const entry of readdirSync(dir)) {
+        const entryPath = path.join(dir, entry)
+        if (statSync(entryPath).isDirectory()) {
+          if (entry !== '__tests__') collect(entryPath)
+        } else if (/\.(vue|scss)$/.test(entry)) {
+          stylesheets.push(entryPath)
+        }
+      }
+    }
+    collect(srcRoot)
+
+    const physicalSide =
+      /(?:^|[\s;{])(?:(?:margin|padding|border)-(?:left|right)(?:-[a-z]+)?\s*:|text-align\s*:\s*(?:left|right)\b|float\s*:\s*(?:left|right)\b)/m
+    const offenders = stylesheets.filter((file) => {
+      const source = readFileSync(file, 'utf8')
+      const styleStart = file.endsWith('.vue') ? source.indexOf('<style') : 0
+      if (styleStart < 0) return false
+      const css = source
+        .slice(styleStart)
+        .replace(/\/\*[\s\S]*?\*\//g, '')
+        .replace(/\/\/.*$/gm, '')
+      return physicalSide.test(css)
+    })
+
+    // Physical sides stay in place in RTL locales; use `*-inline-start` / `*-inline-end`
+    expect(offenders.map((file) => path.relative(srcRoot, file))).toEqual([])
   })
 })

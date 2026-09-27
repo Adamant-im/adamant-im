@@ -414,7 +414,7 @@
     "error_no_hash": "失敗しました。トランザクションハッシュを取得できません",
     "final_amount_label": "手数料込みの合計金額",
     "increase_fee": "手数料を引き上げる",
-    "max_amount_label": "（最大: {amount} {crypto}）",
+    "max_amount_label": "（最大: {amount}）",
     "invalid_qr_code": "QRコードにアドレスが含まれていないか、読み取れません",
     "no_address_text": "このユーザーはまだ公開 {crypto} ウォレットを有効化していません",
     "no_address_title": "受取人に公開 {crypto} ウォレットがありません",

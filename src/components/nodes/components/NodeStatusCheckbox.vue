@@ -43,12 +43,12 @@ export default defineComponent({
   --a-node-toggle-checkbox-offset-inline-start-mobile: var(--a-space-2);
 
   font-size: var(--a-node-toggle-checkbox-font-size);
-  margin-left: var(--a-node-toggle-checkbox-offset-inline-start);
+  margin-inline-start: var(--a-node-toggle-checkbox-offset-inline-start);
 }
 
 @media #{map.get(settings.$display-breakpoints, 'sm-and-down')} {
   .node-toggle-status-checkbox {
-    margin-left: var(--a-node-toggle-checkbox-offset-inline-start-mobile);
+    margin-inline-start: var(--a-node-toggle-checkbox-offset-inline-start-mobile);
   }
 }
 

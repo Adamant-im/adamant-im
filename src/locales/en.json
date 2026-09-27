@@ -414,7 +414,7 @@
     "error_no_hash": "Unable to get transaction hash",
     "final_amount_label": "Total amount with network fee",
     "increase_fee": "Increase fee",
-    "max_amount_label": "(max: {amount} {crypto})",
+    "max_amount_label": "(max: {amount})",
     "invalid_qr_code": "QR code does not contain an address or unrecognizable",
     "no_address_text": "This user hasn't activated their public {crypto} wallet yet",
     "no_address_title": "Recipient has no public {crypto} wallet",

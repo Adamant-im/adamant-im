@@ -62,16 +62,24 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
         <span
           class="fake-input__value"
           data-v-7dc72237=""
-          dir="ltr"
         >
-          0.5 ADM
+          <bdi
+            data-v-7dc72237=""
+            dir="ltr"
+          >
+            0.5 ADM
+          </bdi>
         </span>
         <span
           class="fake-input__value fake-input__value--rate"
           data-v-7dc72237=""
-          dir="ltr"
         >
-           ~0.00 USD
+          <bdi
+            data-v-7dc72237=""
+            dir="ltr"
+          >
+            ~0.00 USD
+          </bdi>
         </span>
       </div>
     </div>
@@ -92,16 +100,24 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
         <span
           class="fake-input__value"
           data-v-7dc72237=""
-          dir="ltr"
         >
-          0.5 ADM
+          <bdi
+            data-v-7dc72237=""
+            dir="ltr"
+          >
+            0.5 ADM
+          </bdi>
         </span>
         <span
           class="fake-input__value fake-input__value--rate"
           data-v-7dc72237=""
-          dir="ltr"
         >
-           ~0.00 USD
+          <bdi
+            data-v-7dc72237=""
+            dir="ltr"
+          >
+            ~0.00 USD
+          </bdi>
         </span>
       </div>
     </div>

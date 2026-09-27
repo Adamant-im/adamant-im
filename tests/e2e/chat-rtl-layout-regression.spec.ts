@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 import { testPassphrase } from './helpers/env'
 import { loginWithPassphrase } from './helpers/auth'
 import { navigateInApp } from './helpers/navigation'
+import { openTransactionListFromHome } from './helpers/openTransactionListFromHome'
 
 // Read-only: the test only opens existing chats and never sends messages or reactions.
 
@@ -127,5 +128,90 @@ test.describe('Chat RTL layout regressions', () => {
     expect(Math.abs(dropdownBox!.x - bubbleBox!.x)).toBeLessThan(8)
 
     await page.keyboard.press('Escape')
+  })
+
+  test('keeps the chat list, chat header and split pane mirrored in Arabic', async ({ page }) => {
+    test.setTimeout(240_000)
+    test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
+
+    await loginWithPassphrase(page, testPassphrase!)
+    await switchToArabic(page)
+    await openChatWithBothDirections(page)
+
+    // Avatars sit at the start (right) of each chat row, separated from the text
+    const avatarGaps = await page.evaluate(() =>
+      [...document.querySelectorAll('.chat-brief')].slice(0, 5).map((row) => {
+        const avatar = row
+          .querySelector('.chat-brief__chat-avatar, .chat-brief__icon')!
+          .getBoundingClientRect()
+        const title = row.querySelector('.chat-brief__title')!.getBoundingClientRect()
+        return avatar.left - title.right
+      })
+    )
+    expect(avatarGaps.length).toBeGreaterThan(0)
+    avatarGaps.forEach((gap) => expect(gap).toBeGreaterThanOrEqual(8))
+
+    // The partner address above the name stays aligned to the start of the header field
+    const headerLabel = await page.evaluate(() => {
+      const field = document.querySelector('.chat-toolbar__textfield .v-field')
+      const label = document.querySelector(
+        '.chat-toolbar__textfield .v-label.v-field-label--floating'
+      )
+      if (!field || !label) return null
+      return {
+        fieldRight: field.getBoundingClientRect().right,
+        labelRight: label.getBoundingClientRect().right
+      }
+    })
+    expect(headerLabel).not.toBeNull()
+    expect(Math.abs(headerLabel!.fieldRight - headerLabel!.labelRight)).toBeLessThan(24)
+
+    // The resize handle is on the left edge of the chat list, and dragging it left widens the list
+    const aside = page.locator('.sidebar__aside').first()
+    expect(
+      await aside.evaluate((element) => window.getComputedStyle(element, '::after').left)
+    ).toBe('0px')
+    const before = (await aside.boundingBox())!
+    await page.mouse.move(before.x + 3, before.y + before.height / 2)
+    await page.mouse.down()
+    await page.mouse.move(before.x - 60, before.y + before.height / 2, { steps: 6 })
+    await page.mouse.up()
+    const after = (await aside.boundingBox())!
+    expect(after.width - before.width).toBeGreaterThan(40)
+  })
+
+  test('keeps amounts, fees and node addresses in reading order in Arabic', async ({ page }) => {
+    test.setTimeout(240_000)
+    test.skip(!testPassphrase, 'Requires ADM_TEST_ACCOUNT_PK in .env.local')
+
+    await loginWithPassphrase(page, testPassphrase!)
+    await switchToArabic(page)
+
+    // Transaction list: "1.5 ADM" stays one value, at the start of the line before its rate
+    await openTransactionListFromHome(page, 'ADM')
+    const firstAmount = page.locator('.transaction-item__amount bdi').first()
+    await expect(firstAmount).toHaveText(/^[\d.,]+ ADM$/)
+    const amountBox = (await firstAmount.boundingBox())!
+    const rateBox = (await page.locator('.transaction-item__rates bdi').first().boundingBox())!
+    expect(amountBox.x).toBeGreaterThan(rateBox.x + rateBox.width)
+
+    // Send form: the fee and its fiat rate keep a gap between them
+    await navigateInApp(page, '/transfer/ADM')
+    const feeValues = page
+      .locator('.send-funds-form .fake-input')
+      .first()
+      .locator('.fake-input__value')
+    await expect(feeValues).toHaveCount(2)
+    const feeBox = (await feeValues.nth(0).locator('bdi').boundingBox())!
+    const feeRateBox = (await feeValues.nth(1).locator('bdi').boundingBox())!
+    expect(feeBox.x - (feeRateBox.x + feeRateBox.width)).toBeGreaterThanOrEqual(2)
+
+    // Node list: the URL reads left to right
+    await navigateInApp(page, '/options/nodes')
+    const nodeUrl = page.locator('.node-url').first()
+    await expect(nodeUrl).toBeVisible({ timeout: 30_000 })
+    const protocolBox = (await nodeUrl.locator('.node-url__protocol').boundingBox())!
+    const nameBox = (await nodeUrl.locator('.node-url__node-name').boundingBox())!
+    expect(protocolBox.x).toBeLessThan(nameBox.x)
   })
 })

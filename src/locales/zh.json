@@ -414,7 +414,7 @@
     "error_no_hash": "无法获取交易哈希",
     "final_amount_label": "包含网络费用的总额",
     "increase_fee": "增加费用",
-    "max_amount_label": "（最多：{amount} {crypto}）",
+    "max_amount_label": "（最多：{amount}）",
     "invalid_qr_code": "二维码不包含地址或无法识别",
     "no_address_text": "该用户尚未激活其公开的 {crypto} 钱包",
     "no_address_title": "收款人没有公开的 {crypto} 钱包",

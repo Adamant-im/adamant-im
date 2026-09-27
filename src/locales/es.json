@@ -414,7 +414,7 @@
     "error_no_hash": "Error. No se pudo obtener el hash de la transacción",
     "final_amount_label": "Importe final incluyendo tarifas",
     "increase_fee": "Aumentar tarifa",
-    "max_amount_label": "(máx.: {amount} {crypto})",
+    "max_amount_label": "(máx.: {amount})",
     "invalid_qr_code": "El código QR no contiene una dirección o no se puede reconocer",
     "no_address_text": "Este usuario aún no ha activado su billetera pública de {crypto}",
     "no_address_title": "El destinatario no tiene una billetera pública de {crypto}",

@@ -20,10 +20,12 @@
       </v-list-item-title>
 
       <v-list-item-title>
-        <span :class="`${className}__amount ${directionClass}`">{{
-          currency(resolvedAmount, crypto, isAdmLiveAmountNormalized)
-        }}</span>
-        <span :class="`${className}__rates`">{{ historyRate }}</span>
+        <span :class="`${className}__amount ${directionClass}`">
+          <bdi dir="ltr">{{ currency(resolvedAmount, crypto, isAdmLiveAmountNormalized) }}</bdi>
+        </span>
+        <span :class="`${className}__rates`"
+          ><bdi dir="ltr">{{ historyRate }}</bdi></span
+        >
         <span
           v-if="comment"
           :class="`${className}__note-prefix ${className}__note-prefix--comment`"
@@ -448,7 +450,7 @@ export default {
     color: var(--a-transaction-item-rates-color);
     font-style: var(--a-transaction-item-rates-style);
     @include mixins.a-text-regular();
-    margin-left: var(--a-transaction-item-rates-gap);
+    margin-inline-start: var(--a-transaction-item-rates-gap);
   }
   &__amount {
     @include mixins.a-text-regular-enlarged-bold();
@@ -468,7 +470,7 @@ export default {
     margin-top: var(--a-transaction-item-prepend-top);
   }
   :deep(.v-divider--inset:not(.v-divider--vertical)) {
-    margin-left: var(--a-transaction-item-divider-inset);
+    margin-inline-start: var(--a-transaction-item-divider-inset);
     max-width: calc(100% - var(--a-transaction-item-divider-inset));
   }
   &__action {

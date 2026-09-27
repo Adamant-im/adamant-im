@@ -84,7 +84,7 @@ defineExpose({
     cursor: pointer;
     font-family: var(--a-font-family-sans, sans-serif);
     color: inherit;
-    text-align: right;
+    text-align: end;
     transition: color var(--a-motion-base, 0.2s) linear;
 
     &:focus-visible {
@@ -98,7 +98,7 @@ defineExpose({
     display: inline-flex;
     flex-direction: column;
     align-items: flex-end;
-    text-align: right;
+    text-align: end;
     color: inherit;
     transition:
       opacity var(--a-motion-base, 0.2s) linear,
@@ -109,7 +109,7 @@ defineExpose({
     @include mixins.a-text-regular();
     line-height: 1.25;
     letter-spacing: normal;
-    text-align: right;
+    text-align: end;
     color: inherit;
   }
 

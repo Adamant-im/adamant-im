@@ -414,7 +414,7 @@
     "error_no_hash": "Échec. Impossible d'obtenir le hash de transaction",
     "final_amount_label": "Montant final incluant les frais",
     "increase_fee": "Augmenter les frais",
-    "max_amount_label": "(max. : {amount} {crypto})",
+    "max_amount_label": "(max. : {amount})",
     "invalid_qr_code": "Le code QR ne contient pas d'adresse ou est illisible",
     "no_address_text": "Cet utilisateur n'a pas encore activé son portefeuille {crypto} public",
     "no_address_title": "Le destinataire n'a pas de portefeuille {crypto} public",

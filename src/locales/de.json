@@ -414,7 +414,7 @@
     "error_no_hash": "Fehlgeschlagen. Transaktions-Hash konnte nicht abgerufen werden",
     "final_amount_label": "Betrag inklusive Transaktionsgebühr",
     "increase_fee": "Gebühr erhöhen",
-    "max_amount_label": "(max.: {amount} {crypto})",
+    "max_amount_label": "(max.: {amount})",
     "invalid_qr_code": "QR-Code enthält keine Adresse oder ist nicht lesbar",
     "no_address_text": "Dieser Benutzer hat seine öffentliche {crypto}-Wallet noch nicht aktiviert",
     "no_address_title": "Empfänger hat keine öffentliche {crypto}-Wallet",
