@@ -1,10 +1,10 @@
 import dayjs from 'dayjs'
-import { i18n } from '@/i18n'
+import { currentDayjsLocale, i18n } from '@/i18n'
 import { isCurrentWeek, isToday, isYesterday } from './helpers'
 import store from '@/store'
 
 export default (timestamp) => {
-  const date = dayjs(timestamp)
+  const date = dayjs(timestamp).locale(currentDayjsLocale())
 
   if (store.state.options.useFullDate) {
     return date.format('YYYY-MM-DD, HH:mm')

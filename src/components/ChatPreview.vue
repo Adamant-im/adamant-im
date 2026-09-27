@@ -58,7 +58,10 @@
                 :color="tsColor(status)"
                 :class="[`${className}__status-icon`, `${className}__status-icon--leading`]"
               />
-              <span>{{ transactionPreviewText }}</span>
+              <span>
+                {{ transactionDirection }}
+                <bdi dir="ltr">{{ transactionPreviewAmount }}</bdi>
+              </span>
               <v-icon
                 v-if="isIncomingTransaction"
                 :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
@@ -91,7 +94,11 @@
               v-if="transaction.isReply && isConfirmed"
               :icon="mdiArrowLeftTop"
               :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
-              :class="[`${className}__status-icon`, `${className}__status-icon--leading`]"
+              :class="[
+                `${className}__status-icon`,
+                `${className}__status-icon--leading`,
+                `${className}__reply-icon`
+              ]"
             />
             <v-icon
               v-else
@@ -220,9 +227,8 @@ const transactionDirection = computed(() => {
 
   return direction
 })
-const transactionPreviewText = computed(
-  () =>
-    `${transactionDirection.value} ${currency(props.transaction.amount, props.transaction.type)}`
+const transactionPreviewAmount = computed(() =>
+  currency(props.transaction.amount, props.transaction.type)
 )
 const isIncomingTransaction = computed(
   () => !isStringEqualCI(props.userId, props.transaction.senderId)
@@ -240,6 +246,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_directional-icon.scss' as directionalIcon;
 @use '@/assets/styles/components/_color-roles.scss' as colorRoles;
 @use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use '@/assets/styles/settings/_colors.scss';
@@ -325,7 +332,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 
   &__date {
     @include mixins.a-text-explanation-small();
-    margin-left: var(--a-chat-brief-date-gap);
+    margin-inline-start: var(--a-chat-brief-date-gap);
     white-space: nowrap;
   }
 
@@ -341,6 +348,11 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
     &--trailing {
       margin-inline-start: var(--a-space-1);
     }
+  }
+
+  // The status icon already uses `transform` to align vertically, so the glyph is mirrored
+  &__reply-icon :deep(svg) {
+    @include directionalIcon.a-directional-icon();
   }
 
   &__badge {

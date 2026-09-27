@@ -11,7 +11,7 @@
       </div>
 
       <div :class="classes.networkRow">
-        <bdi dir="ltr">{{ wallet.cryptoCurrency }}</bdi>
+        {{ wallet.cryptoCurrency }}
         <span v-if="wallet.erc20" :class="classes.networkLabel">
           <sub>ERC20</sub>
         </span>

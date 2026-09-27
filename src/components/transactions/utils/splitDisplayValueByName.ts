@@ -29,8 +29,9 @@ export const splitDisplayValueByName = (
   }
 
   const main = match[1]
-  const muted = match[2]
   const bracketAddress = match[3]
+  // The gap before the bracket is layout: kept outside the text so it survives bidi isolation
+  const muted = `(${bracketAddress})`
   const hasRawAddress = Boolean(rawAddress)
 
   if (!hasRawAddress) {

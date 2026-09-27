@@ -74,7 +74,7 @@
     <TransactionListItem :title="t('transaction.commission')">
       <bdi dir="ltr">{{ calculatedFeeDisplay.token }}</bdi>
       <span v-if="calculatedFeeDisplay.fiat" :class="`${className}__value-muted`">
-        <bdi dir="ltr">{{ ` ${calculatedFeeDisplay.fiat}` }}</bdi>
+        <bdi dir="ltr">{{ calculatedFeeDisplay.fiat }}</bdi>
       </span>
     </TransactionListItem>
 
@@ -488,6 +488,9 @@ const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decim
 
   &__value-muted {
     white-space: pre;
+    // A gap, not a space character: a space inside the isolated value would end up on the
+    // outer side of it in right-to-left locales
+    margin-inline-start: var(--a-space-1);
   }
 
   &__invalid-status-icon {

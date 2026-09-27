@@ -179,14 +179,13 @@ defineExpose({
 
   &__textfield {
     &:deep(.v-field__append-inner) {
-      padding-left: 0;
-      margin-left: var(--a-login-form-passphrase-toggle-offset);
+      padding-inline-start: 0;
+      margin-inline-start: var(--a-login-form-passphrase-toggle-offset);
     }
 
     &:deep(.v-field__input) {
       width: 100%;
-      padding-right: var(--a-login-form-passphrase-input-padding-inline);
-      padding-left: var(--a-login-form-passphrase-input-padding-inline);
+      padding-inline: var(--a-login-form-passphrase-input-padding-inline);
     }
   }
 
@@ -205,10 +204,6 @@ defineExpose({
   &__username-input {
     display: none;
   }
-}
-
-[dir='rtl'] .login-form__textfield:deep(.v-field__append-inner) {
-  margin-left: 0;
 }
 
 /** Themes **/

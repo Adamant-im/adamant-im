@@ -198,6 +198,8 @@ const isBalanceActive = computed(() => {
     @include mixins.a-text-regular();
     font-style: var(--a-font-style-emphasis);
     color: inherit;
+    // Separates the isolated fiat rate from the isolated balance in both text directions
+    margin-inline-start: var(--a-space-1);
   }
   &__list {
     background: var(--a-wallet-card-surface);

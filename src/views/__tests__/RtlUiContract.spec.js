@@ -59,4 +59,68 @@ describe('RTL UI contract', () => {
       'text-align: start;'
     )
   })
+
+  it('isolates transfer destinations, amounts and transaction identifiers', () => {
+    const sendFunds = read('../../components/SendFundsForm.vue')
+    const transaction = read('../../components/transactions/TransactionTemplate.vue')
+
+    expect(sendFunds).toMatch(/v-model\.trim="cryptoAddress"\s+dir="ltr"/)
+    expect(sendFunds).toMatch(/v-model="amountString"\s+dir="ltr"/)
+    expect(sendFunds).toContain('unicode-bidi: isolate;')
+    expect(transaction).toContain('<bdi dir="ltr">{{ transaction?.id || placeholder }}</bdi>')
+    expect(read('../../components/WalletCard.vue')).toContain('<bdi dir="ltr">{{ address }}</bdi>')
+    expect(read('../../components/PartnerInfo.vue')).toContain('<bdi dir="ltr">{{ address }}</bdi>')
+    expect(read('../../components/AChat/AChatTransaction.vue')).toContain(
+      '<bdi dir="ltr">{{ currencyFormatter(transaction.amount, crypto) }}</bdi>'
+    )
+    expect(read('../../components/ChatPreview.vue')).toContain(
+      '<bdi dir="ltr">{{ transactionPreviewAmount }}</bdi>'
+    )
+  })
+
+  it('separates isolated values with a logical gap, not a space inside the isolate', () => {
+    const transaction = read('../../components/transactions/TransactionTemplate.vue')
+
+    // A leading space inside `<bdi>` lands on the outer side of the value in RTL locales
+    expect(transaction).not.toMatch(/<bdi[^>]*>\{\{\s*`\s/)
+    expect(transaction).toMatch(/&__value-muted \{[^}]*margin-inline-start/)
+    expect(read('../../components/WalletCard.vue')).toMatch(/&__rate \{[^}]*margin-inline-start/)
+  })
+
+  it('positions the passphrase visibility toggle with logical properties', () => {
+    const loginForm = read('../../components/LoginForm.vue')
+
+    expect(loginForm).toContain('margin-inline-start: var(--a-login-form-passphrase-toggle-offset)')
+    expect(loginForm).not.toMatch(/margin-left|padding-left|padding-right|dir='rtl'/)
+  })
+
+  it('lays out chat bubbles with logical properties so RTL locales mirror them', () => {
+    const chat = read('../../assets/styles/components/_chat.scss')
+
+    expect(chat).toContain('float: inline-start;')
+    expect(chat).toContain('float: inline-end;')
+    expect(chat).not.toMatch(/float: (left|right)/)
+    expect(chat).toContain('inset-inline-start: -6px;')
+    expect(chat).toContain('inset-inline-end: -6px;')
+    expect(chat).toContain('rotate(var(--a-chat-message-tail-tilt))')
+    expect(chat).not.toMatch(/(margin|padding|border)-(left|right)|text-align: (left|right)/)
+
+    const styleOf = (source) => source.slice(source.indexOf('<style'))
+    const sidedComponents = [
+      '../../components/AChat/AChatMessage.vue',
+      '../../components/AChat/AChatReactions/AChatReactions.vue',
+      '../../components/AChat/AChatReactions/AChatReaction.vue',
+      '../../components/AChat/AChatActionsOverlay.vue',
+      '../../components/AChat/AChatReplyPreview.vue',
+      '../../components/AChat/QuotedMessage.vue',
+      '../../components/AChat/AChatAttachment/AChatFile.vue'
+    ]
+
+    for (const componentPath of sidedComponents) {
+      // Full-width `left: 0; right: 0` insets are symmetric and stay physical
+      expect(styleOf(read(componentPath)), componentPath).not.toMatch(
+        /(margin|padding|border)-(left|right)|(?<![\w-])(left|right): (?!0;|unset;)/
+      )
+    }
+  })
 })

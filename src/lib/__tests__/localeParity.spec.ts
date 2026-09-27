@@ -321,6 +321,7 @@ describe('locale helpers', () => {
     expect(matchSupportedLocale('zh-Hans-CN')).toBe('zh')
     expect(matchSupportedLocale('zh-Hant-TW')).toBeNull()
     expect(matchSupportedLocale('zh-HK')).toBeNull()
+    expect(matchSupportedLocale('zh-Hans-HK')).toBe('zh')
     expect(matchSupportedLocale('ar-EG')).toBe('ar')
     expect(matchSupportedLocale('pt_BR')).toBeNull()
     expect(matchSupportedLocale(undefined)).toBeNull()

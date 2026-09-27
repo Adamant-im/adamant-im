@@ -244,7 +244,7 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('.chat-avatar {')
     expect(content).toContain('CHAT_CONNECTION_SPINNER_SIZE')
     expect(content).toContain(':size="CHAT_CONNECTION_SPINNER_SIZE"')
-    expect(content).toContain('margin-right: var(--a-space-1);')
+    expect(content).toContain('margin-inline-end: var(--a-space-1);')
     expect(content).not.toMatch(/\.chat-avatar\s*\{[^}]*margin-right:\s*var\(--a-space-3\);/s)
   })
 

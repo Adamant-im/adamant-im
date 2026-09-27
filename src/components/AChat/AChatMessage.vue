@@ -275,7 +275,7 @@ export default defineComponent({
 .a-chat__inline-status {
   position: absolute;
   top: 50%;
-  right: calc(100% + var(--a-space-2));
+  inset-inline-end: calc(100% + var(--a-space-2));
   transform: translateY(-50%);
   display: flex;
   align-items: center;

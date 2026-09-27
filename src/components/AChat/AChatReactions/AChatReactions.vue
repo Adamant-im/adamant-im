@@ -101,23 +101,24 @@ watch(
 
   bottom: 0;
 
-  right: 100%;
-  margin-right: calc(var(--a-space-1) * -1);
+  // Outgoing bubbles sit at the end of the line, so their reactions face the middle from the start side
+  inset-inline-end: 100%;
+  margin-inline-end: calc(var(--a-space-1) * -1);
   margin-bottom: calc(var(--a-space-1) * -1);
 
   cursor: default;
   user-select: none;
 
   &--left {
-    right: unset;
-    left: 100%;
-    margin-right: unset;
-    margin-left: calc(var(--a-space-1) * -1);
+    inset-inline-end: unset;
+    inset-inline-start: 100%;
+    margin-inline-end: unset;
+    margin-inline-start: calc(var(--a-space-1) * -1);
   }
 
   &__reaction {
     & ~ & {
-      margin-left: var(--a-space-1);
+      margin-inline-start: var(--a-space-1);
     }
   }
 }

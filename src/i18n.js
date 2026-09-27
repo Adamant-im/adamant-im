@@ -56,7 +56,12 @@ export function matchSupportedLocale(tag) {
   const parts = tag.toLowerCase().split(/[-_]/)
   const primary = parts[0]
 
-  if (primary === 'zh' && parts.some((part) => ['hant', 'tw', 'hk', 'mo'].includes(part))) {
+  const isTraditionalChinese =
+    primary === 'zh' &&
+    !parts.includes('hans') &&
+    parts.some((part) => ['hant', 'tw', 'hk', 'mo'].includes(part))
+
+  if (isTraditionalChinese) {
     return null
   }
 
@@ -173,6 +178,15 @@ export const i18n = createI18n({
   allowComposition: true,
   legacy: false
 })
+
+/**
+ * The dayjs locale of the current app locale. Reading it inside a computed or a render makes
+ * formatted dates update when the language changes; the global dayjs locale is not reactive.
+ * @returns {string}
+ */
+export function currentDayjsLocale() {
+  return DAYJS_LOCALES[normalizeLocale(i18n.global.locale.value)]
+}
 
 /**
  * Applies a locale to vue-i18n, dayjs and the document `lang`/`dir` attributes.

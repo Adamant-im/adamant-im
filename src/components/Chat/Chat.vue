@@ -1051,7 +1051,7 @@ const onKeyPress = (e: KeyboardEvent) => {
 @use '@/assets/styles/settings/_colors.scss';
 
 .chat-menu {
-  margin-right: var(--a-space-3);
+  margin-inline-end: var(--a-space-3);
 }
 .chat {
   height: var(--a-layout-height);
@@ -1060,12 +1060,11 @@ const onKeyPress = (e: KeyboardEvent) => {
 }
 
 .chat-avatar {
-  margin-right: var(--a-space-1);
+  margin-inline-end: var(--a-space-1);
 }
 
 .chat__connection-spinner {
-  margin-left: var(--a-space-1);
-  margin-right: var(--a-space-4);
+  margin-inline: var(--a-space-1) var(--a-space-4);
 }
 
 /** Themes **/

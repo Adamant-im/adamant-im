@@ -157,7 +157,7 @@ describe('AChat UI style contract', () => {
       'class="a-chat__inline-status a-chat__inline-status--rejected"'
     )
     expect(messageContent).toContain('@click="$emit(\'click:status\')"')
-    expect(messageContent).toContain('right: calc(100% + var(--a-space-2));')
+    expect(messageContent).toContain('inset-inline-end: calc(100% + var(--a-space-2));')
     expect(messageContent).toContain('&--pending {')
     expect(messageContent).toContain('&--rejected {')
     expect(messageContent).toContain('var(--a-color-text-on-surface-muted)')
@@ -277,7 +277,9 @@ describe('AChat UI style contract', () => {
       'animation: animate__heartBeat var(--a-chat-reaction-animation-duration) ease-in-out;'
     )
     expect(reactionContent).toContain('bottom: calc(var(--a-chat-reaction-avatar-offset) * -1);')
-    expect(reactionContent).toContain('right: calc(var(--a-chat-reaction-avatar-offset) * -1);')
+    expect(reactionContent).toContain(
+      'inset-inline-end: calc(var(--a-chat-reaction-avatar-offset) * -1);'
+    )
     expect(reactionContent).not.toContain('bottom: -9px;')
     expect(reactionContent).not.toContain('right: -9px;')
 
@@ -289,7 +291,7 @@ describe('AChat UI style contract', () => {
     expect(tokensContent).toContain('--a-chat-accent-border-width')
     expect(tokensContent).toContain('--a-color-text-inverse')
     expect(replyPreviewContent).toContain(
-      "border-left: var(--a-chat-accent-border-width) solid map.get(colors.$adm-colors, 'attention');"
+      "border-inline-start: var(--a-chat-accent-border-width) solid map.get(colors.$adm-colors, 'attention');"
     )
     expect(replyPreviewContent).toContain(
       "background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent');"
@@ -415,7 +417,7 @@ describe('AChat UI style contract', () => {
     expect(content).toContain('--a-quoted-message-border-width')
     expect(content).toContain('--a-quoted-message-error-font-style')
     expect(content).toContain(
-      "border-left: var(--a-quoted-message-border-width) solid map.get(colors.$adm-colors, 'attention');"
+      "border-inline-start: var(--a-quoted-message-border-width) solid map.get(colors.$adm-colors, 'attention');"
     )
 
     expect(formContent).not.toContain('--a-chat-form-max-height: 230px;')

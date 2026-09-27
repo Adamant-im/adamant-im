@@ -160,12 +160,12 @@ export default defineComponent({
     margin-bottom: var(--a-chat-actions-overlay-reaction-gap);
     z-index: 1;
 
-    right: 0;
-    left: unset;
+    // Aligned to the bubble edge at the end of the line; incoming bubbles use the start edge
+    inset-inline-end: 0;
 
     &--left {
-      left: 0;
-      right: unset;
+      inset-inline-start: 0;
+      inset-inline-end: unset;
     }
 
     &--bottom {
@@ -179,12 +179,11 @@ export default defineComponent({
     top: 100%;
     width: max-content;
 
-    right: 0;
-    left: unset;
+    inset-inline-end: 0;
 
     &--left {
-      left: 0;
-      right: unset;
+      inset-inline-start: 0;
+      inset-inline-end: unset;
     }
 
     &--bottom {
