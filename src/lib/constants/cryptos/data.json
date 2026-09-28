@@ -145,7 +145,8 @@
           "crucialUpdateInterval": 30000,
           "onScreenUpdateInterval": 10000,
           "threshold": 6000000
-        }
+        },
+        "minVersion": "0.1.0"
       }
     },
     "links": [
@@ -240,7 +241,8 @@
             "crucialUpdateInterval": 30000,
             "onScreenUpdateInterval": 10000,
             "threshold": 6000000
-          }
+          },
+          "minVersion": "0.1.0"
         }
       }
     },
@@ -326,7 +328,8 @@
             "crucialUpdateInterval": 30000,
             "onScreenUpdateInterval": 10000,
             "threshold": 6000000
-          }
+          },
+          "minVersion": "0.1.0"
         }
       }
     }
