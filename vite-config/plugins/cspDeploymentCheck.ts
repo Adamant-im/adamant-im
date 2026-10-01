@@ -1,4 +1,9 @@
-import { PWA_SECURITY_HEADERS, findUnsafeRuntimeSources } from './cspHardeningPlugin'
+import {
+  PWA_CONTENT_SECURITY_POLICY,
+  PWA_HEADER_CONTENT_SECURITY_POLICY,
+  PWA_SECURITY_HEADERS,
+  findUnsafeRuntimeSources
+} from './cspHardeningPlugin'
 
 export type DeploymentTarget = {
   url: string
@@ -44,7 +49,7 @@ export type FetchResponse = Pick<Response, 'ok' | 'status' | 'text'> & {
 export type FetchLike = (url: string) => Promise<FetchResponse>
 
 const REQUEST_TIMEOUT_MS = 30_000
-const HEADER_ONLY_DIRECTIVES = new Set(['frame-ancestors', 'report-uri', 'report-to'])
+const REPORTING_DIRECTIVES = new Set(['report-uri', 'report-to'])
 const REPORTING_HEADERS = ['Report-To', 'Reporting-Endpoints']
 const JAVASCRIPT_MIME = /^(?:text|application)\/(?:x-)?(?:javascript|ecmascript)\s*(?:;|$)/i
 
@@ -59,25 +64,71 @@ const decodeHtmlAttribute = (value: string) =>
     .replace(/&gt;/g, '>')
     .replace(/&amp;/g, '&')
 
-export function parsePolicy(policy: string): Map<string, string> {
-  return new Map(
-    policy
-      .split(';')
-      .map((directive) => directive.trim().split(/\s+/))
-      .filter(([name]) => name)
-      .map(([name, ...sources]) => [name.toLowerCase(), sources.join(' ')])
+export type ParsedPolicy = {
+  directives: Map<string, string>
+  duplicates: string[]
+}
+
+/**
+ * Parses one serialized policy the way browsers do: directive names are case-insensitive, and only
+ * the first occurrence of a directive takes effect (CSP3, "parse a serialized CSP"). Later
+ * occurrences are returned in `duplicates`.
+ */
+export function parsePolicy(policy: string): ParsedPolicy {
+  const directives = new Map<string, string>()
+  const duplicates: string[] = []
+
+  for (const token of policy.split(';')) {
+    const [name, ...sources] = token.trim().split(/\s+/)
+    if (!name) continue
+
+    const directive = name.toLowerCase()
+    if (directives.has(directive)) duplicates.push(directive)
+    else directives.set(directive, sources.join(' '))
+  }
+
+  return { directives, duplicates }
+}
+
+// A header value may carry several policies separated by commas; browsers enforce each of them.
+const parsePolicyList = (value: string) =>
+  value
+    .split(',')
+    .map((policy) => policy.trim())
+    .filter(Boolean)
+    .map(parsePolicy)
+
+const META_BASELINE = parsePolicy(PWA_CONTENT_SECURITY_POLICY).directives
+const HEADER_BASELINE = parsePolicy(PWA_HEADER_CONTENT_SECURITY_POLICY).directives
+
+const normalizeSources = (sources: string) => sources.split(/\s+/).filter(Boolean).sort().join(' ')
+
+/**
+ * Compares a policy with the shared strict baseline directive by directive. Any added directive
+ * counts, because one such as `script-src-elem` overrides `script-src` for script elements.
+ */
+function diffPolicy(label: string, policy: ParsedPolicy, baseline: Map<string, string>) {
+  const problems = policy.duplicates.map(
+    (name) => `${label} repeats ${name}; browsers apply only its first occurrence`
   )
+
+  for (const [name, expected] of baseline) {
+    const actual = policy.directives.get(name)
+
+    if (actual === undefined) problems.push(`${label} is missing ${name}`)
+    else if (normalizeSources(actual) !== normalizeSources(expected)) {
+      problems.push(`${label} ${name} is "${actual}", expected "${expected}"`)
+    }
+  }
+
+  for (const [name, sources] of policy.directives) {
+    if (!baseline.has(name) && !REPORTING_DIRECTIVES.has(name)) {
+      problems.push(`${label} has unexpected ${name} "${sources}"`)
+    }
+  }
+
+  return problems
 }
-
-const formatPolicy = (policy: Map<string, string>) =>
-  [...policy].map(([name, sources]) => `${name} ${sources}`.trim()).join('; ')
-
-function withoutHeaderOnlyDirectives(policy: Map<string, string>) {
-  return new Map([...policy].filter(([name]) => !HEADER_ONLY_DIRECTIVES.has(name)))
-}
-
-const samePolicy = (a: Map<string, string>, b: Map<string, string>) =>
-  a.size === b.size && [...a].every(([name, sources]) => b.get(name) === sources)
 
 function isSameOriginReportEndpoint(reportUri: string, pageUrl: string) {
   const endpoint = new URL(reportUri, pageUrl)
@@ -85,20 +136,22 @@ function isSameOriginReportEndpoint(reportUri: string, pageUrl: string) {
   return endpoint.origin === new URL(pageUrl).origin && endpoint.pathname === CSP_REPORT_PATH
 }
 
-function checkReporting(target: DeploymentTarget, policy: Map<string, string>): string[] {
+function checkReporting(target: DeploymentTarget, label: string, policy: ParsedPolicy): string[] {
   const problems: string[] = []
-  const reportUri = policy.get('report-uri')
+  const reportUri = policy.directives.get('report-uri')
 
-  if (policy.has('report-to')) {
-    problems.push(`CSP header uses report-to "${policy.get('report-to')}"`)
+  if (policy.directives.has('report-to')) {
+    problems.push(`${label} uses report-to "${policy.directives.get('report-to')}"`)
   }
 
   if (reportUri === undefined) return problems
 
   if (!target.reportsViolations) {
-    problems.push(`production host reports CSP violations to "${reportUri}"`)
+    problems.push(`${label} reports to "${reportUri}" on a host that must not report`)
   } else if (reportUri.split(/\s+/).some((uri) => !isSameOriginReportEndpoint(uri, target.url))) {
-    problems.push(`CSP reports go to "${reportUri}" instead of the same-origin ${CSP_REPORT_PATH}`)
+    problems.push(
+      `${label} reports to "${reportUri}" instead of the same-origin ${CSP_REPORT_PATH}`
+    )
   }
 
   return problems
@@ -128,31 +181,42 @@ function checkResponseHeaders(target: DeploymentTarget, headers: Pick<Headers, '
   return problems
 }
 
-function checkHeaderPolicy(
-  target: DeploymentTarget,
-  headerValue: string | null,
-  metaPolicy: Map<string, string>
-): string[] {
+function checkHeaderPolicy(target: DeploymentTarget, headerValue: string | null): string[] {
   if (!headerValue) {
     return target.sendsHeaders ? ['sends no Content-Security-Policy header'] : []
   }
 
-  const problems: string[] = []
-  const headerPolicy = parsePolicy(headerValue)
-  const comparable = withoutHeaderOnlyDirectives(headerPolicy)
+  const policies = parsePolicyList(headerValue)
 
-  // Browsers enforce both policies, so any difference silently narrows the build's policy.
-  if (!samePolicy(comparable, metaPolicy)) {
-    problems.push(
-      `header policy "${formatPolicy(comparable)}" differs from the build's meta policy "${formatPolicy(metaPolicy)}"`
-    )
+  if (policies.length !== 1) {
+    return [
+      `sends ${policies.length} enforced CSP policies instead of one`,
+      ...policies.flatMap((policy) => checkReporting(target, 'CSP header', policy))
+    ]
   }
 
-  if (headerPolicy.get('frame-ancestors') !== `'none'`) {
-    problems.push(`frame-ancestors is "${headerPolicy.get('frame-ancestors') ?? 'missing'}"`)
+  // Browsers enforce the header and the meta policy together, so the header has to match the
+  // shared baseline exactly: anything else either narrows or weakens the build's policy.
+  return [
+    ...diffPolicy('header policy', policies[0], HEADER_BASELINE),
+    ...checkReporting(target, 'CSP header', policies[0])
+  ]
+}
+
+// Report-Only policies are independent of the enforced ones (CSP3) and can report page URLs on
+// their own, so they are subject to the same per-host reporting rules.
+function checkReportOnlyPolicy(target: DeploymentTarget, headerValue: string | null): string[] {
+  if (!headerValue) return []
+
+  if (!target.reportsViolations) {
+    return [
+      `sends Content-Security-Policy-Report-Only "${headerValue}" on a host that must not report`
+    ]
   }
 
-  return [...problems, ...checkReporting(target, headerPolicy)]
+  return parsePolicyList(headerValue).flatMap((policy) =>
+    checkReporting(target, 'Report-Only policy', policy)
+  )
 }
 
 async function checkScripts(pageUrl: string, html: string, fetchImpl: FetchLike) {
@@ -205,24 +269,20 @@ export async function checkDeployment(
   }
 
   const html = await response.text()
-  const metaContent = /<meta http-equiv="Content-Security-Policy" content="([^"]+)"/i.exec(
-    html
-  )?.[1]
+  const metaContents = [
+    ...html.matchAll(/<meta http-equiv="Content-Security-Policy" content="([^"]+)"/gi)
+  ].map(([, content]) => decodeHtmlAttribute(content))
 
-  if (!metaContent) return ['has no CSP meta policy']
+  if (metaContents.length === 0) return ['has no CSP meta policy']
 
-  const metaPolicy = parsePolicy(decodeHtmlAttribute(metaContent))
-  const problems: string[] = []
-
-  if (metaPolicy.get('script-src') !== `'self' 'wasm-unsafe-eval'`) {
-    problems.push(`meta script-src is "${metaPolicy.get('script-src') ?? 'missing'}"`)
-  }
-
-  problems.push(
+  return [
+    ...(metaContents.length > 1
+      ? [`has ${metaContents.length} CSP meta policies instead of one`]
+      : []),
+    ...diffPolicy('meta policy', parsePolicy(metaContents[0]), META_BASELINE),
     ...checkResponseHeaders(target, response.headers),
-    ...checkHeaderPolicy(target, response.headers.get('content-security-policy'), metaPolicy),
+    ...checkHeaderPolicy(target, response.headers.get('content-security-policy')),
+    ...checkReportOnlyPolicy(target, response.headers.get('content-security-policy-report-only')),
     ...(await checkScripts(target.url, html, fetchImpl))
-  )
-
-  return problems
+  ]
 }

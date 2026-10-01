@@ -148,20 +148,41 @@ describe('checkDeployment', () => {
       const headers = pageHeaders({ 'Content-Security-Policy': PWA_CONTENT_SECURITY_POLICY })
 
       expect(await checkDeployment(production, deployment({ headers }))).toEqual([
-        'frame-ancestors is "missing"'
+        'header policy is missing frame-ancestors'
       ])
     })
 
-    it('rejects a header policy that narrows the meta policy', async () => {
+    it('applies the first of duplicate directives, as browsers do', async () => {
+      const headers = pageHeaders({
+        'Content-Security-Policy': `frame-ancestors *; ${PWA_HEADER_CONTENT_SECURITY_POLICY}`
+      })
+
+      expect(await checkDeployment(production, deployment({ headers }))).toEqual([
+        'header policy repeats frame-ancestors; browsers apply only its first occurrence',
+        `header policy frame-ancestors is "*", expected "'none'"`
+      ])
+    })
+
+    it('rejects a header policy that narrows the shared policy', async () => {
       const narrowed = PWA_HEADER_CONTENT_SECURITY_POLICY.replace(
         `connect-src 'self' http: https: ws: wss: blob:`,
         `connect-src 'self'`
       )
       const headers = pageHeaders({ 'Content-Security-Policy': narrowed })
-      const problems = await checkDeployment(production, deployment({ headers }))
 
-      expect(problems).toHaveLength(1)
-      expect(problems[0]).toMatch(/^header policy .* differs from the build's meta policy/)
+      expect(await checkDeployment(production, deployment({ headers }))).toEqual([
+        `header policy connect-src is "'self'", expected "'self' http: https: ws: wss: blob:"`
+      ])
+    })
+
+    it('rejects several enforced policies in one response', async () => {
+      const headers = pageHeaders({
+        'Content-Security-Policy': `${PWA_HEADER_CONTENT_SECURITY_POLICY}, script-src 'self'`
+      })
+
+      expect(await checkDeployment(production, deployment({ headers }))).toEqual([
+        'sends 2 enforced CSP policies instead of one'
+      ])
     })
 
     it('rejects a production host without a CSP header', async () => {
@@ -182,7 +203,7 @@ describe('checkDeployment', () => {
         })
 
         expect(await checkDeployment(production, deployment({ headers }))).toEqual([
-          `production host reports CSP violations to "${reportUri}"`
+          `CSP header reports to "${reportUri}" on a host that must not report`
         ])
       }
     )
@@ -193,7 +214,7 @@ describe('checkDeployment', () => {
       })
 
       expect(await checkDeployment(reporting, deployment({ headers }))).toEqual([
-        `CSP reports go to "https://collector.example${CSP_REPORT_PATH}" instead of the same-origin ${CSP_REPORT_PATH}`
+        `CSP header reports to "https://collector.example${CSP_REPORT_PATH}" instead of the same-origin ${CSP_REPORT_PATH}`
       ])
     })
 
@@ -207,6 +228,48 @@ describe('checkDeployment', () => {
         'sends Reporting-Endpoints "csp="https://collector.example/csp""',
         'CSP header uses report-to "csp"'
       ])
+    })
+
+    describe('Report-Only policies', () => {
+      it.each([CSP_REPORT_PATH, 'https://collector.example/csp'])(
+        'rejects a Report-Only policy on a production host that reports to %s',
+        async (reportUri) => {
+          const reportOnly = `default-src 'self'; report-uri ${reportUri}`
+          const headers = pageHeaders({ 'Content-Security-Policy-Report-Only': reportOnly })
+
+          expect(await checkDeployment(production, deployment({ headers }))).toEqual([
+            `sends Content-Security-Policy-Report-Only "${reportOnly}" on a host that must not report`
+          ])
+        }
+      )
+
+      it('rejects a Report-Only policy that reports to another origin', async () => {
+        const headers = pageHeaders({
+          'Content-Security-Policy-Report-Only': `default-src 'self'; report-uri https://collector.example/csp`
+        })
+
+        expect(await checkDeployment(reporting, deployment({ headers }))).toEqual([
+          `Report-Only policy reports to "https://collector.example/csp" instead of the same-origin ${CSP_REPORT_PATH}`
+        ])
+      })
+
+      it('checks every Report-Only policy in the header', async () => {
+        const headers = pageHeaders({
+          'Content-Security-Policy-Report-Only': `default-src 'self'; report-uri ${CSP_REPORT_PATH}, img-src 'self'; report-to csp`
+        })
+
+        expect(await checkDeployment(reporting, deployment({ headers }))).toEqual([
+          'Report-Only policy uses report-to "csp"'
+        ])
+      })
+
+      it('accepts a Report-Only policy that reports to its own endpoint', async () => {
+        const headers = pageHeaders({
+          'Content-Security-Policy-Report-Only': `default-src 'self'; report-uri ${CSP_REPORT_PATH}`
+        })
+
+        expect(await checkDeployment(reporting, deployment({ headers }))).toEqual([])
+      })
     })
   })
 
@@ -223,15 +286,50 @@ describe('checkDeployment', () => {
       const html = pageHtml(
         PWA_CONTENT_SECURITY_POLICY.replace(`'wasm-unsafe-eval'`, `'unsafe-eval'`)
       )
+
+      expect(await checkDeployment(production, deployment({ html }))).toEqual([
+        `meta policy script-src is "'self' 'unsafe-eval'", expected "'self' 'wasm-unsafe-eval'"`
+      ])
+    })
+
+    it('rejects a directive that overrides script-src for script elements', async () => {
+      const override = `script-src-elem 'self' https://collector.example`
+      const html = pageHtml(`${PWA_CONTENT_SECURITY_POLICY}; ${override}`)
       const headers = pageHeaders({
-        'Content-Security-Policy': PWA_HEADER_CONTENT_SECURITY_POLICY.replace(
-          `'wasm-unsafe-eval'`,
-          `'unsafe-eval'`
-        )
+        'Content-Security-Policy': `${PWA_HEADER_CONTENT_SECURITY_POLICY}; ${override}`
       })
 
       expect(await checkDeployment(production, deployment({ headers, html }))).toEqual([
-        `meta script-src is "'self' 'unsafe-eval'"`
+        `meta policy has unexpected script-src-elem "'self' https://collector.example"`,
+        `header policy has unexpected script-src-elem "'self' https://collector.example"`
+      ])
+    })
+
+    it('rejects a meta policy without one of the shared directives', async () => {
+      const html = pageHtml(PWA_CONTENT_SECURITY_POLICY.replace(`object-src 'none'; `, ''))
+
+      expect(await checkDeployment(production, deployment({ html }))).toEqual([
+        'meta policy is missing object-src'
+      ])
+    })
+
+    it('applies the first of duplicate meta directives', async () => {
+      const html = pageHtml(`script-src 'self' 'unsafe-inline'; ${PWA_CONTENT_SECURITY_POLICY}`)
+
+      expect(await checkDeployment(production, deployment({ html }))).toEqual([
+        'meta policy repeats script-src; browsers apply only its first occurrence',
+        `meta policy script-src is "'self' 'unsafe-inline'", expected "'self' 'wasm-unsafe-eval'"`
+      ])
+    })
+
+    it('rejects a second meta policy', async () => {
+      const html = pageHtml().replace(
+        '</head>',
+        `<meta http-equiv="Content-Security-Policy" content="img-src *"></head>`
+      )
+
+      expect(await checkDeployment(production, deployment({ html }))).toEqual([
+        'has 2 CSP meta policies instead of one'
       ])
     })
   })
