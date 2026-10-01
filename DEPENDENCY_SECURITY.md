@@ -7,7 +7,7 @@ must keep the following checks green:
 - `npm audit --omit=dev --audit-level=high`
 - `npm audit --audit-level=high`
 
-The runtime dependency tree has no known advisories as of 2026-09-17. The full development tree has
+The runtime dependency tree has no known advisories as of 2026-10-01. The full development tree has
 one accepted moderate advisory chain after upgrading to `@capacitor/cli@8.5.2`:
 
 - `@capacitor/cli -> xcode -> uuid@7` (`GHSA-w5hq-g745-h8pq`). `xcode` is a development-only iOS

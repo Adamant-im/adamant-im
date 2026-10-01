@@ -90,7 +90,7 @@
     "copy-to-clipboard": "^4.0.2",
     "dayjs": "^1.11.23",
     "deepmerge": "^4.3.1",
-    "dompurify": "^3.4.15",
+    "dompurify": "^3.4.16",
     "ecpair": "^3.0.2",
     "ed2curve": "^0.3.0",
     "emoji-mart": "^5.6.0",
