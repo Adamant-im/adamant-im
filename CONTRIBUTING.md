@@ -231,22 +231,50 @@ server-side builds, do not repeat the check and do not need the submodule. Mode 
 bundle gate still run inside their Vite builds. Server-side Tor builds use `npm run build:tor`, or
 `vite build` with `--mode tor`.
 
-### CSP hardening on Vercel builds
+### CSP hardening
 
 Production builds inject a CSP meta policy that blocks JavaScript `eval` and `Function` constructors
-on every static hosting target. Vercel also delivers the same script policy as a response header.
-`wasm-unsafe-eval` remains narrowly enabled for the bundled secp256k1 WebAssembly module.
+on every static hosting target. `wasm-unsafe-eval` remains narrowly enabled for the bundled
+secp256k1 WebAssembly module.
 
 The policy intentionally allows HTTP(S) and WebSocket connections, images, and media from arbitrary
 origins so user-configured and self-hosted nodes keep working. This is broader than a fixed ADAMANT
-domain allowlist, while script execution is substantially narrower. Static meta policies cannot
-enforce `frame-ancestors`. Deployments with response-header support must deny framing there; the
-Vercel and Electron targets enforce `frame-ancestors 'none'` and `X-Frame-Options: DENY`.
+domain allowlist, while script execution is substantially narrower.
+
+Static meta policies cannot enforce `frame-ancestors`, so every host that can send response headers
+also sends the policy as a header, extended with `frame-ancestors 'none'`. `PWA_SECURITY_HEADERS` in
+`vite-config/plugins/cspHardeningPlugin.ts` is the single source of truth for these headers:
+
+- `vercel.json` sends them on every Vercel host. Only `dev.adamant.im` and team preview hosts add `report-uri /api/csp-report`; production hosts do not report, because a report carries the page URL, and app URLs contain chat partner addresses
+- `deploy/nginx/security-headers.conf` sends them on server-side and self-hosted builds, including onion services
+- Electron sends its own renderer policy from `src/electron/main.js`
+
+Contract tests in `vite-config/plugins/securityHeaders.spec.ts` fail when `vercel.json` or the nginx
+snippet differ from the source. Browsers enforce every delivered policy, so a header that differs
+from the build's meta policy silently narrows it. Server operators must reinstall the nginx snippet
+whenever it changes.
 
 The build fails if a generated JavaScript chunk contains a direct `eval` or a `Function`
 constructor. This gate scans reachable emitted chunks and direct lexical calls; runtime CSP remains
 the enforcement boundary for indirect forms. Keep runtime dependencies compatible with this gate
 instead of adding `unsafe-eval`.
+
+#### Verifying deployed CSP
+
+`vite-config/plugins/cspDeployments.env.spec.ts` checks the public deployment matrix. It only reads
+public pages and scripts, but it depends on third-party hosts, so it is opt-in:
+
+```bash
+ADM_LIVE_DEPLOYMENTS=1 npm run test -- --run vite-config/plugins/cspDeployments.env.spec.ts
+```
+
+For every target it requires the strict meta policy, a matching header policy on hosts that send
+headers, and module scripts without `eval` or `Function` constructors. Onion services need Tor, so
+check them from a Tor-enabled host:
+
+```bash
+curl --socks5-hostname 127.0.0.1:9050 -sS -D - -o /dev/null http://<onion-address>/
+```
 
 ## Playwright Smoke Checks
 

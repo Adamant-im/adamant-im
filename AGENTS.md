@@ -180,6 +180,7 @@ Build and platform targets:
 - PWA web/tor builds: `vite-pwa.config.ts`, `src/config/mainnet.json`, `src/config/tor.json`
 - Testnet build mode: `src/config/testnet.json`
 - Build mode to network configuration mapping and bundle gate: `vite-config/plugins/networkConfigPlugin.ts`
+- CSP meta policy, shared security headers, and the `eval` bundle gate: `vite-config/plugins/cspHardeningPlugin.ts`, mirrored by `vercel.json` and `deploy/nginx/*`
 - Wallet metadata generation and drift check: `scripts/wallets.mjs`, `scripts/wallets/*`
 - Electron packaging: `electron-vite.config.ts`, `src/electron/main.js`
 - Android pipeline: `vite-android.config.ts`, `capacitor.config.ts`, `scripts/capacitor/build-android.mjs`
@@ -292,6 +293,10 @@ are not recoverable.
 
 `src/lib/live-xss-pipeline.env.spec.ts` is the reference for the read-first pattern: it reads the
 chat, and sends only the payloads that are not on chain yet.
+
+`ADM_LIVE_DEPLOYMENTS=1` enables `vite-config/plugins/cspDeployments.env.spec.ts`, a read-only
+check of the CSP on every public deployment. Run it after changing CSP or security headers and after
+those changes reach the deployed hosts.
 
 ### Playwright route notes
 

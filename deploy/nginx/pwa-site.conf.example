@@ -1,0 +1,65 @@
+# Example nginx sites for a self-hosted ADAMANT Messenger PWA.
+#
+# 1. Build the app (`npm run build`, or `npm run build:tor` for an onion service)
+# 2. Copy the build output (`dist/`) to the web root below
+# 3. Install `security-headers.conf` as /etc/nginx/snippets/adamant-pwa-security-headers.conf
+#
+# The app keeps no server-side state, so access logs would only record who uses the messenger.
+
+# Clearnet HTTPS site.
+server {
+    listen 443 ssl;
+    server_name msg.example.org;
+
+    ssl_certificate /etc/letsencrypt/live/msg.example.org/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/msg.example.org/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    root /var/www/adamant-im;
+    index index.html;
+    access_log off;
+
+    include /etc/nginx/snippets/adamant-pwa-security-headers.conf;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # The entry document and the service worker must revalidate so updates reach users.
+    location ~ ^/(index\.html|service-worker\.js)$ {
+        include /etc/nginx/snippets/adamant-pwa-security-headers.conf;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+        add_header Cache-Control "no-cache" always;
+    }
+}
+
+server {
+    listen 80;
+    server_name msg.example.org;
+    return 301 https://$host$request_uri;
+}
+
+# Onion service backend. Bind it to loopback only: a public listener lets anyone link the
+# onion address to the server's clearnet IP. In torrc:
+#   HiddenServiceDir /var/lib/tor/adamant-pwa/
+#   HiddenServicePort 80 127.0.0.1:8099
+server {
+    listen 127.0.0.1:8099;
+    server_name _;
+
+    root /var/www/adamant-im-tor;
+    index index.html;
+    access_log off;
+
+    include /etc/nginx/snippets/adamant-pwa-security-headers.conf;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location ~ ^/(index\.html|service-worker\.js)$ {
+        include /etc/nginx/snippets/adamant-pwa-security-headers.conf;
+        add_header Cache-Control "no-cache" always;
+    }
+}
