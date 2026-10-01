@@ -20,6 +20,12 @@ This acceptance expires on 2026-11-10 and must be reviewed earlier when Capacito
 update. A newly introduced high or critical advisory is never covered by this acceptance and is
 blocked in CI.
 
+`package.json` overrides `basic-ftp` to `^6.2.1` for `get-uri` (`GHSA-c475-qrg2-pj4r`, high). The
+chain `@openapitools/openapi-generator-cli -> proxy-agent -> pac-proxy-agent -> get-uri` is
+development-only, and the latest `get-uri` still requires `basic-ftp@^5`. The only breaking change in
+`basic-ftp@6` disallows separate FTP transfer hosts by default; `get-uri` does not use them, and the
+client methods it calls are unchanged. Remove the override once `get-uri` depends on a fixed release.
+
 Dependabot monitors npm and GitHub Actions weekly. CodeQL and dependency review publish findings
 through GitHub code scanning, while ESLint's security rules catch unsafe JavaScript patterns before
 merge.

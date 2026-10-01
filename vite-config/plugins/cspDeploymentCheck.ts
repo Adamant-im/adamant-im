@@ -1,3 +1,5 @@
+import { parse, type DefaultTreeAdapterTypes } from 'parse5'
+
 import {
   PWA_CONTENT_SECURITY_POLICY,
   PWA_HEADER_CONTENT_SECURITY_POLICY,
@@ -56,13 +58,85 @@ const JAVASCRIPT_MIME = /^(?:text|application)\/(?:x-)?(?:javascript|ecmascript)
 const defaultFetch: FetchLike = (url) =>
   fetch(url, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) })
 
-const decodeHtmlAttribute = (value: string) =>
-  value
-    .replace(/&#39;/g, "'")
-    .replace(/&quot;/g, '"')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&amp;/g, '&')
+type Element = DefaultTreeAdapterTypes.Element
+
+const attribute = (element: Element, name: string) =>
+  element.attrs.find((attr) => attr.name === name)?.value
+
+/**
+ * Yields elements in tree order as the browser builds them. Comments are not elements, and
+ * `<template>` contents live in a separate inert fragment, so neither is visited.
+ */
+function* elements(node: DefaultTreeAdapterTypes.ParentNode): Generator<Element> {
+  for (const child of node.childNodes) {
+    if (!('tagName' in child)) continue
+
+    yield child
+    yield* elements(child)
+  }
+}
+
+const isCspMeta = (element: Element) =>
+  element.tagName === 'meta' &&
+  attribute(element, 'http-equiv')?.trim().toLowerCase() === 'content-security-policy'
+
+const linkRel = (element: Element) =>
+  element.tagName === 'link' ? (attribute(element, 'rel') ?? '').toLowerCase().split(/\s+/) : []
+
+// A meta policy only applies to what the parser reaches after it, so code and styles that come
+// first escape it.
+const runsBeforePolicy = (element: Element) =>
+  element.tagName === 'script' ||
+  element.tagName === 'style' ||
+  linkRel(element).some((rel) => ['stylesheet', 'preload', 'modulepreload'].includes(rel))
+
+function describeElement(element: Element) {
+  const source = attribute(element, 'src') ?? attribute(element, 'href')
+
+  return source ? `<${element.tagName} ${source}>` : `inline <${element.tagName}>`
+}
+
+type DocumentStructure = {
+  metaPolicies: string[]
+  beforePolicy: string[]
+  moduleScripts: string[]
+}
+
+/**
+ * Reads the entry document the way the browser applies it. HTML installs a CSP meta policy only
+ * from a `<meta http-equiv="Content-Security-Policy">` element that is a child of `<head>` and has
+ * a non-empty `content`; matching text in a comment, in template contents, or elsewhere in the
+ * document is not enforced.
+ */
+function readDocument(html: string, pageUrl: string): DocumentStructure {
+  const structure: DocumentStructure = { metaPolicies: [], beforePolicy: [], moduleScripts: [] }
+
+  for (const element of elements(parse(html))) {
+    if (isCspMeta(element)) {
+      const content = attribute(element, 'content')?.trim()
+
+      if (content && element.parentNode?.nodeName === 'head') {
+        structure.metaPolicies.push(content)
+      }
+      continue
+    }
+
+    if (structure.metaPolicies.length === 0 && runsBeforePolicy(element)) {
+      structure.beforePolicy.push(describeElement(element))
+    }
+
+    const src = attribute(element, 'src')
+    const href = attribute(element, 'href')
+
+    if (element.tagName === 'script' && attribute(element, 'type') === 'module' && src) {
+      structure.moduleScripts.push(new URL(src, pageUrl).href)
+    } else if (linkRel(element).includes('modulepreload') && href) {
+      structure.moduleScripts.push(new URL(href, pageUrl).href)
+    }
+  }
+
+  return structure
+}
 
 export type ParsedPolicy = {
   directives: Map<string, string>
@@ -219,12 +293,8 @@ function checkReportOnlyPolicy(target: DeploymentTarget, headerValue: string | n
   )
 }
 
-async function checkScripts(pageUrl: string, html: string, fetchImpl: FetchLike) {
+async function checkScripts(scriptUrls: string[], fetchImpl: FetchLike) {
   const problems: string[] = []
-  const scriptUrls = [
-    ...html.matchAll(/<script[^>]+type="module"[^>]+src="([^"]+)"/g),
-    ...html.matchAll(/<link[^>]+rel="modulepreload"[^>]+href="([^"]+)"/g)
-  ].map(([, src]) => new URL(src, pageUrl).href)
 
   if (scriptUrls.length === 0) return ['references no module scripts']
 
@@ -268,21 +338,24 @@ export async function checkDeployment(
     return [`is served as "${contentType || 'no content type'}", not HTML`]
   }
 
-  const html = await response.text()
-  const metaContents = [
-    ...html.matchAll(/<meta http-equiv="Content-Security-Policy" content="([^"]+)"/gi)
-  ].map(([, content]) => decodeHtmlAttribute(content))
+  const { metaPolicies, beforePolicy, moduleScripts } = readDocument(
+    await response.text(),
+    target.url
+  )
 
-  if (metaContents.length === 0) return ['has no CSP meta policy']
+  if (metaPolicies.length === 0) return ['has no active CSP meta policy in the document head']
 
   return [
-    ...(metaContents.length > 1
-      ? [`has ${metaContents.length} CSP meta policies instead of one`]
+    ...(metaPolicies.length > 1
+      ? [`has ${metaPolicies.length} CSP meta policies instead of one`]
       : []),
-    ...diffPolicy('meta policy', parsePolicy(metaContents[0]), META_BASELINE),
+    ...(beforePolicy.length > 0
+      ? [`CSP meta policy comes after ${beforePolicy.join(', ')}, which it does not cover`]
+      : []),
+    ...diffPolicy('meta policy', parsePolicy(metaPolicies[0]), META_BASELINE),
     ...checkResponseHeaders(target, response.headers),
     ...checkHeaderPolicy(target, response.headers.get('content-security-policy')),
     ...checkReportOnlyPolicy(target, response.headers.get('content-security-policy-report-only')),
-    ...(await checkScripts(target.url, html, fetchImpl))
+    ...(await checkScripts(moduleScripts, fetchImpl))
   ]
 }

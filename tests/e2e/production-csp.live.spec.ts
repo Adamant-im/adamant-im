@@ -66,6 +66,22 @@ async function openLoginScreen(
   }
 }
 
+// Inserts an inline script, which the shared policy blocks because it has no 'unsafe-inline'.
+// Watching for violations alone cannot prove enforcement: a page without any policy reports none.
+async function probeEnforcement(page: Page) {
+  const executed = await page.evaluate(() => {
+    const probe = document.createElement('script')
+
+    probe.textContent = 'window.__cspProbeExecuted = true'
+    document.head.append(probe)
+    probe.remove()
+
+    return (window as unknown as { __cspProbeExecuted?: boolean }).__cspProbeExecuted === true
+  })
+
+  return executed ? ['an injected inline script ran: no CSP is enforced'] : []
+}
+
 test.describe('Production build CSP smoke', () => {
   test.skip(
     targets.length === 0,
@@ -82,6 +98,7 @@ test.describe('Production build CSP smoke', () => {
       await page.waitForTimeout(SETTLE_MS)
 
       expect(await collectProblems()).toEqual([])
+      expect(await probeEnforcement(page)).toEqual([])
     })
   }
 
@@ -120,4 +137,34 @@ test.describe('Production build CSP smoke', () => {
       .poll(collectProblems)
       .toContain('CSP violation: script-src-elem https://example.com/injected.js')
   })
+
+  // The browser never installs a policy from a comment or from template contents. Without a
+  // header there is then no policy at all, so only the enforcement probe can notice.
+  for (const [placement, hide] of [
+    ['an HTML comment', (meta: string) => `<!-- ${meta} -->`],
+    ['template contents', (meta: string) => `<template>${meta}</template>`]
+  ] as const) {
+    test(`detects a meta policy in ${placement} on a headerless host`, async ({ page }) => {
+      test.skip(!productionBuildUrl, 'Needs ADM_PRODUCTION_BUILD_URL')
+
+      await page.route(productionBuildUrl!, async (route) => {
+        const response = await route.fetch()
+        const body = (await response.text()).replace(
+          /<meta http-equiv="Content-Security-Policy"[^>]*>/i,
+          hide
+        )
+
+        expect(response.headers()['content-security-policy']).toBeUndefined()
+        await route.fulfill({ response, body })
+      })
+
+      const collectProblems = await openLoginScreen(page, productionBuildUrl!)
+
+      await expect(page.locator('input[autocomplete="current-password"]')).toBeVisible()
+      expect(await collectProblems()).toEqual([])
+      expect(await probeEnforcement(page)).toEqual([
+        'an injected inline script ran: no CSP is enforced'
+      ])
+    })
+  }
 })

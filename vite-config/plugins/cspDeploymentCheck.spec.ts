@@ -278,8 +278,67 @@ describe('checkDeployment', () => {
       const html = pageHtml().replace(/<meta http-equiv="Content-Security-Policy"[^>]+>/, '')
 
       expect(await checkDeployment(production, deployment({ html }))).toEqual([
-        'has no CSP meta policy'
+        'has no active CSP meta policy in the document head'
       ])
+    })
+
+    // HTML only installs a policy from an active meta element in <head>; matching text elsewhere
+    // is never enforced, so these pages run without a policy on a static host.
+    it.each([
+      ['inside an HTML comment', (meta: string) => ({ head: `<!-- ${meta} -->`, body: '' })],
+      [
+        'inside template contents',
+        (meta: string) => ({ head: `<template>${meta}</template>`, body: '' })
+      ],
+      ['in the body', (meta: string) => ({ head: '', body: meta })]
+    ])('rejects a policy %s', async (_label, place) => {
+      const html = pageHtml().replace(
+        /(<meta http-equiv="Content-Security-Policy"[^>]+>)(.*<\/head><body>)/,
+        (_match, meta: string, between: string) => {
+          const { head, body } = place(meta)
+
+          return `${head}${between}${body}`
+        }
+      )
+
+      expect(await checkDeployment(staticHost, deployment({ html }))).toEqual([
+        'has no active CSP meta policy in the document head'
+      ])
+    })
+
+    it('rejects a meta element with an empty policy', async () => {
+      const html = pageHtml().replace(/content="[^"]+"/, 'content=" "')
+
+      expect(await checkDeployment(staticHost, deployment({ html }))).toEqual([
+        'has no active CSP meta policy in the document head'
+      ])
+    })
+
+    it('rejects a policy that comes after a script', async () => {
+      const html = pageHtml().replace('<head>', '<head><script src="/early.js"></script>')
+
+      expect(await checkDeployment(staticHost, deployment({ html }))).toEqual([
+        'CSP meta policy comes after <script /early.js>, which it does not cover'
+      ])
+    })
+
+    it('accepts an active meta element regardless of attribute case and order', async () => {
+      const policy = PWA_CONTENT_SECURITY_POLICY.replace(/'/g, '&#39;')
+      const html = pageHtml().replace(
+        /<meta http-equiv="Content-Security-Policy"[^>]+>/,
+        `<META CONTENT="${policy}" HTTP-EQUIV="content-security-policy">`
+      )
+
+      expect(await checkDeployment(staticHost, deployment({ html }))).toEqual([])
+    })
+
+    it('ignores module scripts in inert markup', async () => {
+      const html = pageHtml().replace(
+        '</body>',
+        '<template><script type="module" src="/assets/missing.js"></script></template></body>'
+      )
+
+      expect(await checkDeployment(staticHost, deployment({ html }))).toEqual([])
     })
 
     it('rejects a meta policy that allows JavaScript evaluation', async () => {
