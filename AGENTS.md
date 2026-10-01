@@ -294,9 +294,11 @@ are not recoverable.
 `src/lib/live-xss-pipeline.env.spec.ts` is the reference for the read-first pattern: it reads the
 chat, and sends only the payloads that are not on chain yet.
 
-`ADM_LIVE_DEPLOYMENTS=1` enables `vite-config/plugins/cspDeployments.env.spec.ts`, a read-only
-check of the CSP on every public deployment. Run it after changing CSP or security headers and after
-those changes reach the deployed hosts.
+`ADM_LIVE_DEPLOYMENTS=1` enables `vite-config/plugins/cspDeployments.env.spec.ts` and
+`tests/e2e/production-csp.live.spec.ts`, read-only checks of the CSP, the shared security headers,
+and the login screen on every public deployment. Run them after changing CSP or security headers
+and after those changes reach the deployed hosts. `ADM_PRODUCTION_BUILD_URL` runs the browser check
+against a local production preview.
 
 ### Playwright route notes
 

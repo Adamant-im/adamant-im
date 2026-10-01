@@ -261,16 +261,34 @@ instead of adding `unsafe-eval`.
 
 #### Verifying deployed CSP
 
-`vite-config/plugins/cspDeployments.env.spec.ts` checks the public deployment matrix. It only reads
-public pages and scripts, but it depends on third-party hosts, so it is opt-in:
+The deployment matrix lives in `vite-config/plugins/cspDeploymentCheck.ts`. For every target the
+check requires:
+
+- An HTML entry document with the strict meta policy
+- Module scripts served with a JavaScript MIME type and without `eval` or `Function` constructors. An SPA fallback that answers a missing module with `index.html` fails the check
+- On hosts that send headers, the shared header set from `PWA_SECURITY_HEADERS` and a header policy that matches the build's meta policy plus `frame-ancestors 'none'`
+- CSP reporting only where it is intended: `report-uri` to the same-origin `/api/csp-report` on reporting hosts, no reporting directives or reporting headers anywhere else
+
+`cspDeploymentCheck.spec.ts` covers these rules without a network. The live checks only read public
+pages, but they depend on third-party hosts, so they are opt-in:
 
 ```bash
 ADM_LIVE_DEPLOYMENTS=1 npm run test -- --run vite-config/plugins/cspDeployments.env.spec.ts
+ADM_LIVE_DEPLOYMENTS=1 npm run test:e2e -- tests/e2e/production-csp.live.spec.ts
 ```
 
-For every target it requires the strict meta policy, a matching header policy on hosts that send
-headers, and module scripts without `eval` or `Function` constructors. Onion services need Tor, so
-check them from a Tor-enabled host:
+The Playwright check opens every target in Chromium and requires the login screen without module
+loading errors or CSP violations. A host that injects its own content, such as a Massa DeWeb
+provider label, declares the violations it causes in `expectedViolations`; any other violation
+fails. To run the same browser check against a local production build:
+
+```bash
+npm run build
+npx vite preview --config vite-pwa.config.ts --host 127.0.0.1 --port 4174
+ADM_PRODUCTION_BUILD_URL=http://127.0.0.1:4174/ npm run test:e2e -- tests/e2e/production-csp.live.spec.ts
+```
+
+Onion services need Tor, so check them from a Tor-enabled host:
 
 ```bash
 curl --socks5-hostname 127.0.0.1:9050 -sS -D - -o /dev/null http://<onion-address>/
