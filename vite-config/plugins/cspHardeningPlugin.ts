@@ -2,7 +2,8 @@ import type { Plugin } from 'vite'
 
 export const PWA_CONTENT_SECURITY_POLICY = [
   // `frame-ancestors` is intentionally absent: browsers ignore it in meta-delivered policies.
-  // Hosting targets that support response headers must enforce it there, as Vercel and Electron do.
+  // Hosting targets that support response headers must enforce it there, as Vercel, the nginx
+  // snippet in `deploy/nginx`, and Electron do.
   `default-src 'self'`,
   `base-uri 'self'`,
   `object-src 'none'`,
@@ -18,6 +19,22 @@ export const PWA_CONTENT_SECURITY_POLICY = [
   `manifest-src 'self'`,
   `form-action 'self'`
 ].join('; ')
+
+// Response-header copy of the meta policy. Header-capable hosts must send exactly this policy:
+// browsers enforce every delivered policy, so a stale header narrows the build's meta policy.
+export const PWA_HEADER_CONTENT_SECURITY_POLICY = `${PWA_CONTENT_SECURITY_POLICY}; frame-ancestors 'none'`
+
+// Response headers shared by Vercel (`vercel.json`) and self-hosted nginx
+// (`deploy/nginx/security-headers.conf`). Contract tests keep both copies identical to this map.
+export const PWA_SECURITY_HEADERS: Readonly<Record<string, string>> = {
+  'Content-Security-Policy': PWA_HEADER_CONTENT_SECURITY_POLICY,
+  'X-Frame-Options': 'DENY',
+  'X-Content-Type-Options': 'nosniff',
+  // The router uses history mode, so URLs carry chat partner addresses.
+  'Referrer-Policy': 'no-referrer',
+  // Disables the legacy XSS auditor, which could be abused to leak page state.
+  'X-XSS-Protection': '0'
+}
 
 const ENGINE_IO_GLOBALS_MODULE = /\/engine\.io-client\/build\/esm(?:-debug)?\/globals\.js(?:\?|$)/
 const ENGINE_IO_GLOBAL_FALLBACK = /Function\((['"])return this\1\)\(\)/g

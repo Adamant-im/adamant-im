@@ -58,7 +58,7 @@ Mainnet app:
 - Server-side Tor auto-build: <http://adamant6457join2rxdkr2y7iqatar7n4n72lordxeknj435i4cjhpyd.onion> from `master`
 - Server-side Tor auto-build: <http://il2fcw65jrrv4au7mtuvodzfwtc6hje6r4ooz7yoqu2jl422b44iofyd.onion> from `dev`
 - Vercel auto-build: [dev.adamant.im](https://dev.adamant.im) from the `dev` branch on Vercel US
-- Massa DeWeb auto-build: [adm.massahub.network](https://adm.massahub.network) from `master`, hosted on the Massa blockchain
+- Massa DeWeb build: `adm.massa` from `master`, hosted on the Massa blockchain and deployed manually with the `Massa DeWeb` workflow. Public DeWeb providers serve it at [adm.deweb.half-red.net](https://adm.deweb.half-red.net)
 - GitHub Actions auto-build can also be configured by any user for their own `master` deployment
 
 Testnet app:
@@ -96,6 +96,15 @@ Follow the instructions below.
 6. Open ADAMANT Messenger at `username.github.io/adamant-im`
 
 You can as well point your GitHub Pages subdomain to a [custom domain](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site).
+
+### Serve with nginx
+
+To serve your own build from a server, use the files in [`deploy/nginx`](deploy/nginx):
+
+- `security-headers.conf` holds the response headers, including the Content Security Policy, that every ADAMANT deployment sends
+- `pwa-site.conf.example` shows a clearnet HTTPS site and a loopback-only onion service backend that use it
+
+Reinstall `security-headers.conf` whenever it changes. Browsers enforce both the header policy and the policy inside the build, so an outdated header can block features of a newer build.
 
 ## Security and Privacy Notes
 

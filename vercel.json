@@ -1,5 +1,47 @@
 {
+  "git": {
+    "deploymentEnabled": {
+      "gh-pages": false
+    }
+  },
   "headers": [
+    {
+      "source": "/(.*)",
+      "missing": [
+        {
+          "type": "host",
+          "value": "dev.adamant.im"
+        },
+        {
+          "type": "host",
+          "value": {
+            "suf": "adamant-team.vercel.app"
+          }
+        }
+      ],
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' data: 'unsafe-inline'; img-src 'self' data: blob: http: https:; media-src 'self' data: blob: http: https:; font-src 'self' data:; connect-src 'self' http: https: ws: wss: blob:; worker-src 'self' blob:; manifest-src 'self'; form-action 'self'; frame-ancestors 'none'"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "0"
+        }
+      ]
+    },
     {
       "source": "/(.*)",
       "has": [
@@ -11,7 +53,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; frame-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' data: 'unsafe-inline'; img-src 'self' data: blob: http: https:; media-src 'self' data: blob: http: https:; font-src 'self' data:; connect-src 'self' http: https: ws: wss: blob:; worker-src 'self' blob:; manifest-src 'self'; form-action 'self'; report-uri /api/csp-report;"
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' data: 'unsafe-inline'; img-src 'self' data: blob: http: https:; media-src 'self' data: blob: http: https:; font-src 'self' data:; connect-src 'self' http: https: ws: wss: blob:; worker-src 'self' blob:; manifest-src 'self'; form-action 'self'; frame-ancestors 'none'; report-uri /api/csp-report"
         },
         {
           "key": "X-Frame-Options",
@@ -22,8 +64,12 @@
           "value": "nosniff"
         },
         {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        },
+        {
           "key": "X-XSS-Protection",
-          "value": "1"
+          "value": "0"
         }
       ]
     },
@@ -40,7 +86,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; frame-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' data: 'unsafe-inline'; img-src 'self' data: blob: http: https:; media-src 'self' data: blob: http: https:; font-src 'self' data:; connect-src 'self' http: https: ws: wss: blob:; worker-src 'self' blob:; manifest-src 'self'; form-action 'self'; report-uri /api/csp-report;"
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' data: 'unsafe-inline'; img-src 'self' data: blob: http: https:; media-src 'self' data: blob: http: https:; font-src 'self' data:; connect-src 'self' http: https: ws: wss: blob:; worker-src 'self' blob:; manifest-src 'self'; form-action 'self'; frame-ancestors 'none'; report-uri /api/csp-report"
         },
         {
           "key": "X-Frame-Options",
@@ -51,8 +97,12 @@
           "value": "nosniff"
         },
         {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        },
+        {
           "key": "X-XSS-Protection",
-          "value": "1"
+          "value": "0"
         }
       ]
     }
