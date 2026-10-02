@@ -2,7 +2,7 @@
 
 import { describe, expect, it } from 'vitest'
 
-import { CSP_REPORT_PATH, checkDeployment, type FetchLike } from './cspDeploymentCheck'
+import { CSP_REPORT_PATH, checkDeployment, parsePolicy, type FetchLike } from './cspDeploymentCheck'
 import {
   PWA_CONTENT_SECURITY_POLICY,
   PWA_HEADER_CONTENT_SECURITY_POLICY,
@@ -113,6 +113,25 @@ describe('checkDeployment', () => {
       ])
     })
 
+    it('checks a module script whose type differs in case and whitespace', async () => {
+      const html = pageHtml().replace('type="module"', 'type=" Module "')
+      const routes = { [ENTRY_URL]: { headers: { 'Content-Type': 'text/html' }, body: pageHtml() } }
+
+      expect(await checkDeployment(production, deployment({ html, routes }))).toEqual([
+        `${ENTRY_URL} is served as "text/html", not JavaScript`
+      ])
+    })
+
+    it('rejects a JavaScript MIME type followed by a no-break space', async () => {
+      const routes = {
+        [ENTRY_URL]: { headers: { 'Content-Type': 'text/javascript\u00a0' }, body: 'export {}' }
+      }
+
+      expect(await checkDeployment(production, deployment({ routes }))).toEqual([
+        `${ENTRY_URL} is served as "text/javascript\u00a0", not JavaScript`
+      ])
+    })
+
     it('rejects JavaScript string evaluation', async () => {
       const routes = {
         [ENTRY_URL]: { headers: { 'Content-Type': 'text/javascript' }, body: 'eval(input)' }
@@ -182,6 +201,20 @@ describe('checkDeployment', () => {
 
       expect(await checkDeployment(production, deployment({ headers }))).toEqual([
         'sends 2 enforced CSP policies instead of one'
+      ])
+    })
+
+    it('rejects a framing directive that browsers ignore for a no-break space', async () => {
+      const headers = pageHeaders({
+        'Content-Security-Policy': PWA_HEADER_CONTENT_SECURITY_POLICY.replace(
+          `frame-ancestors 'none'`,
+          `frame-ancestors\u00a0'none'`
+        )
+      })
+
+      expect(await checkDeployment(production, deployment({ headers }))).toEqual([
+        `header policy has a directive browsers ignore for non-ASCII characters: "frame-ancestors\\u00a0'none'"`,
+        'header policy is missing frame-ancestors'
       ])
     })
 
@@ -306,12 +339,59 @@ describe('checkDeployment', () => {
       ])
     })
 
-    it('rejects a meta element with an empty policy', async () => {
-      const html = pageHtml().replace(/content="[^"]+"/, 'content=" "')
+    it.each([' Content-Security-Policy', 'Content-Security-Policy ', '\tContent-Security-Policy'])(
+      'rejects an http-equiv value with surrounding whitespace: %j',
+      async (httpEquiv) => {
+        const html = pageHtml().replace(
+          'http-equiv="Content-Security-Policy"',
+          `http-equiv="${httpEquiv}"`
+        )
+
+        expect(await checkDeployment(staticHost, deployment({ html }))).toEqual([
+          'has no active CSP meta policy in the document head'
+        ])
+      }
+    )
+
+    it('rejects a meta element with an empty content attribute', async () => {
+      const html = pageHtml().replace(/content="[^"]+"/, 'content=""')
 
       expect(await checkDeployment(staticHost, deployment({ html }))).toEqual([
         'has no active CSP meta policy in the document head'
       ])
+    })
+
+    it('treats a blank content attribute as a policy without directives', async () => {
+      const html = pageHtml().replace(/content="[^"]+"/, 'content=" "')
+      const baseline = [...parsePolicy(PWA_CONTENT_SECURITY_POLICY).directives.keys()]
+
+      expect(await checkDeployment(staticHost, deployment({ html }))).toEqual(
+        baseline.map((name) => `meta policy is missing ${name}`)
+      )
+    })
+
+    // Browsers split policies on ASCII whitespace only and skip a directive that contains any
+    // other character, so a no-break space silently removes the directive.
+    it.each([
+      ['a no-break space', '\u00a0', '\\u00a0'],
+      ['an em space', '\u2003', '\\u2003']
+    ])('rejects a meta directive separated by %s', async (_label, space, escaped) => {
+      const html = pageHtml(
+        PWA_CONTENT_SECURITY_POLICY.replace(`object-src 'none'`, `object-src${space}'none'`)
+      )
+
+      expect(await checkDeployment(staticHost, deployment({ html }))).toEqual([
+        `meta policy has a directive browsers ignore for non-ASCII characters: "object-src${escaped}'none'"`,
+        'meta policy is missing object-src'
+      ])
+    })
+
+    it('accepts ASCII whitespace inside directives', async () => {
+      const html = pageHtml(
+        PWA_CONTENT_SECURITY_POLICY.replace(`object-src 'none'`, `object-src\t\t'none'`)
+      )
+
+      expect(await checkDeployment(staticHost, deployment({ html }))).toEqual([])
     })
 
     it('rejects a policy that comes after a script', async () => {

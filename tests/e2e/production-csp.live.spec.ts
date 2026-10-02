@@ -138,11 +138,16 @@ test.describe('Production build CSP smoke', () => {
       .toContain('CSP violation: script-src-elem https://example.com/injected.js')
   })
 
-  // The browser never installs a policy from a comment or from template contents. Without a
-  // header there is then no policy at all, so only the enforcement probe can notice.
+  // The browser never installs a policy from a comment, from template contents, or from a meta
+  // element whose http-equiv value is padded. Without a header there is then no policy at all, so
+  // only the enforcement probe can notice.
   for (const [placement, hide] of [
     ['an HTML comment', (meta: string) => `<!-- ${meta} -->`],
-    ['template contents', (meta: string) => `<template>${meta}</template>`]
+    ['template contents', (meta: string) => `<template>${meta}</template>`],
+    [
+      'an element whose http-equiv value has a leading space',
+      (meta: string) => meta.replace('http-equiv="', 'http-equiv=" ')
+    ]
   ] as const) {
     test(`detects a meta policy in ${placement} on a headerless host`, async ({ page }) => {
       test.skip(!productionBuildUrl, 'Needs ADM_PRODUCTION_BUILD_URL')

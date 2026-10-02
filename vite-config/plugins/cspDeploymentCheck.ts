@@ -53,7 +53,8 @@ export type FetchLike = (url: string) => Promise<FetchResponse>
 const REQUEST_TIMEOUT_MS = 30_000
 const REPORTING_DIRECTIVES = new Set(['report-uri', 'report-to'])
 const REPORTING_HEADERS = ['Report-To', 'Reporting-Endpoints']
-const JAVASCRIPT_MIME = /^(?:text|application)\/(?:x-)?(?:javascript|ecmascript)\s*(?:;|$)/i
+// Parameters after the essence are separated by optional HTTP whitespace, which is not `\s`.
+const JAVASCRIPT_MIME = /^(?:text|application)\/(?:x-)?(?:javascript|ecmascript)[\t\n\r ]*(?:;|$)/i
 
 const defaultFetch: FetchLike = (url) =>
   fetch(url, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) })
@@ -76,12 +77,32 @@ function* elements(node: DefaultTreeAdapterTypes.ParentNode): Generator<Element>
   }
 }
 
+// HTML and CSP compare keywords ASCII case-insensitively and separate tokens with ASCII whitespace
+// only. JavaScript's `trim()` and `\s` also accept other spaces, such as a no-break space, which
+// browsers treat as ordinary characters.
+const ASCII_WHITESPACE = /[\t\n\f\r ]+/
+const asciiLowercase = (value: string) => value.replace(/[A-Z]/g, (char) => char.toLowerCase())
+const stripAsciiWhitespace = (value: string) => value.replace(/^[\t\n\f\r ]+|[\t\n\f\r ]+$/g, '')
+const isAscii = (value: string) => [...value].every((char) => char.charCodeAt(0) <= 0x7f)
+const escapeNonAscii = (value: string) =>
+  value.replace(/[^\x20-\x7e]/g, (char) => `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`)
+
+// The enumerated value is matched without stripping whitespace: Chromium ignores
+// `http-equiv=" Content-Security-Policy"`.
 const isCspMeta = (element: Element) =>
   element.tagName === 'meta' &&
-  attribute(element, 'http-equiv')?.trim().toLowerCase() === 'content-security-policy'
+  asciiLowercase(attribute(element, 'http-equiv') ?? '') === 'content-security-policy'
+
+// Matches every type that some browser runs as a module: the HTML standard strips ASCII whitespace
+// before an ASCII case-insensitive match, while Chromium only ignores case. Over-matching here can
+// only add checks, never hide a broken deployment.
+const isModuleScript = (element: Element) =>
+  asciiLowercase(stripAsciiWhitespace(attribute(element, 'type') ?? '')) === 'module'
 
 const linkRel = (element: Element) =>
-  element.tagName === 'link' ? (attribute(element, 'rel') ?? '').toLowerCase().split(/\s+/) : []
+  element.tagName === 'link'
+    ? asciiLowercase(attribute(element, 'rel') ?? '').split(ASCII_WHITESPACE)
+    : []
 
 // A meta policy only applies to what the parser reaches after it, so code and styles that come
 // first escape it.
@@ -113,8 +134,9 @@ function readDocument(html: string, pageUrl: string): DocumentStructure {
 
   for (const element of elements(parse(html))) {
     if (isCspMeta(element)) {
-      const content = attribute(element, 'content')?.trim()
+      const content = attribute(element, 'content')
 
+      // Only a missing or empty `content` disables the element; a blank one installs an empty policy.
       if (content && element.parentNode?.nodeName === 'head') {
         structure.metaPolicies.push(content)
       }
@@ -128,7 +150,7 @@ function readDocument(html: string, pageUrl: string): DocumentStructure {
     const src = attribute(element, 'src')
     const href = attribute(element, 'href')
 
-    if (element.tagName === 'script' && attribute(element, 'type') === 'module' && src) {
+    if (element.tagName === 'script' && isModuleScript(element) && src) {
       structure.moduleScripts.push(new URL(src, pageUrl).href)
     } else if (linkRel(element).includes('modulepreload') && href) {
       structure.moduleScripts.push(new URL(href, pageUrl).href)
@@ -141,50 +163,65 @@ function readDocument(html: string, pageUrl: string): DocumentStructure {
 export type ParsedPolicy = {
   directives: Map<string, string>
   duplicates: string[]
+  // Directives that browsers skip because they contain non-ASCII characters.
+  ignored: string[]
 }
 
 /**
- * Parses one serialized policy the way browsers do: directive names are case-insensitive, and only
- * the first occurrence of a directive takes effect (CSP3, "parse a serialized CSP"). Later
- * occurrences are returned in `duplicates`.
+ * Parses one serialized policy the way browsers do (CSP3, "parse a serialized CSP"): tokens are
+ * stripped of ASCII whitespace, a token with any non-ASCII character is skipped, directive names
+ * are ASCII case-insensitive, and only the first occurrence of a directive takes effect. Skipped
+ * tokens and later occurrences are returned in `ignored` and `duplicates`.
  */
 export function parsePolicy(policy: string): ParsedPolicy {
-  const directives = new Map<string, string>()
-  const duplicates: string[] = []
+  const parsed: ParsedPolicy = { directives: new Map(), duplicates: [], ignored: [] }
 
-  for (const token of policy.split(';')) {
-    const [name, ...sources] = token.trim().split(/\s+/)
-    if (!name) continue
+  for (const rawToken of policy.split(';')) {
+    const token = stripAsciiWhitespace(rawToken)
+    if (!token) continue
 
-    const directive = name.toLowerCase()
-    if (directives.has(directive)) duplicates.push(directive)
-    else directives.set(directive, sources.join(' '))
+    if (!isAscii(token)) {
+      parsed.ignored.push(token)
+      continue
+    }
+
+    const [name, ...sources] = token.split(ASCII_WHITESPACE)
+    const directive = asciiLowercase(name)
+
+    if (parsed.directives.has(directive)) parsed.duplicates.push(directive)
+    else parsed.directives.set(directive, sources.join(' '))
   }
 
-  return { directives, duplicates }
+  return parsed
 }
 
 // A header value may carry several policies separated by commas; browsers enforce each of them.
 const parsePolicyList = (value: string) =>
   value
     .split(',')
-    .map((policy) => policy.trim())
-    .filter(Boolean)
+    .filter((policy) => stripAsciiWhitespace(policy))
     .map(parsePolicy)
 
 const META_BASELINE = parsePolicy(PWA_CONTENT_SECURITY_POLICY).directives
 const HEADER_BASELINE = parsePolicy(PWA_HEADER_CONTENT_SECURITY_POLICY).directives
 
-const normalizeSources = (sources: string) => sources.split(/\s+/).filter(Boolean).sort().join(' ')
+const normalizeSources = (sources: string) =>
+  sources.split(ASCII_WHITESPACE).filter(Boolean).sort().join(' ')
 
 /**
  * Compares a policy with the shared strict baseline directive by directive. Any added directive
  * counts, because one such as `script-src-elem` overrides `script-src` for script elements.
  */
 function diffPolicy(label: string, policy: ParsedPolicy, baseline: Map<string, string>) {
-  const problems = policy.duplicates.map(
-    (name) => `${label} repeats ${name}; browsers apply only its first occurrence`
-  )
+  const problems = [
+    ...policy.ignored.map(
+      (token) =>
+        `${label} has a directive browsers ignore for non-ASCII characters: "${escapeNonAscii(token)}"`
+    ),
+    ...policy.duplicates.map(
+      (name) => `${label} repeats ${name}; browsers apply only its first occurrence`
+    )
+  ]
 
   for (const [name, expected] of baseline) {
     const actual = policy.directives.get(name)
@@ -222,7 +259,9 @@ function checkReporting(target: DeploymentTarget, label: string, policy: ParsedP
 
   if (!target.reportsViolations) {
     problems.push(`${label} reports to "${reportUri}" on a host that must not report`)
-  } else if (reportUri.split(/\s+/).some((uri) => !isSameOriginReportEndpoint(uri, target.url))) {
+  } else if (
+    reportUri.split(ASCII_WHITESPACE).some((uri) => !isSameOriginReportEndpoint(uri, target.url))
+  ) {
     problems.push(
       `${label} reports to "${reportUri}" instead of the same-origin ${CSP_REPORT_PATH}`
     )
