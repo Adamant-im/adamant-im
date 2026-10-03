@@ -1,78 +1,72 @@
 <template>
-  <v-dialog
-    v-model="show"
-    width="var(--a-secondary-dialog-width)"
-    :class="className"
-    @keydown.enter="onEnter"
-  >
-    <v-card>
-      <v-card-title :class="`${className}__card-title`">
-        {{ $t('chats.new_chat') }}
-      </v-card-title>
+  <v-card :class="className">
+    <v-card-title :class="`${className}__card-title`">
+      {{ $t('chats.new_chat') }}
+    </v-card-title>
 
-      <v-divider class="a-divider" />
+    <v-divider class="a-divider" />
 
-      <v-row justify="center" align="center" gap="0" :class="`${className}__body`">
-        <v-text-field
-          ref="partnerField"
-          v-model="recipientAddress"
-          class="a-input"
-          variant="underlined"
-          color="primary"
-          :label="$t('chats.recipient')"
-          :title="$t('chats.recipient_tooltip')"
-          autofocus
-          @paste="onPasteURI"
-        >
-          <template #append-inner>
-            <v-menu :offset-overflow="true" :offset-y="false" left eager>
-              <template #activator="{ props }">
-                <v-icon
-                  v-bind="props"
-                  :class="`${className}__menu-activator`"
-                  :icon="mdiDotsVertical"
-                />
-              </template>
-              <v-list :class="`${className}__menu-list`">
-                <v-list-item :class="`${className}__menu-item`" @click="showQrcodeScanner = true">
-                  <v-list-item-title :class="`${className}__menu-item-title`">
-                    {{ $t('transfer.decode_from_camera') }}
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item :class="`${className}__menu-item`" link>
-                  <v-list-item-title :class="`${className}__menu-item-title`">
-                    <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
-                      <span>{{ $t('transfer.decode_from_image') }}</span>
-                    </qrcode-capture>
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </template>
-        </v-text-field>
+    <v-row justify="center" align="center" gap="0" :class="`${className}__body`">
+      <v-text-field
+        ref="partnerField"
+        v-model="recipientAddress"
+        class="a-input"
+        variant="underlined"
+        color="primary"
+        :label="$t('chats.recipient')"
+        :title="$t('chats.recipient_tooltip')"
+        autofocus
+        @paste="onPasteURI"
+        @keydown.enter="onEnter"
+      >
+        <template #append-inner>
+          <v-menu :offset-overflow="true" :offset-y="false" left eager>
+            <template #activator="{ props }">
+              <v-icon
+                v-bind="props"
+                :class="`${className}__menu-activator`"
+                :icon="mdiDotsVertical"
+              />
+            </template>
+            <v-list :class="`${className}__menu-list`">
+              <v-list-item :class="`${className}__menu-item`" @click="showQrcodeScanner = true">
+                <v-list-item-title :class="`${className}__menu-item-title`">
+                  {{ $t('transfer.decode_from_camera') }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item :class="`${className}__menu-item`" link>
+                <v-list-item-title :class="`${className}__menu-item-title`">
+                  <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
+                    <span>{{ $t('transfer.decode_from_image') }}</span>
+                  </qrcode-capture>
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </template>
+      </v-text-field>
 
-        <v-col cols="12" :class="`${className}__actions`">
-          <v-btn :class="[`${className}__btn-start-chat`, 'a-btn-primary']" @click="startChat">
-            {{ $t('chats.start_chat') }}
-          </v-btn>
-        </v-col>
+      <v-col cols="12" :class="`${className}__actions`">
+        <v-btn :class="[`${className}__btn-start-chat`, 'a-btn-primary']" @click="startChat">
+          {{ $t('chats.start_chat') }}
+        </v-btn>
+      </v-col>
 
-        <v-col cols="12" :class="`${className}__btn-show-qrcode`">
-          <a :class="`${className}__link`" @click="showQrcodeRendererDialog = true">
-            {{ $t('chats.show_my_qr_code') }}
-          </a>
-        </v-col>
-      </v-row>
-    </v-card>
+      <v-col cols="12" :class="`${className}__btn-show-qrcode`">
+        <a :class="`${className}__link`" @click="showQrcodeRendererDialog = true">
+          {{ $t('chats.show_my_qr_code') }}
+        </a>
+      </v-col>
+    </v-row>
+  </v-card>
 
-    <qrcode-scanner-dialog
-      v-if="showQrcodeScanner"
-      v-model="showQrcodeScanner"
-      @scan="onScanQrcode"
-    />
+  <qrcode-scanner-dialog
+    v-if="showQrcodeScanner"
+    v-model="showQrcodeScanner"
+    @scan="onScanQrcode"
+  />
 
-    <qrcode-renderer-dialog v-model="showQrcodeRendererDialog" :text="uri" logo />
-  </v-dialog>
+  <qrcode-renderer-dialog v-model="showQrcodeRendererDialog" :text="uri" logo />
 </template>
 
 <script>
@@ -88,6 +82,10 @@ import partnerName from '@/mixins/partnerName'
 import { mdiDotsVertical } from '@mdi/js'
 import { logger } from '@/utils/devTools/logger'
 
+/**
+ * Dialog content of the async modal system (see #915). Rendered by `Modals/Modal.vue`,
+ * it emits `close` with the chat to open and is mounted only while the modal is open.
+ */
 export default {
   components: {
     QrcodeCapture,
@@ -98,13 +96,9 @@ export default {
   props: {
     partnerId: {
       type: String
-    },
-    modelValue: {
-      type: Boolean,
-      required: true
     }
   },
-  emits: ['start-chat', 'error', 'update:modelValue'],
+  emits: ['close'],
   setup() {
     return {
       mdiDotsVertical
@@ -119,14 +113,6 @@ export default {
   }),
   computed: {
     className: () => 'chat-start-dialog',
-    show: {
-      get() {
-        return this.modelValue
-      },
-      set(value) {
-        this.$emit('update:modelValue', value)
-      }
-    },
     uri() {
       return generateURI(Cryptos.ADM, this.$store.state.address)
     }
@@ -134,14 +120,6 @@ export default {
   mounted() {
     if (this.partnerId) {
       this.recipientAddress = this.partnerId
-    }
-  },
-  watch: {
-    modelValue(newVal) {
-      if (!newVal) {
-        this.recipientAddress = ''
-        this.recipientName = ''
-      }
     }
   },
   methods: {
@@ -156,15 +134,12 @@ export default {
         return Promise.reject(new Error(this.$t('chats.incorrect_address')))
       }
 
-      this.$emit('start-chat', this.recipientAddress, this.uriMessage, this.recipientName, true)
-      this.closeDialog()
-    },
-
-    // Clear all values
-    closeDialog() {
-      this.$emit('update:modelValue', false)
-      this.recipientAddress = ''
-      this.recipientName = ''
+      this.$emit('close', {
+        partnerId: this.recipientAddress,
+        messageText: this.uriMessage,
+        partnerName: this.recipientName,
+        retrieveKey: true
+      })
     },
 
     /**
@@ -200,7 +175,9 @@ export default {
           e.preventDefault()
           this.getInfoFromURI(data)
         } else {
-          this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: 'ADM' }))
+          this.$store.dispatch('snackbar/show', {
+            message: this.$t('transfer.error_incorrect_address', { crypto: 'ADM' })
+          })
         }
       })
     },
@@ -231,7 +208,9 @@ export default {
         }
         this.startChat()
       } else {
-        this.$emit('error', this.$t('chats.incorrect_address', { crypto: Cryptos.ADM }))
+        this.$store.dispatch('snackbar/show', {
+          message: this.$t('chats.incorrect_address', { crypto: Cryptos.ADM })
+        })
       }
     },
     isValidUserAddress() {

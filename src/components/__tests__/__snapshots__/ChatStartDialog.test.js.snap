@@ -1,13 +1,12 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
-<v-dialog
-  class="chat-start-dialog"
-  data-v-50a3fb39=""
-  modelvalue="true"
-  width="var(--a-secondary-dialog-width)"
+<div
+  data-v-app=""
 >
+  
   <v-card
+    class="chat-start-dialog"
     data-v-50a3fb39=""
   >
     <v-card-title
@@ -118,5 +117,6 @@ exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
       </v-card-text>
     </v-card>
   </v-dialog>
-</v-dialog>
+  
+</div>
 `;

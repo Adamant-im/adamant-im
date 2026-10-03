@@ -85,9 +85,6 @@ describe('ChatStartDialog.vue', () => {
 
   it('renders the correct markup', () => {
     const wrapper = mount(ChatStartDialog, {
-      propsData: {
-        modelValue: true
-      },
       global: {
         plugins: [store, i18n]
       }
@@ -96,10 +93,10 @@ describe('ChatStartDialog.vue', () => {
     expect(wrapper.element).toMatchSnapshot()
   })
 
-  it('should display dialog when :value = true', () => {
+  it('should prefill the recipient address from the partnerId prop', async () => {
     const wrapper = mount(ChatStartDialog, {
-      propsData: {
-        modelValue: true
+      props: {
+        partnerId: 'U123456'
       },
       global: {
         stubs: {
@@ -109,29 +106,12 @@ describe('ChatStartDialog.vue', () => {
       }
     })
 
-    expect(wrapper.vm.show).toBe(true)
-  })
-
-  it('should hide dialog when :value = false', () => {
-    const wrapper = mount(ChatStartDialog, {
-      shallow: true,
-      propsData: {
-        modelValue: false
-      },
-      global: {
-        plugins: [store, i18n]
-      }
-    })
-
-    expect(wrapper.vm.show).toBe(false)
+    expect(wrapper.vm.recipientAddress).toBe('U123456')
   })
 
   it('should show snackbar when invalid recipient address', async () => {
     const wrapper = mount(ChatStartDialog, {
       shallow: true,
-      propsData: {
-        modelValue: false
-      },
       global: {
         plugins: [store, i18n]
       }
@@ -146,12 +126,9 @@ describe('ChatStartDialog.vue', () => {
     expect(snackbar.actions.show).toHaveBeenCalled()
   })
 
-  it('should emit `start-chat` when valid recipient address', async () => {
+  it('should emit `close` with the chat to open when valid recipient address', async () => {
     const wrapper = mount(ChatStartDialog, {
       shallow: true,
-      propsData: {
-        modelValue: false
-      },
       global: {
         plugins: [store, i18n]
       }
@@ -160,7 +137,9 @@ describe('ChatStartDialog.vue', () => {
     wrapper.setData({ recipientAddress: 'U123456' }) // valid address
     await wrapper.vm.startChat()
 
-    expect(wrapper.emitted()['start-chat']).toBeTruthy()
-    expect(wrapper.emitted()['update:modelValue']).toEqual([[false]]) // should close dialog after
+    expect(wrapper.emitted()['close']).toBeTruthy()
+    expect(wrapper.emitted()['close']).toEqual([
+      [{ partnerId: 'U123456', messageText: '', partnerName: '', retrieveKey: true }]
+    ])
   })
 })
