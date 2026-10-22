@@ -19,7 +19,7 @@ const minimumValue = toSmallPrecision(Math.pow(10, 1 - significantDigits))
 
 export default function smartNumber(num: string | number, locale: string = 'en-US') {
   //smart numbers
-  const stringifiedNumber = String(num)
+  const stringifiedNumber = typeof num === 'number' ? new BigNumber(num).toFixed() : num
   const integerPart = Math.trunc(Number(num))
   const integerPartCount = String(integerPart).length
 
@@ -38,9 +38,7 @@ export default function smartNumber(num: string | number, locale: string = 'en-U
     BigNumber(toSmallPrecision(`0.${decimalPart}`)) <= minimumValue
   ) {
     const resultFullPart = toLocalCurrency(stringifiedNumber, locale, decimalOptions)
-    const modifiedDecimal = String(toSmallPrecision(`0.${decimalPart}`))
-      .split('.')
-      .pop()
+    const modifiedDecimal = toSmallPrecision(`0.${decimalPart}`).toFixed().split('.').pop()
     return `${resultFullPart.split('.')[0]}.${String(modifiedDecimal).replace('0000', '00…')}`
   }
 
