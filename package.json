@@ -159,7 +159,7 @@
     "autoprefixer": "^10.6.1",
     "cross-env": "^10.1.0",
     "dotenv": "^17.4.2",
-    "electron": "^44.4.1",
+    "electron": "^44.9.1",
     "electron-builder": "^26.16.1",
     "electron-devtools-installer": "^4.0.0",
     "eslint": "^10.10.0",
