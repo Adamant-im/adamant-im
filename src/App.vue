@@ -2,6 +2,7 @@
   <v-app :theme="themeName" class="application--linear-gradient">
     <UploadAttachmentExitPrompt />
     <warning-on-addresses-dialog v-model="showWarningOnAddressesDialog" />
+    <ModalsHost />
 
     <v-main>
       <router-view v-slot="{ Component }">
@@ -18,6 +19,7 @@
 import { computed, onBeforeUnmount, onMounted, getCurrentInstance, ref, watch } from 'vue'
 import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
 import UploadAttachmentExitPrompt from '@/components/UploadAttachmentExitPrompt.vue'
+import ModalsHost from '@/components/modals/ModalsHost.vue'
 import Notifications from '@/lib/notifications'
 import { ThemeName } from './plugins/vuetify'
 import { useStore } from 'vuex'
