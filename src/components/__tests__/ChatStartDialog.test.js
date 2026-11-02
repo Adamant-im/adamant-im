@@ -146,7 +146,7 @@ describe('ChatStartDialog.vue', () => {
     expect(snackbar.actions.show).toHaveBeenCalled()
   })
 
-  it('should emit `start-chat` when valid recipient address', async () => {
+  it('should emit `close` with the chat result when valid recipient address', async () => {
     const wrapper = mount(ChatStartDialog, {
       shallow: true,
       propsData: {
@@ -160,7 +160,9 @@ describe('ChatStartDialog.vue', () => {
     wrapper.setData({ recipientAddress: 'U123456' }) // valid address
     await wrapper.vm.startChat()
 
-    expect(wrapper.emitted()['start-chat']).toBeTruthy()
+    expect(wrapper.emitted().close).toEqual([
+      [{ partnerId: 'U123456', messageText: '', partnerName: '', retrieveKey: true }]
+    ])
     expect(wrapper.emitted()['update:modelValue']).toEqual([[false]]) // should close dialog after
   })
 })
