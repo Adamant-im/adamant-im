@@ -1,3 +1,4 @@
+import '@/lib/configureZod'
 import { createApp } from 'vue'
 import { VueQueryPlugin } from '@tanstack/vue-query'
 
@@ -6,21 +7,12 @@ import { router } from './router'
 import { pinia } from '@/plugins/pinia'
 import store from './store/index.js'
 import { i18n } from './i18n'
-import packageJSON from '../package.json'
 import { vuetify } from '@/plugins/vuetify'
 import { registerGlobalComponents } from './plugins/layout'
 import { longPressDirective } from '@/directives/longPress'
 import '@/assets/styles/app.scss'
 
-import 'dayjs/locale/de'
-import 'dayjs/locale/en'
-import 'dayjs/locale/fr'
-import 'dayjs/locale/it'
-import 'dayjs/locale/ru'
-
 const app = createApp(App)
-
-app.provide('appVersion', packageJSON.version)
 
 app.use(router)
 app.use(store)

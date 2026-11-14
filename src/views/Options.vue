@@ -188,14 +188,7 @@
         </v-col>
       </v-row>
       <v-row gap="0">
-        <button
-          type="button"
-          :class="`${className}__version_info`"
-          @click="onVersionClick"
-          data-test-id="version-info"
-        >
-          {{ t('options.version') }} {{ appVersion }}
-        </button>
+        <BuildInfo :class="`${className}__version_info`" allow-dev-mode-unlock />
       </v-row>
     </template>
   </navigation-wrapper>
@@ -215,6 +208,7 @@ import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import { resetPinia } from '@/plugins/pinia'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
+import BuildInfo from '@/components/BuildInfo.vue'
 import { sidebarLayoutKey } from '@/lib/constants'
 import { useChatStateStore } from '@/stores/modal-state'
 import { logger } from '@/utils/devTools/logger'
@@ -229,10 +223,8 @@ const theme = useTheme()
 const className = 'settings-view'
 const hasView = computed(() => route.matched.length > 2)
 
-const appVersion = inject('appVersion')
 const sidebarLayoutRef = inject<Ref>(sidebarLayoutKey)
 
-const tapCount = ref(0)
 const SETTINGS_STATE_RESET_KEY = 'resetSettingsView'
 const SETTINGS_STATE_FORCE_RESET_KEY = 'forceResetSettingsView'
 const SETTINGS_PATH_PREFIX = '/options'
@@ -311,6 +303,19 @@ const restoreSettingsViewState = async (path = route.path) => {
   const shouldReset = shouldResetSettingsViewState(path)
   const top = shouldReset ? 0 : store.getters['options/settingsScrollPosition'](path)
 
+  if (shouldReset || top <= 0) {
+    applySettingsScrollTop(0)
+    stopSettingsRestore()
+    activeSettingsScrollPath.value = path
+    store.commit('options/setSettingsScrollPosition', {
+      path,
+      top: 0
+    })
+    store.commit('options/setSettingsLastRoute', path)
+    isRestoringSettingsScroll.value = false
+    return
+  }
+
   applySettingsScrollTop(top)
   await waitForSettingsViewFrame()
   applySettingsScrollTop(top)
@@ -326,12 +331,6 @@ const restoreSettingsViewState = async (path = route.path) => {
     store.commit('options/setSettingsLastRoute', path)
     isRestoringSettingsScroll.value = false
   }
-
-  if (shouldReset || top <= 0) {
-    finalizeRestore(0)
-    return
-  }
-
   const restoreDeadline = window.performance.now() + 1500
   let stableFrames = 0
   let lastTop = -1
@@ -529,19 +528,6 @@ const logout = () => {
   }
 }
 
-const onVersionClick = () => {
-  tapCount.value++
-
-  if (tapCount.value >= 10) {
-    isDevModeEnabled.value = true
-
-    store.dispatch('snackbar/show', {
-      message: 'Dev screens enabled',
-      timeout: 3000
-    })
-  }
-}
-
 const navigateToSettingsChild = (path: string) => {
   saveSettingsViewState(route.path)
 
@@ -579,6 +565,7 @@ watch(
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_directional-icon.scss' as directionalIcon;
 @use '@/assets/styles/components/_text-content.scss' as textContent;
 @use '@/assets/styles/settings/_colors.scss';
 @use '@/assets/styles/themes/adamant/_mixins.scss';
@@ -602,10 +589,8 @@ watch(
     @include mixins.a-text-caption();
     padding-top: var(--a-settings-title-padding-top);
     margin-top: 0;
-    margin-left: calc(var(--a-settings-gutter) * -1);
-    margin-right: calc(var(--a-settings-gutter) * -1);
-    padding-left: var(--a-settings-gutter);
-    padding-right: var(--a-settings-gutter);
+    margin-inline: calc(var(--a-settings-gutter) * -1);
+    padding-inline: var(--a-settings-gutter);
   }
 
   &__title--first {
@@ -636,7 +621,7 @@ watch(
 
   &__version_info {
     @include mixins.a-text-explanation();
-    margin-left: auto;
+    margin-inline-start: auto;
     margin-top: var(--a-space-6);
     margin-bottom: var(--a-space-4);
     padding: 0;
@@ -668,12 +653,15 @@ watch(
     padding: 0;
   }
   .actions-list {
-    margin-left: calc(var(--a-settings-gutter) * -1);
-    margin-right: calc(var(--a-settings-gutter) * -1);
+    margin-inline: calc(var(--a-settings-gutter) * -1);
 
     :deep(.v-list-item) {
       padding-inline-start: var(--a-settings-gutter);
       padding-inline-end: var(--a-settings-gutter);
+    }
+
+    :deep(.v-list-item__append .v-icon) {
+      @include directionalIcon.a-directional-icon();
     }
 
     :deep(.v-list-item--density-default.v-list-item--one-line) {
@@ -686,7 +674,7 @@ watch(
     height: var(--a-control-size-lg);
   }
   :deep(.v-checkbox) {
-    margin-left: calc(var(--a-space-2) * -1);
+    margin-inline-start: calc(var(--a-space-2) * -1);
   }
 
   &__logout {

@@ -125,7 +125,7 @@ describe('Chats UI style contract', () => {
       'margin-inline-start: var(--a-chats-connection-spinner-offset-inline-start);'
     )
     expect(content).toContain('padding-inline-end: 0;')
-    expect(content).toContain('text-align: right;')
+    expect(content).toContain('text-align: end;')
     expect(content).toContain('__title-wrap')
     expect(content).toContain('justify-content: flex-end;')
     expect(content).toContain(':size="CHATS_CONNECTION_SPINNER_SIZE"')
@@ -184,10 +184,13 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('@include mixins.a-text-explanation-enlarged-bold();')
     expect(content).toContain('margin-bottom: var(--a-chat-brief-heading-gap);')
     expect(content).toContain('line-height: var(--a-chat-brief-subtitle-line-height);')
-    expect(content).toContain(':class="`${className}__status-icon`"')
+    expect(content).toContain('`${className}__status-icon--leading`')
+    expect(content).toContain('`${className}__status-icon--trailing`')
     expect(content).toContain('display: inline-flex;')
     expect(content).toContain('vertical-align: middle;')
     expect(content).toContain('transform: translateY(var(--a-chat-preview-status-icon-shift-y));')
+    expect(content).toContain('margin-inline-end: var(--a-space-1);')
+    expect(content).toContain('margin-inline-start: var(--a-space-1);')
 
     expect(content).not.toContain('size="15"')
     expect(content).not.toContain('const CHAT_PREVIEW_AVATAR_SIZE = 48')
@@ -241,7 +244,7 @@ describe('Chats UI style contract', () => {
     expect(content).toContain('.chat-avatar {')
     expect(content).toContain('CHAT_CONNECTION_SPINNER_SIZE')
     expect(content).toContain(':size="CHAT_CONNECTION_SPINNER_SIZE"')
-    expect(content).toContain('margin-right: var(--a-space-1);')
+    expect(content).toContain('margin-inline-end: var(--a-space-1);')
     expect(content).not.toMatch(/\.chat-avatar\s*\{[^}]*margin-right:\s*var\(--a-space-3\);/s)
   })
 

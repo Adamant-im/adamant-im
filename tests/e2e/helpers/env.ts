@@ -1,6 +1,12 @@
-import { readLiveEnv, warnMissingLiveEnv } from '../../shared/liveEnv'
+import { isCI, readLiveEnv, warnMissingLiveEnv } from '../../shared/liveEnv'
 
-export const testPassphrase = readLiveEnv('ADM_TEST_ACCOUNT_PK')
+const configuredPassphrase = readLiveEnv('ADM_TEST_ACCOUNT_PK')
+
+if (isCI && configuredPassphrase) {
+  throw new Error('Playwright account passphrases must not be available in CI')
+}
+
+export const testPassphrase = isCI ? undefined : configuredPassphrase
 
 warnMissingLiveEnv(
   'playwright',

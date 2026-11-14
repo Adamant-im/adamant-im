@@ -526,10 +526,8 @@ export function getTransaction(id, returnAsset = 0) {
  */
 export function getChats(from = 0, offset = 0, orderBy = 'desc') {
   const params = {
-    // returnAsset: 1,
-    // types: '0,8',
-    // inId: myAddress,
-    isIn: myAddress,
+    inId: myAddress,
+    includeDirectTransfers: 1,
     orderBy: `timestamp:${orderBy}`
   }
 
@@ -541,14 +539,16 @@ export function getChats(from = 0, offset = 0, orderBy = 'desc') {
     params.offset = offset
   }
 
-  // Doesn't return ADM direct transfer transactions, only messages and in-chat transfers
-  // https://github.com/Adamant-im/adamant/wiki/API-Specification#get-chat-transactions
-  return client.get('/api/chats/get/', params).then((response) => {
+  return client.get('/api/chats/get', params).then((response) => {
     const { count, transactions, nodeTimestamp } = response
     const fetchedCount = transactions.length
     const lastProcessedHeight = transactions[transactions.length - 1]?.height || 0
 
     const promises = transactions.filter(isChatTransactionVisible).map((transaction) => {
+      if (transaction.type === Transactions.SEND) {
+        return Promise.resolve(transaction)
+      }
+
       const isIncoming = isStringEqualCI(transaction.recipientId, myAddress)
       // The polling path accepts keys from the node just like the socket does, so it needs the
       // same binding check. Without it a compromised node could substitute its own key together
@@ -766,6 +766,7 @@ export function loginViaPassword(password, store) {
  */
 export async function getChatRooms(address, params) {
   const defaultParams = {
+    includeDirectTransfers: 1,
     orderBy: 'timestamp:desc',
     limit: 25,
     offset: 0
@@ -838,6 +839,7 @@ export async function getChatRooms(address, params) {
  */
 export async function getChatRoomMessages(address1, address2, paramsArg, recursive = false) {
   const defaultParams = {
+    includeDirectTransfers: 1,
     orderBy: 'timestamp:desc',
     limit: 25
   }
@@ -853,7 +855,7 @@ export async function getChatRoomMessages(address1, address2, paramsArg, recursi
 
   const loadMessages = async (offset) => {
     const { participants, messages } = await client.get(`/api/chatrooms/${address1}/${address2}`, {
-      ...defaultParams,
+      ...params,
       offset,
       limit
     })

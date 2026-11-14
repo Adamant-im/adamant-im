@@ -10,18 +10,20 @@
     :query-status="queryStatus"
     :transaction-status="transactionStatus"
     :additional-status="additionalStatus"
+    :inconsistent-status="inconsistentStatus"
     :crypto="crypto"
     @refetch-status="refetch"
   />
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+import { computed, defineComponent, PropType, toRef, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useTransactionAdditionalStatus } from './hooks/useTransactionAdditionalStatus'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useFindAdmTransaction } from './hooks/useFindAdmTransaction'
 import { useSyncChatTransferPendingStatus } from './hooks/useSyncChatTransferPendingStatus'
+import { useInconsistentStatus } from './hooks/useInconsistentStatus'
 import { useFormatADMAddress } from '@/hooks/address/useFormatADMAddress'
 import { useBlockHeight } from '@/hooks/queries/useBlockHeight'
 import { useAdmTransactionQuery } from '@/hooks/queries/transaction'
@@ -54,26 +56,67 @@ export default defineComponent({
       error,
       data: transaction,
       refetch
-    } = useAdmTransactionQuery(props.id, {
+    } = useAdmTransactionQuery(toRef(props, 'id'), {
       refetchOnMount: true
     })
+    const admTx = useFindAdmTransaction(toRef(props, 'id'))
+    const inconsistentStatus = useInconsistentStatus(transaction, props.crypto, admTx)
     const statusValue = computed<TransactionStatusType | undefined>(
-      () => (transaction.value as { status?: TransactionStatusType } | undefined)?.status
+      () =>
+        (transaction.value as { status?: TransactionStatusType } | undefined)?.status ||
+        admTx.value?.status
     )
     const additionalStatus = useTransactionAdditionalStatus(transaction, props.crypto)
-    const transactionStatus = useTransactionStatus(
+    const resolvedTransactionStatus = useTransactionStatus(
       isFetching,
       queryStatus,
       statusValue,
-      undefined,
+      inconsistentStatus,
       undefined,
       additionalStatus,
       isLoadingError,
       isRefetchError,
       error
     )
-    const admTx = useFindAdmTransaction(props.id)
-    useSyncChatTransferPendingStatus(props.crypto, props.id, admTx, isFetching, queryStatus)
+    const transactionStatus = computed(() =>
+      queryStatus.value === 'pending' && admTx.value
+        ? admTx.value.status
+        : resolvedTransactionStatus.value
+    )
+    useSyncChatTransferPendingStatus(
+      props.crypto,
+      toRef(props, 'id'),
+      admTx,
+      isFetching,
+      queryStatus
+    )
+
+    watch(
+      [queryStatus, transactionStatus, transaction],
+      ([resolvedQueryStatus, resolvedStatus, resolvedTransaction]) => {
+        const localTransaction = admTx.value
+
+        if (resolvedQueryStatus !== 'success' || !localTransaction || !resolvedTransaction?.id) {
+          return
+        }
+
+        const partnerId = getPartnerAddress(
+          localTransaction.senderId,
+          localTransaction.recipientId,
+          store.state.address
+        )
+
+        if (!partnerId) return
+
+        store.commit('chat/updateCryptoTransferMessage', {
+          partnerId,
+          hash: localTransaction.hash || localTransaction.id,
+          status: resolvedStatus,
+          confirmations: resolvedTransaction.confirmations
+        })
+      },
+      { immediate: true }
+    )
 
     const partnerAdmAddress = computed(() => {
       return transaction.value
@@ -85,8 +128,8 @@ export default defineComponent({
         : ''
     })
 
-    const senderId = computed(() => transaction.value?.senderId)
-    const recipientId = computed(() => transaction.value?.recipientId)
+    const senderId = computed(() => transaction.value?.senderId || '')
+    const recipientId = computed(() => transaction.value?.recipientId || '')
 
     const senderFormatted = useFormatADMAddress(senderId)
     const recipientFormatted = useFormatADMAddress(recipientId)
@@ -97,7 +140,11 @@ export default defineComponent({
       enabled: () => transactionStatus.value === 'CONFIRMED'
     })
     const confirmations = computed(() => {
-      if (!blockHeight.value || !transaction.value) return NaN
+      if (!transaction.value) return NaN
+      const restConfirmations = transaction.value.confirmations || 0
+      if (restConfirmations < 1 || !transaction.value.height || !blockHeight.value) {
+        return restConfirmations
+      }
 
       return Math.max(
         blockHeight.value - transaction.value.height + 1,
@@ -118,6 +165,7 @@ export default defineComponent({
       confirmations,
       queryStatus,
       transactionStatus,
+      inconsistentStatus,
       additionalStatus
     }
   }

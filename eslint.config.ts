@@ -65,7 +65,9 @@ export default defineConfig([
       'vue/no-v-html': 'error',
       'prettier/prettier': 'warn',
       'import-x/no-named-as-default': 'off',
-      'import-x/no-named-as-default-member': 'off'
+      'import-x/no-named-as-default-member': 'off',
+      // Vite plugins provide `virtual:` modules, such as the network configuration selected by mode
+      'import-x/no-unresolved': ['error', { ignore: ['^virtual:'] }]
     },
     settings: {
       'import-x/resolver-next': [

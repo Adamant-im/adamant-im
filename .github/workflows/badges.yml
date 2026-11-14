@@ -1,7 +1,12 @@
 name: Update Commits Badge
 
 on:
+  # The badge counts commits on all branches; refreshing it on main-branch pushes plus daily is
+  # enough, and every run adds a commit to gh-pages.
   push:
+    branches:
+      - dev
+      - master
   schedule:
     - cron: '17 2 * * *' # every day at 02:17 UTC
   workflow_dispatch: # manual run
@@ -33,6 +38,12 @@ jobs:
             "color": "$COLOR"
           }
           EOF
+
+      # gh-pages only holds badge data. Vercel deploys every branch of the project by default and
+      # reads this file from the pushed commit, so it would otherwise build each badge update.
+      - name: Disable Vercel deployments of the badge branch
+        run: |
+          echo '{ "git": { "deploymentEnabled": false } }' > .badges/vercel.json
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4

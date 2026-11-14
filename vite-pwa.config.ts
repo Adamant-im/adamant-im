@@ -4,6 +4,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl'
 
 import viteBaseConfig from './vite-base.config.ts'
 import { manifest } from './vite-config/manifest.ts'
+import { networkConfigPlugin } from './vite-config/plugins/networkConfigPlugin.ts'
 
 const useHttps = process.env.HTTPS === 'true'
 
@@ -11,6 +12,7 @@ export default mergeConfig(
   viteBaseConfig,
   defineConfig({
     plugins: [
+      networkConfigPlugin('pwa'),
       VitePWA({
         registerType: 'autoUpdate',
         srcDir: 'src',

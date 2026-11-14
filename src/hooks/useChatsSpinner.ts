@@ -1,7 +1,7 @@
 import { useStore } from 'vuex'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
-import { useNow } from '@vueuse/core'
+import { useIntervalFn, useNow } from '@vueuse/core'
 import Visibility from 'visibilityjs'
 
 export function shouldShowChatsSpinner(
@@ -14,7 +14,10 @@ export function shouldShowChatsSpinner(
 
 export function useChatsSpinner() {
   const store = useStore()
-  const { now, pause, resume } = useNow({ interval: 500, controls: true })
+  const { now, pause, resume } = useNow({
+    scheduler: (update) => useIntervalFn(update, 500),
+    controls: true
+  })
 
   const visibilityId = ref<number | boolean | null>(null)
 

@@ -47,12 +47,12 @@ export default {
 
   th.delegates-table-head__td {
     font-size: var(--a-delegates-table-head-font-size);
-    padding-left: 0;
-    padding-right: var(--a-delegates-table-head-padding-inline-end);
+    padding-inline-start: 0;
+    padding-inline-end: var(--a-delegates-table-head-padding-inline-end);
   }
 
   th.delegates-table-head__td--primary {
-    padding-left: var(--a-delegates-table-head-padding-inline-start-primary);
+    padding-inline-start: var(--a-delegates-table-head-padding-inline-start-primary);
   }
 }
 

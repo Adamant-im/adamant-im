@@ -1,14 +1,59 @@
 import socketClient from '@/lib/sockets'
 import { cacheVerifiedPublicKey, decodeChat, getPublicKey } from '@/lib/adamant-api'
+import { Transactions, TransactionStatus } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { logger } from '@/utils/devTools/logger'
 import { isChatTransactionVisible } from '@/lib/chat/helpers/isChatTransactionVisible'
 
 function subscribe(store) {
   socketClient.subscribe('newMessage', (transaction) => {
+    if (
+      !transaction?.id ||
+      ![Transactions.SEND, Transactions.CHAT_MESSAGE].includes(transaction.type)
+    )
+      return
     if (!isChatTransactionVisible(transaction)) return
+    if (transaction.type === Transactions.SEND && !(Number(transaction.amount) > 0)) return
 
-    const isIncoming = isStringEqualCI(transaction.recipientId, store.state.address)
+    const accountAddress = store.state.address
+    const isIncoming = isStringEqualCI(transaction.recipientId, accountAddress)
+    if (!isIncoming && !isStringEqualCI(transaction.senderId, accountAddress)) return
+    const isValueBearingTransaction = Number(transaction.amount) > 0
+    const asProvisionalTransaction = (decodedTransaction) =>
+      isValueBearingTransaction
+        ? {
+            ...decodedTransaction,
+            confirmations: 0,
+            height: 0,
+            status: TransactionStatus.REGISTERED
+          }
+        : decodedTransaction
+
+    const pushSocketTransaction = (decodedTransaction) => {
+      if (store.state.address !== accountAddress) return
+
+      // A delayed socket echo must not replace a REST result or the first-seen transfer fields.
+      // REST polling and the transaction query own reconciliation after initial delivery.
+      if (
+        Number(transaction.amount) > 0 &&
+        Object.values(store.state.chat.chats || {}).some((chat) =>
+          chat.messages?.some((message) => message.id === transaction.id)
+        )
+      ) {
+        return
+      }
+
+      store.dispatch('chat/pushNewMessages', [asProvisionalTransaction(decodedTransaction)])
+    }
+
+    if (transaction.type === Transactions.SEND) {
+      // Realtime value-bearing transactions are provisional in both directions. Show them
+      // immediately, but never trust socket-supplied confirmation metadata; REST reconciliation
+      // decides whether they become confirmed or invalid.
+      pushSocketTransaction(transaction)
+      return
+    }
+
     const counterpartyId = isIncoming ? transaction.senderId : transaction.recipientId
     const counterpartyPublicKey = isIncoming
       ? transaction.senderPublicKey
@@ -37,13 +82,11 @@ function subscribe(store) {
 
     resolveKey
       .then((publicKey) => {
-        const decoded = transaction.type === 0 ? transaction : decodeChat(transaction, publicKey)
+        const decoded = decodeChat(transaction, publicKey)
 
-        // All transactions we get via socket are shown in chats, including ADM direct transfers
-        // Currently, we don't update confirmations for direct transfers, see getChats() in adamant-api.js
-        // So we'll update confirmations in getTransactionStatus()
+        // Socket transactions are provisional; polling reconciles their confirmed state.
 
-        store.dispatch('chat/pushMessages', [decoded])
+        pushSocketTransaction(decoded)
       })
       .catch((error) => {
         logger.warn(
@@ -57,6 +100,8 @@ function subscribe(store) {
 export default (store) => {
   subscribe(store)
 
+  socketClient.setNodes(store.getters['nodes/adm'])
+  socketClient.setUseFastest(store.state.nodes.useFastestAdmNode)
   socketClient.setSocketEnabled(store.state.options.useSocketConnection)
 
   // open socket connection when chats are loaded
@@ -85,7 +130,7 @@ export default (store) => {
       socketClient.setNodes(store.getters['nodes/adm'])
     }
 
-    if (mutation.type === 'nodes/useFastest') {
+    if (mutation.type === 'nodes/useFastestAdmNode') {
       socketClient.setUseFastest(mutation.payload)
     }
   })

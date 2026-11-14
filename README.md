@@ -58,243 +58,13 @@ Mainnet app:
 - Server-side Tor auto-build: <http://adamant6457join2rxdkr2y7iqatar7n4n72lordxeknj435i4cjhpyd.onion> from `master`
 - Server-side Tor auto-build: <http://il2fcw65jrrv4au7mtuvodzfwtc6hje6r4ooz7yoqu2jl422b44iofyd.onion> from `dev`
 - Vercel auto-build: [dev.adamant.im](https://dev.adamant.im) from the `dev` branch on Vercel US
-- Massa DeWeb auto-build: [adm.massahub.network](https://adm.massahub.network) from `master`, hosted on the Massa blockchain
+- Massa DeWeb build: `adm.massa` from `master`, hosted on the Massa blockchain and deployed manually with the `Massa DeWeb` workflow. Public DeWeb providers serve it at [adm.deweb.half-red.net](https://adm.deweb.half-red.net)
 - GitHub Actions auto-build can also be configured by any user for their own `master` deployment
 
 Testnet app:
 
 - GitHub Actions auto-build in Surge: [msg-adamant-testnet.surge.sh](https://msg-adamant-testnet.surge.sh) from `master`, mirrored at <http://msg-testnet.adamant.im> (HTTP-only for the mirror)
 - GitHub Actions auto-build in Surge: [dev-adamant-testnet.surge.sh](https://dev-adamant-testnet.surge.sh) from `dev`, mirrored at <http://dev-testnet.adamant.im> (HTTP-only for the mirror)
-
-## Quick Start
-
-Recommended environment:
-
-- Node.js `>=24.15.0`
-- npm `>=12`
-
-Clone and run the app locally:
-
-```bash
-git clone --recursive https://github.com/Adamant-im/adamant-im.git
-cd adamant-im
-corepack enable npm
-npm install
-npm run dev
-```
-
-Start a local HTTPS dev server with hot reload:
-
-```bash
-npm run dev-https
-```
-
-`npm run https` is kept as a shortcut for the same flow.
-
-## Common Commands
-
-| Task                                    | Command                    |
-| --------------------------------------- | -------------------------- |
-| Start local development                 | `npm run dev`              |
-| Start local HTTPS development           | `npm run dev-https`        |
-| Start localnet development on `0.0.0.0` | `npm run dev:localnet`     |
-| Start testnet development               | `npm run dev:testnet`      |
-| Start Tor-mode development              | `npm run dev:tor`          |
-| Build production PWA                    | `npm run build`            |
-| Build testnet PWA                       | `npm run build:testnet`    |
-| Build Tor PWA                           | `npm run build:tor`        |
-| Preview production build                | `npm run serve`            |
-| Preview testnet build                   | `npm run serve:testnet`    |
-| Build Electron app                      | `npm run electron:build`   |
-| Run Electron in development             | `npm run electron:dev`     |
-| Preview Electron production build       | `npm run electron:serve`   |
-| Prepare Android build assets            | `npm run android:prebuild` |
-| Open Android Studio project             | `npm run android:open`     |
-| Run Android app on device/emulator      | `npm run android:run`      |
-
-### CSP hardening on Vercel builds
-
-Production builds inject a CSP meta policy that blocks JavaScript `eval` and `Function` constructors
-on every static hosting target. Vercel also delivers the same script policy as a response header.
-`wasm-unsafe-eval` remains narrowly enabled for the bundled secp256k1 WebAssembly module.
-
-The policy intentionally allows HTTP(S) and WebSocket connections, images, and media from arbitrary
-origins so user-configured and self-hosted nodes keep working. This is broader than a fixed ADAMANT
-domain allowlist, while script execution is substantially narrower. Static meta policies cannot
-enforce `frame-ancestors`. Deployments with response-header support must deny framing there; the
-Vercel and Electron targets enforce `frame-ancestors 'none'` and `X-Frame-Options: DENY`.
-
-The build fails if a generated JavaScript chunk contains a direct `eval` or a `Function`
-constructor. This gate scans reachable emitted chunks and direct lexical calls; runtime CSP remains
-the enforcement boundary for indirect forms. Keep runtime dependencies compatible with this gate
-instead of adding `unsafe-eval`.
-
-## Validation
-
-Baseline validation for non-trivial changes:
-
-```bash
-npm run lint
-npm run typecheck
-npm run test -- --run
-```
-
-Useful additional checks:
-
-```bash
-npm run build
-npm run test:e2e
-```
-
-When changes affect schema-driven artifacts:
-
-```bash
-npm run schema:generate
-npm run wallets:types:generate
-```
-
-## Playwright Smoke Checks
-
-Install Chromium for local e2e runs:
-
-```bash
-npm run test:e2e:install
-```
-
-Run the smoke suite:
-
-```bash
-npm run test:e2e
-```
-
-Tests explicitly marked with the `@long-running` tag are skipped by default. Use
-`longRunningTestTitle()` to mark tests whose observed runtime exceeds the configured threshold,
-then include them explicitly:
-
-```bash
-npm run test:e2e -- --perform-long-running
-```
-
-Change the threshold in
-`tests/e2e/helpers/longRunning.ts` (`LONG_RUNNING_TEST_THRESHOLD_MS = 40_000`) and reassess the
-tagged tests when updating it.
-
-Run with extended artifacts:
-
-```bash
-npm run test:e2e:detailed
-```
-
-Open the latest HTML report:
-
-```bash
-npm run test:e2e:report
-```
-
-## Desktop and Android Notes
-
-Run Electron locally:
-
-```bash
-npm run electron:dev
-```
-
-Force legacy Chrome extension-based Vue DevTools inside Electron:
-
-```bash
-ELECTRON_USE_CHROME_DEVTOOLS_EXTENSION=true npm run electron:dev
-```
-
-Keep DevTools open while suppressing noisy Chromium logs in terminal:
-
-```bash
-npm run electron:dev
-```
-
-Disable log suppression and show full Chromium/Electron internals:
-
-```bash
-ELECTRON_SUPPRESS_CHROMIUM_LOGS=false npm run electron:dev
-```
-
-Build Electron packages:
-
-```bash
-npm run electron:build
-```
-
-Build a macOS arm64 app and notarize it:
-
-```bash
-npm run electron:build:mac:arm64:notarize
-```
-
-Preview the Electron production build:
-
-```bash
-npm run electron:serve
-```
-
-### macOS signing and notarization (local/CI)
-
-For distributable macOS builds, use a valid `Developer ID Application` certificate and notarization.
-
-The notarization hook (`scripts/electron/notarize.cjs`) supports 3 auth strategies:
-
-1. Apple ID + app-specific password
-2. Keychain profile (`xcrun notarytool store-credentials`)
-3. App Store Connect API key
-
-Supported environment variables:
-
-```bash
-# Common
-APPLE_NOTARIZE=true
-
-# Strategy 1 (Apple ID)
-APPLE_ID=...
-APPLE_APP_SPECIFIC_PASSWORD=...
-APPLE_TEAM_ID=...
-
-# Strategy 2 (Keychain profile)
-APPLE_KEYCHAIN_PROFILE=...
-# optional
-APPLE_KEYCHAIN=...
-
-# Strategy 3 (App Store Connect API key)
-APPLE_API_KEY=/absolute/path/to/AuthKey_XXXXXXXXXX.p8
-APPLE_API_KEY_ID=XXXXXXXXXX
-# optional for team keys
-APPLE_API_ISSUER=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-```
-
-Local builds can store these variables in `electron-builder.env.local` or `electron-builder.env` and the hook will load them automatically.
-For Apple ID strategy, `APPLE_APP_PASSWORD` is also accepted as an alias for `APPLE_APP_SPECIFIC_PASSWORD`.
-
-Code-signing for `electron-builder`:
-
-```bash
-# local identity in Keychain
-CSC_NAME="Developer ID Application: <Company> (<TEAM_ID>)"
-
-# or CI/base64 P12
-CSC_LINK=...
-CSC_KEY_PASSWORD=...
-```
-
-Prepare and open Android project:
-
-```bash
-npm run android:prebuild
-npm run android:open
-```
-
-Build and sign Android app:
-
-```bash
-cp capacitor.env.example capacitor.env
-npm run android:build
-```
 
 ## Self-hosted
 
@@ -303,7 +73,7 @@ If you are unable to access [adm.im](https://adm.im) (e.g., due to censorship), 
 - Increase reliability and decentralization of the ADAMANT Messenger ecosystem
 - Help other users access the messenger in countries with strong Internet limitations
 
-We always encourage people to build it from source.
+We always encourage people to build it from source by following the [development setup](CONTRIBUTING.md#development-setup).
 
 As an option, you can build and deploy the app to GitHub Pages.
 
@@ -327,6 +97,15 @@ Follow the instructions below.
 
 You can as well point your GitHub Pages subdomain to a [custom domain](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site).
 
+### Serve with nginx
+
+To serve your own build from a server, use the files in [`deploy/nginx`](deploy/nginx):
+
+- `security-headers.conf` holds the response headers, including the Content Security Policy, that every ADAMANT deployment sends
+- `pwa-site.conf.example` shows a clearnet HTTPS site and a loopback-only onion service backend that use it
+
+Reinstall `security-headers.conf` whenever it changes. Browsers enforce both the header policy and the policy inside the build, so an outdated header can block features of a newer build.
+
 ## Security and Privacy Notes
 
 - Private keys are derived and stored client-side
@@ -337,13 +116,4 @@ You can as well point your GitHub Pages subdomain to a [custom domain](https://d
 ## Contributing
 
 Issues and pull requests are welcome.
-When contributing, prioritize security, privacy, decentralization, and compatibility with the existing ADAMANT protocol and user data.
-
-Before opening a substantial PR, it is helpful to run:
-
-```bash
-npm run lint
-npm run typecheck
-npm run test -- --run
-npm run build
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the development setup, commands, validation, wallet metadata and build modes, and desktop and Android packaging.

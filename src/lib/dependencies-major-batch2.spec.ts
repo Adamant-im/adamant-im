@@ -46,6 +46,10 @@ describe('major dependency batch 2 usage', () => {
     expect(typeof VUEJS_DEVTOOLS).toBe('object')
     expect(typeof VUEJS_DEVTOOLS.id).toBe('string')
     expect(VUEJS_DEVTOOLS.id.length).toBeGreaterThan(0)
+    expect(mainProcessSource).not.toMatch(
+      /^import\s+.*\s+from\s+['"]electron-devtools-installer['"]/m
+    )
+    expect(mainProcessSource).toContain("await import('electron-devtools-installer')")
     expect(mainProcessSource).toContain('installExtension(VUEJS_DEVTOOLS')
   })
 })

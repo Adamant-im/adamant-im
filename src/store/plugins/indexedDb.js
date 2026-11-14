@@ -3,8 +3,7 @@ import { Base64 } from 'js-base64'
 
 import { router } from '@/router'
 import { Modules, Chats, Security, clearDb } from '@/lib/idb'
-import { restoreState, modules } from '@/lib/idb/state'
-import { Cryptos } from '@/lib/constants'
+import { restoreState, modules, toPersistedModule } from '@/lib/idb/state'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { logger } from '@/utils/devTools/logger'
 import { loadPasswordKdfDescriptor } from '@/lib/idb/passwordKdf'
@@ -55,15 +54,7 @@ function createThrottles() {
   // throttle modules
   modules.forEach((module) => {
     throttles[module] = throttle(
-      ({ name, value }) => {
-        const clonedValue = { ...value }
-
-        if (Cryptos[name.toUpperCase()]) {
-          clonedValue.transactions = {}
-        }
-
-        return Modules.set({ name, value: clonedValue })
-      },
+      ({ name, value }) => Modules.set({ name, value: toPersistedModule(name, value) }),
       1,
       interval
     )

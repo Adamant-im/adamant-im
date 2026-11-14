@@ -4,6 +4,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import viteBaseConfig from './vite-base.config.ts'
 import { excludeScreenshotsPlugin } from './vite-config/plugins/excludeScreenshotsPlugin.ts'
+import { networkConfigPlugin } from './vite-config/plugins/networkConfigPlugin.ts'
 
 const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -41,6 +42,7 @@ export default mergeConfig(
       outDir: './dist-electron'
     },
     plugins: [
+      networkConfigPlugin('electron'),
       electron([
         {
           entry: 'src/electron/main.js',

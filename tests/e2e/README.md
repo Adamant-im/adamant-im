@@ -40,10 +40,13 @@ npm run test:e2e:report
 
 - Playwright is used as a development and CI quality gate only
 - It is not bundled into production artifacts
+- CI does not use account passphrases; account-gated tests are skipped there
+- CI disables automatic traces, screenshots, and videos and does not upload Playwright reports
 - Tests intentionally focus on stable, high-value checks to reduce flaky runs
 - Every run is stored under `playwright-report/YYYY-MM-DD HH:MM/`
 - If the same minute is reused, a numeric suffix is appended: `YYYY-MM-DD HH:MM (2)`
-- Default mode keeps only failure artifacts, detailed mode keeps artifacts for all tests
+- Local default mode keeps only failure artifacts, detailed mode keeps artifacts for all tests
+- Keep local reports private when running tests with a funded account
 - For transaction list routes like `/transactions/ADM` or `/transactions/DOGE`, open them through `Home -> Balance` for the target wallet
 - Do not use direct `page.goto('/transactions/:crypto')` for transaction list e2e flows because those routes can redirect to `/home`
 

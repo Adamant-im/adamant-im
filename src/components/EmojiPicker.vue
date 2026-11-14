@@ -21,6 +21,8 @@ import { useTheme } from '@/hooks/useTheme'
 import { ref, onBeforeUnmount, onMounted, nextTick, PropType } from 'vue'
 import axios from 'axios'
 import { Picker } from 'emoji-mart'
+import { useI18n } from 'vue-i18n'
+import { getEmojiPickerLocale } from '@/lib/emojiPickerLocale'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { logger } from '@/utils/devTools/logger'
 
@@ -48,6 +50,7 @@ const emit = defineEmits<{
 }>()
 
 const isMobile = useIsMobile()
+const { locale } = useI18n()
 const { isDarkTheme } = useTheme()
 const root = ref<HTMLElement | null>(null)
 const container = ref<HTMLElement>()
@@ -127,10 +130,14 @@ const updateAlignment = async () => {
 }
 
 onMounted(async () => {
-  const { data } = await axios.get(`${import.meta.env.BASE_URL}emojis/data.json`)
+  const [{ data }, pickerLocale] = await Promise.all([
+    axios.get(`${import.meta.env.BASE_URL}emojis/data.json`),
+    getEmojiPickerLocale(locale.value)
+  ])
 
   picker.value = new Picker({
     data,
+    ...pickerLocale,
     autoFocus: !isMobile.value, // disable autofocus on mobile devices
     dynamicWidth: true,
     navPosition: 'none',

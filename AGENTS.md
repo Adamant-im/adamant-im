@@ -50,7 +50,7 @@ This repository is a client application, so agent decisions must:
 
 Use these sources when implementing or reviewing changes:
 
-- This repository: `README.md`, current code, and passing tests
+- This repository: `README.md`, `CONTRIBUTING.md`, current code, and passing tests
 - About ADAMANT: Description and Details: <https://docs.google.com/document/d/e/2PACX-1vR_SndPoXvRvntay9Pn9A_xbI1n940GvSAENiU5SuYcznFT-6a7X0RqH50vCgJR-QmXPLe1s_1DRtl6/pub>
 - ADAMANT Node guidelines baseline: <https://github.com/Adamant-im/adamant/blob/dev/AGENTS.md>
 - Org-wide issue/label governance: <https://github.com/Adamant-im/.github>
@@ -177,8 +177,11 @@ Attachments and IPFS:
 Build and platform targets:
 
 - Base Vite config and browser polyfills: `vite-base.config.ts`
-- PWA web/tor builds: `vite-pwa.config.ts`, `src/config/production.json`, `src/config/tor.json`
+- PWA web/tor builds: `vite-pwa.config.ts`, `src/config/mainnet.json`, `src/config/tor.json`
 - Testnet build mode: `src/config/testnet.json`
+- Build mode to network configuration mapping and bundle gate: `vite-config/plugins/networkConfigPlugin.ts`
+- CSP meta policy, shared security headers, and the `eval` bundle gate: `vite-config/plugins/cspHardeningPlugin.ts`, mirrored by `vercel.json` and `deploy/nginx/*`
+- Wallet metadata generation and drift check: `scripts/wallets.mjs`, `scripts/wallets/*`
 - Electron packaging: `electron-vite.config.ts`, `src/electron/main.js`
 - Android pipeline: `vite-android.config.ts`, `capacitor.config.ts`, `scripts/capacitor/build-android.mjs`
 
@@ -291,6 +294,12 @@ are not recoverable.
 `src/lib/live-xss-pipeline.env.spec.ts` is the reference for the read-first pattern: it reads the
 chat, and sends only the payloads that are not on chain yet.
 
+`ADM_LIVE_DEPLOYMENTS=1` enables `vite-config/plugins/cspDeployments.env.spec.ts` and
+`tests/e2e/production-csp.live.spec.ts`, read-only checks of the CSP, the shared security headers,
+and the login screen on every public deployment. Run them after changing CSP or security headers
+and after those changes reach the deployed hosts. `ADM_PRODUCTION_BUILD_URL` runs the browser check
+against a local production preview.
+
 ### Playwright route notes
 
 - For transaction list screens like `/transactions/ADM` and `/transactions/DOGE`, do not navigate by direct URL in e2e tests
@@ -306,6 +315,7 @@ chat, and sends only the payloads that are not on chain yet.
 - Web PWA: `npm run build`
 - Testnet mode changes: `npm run build:testnet`
 - Tor mode changes: `npm run build:tor`
+- Wallet metadata, generator, or `src/config/*.json` changes: `npm run wallets:data:check`
 - Electron-related changes: `npm run electron:build` (or `npm run electron:dev` for local verification)
 - Android/Capacitor changes: at least `npm run android:prebuild`
 

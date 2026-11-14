@@ -3,7 +3,9 @@
     <crypto-icon :class="classes.cryptoIcon" :crypto="wallet.cryptoCurrency" size="medium" />
 
     <div :class="classes.content">
-      <div v-if="isBalanceValid && !isRefreshing">{{ formattedBalance }}</div>
+      <div v-if="isBalanceValid && !isRefreshing">
+        <bdi dir="ltr">{{ formattedBalance }}</bdi>
+      </div>
       <div v-else :class="classes.balanceLoading">
         <v-icon :icon="mdiDotsHorizontal" :size="WALLET_TAB_LOADING_ICON_SIZE" />
       </div>
@@ -25,7 +27,9 @@
         ]"
         :aria-hidden="!isRateLoaded"
       >
-        <span v-if="isRateLoaded">{{ wallet.rate }} {{ fiatCurrency }}</span>
+        <span v-if="isRateLoaded"
+          ><bdi dir="ltr">{{ wallet.rate }} {{ fiatCurrency }}</bdi></span
+        >
         <span v-else>&nbsp;</span>
       </div>
     </div>

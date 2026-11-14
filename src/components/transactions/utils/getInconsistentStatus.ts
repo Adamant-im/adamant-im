@@ -2,9 +2,12 @@ import type { DecodedChatMessageTransaction } from '@/lib/adamant-api'
 import type { NormalizedChatMessageTransaction } from '@/lib/chat/helpers/normalizeMessage'
 import { CoinTransaction } from '@/lib/nodes/types/transaction'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import { CryptosInfo, CryptoSymbol } from '@/lib/constants'
+import { Cryptos, CryptosInfo, CryptoSymbol } from '@/lib/constants'
+import { BigNumber } from '@/lib/bignumber'
+import { isNumeric } from '@/lib/numericHelpers'
 
 const AllowAmountErrorPercent = 0.3
+const AdmAmountMultiplier = 1e8
 
 export const TransactionInconsistentReason = {
   UNKNOWN: 'unknown',
@@ -28,10 +31,28 @@ export function getInconsistentStatus(
     recipientCryptoAddress
   }: { senderCryptoAddress?: string; recipientCryptoAddress?: string }
 ): InconsistentStatus {
-  const isAdmTransaction =
-    'message' in transaction || ('type' in transaction && typeof transaction.type === 'number')
-  if (isAdmTransaction) {
-    return '' // ADM transactions are always consistent
+  if (admTransaction.type === Cryptos.ADM) {
+    if (!isStringEqualCI(String(transaction.id), String(admTransaction.id))) {
+      return TransactionInconsistentReason.WRONG_TX_HASH
+    }
+
+    if (
+      !isNumeric(transaction.amount) ||
+      !isNumeric(admTransaction.amount) ||
+      !new BigNumber(transaction.amount).times(AdmAmountMultiplier).isEqualTo(admTransaction.amount)
+    ) {
+      return TransactionInconsistentReason.WRONG_AMOUNT
+    }
+
+    if (!isStringEqualCI(transaction.senderId, admTransaction.senderId)) {
+      return TransactionInconsistentReason.SENDER_CRYPTO_ADDRESS_MISMATCH
+    }
+
+    if (!isStringEqualCI(transaction.recipientId, admTransaction.recipientId)) {
+      return TransactionInconsistentReason.RECIPIENT_CRYPTO_ADDRESS_MISMATCH
+    }
+
+    return ''
   }
 
   const coin = admTransaction.type as unknown as CryptoSymbol
@@ -43,7 +64,7 @@ export function getInconsistentStatus(
     return TransactionInconsistentReason.NO_SENDER_CRYPTO_ADDRESS
   }
 
-  if (!isStringEqualCI(transaction.hash, admTransaction.hash)) {
+  if (!('hash' in transaction) || !isStringEqualCI(transaction.hash, admTransaction.hash)) {
     return TransactionInconsistentReason.WRONG_TX_HASH
   }
 

@@ -109,12 +109,12 @@ export default {
 
   td.delegates-table-item__td {
     font-size: var(--a-delegates-table-item-font-size);
-    padding-left: 0;
-    padding-right: var(--a-delegates-table-item-padding-inline-end);
+    padding-inline-start: 0;
+    padding-inline-end: var(--a-delegates-table-item-padding-inline-end);
   }
 
   td.delegates-table-item__td-username {
-    padding-left: var(--a-delegates-table-item-padding-inline-start-primary);
+    padding-inline-start: var(--a-delegates-table-item-padding-inline-start-primary);
   }
 
   td.delegates-table-item__details-cell {

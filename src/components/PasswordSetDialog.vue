@@ -37,13 +37,17 @@
           </template>
         </v-text-field>
 
-        <div :class="`${className}__article-hint`">
-          {{ t('login_via_password.article_hint') }}
-          <a :class="`${className}__article-link`" @click="openLink(userPasswordAgreementLink)">{{
-            t('login_via_password.article')
-          }}</a
-          >.
-        </div>
+        <i18n-t
+          keypath="login_via_password.article_hint"
+          tag="div"
+          :class="`${className}__article-hint`"
+        >
+          <template #article>
+            <a :class="`${className}__article-link`" @click="openLink(userPasswordAgreementLink)">{{
+              t('login_via_password.article')
+            }}</a>
+          </template>
+        </i18n-t>
       </v-card-text>
 
       <v-card-actions :class="`${className}__actions`">

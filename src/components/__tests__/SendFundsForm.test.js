@@ -797,7 +797,21 @@ describe('SendFundsForm', () => {
   })
 
   describe('methods.pushTransactionToChat', () => {
-    it('should push ADM transaction', () => {})
+    it.each([
+      [0.29, 29_000_000],
+      [0.57, 57_000_000],
+      [1.1, 110_000_000]
+    ])('should push %s ADM in the integer units of the broadcast transaction', (amount, units) => {
+      const dispatch = vi.spyOn(store, 'dispatch').mockResolvedValue(undefined)
+      wrapper.vm.amount = amount
+
+      wrapper.vm.pushTransactionToChat('T1', 'U111111')
+
+      expect(dispatch).toHaveBeenCalledWith(
+        'chat/pushTransaction',
+        expect.objectContaining({ transactionId: 'T1', type: 'ADM', amount: units })
+      )
+    })
     it('should push OTHER crypto transaction', () => {})
   })
 

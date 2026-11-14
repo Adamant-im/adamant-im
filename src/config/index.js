@@ -1,16 +1,3 @@
-import devConfig from './development.json'
-import prodConfig from './production.json'
-import testnetConfig from './testnet.json'
-import torConfig from './tor.json'
-
-const configMap = {
-  development: devConfig,
-  production: prodConfig,
-  test: devConfig,
-  testnet: testnetConfig,
-  tor: torConfig
-}
-
-const configName = import.meta.env.MODE
-
-export default configMap[configName]
+// Each build bundles exactly one generated network configuration. The Vite mode selects it in
+// `vite-config/plugins/networkConfigPlugin.ts`, which rejects unsupported modes before bundling.
+export { default } from 'virtual:adamant-network-config'

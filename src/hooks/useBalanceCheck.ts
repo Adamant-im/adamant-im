@@ -1,5 +1,5 @@
 import { useStore } from 'vuex'
-import { useNow } from '@vueuse/core'
+import { useIntervalFn, useNow } from '@vueuse/core'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import Visibility from 'visibilityjs'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
@@ -7,7 +7,7 @@ import { CoinSymbol } from '@/store/modules/wallets/types'
 
 export function useBalanceCheck() {
   const store = useStore()
-  const { now } = useNow({ interval: 500, controls: true })
+  const { now } = useNow({ scheduler: (update) => useIntervalFn(update, 500), controls: true })
 
   const visibilityId = ref<number | boolean | null>(null)
 

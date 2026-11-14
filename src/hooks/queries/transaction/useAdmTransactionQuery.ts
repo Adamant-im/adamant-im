@@ -5,17 +5,21 @@ import { refetchIntervalFactory, refetchOnMountFn, retryDelayFactory, retryFacto
 
 import { DecodedChatMessageTransaction, decodeTransaction } from '@/lib/adamant-api'
 import * as admApi from '@/lib/adamant-api'
-import { Cryptos, TransactionStatusType } from '@/lib/constants'
+import { Cryptos, TransactionStatus, TransactionStatusType } from '@/lib/constants'
 import { UseTransactionQueryParams } from './types'
 
 const fetchTransaction = async (transactionId: string, currentUserAdmAddress: string) => {
   const rawTransaction = await admApi.getTransaction(transactionId, 1)
   if (!rawTransaction) throw new Error('Transaction not found')
+  if (!rawTransaction.id) throw new Error('Invalid transaction response: missing ID')
 
   const transaction = decodeTransaction(rawTransaction, currentUserAdmAddress)
+  const status =
+    transaction.confirmations >= 1 ? TransactionStatus.CONFIRMED : TransactionStatus.REGISTERED
 
   return {
     ...transaction,
+    status,
     amount: transaction.amount / 1e8,
     fee: transaction.fee / 1e8
   }
@@ -33,7 +37,6 @@ export function useAdmTransactionQuery(
   return useQuery({
     queryKey: ['transaction', Cryptos.ADM, transactionId],
     queryFn: () => fetchTransaction(unref(transactionId), store.state.address),
-    initialData: {} as DecodedChatMessageTransaction,
     retry: retryFactory(Cryptos.ADM, unref(transactionId)),
     retryDelay: retryDelayFactory(Cryptos.ADM, unref(transactionId)),
     refetchInterval: ({ state }) =>

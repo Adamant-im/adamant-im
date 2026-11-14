@@ -43,7 +43,7 @@
         },
         {
           "url": "https://endless.adamant.im",
-          "alt_ip": "http://149.102.157.15:36666"
+          "alt_ip": "http://169.58.72.175:36666"
         },
         {
           "url": "https://bid.adamant.im"
@@ -66,7 +66,8 @@
           "alt_ip": "http://154.26.159.245:36666"
         },
         {
-          "url": "https://dschubba.adm.im"
+          "url": "https://dschubba.adm.im",
+          "alt_ip": "http://167.86.99.198:36666"
         },
         {
           "url": "https://lake.bbry.org",
@@ -87,7 +88,7 @@
         "onScreenUpdateInterval": 10000,
         "threshold": 10
       },
-      "minVersion": "0.8.0",
+      "minVersion": "0.10.0",
       "nodeTimeCorrection": 500
     },
     "services": {
@@ -145,7 +146,8 @@
           "crucialUpdateInterval": 30000,
           "onScreenUpdateInterval": 10000,
           "threshold": 6000000
-        }
+        },
+        "minVersion": "0.1.0"
       }
     },
     "links": [
@@ -172,14 +174,14 @@
         "list": [
           {
             "url": "https://testnode1.adamant.im",
-            "alt_ip": "http://162.55.32.80:36667"
+            "alt_ip": "http://167.86.99.198:36667"
           },
           {
             "url": "http://81.0.247.181:36667"
           },
           {
             "url": "https://testnode3.adm.im",
-            "alt_ip": "http://95.217.19.144:36667"
+            "alt_ip": "http://167.86.113.240:36667"
           }
         ],
         "healthCheck": {
@@ -188,7 +190,7 @@
           "onScreenUpdateInterval": 10000,
           "threshold": 10
         },
-        "minVersion": "0.9.0",
+        "minVersion": "0.10.0",
         "nodeTimeCorrection": 500
       },
       "services": {
@@ -240,7 +242,8 @@
             "crucialUpdateInterval": 30000,
             "onScreenUpdateInterval": 10000,
             "threshold": 6000000
-          }
+          },
+          "minVersion": "0.1.0"
         }
       }
     },
@@ -280,7 +283,7 @@
           "onScreenUpdateInterval": 10000,
           "threshold": 10
         },
-        "minVersion": "0.8.0",
+        "minVersion": "0.10.0",
         "nodeTimeCorrection": 500
       },
       "services": {
@@ -326,7 +329,8 @@
             "crucialUpdateInterval": 30000,
             "onScreenUpdateInterval": 10000,
             "threshold": 6000000
-          }
+          },
+          "minVersion": "0.1.0"
         }
       }
     }

@@ -8,6 +8,7 @@
     <div ref="messageInputRoot">
       <v-textarea
         v-model="message"
+        dir="auto"
         @input="onInput"
         :placeholder="placeholder"
         :disabled="shouldDisableInput"
@@ -21,7 +22,6 @@
         base-color="primary"
         color="primary"
         v-on="listeners"
-        :autofocus="isDesktopDevice"
         @focusin="isInputFocused = true"
         @focusout="isInputFocused = false"
       >
@@ -179,6 +179,12 @@ const listeners = computed(() => {
 onMounted(() => {
   if (props.messageText) {
     message.value = props.messageText
+  }
+
+  // Focus once when the chat opens. Vuetify's `autofocus` prop is not used: it refocuses the
+  // field every time it scrolls back into view, taking the focus back after the user dismissed
+  // it with Escape.
+  if (props.messageText || (isDesktopDevice && !props.shouldDisableInput)) {
     focus()
   }
   attachKeyCommandListener()
@@ -414,6 +420,7 @@ defineExpose({
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_directional-icon.scss' as directionalIcon;
 @use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use '@/assets/styles/settings/_colors.scss';
 @use 'vuetify/settings';
@@ -477,6 +484,7 @@ defineExpose({
 
 .a-chat__form-send-area {
   position: relative;
+  @include directionalIcon.a-directional-icon();
 
   &::before {
     content: '';

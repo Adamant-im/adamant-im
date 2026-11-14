@@ -3,6 +3,7 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import 'vuetify/styles'
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
+import { ar, de, en, es, fr, ja, ru, zhHans } from 'vuetify/locale'
 
 export enum ThemeName {
   Light = 'light',
@@ -38,6 +39,14 @@ const darkTheme: ThemeDefinition = {
 export const vuetify = createVuetify({
   components,
   directives,
+  locale: {
+    locale: 'en',
+    fallback: 'en',
+    messages: { ar, de, en, es, fr, ja, ru, zh: zhHans },
+    rtl: {
+      ar: true
+    }
+  },
   theme: {
     defaultTheme: 'dark',
 
@@ -50,7 +59,7 @@ export const vuetify = createVuetify({
     defaultSet: 'mdi',
     aliases,
     sets: {
-      mdi,
-    },
-  },
+      mdi
+    }
+  }
 })

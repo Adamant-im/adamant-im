@@ -20,10 +20,12 @@
       </v-list-item-title>
 
       <v-list-item-title>
-        <span :class="`${className}__amount ${directionClass}`">{{
-          currency(resolvedAmount, crypto, isAdmLiveAmountNormalized)
-        }}</span>
-        <span :class="`${className}__rates`">{{ historyRate }}</span>
+        <span :class="`${className}__amount ${directionClass}`">
+          <bdi dir="ltr">{{ currency(resolvedAmount, crypto, isAdmLiveAmountNormalized) }}</bdi>
+        </span>
+        <span :class="`${className}__rates`"
+          ><bdi dir="ltr">{{ historyRate }}</bdi></span
+        >
         <span
           v-if="comment"
           :class="`${className}__note-prefix ${className}__note-prefix--comment`"
@@ -42,11 +44,19 @@
 
       <v-list-item-subtitle :class="`${className}__date`">
         <span v-if="!isStatusVisibleTransaction">{{ formatDate(createdAt) }}</span>
-        <span
-          v-else-if="resolvedStatus"
-          :class="`${className}__status ${className}__status--${resolvedStatus}`"
-          >{{ $t(`transaction.statuses.${resolvedStatus}`) }}</span
-        >
+        <span v-else-if="resolvedStatus" :class="`${className}__status-row`">
+          <v-icon
+            v-if="resolvedStatus === TransactionStatus.INVALID"
+            :class="`${className}__invalid-status-icon`"
+            :icon="tsIcon(resolvedStatus)"
+            :color="tsColor(resolvedStatus)"
+            :title="statusTooltip"
+            size="x-small"
+          />
+          <span :class="`${className}__status ${className}__status--${resolvedStatus}`">{{
+            $t(`transaction.statuses.${resolvedStatus}`)
+          }}</span>
+        </span>
       </v-list-item-subtitle>
 
       <template #append>
@@ -67,11 +77,12 @@
 </template>
 
 <script>
-import { computed, toRef } from 'vue'
+import { computed, ref, toRef } from 'vue'
 import formatDate from '@/filters/date'
-import { EPOCH, Cryptos, TransactionStatus } from '@/lib/constants'
+import { EPOCH, Cryptos, TransactionStatus, tsColor, tsIcon } from '@/lib/constants'
 import partnerName from '@/mixins/partnerName'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import { BigNumber } from '@/lib/bignumber'
 import currencyAmount from '@/filters/currencyAmount'
 import { timestampInSec } from '@/filters/helpers'
 import currency from '@/filters/currencyAmountWithSymbol'
@@ -80,6 +91,8 @@ import { useTransactionQuery } from '@/hooks/queries/transaction'
 import { useTransactionAdditionalStatus } from '@/components/transactions/hooks/useTransactionAdditionalStatus'
 import { useTransactionStatus } from '@/components/transactions/hooks/useTransactionStatus'
 import { useClearPendingTransaction } from '@/components/transactions/hooks/useClearPendingTransaction'
+import { useFindAdmTransaction } from '@/components/transactions/hooks/useFindAdmTransaction'
+import { useInconsistentStatus } from '@/components/transactions/hooks/useInconsistentStatus'
 
 export default {
   mixins: [partnerName],
@@ -136,6 +149,33 @@ export default {
     } = useTransactionQuery(toRef(props, 'id'), props.crypto, {
       enabled: hasLiveStatusTracking
     })
+    // A wallet row can only have a chat record in the chats of its own participants. Scanning every
+    // chat for every row would walk all loaded messages again on each new chat message.
+    const knownAdmTransaction =
+      props.crypto === Cryptos.ADM
+        ? useFindAdmTransaction(
+            toRef(props, 'id'),
+            computed(() => [props.senderId, props.recipientId]),
+            { searchAllChats: false }
+          )
+        : ref(undefined)
+    const admTransactionForConsistency = computed(() => {
+      if (props.crypto !== Cryptos.ADM) return undefined
+      if (liveTransaction.value?.id) return liveTransaction.value
+
+      return {
+        id: props.id,
+        senderId: props.senderId,
+        recipientId: props.recipientId,
+        amount: new BigNumber(props.amount).dividedBy(1e8).toNumber(),
+        timestamp: props.timestamp,
+        status: props.status
+      }
+    })
+    const inconsistentStatus =
+      props.crypto === Cryptos.ADM
+        ? useInconsistentStatus(admTransactionForConsistency, Cryptos.ADM, knownAdmTransaction)
+        : ref('')
     const liveTransactionStatus = computed(() => liveTransaction.value?.status)
     const liveAdditionalStatus = useTransactionAdditionalStatus(
       liveTransaction,
@@ -145,7 +185,7 @@ export default {
       isLiveTransactionFetching,
       liveQueryStatus,
       liveTransactionStatus,
-      undefined,
+      inconsistentStatus,
       undefined,
       liveAdditionalStatus,
       isLiveTransactionLoadingError,
@@ -159,6 +199,11 @@ export default {
       hasLiveStatusTracking,
       liveStatus,
       liveTransaction,
+      liveQueryPending: computed(() => liveQueryStatus.value === 'pending'),
+      inconsistentStatus,
+      TransactionStatus,
+      tsColor,
+      tsIcon,
       mdiAirplaneLanding,
       mdiAirplaneTakeoff,
       mdiMessageOutline,
@@ -187,7 +232,14 @@ export default {
       return this.crypto === Cryptos.ADM && typeof this.liveTransaction?.amount === 'number'
     },
     resolvedStatus() {
-      return this.hasLiveStatusTracking ? this.liveStatus : this.status
+      if (this.inconsistentStatus) return TransactionStatus.INVALID
+
+      // Until REST has returned a transaction, retain the state supplied by the wallet list.
+      if (this.crypto === Cryptos.ADM && this.liveQueryPending) return this.status
+
+      return this.hasLiveStatusTracking || (this.crypto === Cryptos.ADM && this.liveTransaction?.id)
+        ? this.liveStatus
+        : this.status
     },
     resolvedTimestamp() {
       return typeof this.liveTransaction?.timestamp === 'number'
@@ -297,8 +349,19 @@ export default {
       return (
         this.resolvedStatus === TransactionStatus.PENDING ||
         this.resolvedStatus === TransactionStatus.REGISTERED ||
-        this.resolvedStatus === TransactionStatus.REJECTED
+        this.resolvedStatus === TransactionStatus.REJECTED ||
+        this.resolvedStatus === TransactionStatus.INVALID
       )
+    },
+    statusTooltip() {
+      const statusText = this.$t(`chats.transaction_statuses.${this.resolvedStatus}`)
+
+      if (!this.inconsistentStatus) return statusText
+
+      const reason = this.$t(`transaction.inconsistent_reasons.${this.inconsistentStatus}`, {
+        crypto: this.crypto
+      })
+      return `${statusText} ${reason}`
     }
   },
   mounted() {
@@ -387,7 +450,7 @@ export default {
     color: var(--a-transaction-item-rates-color);
     font-style: var(--a-transaction-item-rates-style);
     @include mixins.a-text-regular();
-    margin-left: var(--a-transaction-item-rates-gap);
+    margin-inline-start: var(--a-transaction-item-rates-gap);
   }
   &__amount {
     @include mixins.a-text-regular-enlarged-bold();
@@ -407,7 +470,7 @@ export default {
     margin-top: var(--a-transaction-item-prepend-top);
   }
   :deep(.v-divider--inset:not(.v-divider--vertical)) {
-    margin-left: var(--a-transaction-item-divider-inset);
+    margin-inline-start: var(--a-transaction-item-divider-inset);
     max-width: calc(100% - var(--a-transaction-item-divider-inset));
   }
   &__action {
@@ -427,6 +490,14 @@ export default {
     &--REJECTED {
       color: var(--a-transaction-item-status-danger-color);
     }
+  }
+  &__status-row {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--a-space-1);
+  }
+  &__invalid-status-icon {
+    flex: 0 0 auto;
   }
   // Do not break computed length of v-divider
   /*&__tile*/

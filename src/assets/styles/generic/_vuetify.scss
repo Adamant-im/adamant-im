@@ -22,6 +22,12 @@ html {
   fill: currentColor;
 }
 
+// Vuetify scales floating field labels from the physical left edge. In RTL locales a label
+// starts at the right edge, so it must shrink towards that edge to stay in place.
+[dir='rtl'] .v-label.v-field-label {
+  transform-origin: right center;
+}
+
 .v-btn--floating .v-btn__content .svg-icon :not(:only-child) {
   // [2]
   &:last-child,

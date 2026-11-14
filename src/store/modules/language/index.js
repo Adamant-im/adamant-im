@@ -1,20 +1,15 @@
-import dayjs from 'dayjs'
-import { i18n, DEFAULT_LOCALE } from '@/i18n'
+import { SUPPORTED_LOCALES, detectLocale } from '@/i18n'
 
-const locales = ['de', 'en', 'ru', 'zh']
-
+// A saved preference restored by `vuex-persist` replaces the detected locale.
+// `App.vue` applies the current locale to vue-i18n, Vuetify, dayjs and the document.
 const state = () => ({
-  currentLocale: DEFAULT_LOCALE
+  currentLocale: detectLocale()
 })
 
 const mutations = {
   changeLocale(state, locale) {
-    const newLocale = locales.find((value) => value === locale)
-
-    if (newLocale) {
-      state.currentLocale = newLocale
-      i18n.locale = newLocale
-      dayjs.locale(newLocale)
+    if (SUPPORTED_LOCALES.includes(locale)) {
+      state.currentLocale = locale
     }
   }
 }

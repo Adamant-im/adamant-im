@@ -94,8 +94,7 @@ export default defineComponent({
 
   &__list-item {
     min-height: var(--a-delegate-details-expander-item-height);
-    padding-left: var(--a-delegate-details-expander-item-padding-inline);
-    padding-right: var(--a-delegate-details-expander-item-padding-inline);
+    padding-inline: var(--a-delegate-details-expander-item-padding-inline);
   }
   &__address {
     a {
@@ -108,7 +107,7 @@ export default defineComponent({
   }
 
   &__value {
-    text-align: right;
+    text-align: end;
   }
 }
 

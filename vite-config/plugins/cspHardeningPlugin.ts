@@ -2,7 +2,8 @@ import type { Plugin } from 'vite'
 
 export const PWA_CONTENT_SECURITY_POLICY = [
   // `frame-ancestors` is intentionally absent: browsers ignore it in meta-delivered policies.
-  // Hosting targets that support response headers must enforce it there, as Vercel and Electron do.
+  // Hosting targets that support response headers must enforce it there, as Vercel, the nginx
+  // snippet in `deploy/nginx`, and Electron do.
   `default-src 'self'`,
   `base-uri 'self'`,
   `object-src 'none'`,
@@ -19,8 +20,29 @@ export const PWA_CONTENT_SECURITY_POLICY = [
   `form-action 'self'`
 ].join('; ')
 
+// Response-header copy of the meta policy. Header-capable hosts must send exactly this policy:
+// browsers enforce every delivered policy, so a stale header narrows the build's meta policy.
+export const PWA_HEADER_CONTENT_SECURITY_POLICY = `${PWA_CONTENT_SECURITY_POLICY}; frame-ancestors 'none'`
+
+// Response headers shared by Vercel (`vercel.json`) and self-hosted nginx
+// (`deploy/nginx/security-headers.conf`). Contract tests keep both copies identical to this map.
+export const PWA_SECURITY_HEADERS: Readonly<Record<string, string>> = {
+  'Content-Security-Policy': PWA_HEADER_CONTENT_SECURITY_POLICY,
+  'X-Frame-Options': 'DENY',
+  'X-Content-Type-Options': 'nosniff',
+  // The router uses history mode, so URLs carry chat partner addresses.
+  'Referrer-Policy': 'no-referrer',
+  // Disables the legacy XSS auditor, which could be abused to leak page state.
+  'X-XSS-Protection': '0'
+}
+
 const ENGINE_IO_GLOBALS_MODULE = /\/engine\.io-client\/build\/esm(?:-debug)?\/globals\.js(?:\?|$)/
 const ENGINE_IO_GLOBAL_FALLBACK = /Function\((['"])return this\1\)\(\)/g
+const ZOD_CORE_MODULE = /\/node_modules\/zod\/v4\/core\/(util|doc|compile)\.js(?:\?|$)/
+const ZOD_EVAL_PROBE = /export const allowsEval = [^\n]*cached\(\(\) => \{[\s\S]*?^\}\);/m
+const ZOD_DOC_COMPILE = /^ {4}compile\(\) \{[\s\S]*?^ {4}\}/m
+const ZOD_COMPILE_FN = /^export function compileFn\(schema, options\) \{[\s\S]*?^\}/m
+const FUNCTION_ALIAS = /(?<![\w$.])[A-Za-z_$][\w$]*\s*=\s*Function\s*(?:[;,})]|$)/
 
 function isIdentifierOrPropertyCharacter(value: string | undefined): boolean {
   if (!value) return false
@@ -55,12 +77,37 @@ export function replaceEngineIoGlobalFallback(code: string, id: string): string 
   return hardenedCode === code ? null : hardenedCode
 }
 
+export function removeZodDynamicCompilation(code: string, id: string): string | null {
+  const module = ZOD_CORE_MODULE.exec(id)?.[1]
+  if (!module) return null
+
+  // Keep schema validation in the interpreter and fail closed on explicit compilation.
+  const replacements = {
+    util: [ZOD_EVAL_PROBE, 'export const allowsEval = { value: false };'],
+    doc: [ZOD_DOC_COMPILE, '    compile() { throw new Error("Zod JIT is disabled"); }'],
+    compile: [
+      ZOD_COMPILE_FN,
+      'export function compileFn() { throw new ZodCompileUnsupportedError("dynamic compilation under strict CSP"); }'
+    ]
+  } as const
+  const [pattern, replacement] = replacements[module as keyof typeof replacements]
+  const hardenedCode = code.replace(pattern, replacement)
+
+  if (
+    hardenedCode === code ||
+    /\bFunction\b/.test(hardenedCode.replace(/\/\/.*|\/\*[\s\S]*?\*\//g, ''))
+  ) {
+    throw new Error(`Zod changed its ${module} module. Review the strict CSP transform.`)
+  }
+
+  return hardenedCode
+}
+
 export function findUnsafeRuntimeSources(fileName: string, code: string): string[] {
-  // Defense in depth for reachable emitted chunks and direct lexical calls. Runtime CSP remains
-  // the enforcement boundary for indirect aliases or computed access to eval/Function.
+  // Runtime CSP also enforces forms that lexical checks cannot identify.
   const violations = []
 
-  if (hasUnqualifiedCall(code, 'Function')) {
+  if (hasUnqualifiedCall(code, 'Function') || FUNCTION_ALIAS.test(code)) {
     violations.push(`${fileName}: Function constructor`)
   }
 
@@ -83,7 +130,9 @@ export function cspHardeningPlugin(): Plugin {
     },
 
     transform(code, id) {
-      const hardenedCode = replaceEngineIoGlobalFallback(code, id)
+      const hardenedCode =
+        (isBuild ? removeZodDynamicCompilation(code, id) : null) ??
+        replaceEngineIoGlobalFallback(code, id)
       return hardenedCode ? { code: hardenedCode, map: null } : null
     },
 

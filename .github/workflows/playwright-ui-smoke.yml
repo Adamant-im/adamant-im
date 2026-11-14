@@ -35,17 +35,7 @@ jobs:
         run: npm ci
 
       - name: Install Playwright browser 🎭
-        run: npx playwright install --with-deps chromium
+        run: npm run test:e2e:install -- --with-deps
 
       - name: Run Playwright tests 🛠️
         run: npm run test:e2e
-        env:
-          ADM_TEST_ACCOUNT_PK: ${{ secrets.ADM_TEST_ACCOUNT_PK }}
-
-      - name: Upload Playwright report
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: playwright-report
-          path: playwright-report/
-          if-no-files-found: ignore

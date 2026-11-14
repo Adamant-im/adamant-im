@@ -40,7 +40,11 @@ export default {
         direction: isStringEqualCI(tx.recipientId, address) ? 'to' : 'from',
         partner: isStringEqualCI(tx.recipientId, address) ? tx.senderId : tx.recipientId,
         status:
-          tx.height || tx.confirmations > 0 ? 'CONFIRMED' : tx.status ? tx.status : 'REGISTERED'
+          tx.confirmations >= 1
+            ? 'CONFIRMED'
+            : tx.status && tx.status !== 'CONFIRMED'
+              ? tx.status
+              : 'REGISTERED'
       }
 
       if (tx.height && updateTimestamps) {

@@ -103,7 +103,7 @@ function openLink() {
 
   &__spinner {
     margin-bottom: var(--a-space-1);
-    margin-right: var(--a-space-1);
+    margin-inline-end: var(--a-space-1);
   }
 
   &__row {

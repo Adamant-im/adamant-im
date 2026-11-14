@@ -56,15 +56,18 @@
                 :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
                 :icon="tsIcon(status)"
                 :color="tsColor(status)"
-                :class="`${className}__status-icon`"
+                :class="[`${className}__status-icon`, `${className}__status-icon--leading`]"
               />
-              <span>{{ transactionPreviewText }}</span>
+              <span>
+                {{ transactionDirection }}
+                <bdi dir="ltr">{{ transactionPreviewAmount }}</bdi>
+              </span>
               <v-icon
                 v-if="isIncomingTransaction"
                 :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
                 :icon="tsIcon(status)"
                 :color="tsColor(status)"
-                :class="`${className}__status-icon`"
+                :class="[`${className}__status-icon`, `${className}__status-icon--trailing`]"
               />
             </v-list-item-subtitle>
           </template>
@@ -85,19 +88,28 @@
 
       <!-- Message -->
       <template v-else>
-        <v-list-item-subtitle :class="`${className}__subtitle`">
+        <!-- A user message keeps its own direction, so a long LTR message in an RTL list is
+             truncated at its end, not at its beginning -->
+        <v-list-item-subtitle
+          :class="`${className}__subtitle`"
+          :dir="isMessageI18n ? undefined : 'auto'"
+        >
           <template v-if="isOutgoingTransaction">
             <v-icon
               v-if="transaction.isReply && isConfirmed"
               :icon="mdiArrowLeftTop"
               :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
-              :class="`${className}__status-icon`"
+              :class="[
+                `${className}__status-icon`,
+                `${className}__status-icon--leading`,
+                `${className}__reply-icon`
+              ]"
             />
             <v-icon
               v-else
               :icon="admStatusIcon"
               :size="CHAT_PREVIEW_STATUS_ICON_SIZE"
-              :class="`${className}__status-icon`"
+              :class="[`${className}__status-icon`, `${className}__status-icon--leading`]"
             />
           </template>
 
@@ -220,9 +232,8 @@ const transactionDirection = computed(() => {
 
   return direction
 })
-const transactionPreviewText = computed(
-  () =>
-    `${transactionDirection.value} ${currency(props.transaction.amount, props.transaction.type)}`
+const transactionPreviewAmount = computed(() =>
+  currency(props.transaction.amount, props.transaction.type)
 )
 const isIncomingTransaction = computed(
   () => !isStringEqualCI(props.userId, props.transaction.senderId)
@@ -240,6 +251,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 
 <style lang="scss" scoped>
 @use 'sass:map';
+@use '@/assets/styles/components/_directional-icon.scss' as directionalIcon;
 @use '@/assets/styles/components/_color-roles.scss' as colorRoles;
 @use '@/assets/styles/components/_layout-primitives.scss' as layoutPrimitives;
 @use '@/assets/styles/settings/_colors.scss';
@@ -289,13 +301,13 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
   }
 
   &__chat-avatar {
-    margin-right: var(--a-chat-brief-avatar-gap);
+    margin-inline-end: var(--a-chat-brief-avatar-gap);
   }
 
   &__icon {
     width: var(--a-chat-brief-icon-size);
     height: var(--a-chat-brief-icon-size);
-    margin-right: var(--a-chat-brief-avatar-gap);
+    margin-inline-end: var(--a-chat-brief-avatar-gap);
 
     :deep(.svg-icon) {
       width: 100%;
@@ -325,7 +337,7 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 
   &__date {
     @include mixins.a-text-explanation-small();
-    margin-left: var(--a-chat-brief-date-gap);
+    margin-inline-start: var(--a-chat-brief-date-gap);
     white-space: nowrap;
   }
 
@@ -333,12 +345,24 @@ const isConfirmed = computed(() => status.value === TS.CONFIRMED)
     display: inline-flex;
     vertical-align: middle;
     transform: translateY(var(--a-chat-preview-status-icon-shift-y));
-    margin-inline-end: var(--a-space-1);
+
+    &--leading {
+      margin-inline-end: var(--a-space-1);
+    }
+
+    &--trailing {
+      margin-inline-start: var(--a-space-1);
+    }
+  }
+
+  // The status icon already uses `transform` to align vertically, so the glyph is mirrored
+  &__reply-icon :deep(svg) {
+    @include directionalIcon.a-directional-icon();
   }
 
   &__badge {
     :deep(.v-badge__badge) {
-      left: calc(100% - var(--a-space-3) - var(--a-space-4)) !important;
+      inset-inline-start: calc(100% - var(--a-space-3) - var(--a-space-4)) !important;
       font-size: var(--a-font-size-sm);
       width: var(--a-size-badge-md);
       height: var(--a-size-badge-md);

@@ -1,5 +1,7 @@
 import { ref } from 'vue'
 
+import { i18n, isRtlLocale } from '@/i18n'
+
 /**
  * Ratio between swipe offsetX / offsetY.
  * The higher value, the smoother swipe is needed on X axis
@@ -21,14 +23,20 @@ const SWIPE_OFFSET_X_ACTIVATION = 16
  */
 const SWIPE_TRIGGER_ACTIVATION = 100
 
+/**
+ * Swipe-to-reply towards the start of the line: to the left in LTR locales and to the right
+ * in RTL locales, where messages are mirrored.
+ */
 export function useSwipeLeft(onSwipe) {
   const swipeStarted = ref(false)
   const elementLeftOffset = ref(0)
 
   const onMove = (e) => {
-    const offsetX = e.touchstartX - e.touchmoveX
+    const towardsStart = isRtlLocale(i18n.global.locale.value) ? -1 : 1
+    const offsetX = (e.touchstartX - e.touchmoveX) * towardsStart
     const offsetY = e.touchstartY - e.touchmoveY
-    const ratio = offsetX / offsetY
+    // A slight vertical drift in either direction must not cancel a horizontal swipe
+    const ratio = offsetX / Math.abs(offsetY)
 
     const swipeActivated = ratio > SWIPE_RATIO_ACTIVATION && offsetX > SWIPE_OFFSET_X_ACTIVATION
 
@@ -37,7 +45,8 @@ export function useSwipeLeft(onSwipe) {
     }
 
     if (swipeStarted.value) {
-      elementLeftOffset.value = -offsetX
+      // The message follows the finger
+      elementLeftOffset.value = e.touchmoveX - e.touchstartX
     }
 
     if (swipeStarted.value && offsetX > SWIPE_TRIGGER_ACTIVATION) {

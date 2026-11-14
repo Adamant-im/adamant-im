@@ -28,7 +28,7 @@ import * as chatHelpers from '@/lib/chat/helpers'
 import adamant from '@/lib/adamant'
 import { AllNodesDisabledError, AllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
-import { TransactionStatus as TS } from '@/lib/constants'
+import { Cryptos, TransactionStatus as TS } from '@/lib/constants'
 import { WELCOME_CHAT_ID } from '@/lib/chat/meta/chat-meta'
 
 const { getters, mutations, actions } = chatModule
@@ -785,6 +785,35 @@ describe('Store: chat.js', () => {
      * mutations.pushMessage
      */
     describe('mutations.pushMessage', () => {
+      it('reconciles a changed ADM counterparty against the original ID without creating another chat', () => {
+        const original = {
+          id: 'adm-1',
+          type: 'ADM',
+          senderId: 'U111111',
+          recipientId: 'U123456',
+          amount: 10_000_000,
+          status: TS.REGISTERED,
+          confirmations: 0,
+          height: 0
+        }
+        const state = { chats: { U111111: { messages: [original], numOfNewMessages: 1 } } }
+        mutations.pushMessage(state, {
+          message: {
+            ...original,
+            senderId: 'U999999',
+            confirmations: 1,
+            height: 123,
+            status: TS.CONFIRMED
+          },
+          userId: 'U123456',
+          markAsUnread: true
+        })
+        expect(original.status).toBe(TS.INVALID)
+        expect(original.senderId).toBe('U111111')
+        expect(original.confirmations).toBe(1)
+        expect(Object.keys(state.chats)).toEqual(['U111111'])
+        expect(state.chats.U111111.numOfNewMessages).toBe(1)
+      })
       it('should push message to specific chat by senderId', () => {
         const state = {
           chats: {
@@ -943,6 +972,44 @@ describe('Store: chat.js', () => {
         expect(state.chats.U111111.numOfNewMessages).toBe(0)
       })
 
+      it('marks an explicitly new incoming transfer as unread when its height is zero', () => {
+        const state = {
+          chats: {
+            U111111: {
+              messages: [],
+              numOfNewMessages: 0
+            }
+          },
+          lastMessageHeight: 0
+        }
+
+        mutations.pushMessage(state, {
+          message: {
+            id: 'direct-adm-id',
+            senderId: 'U111111',
+            recipientId: 'U123456',
+            type: 'ADM',
+            height: 0
+          },
+          userId: 'U123456',
+          markAsUnread: true
+        })
+
+        mutations.pushMessage(state, {
+          message: {
+            id: 'direct-adm-id',
+            senderId: 'U111111',
+            recipientId: 'U123456',
+            type: 'ADM',
+            height: 1
+          },
+          userId: 'U123456',
+          markAsUnread: true
+        })
+
+        expect(state.chats.U111111.numOfNewMessages).toBe(1)
+      })
+
       it('should not duplicate local messages added directly when `getNewMessages`', () => {
         const state = {
           chats: {
@@ -969,6 +1036,99 @@ describe('Store: chat.js', () => {
         mutations.pushMessage(state, messageObject) // duplicate
 
         expect(state.chats.U111111.messages.length).toBe(1)
+      })
+
+      it('marks a provisional ADM transfer invalid when REST value fields differ', () => {
+        const state = {
+          chats: {
+            U111111: {
+              messages: [],
+              numOfNewMessages: 0
+            }
+          }
+        }
+        const provisionalTransfer = {
+          id: 'direct-adm-id',
+          senderId: 'U111111',
+          recipientId: 'U123456',
+          type: Cryptos.ADM,
+          amount: 10_000_000_000,
+          message: 'fabricated socket comment',
+          status: TS.REGISTERED,
+          confirmations: 0,
+          height: 0
+        }
+        const reconciledTransfer = {
+          ...provisionalTransfer,
+          amount: 10_000_000,
+          message: '',
+          status: TS.CONFIRMED,
+          height: 123,
+          confirmations: 1
+        }
+
+        mutations.pushMessage(state, {
+          message: provisionalTransfer,
+          userId: 'U123456'
+        })
+        mutations.pushMessage(state, {
+          message: reconciledTransfer,
+          userId: 'U123456'
+        })
+
+        expect(state.chats.U111111.messages).toEqual([
+          {
+            ...provisionalTransfer,
+            status: TS.INVALID,
+            height: 123,
+            confirmations: 1
+          }
+        ])
+      })
+
+      it('confirms a provisional ADM transfer only when REST value fields match', () => {
+        const state = {
+          chats: {
+            U111111: {
+              messages: [],
+              numOfNewMessages: 0
+            }
+          }
+        }
+        const provisionalTransfer = {
+          id: 'direct-adm-id',
+          senderId: 'U111111',
+          recipientId: 'U123456',
+          type: Cryptos.ADM,
+          amount: 10_000_000,
+          message: '',
+          status: TS.REGISTERED,
+          confirmations: 0,
+          height: 0
+        }
+
+        mutations.pushMessage(state, {
+          message: provisionalTransfer,
+          userId: 'U123456'
+        })
+        mutations.pushMessage(state, {
+          message: {
+            ...provisionalTransfer,
+            status: TS.CONFIRMED,
+            confirmations: 1,
+            height: 123
+          },
+          userId: 'U123456'
+        })
+
+        expect(state.chats.U111111.messages).toEqual([
+          {
+            ...provisionalTransfer,
+            status: TS.CONFIRMED,
+            confirmations: 1,
+            height: 123
+          }
+        ])
       })
     })
 
@@ -1167,6 +1327,7 @@ describe('Store: chat.js', () => {
           lastMessageHeight: 0,
           isFulfilled: false,
           offset: 0,
+          isInitialChatListEmpty: false,
           noActiveNodesDialog: undefined,
           newChats: {},
           chatsActualUntil: 0
@@ -1235,6 +1396,7 @@ describe('Store: chat.js', () => {
           ['setFulfilled', false],
           ['setHeight', 100],
           ['setOffset', 12],
+          ['setInitialChatListEmpty', false],
           ['setFulfilled', true]
         ])
 
@@ -1267,6 +1429,30 @@ describe('Store: chat.js', () => {
         expect(commit.args).toEqual([
           ['setFulfilled', false],
           ['setOffset', 25],
+          ['setInitialChatListEmpty', false],
+          ['setFulfilled', true]
+        ])
+        expect(dispatch.args).toEqual([['pushMessages', []]])
+      })
+
+      it('remembers that the first chat list page of a new account is empty', async () => {
+        chatModule.__Rewire__('admApi', {
+          getChatRooms: () =>
+            Promise.resolve({
+              messages: [],
+              lastMessageHeight: 0,
+              fetchedCount: 0
+            })
+        })
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+
+        await actions.loadChats({ commit, dispatch, rootState: { address: 'U123456' } })
+
+        expect(commit.args).toEqual([
+          ['setFulfilled', false],
+          ['setInitialChatListEmpty', true],
           ['setFulfilled', true]
         ])
         expect(dispatch.args).toEqual([['pushMessages', []]])
@@ -1493,6 +1679,33 @@ describe('Store: chat.js', () => {
      * actions.pushMessages
      */
     describe('actions.pushMessages', () => {
+      it('ignores forged rich payloads on direct ADM transfers', () => {
+        const message = chatHelpers.normalizeMessage({
+          id: 'direct',
+          type: 0,
+          amount: 10_000_000,
+          confirmations: 0,
+          message: { type: 'btc_transaction', amount: '100', hash: 'fake-hash' }
+        })
+        expect(message).toMatchObject({
+          type: 'ADM',
+          hash: 'direct',
+          amount: 10_000_000,
+          message: '',
+          status: TS.REGISTERED
+        })
+      })
+
+      it('does not confirm a third-party rich transfer using the enclosing ADM confirmations', () => {
+        const message = chatHelpers.normalizeMessage({
+          id: 'rich',
+          type: 8,
+          amount: 10_000_000,
+          confirmations: 2,
+          message: { type: 'btc_transaction', amount: '1', hash: 'btc-hash' }
+        })
+        expect(message).toMatchObject({ type: 'BTC', status: TS.PENDING })
+      })
       it('should commit(pushMessage) n times', () => {
         const commit = sinon.spy()
         const dispatch = sinon.spy()
@@ -1552,6 +1765,99 @@ describe('Store: chat.js', () => {
         expect(dispatch.args[0][1]).toHaveLength(1)
         expect(dispatch.args[0][1][0].id).toBe(visibleMessage.id)
       })
+
+      it('normalizes an incoming direct ADM transfer for insertion into its chat', () => {
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+        const rootState = { address: 'U123456' }
+        const directAdmTransfer = {
+          id: 'direct-adm-id',
+          type: 0,
+          height: 100,
+          confirmations: 1,
+          timestamp: 1_710_000_000,
+          senderId: 'U222222',
+          recipientId: 'U123456',
+          amount: 100_000_000,
+          message: 'fabricated direct-transfer comment'
+        }
+
+        actions.pushMessages({ commit, rootState, dispatch }, [directAdmTransfer])
+
+        expect(commit.args).toEqual([
+          [
+            'pushMessage',
+            {
+              message: expect.objectContaining({
+                id: 'direct-adm-id',
+                hash: 'direct-adm-id',
+                type: 'ADM',
+                status: TS.CONFIRMED,
+                senderId: 'U222222',
+                recipientId: 'U123456',
+                message: ''
+              }),
+              userId: 'U123456'
+            }
+          ]
+        ])
+      })
+
+      it('keeps a mined ADM transfer registered until REST reports a confirmation', () => {
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+        const rootState = { address: 'U123456' }
+
+        actions.pushMessages({ commit, rootState, dispatch }, [
+          {
+            id: 'unconfirmed-adm-id',
+            type: 0,
+            height: 100,
+            confirmations: 0,
+            status: TS.CONFIRMED,
+            timestamp: 1_710_000_000,
+            senderId: 'U222222',
+            recipientId: 'U123456',
+            amount: 100_000_000
+          }
+        ])
+
+        expect(commit.args[0][1].message.status).toBe(TS.REGISTERED)
+      })
+    })
+
+    describe('actions.pushNewMessages', () => {
+      it('marks incoming direct ADM transfers as unread explicitly', () => {
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+        const rootState = { address: 'U123456' }
+        const directAdmTransfer = {
+          id: 'direct-adm-id',
+          type: 0,
+          height: 0,
+          timestamp: 1_710_000_000,
+          senderId: 'U222222',
+          recipientId: 'U123456',
+          amount: 10_000_000
+        }
+
+        actions.pushNewMessages({ commit, rootState, dispatch }, [directAdmTransfer])
+
+        expect(commit.args).toEqual([
+          [
+            'pushMessage',
+            {
+              message: expect.objectContaining({
+                id: 'direct-adm-id',
+                type: 'ADM',
+                status: TS.REGISTERED
+              }),
+              userId: 'U123456',
+              markAsUnread: true
+            }
+          ]
+        ])
+      })
     })
 
     /**
@@ -1568,7 +1874,7 @@ describe('Store: chat.js', () => {
         )
       })
 
-      it('should only dispatch `pushMessages` when `lastMessageHeight = 0`', async () => {
+      it('marks polling results as new after an empty initial chat list was paged to the end', async () => {
         chatModule.__Rewire__('getChats', () =>
           Promise.resolve({
             messages: [],
@@ -1578,7 +1884,10 @@ describe('Store: chat.js', () => {
         )
 
         const state = {
-          isFulfilled: true
+          isFulfilled: true,
+          lastMessageHeight: 0,
+          offset: -1,
+          isInitialChatListEmpty: true
         }
         const getters = {
           chatsActualityTimeout: 1000
@@ -1590,7 +1899,37 @@ describe('Store: chat.js', () => {
           undefined
         )
         expect(commit.args).toEqual([['setChatsActualUntil', expect.any(Number)]])
-        expect(dispatch.args).toEqual([['pushMessages', []]])
+        expect(dispatch.args).toEqual([['pushNewMessages', []]])
+      })
+
+      it('does not mark recovered history unread when the initial page was filtered', async () => {
+        chatModule.__Rewire__('getChats', () =>
+          Promise.resolve({
+            messages: [{ id: 'historical-message' }],
+            lastMessageHeight: 100,
+            nodeTimestamp: 1
+          })
+        )
+
+        const state = {
+          isFulfilled: true,
+          lastMessageHeight: 0,
+          offset: 25,
+          isInitialChatListEmpty: false
+        }
+        const getters = {
+          chatsActualityTimeout: 1000
+        }
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+
+        await actions.getNewMessages({ getters, state, commit, dispatch })
+
+        expect(dispatch.args).toEqual([['pushMessages', [{ id: 'historical-message' }]]])
+        expect(commit.args).toEqual([
+          ['setChatsActualUntil', expect.any(Number)],
+          ['setHeight', 100]
+        ])
       })
 
       it('should dispatch `pushMessages` & commit `setHeight`', async () => {
@@ -1603,7 +1942,8 @@ describe('Store: chat.js', () => {
         )
 
         const state = {
-          isFulfilled: true
+          isFulfilled: true,
+          lastMessageHeight: 100
         }
         const getters = {
           chatsActualityTimeout: 1000
@@ -1618,7 +1958,7 @@ describe('Store: chat.js', () => {
           ['setChatsActualUntil', expect.any(Number)],
           ['setHeight', 100]
         ])
-        expect(dispatch.args).toEqual([['pushMessages', []]])
+        expect(dispatch.args).toEqual([['pushNewMessages', []]])
       })
     })
 

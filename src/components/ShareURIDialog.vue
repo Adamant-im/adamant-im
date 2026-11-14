@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { ref, computed, defineComponent, PropType } from 'vue'
+import { ref, computed, defineComponent, PropType, watch, onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 
@@ -89,6 +89,12 @@ export default defineComponent({
     const store = useStore()
     const showQrcodeRendererDialog = ref(false)
 
+    const onKeydown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !showQrcodeRendererDialog.value) {
+        show.value = false
+      }
+    }
+
     const show = computed({
       get() {
         return props.modelValue
@@ -123,6 +129,22 @@ export default defineComponent({
       const explorerLink = getExplorerAddressUrl(crypto, props.address)
       openExternalLink(explorerLink)
     }
+
+    watch(
+      show,
+      (value) => {
+        if (value) {
+          window.addEventListener('keydown', onKeydown, true)
+        } else {
+          window.removeEventListener('keydown', onKeydown, true)
+        }
+      },
+      { immediate: true }
+    )
+
+    onBeforeUnmount(() => {
+      window.removeEventListener('keydown', onKeydown, true)
+    })
 
     return {
       classes,

@@ -36,15 +36,15 @@
   pointer-events: none;
   flex: 1 1 auto;
   font-size: var(--a-fake-input-font-size);
-  text-align: left;
+  text-align: start;
   display: flex;
   align-items: flex-start;
   min-height: inherit;
   position: relative;
 
   &__label {
-    left: 0px;
-    right: auto;
+    inset-inline-start: 0;
+    inset-inline-end: auto;
     position: absolute;
     transform: translateY(var(--a-fake-input-label-translate-y))
       scale(var(--a-fake-input-label-scale));
@@ -54,6 +54,11 @@
     transform-origin: top left;
     white-space: nowrap;
     max-width: 133%;
+
+    // The scaled label keeps its start edge in place
+    [dir='rtl'] & {
+      transform-origin: top right;
+    }
   }
 
   &__box {

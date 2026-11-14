@@ -313,7 +313,7 @@ export default defineComponent({
 
   &__camera-select {
     position: absolute;
-    right: 0;
+    inset-inline-end: 0;
     bottom: 0;
     :deep(.v-btn) {
       min-width: auto;

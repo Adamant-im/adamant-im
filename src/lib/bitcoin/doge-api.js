@@ -110,13 +110,30 @@ export default class DogeApi extends BtcBaseApi {
   }
 
   /** @override */
-  getTransactions({ from = 0 }) {
-    const to = from + CHUNK_SIZE
-    return this._get(`/api/addrs/${this.address}/txs`, { from, to }).then((resp) => ({
+  getTransactions({ from = 0, to = from + CHUNK_SIZE }) {
+    return this._get(`/api/addrs/${this.address}/txs`, { from, to }).then((resp) =>
+      this._mapHistoryPage(resp, to)
+    )
+  }
+
+  /**
+   * Same as `getTransactions`, but on the indexer a history session is pinned to:
+   * an offset is only meaningful within one node's list
+   *
+   * @param {import('@/lib/nodes/doge-indexer/DogeIndexerClient').DogeIndexerHistorySession} session
+   */
+  getTransactionsVia(session, { from = 0, to = from + CHUNK_SIZE }) {
+    return session
+      .get(`/api/addrs/${this.address}/txs`, { from, to })
+      .then((resp) => this._mapHistoryPage(resp, to))
+  }
+
+  _mapHistoryPage(resp, to) {
+    return {
       ...resp,
       hasMore: to < resp.totalItems,
       items: resp.items.map((tx) => this._mapTransaction(tx))
-    }))
+    }
   }
 
   /** @override */

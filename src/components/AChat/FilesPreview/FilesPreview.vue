@@ -70,14 +70,14 @@ export default defineComponent({
     display: flex;
     gap: var(--a-space-2);
     overflow: auto;
-    margin-right: var(--a-space-3);
+    margin-inline-end: var(--a-space-3);
   }
 
   &__close-button {
     position: absolute;
-    right: 0;
+    inset-inline-end: 0;
     top: 0;
-    margin-right: var(--a-space-1);
+    margin-inline-end: var(--a-space-1);
     margin-top: var(--a-space-1);
   }
 }
@@ -86,7 +86,8 @@ export default defineComponent({
   .files-preview {
     background-color: map.get(colors.$adm-colors, 'secondary');
     color: map.get(colors.$adm-colors, 'regular');
-    border-left: var(--a-chat-accent-border-width) solid map.get(colors.$adm-colors, 'attention');
+    border-inline-start: var(--a-chat-accent-border-width) solid
+      map.get(colors.$adm-colors, 'attention');
   }
 }
 
@@ -94,7 +95,8 @@ export default defineComponent({
   .files-preview {
     background-color: map.get(colors.$adm-colors, 'secondary2-slightly-transparent2');
     color: #fff;
-    border-left: var(--a-chat-accent-border-width) solid map.get(colors.$adm-colors, 'attention');
+    border-inline-start: var(--a-chat-accent-border-width) solid
+      map.get(colors.$adm-colors, 'attention');
   }
 }
 </style>

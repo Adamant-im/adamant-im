@@ -184,7 +184,7 @@ export default defineComponent({
   }
 
   :deep(.v-checkbox) {
-    margin-left: var(--a-wallets-list-item-checkbox-offset);
+    margin-inline-start: var(--a-wallets-list-item-checkbox-offset);
   }
 
   :deep(.sortable-chosen) {

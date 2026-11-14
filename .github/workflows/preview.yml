@@ -22,12 +22,17 @@ jobs:
     steps:
       - name: Checkout repository 🛎️
         uses: actions/checkout@v7
+        with:
+          submodules: true
 
       - name: Setup Node version 🍀
         uses: ./.github/actions/setup-node
 
       - name: Install dependencies ⚙️
         run: npm ci
+
+      - name: Verify generated wallet data 🔍
+        run: npm run wallets:data:check
 
       - name: Build PWA 🛠️
         run: |

@@ -14,5 +14,20 @@ export default {
 
   height(state, height) {
     state.height = height
+  },
+
+  /**
+   * Stores (or clears, with `null`) the resume point of an unfinished walk
+   * towards the previously known history
+   */
+  newTxCatchUp(state, value) {
+    state.newTxCatchUp = value
+  },
+
+  /**
+   * Stores node-specific cursor state for older history pagination
+   */
+  oldTxState(state, value) {
+    state.oldTxState = value
   }
 }

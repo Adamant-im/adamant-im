@@ -1,0 +1,10 @@
+/**
+ * Mirrors an icon that points along the reading direction (back, forward, send) in
+ * right-to-left locales. `applyLocale()` sets `dir` on the document root, which also covers
+ * overlays teleported outside `.v-application`.
+ */
+@mixin a-directional-icon() {
+  [dir='rtl'] & {
+    transform: scaleX(-1);
+  }
+}

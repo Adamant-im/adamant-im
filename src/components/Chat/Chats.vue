@@ -400,7 +400,7 @@ const checkDate = () => {
     padding-inline-end: 0;
 
     & :deep(.v-list-item__avatar) {
-      margin-right: var(--a-chats-item-avatar-gap-inline);
+      margin-inline-end: var(--a-chats-item-avatar-gap-inline);
     }
 
     :deep(.v-list-item__prepend) {
@@ -421,7 +421,7 @@ const checkDate = () => {
   &__title {
     font-weight: var(--a-chats-title-font-weight);
     font-size: var(--a-chats-title-font-size);
-    text-align: right;
+    text-align: end;
   }
   &__title-wrap {
     display: flex;

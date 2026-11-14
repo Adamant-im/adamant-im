@@ -1,5 +1,6 @@
 // @vitest-environment node
 
+import { readFileSync } from 'node:fs'
 import { Readable } from 'node:stream'
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -47,6 +48,25 @@ describe('CSP report endpoint', () => {
     expect(isAllowedHost('preview.adamant-team.vercel.app')).toBe(true)
     expect(isAllowedHost('adamant-im-git-branch-adamant-team.vercel.app')).toBe(true)
     expect(isAllowedHost('notadamant-team.vercel.app')).toBe(false)
+  })
+
+  it('accepts reports from every host that vercel.json asks to report', () => {
+    const { headers: rules } = JSON.parse(
+      readFileSync(new URL('../vercel.json', import.meta.url), 'utf8')
+    )
+    const reportingHosts = rules
+      .filter((rule) =>
+        rule.headers.some(({ value }) => value.includes('report-uri /api/csp-report'))
+      )
+      .flatMap((rule) => rule.has ?? [])
+
+    expect(reportingHosts.length).toBeGreaterThan(0)
+    for (const { type, value } of reportingHosts) {
+      expect(type).toBe('host')
+      expect(
+        isAllowedHost(typeof value === 'string' ? value : `adamant-im-git-dev-${value.suf}`)
+      ).toBe(true)
+    }
   })
 
   it('parses a raw application/csp-report request stream', async () => {

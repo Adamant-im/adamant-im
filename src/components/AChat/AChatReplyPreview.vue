@@ -89,7 +89,8 @@ const messageLabel = computed(() => {
 $message-max-lines: 2;
 
 .a-chat-reply-preview {
-  border-left: var(--a-chat-accent-border-width) solid map.get(colors.$adm-colors, 'attention');
+  border-inline-start: var(--a-chat-accent-border-width) solid
+    map.get(colors.$adm-colors, 'attention');
   border-radius: var(--a-radius-sm);
   margin: var(--a-space-2);
 
@@ -103,8 +104,7 @@ $message-max-lines: 2;
     @include chatMessageContent.a-chat-message-body-copy();
     line-height: var(--a-chat-reply-preview-line-height);
 
-    margin-left: var(--a-space-2);
-    margin-right: var(--a-space-2);
+    margin-inline: var(--a-space-2);
 
     overflow: hidden;
     display: -webkit-box;
@@ -114,9 +114,9 @@ $message-max-lines: 2;
 
   &__close-button {
     position: absolute;
-    right: 0;
+    inset-inline-end: 0;
     top: 0;
-    margin-right: var(--a-space-1);
+    margin-inline-end: var(--a-space-1);
     margin-top: var(--a-space-1);
   }
 }

@@ -46,7 +46,7 @@ const createAdmTransaction = (
 })
 
 describe('getInconsistentStatus', () => {
-  test('treats native ADM transfers as always consistent', () => {
+  test('accepts a native ADM transfer whose canonical fields match the chat record', () => {
     expect(
       getInconsistentStatus(
         {
@@ -55,21 +55,59 @@ describe('getInconsistentStatus', () => {
           senderId: 'U1111111111111111111',
           recipientId: 'U2222222222222222222',
           confirmations: 1,
-          amount: 100000000,
-          fee: 50000000
+          amount: 1,
+          fee: 0.5
         } as any,
         createAdmTransaction({
           id: 'adm-native-1',
           hash: 'adm-native-1',
           type: 'ADM',
-          amount: 1
+          senderId: 'U1111111111111111111',
+          recipientId: 'U2222222222222222222',
+          amount: 100_000_000
         }),
-        {
-          senderCryptoAddress: SENDER_CRYPTO_ADDRESS,
-          recipientCryptoAddress: RECIPIENT_CRYPTO_ADDRESS
-        }
+        {}
       )
     ).toBe('')
+  })
+
+  test.each([
+    ['id', { id: 'different-id' }, TransactionInconsistentReason.WRONG_TX_HASH],
+    ['amount', { amount: 200_000_000 }, TransactionInconsistentReason.WRONG_AMOUNT],
+    [
+      'sender',
+      { senderId: 'U3333333333333333333' },
+      TransactionInconsistentReason.SENDER_CRYPTO_ADDRESS_MISMATCH
+    ],
+    [
+      'recipient',
+      { recipientId: 'U3333333333333333333' },
+      TransactionInconsistentReason.RECIPIENT_CRYPTO_ADDRESS_MISMATCH
+    ]
+  ])('rejects a native ADM transfer with a mismatched %s', (_field, mismatch, expected) => {
+    expect(
+      getInconsistentStatus(
+        {
+          id: 'adm-native-1',
+          type: 0,
+          senderId: 'U1111111111111111111',
+          recipientId: 'U2222222222222222222',
+          confirmations: 1,
+          amount: 1,
+          fee: 0.5
+        } as any,
+        createAdmTransaction({
+          id: 'adm-native-1',
+          hash: 'adm-native-1',
+          type: 'ADM',
+          senderId: 'U1111111111111111111',
+          recipientId: 'U2222222222222222222',
+          amount: 100_000_000,
+          ...mismatch
+        }),
+        {}
+      )
+    ).toBe(expected)
   })
 
   describe('NO_SENDER_CRYPTO_ADDRESS', () => {

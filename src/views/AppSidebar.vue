@@ -152,13 +152,19 @@ const stopResize = () => {
   document.removeEventListener('mouseup', stopResize)
 }
 
+// In RTL locales the aside sits on the right and its resize handle is on its left edge
+const isAsideRtl = (aside: HTMLElement) => window.getComputedStyle(aside).direction === 'rtl'
+
 const startResize = (event: MouseEvent) => {
   if (!asideRef.value) return
 
-  const { left, width: boxWidth } = asideRef.value.getBoundingClientRect()
+  const { left, right } = asideRef.value.getBoundingClientRect()
   const mouseX = event.clientX
+  const isOnHandle = isAsideRtl(asideRef.value)
+    ? mouseX <= left + ASIDE_RESIZE_HANDLE_WIDTH
+    : mouseX >= right - ASIDE_RESIZE_HANDLE_WIDTH
 
-  if (mouseX >= left + boxWidth - ASIDE_RESIZE_HANDLE_WIDTH && !isResizing) {
+  if (isOnHandle && !isResizing) {
     isResizing = true
     document.body.style.cursor = 'ew-resize'
     document.addEventListener('mousemove', resize)
@@ -170,9 +176,9 @@ const resize = (event: MouseEvent) => {
   if (isResizing) {
     requestAnimationFrame(() => {
       if (asideRef.value) {
-        const { left } = asideRef.value.getBoundingClientRect()
+        const { left, right } = asideRef.value.getBoundingClientRect()
 
-        const newWidth = event.clientX - left
+        const newWidth = isAsideRtl(asideRef.value) ? right - event.clientX : event.clientX - left
 
         if (newWidth >= minWidth) {
           asideWidth.value = newWidth + 'px'
@@ -363,8 +369,7 @@ onBeforeUnmount(() => {
   &__with-aside {
     max-width: var(--a-layout-split-max-width);
     @media (min-width: variables.$layout-split-frame-breakpoint) {
-      border-right: var(--a-border-width-strong) solid black;
-      border-left: var(--a-border-width-strong) solid black;
+      border-inline: var(--a-border-width-strong) solid black;
     }
   }
 
@@ -372,7 +377,7 @@ onBeforeUnmount(() => {
     width: var(--asideWidth);
     min-height: 100%;
     height: var(--a-layout-height);
-    border-right: var(--a-border-width-strong) solid black;
+    border-inline-end: var(--a-border-width-strong) solid black;
     position: relative;
     max-width: var(--a-layout-split-pane-max-width-ratio);
     user-select: none;
@@ -380,13 +385,13 @@ onBeforeUnmount(() => {
     @media (max-width: map.get(variables.$breakpoints, 'mobile')) {
       margin-top: var(--a-safe-area-top);
       height: var(--a-layout-height-safe);
-      border-right: none;
+      border-inline-end: none;
     }
 
     &::after {
       content: '';
       position: absolute;
-      right: 0;
+      inset-inline-end: 0;
       top: 0;
       width: var(--asideResizeHandleWidth);
       height: 100%;
@@ -471,13 +476,12 @@ onBeforeUnmount(() => {
   .sidebar {
     &__with-aside {
       @media (min-width: variables.$layout-split-frame-breakpoint) {
-        border-right: var(--a-border-width-strong) solid map.get(colors.$adm-colors, 'secondary2');
-        border-left: var(--a-border-width-strong) solid map.get(colors.$adm-colors, 'secondary2');
+        border-inline: var(--a-border-width-strong) solid map.get(colors.$adm-colors, 'secondary2');
       }
     }
 
     &__aside {
-      border-right-color: map.get(colors.$adm-colors, 'secondary2');
+      border-inline-end-color: map.get(colors.$adm-colors, 'secondary2');
     }
 
     &__router-view {

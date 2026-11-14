@@ -2,4 +2,7 @@
 
 @mixin a-chat-message-body-copy() {
   @include mixins.a-text-regular-enlarged();
+  // Message text is rendered with `dir="auto"`: align it to the start of its own direction,
+  // not to the physical side inherited from the message card.
+  text-align: start;
 }

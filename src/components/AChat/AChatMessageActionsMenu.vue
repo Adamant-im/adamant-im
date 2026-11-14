@@ -4,7 +4,10 @@
       <v-list-item-title>{{ primaryActionLabel }}</v-list-item-title>
 
       <template #append>
-        <v-icon :icon="primaryActionIcon" />
+        <v-icon
+          :icon="primaryActionIcon"
+          :class="{ [classes.replyIcon]: primaryActionIcon === mdiReply }"
+        />
       </template>
     </v-list-item>
 
@@ -34,7 +37,8 @@ const classes = {
   vList: `${className}__list`,
   vOverlayContent: `${className}__overlay-content`,
   vOverlayContentLeft: `${className}__overlay-content--left`,
-  vOverlayContentRight: `${className}__overlay-content--right`
+  vOverlayContentRight: `${className}__overlay-content--right`,
+  replyIcon: `${className}__reply-icon`
 }
 
 export default defineComponent({
@@ -85,6 +89,7 @@ export default defineComponent({
 
 <style lang="scss">
 @use '@/assets/styles/components/_chat-action-surface.scss' as chatActionSurface;
+@use '@/assets/styles/components/_directional-icon.scss' as directionalIcon;
 @use '@/assets/styles/components/_chat.scss';
 
 .message-actions-menu {
@@ -97,6 +102,10 @@ export default defineComponent({
     padding-top: var(--a-chat-message-actions-menu-list-padding-block);
     padding-bottom: var(--a-chat-message-actions-menu-list-padding-block);
     min-width: var(--a-chat-message-actions-menu-list-min-width);
+  }
+
+  &__reply-icon {
+    @include directionalIcon.a-directional-icon();
   }
 
   &__overlay-content {
