@@ -7,6 +7,8 @@ must keep the following checks green:
 - `npm audit --omit=dev --audit-level=high`
 - `npm audit --audit-level=high`
 
+The lockfile refresh for #1028 uses a seven-day minimum release age for new package versions.
+
 ## Remaining advisory
 
 On 2026-11-14, the runtime audit reported two low-severity findings and the full audit reported five.
@@ -22,11 +24,14 @@ can migrate with state-restore and service-worker regression coverage.
 - `web3-validator` declares Zod 3. The override uses patched Zod 4 to address
   [GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5).
   `web3-eth-abi` uses an updated `abitype` with a Zod 4 peer range. Offline Ethereum tests cover
-  RPC validation and ABI encoding/decoding. The renderer disables Zod JIT, and the strict CSP build
-  removes its dynamic compilation code. Review both overrides and the build transform on upgrades
-- `@electron/universal`, `app-builder-lib`, `editorconfig` and `@typescript-eslint/typescript-estree`
-  use patched `minimatch` 11 for [GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249).
-  `js-beautify` and `workbox-build` use patched `glob` 14 for
+  RPC validation and ABI encoding/decoding. Web3.js passes a refinement metadata callback that
+  Zod 4 no longer accepts. Every failed Web3.js format refinement loses the value and format
+  details and is reported as a required parameter. Invalid inputs are still rejected. The renderer
+  disables Zod JIT, and the strict CSP build removes the eval probe and both compiler entry points.
+  Review both overrides and the build transform on upgrades.
+- Electron packaging, EditorConfig and ESLint tooling use patched `minimatch` 11 for
+  [GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249).
+  `js-beautify`, `workbox-build` and OpenAPI Generator CLI use patched `glob` 14 for
   [GHSA-3g3m-2fjr-6pw4](https://github.com/advisories/GHSA-3g3m-2fjr-6pw4).
   Remove each override when its parent adopts a patched range
 - `get-uri` uses patched `basic-ftp` 6.2.6 for

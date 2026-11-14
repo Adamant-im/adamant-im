@@ -254,10 +254,9 @@ snippet differ from the source. Browsers enforce every delivered policy, so a he
 from the build's meta policy silently narrows it. Server operators must reinstall the nginx snippet
 whenever it changes.
 
-The build fails if a generated JavaScript chunk contains a direct `eval` or a `Function`
-constructor. This gate scans reachable emitted chunks and direct lexical calls; runtime CSP remains
-the enforcement boundary for indirect forms. Keep runtime dependencies compatible with this gate
-instead of adding `unsafe-eval`.
+The build checks emitted JavaScript chunks for direct `eval` and `Function` calls and simple
+assignments that alias the `Function` constructor. The runtime CSP also blocks dynamic execution
+through indirect forms.
 
 #### Verifying deployed CSP
 

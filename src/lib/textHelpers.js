@@ -17,11 +17,13 @@ export function downloadFile(data, filename, type) {
     a.href = url
     a.download = filename
     document.body.appendChild(a)
-    a.click()
-    setTimeout(function () {
-      document.body.removeChild(a)
-      window.URL.revokeObjectURL(url)
-    }, 0)
+    try {
+      a.click()
+    } finally {
+      a.remove()
+      // WebKit can start the download asynchronously after the click.
+      setTimeout(() => URL.revokeObjectURL(url), 40_000)
+    }
   }
 }
 

@@ -68,8 +68,8 @@
   },
   "dependencies": {
     "@capacitor-community/file-opener": "^8.0.1",
-    "@capacitor/android": "^8.6.2",
-    "@capacitor/core": "^8.6.2",
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/core": "^8.6.0",
     "@capacitor/filesystem": "^8.1.5",
     "@emoji-mart/data": "^1.2.1",
     "@mdi/js": "^7.4.47",
@@ -80,7 +80,7 @@
     "@vueuse/core": "^15.0.0",
     "@zxing/browser": "^0.2.1",
     "@zxing/library": "^0.23.0",
-    "axios": "^1.21.0",
+    "axios": "^1.20.0",
     "bignumber.js": "^11.1.5",
     "bitcoinjs-lib": "^7.0.5",
     "buffer": "^6.0.3",
@@ -118,7 +118,7 @@
     "util": "^0.12.5",
     "visibilityjs": "^2.0.2",
     "vue": "^3.5.45",
-    "vue-i18n": "^11.4.20",
+    "vue-i18n": "^11.4.18",
     "vue-router": "^5.3.1",
     "vuedraggable": "^4.1.0",
     "vuetify": "^4.2.1",
@@ -135,7 +135,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@capacitor/cli": "^8.6.2",
+    "@capacitor/cli": "^8.6.0",
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
     "@commitlint/types": "^21.2.3",
@@ -143,13 +143,13 @@
     "@eslint/compat": "^2.1.1",
     "@eslint/eslintrc": "^3.3.7",
     "@eslint/js": "^10.0.1",
-    "@openapitools/openapi-generator-cli": "^2.42.2",
+    "@openapitools/openapi-generator-cli": "^2.42.0",
     "@playwright/test": "^1.63.0",
     "@types/eslint": "^9.6.1",
     "@types/eslint-plugin-security": "^3.0.1",
     "@types/semver": "^7.8.0",
-    "@typescript-eslint/eslint-plugin": "^8.72.2",
-    "@typescript-eslint/parser": "^8.72.2",
+    "@typescript-eslint/eslint-plugin": "^8.72.1",
+    "@typescript-eslint/parser": "^8.72.1",
     "@vitejs/plugin-basic-ssl": "^2.3.0",
     "@vitejs/plugin-vue": "^6.0.9",
     "@vitejs/plugin-vue-jsx": "^5.1.6",
@@ -157,13 +157,13 @@
     "@vue/test-utils": "^2.5.1",
     "autoprefixer": "^10.6.2",
     "cross-env": "^10.1.0",
-    "dotenv": "^18.0.10",
-    "electron": "^44.11.3",
+    "dotenv": "^17.4.2",
+    "electron": "^44.10.2",
     "electron-builder": "^26.18.0",
     "electron-devtools-installer": "^4.0.0",
-    "eslint": "^10.15.0",
+    "eslint": "^10.14.0",
     "eslint-import-resolver-typescript": "^4.4.5",
-    "eslint-plugin-import-x": "^4.18.1",
+    "eslint-plugin-import-x": "^4.18.0",
     "eslint-plugin-security": "^4.2.1",
     "eslint-plugin-vue": "^10.11.0",
     "execa": "^10.2.1",
@@ -181,7 +181,7 @@
     "typescript": "^6.0.3",
     "user-agent-data-types": "^0.4.3",
     "uuid": "^14.0.3",
-    "vite": "^8.3.8",
+    "vite": "^8.3.6",
     "vite-plugin-electron": "^1.2.0",
     "vite-plugin-pwa": "^2.0.0",
     "vite-plugin-vue-devtools": "^8.2.1",
@@ -239,13 +239,14 @@
   ],
   "overrides": {
     "eslint": {
-      "ajv": "^6.14.0"
+      "ajv": "^6.14.0",
+      "minimatch": "^11.0.5"
     },
     "editorconfig": {
-      "minimatch": "^11.0.8"
+      "minimatch": "^11.0.5"
     },
     "js-beautify": {
-      "glob": "^14.0.6"
+      "glob": "^14.0.4"
     },
     "filelist": {
       "minimatch": "^5.1.7"
@@ -263,22 +264,28 @@
       "basic-ftp": "^6.2.6"
     },
     "@electron/universal": {
-      "minimatch": "^11.0.8"
+      "minimatch": "^11.0.5"
     },
     "@typescript-eslint/typescript-estree": {
-      "minimatch": "^11.0.8"
+      "minimatch": "^11.0.5"
     },
     "app-builder-lib": {
-      "minimatch": "^11.0.8"
+      "minimatch": "^11.0.5"
     },
     "workbox-build": {
-      "glob": "^14.0.6"
+      "glob": "^14.0.4"
     },
     "web3-validator": {
       "zod": "$zod"
     },
     "web3-eth-abi": {
       "abitype": "^1.3.0"
+    },
+    "@eslint/config-array": {
+      "minimatch": "^11.0.5"
+    },
+    "@openapitools/openapi-generator-cli": {
+      "glob": "^14.0.4"
     }
   }
 }

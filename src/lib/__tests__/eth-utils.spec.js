@@ -4,7 +4,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import Web3Eth from 'web3-eth'
 import { decodeParameters, encodeParameters } from 'web3-eth-abi'
-import { Web3ValidatorError } from 'web3-validator'
+import { validator, Web3ValidatorError } from 'web3-validator'
 import { toEther, toWei, getAccountFromPassphrase, calculateFee } from '@/lib/eth-utils'
 import { bytesToHex } from '@/lib/hex'
 import cache from '@/store/cache'
@@ -33,6 +33,16 @@ describe('eth-utils', () => {
     const encoded = encodeParameters(types, [[address, 42n]])
 
     expect(decodeParameters(types, encoded)[0]).toMatchObject({ recipient: address, amount: 42n })
+  })
+
+  it.each([
+    ['address', '0x000000000000000000000000000000000000dEaD', '0x1234'],
+    ['uint256', 2n ** 256n - 1n, 2n ** 256n],
+    ['bytes32', `0x${'ab'.repeat(32)}`, `0x${'ab'.repeat(31)}`],
+    ['blockNumberOrTag', 'finalized', 'invalid']
+  ])('preserves Web3.js acceptance and rejection for %s', (type, valid, invalid) => {
+    expect(() => validator.validate([type], [valid])).not.toThrow()
+    expect(() => validator.validate([type], [invalid])).toThrow(Web3ValidatorError)
   })
 
   describe('toEther', () => {
