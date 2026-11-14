@@ -67,6 +67,11 @@ describe('smartNumber', () => {
     expect(numbers[6]).toBe('4.00…2')
   })
 
+  it('should keep tiny values in decimal notation', () => {
+    expect(smartNumber('0.00000001')).toBe('0.00…0001')
+    expect(smartNumber(0.00000001)).toBe('0.00…0001')
+  })
+
   it('should handle zero and integer values without decimal part', () => {
     expect(smartNumber(0)).toBe('0')
     expect(smartNumber('0')).toBe('0')
