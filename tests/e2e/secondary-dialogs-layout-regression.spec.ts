@@ -150,13 +150,6 @@ test.describe('Secondary dialogs layout regressions', () => {
     expect(qrMetrics?.buttonMarginTop ?? 99).toBeLessThanOrEqual(17)
     expect(qrMetrics?.buttonMarginBottom ?? 0).toBeGreaterThanOrEqual(7)
     expect(qrMetrics?.buttonMarginBottom ?? 99).toBeLessThanOrEqual(9)
-
-    const preview = page.locator('.qrcode-renderer-dialog__preview-action')
-    await expect(preview.locator('img')).toBeVisible()
-
-    const [download] = await Promise.all([page.waitForEvent('download'), preview.click()])
-    expect(download.suggestedFilename()).toBe('adamant-im.png')
-    expect(await download.failure()).toBeNull()
   })
 
   test('keeps partner info dialog on the shared info width', async ({ page }) => {

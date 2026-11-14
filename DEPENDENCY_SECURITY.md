@@ -7,7 +7,10 @@ must keep the following checks green:
 - `npm audit --omit=dev --audit-level=high`
 - `npm audit --audit-level=high`
 
-The lockfile refresh for #1028 uses a seven-day minimum release age for new package versions.
+`.npmrc` sets a seven-day minimum release age for npm dependency resolution. The Security
+workflow runs `node scripts/check-dependency-release-age.mjs` before installation to verify
+the publication timestamps of the pinned npm version and every version in the lockfile,
+including optional dependencies.
 
 ## Remaining advisory
 

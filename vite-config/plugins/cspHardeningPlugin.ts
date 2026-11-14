@@ -42,7 +42,7 @@ const ZOD_CORE_MODULE = /\/node_modules\/zod\/v4\/core\/(util|doc|compile)\.js(?
 const ZOD_EVAL_PROBE = /export const allowsEval = [^\n]*cached\(\(\) => \{[\s\S]*?^\}\);/m
 const ZOD_DOC_COMPILE = /^ {4}compile\(\) \{[\s\S]*?^ {4}\}/m
 const ZOD_COMPILE_FN = /^export function compileFn\(schema, options\) \{[\s\S]*?^\}/m
-const FUNCTION_ALIAS = /\b[A-Za-z_$][\w$]*\s*=\s*Function\s*(?:[;,})]|$)/
+const FUNCTION_ALIAS = /(?<![\w$.])[A-Za-z_$][\w$]*\s*=\s*Function\s*(?:[;,})]|$)/
 
 function isIdentifierOrPropertyCharacter(value: string | undefined): boolean {
   if (!value) return false

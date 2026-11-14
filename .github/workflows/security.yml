@@ -28,6 +28,9 @@ jobs:
       - name: Setup Node.js
         uses: ./.github/actions/setup-node
 
+      - name: Verify npm release age
+        run: node scripts/check-dependency-release-age.mjs
+
       - name: Install locked dependencies without lifecycle scripts
         run: npm ci --ignore-scripts
 

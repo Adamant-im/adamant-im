@@ -53,6 +53,8 @@ describe('CSP hardening plugin', () => {
     ['Function constructor', 'const execute = new Function("return 1")'],
     ['Function constructor', 'const F = Function; const execute = new F("return 1")'],
     ['Function constructor', 'const a=1,F=Function,f=new F("return 1");'],
+    ['Function constructor', 'let $=Function;new $("return 1");'],
+    ['Function constructor', 'let $$=Function;new $$("return 1");'],
     ['direct eval', 'const value = eval(input)']
   ])('detects %s in generated chunks', (expected, source) => {
     expect(findUnsafeRuntimeSources('assets/index.js', source)).toEqual([
@@ -63,6 +65,8 @@ describe('CSP hardening plugin', () => {
   it('allows normal functions and WebAssembly compilation', () => {
     expect(findUnsafeRuntimeSources('assets/index.js', 'function parse() { return 1 }')).toEqual([])
     expect(findUnsafeRuntimeSources('assets/index.js', 'const prop = {type:Function};')).toEqual([])
+    expect(findUnsafeRuntimeSources('assets/index.js', 'a.type=Function;')).toEqual([])
+    expect(findUnsafeRuntimeSources('assets/index.js', 'a.$$type=Function;')).toEqual([])
     expect(PWA_CONTENT_SECURITY_POLICY).toContain(`script-src 'self' 'wasm-unsafe-eval'`)
     expect(PWA_CONTENT_SECURITY_POLICY).not.toContain(`'unsafe-eval'`)
     expect(PWA_CONTENT_SECURITY_POLICY).not.toContain(`script-src 'self' 'unsafe-inline'`)
