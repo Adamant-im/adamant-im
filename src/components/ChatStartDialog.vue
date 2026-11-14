@@ -104,7 +104,7 @@ export default {
       required: true
     }
   },
-  emits: ['start-chat', 'error', 'update:modelValue'],
+  emits: ['close', 'dismiss', 'update:modelValue'],
   setup() {
     return {
       mdiDotsVertical
@@ -156,7 +156,12 @@ export default {
         return Promise.reject(new Error(this.$t('chats.incorrect_address')))
       }
 
-      this.$emit('start-chat', this.recipientAddress, this.uriMessage, this.recipientName, true)
+      this.$emit('close', {
+        partnerId: this.recipientAddress,
+        messageText: this.uriMessage,
+        partnerName: this.recipientName,
+        retrieveKey: true
+      })
       this.closeDialog()
     },
 
@@ -200,7 +205,7 @@ export default {
           e.preventDefault()
           this.getInfoFromURI(data)
         } else {
-          this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: 'ADM' }))
+          this.showError(this.$t('transfer.error_incorrect_address', { crypto: 'ADM' }))
         }
       })
     },
@@ -231,8 +236,11 @@ export default {
         }
         this.startChat()
       } else {
-        this.$emit('error', this.$t('chats.incorrect_address', { crypto: Cryptos.ADM }))
+        this.showError(this.$t('chats.incorrect_address', { crypto: Cryptos.ADM }))
       }
+    },
+    showError(message) {
+      this.$store.dispatch('snackbar/show', { message })
     },
     isValidUserAddress() {
       return validateAddress(Cryptos.ADM, this.recipientAddress)
