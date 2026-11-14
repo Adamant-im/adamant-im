@@ -14,7 +14,7 @@
         },
         {
           "url": "https://endless.adamant.im",
-          "alt_ip": "http://149.102.157.15:36666"
+          "alt_ip": "http://169.58.72.175:36666"
         },
         {
           "url": "https://bid.adamant.im"
@@ -37,7 +37,8 @@
           "alt_ip": "http://154.26.159.245:36666"
         },
         {
-          "url": "https://dschubba.adm.im"
+          "url": "https://dschubba.adm.im",
+          "alt_ip": "http://167.86.99.198:36666"
         },
         {
           "url": "https://lake.bbry.org",
