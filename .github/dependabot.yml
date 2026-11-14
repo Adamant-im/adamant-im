@@ -10,6 +10,11 @@ updates:
       time: '06:22'
       timezone: Etc/UTC
     open-pull-requests-limit: 10
+    # Keeps version updates behind the seven-day release-age gate in the Security workflow.
+    # The extra day avoids proposing a version a few hours before the gate accepts it.
+    # Security updates ignore the cooldown, see DEPENDENCY_SECURITY.md for that path.
+    cooldown:
+      default-days: 8
     groups:
       npm-minor-and-patch:
         patterns:
@@ -28,6 +33,8 @@ updates:
       day: monday
       time: '06:52'
       timezone: Etc/UTC
+    cooldown:
+      default-days: 7
     groups:
       github-actions:
         patterns:

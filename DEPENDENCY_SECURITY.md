@@ -10,7 +10,36 @@ must keep the following checks green:
 `.npmrc` sets a seven-day minimum release age for npm dependency resolution. The Security
 workflow runs `node scripts/check-dependency-release-age.mjs` before installation to verify
 the publication timestamps of the pinned npm version and every version in the lockfile,
-including optional dependencies.
+including optional dependencies. Dependabot version updates use a cooldown in
+`.github/dependabot.yml` that keeps them behind this cutoff.
+
+## Urgent security updates
+
+A patched release can be younger than seven days when an advisory is already public. Dependabot
+security updates also ignore the cooldown. Use a reviewed exception for such a version instead of
+disabling the check:
+
+1. Install the patched version with `npm install <package>@<version> --min-release-age=0`
+2. Add the exact version to `.github/dependency-release-age-exceptions.json` with the advisory
+   that makes the update urgent:
+
+   ```json
+   [
+     {
+       "package": "example-package",
+       "version": "1.2.3",
+       "advisory": "GHSA-xxxx-xxxx-xxxx",
+       "reason": "Patched release for an advisory that affects the runtime bundle"
+     }
+   ]
+   ```
+
+3. Explain in the pull request why waiting for the seven-day cutoff is riskier than the fresh release
+
+An exception covers one exact version and requires a GHSA or CVE identifier. It never covers a
+version whose publication time cannot be read. The check fails when an exception does not match
+a locked version, and it prints a warning once the version is older than seven days. Remove the
+entry at that point.
 
 ## Remaining advisory
 
