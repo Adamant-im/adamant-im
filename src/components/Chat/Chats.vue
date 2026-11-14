@@ -17,7 +17,7 @@
           :size="CHATS_CONNECTION_SPINNER_SIZE"
         />
         <v-spacer />
-        <v-btn :class="`${className}__item`" @click="setShowChatStartDialog(true)" variant="plain">
+        <v-btn :class="`${className}__item`" @click="openChatStartDialog" variant="plain">
           <template #prepend>
             <v-icon :class="`${className}__icon`" :icon="mdiMessageOutline" size="small" />
           </template>
@@ -61,20 +61,12 @@
       <ChatSpinner :value="!isFulfilled" />
     </div>
 
-    <chat-start-dialog
-      v-model="isShowChatStartDialog"
-      :partner-id="partnerId"
-      @error="onError"
-      @start-chat="openChat"
-    />
-
     <NodesOfflineDialog node-type="adm" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import ChatPreview from '@/components/ChatPreview.vue'
-import ChatStartDialog from '@/components/ChatStartDialog.vue'
 import ChatSpinner from '@/components/ChatSpinner.vue'
 import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
@@ -92,7 +84,7 @@ import {
   useTemplateRef,
   watch
 } from 'vue'
-import { useChatStateStore } from '@/stores/modal-state'
+import { useModalsStore } from '@/stores/modals'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { useChatsSpinner } from '@/hooks/useChatsSpinner'
@@ -120,16 +112,9 @@ const router = useRouter()
 const { t } = useI18n()
 const showSpinner = useChatsSpinner()
 const route = useRoute()
-const chatStateStore = useChatStateStore()
+const modalsStore = useModalsStore()
 
 const className = 'chats-view'
-
-const { setShowChatStartDialog } = chatStateStore
-
-const isShowChatStartDialog = computed({
-  get: () => chatStateStore.isShowChatStartDialog,
-  set: (value) => setShowChatStartDialog(value)
-})
 
 const messagesContainer = useTemplateRef('messagesContainer')
 const lastPartnerId = ref<string | null>(null)
@@ -191,7 +176,9 @@ onDeactivated(() => {
 })
 
 onMounted(() => {
-  setShowChatStartDialog(props.showNewContact)
+  if (props.showNewContact) {
+    openChatStartDialog()
+  }
   attachScrollListener()
   checkDate()
 })
@@ -226,6 +213,25 @@ const checkIsActive = (contactId: string) => {
   return route.name !== 'Chats' && contactId === lastPartnerId.value
 }
 
+type ChatStartDialogResult = {
+  partnerId: string
+  messageText?: string
+  partnerName?: string
+  retrieveKey: boolean
+}
+
+const openChatStartDialog = async () => {
+  const result = await modalsStore.open<ChatStartDialogResult>({
+    component: 'ChatStartDialog',
+    props: { partnerId: props.partnerId },
+    dialogProps: { width: 'var(--a-secondary-dialog-width)' }
+  })
+
+  if (result) {
+    openChat(result.partnerId, result.messageText, result.partnerName, result.retrieveKey)
+  }
+}
+
 const openChat = (
   partnerId: string,
   messageText?: string,
@@ -241,10 +247,6 @@ const openChat = (
     params: { partnerId },
     query: { messageText }
   })
-}
-
-const onError = (message: string) => {
-  store.dispatch('snackbar/show', { message })
 }
 
 const attachScrollListener = () => {
