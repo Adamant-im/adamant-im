@@ -65,14 +65,21 @@ export default defineConfig({
     trace: isCI ? 'off' : isDetailedMode ? 'on' : 'on-first-retry',
     screenshot: isCI ? 'off' : isDetailedMode ? 'on' : 'only-on-failure',
     video: isCI ? 'off' : isDetailedMode ? 'on' : 'retain-on-failure',
-    permissions: ['clipboard-read', 'clipboard-write'],
     viewport: { width: 1366, height: 900 }
   },
   projects: [
     {
       name: 'chromium',
       use: {
-        ...devices['Desktop Chrome']
+        ...devices['Desktop Chrome'],
+        permissions: ['clipboard-read', 'clipboard-write']
+      }
+    },
+    {
+      name: 'webkit',
+      testMatch: '**/qr-download.spec.ts',
+      use: {
+        ...devices['Desktop Safari']
       }
     }
   ],

@@ -38,6 +38,11 @@ export const PWA_SECURITY_HEADERS: Readonly<Record<string, string>> = {
 
 const ENGINE_IO_GLOBALS_MODULE = /\/engine\.io-client\/build\/esm(?:-debug)?\/globals\.js(?:\?|$)/
 const ENGINE_IO_GLOBAL_FALLBACK = /Function\((['"])return this\1\)\(\)/g
+const ZOD_CORE_MODULE = /\/node_modules\/zod\/v4\/core\/(util|doc|compile)\.js(?:\?|$)/
+const ZOD_EVAL_PROBE = /export const allowsEval = [^\n]*cached\(\(\) => \{[\s\S]*?^\}\);/m
+const ZOD_DOC_COMPILE = /^ {4}compile\(\) \{[\s\S]*?^ {4}\}/m
+const ZOD_COMPILE_FN = /^export function compileFn\(schema, options\) \{[\s\S]*?^\}/m
+const FUNCTION_ALIAS = /(?<![\w$.])[A-Za-z_$][\w$]*\s*=\s*Function\s*(?:[;,})]|$)/
 
 function isIdentifierOrPropertyCharacter(value: string | undefined): boolean {
   if (!value) return false
@@ -72,12 +77,37 @@ export function replaceEngineIoGlobalFallback(code: string, id: string): string 
   return hardenedCode === code ? null : hardenedCode
 }
 
+export function removeZodDynamicCompilation(code: string, id: string): string | null {
+  const module = ZOD_CORE_MODULE.exec(id)?.[1]
+  if (!module) return null
+
+  // Keep schema validation in the interpreter and fail closed on explicit compilation.
+  const replacements = {
+    util: [ZOD_EVAL_PROBE, 'export const allowsEval = { value: false };'],
+    doc: [ZOD_DOC_COMPILE, '    compile() { throw new Error("Zod JIT is disabled"); }'],
+    compile: [
+      ZOD_COMPILE_FN,
+      'export function compileFn() { throw new ZodCompileUnsupportedError("dynamic compilation under strict CSP"); }'
+    ]
+  } as const
+  const [pattern, replacement] = replacements[module as keyof typeof replacements]
+  const hardenedCode = code.replace(pattern, replacement)
+
+  if (
+    hardenedCode === code ||
+    /\bFunction\b/.test(hardenedCode.replace(/\/\/.*|\/\*[\s\S]*?\*\//g, ''))
+  ) {
+    throw new Error(`Zod changed its ${module} module. Review the strict CSP transform.`)
+  }
+
+  return hardenedCode
+}
+
 export function findUnsafeRuntimeSources(fileName: string, code: string): string[] {
-  // Defense in depth for reachable emitted chunks and direct lexical calls. Runtime CSP remains
-  // the enforcement boundary for indirect aliases or computed access to eval/Function.
+  // Runtime CSP also enforces forms that lexical checks cannot identify.
   const violations = []
 
-  if (hasUnqualifiedCall(code, 'Function')) {
+  if (hasUnqualifiedCall(code, 'Function') || FUNCTION_ALIAS.test(code)) {
     violations.push(`${fileName}: Function constructor`)
   }
 
@@ -100,7 +130,9 @@ export function cspHardeningPlugin(): Plugin {
     },
 
     transform(code, id) {
-      const hardenedCode = replaceEngineIoGlobalFallback(code, id)
+      const hardenedCode =
+        (isBuild ? removeZodDynamicCompilation(code, id) : null) ??
+        replaceEngineIoGlobalFallback(code, id)
       return hardenedCode ? { code: hardenedCode, map: null } : null
     },
 

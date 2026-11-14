@@ -254,10 +254,10 @@ snippet differ from the source. Browsers enforce every delivered policy, so a he
 from the build's meta policy silently narrows it. Server operators must reinstall the nginx snippet
 whenever it changes.
 
-The build fails if a generated JavaScript chunk contains a direct `eval` or a `Function`
-constructor. This gate scans reachable emitted chunks and direct lexical calls; runtime CSP remains
-the enforcement boundary for indirect forms. Keep runtime dependencies compatible with this gate
-instead of adding `unsafe-eval`.
+The build fails if an emitted JavaScript chunk contains a direct `eval` or `Function` call or a
+simple assignment that aliases the `Function` constructor. The runtime CSP also blocks dynamic
+execution through indirect forms. Keep runtime dependencies compatible with this gate instead of
+adding `unsafe-eval`.
 
 #### Verifying deployed CSP
 
@@ -296,7 +296,7 @@ curl --socks5-hostname 127.0.0.1:9050 -sS -D - -o /dev/null http://<onion-addres
 
 ## Playwright Smoke Checks
 
-Install Chromium for local e2e runs:
+Install Chromium and WebKit for local e2e runs:
 
 ```bash
 npm run test:e2e:install

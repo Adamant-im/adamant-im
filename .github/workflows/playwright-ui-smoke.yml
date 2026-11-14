@@ -35,7 +35,7 @@ jobs:
         run: npm ci
 
       - name: Install Playwright browser 🎭
-        run: npx playwright install --with-deps chromium
+        run: npm run test:e2e:install -- --with-deps
 
       - name: Run Playwright tests 🛠️
         run: npm run test:e2e
