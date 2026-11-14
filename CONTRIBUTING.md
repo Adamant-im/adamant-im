@@ -378,9 +378,15 @@ npm run electron:serve
 
 ### macOS signing and notarization (local/CI)
 
-For distributable macOS builds, use a valid `Developer ID Application` certificate and notarization.
+The macOS CI workflow builds and signs the Electron app with a `Developer ID Application`
+certificate and packages DMGs. CI currently skips notarization.
 
-The notarization hook (`scripts/electron/notarize.cjs`) supports 3 auth strategies:
+If you trust the source and have verified the download, try opening the app once. Then go to
+**System Settings → Privacy & Security → Open Anyway** and confirm the exception for that app.
+See [Apple's Gatekeeper instructions](https://support.apple.com/en-us/102445).
+
+Local notarization is available through the opt-in npm scripts. The notarization hook
+(`scripts/electron/notarize.cjs`) supports three authentication strategies:
 
 1. Apple ID + app-specific password
 2. Keychain profile (`xcrun notarytool store-credentials`)
