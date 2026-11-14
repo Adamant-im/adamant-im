@@ -1,6 +1,6 @@
-import { expect, vi } from 'vitest'
+import { vi } from 'vitest'
 import { config as testUtilsConfig } from '@vue/test-utils'
-import vueSnapshotSerializer from 'jest-serializer-vue'
+import '@/lib/configureZod'
 import '../__mocks__/globals'
 
 const createMemoryStorage = () => {
@@ -159,5 +159,4 @@ testUtilsConfig.global.config = {
 ensureMediaDevicesApi()
 ensureCanvasContextApi()
 
-expect.addSnapshotSerializer(vueSnapshotSerializer)
 globalThis.jest = vi

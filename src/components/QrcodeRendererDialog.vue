@@ -22,10 +22,10 @@
 </template>
 
 <script>
-import b64toBlob from 'b64-to-blob'
-import FileSaver from 'file-saver'
+import { Base64 } from 'js-base64'
 
 import QrcodeRenderer from '@/components/QrcodeRenderer.vue'
+import { downloadFile } from '@/lib/textHelpers.js'
 import { joinUrl } from '@/lib/urlFormatter.js'
 
 export default {
@@ -68,11 +68,12 @@ export default {
   },
   methods: {
     saveQrcode() {
-      const imgUrl = this.$refs.qrcode.$el.src
-      const base64Data = imgUrl.slice(22, imgUrl.length)
-      const byteCharacters = b64toBlob(base64Data)
-      const blob = new Blob([byteCharacters], { type: 'image/png' })
-      FileSaver.saveAs(blob, 'adamant-im.png')
+      const dataUrl = this.$refs.qrcode?.dataUrl
+      const pngPrefix = 'data:image/png;base64,'
+      if (!dataUrl?.startsWith(pngPrefix)) return
+
+      const bytes = Base64.toUint8Array(dataUrl.slice(pngPrefix.length))
+      downloadFile(bytes, 'adamant-im.png', 'image/png')
     }
   }
 }

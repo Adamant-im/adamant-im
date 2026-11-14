@@ -1,13 +1,40 @@
 // @vitest-environment node
 // Some crypto libs throw errors when using `jsdom` environment
 
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import Web3Eth from 'web3-eth'
+import { decodeParameters, encodeParameters } from 'web3-eth-abi'
+import { Web3ValidatorError } from 'web3-validator'
 import { toEther, toWei, getAccountFromPassphrase, calculateFee } from '@/lib/eth-utils'
 import { bytesToHex } from '@/lib/hex'
 import cache from '@/store/cache'
 
 describe('eth-utils', () => {
+  it('validates Ethereum RPC addresses before calling the provider', async () => {
+    const request = vi.fn().mockResolvedValue('0x2a')
+    const api = new Web3Eth({ request })
+    const address = '0x000000000000000000000000000000000000dEaD'
+
+    await expect(api.getBalance(address)).resolves.toBe(42n)
+    expect(request).toHaveBeenCalledTimes(1)
+    expect(request.mock.calls[0][0]).toMatchObject({
+      method: 'eth_getBalance',
+      params: [address, 'latest']
+    })
+    request.mockClear()
+
+    await expect(api.getBalance('invalid address')).rejects.toBeInstanceOf(Web3ValidatorError)
+    expect(request).not.toHaveBeenCalled()
+  })
+
+  it('round-trips a human-readable ABI tuple', () => {
+    const types = ['(address recipient, uint256 amount)']
+    const address = '0x000000000000000000000000000000000000dEaD'
+    const encoded = encodeParameters(types, [[address, 42n]])
+
+    expect(decodeParameters(types, encoded)[0]).toMatchObject({ recipient: address, amount: 42n })
+  })
+
   describe('toEther', () => {
     it('should convert Wei amount to Ether from a number', () => {
       expect(toEther(1)).toBe('0.000000000000000001')

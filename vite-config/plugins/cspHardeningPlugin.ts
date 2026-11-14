@@ -38,6 +38,9 @@ export const PWA_SECURITY_HEADERS: Readonly<Record<string, string>> = {
 
 const ENGINE_IO_GLOBALS_MODULE = /\/engine\.io-client\/build\/esm(?:-debug)?\/globals\.js(?:\?|$)/
 const ENGINE_IO_GLOBAL_FALLBACK = /Function\((['"])return this\1\)\(\)/g
+const ZOD_CORE_MODULE = /\/node_modules\/zod\/v4\/core\/(util|doc)\.js(?:\?|$)/
+const ZOD_EVAL_PROBE = /export const allowsEval = [^\n]*cached\(\(\) => \{[\s\S]*?^\}\);/m
+const ZOD_COMPILE_BODY = / {4}compile\(\) \{[\s\S]*?^ {4}\}/m
 
 function isIdentifierOrPropertyCharacter(value: string | undefined): boolean {
   if (!value) return false
@@ -100,6 +103,24 @@ export function cspHardeningPlugin(): Plugin {
     },
 
     transform(code, id) {
+      const zodModule = isBuild && ZOD_CORE_MODULE.exec(id)?.[1]
+      if (zodModule) {
+        // Keep the interpreter and remove both dynamic Function calls from the renderer.
+        const hardenedCode =
+          zodModule === 'util'
+            ? code.replace(ZOD_EVAL_PROBE, 'export const allowsEval = { value: false };')
+            : code.replace(
+                ZOD_COMPILE_BODY,
+                '    compile() { throw new Error("Zod JIT is disabled"); }'
+              )
+
+        if (hardenedCode === code) {
+          this.error(`Zod changed its ${zodModule} module. Review the strict CSP transform.`)
+        }
+
+        return { code: hardenedCode, map: null }
+      }
+
       const hardenedCode = replaceEngineIoGlobalFallback(code, id)
       return hardenedCode ? { code: hardenedCode, map: null } : null
     },

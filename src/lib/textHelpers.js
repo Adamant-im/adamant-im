@@ -1,7 +1,7 @@
 /**
  * Download file helper.
  *
- * @param {string} data
+ * @param {BlobPart} data
  * @param {string} filename
  * @param {string} type Example `text/plain`
  */
