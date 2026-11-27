@@ -33,10 +33,5 @@ exports[`PassphraseGenerator.vue > renders the correct markup 1`] = `
   >
     <!--v-if-->
   </transition-stub>
-  <qrcode-renderer-dialog-stub
-    data-v-f3fe94d6=""
-    modelvalue="false"
-    text=""
-  />
 </div>
 `;

@@ -1,7 +1,6 @@
 <template>
   <v-app :theme="themeName" class="application--linear-gradient">
     <UploadAttachmentExitPrompt />
-    <warning-on-addresses-dialog v-model="showWarningOnAddressesDialog" />
     <ModalsHost />
 
     <v-main>
@@ -17,9 +16,10 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, getCurrentInstance, ref, watch } from 'vue'
-import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
 import UploadAttachmentExitPrompt from '@/components/UploadAttachmentExitPrompt.vue'
 import ModalsHost from '@/components/modals/ModalsHost.vue'
+import { useModalsStore } from '@/stores/modals'
+import { vueBus } from '@/lib/vueBus'
 import Notifications from '@/lib/notifications'
 import { ThemeName } from './plugins/vuetify'
 import { useStore } from 'vuex'
@@ -37,7 +37,13 @@ const store = useStore()
 const isSnackbarShowing = computed(() => store.state.snackbar.show)
 const cachedRootComponentNames = ['AppSidebar']
 
-const showWarningOnAddressesDialog = ref(false)
+const modalsStore = useModalsStore()
+
+const onWarningOnAddresses = (summary: unknown) => {
+  if (!(summary as { isAllRight?: boolean }).isAllRight) {
+    modalsStore.open({ component: 'WarningOnAddressesDialog', props: { summary } })
+  }
+}
 
 const notifications = ref<Notifications | null>(null)
 
@@ -67,6 +73,8 @@ const shouldCacheRootComponent = (component: unknown) => {
 }
 
 onMounted(() => {
+  vueBus.on('warningOnAddressDialog', onWarningOnAddresses)
+
   const instance = getCurrentInstance()
 
   if (instance?.proxy) {
@@ -76,6 +84,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  vueBus.off('warningOnAddressDialog', onWarningOnAddresses)
   notifications.value?.stop()
   store.dispatch('stopInterval')
 })

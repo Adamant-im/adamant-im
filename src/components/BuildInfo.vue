@@ -14,19 +14,13 @@
         {{ t('build_info.testnet') }}
       </span>
     </button>
-
-    <BuildInfoDialog
-      v-model="showDialog"
-      :build-info="info"
-      :allow-dev-mode-unlock="allowDevModeUnlock"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, type PropType } from 'vue'
+import { computed, type PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
-import BuildInfoDialog from '@/components/BuildInfoDialog.vue'
+import { useModalsStore } from '@/stores/modals'
 import {
   buildInfo as defaultBuildInfo,
   getBuildInfoLines,
@@ -47,14 +41,17 @@ const props = defineProps({
 
 const { t } = useI18n()
 const className = 'build-info'
-const showDialog = ref(false)
+const modalsStore = useModalsStore()
 
 const info = computed<BuildMetadata>(() => props.buildInfo || defaultBuildInfo)
 const lines = computed(() => getBuildInfoLines(info.value))
 const compactText = computed(() => getCompactBuildInfoString(info.value))
 
 const onTriggerClick = () => {
-  showDialog.value = true
+  modalsStore.open({
+    component: 'BuildInfoDialog',
+    props: { buildInfo: info.value, allowDevModeUnlock: props.allowDevModeUnlock }
+  })
 }
 
 defineExpose({

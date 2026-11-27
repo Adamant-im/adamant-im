@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { watch } from 'vue'
+import { onMounted } from 'vue'
 
 import { websiteUriToOnion } from '@/lib/uri'
 import { mdiGift } from '@mdi/js'
@@ -52,15 +52,11 @@ export default {
     }
   },
   emits: ['update:modelValue'],
-  setup(props) {
-    watch(
-      () => props.modelValue,
-      () => {
-        if (props.modelValue) {
-          vibrate.medium()
-        }
-      }
-    )
+  setup() {
+    // The dialog is mounted already open by the modals host
+    onMounted(() => {
+      vibrate.medium()
+    })
 
     return {
       mdiGift

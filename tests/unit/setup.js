@@ -1,4 +1,5 @@
-import { expect, vi } from 'vitest'
+import { beforeEach, expect, vi } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
 import { config as testUtilsConfig } from '@vue/test-utils'
 import vueSnapshotSerializer from 'jest-serializer-vue'
 import '../__mocks__/globals'
@@ -155,6 +156,11 @@ testUtilsConfig.global.config = {
     originalWarn(`[Vue warn]: ${message}`)
   }
 }
+
+// Components open dialogs through the modals store, so every test gets a fresh active Pinia
+beforeEach(() => {
+  setActivePinia(createPinia())
+})
 
 ensureMediaDevicesApi()
 ensureCanvasContextApi()

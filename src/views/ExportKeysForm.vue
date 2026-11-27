@@ -91,7 +91,7 @@
             </v-btn>
           </template>
           <v-list :class="`${className}__menu-list`">
-            <v-list-item :class="`${className}__menu-item`" @click="showQrcodeScanner = true">
+            <v-list-item :class="`${className}__menu-item`" @click="openQrcodeScanner">
               <v-list-item-title :class="`${className}__menu-item-title`">
                 {{ t('transfer.decode_from_camera') }}
               </v-list-item-title>
@@ -113,12 +113,6 @@
         {{ t('options.export_keys.button') }}
       </v-btn>
     </div>
-
-    <qrcode-scanner-dialog
-      v-if="showQrcodeScanner"
-      v-model="showQrcodeScanner"
-      @scan="onScanQrcode"
-    />
   </v-form>
 </template>
 <script>
@@ -129,12 +123,12 @@ import { getAccountFromPassphrase as getEthAccount } from '@/lib/eth-utils'
 import { getAccount as getBtcAccount } from '@/lib/bitcoin/btc-base-api'
 import { Cryptos, CryptosInfo } from '@/lib/constants'
 import QrcodeCapture from '@/components/QrcodeCapture.vue'
-import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
 import { ref, defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { mdiContentCopy, mdiDotsVertical, mdiEye, mdiEyeOff } from '@mdi/js'
 import { logger } from '@/utils/devTools/logger'
+import { useModalsStore } from '@/stores/modals'
 import {
   AUTH_FORM_COPY_ICON_SIZE,
   AUTH_FORM_MENU_ICON_SIZE,
@@ -155,13 +149,12 @@ function getBtcKey(crypto, passphrase, asWif) {
 
 export default defineComponent({
   components: {
-    QrcodeCapture,
-    QrcodeScannerDialog
+    QrcodeCapture
   },
 
   setup() {
     const passphrase = ref('')
-    const showQrcodeScanner = ref(false)
+    const modalsStore = useModalsStore()
     const store = useStore()
     const { t } = useI18n()
     const keys = ref([])
@@ -176,6 +169,11 @@ export default defineComponent({
         message: t('transfer.invalid_qr_code')
       })
       logger.log('ExportKeysForm', 'warn', error)
+    }
+    const openQrcodeScanner = async () => {
+      const uri = await modalsStore.open({ component: 'QrcodeScannerDialog' })
+
+      if (uri) onScanQrcode(uri)
     }
     const onScanQrcode = (pass) => {
       passphrase.value = pass
@@ -226,7 +224,7 @@ export default defineComponent({
 
     return {
       passphrase,
-      showQrcodeScanner,
+      openQrcodeScanner,
       keys,
       className,
       t,

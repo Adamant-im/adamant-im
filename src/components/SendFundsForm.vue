@@ -1,10 +1,5 @@
 <template>
   <div :class="className">
-    <warning-on-partner-address-dialog
-      v-model="showWarningOnPartnerAddressDialog"
-      :info="warningOnPartnerInfo"
-    />
-
     <v-form ref="form" v-model="validForm" @submit.prevent="confirm">
       <div v-if="addressReadonly" class="fake-input">
         <div class="fake-input__label">
@@ -56,7 +51,7 @@
               />
             </template>
             <v-list :class="`${className}__menu-list`">
-              <v-list-item :class="`${className}__menu-item`" @click="showQrcodeScanner = true">
+              <v-list-item :class="`${className}__menu-item`" @click="openQrcodeScanner">
                 <v-list-item-title :class="`${className}__menu-item-title`">
                   {{ $t('transfer.decode_from_camera') }}
                 </v-list-item-title>
@@ -212,12 +207,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <qrcode-scanner-dialog
-      v-if="showQrcodeScanner"
-      v-model="showQrcodeScanner"
-      @scan="onScanQrcode"
-    />
   </div>
 </template>
 
@@ -232,7 +221,6 @@ import { PendingTransactionError } from '@/lib/pending-transactions'
 import { computed, nextTick } from 'vue'
 
 import QrcodeCapture from '@/components/QrcodeCapture.vue'
-import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
 import { BigNumber } from 'bignumber.js'
 import { logger } from '@/utils/devTools/logger'
 
@@ -259,7 +247,7 @@ import validateAddress from '@/lib/validateAddress'
 import { formatNumber, isNumeric, trimTrailingZeros } from '@/lib/numericHelpers'
 import partnerName from '@/mixins/partnerName'
 
-import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressDialog.vue'
+import { useModalsStore } from '@/stores/modals'
 import SafeHtml from '@/components/common/SafeHtml'
 import { escapeHtml } from '@/lib/markdown'
 import { isStringEqualCI } from '@/lib/textHelpers'
@@ -291,8 +279,6 @@ function validateForm() {
 export default {
   components: {
     QrcodeCapture,
-    QrcodeScannerDialog,
-    WarningOnPartnerAddressDialog,
     SafeHtml
   },
   mixins: [partnerName],
@@ -321,6 +307,7 @@ export default {
   emits: ['send', 'error'],
   setup() {
     const store = useStore()
+    const modalsStore = useModalsStore()
 
     const isOnline = computed(() => store.getters['isOnline'])
 
@@ -330,6 +317,7 @@ export default {
 
     return {
       checkIsOnline,
+      modalsStore,
       COMMON_INLINE_SPINNER_SIZE,
       mdiDotsVertical,
       mdiMenuDown
@@ -363,13 +351,10 @@ export default {
     textData: '',
     validForm: true,
     disabledButton: false,
-    showQrcodeScanner: false,
     showSpinner: false,
     dialog: false,
     fetchAddress: null, // fn throttle
     increaseFee: false,
-    showWarningOnPartnerAddressDialog: false,
-    warningOnPartnerInfo: {},
     estimatedGasLimit: null,
 
     // Account exists check
@@ -786,6 +771,12 @@ export default {
      * Parse info from an URI
      * @param {string} uri URI
      */
+    async openQrcodeScanner() {
+      const uri = await this.modalsStore.open({ component: 'QrcodeScannerDialog' })
+
+      if (uri) this.onScanQrcode(uri)
+    },
+
     onScanQrcode(uri) {
       const recipient = parseURI(uri)
       const { params, address } = recipient
@@ -956,14 +947,17 @@ export default {
             this.cryptoAddress = addresses[0]
             if (addresses.length > 1) {
               const addressesList = addresses.join(', ')
-              this.warningOnPartnerInfo.coin = this.currency
-              this.warningOnPartnerInfo.ADMaddress = this.address
-              this.warningOnPartnerInfo.ADMname = ''
-              if (this.recipientName) {
-                this.warningOnPartnerInfo.ADMname = ' (' + this.recipientName + ')'
-              }
-              this.warningOnPartnerInfo.coinAddresses = addressesList
-              this.showWarningOnPartnerAddressDialog = true
+              this.modalsStore.open({
+                component: 'WarningOnPartnerAddressDialog',
+                props: {
+                  info: {
+                    coin: this.currency,
+                    ADMaddress: this.address,
+                    ADMname: this.recipientName ? ' (' + this.recipientName + ')' : '',
+                    coinAddresses: addressesList
+                  }
+                }
+              })
             }
           })
       }

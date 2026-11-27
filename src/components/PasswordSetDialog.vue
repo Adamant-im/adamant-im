@@ -99,7 +99,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'password', value: string): void
+  (e: 'close', value: string): void
   (e: 'update:modelValue', value: boolean): void
 }>()
 
@@ -143,7 +143,7 @@ const submit = () => {
     })
     .then((encodedPassword) => {
       password.value = ''
-      emit('password', encodedPassword)
+      emit('close', encodedPassword)
     })
     .catch(async (err) => {
       try {

@@ -61,7 +61,7 @@
                 variant="text"
                 size="x-small"
                 :class="[`${className}__icon`, `${className}__qr-action-button`]"
-                @click="showQrcodeScanner = true"
+                @click="openQrcodeScanner"
               >
                 <icon><qr-code-scan-icon /></icon>
               </v-btn>
@@ -100,12 +100,6 @@
             </v-col>
           </v-row>
         </v-sheet>
-
-        <qrcode-scanner-dialog
-          v-if="showQrcodeScanner"
-          v-model="showQrcodeScanner"
-          @scan="onScanQrcode"
-        />
       </container>
     </v-row>
   </component>
@@ -122,7 +116,6 @@ import QrcodeCapture from '@/components/QrcodeCapture.vue'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import PassphraseGenerator from '@/components/PassphraseGenerator.vue'
 import LoginForm from '@/components/LoginForm.vue'
-import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
 import Icon from '@/components/icons/BaseIcon.vue'
 import QrCodeScanIcon from '@/components/icons/common/QrCodeScan.vue'
 import FileIcon from '@/components/icons/common/File.vue'
@@ -132,6 +125,7 @@ import BuildInfo from '@/components/BuildInfo.vue'
 import { buildInfo as defaultBuildInfo } from '@/lib/buildInfo'
 import { navigateByURI } from '@/router/navigationGuard'
 import { logger } from '@/utils/devTools/logger'
+import { useModalsStore } from '@/stores/modals'
 import { AUTH_FORM_SETTINGS_BUTTON_SIZE } from '@/components/Login/helpers/uiMetrics'
 
 const store = useStore()
@@ -142,7 +136,7 @@ const className = 'login-page'
 const isTestnet = computed(() => defaultBuildInfo.isTestnet)
 const passphrase = ref('')
 const password = ref('')
-const showQrcodeScanner = ref(false)
+const modalsStore = useModalsStore()
 const loginForm = useTemplateRef<InstanceType<typeof LoginForm> | null>('loginForm')
 
 const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
@@ -182,6 +176,12 @@ const onCopyPassphrase = () => {
     message: t('home.copied'),
     timeout: 2000
   })
+}
+
+const openQrcodeScanner = async () => {
+  const uri = await modalsStore.open<string>({ component: 'QrcodeScannerDialog' })
+
+  if (uri) onScanQrcode(uri)
 }
 
 const onScanQrcode = (value: string) => {

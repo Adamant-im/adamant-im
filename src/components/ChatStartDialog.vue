@@ -34,7 +34,7 @@
                 />
               </template>
               <v-list :class="`${className}__menu-list`">
-                <v-list-item :class="`${className}__menu-item`" @click="showQrcodeScanner = true">
+                <v-list-item :class="`${className}__menu-item`" @click="openQrcodeScanner">
                   <v-list-item-title :class="`${className}__menu-item-title`">
                     {{ $t('transfer.decode_from_camera') }}
                   </v-list-item-title>
@@ -58,20 +58,13 @@
         </v-col>
 
         <v-col cols="12" :class="`${className}__btn-show-qrcode`">
-          <a :class="`${className}__link`" @click="showQrcodeRendererDialog = true">
+          <a :class="`${className}__link`" @click="openQrcodeRenderer">
             {{ $t('chats.show_my_qr_code') }}
           </a>
         </v-col>
       </v-row>
     </v-card>
 
-    <qrcode-scanner-dialog
-      v-if="showQrcodeScanner"
-      v-model="showQrcodeScanner"
-      @scan="onScanQrcode"
-    />
-
-    <qrcode-renderer-dialog v-model="showQrcodeRendererDialog" :text="uri" logo />
   </v-dialog>
 </template>
 
@@ -82,17 +75,14 @@ import { Cryptos } from '@/lib/constants'
 import { generateURI, parseURIasAIP } from '@/lib/uri'
 import validateAddress from '@/lib/validateAddress'
 import QrcodeCapture from '@/components/QrcodeCapture.vue'
-import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
-import QrcodeRendererDialog from '@/components/QrcodeRendererDialog.vue'
 import partnerName from '@/mixins/partnerName'
 import { mdiDotsVertical } from '@mdi/js'
 import { logger } from '@/utils/devTools/logger'
+import { useModalsStore } from '@/stores/modals'
 
 export default {
   components: {
-    QrcodeCapture,
-    QrcodeScannerDialog,
-    QrcodeRendererDialog
+    QrcodeCapture
   },
   mixins: [partnerName],
   props: {
@@ -106,15 +96,16 @@ export default {
   },
   emits: ['close', 'dismiss', 'update:modelValue'],
   setup() {
+    const modalsStore = useModalsStore()
+
     return {
-      mdiDotsVertical
+      mdiDotsVertical,
+      modalsStore
     }
   },
   data: () => ({
     recipientAddress: '',
     recipientName: '',
-    showQrcodeScanner: false,
-    showQrcodeRendererDialog: false,
     uriMessage: ''
   }),
   computed: {
@@ -163,6 +154,19 @@ export default {
         retrieveKey: true
       })
       this.closeDialog()
+    },
+
+    async openQrcodeScanner() {
+      const uri = await this.modalsStore.open({ component: 'QrcodeScannerDialog' })
+
+      if (uri) this.onScanQrcode(uri)
+    },
+
+    openQrcodeRenderer() {
+      this.modalsStore.open({
+        component: 'QrcodeRendererDialog',
+        props: { text: this.uri, logo: true }
+      })
     },
 
     // Clear all values

@@ -49,13 +49,17 @@
 </template>
 
 <script>
-import { vueBus } from '@/lib/vueBus'
 import { mdiAlert } from '@mdi/js'
 
 export default {
   props: {
     modelValue: {
       type: Boolean,
+      required: true
+    },
+    // Result of the crypto addresses validation, see `src/lib/store-crypto-address.js`
+    summary: {
+      type: Object,
       required: true
     }
   },
@@ -65,10 +69,6 @@ export default {
       mdiAlert
     }
   },
-  data: () => ({
-    header: '',
-    content: ''
-  }),
   computed: {
     className: () => 'warning-on-addresses-dialog',
     show: {
@@ -78,57 +78,54 @@ export default {
       set(value) {
         this.$emit('update:modelValue', value)
       }
-    }
-  },
-  created() {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const dialog = this
+    },
+    header() {
+      return this.$t('warning_on_addresses.headline')
+    },
+    about() {
+      return this.$t('warning_on_addresses.about')
+    },
+    details() {
+      const summary = this.summary
+      let details = ''
 
-    vueBus.on('warningOnAddressDialog', function (validateSummary) {
-      if (!validateSummary.isAllRight) {
-        dialog.header = dialog.$t('warning_on_addresses.headline')
+      if (summary.isWrongAddress) {
+        details = this.$t('warning_on_addresses.specifics_wrong_addresses', {
+          crypto: summary.wrongCoin,
+          storedAddress: summary.storedAddress,
+          correctAddress: summary.correctAddress
+        })
 
-        dialog.about = dialog.$t('warning_on_addresses.about')
-
-        if (validateSummary.isWrongAddress) {
-          dialog.details = dialog.$t('warning_on_addresses.specifics_wrong_addresses', {
-            crypto: validateSummary.wrongCoin,
-            storedAddress: validateSummary.storedAddress,
-            correctAddress: validateSummary.correctAddress
-          })
-
-          if (validateSummary.wrongCoins.length > 1) {
-            const wrongCoins = validateSummary.wrongCoins.join(', ')
-            dialog.details +=
-              ' ' +
-              dialog.$t('warning_on_addresses.full_list_wrong_addresses', {
-                crypto_list: wrongCoins
-              })
-          }
-        } else if (validateSummary.isManyAddresses) {
-          const manyAddresses = validateSummary.manyAddresses.join(', ')
-
-          dialog.details = dialog.$t('warning_on_addresses.specifics_many_addresses', {
-            crypto: validateSummary.manyAddressesCoin,
-            manyAddresses: manyAddresses
-          })
-
-          if (validateSummary.manyAddressesCoins.length > 1) {
-            const wrongCoins = validateSummary.manyAddressesCoins.join(', ')
-            dialog.details +=
-              ' ' +
-              dialog.$t('warning_on_addresses.full_list_many_addresses', {
-                crypto_list: wrongCoins
-              })
-          }
+        if (summary.wrongCoins.length > 1) {
+          details +=
+            ' ' +
+            this.$t('warning_on_addresses.full_list_wrong_addresses', {
+              crypto_list: summary.wrongCoins.join(', ')
+            })
         }
+      } else if (summary.isManyAddresses) {
+        details = this.$t('warning_on_addresses.specifics_many_addresses', {
+          crypto: summary.manyAddressesCoin,
+          manyAddresses: summary.manyAddresses.join(', ')
+        })
 
-        dialog.reasons = dialog.$t('warning_on_addresses.reasons')
-        dialog.action = dialog.$t('warning_on_addresses.what_to_do')
-
-        dialog.show = true
+        if (summary.manyAddressesCoins.length > 1) {
+          details +=
+            ' ' +
+            this.$t('warning_on_addresses.full_list_many_addresses', {
+              crypto_list: summary.manyAddressesCoins.join(', ')
+            })
+        }
       }
-    })
+
+      return details
+    },
+    reasons() {
+      return this.$t('warning_on_addresses.reasons')
+    },
+    action() {
+      return this.$t('warning_on_addresses.what_to_do')
+    }
   },
   methods: {
     hide() {

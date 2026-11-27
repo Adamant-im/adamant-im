@@ -13,20 +13,18 @@
         :key="node.url"
         blockchain="adm"
         :node="node"
-        @show-http-info="showHttpInfo = true"
+        @show-http-info="showHttpInfo"
       />
     </tbody>
   </SettingsDataTable>
-
-  <HttpProtocolInfoDialog v-model="showHttpInfo" />
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { useStore } from 'vuex'
+import { useModalsStore } from '@/stores/modals'
 import SettingsDataTable from '@/components/common/SettingsDataTable.vue'
 import NodesTableHead from '@/components/nodes/components/NodesTableHead.vue'
-import HttpProtocolInfoDialog from '@/components/nodes/components/HttpProtocolInfoDialog.vue'
 import IpfsNodesTableItem from './IpfsNodesTableItem.vue'
 import { type NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { sortNodesFn } from '@/components/nodes/utils/sortNodesFn'
@@ -35,12 +33,15 @@ export default defineComponent({
   components: {
     SettingsDataTable,
     NodesTableHead,
-    HttpProtocolInfoDialog,
     IpfsNodesTableItem
   },
   setup() {
     const store = useStore()
-    const showHttpInfo = ref(false)
+    const modalsStore = useModalsStore()
+
+    const showHttpInfo = () => {
+      modalsStore.open({ component: 'HttpProtocolInfoDialog' })
+    }
     const ipfsNodes = computed(() => {
       const arr = store.getters['nodes/ipfs']
 

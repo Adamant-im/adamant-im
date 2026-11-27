@@ -52,8 +52,6 @@
           <div :class="`${className}__explanation`">
             {{ t('options.stay_logged_in_tooltip') }}
           </div>
-
-          <password-set-dialog v-model="isPasswordDialogDisplayed" @password="onSetPassword" />
         </v-col>
       </v-row>
 
@@ -204,17 +202,16 @@ import { useTheme } from 'vuetify'
 
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import CurrencySwitcher from '@/components/CurrencySwitcher.vue'
-import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import { resetPinia } from '@/plugins/pinia'
 import NavigationWrapper from '@/components/NavigationWrapper.vue'
 import BuildInfo from '@/components/BuildInfo.vue'
 import { sidebarLayoutKey } from '@/lib/constants'
-import { useChatStateStore } from '@/stores/modal-state'
+import { useModalsStore } from '@/stores/modals'
 import { logger } from '@/utils/devTools/logger'
 
 const store = useStore()
-const chatStateStore = useChatStateStore()
+const modalsStore = useModalsStore()
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
@@ -377,15 +374,6 @@ const restoreSettingsViewState = async (path = route.path) => {
   settingsRestoreFrame = window.requestAnimationFrame(continueRestore)
 }
 
-const isPasswordDialogDisplayed = computed({
-  get() {
-    return chatStateStore.isShowSetPasswordDialog
-  },
-  set(value) {
-    chatStateStore.setShowSetPasswordDialog(value)
-  }
-})
-
 const stayLoggedIn = computed(() => {
   return store.state.options.stayLoggedIn
 })
@@ -488,8 +476,9 @@ const onSetPassword = () => {
 const onCheckStayLoggedIn = () => {
   if (!stayLoggedIn.value) {
     isIDBSupported
-      .then(() => {
-        isPasswordDialogDisplayed.value = true
+      .then(() => modalsStore.open<string>({ component: 'PasswordSetDialog' }))
+      .then((encodedPassword) => {
+        if (encodedPassword) onSetPassword()
       })
       .catch(() => {
         store.dispatch('snackbar/show', {

@@ -136,7 +136,7 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['scan', 'update:modelValue'],
+  emits: ['close', 'update:modelValue'],
   setup(props, { emit }) {
     const store = useStore()
     const { t } = useI18n()
@@ -186,7 +186,7 @@ export default defineComponent({
     }
 
     const onScan = (content: string) => {
-      emit('scan', content)
+      emit('close', content)
       destroyScanner()
       show.value = false
     }

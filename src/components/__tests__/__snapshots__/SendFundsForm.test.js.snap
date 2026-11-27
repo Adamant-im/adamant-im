@@ -5,11 +5,6 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
   class="send-funds-form"
   data-v-7dc72237=""
 >
-  <warning-on-partner-address-dialog-stub
-    data-v-7dc72237=""
-    info="[object Object]"
-    modelvalue="false"
-  />
   <div
     data-v-7dc72237=""
     modelvalue="true"
@@ -141,6 +136,5 @@ exports[`SendFundsForm > renders the correct markup 1`] = `
     modelvalue="false"
     width="var(--a-secondary-dialog-width)"
   />
-  <!--v-if-->
 </div>
 `;

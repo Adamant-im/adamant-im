@@ -7,6 +7,7 @@ import * as directives from 'vuetify/directives'
 import mockupI18n from './__mocks__/plugins/i18n'
 import BuildInfo from '@/components/BuildInfo.vue'
 import BuildInfoDialog from '@/components/BuildInfoDialog.vue'
+import { useModalsStore } from '@/stores/modals'
 
 if (typeof window !== 'undefined' && !window.visualViewport) {
   window.visualViewport = {
@@ -226,12 +227,21 @@ describe('BuildInfo.vue', () => {
       }
     })
 
+    const modalsStore = useModalsStore()
+    const open = vi.spyOn(modalsStore, 'open').mockResolvedValue(undefined)
+
     const button = wrapper.find('button[data-test-id="version-info"]')
-    expect(wrapper.findComponent(BuildInfoDialog).props('modelValue')).toBe(false)
+    expect(open).not.toHaveBeenCalled()
 
     await button.trigger('click')
 
-    expect(wrapper.findComponent(BuildInfoDialog).props('modelValue')).toBe(true)
+    expect(open).toHaveBeenCalledWith({
+      component: 'BuildInfoDialog',
+      props: {
+        buildInfo: wrapper.props('buildInfo'),
+        allowDevModeUnlock: false
+      }
+    })
   })
 })
 

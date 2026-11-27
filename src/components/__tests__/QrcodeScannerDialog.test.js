@@ -91,6 +91,21 @@ describe('QrcodeScannerDialog.vue', () => {
     expect(wrapper.vm.show).toBe(true)
   })
 
+  it('reports the scan result with the close event', () => {
+    const wrapper = mount(QrcodeScannerDialog, {
+      shallow: true,
+      propsData: {
+        modelValue: true
+      },
+      global: {
+        plugins: [store, i18n]
+      }
+    })
+
+    expect(wrapper.vm.$options.emits).toContain('close')
+    expect(wrapper.vm.$options.emits).not.toContain('scan')
+  })
+
   it('should hide dialog when :value = false', () => {
     const wrapper = mount(QrcodeScannerDialog, {
       shallow: true,

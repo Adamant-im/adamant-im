@@ -35,18 +35,17 @@
         </v-list>
       </v-card-text>
     </v-card>
-    <QrcodeRendererDialog v-model="showQrcodeRendererDialog" :logo="isADM" :text="uri" />
   </v-dialog>
 </template>
 
 <script lang="ts">
-import { ref, computed, defineComponent, PropType, watch, onBeforeUnmount } from 'vue'
+import { computed, defineComponent, PropType, watch, onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 
 import { CryptoSymbol, Cryptos, isErc20 } from '@/lib/constants'
 
-import QrcodeRendererDialog from '@/components/QrcodeRendererDialog.vue'
+import { useModalsStore } from '@/stores/modals'
 import copyToClipboard from 'copy-to-clipboard'
 import { generateURI } from '@/lib/uri'
 import { getExplorerAddressUrl } from '@/config/utils'
@@ -63,9 +62,6 @@ const classes = {
 }
 
 export default defineComponent({
-  components: {
-    QrcodeRendererDialog
-  },
   props: {
     modelValue: {
       type: Boolean,
@@ -87,10 +83,10 @@ export default defineComponent({
   setup(props, { emit }) {
     const { t } = useI18n()
     const store = useStore()
-    const showQrcodeRendererDialog = ref(false)
+    const modalsStore = useModalsStore()
 
     const onKeydown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !showQrcodeRendererDialog.value) {
+      if (event.key === 'Escape') {
         show.value = false
       }
     }
@@ -120,7 +116,10 @@ export default defineComponent({
     }
 
     const openQRCodeRenderer = () => {
-      showQrcodeRendererDialog.value = true
+      modalsStore.open({
+        component: 'QrcodeRendererDialog',
+        props: { logo: props.isADM, text: uri.value }
+      })
       show.value = false
     }
 
@@ -149,7 +148,6 @@ export default defineComponent({
     return {
       classes,
       t,
-      showQrcodeRendererDialog,
       show,
       uri,
       isErc,

@@ -1,7 +1,7 @@
 <template>
   <v-card flat color="transparent" :class="classes.root">
     <v-list lines="two" bg-color="transparent" :class="classes.walletCardList">
-      <v-list-item :class="classes.walletCardTile" @click="showShareURIDialog = true">
+      <v-list-item :class="classes.walletCardTile" @click="openShareURIDialog">
         <v-list-item-title :class="classes.walletCardTitle">
           <template v-if="isADM">
             <span v-if="walletTitlePrefix">{{ walletTitlePrefix }}</span>
@@ -61,21 +61,14 @@
     </v-list>
 
     <WalletCardListActions :class="classes.walletCardActions" :crypto="crypto" :is-a-d-m="isADM" />
-
-    <ShareURIDialog
-      v-model="showShareURIDialog"
-      :address="address"
-      :crypto="crypto"
-      :is-a-d-m="isADM"
-    />
   </v-card>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
-import ShareURIDialog from '@/components/ShareURIDialog.vue'
+import { useModalsStore } from '@/stores/modals'
 import WalletCardListActions from '@/components/WalletCardListActions.vue'
 import { Cryptos, CryptoSymbol } from '@/lib/constants'
 import { useDisplay } from 'vuetify'
@@ -122,7 +115,14 @@ const store = useStore()
 const route = useRoute()
 const { xs } = useDisplay()
 const key = props.crypto.toLowerCase()
-const showShareURIDialog = ref(false)
+const modalsStore = useModalsStore()
+
+const openShareURIDialog = () => {
+  modalsStore.open({
+    component: 'ShareURIDialog',
+    props: { address: props.address, crypto: props.crypto, isADM: isADM.value }
+  })
+}
 
 const balance = computed(() => {
   return props.crypto === Cryptos.ADM

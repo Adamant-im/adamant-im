@@ -60,7 +60,7 @@
                 :height="AUTH_FORM_TOGGLE_ICON_SIZE"
                 shape-rendering="crispEdges"
                 :title="t('login.save_qr_code_tooltip')"
-                @click="showQrcodeRendererDialog = true"
+                @click="openQrcodeRenderer"
               >
                 <qr-code-icon />
               </icon>
@@ -76,8 +76,6 @@
         </v-textarea>
       </div>
     </transition>
-
-    <QrcodeRendererDialog v-model="showQrcodeRendererDialog" :text="passphrase" />
   </div>
 </template>
 
@@ -89,7 +87,7 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { downloadFile } from '@/lib/textHelpers'
-import QrcodeRendererDialog from '@/components/QrcodeRendererDialog.vue'
+import { useModalsStore } from '@/stores/modals'
 import Icon from '@/components/icons/BaseIcon.vue'
 import SafeHtml from '@/components/common/SafeHtml'
 import CopyIcon from '@/components/icons/common/Copy.vue'
@@ -119,9 +117,16 @@ const classes = {
 
 const passphrase = ref('')
 const showPassphrase = ref(false)
-const showQrcodeRendererDialog = ref(false)
+const modalsStore = useModalsStore()
 const showSuggestedPassphrase = ref(false)
 const textarea = ref<InstanceType<typeof VTextarea> | null>(null)
+
+const openQrcodeRenderer = () => {
+  modalsStore.open({
+    component: 'QrcodeRendererDialog',
+    props: { text: passphrase.value }
+  })
+}
 
 const displayedPassphrase = computed(() => {
   return showSuggestedPassphrase.value

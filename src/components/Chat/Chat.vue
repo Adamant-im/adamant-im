@@ -1,6 +1,5 @@
 <template>
   <v-card class="chat">
-    <free-tokens-dialog v-model="isShowFreeTokensDialog" />
     <a-chat
       ref="chatRef"
       :key="dateRefreshKey"
@@ -318,7 +317,7 @@ import ChatToolbar from '@/components/Chat/ChatToolbar.vue'
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 import ChatMenu from '@/components/Chat/ChatMenu.vue'
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
-import FreeTokensDialog from '@/components/FreeTokensDialog.vue'
+import { useModalsStore } from '@/stores/modals'
 import { isMobile } from '@/lib/display-mobile'
 import { isAdamantChat, isWelcomeChat, isWelcomeMessage } from '@/lib/chat/meta/utils'
 import AChatAttachment from '@/components/AChat/AChatAttachment/AChatAttachment.vue'
@@ -412,12 +411,9 @@ const allowFetchingMessages = ref(true)
 
 const chatStateStore = useChatStateStore()
 
-const { setShowFreeTokensDialog, setActionsDropdownMessageId } = chatStateStore
+const modalsStore = useModalsStore()
 
-const isShowFreeTokensDialog = computed({
-  get: () => chatStateStore.isShowFreeTokensDialog,
-  set: setShowFreeTokensDialog
-})
+const { setActionsDropdownMessageId } = chatStateStore
 
 const actionsDropdownMessageId = computed({
   get: () => chatStateStore.actionsDropdownMessageId,
@@ -679,7 +675,7 @@ const cancelPreviewFile = () => {
 const onMessageError = (error: string) => {
   switch (error) {
     case validationErrors.notEnoughFundsNewAccount:
-      setShowFreeTokensDialog(true)
+      modalsStore.open({ component: 'FreeTokensDialog' })
       return
     case validationErrors.notEnoughFunds:
       store.dispatch('snackbar/show', { message: t('chats.no_money') })
@@ -1037,7 +1033,8 @@ const hasFocusedEditableElement = () => {
 }
 
 const onKeyPress = (e: KeyboardEvent) => {
-  if (e.code === 'Enter' && !isShowFreeTokensDialog.value && !hasFocusedEditableElement()) {
+  if (e.code === 'Enter' && !modalsStore.stack.some((modal) => modal.isOpen) &&
+!hasFocusedEditableElement()) {
     e.preventDefault()
     e.stopPropagation()
     chatFormRef.value.focus()

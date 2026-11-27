@@ -43,22 +43,20 @@
         </v-list-item-title>
       </v-list-item>
     </template>
-
-    <buy-tokens-dialog v-model="showBuyTokensDialog" :adamant-address="$store.state.address" />
   </v-list>
 </template>
 
 <script setup lang="ts">
 import { CryptoSymbol } from '@/lib/constants/cryptos'
-import BuyTokensDialog from '@/components/BuyTokensDialog.vue'
 import Icon from '@/components/icons/BaseIcon.vue'
 import StakeIcon from '@/components/icons/common/Stake.vue'
 import { WALLET_ACTION_STAKE_ICON_SIZE } from '@/components/wallets/helpers/uiMetrics'
 import { websiteUriToOnion } from '@/lib/uri'
 
 import { mdiBankTransferOut, mdiFinance, mdiGift } from '@mdi/js'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useStore } from 'vuex'
+import { useModalsStore } from '@/stores/modals'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { openExternalLink } from '@/lib/openExternalLink'
@@ -79,7 +77,7 @@ const router = useRouter()
 const route = useRoute()
 const { t } = useI18n()
 
-const showBuyTokensDialog = ref(false)
+const modalsStore = useModalsStore()
 
 const hasAdmTokens = computed(() => store.state.balance > 0)
 
@@ -116,7 +114,10 @@ const stakeAndEarn = () => {
 }
 
 const buyTokens = () => {
-  showBuyTokensDialog.value = true
+  modalsStore.open({
+    component: 'BuyTokensDialog',
+    props: { adamantAddress: store.state.address }
+  })
 }
 
 const getFreeTokens = () => {

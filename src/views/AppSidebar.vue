@@ -198,14 +198,7 @@ if (SAVED_WIDTH_KEY) {
   }
 }
 
-const {
-  actionsDropdownMessageId,
-  isShowPartnerInfoDialog,
-  isShowFreeTokensDialog,
-  isShowSetPasswordDialog,
-  isChatMenuOpen,
-  isEmojiPickerOpen
-} = storeToRefs(chatStateStore)
+const { actionsDropdownMessageId, isChatMenuOpen, isEmojiPickerOpen } = storeToRefs(chatStateStore)
 const modalsStore = useModalsStore()
 const isSnackbarShowing = computed(() => store.state.snackbar.show)
 const noActiveNodesDialog = computed(() => store.state.chat.noActiveNodesDialog)
@@ -215,10 +208,7 @@ const canPressEscape = computed(() => {
   return (
     !noActiveNodesDialog.value &&
     !isModalOpen.value &&
-    !isShowFreeTokensDialog.value &&
-    !isShowSetPasswordDialog.value &&
     !isSnackbarShowing.value &&
-    !isShowPartnerInfoDialog.value &&
     !isChatMenuOpen.value &&
     !isEmojiPickerOpen.value &&
     actionsDropdownMessageId.value === -1
